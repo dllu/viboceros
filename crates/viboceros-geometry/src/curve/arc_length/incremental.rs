@@ -106,8 +106,12 @@ impl ArcLengthSampler<'_> {
             matches!(s.linear,
             Some(LinearSpan::Rational {controls}) if controls[0].weight()!=controls[1].weight())
         };
+        // Numerical scalar queries must consider natural span boundaries even
+        // when each span has constant speed. The precise inverse remains a
+        // separate contract; incremental batches retain their existing path.
         if self.spans.iter().all(|s| !s.variable_speed)
-            && (policy == InversePolicy::Incremental || !self.spans.iter().any(quadrature_line))
+            && (policy == InversePolicy::Incremental
+                || (self.spans.len() == 1 && !self.spans.iter().any(quadrature_line)))
         {
             let mut parameters = self.parameters_at_normalized_lengths(fractions)?;
             if policy == InversePolicy::Independent {
@@ -198,8 +202,11 @@ impl ArcLengthSampler<'_> {
                     nodes[0]
                 } else if fraction == 1. {
                     *nodes.last().unwrap()
-                } else if policy == InversePolicy::Independent && near.distance == target {
-                    nodes[nodes.partition_point(|n| n.distance <= target) - 1]
+                } else if policy == InversePolicy::Independent {
+                    // All ends of a zero-length plateau have this distance.
+                    // Retain the last parameter, including a nearby query
+                    // accepted under the requested numerical tolerance.
+                    nodes[nodes.partition_point(|n| n.distance <= near.distance) - 1]
                 } else {
                     near
                 };

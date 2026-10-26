@@ -1,0 +1,247 @@
+{
+  "feature": "Numerical scalar arc-length acceptance at natural knots and stationary plateaus",
+  "native_reference": "Rhino 8 public Curve.NormalizedLengthParameter",
+  "geometry_api": [
+    "parameter_at_quadrature_normalized_length",
+    "parameters_at_quadrature_normalized_lengths"
+  ],
+  "oracle_operation": "curve_length_parameters",
+  "epsilon": 1e-09,
+  "numerical_scalar": {
+    "midpoint_clock_stations": 3960,
+    "midpoint_clock_maximum": 4.440892098500626e-16,
+    "independent_holdout_stations": 396,
+    "independent_holdout_maximum": 1.1368683772161603e-13,
+    "qualified_constant_speed_multispan_families": true
+  },
+  "protocol": {
+    "oracle-default": {
+      "records": 36,
+      "stations": 396,
+      "maximum_difference": 2.2737367544323206e-13
+    },
+    "oracle-native": {
+      "records": 36,
+      "stations": 396,
+      "maximum_difference": 2.2737367544323206e-13
+    }
+  },
+  "precise_inverse_changed": false,
+  "incremental_batch_behavior_changed": false,
+  "general_scalar_sdk_parity_qualified": false,
+  "adaptive_fitter_midpoint_policy_qualified": false,
+  "performance_qualified": false,
+  "known_general_scalar_diagnostic": {
+    "queries": 2090,
+    "maximum_difference": 0.05757706905101623,
+    "mismatches": 14,
+    "exit_code": 101,
+    "qualified": false
+  },
+  "python_suite": {
+    "tests": 2021,
+    "seconds": 336.928,
+    "passed": true
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve::arc_length",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 36
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "loft_midpoint_clock_native",
+        "--test",
+        "scalar_clock_native",
+        "--test",
+        "loft_refit_clock_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 6
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "loft",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 61
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "fitting_clock_native",
+        "--test",
+        "loft_refit_adaptive_join_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 6
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "fitting_clock_native",
+        "--test",
+        "loft_refit_adaptive_join_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 6
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--features",
+        "native-smlib",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "passed": true,
+      "tests": 2021
+    }
+  ],
+  "observations": [
+    "The precise fast path bypassed independent scalar checkpoint acceptance whenever all source spans had constant speed. Multispan sources now use the existing numerical trace and requested tolerance. Precise distance inverses and incremental batches retain their existing policies.",
+    "A nearby query accepted at a stationary plateau now chooses its right endpoint, including when its target distance is not exactly the plateau distance. Natural domain endpoints remain exact.",
+    "New strict native comparisons cover 3960 scalar positions in forward and reverse order and 396 independent holdout positions. Holdouts vary model units, coordinate frames, source domains, same-sign weight gauges, collinear and orthogonal regions, and zero-length spans.",
+    "The public JSON/Python protocol compares complete native records for the 36 independent holdout operations on portable and SMLib-enabled builds. Source definitions remain unchanged.",
+    "The existing 2090-query all-precision scalar diagnostic still has 14 curved-source mismatches and remains ignored in the normal suite. New knot-family measurements do not establish general scalar SDK parity.",
+    "Native incremental batches and independent scalar queries accept different near-knot parameters. Paired Loft subdivision also differs from a simple one-percent scalar midpoint rule; no new adaptive command fits were admitted."
+  ],
+  "sha256": {
+    "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
+    "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
+    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "d92bdc17559fcf9b5f7fdff801505403d34e1045b654bf6fd373e6f128843399",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "a6f55f34de55988055d442b146593a4c3d02571fa14a9a0578ef8a00181fe60d",
+    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200",
+    "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
+    "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
+    "crates/viboceros-geometry/tests/loft_midpoint_clock_native.rs": "bb6d84c0f6d756755c9d2073dbeb6f5e05e39869b06b889b9333cc2046444a96",
+    "crates/viboceros-geometry/tests/scalar_clock_native.rs": "fb3f0a9b9d87d7d07dd8694350d665aa13dd299ee67a33f3ea09c2c48cc27cba",
+    "crates/viboceros-geometry/tests/loft_refit_clock_native.rs": "8471c7dff971a6721164c328b72fe129c67b430faa99fb2d4d19039723adb918",
+    "crates/viboceros-oracle/src/arc_length_batch.rs": "e7c43eb70dc20a934fad524fb0fbc93aa6ce10b52487bd544cc0dad07e2a1eed",
+    "crates/viboceros-oracle/tests/fitting_clock_native.rs": "456b4f712ab280cdc00af85f746097f36c8836711ff2e9acf7bfac2b32ace4de",
+    "tools/rhino_oracle/qualification_sources.py": "04ef7ff4ea59b3be397987fd24826c2e194956eada7fb77ec40119a841a6ec5e",
+    "tools/rhino_oracle/loft_scalar_clock_probe.py": "7261d3967be0d4c71af4ecfa963521e773fc082b153e728ea680d873e9e401bb",
+    "tools/rhino_oracle/test_scalar_knot_captures.py": "96918d88a38555de4501f29ae8a8c17f2edd2f5d5abe11d5c90075cdd19cf836",
+    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "docs/loft-fitting-clock.md": "a05ac5920152f36ff8e450eea36aecfd82defacc4e66c16678f3317bc97e2bde",
+    "tools/rhino_oracle/fixtures/loft_refit_midpoint_snapping.json": "e75054594a345cdeea87a30d6b5f54fc48028c8908344eec3caae7456113dee2",
+    "tools/rhino_oracle/observations/loft_refit_midpoint_snapping.json": "323e7e18b96c6dc5fe80f8413578a7bf7f49492b89eef8963d534ee23deebda6",
+    "tools/rhino_oracle/generate_loft_refit_midpoint_snapping.py": "ac7063142297df108d1006c21221b54aaebc1cb81156b12bb8c09341c83e80a0",
+    "tools/rhino_oracle/observations/source_snapshots/ac7063142297df108d1006c21221b54aaebc1cb81156b12bb8c09341c83e80a0.gz": "dee110965812933f03fd4a3f1a5a9fe2647422e79ca3f04cf20a5874958684ed",
+    "tools/rhino_oracle/observations/source_snapshots/a10ef04126fc7adf505836b5f2ed946c5a849601597530811eb20eee55497f74.gz": "91b4c9c94206601cb678a5353dcf66a57e5b00b17ecb2700912413b680a49a3b",
+    "tools/rhino_oracle/observations/source_snapshots/970c8bab8564875f31b096346c747fa150e50e2a5c684e027559b414d5060555.gz": "833bb0f2dadfbd161e1b37d14b32055bbd0876fefcef3089007ac79d7f9708bd",
+    "tools/rhino_oracle/observations/source_snapshots/8f2d08950f62d74b76c809f6894e9e401b5f576c69a4cd87fab1fb8e63e5c237.gz": "017662cc3c7382fb1a3021d1e973b9b72462cbf8b2973005cbdabf5da693f8f8",
+    "tools/rhino_oracle/observations/source_snapshots/d5b384ea36dfe530289f512b132b3f9d8000a8756c112f135cd90911e9d017f4.gz": "d0344be90c51b7c8eb17e131dc773a6ca6a5e769595398f6187ebc1ffeb2f22b",
+    "tools/rhino_oracle/observations/source_snapshots/a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd.gz": "26c5452d59e2fe178d637a5b89a7f7421aa5aea4069e0468d93b87bc4a0e9b66",
+    "tools/rhino_oracle/observations/source_snapshots/dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9.gz": "fbd17990aa13535271a26444c03b4d43dcb5bcf4857960a33112b159a7230df6",
+    "tools/rhino_oracle/fixtures/loft_refit_midpoint_clocks.json": "3b9bdd38ae9faa5b862355a87e44210570bb62f8caee2d41d1e7da3f582afeb3",
+    "tools/rhino_oracle/observations/loft_refit_midpoint_clocks.json": "b0073cacadab970b555fc23195a4be8d87da7984de0f7b8e10a4bf425cc640f0",
+    "tools/rhino_oracle/generate_loft_refit_midpoint_clocks.py": "bce4b70b88f55061239eb1505796b4ee677281398fbd5d4319c2435cc4e12382",
+    "tools/rhino_oracle/observations/source_snapshots/bce4b70b88f55061239eb1505796b4ee677281398fbd5d4319c2435cc4e12382.gz": "5c0ee9c55743ad1e4dfa3f246108883002acb4708ba6bcf701b7f8eaef1b3408",
+    "tools/rhino_oracle/observations/source_snapshots/7261d3967be0d4c71af4ecfa963521e773fc082b153e728ea680d873e9e401bb.gz": "a1bd11dcadf0f3a8cb4877ba691d991411831aa90b8cb772351843ce5e8371bf",
+    "tools/rhino_oracle/fixtures/loft_refit_midpoint_boundary.json": "41114a2a2dd55ab124309c33ce8eb78023e571c332a350a5bc113d7b3a6366e0",
+    "tools/rhino_oracle/observations/loft_refit_midpoint_boundary.json": "3235887362c017fe7b389bd2ff5caf207284c9760d65f722a79281c1a85fdf4b",
+    "tools/rhino_oracle/generate_loft_refit_midpoint_boundary.py": "24fd5a6df9d44fafcd91659c136f8de55835dbc199c236138e4ccf398a590e95",
+    "tools/rhino_oracle/observations/source_snapshots/24fd5a6df9d44fafcd91659c136f8de55835dbc199c236138e4ccf398a590e95.gz": "0e2fa1a09d22f9e88725691d0d97180be3117628f9463880de876a378040b1f9",
+    "tools/rhino_oracle/fixtures/scalar_knot_holdouts.json": "6f97fabd8b72c2b3a6c875c8e0c0d84610d1fb2f4bb82eeaa558acc338abb400",
+    "tools/rhino_oracle/observations/scalar_knot_holdouts.json": "e4f881555a2df12dd5eb55e88d6b9c8f9d2174864785bb2958449962155e0a8f",
+    "tools/rhino_oracle/generate_scalar_knot_holdouts.py": "5dacad5b30fad0ff698c275ca09e74fab4086a0eb9360bb48e965cb6b0c46bde",
+    "tools/rhino_oracle/observations/source_snapshots/5dacad5b30fad0ff698c275ca09e74fab4086a0eb9360bb48e965cb6b0c46bde.gz": "ec05d3c5410efca551ffd450cad5c1ed86654b9ea4e5bf6ebf6228a9ea258b9f",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs": "189e8964e23bcf5bf2fb74bb05ae3cdf7bc054cf31ad70dbeadb86b967973e8f",
+    "crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "7aae4d6589912b24aaa90a0b7a057805e99a4953d8a7f56c11e9e3141d7209fb",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
+    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13"
+  }
+}

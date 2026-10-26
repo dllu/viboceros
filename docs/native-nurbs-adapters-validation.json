@@ -518,7 +518,6 @@
     "crates/viboceros-smlib/src/native/knot_refinement/trim.rs": "e8e664c31855d67513f9200ebbe84cd983b5c56e3369e1e965179e6e73ed4274",
     "crates/viboceros-smlib/native/bridge.cpp": "aa63073bdc65f8ee3902e95679241b29b558072b92a3580e207c5a5ce5587e32",
     "crates/viboceros-geometry/src/point_grid.rs": "6fbb99973be75c968d6d935967d4278527ba9af4a797ba4b0455d1accfd1f152",
-    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "e1157e2964d099fe15a9400b329eb4e8fde2a42fda0f7e3bf1f04ae7f30e3bb5",
     "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
     "crates/viboceros-oracle/tests/scalar_overshoot_native.rs": "ff8b6d29adae45a8c1dce38945d5d84d58c6b039fb31da0a757b79716b7a8321",
@@ -527,7 +526,6 @@
     "tools/rhino_oracle/test_scalar_linearity.py": "2a9a32f65760d12bba0c21e4b1f713c00bb5ac942ee95bdeee8cb78e144a9f0d",
     "tools/rhino_oracle/fixtures/refit_join_certificate.json": "49483d28e6675b2c4f01947ab53988bea47b322f50050b6e5b3d99c9d8d1f1f2",
     "docs/native-nurbs-adapters.md": "5b80f66554bd46d4f53baadbfe0e2ec27a1ae3952940e0fb9cabf203b8cf9baa",
-    "docs/loft-fitting-clock.md": "aeae180522d17933a01aadd6eb3975367529fb6bce43903bff63fa0833576fda",
     "docs/smlib-curve-fit.md": "7d98cd7fadc365677236d7cbe208ba21612a02862fe273cd9dd3b77915f22d9a",
     "tools/rhino_oracle/generate_scalar_overshoot.py": "b6f34f308b0663f50ff58568286d50d88ed3cd11208b71e4b04dd6216a59705f",
     "tools/rhino_oracle/fixtures/scalar_overshoot.json": "0ade7b7de323f06f3b2f179e411ac75134bfedc8fd11c890fa925f8eb0762fa8",
@@ -540,7 +538,6 @@
     "tools/rhino_oracle/observations/scalar_linearity.json": "31d01e9347b0cf67ff55cf69291582dbca1fd0cc7817b424416b57dec6ad5bbf",
     "tools/rhino_oracle/observations/source_snapshots/63e83f89dd7e8f8692c517d325114cf755d69448dabdd7fca99ed285c989d3f0.gz": "9cf4417706ae8c8dfaab18d068a17fffa099acef28d0f8aba36c0b48ac620c13",
     "crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs": "189e8964e23bcf5bf2fb74bb05ae3cdf7bc054cf31ad70dbeadb86b967973e8f",
-    "crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "0b4b5ac93c9addc4d810c5a584cc453fb04a2843d7e63f90b6b74e61e8400e2b",
     "crates/viboceros-smlib/native/surface_apex_extrusion.h": "1a7b1b21a26074670770e3edb15f3d292b9c6433e067d8387fa36d6aaed0ade2",
     "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5"
   },
@@ -555,7 +552,10 @@
     "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-geometry/src/curve_fit/g1.rs": "ddb71a0761384450092708e723786d6a07ff2bf7a2faae02cd15289baadd9099",
     "b08ce318cb40a91a135ff34043c91a81813239cf:tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
-    "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad"
+    "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad",
+    "aaaad7202440486a655ce0cbc66c0ddbb5660e07:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "e1157e2964d099fe15a9400b329eb4e8fde2a42fda0f7e3bf1f04ae7f30e3bb5",
+    "aaaad7202440486a655ce0cbc66c0ddbb5660e07:docs/loft-fitting-clock.md": "aeae180522d17933a01aadd6eb3975367529fb6bce43903bff63fa0833576fda",
+    "aaaad7202440486a655ce0cbc66c0ddbb5660e07:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "0b4b5ac93c9addc4d810c5a584cc453fb04a2843d7e63f90b6b74e61e8400e2b"
   },
   "python_suite": {
     "tests": 1995,

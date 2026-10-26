@@ -1,0 +1,3641 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--0.0001-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--0.0001-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999,
+                9.999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-05-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-05-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999,
+                9.9999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-06-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-06-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999989999999999,
+                9.99999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-07-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-07-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999000000002,
+                9.999999000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-08-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-08-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.99999999,
+                9.999999900000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-09-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-09-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.999999999,
+                9.999999990000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-10-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping--1e-10-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9999999999,
+                9.999999999e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-0.0-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-0.0-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                1e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                1e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                1e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-10-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-10-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000000001,
+                1.0000000001000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-09-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-09-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000000001,
+                1.0000000010000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-08-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-08-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00000001,
+                1.00000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-07-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-07-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000001000000003,
+                1.0000001000000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-06-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-06-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.000001,
+                1.000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-05-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-1e-05-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.00001,
+                1.0000100000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-0.0001-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-snapping-0.0001-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0000999999999998,
+                1.0001000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_refit_adjustment": true
+    }
+  ]
+}

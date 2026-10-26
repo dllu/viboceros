@@ -1,0 +1,3883 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.02-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.02-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.98,
+                9.800000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.02-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.02-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.02,
+                1.02e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.039-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.039-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9609999999999999,
+                9.610000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.039-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.039-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0389999999999997,
+                1.039e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.0392-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.0392-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9607999999999999,
+                9.608e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.0392-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.0392-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392,
+                1.0392e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.03922-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.03922-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96078,
+                9.6078e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.03922-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.03922-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0392200000000003,
+                1.0392200000000002e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.04-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.04-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.96,
+                9.600000000000001e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.04-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.04-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04,
+                1.04e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.0408-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.0408-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.9592,
+                9.592e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.0408-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.0408-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0408,
+                1.0408000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.04082-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.04082-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95918,
+                9.591800000000002e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.04082-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.04082-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.04082,
+                1.0408200000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.05-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary--0.05-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.95,
+                9.5e-06,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.05-0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-midpoint-boundary-0.05-1",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.05,
+                1.0500000000000001e-05,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    }
+  ]
+}

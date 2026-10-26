@@ -6,7 +6,9 @@
 Cash–Karp trace across independent numerical inverse queries. Arbitrary order
 and repeated fractions retain the same results as separate scalar calls.
 `parameter_at_quadrature_normalized_length` is the scalar convenience method.
-Stationary plateaus use their right endpoint; natural domain ends remain exact.
+Natural knots participate in numerical scalar acceptance even when each span
+has constant speed. Nearby stationary plateaus use their right endpoint;
+natural domain ends remain exact.
 Incremental batches keep their existing, prefix-dependent behavior.
 
 The JSON/Python operation `curve_length_parameters` accepts a NURBS `curve`,
@@ -23,11 +25,19 @@ incremental batch.
 Adding a second coincident profile changes fitting while zero-simplification
 preparation remains the same. Translation does not explain that branch.
 
-Full scalar SDK parity remains unfinished. A retained strict diagnostic compares
-2,090 queries at five precisions; it is ignored in the default suite and remains
-failing. Other precisions must not be treated as native-compatible on the basis
-of the `1e-4` comparisons. Adaptive smooth Loft Refit remains unfinished;
-[smooth proposals](loft-refit-candidates.md)
+A further 4,356 scalar queries cover near-knot acceptance at five precisions,
+reversed order, frames, units, negative weight gauges, collinear and orthogonal
+regions, and stationary spans. They match within `1e-9`; the previous constant-speed
+shortcut bypassed these numerical stopping rules. Precise geometric inverses and
+incremental batch behavior remain unchanged. [Knot-query validation](scalar-knot-validation.json)
+retains these measurements and separate fitter counterexamples.
+
+Full scalar SDK parity remains unfinished. The retained strict diagnostic compares
+2,090 queries at five precisions and still fails on 14 curved-source queries;
+it remains ignored in the default suite. The knot-family measurements do not
+establish general parity at every precision. Paired fitting also differs from a
+simple one-percent scalar midpoint model in the new boundary holdouts.
+Adaptive smooth Loft Refit remains unfinished; [smooth proposals](loft-refit-candidates.md)
 have a separate continuous acceptance bound.
 
 Fresh overshoot references retain 24 direct queries with 768 positions, plus

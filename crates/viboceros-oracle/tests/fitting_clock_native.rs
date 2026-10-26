@@ -54,3 +54,34 @@ fn invalid_fraction_counts_and_tolerances_fail_before_sampling() {
         assert!(error.contains(reason), "{error}");
     }
 }
+
+#[test]
+fn natural_knot_queries_match_native_across_units_frames_and_plateaus() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
+    let read = |folder| -> Value {
+        serde_json::from_slice(
+            &std::fs::read(root.join(format!("{folder}/scalar_knot_holdouts.json"))).unwrap(),
+        )
+        .unwrap()
+    };
+    let query = read("fixtures");
+    let native = read("observations");
+    let request: ProbeRequest = serde_json::from_value(query).unwrap();
+    let actual = run_request(&request).unwrap();
+    assert_eq!(actual.results.len(), 36);
+    assert_eq!(native["results"].as_array().unwrap().len(), 36);
+    let mut maximum = 0_f64;
+    for (row, reference) in actual
+        .results
+        .iter()
+        .zip(native["results"].as_array().unwrap())
+    {
+        assert_eq!(row.id, reference["id"]);
+        assert_eq!(row.value["before"], row.value["after"]);
+        let d = comparison::difference(&row.value, &reference["value"])
+            .unwrap_or_else(|e| panic!("{}: {e}", row.id));
+        assert!(d <= 1e-9, "{}: {d}", row.id);
+        maximum = maximum.max(d);
+    }
+    println!("SCALAR_KNOT_PROTOCOL records=36 stations=396 maximum={maximum}");
+}

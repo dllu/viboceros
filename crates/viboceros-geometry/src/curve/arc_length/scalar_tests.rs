@@ -111,3 +111,62 @@ fn invalid_queries_do_not_mutate_or_poison_later_results() {
         before
     );
 }
+
+#[test]
+fn numerical_queries_retain_nearby_knots_without_changing_precise_inverses() {
+    let curve = NurbsCurve::try_new(
+        1,
+        [[0., 0., 0.], [1., 0., 0.], [1., 1.00001, 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![0., 0., 0.2, 1., 1.],
+    )
+    .unwrap();
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    let precise = sampler.parameters_at_normalized_lengths(&[0.5]).unwrap()[0];
+    assert!(precise > 0.2);
+    assert_eq!(
+        sampler
+            .parameter_at_quadrature_normalized_length(0.5, 1e-4)
+            .unwrap(),
+        0.2
+    );
+    assert!(
+        (sampler
+            .parameter_at_quadrature_normalized_length(0.5, 1e-8)
+            .unwrap()
+            - precise)
+            .abs()
+            < 1e-12
+    );
+    assert_eq!(
+        sampler.parameters_at_normalized_lengths(&[0.5]).unwrap()[0],
+        precise
+    );
+    let before = curve.clone();
+    let point = curve.evaluate(0.2).unwrap();
+    let midpoint = curve.evaluate(precise).unwrap();
+    assert!(point.distance_to(midpoint).unwrap() <= 1e-4 * sampler.total_length());
+    assert_eq!(curve, before);
+}
+
+#[test]
+fn nearby_numerical_queries_choose_the_right_end_of_a_zero_length_plateau() {
+    let curve = NurbsCurve::try_new(
+        1,
+        [[0., 0., 0.], [1., 0., 0.], [1., 0., 0.], [2.00001, 0., 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![-3., -3., -1., 2., 7., 7.],
+    )
+    .unwrap();
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        sampler
+            .parameters_at_quadrature_normalized_lengths(&[0.49999, 0.5, 0.50001], 1e-4)
+            .unwrap(),
+        [2., 2., 2.]
+    );
+}
