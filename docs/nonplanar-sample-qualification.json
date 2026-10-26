@@ -817,7 +817,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
+    "tools/rhino_oracle/qualification_sources.py": "f7a54acdd3198d696ce526c8894c117e70a55e508cf7dadc41946562522efa1a",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded.json": "64837a3938537fc68151ca2b0c147539d74d83e23ba2a6ae5714e4fd23ec3b0c",
     "tools/rhino_oracle/observations/nonplanar_sample_shaded.json": "45061456e515baa50db7082e48db0a7f190466df28f18fc053dc59fcd970888d",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded/nonplanar_sample_shaded_angle.3dm": "35c66fcc99ea846d2427eb7798e1697e6442941fe323b3736386f722c239cbbb",

@@ -4,6 +4,7 @@ use super::*;
 pub(super) fn prepare(
     curves: &[NurbsCurve],
     tolerance: Real,
+    angle: Option<Real>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     let unsupported = || GeometryError::UnsupportedCurveApproximation {
         context: "Loft Refit currently requires certified straight regions or certified smooth cubics; adaptive subdivision remains unfinished",
@@ -26,7 +27,10 @@ pub(super) fn prepare(
                 && (knots
                     .chunk_by(|a, b| a == b)
                     .any(|g| g[0] > *domain.start() && g[0] < *domain.end() && g.len() > degree)
-                    || super::super::parameterize::has_legacy_tangent_breaks(source)?))
+                    || super::super::parameterize::has_tangent_breaks(
+                        source,
+                        corner_angle(angle),
+                    )?))
         {
             return Err(unsupported());
         }

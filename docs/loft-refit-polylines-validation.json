@@ -205,7 +205,6 @@
     "Explicit positive Refit angle overrides in the JSON API fail instead of being silently ignored; smooth fitting and general angle policy remain unfinished."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/loft/refit/matching.rs": "0de3339e425ac1c3db0377ce63b32d087c429c5fbd1b58b78f03c4355d02a426",
     "crates/viboceros-geometry/src/loft/refit/polyline_tests.rs": "7615114ce7ad480a14f771d0cf0ca63e451d1e62c035145c6838f0b3a77c3224",
     "crates/viboceros-geometry/src/surface_pullback.rs": "c0c0ed5b26e93b54bb1a6c1b88c6cc28d05bb32f13785776fd911b066d2f8721",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
@@ -326,6 +325,7 @@
     "0aabd7c80f6cce51a079c71911eda7b227d19539:crates/viboceros-geometry/src/loft.rs": "1ec81978234e72686d3925c80078c3eb1b01d752ba22bbf4b1df664dc085d2a5",
     "0aabd7c80f6cce51a079c71911eda7b227d19539:crates/viboceros-geometry/src/loft/compatible.rs": "42ae35d7058426728977116f0fbd29f617decff405d728b2b2c8e3313fdec2e0",
     "0aabd7c80f6cce51a079c71911eda7b227d19539:crates/viboceros-geometry/src/loft/parameterize.rs": "ea58a0e1e2bc873bccc50774062b1c3b74ef05d0f2a713a66c39a7f65f52590b",
-    "67990314e036edd278499f8ca10c5f0b3c132aec:crates/viboceros-oracle/tests/loft_refit_polylines_native.rs": "48f8b8ac42dac7e29f0acfcd80dc86e5899559996f9855a40eb81eeff6124445"
+    "67990314e036edd278499f8ca10c5f0b3c132aec:crates/viboceros-oracle/tests/loft_refit_polylines_native.rs": "48f8b8ac42dac7e29f0acfcd80dc86e5899559996f9855a40eb81eeff6124445",
+    "3608cddf37605ae9b2e366361d37d21e27e3c0f2:crates/viboceros-geometry/src/loft/refit/matching.rs": "0de3339e425ac1c3db0377ce63b32d087c429c5fbd1b58b78f03c4355d02a426"
   }
 }

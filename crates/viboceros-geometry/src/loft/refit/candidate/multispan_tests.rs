@@ -81,7 +81,7 @@ fn a_positional_bound_cannot_erase_a_resolved_corner_or_a_jump() {
             .unwrap()
             .is_some()
     );
-    assert!(prepare(&[corner.clone(), corner.clone()], 0.001).is_err());
+    assert!(prepare(&[corner.clone(), corner.clone()], 0.001, None).is_err());
     let fits = try_prepare_refitted_loft_sections(&[corner.clone(), corner], 0.001).unwrap();
     assert_eq!(fits[0].control_points().len(), 10);
     let jump = source(

@@ -45,15 +45,22 @@ pub fn try_prepare_refitted_loft_sections(
     prepare(curves, fit_tolerance, None)
 }
 
-/// Refit with an explicit corner angle in radians, in `[0, pi]`. The legacy
-/// one-degree resolution floor still applies. Corners suppressed by the angle
-/// require the adaptive smooth fitter and may remain unsupported.
+/// Refit with an explicit corner angle in radians, in `[0, pi]`. Zero uses
+/// one degree; positive angles have a measured 0.002-radian resolution floor.
+/// Suppressed corners require the adaptive smooth fitter and may remain unsupported.
 pub fn try_prepare_refitted_loft_sections_with_angle(
     curves: &[NurbsCurve],
     fit_tolerance: Real,
     angle: Real,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     prepare(curves, fit_tolerance, Some(angle))
+}
+
+// Public multi-profile Refit captures resolve positive angles above 0.002
+// radians. Zero selects the one-degree default instead of that minimum.
+fn corner_angle(angle: Option<Real>) -> Real {
+    let default = std::f64::consts::PI / 180.;
+    angle.filter(|a| *a > 0.).map_or(default, |a| a.max(0.002))
 }
 
 fn validate_angle(angle: Option<Real>) -> Result<(), GeometryError> {
@@ -100,7 +107,7 @@ fn prepare(
         Err(GeometryError::UnsupportedCurveApproximation { .. })
             if curves.len() >= 2 && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
         {
-            return candidate::prepare(curves, fit_tolerance);
+            return candidate::prepare(curves, fit_tolerance, angle);
         }
         Err(error) => return Err(error),
     };
@@ -114,7 +121,7 @@ fn prepare(
             }
         }
     }
-    matching::prepare(sections, fit_tolerance)
+    matching::prepare(sections, fit_tolerance, angle)
 }
 
 /// Loft the refitted ordered sections, retaining the usual style, closed-loft

@@ -4,6 +4,7 @@ use super::*;
 pub(super) fn prepare(
     sections: Vec<Section>,
     tolerance: Real,
+    angle: Option<Real>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     if sections.iter().all(|s| s.vertices.len() == 2) {
         return Ok(sections.into_iter().map(|s| s.curve).collect());
@@ -36,8 +37,11 @@ pub(super) fn prepare(
             NurbsCurve::try_new(1, points, knots)
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    let matched =
-        super::super::parameterize::prepare::<GeometryError>(&proxies, &mut |c| Ok(c.clone()))?;
+    let matched = super::super::parameterize::prepare_refit::<GeometryError>(
+        &proxies,
+        Some(corner_angle(angle)),
+        &mut |c| Ok(c.clone()),
+    )?;
     let mut cuts = matched
         .iter()
         .flat_map(|c| c.knots().iter().copied())

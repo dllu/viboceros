@@ -18,42 +18,35 @@ pub(super) fn refit(
             maximum: MAX_LOFT_SECTION_CONTROLS,
         });
     }
-    // The legacy public Refit uses a one-degree corner threshold. Shallower
-    // bends enter the smooth fitter, whose policy is not implemented yet.
-    // Retain a small conservative margin at the floating angular boundary.
-    let cosine = rational((std::f64::consts::PI / 180.).cos() - 16. * Real::EPSILON);
+    let cosine = corner_angle(angle).cos();
     for triple in vertices.windows(3) {
         let a = std::array::from_fn::<_, 3, _>(|i| &triple[1][i] - &triple[0][i]);
         let b = std::array::from_fn::<_, 3, _>(|i| &triple[2][i] - &triple[1][i]);
         let dot = (0..3).map(|i| &a[i] * &b[i]).sum::<Rational>();
         let aa = a.iter().map(|x| x * x).sum::<Rational>();
         let bb = b.iter().map(|x| x * x).sum::<Rational>();
-        if dot.is_positive() && &dot * &dot >= &aa * &bb * &cosine * &cosine {
+        // Exact orthogonality retains the public right-angle boundary. Other
+        // floating angular boundaries keep a conservative roundoff margin.
+        let c = rational(
+            cosine
+                - if dot.is_zero() {
+                    0.
+                } else {
+                    16. * Real::EPSILON
+                },
+        );
+        // Compare signed normalized dot products without square roots.
+        let retained = if dot.is_negative() && !c.is_negative() {
+            true
+        } else if !dot.is_negative() && c.is_negative() {
+            false
+        } else if dot.is_negative() {
+            &dot * &dot > &aa * &bb * &c * &c
+        } else {
+            &dot * &dot < &aa * &bb * &c * &c
+        };
+        if !retained {
             return Err(unsupported());
-        }
-        // Compare the signed normalized dot product without square roots.
-        // Squaring reverses the ordering when both sides are negative.
-        if let Some(angle) = angle {
-            // A zero dot product is exact at a right angle. Other floating
-            // angular boundaries retain the legacy conservative margin.
-            let margin = if dot.is_zero() {
-                0.
-            } else {
-                16. * Real::EPSILON
-            };
-            let c = rational(angle.cos() - margin);
-            let retained = if dot.is_negative() && !c.is_negative() {
-                true
-            } else if !dot.is_negative() && c.is_negative() {
-                false
-            } else if dot.is_negative() {
-                &dot * &dot > &aa * &bb * &c * &c
-            } else {
-                &dot * &dot < &aa * &bb * &c * &c
-            };
-            if !retained {
-                return Err(unsupported());
-            }
         }
     }
     let mut controls = Vec::with_capacity(count);

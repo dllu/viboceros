@@ -24,8 +24,8 @@ scales, match both portable and SMLib-backed basis interpolation within `1e-9`.
 The Rust regressions also compare 65 evaluation stations and retain the inputs.
 This rules out that single-knot operation as the explanation for the remaining
 Loft joining differences; the final composite fitting policy remains unfinished.
-The smaller explicit angles also retain native quarter-degree polygon corners
-that the current Rust one-degree polygon floor still declines.
+The smaller explicit angles retain native quarter-degree polygon corners;
+the [shallow-corner implementation](loft-refit-shallow.md) now supports them.
 Earlier captures and their archived producers are immutable. Their independent
 inspection angles must be read from their captured document settings.
 

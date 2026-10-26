@@ -230,10 +230,14 @@ fn region_breaks(
 /// A fitted cubic can cross curvature changes, but resolved tangent corners
 /// still separate fitting regions. Reuse the scaled native classifier.
 pub(super) fn has_legacy_tangent_breaks(curve: &NurbsCurve) -> Result<bool, GeometryError> {
+    has_tangent_breaks(curve, 1_f64.to_radians())
+}
+
+pub(super) fn has_tangent_breaks(curve: &NurbsCurve, angle: Real) -> Result<bool, GeometryError> {
     Ok(!geometric_breaks(
         curve,
         coordinate_scale(curve),
-        1_f64.to_radians().cos(),
+        angle.cos(),
         CurveContinuity::G1,
     )?
     .is_empty())
