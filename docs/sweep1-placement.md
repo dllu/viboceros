@@ -30,6 +30,8 @@ according to which half of the rail's arc length contains its station. With
 otherwise the sweep begins at the profile. Partial intervals use a cubic refit,
 including the measured straight-rail interior cases with `RefitRail=No`.
 The geometry model rechecks corners and seam continuity when extending its interval.
+[Rail continuity](sweep1-rail-intervals.md) is checked on the original source so
+that a tiny rounded trim cannot turn a smooth join into a false corner.
 
 ## Evidence and limits
 

@@ -1090,7 +1090,7 @@
     "tools/rhino_oracle/observations/source_snapshots/f13cecea6ba29d46eed0106c456eeae35154eb83f939747202abc76e4c306b47.gz": "e1002bb29586835c26dbecf4d273e86a444c340394011f16152b1348bddc085f",
     "tools/rhino_oracle/observations/source_snapshots/f6e1842eea195ab3efd0f2a99da89ea7cd60285c210c38e22cd6fb0cacdda90e.gz": "8c9850a328f934098b5e4f8ba9011d12a52636a525caaa4f69a1905d6ea555fd",
     "tools/rhino_oracle/observations/source_snapshots/fa30b75a38da3cbb67e85e78f84a9ce4f5c6ff43d47bb8b4e2a41740cde7fa76.gz": "86f165d2b4dc9c5aa6a586cbaaab7fe1005ac24f5aa4c8e43d0ec790875f6986",
-    "tools/rhino_oracle/qualification_sources.py": "4a7b461b7777e824020306e36671dfa49ce6cf1c183f19ec5baa2cdfec2f5672",
+    "tools/rhino_oracle/qualification_sources.py": "3953e7c8a13b8ef400fd75cda77ea02a1662376410edf68e4e69cdffec6de223",
     "tools/rhino_oracle/test_loft_refit_preparation_validation.py": "cfa008e6c911994141999f8d454969fbb8dd7015cdc0ee23a7d86db638a46779",
     "crates/viboceros-geometry/src/curve_distance.rs": "c1104a713d2887eaad6a79282c25337692411e216822e61c1e5182fcb73d71c8",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs": "672a68ccc63fd1a25210142011977f287a5f61c31b42ab4b85078a051d5ef48c",

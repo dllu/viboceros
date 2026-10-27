@@ -1,6 +1,6 @@
 {
-  "feature": "Sweep1 analytic arc transport stations and explicit refit interval policy",
-  "source_base_commit": "8b0df132823c34b4a5f223530af3c09e5e634245",
+  "feature": "Sweep1 analytic arc stations, explicit refit intervals and original-source rail continuity",
+  "source_base_commit": "3513e1039c2e0d79f635dc975e2aeae74a73d762",
   "arc_station_policy_implemented": true,
   "complete_rhino_sweep_compatibility": false,
   "complete_image_cases": 36,
@@ -13,7 +13,8 @@
     "Every captured surface participates. Full-order join knots preserve all face boundaries and both one-sided limits. Equal V weight rows make V affine. One shared monotone U correspondence for both complete boundary atlases certifies the entire surface image by convexity.",
     "Local derivative projections only propose mapping nodes. The exact rational curve certificate decides acceptance. Proof reuse requires exact equality of both actual surface atlases and complete captured values.",
     "The source minimum-distance witness remains a geometric certificate. Analytic-arc command transport uses a distinct native-parameter policy inferred from public command outputs. Other geometry parameter maps and explicit station scripts are unchanged.",
-    "The additional interval and inserted-knot captures are investigation evidence, not claims of complete surface agreement. Face partition, topology, derivatives and UV parameterization are outside the image comparison."
+    "The additional interval and inserted-knot captures are investigation evidence, not claims of complete surface agreement. Face partition, topology, derivatives and UV parameterization are outside the image comparison.",
+    "Rail continuity is checked on original source knot tangents, restricted to the swept interval in the original rational chart. No requested stations are snapped. Coincident mapped frame parameters share one transported frame. Seam validation and real corner rejection remain active."
   ],
   "remaining": [
     "Near-Greville rational multi-span station decisions",
@@ -137,6 +138,40 @@
     }
   },
   "checks": {
+    "core-regressions": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "sweep_knot_continuity",
+        "--test",
+        "sweep_anchoring",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 29.85192399704829,
+      "log": "/tmp/viboceros-sweep-knot-core-regressions.log"
+    },
+    "kernel": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "sweep::",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 55.658646481111646,
+      "log": "/tmp/viboceros-sweep-knot-kernel.log"
+    },
     "default": {
       "command": [
         "cargo",
@@ -150,13 +185,15 @@
         "--nocapture"
       ],
       "exit_code": 0,
-      "seconds": 396.7045431928709,
-      "log": "/tmp/viboceros-arc-default.log"
+      "seconds": 422.11573511827737,
+      "log": "/tmp/viboceros-sweep-knot-default.log"
     },
     "clippy-default": {
       "command": [
         "cargo",
         "clippy",
+        "-p",
+        "viboceros-geometry",
         "-p",
         "viboceros-command",
         "--all-targets",
@@ -166,8 +203,24 @@
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 67.27103338390589,
-      "log": "/tmp/viboceros-arc-clippy-default.log"
+      "seconds": 41.38132577575743,
+      "log": "/tmp/viboceros-sweep-knot-clippy-default.log"
+    },
+    "command-regressions": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "sweep_knot_continuity",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 11.21485956106335,
+      "log": "/tmp/viboceros-sweep-knot-command-regressions.log"
     },
     "switch-native": {
       "command": [
@@ -180,8 +233,26 @@
         "--frozen"
       ],
       "exit_code": 0,
-      "seconds": 0.23370687384158373,
-      "log": "/tmp/viboceros-arc-switch-native.log"
+      "seconds": 0.26681981002911925,
+      "log": "/tmp/viboceros-sweep-knot-switch-native.log"
+    },
+    "command-regressions-native": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "sweep_knot_continuity",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 105.79401948675513,
+      "log": "/tmp/viboceros-sweep-knot-command-regressions-native.log"
     },
     "native": {
       "command": [
@@ -198,8 +269,8 @@
         "--nocapture"
       ],
       "exit_code": 0,
-      "seconds": 495.10139513900504,
-      "log": "/tmp/viboceros-arc-native.log"
+      "seconds": 403.2726425542496,
+      "log": "/tmp/viboceros-sweep-knot-native.log"
     },
     "clippy-native": {
       "command": [
@@ -216,8 +287,8 @@
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 111.3091181111522,
-      "log": "/tmp/viboceros-arc-clippy-native.log"
+      "seconds": 108.17627675971016,
+      "log": "/tmp/viboceros-sweep-knot-clippy-native.log"
     },
     "format": {
       "command": [
@@ -228,8 +299,8 @@
         "--check"
       ],
       "exit_code": 0,
-      "seconds": 7.162772267125547,
-      "log": "/tmp/viboceros-arc-format.log"
+      "seconds": 8.324421000666916,
+      "log": "/tmp/viboceros-sweep-knot-format.log"
     },
     "python": {
       "command": [
@@ -243,8 +314,8 @@
         "."
       ],
       "exit_code": 0,
-      "seconds": 354.98998348833993,
-      "log": "/tmp/viboceros-arc-python.log"
+      "seconds": 352.3343962589279,
+      "log": "/tmp/viboceros-sweep-knot-python.log"
     }
   },
   "required_checks_pending": [],
@@ -337,6 +408,7 @@
     "crates/viboceros-command/tests/extract_points_subd_native.rs": "c94567a0bd28a754768eccc00d9503c320cd55d98271701cca58b535cf811678",
     "crates/viboceros-command/tests/subd_display_native.rs": "bce8f89f39c060a473ed3534c3f7ac2ca4619aa36ebb5aea1fac46044c4426f3",
     "crates/viboceros-command/tests/support/extract_points.rs": "c89b6ec64be7a8eddfd2f87326fc66e609f75b6006fcb6fad04430e87388e294",
+    "crates/viboceros-command/tests/sweep_knot_continuity.rs": "eb2ed21a663465357c0a4a54cdfc119f877332c8780ef62fea56ab9d8f3c345e",
     "crates/viboceros-geometry/src/curve_distance.rs": "c1104a713d2887eaad6a79282c25337692411e216822e61c1e5182fcb73d71c8",
     "crates/viboceros-geometry/src/curve_fit.rs": "c30bb4d73d56422dd76eda5cac8de0cc5af1130aa0e4fbfffa33302a2997dabf",
     "crates/viboceros-geometry/src/curve_fit/adaptive.rs": "f55668222afb298b423453f783828f7b24a9741025080af43442068dd10bac9e",
@@ -408,11 +480,16 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected/tests.rs": "a5f4441de7de15343f32f993de65d9d33c5a247aeea33004eb9ca59e51b3e6a8",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/tests.rs": "5ae34d6a7dc213bd098ceef7d8f8a23ef8a817fce974e0b0cec8247f4e2a6139",
     "crates/viboceros-geometry/src/surface_pullback/certificate/linear.rs": "e66674476d977da32b4401d2b21a4bf7ba5f7b768231099f9c66ce030a6c8734",
-    "crates/viboceros-geometry/src/sweep.rs": "c15c55349518f4f4c73c2c7eab2f579b046442009dccad47501208bfb8e4976f",
+    "crates/viboceros-geometry/src/sweep.rs": "219609d44249d72e9a0be1ccdbeffc34c4a85b128eb0e20edcb21c8c891d6cef",
     "crates/viboceros-geometry/src/sweep/basis.rs": "d0b9a37b43818988d7e0970739614a8fc13dc705948a99d1cd50d9a08e8cdc08",
+    "crates/viboceros-geometry/src/sweep/fit.rs": "c2e18ffc2b31ec7e0a059c7d18a881b8d70a161a054c3aa3c3e5e7380806ae06",
+    "crates/viboceros-geometry/src/sweep/rail.rs": "77c32d92fa44a57201a336ead8306ad43f227d1682e995606e7a6b646311e9f3",
+    "crates/viboceros-geometry/src/sweep/tests.rs": "2e823d88a2cc9611b622fd3914b29fc28a44399d6d5fa2e9cea7718ced753d68",
+    "crates/viboceros-geometry/src/sweep/weights.rs": "0a7277fd1e22548dcc86f817473f758466f2076bd08d238e83ed2fe9535bc1ff",
     "crates/viboceros-geometry/tests/curve_minimum.rs": "f5c4135f5a3e3e08c56d7247dfa66356e84a46111456a9b8ae24d8be30b07035",
     "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab",
     "crates/viboceros-geometry/tests/sweep_anchoring.rs": "28b8e1c461f29f8f18d40eb54354e8f13a3862b228ec9c6ddc7895791b0c0175",
+    "crates/viboceros-geometry/tests/sweep_knot_continuity.rs": "e530e2c66ba48f082a4b151c6892e77f09dd5843f7859e51383be47f163c4c93",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
     "crates/viboceros-opennurbs/native/curve_discontinuities.h": "f130962df522d096b6753d342bab011a79ef7bbe2500561a89ea6ae5387bf70d",
     "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "a7d086596fa493c138370a73cddbce3815d78c4b14fe7579c8724f1abf40b21e",
@@ -433,8 +510,9 @@
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/tests/curve_continuity.rs": "b9f64d944fd6de7b878737583b94177260bfb22034e471adb69376f3f45525e7",
     "docs/sweep1-arc-parameters.md": "9beab6853020f4dea028336cded0e5a48ad4de52ec6e9512270e3c3828fd2f82",
-    "docs/sweep1-automatic-validation.json": "ab5fb7ded852b7068777e332cce6b6568e3643cf35f0a5938c3442d4952a1616",
-    "docs/sweep1-placement.md": "b29da906b0d5164f645c1d5f2573e656473dc19beb2a5e2bd90de15f8a8fd3ee",
+    "docs/sweep1-automatic-validation.json": "0ac98887bf0c9a5347083e2278da3b6d122ca8000e3a7194543bfdc7f4e109fe",
+    "docs/sweep1-placement.md": "615fcd996faa2ace9afa2760c73066821af94d3f96a0fe28f384d2e87e4f7d79",
+    "docs/sweep1-rail-intervals.md": "c2bdd7931f8d197d21364e3ea11ba4b00b7f7e7a6c903ba33ed0098dfb8e890f",
     "third_party/patches/usd-brep-curve-continuity.cmake": "30e07ba6eaae12e34ae76bca34838f408d4f18952eca88497bf42f35fcaa19b1",
     "third_party/patches/usd-brep-curve-continuity.patch": "4888e12c1fb6f3c6a7ff330250f1033daff2d39f13fe3401b236c1e542477602",
     "tools/rhino_oracle/fixtures/sweep1_arc_stations.json": "fcc738a8612bf32976b70b384692c71cc1841fcb16dc8e633a67c9f5e46e9eaa",
@@ -451,8 +529,43 @@
     "tools/rhino_oracle/observations/sweep1_automatic_stations.json": "29069dbb3ec0408eef11e03a334f4732e724fdac590720303a7db7724d43288c",
     "tools/rhino_oracle/observations/sweep1_greville_spans.json": "a280a50841fde059cc2118dc0d5346840def71a476fdbeee131cf81ad327142f",
     "tools/rhino_oracle/observations/sweep1_refit_intervals.json": "dee910dcc3c9bab43907e042772a7f393e457c072219787ede4e14386a5abb5d",
-    "tools/rhino_oracle/qualification_sources.py": "4a7b461b7777e824020306e36671dfa49ce6cf1c183f19ec5baa2cdfec2f5672",
-    "tools/rhino_oracle/test_sweep1_arc_parameters.py": "5be254b6ec37b19edf957a24b3dac083fb8e05551ac866057efdf51aa97ec6b2",
+    "tools/rhino_oracle/qualification_sources.py": "3953e7c8a13b8ef400fd75cda77ea02a1662376410edf68e4e69cdffec6de223",
+    "tools/rhino_oracle/test_sweep1_arc_parameters.py": "e7666f4d32f2dc1fe947879456f6a186a77aa76589456d14dffa5d189cb771c5",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562"
+  },
+  "rail_interval_regressions": {
+    "test_functions": 3,
+    "smooth_fitted_surfaces": 12,
+    "command_test_functions": 1,
+    "command_constructions_per_backend": 4,
+    "source_tangents": true,
+    "repeated_parameters_reuse_frames": true,
+    "coverage": [
+      "Translated exact quadratic parabola; forward and reversed; one, two, four and eight floating-point steps before the smooth repeated knot.",
+      "Translated rational arc from the frozen native interval fixture; forward and reversed; at and one floating-point step before its join.",
+      "Real corners with one floating-point step of incoming span, interval boundary exclusions and full-rail revalidation.",
+      "Repeated frame requests return identical sections; decreasing requests still fail."
+    ],
+    "fit_check_scope": "Fitted surface samples satisfy independent analytic parabola/circle and normal-translation equations; these checks do not certify complete fitted images.",
+    "before_fix": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "sweep_knot_continuity",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "seconds": 32.58370010973886
+    },
+    "before_fix_expected_exit_code": 101,
+    "before_fix_failed_tests": [
+      "smooth_polynomial_join_remains_sweepable_with_a_few_ulps_left_before_it",
+      "translated_rational_arc_keeps_its_source_continuity_next_to_the_join"
+    ]
   }
 }

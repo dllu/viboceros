@@ -62,6 +62,14 @@ class ArcStationTests(unittest.TestCase):
         self.assertEqual(record['calibration_cases'],1)
         self.assertEqual(record['diagnostic_records'],48)
         self.assertFalse(record['complete_rhino_sweep_compatibility'])
+        continuity = record['rail_interval_regressions']
+        self.assertEqual(continuity['test_functions'], 3)
+        self.assertEqual(continuity['smooth_fitted_surfaces'], 12)
+        self.assertTrue(continuity['source_tangents'])
+        self.assertTrue(continuity['repeated_parameters_reuse_frames'])
+        for name in ['crates/viboceros-geometry/src/sweep/rail.rs',
+                     'crates/viboceros-geometry/tests/sweep_knot_continuity.rs']:
+            self.assertIn(name, record['sha256'])
 
 
 if __name__ == '__main__':

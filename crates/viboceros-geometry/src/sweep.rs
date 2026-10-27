@@ -8,6 +8,8 @@ use std::ops::RangeInclusive;
 
 mod basis;
 mod fit;
+mod rail;
+use rail::validate_rail_interval;
 #[cfg(test)]
 mod tests;
 mod weights;
@@ -422,11 +424,17 @@ impl Sweep1 {
     }
 
     fn frames(&self, parameters: &[Real]) -> Result<Vec<Frame3>, GeometryError> {
-        if parameters.is_empty() || parameters.windows(2).any(|p| p[0] >= p[1]) {
-            return Err(invalid("frame parameters must be nonempty and increasing"));
+        if parameters.is_empty() || parameters.windows(2).any(|p| p[0] > p[1]) {
+            return Err(invalid(
+                "frame parameters must be nonempty and nondecreasing",
+            ));
         }
         let start = *self.domain.start();
         let mut ts = parameters.to_vec();
+        // Distinct collocation stations can map to the same representable
+        // source parameter beside a very short span. Transport once there,
+        // then reuse that frame for every requested sample.
+        ts.dedup();
         let prepend = ts[0] > start;
         if prepend {
             ts.insert(0, start);
@@ -467,38 +475,21 @@ impl Sweep1 {
         if prepend {
             frames.remove(0);
         }
-        Ok(frames)
-    }
-}
-
-fn validate_rail_interval(
-    rail: CurveRef<'_>,
-    domain: RangeInclusive<Real>,
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    // A rail kink needs a miter construction, not an interpolated jump of
-    // transported profiles. Reject it until that topology is constructed.
-    let start = *domain.start();
-    let end = *domain.end();
-    let trimmed = rail.to_owned().try_trimmed(domain)?;
-    if trimmed
-        .as_ref()
-        .to_nurbs()?
-        .has_full_multiplicity_kink(tolerance)?
-    {
-        return Err(invalid("rail corners require sweep miter construction"));
-    }
-    let closed_rail = trimmed.as_ref().is_closed()?;
-    if closed_rail {
-        let first = trimmed.as_ref().evaluate_with_tangent(start)?.tangent();
-        let last = trimmed.as_ref().evaluate_with_tangent(end)?.tangent();
-        if first.as_vector().angle_to(last.as_vector())? > tolerance.angular() {
-            return Err(invalid(
-                "rail seam corner requires sweep miter construction",
-            ));
+        if frames.len() == parameters.len() {
+            return Ok(frames);
         }
+        let mut index = 0;
+        Ok(parameters
+            .iter()
+            .enumerate()
+            .map(|(i, &t)| {
+                if i > 0 && t != parameters[i - 1] {
+                    index += 1;
+                }
+                frames[index]
+            })
+            .collect())
     }
-    Ok(closed_rail)
 }
 
 fn invalid(context: &'static str) -> GeometryError {

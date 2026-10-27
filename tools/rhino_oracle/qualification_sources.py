@@ -201,7 +201,14 @@ def _expand_sources_once(paths):
                  'crates/viboceros-command/src/sweep/automatic_tests.rs',
                  'crates/viboceros-command/src/sweep/curved_tests.rs']
     if 'crates/viboceros-geometry/src/sweep.rs' in paths:
-        paths = [*paths, 'crates/viboceros-geometry/tests/sweep_anchoring.rs']
+        paths = [*paths,
+                 'crates/viboceros-geometry/src/sweep/rail.rs',
+                 'crates/viboceros-geometry/src/sweep/basis.rs',
+                 'crates/viboceros-geometry/src/sweep/fit.rs',
+                 'crates/viboceros-geometry/src/sweep/weights.rs',
+                 'crates/viboceros-geometry/src/sweep/tests.rs',
+                 'crates/viboceros-geometry/tests/sweep_anchoring.rs',
+                 'crates/viboceros-geometry/tests/sweep_knot_continuity.rs']
     if 'crates/viboceros-smlib/src/native/knot_refinement.rs' in paths:
         paths = [*paths,
             'crates/viboceros-smlib/src/native/knot_refinement/loft.rs',
