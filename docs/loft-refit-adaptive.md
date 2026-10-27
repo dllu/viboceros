@@ -1,6 +1,6 @@
 # Adaptive Refit proposals
 
-[Loft Refit](loft-refit.md) · [Current validation](loft-refit-c1-rebuild-validation.json)
+[Loft Refit](loft-refit.md) · [Current validation](nurbs-batch-validation.json)
 
 The adaptive APIs return certified geometry proposals. Rhino-compatible general
 adaptive command preparation is still unfinished: fitting decisions can produce
@@ -59,9 +59,11 @@ both joining modes and subdivision counterexamples. Sixty-four additional native
 records cover styles, SDK/document commands, frames, reversal, weight gauges,
 affine domains and model units. Absolute curvature rules can change region counts
 when model units change; reversal also exposes a remaining spatial discrepancy.
-The new rebuild retains all 48 curved, twelve clock and 31 scale/curvature
-matches, and improves unequal-source matches from seven to seventeen of 24 at
-`1e-9`. All ten single-region knot sequences match Native; their rebuilt curves
+The rebuild retains all 48 curved, twelve clock and 31 scale/curvature matches.
+[Numerical NURBS batch retention](nurbs-batch-validation.json) brings the
+unequal-source matches to twenty of 24 at `1e-9`, recovering all three reversed
+equal-spacing cases while retaining the earlier seventeen matches.
+All ten single-region knot sequences match Native; their rebuilt curves
 also receive complete pointwise bounds against the saved Native curves within
 5% of requested tolerance. Control differences up to `8.4e-8` remain, so those
 bounds do not establish strict surface-record agreement. See the current

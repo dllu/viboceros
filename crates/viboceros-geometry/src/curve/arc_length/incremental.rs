@@ -1,6 +1,7 @@
 //! Independent and incremental inverses with quadrature checkpoints as brackets.
 use super::*;
 use crate::integration::cash_karp;
+mod constant;
 
 #[derive(Clone, Copy, Debug)]
 struct Node {
@@ -23,6 +24,9 @@ impl ArcLengthSampler<'_> {
     /// Errors can accumulate. Results depend on earlier
     /// fractions in the batch. Use `parameters_at_normalized_lengths` for
     /// precise, order-independent geometry queries.
+    /// Constant-speed multispan NURBS retain numerical checkpoints and the
+    /// accepted prefix, with a tighter stopping error for coarse requests.
+    /// Analytic primitives and polylines retain their precise length clocks.
     ///
     /// The method reuses Cash–Karp integration, retains span boundaries and
     /// checkpoints separated by more than 1% of each integration interval,
@@ -116,7 +120,12 @@ impl ArcLengthSampler<'_> {
             self.curve(),
             CurveRef::Line(_) | CurveRef::Circle(_) | CurveRef::Arc(_) | CurveRef::Polyline(_)
         );
-        if self.spans.iter().all(|s| !s.variable_speed)
+        let constant_nurbs_batch = policy == InversePolicy::Incremental
+            && constant_speed
+            && self.spans.len() > 1
+            && matches!(self.curve(), CurveRef::NurbsCurve(_));
+        if !constant_nurbs_batch
+            && self.spans.iter().all(|s| !s.variable_speed)
             && (policy == InversePolicy::Incremental
                 || (constant_speed && (exact_clock || self.spans.len() == 1)))
         {
@@ -143,7 +152,7 @@ impl ArcLengthSampler<'_> {
             fractional_tolerance,
             false,
             false,
-            if policy == InversePolicy::Independent {
+            if policy == InversePolicy::Independent || constant_nurbs_batch {
                 trace::TraceMode::ScalarInverse
             } else {
                 trace::TraceMode::Geometric
@@ -201,7 +210,11 @@ impl ArcLengthSampler<'_> {
             } else {
                 total
             };
-            let error = fractional_tolerance * local_length;
+            let error = if constant_nurbs_batch {
+                constant::checkpoint_tolerance(fractional_tolerance)
+            } else {
+                fractional_tolerance
+            } * local_length;
             require_finite([error], "incremental arc-length error")?;
             // Form the distance thresholds before comparison. Subtracting the
             // target from the total instead changes floating-point boundary
@@ -221,11 +234,19 @@ impl ArcLengthSampler<'_> {
                 out.push(self.source_parameter(node.parameter)?);
                 continue;
             }
-            let near = if (target - lower.distance).abs() < (target - upper.distance).abs() {
+            let mut near = if (target - lower.distance).abs() < (target - upper.distance).abs() {
                 lower
             } else {
                 upper
             };
+            if constant_nurbs_batch
+                && (target - previous.distance).abs() < (target - near.distance).abs()
+            {
+                // The prior accepted root is itself a checkpoint. Nearby
+                // distinct fractions may keep that parameter before moving
+                // to another integration checkpoint.
+                near = previous;
+            }
             if (target - near.distance).abs() <= error {
                 let node = if policy == InversePolicy::Independent {
                     // All ends of a zero-length plateau have this distance.

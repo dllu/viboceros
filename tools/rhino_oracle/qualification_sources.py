@@ -202,6 +202,8 @@ def _expand_sources_once(paths):
         ]
     if 'crates/viboceros-geometry/src/curve/arc_length/incremental.rs' in paths:
         paths = [*paths,
+            'crates/viboceros-geometry/src/curve/arc_length/incremental/constant.rs',
+            'crates/viboceros-geometry/tests/nurbs_batch_native.rs',
             'crates/viboceros-geometry/tests/scalar_checkpoint_acceptance_native.rs',
             'crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs',
             'crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs',

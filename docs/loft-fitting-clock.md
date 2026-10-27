@@ -16,6 +16,17 @@ Precise geometric inverses and prefix-dependent incremental batches retain their
 separate policies. Numerical stopping errors are estimates, not continuous
 distance certificates or a qualified adaptive Loft sampling rule.
 
+Incremental batches on constant-speed multispan NURBS retain the numerical
+trace, including the previous accepted root. Nearby distinct fractions can
+therefore return the same parameter. Requests below `1e-5` use their fractional
+stopping error; coarser requests use `min(tolerance, 0.01) / 100`. Polyline and
+precise geometric queries keep their separate clocks. The
+[batch validation](nurbs-batch-validation.json) compares 7,452 cold/prequeried and
+spatial holdout positions, 900 Loft sampling positions and 216 original-NURBS
+component positions with Rhino. Prior length, scalar and batch queries did not
+change the controlled results. A full trace is necessary: retaining only natural
+knots misses interior checkpoints and the accepted prefix.
+
 The JSON/Python operation `curve_length_parameters` accepts a NURBS `curve`,
 `fractions`, optional `fractional_tolerance` (default `1e-4`) and an optional
 `subdomain: [start, end]` inside the active source domain. Both oracle engines

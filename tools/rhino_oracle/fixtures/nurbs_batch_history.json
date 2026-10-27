@@ -1,0 +1,989 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-1e-06-0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.000001,
+              1.000001e-05,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-1e-06-1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.000001,
+              1.000001e-05,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-1e-05-0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.00001,
+              1.0000100000000001e-05,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-1e-05-1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.00001,
+              1.0000100000000001e-05,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-2e-04-0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0002,
+              1.0002e-05,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_length_batch",
+      "id": "nurbs-batch-history-2e-04-1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0002,
+              1.0002e-05,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "fractions": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "inspect_numerical_batch": [
+        {
+          "id": "cold-0",
+          "fractional_tolerance": 1e-06,
+          "history": []
+        },
+        {
+          "id": "cold-1",
+          "fractional_tolerance": 1e-05,
+          "history": []
+        },
+        {
+          "id": "cold-2",
+          "fractional_tolerance": 0.0001,
+          "history": []
+        },
+        {
+          "id": "cold-3",
+          "fractional_tolerance": 0.001,
+          "history": []
+        },
+        {
+          "id": "cold-4",
+          "fractional_tolerance": 0.005,
+          "history": []
+        },
+        {
+          "id": "cold-5",
+          "fractional_tolerance": 0.01,
+          "history": []
+        },
+        {
+          "id": "length-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-0",
+          "fractional_tolerance": 0.0001,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        },
+        {
+          "id": "length-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "scalar-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "scalar",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "batch-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "batch",
+              "fractional_tolerance": 0.001
+            }
+          ]
+        },
+        {
+          "id": "length-tight-1",
+          "fractional_tolerance": 1e-05,
+          "history": [
+            {
+              "query": "length",
+              "fractional_tolerance": 1e-06
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -118,7 +118,9 @@ pub(super) fn construct(
         } else {
             let sampler =
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(&trimmed), Tolerance::DEFAULT)?;
-            sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?
+            // The legacy straight-region proxy has an intentionally precise
+            // local clock; numerical NURBS checkpoint selection is separate.
+            sampler.parameters_at_normalized_lengths(&fractions)?
         };
         // Samples propose a piece; a complete interval bound decides whether
         // it can be kept. A feature between stations must trigger refinement
