@@ -14,6 +14,40 @@ fn source(degree: usize, points: &[[Real; 2]], knots: Vec<Real>) -> NurbsCurve {
 }
 
 #[test]
+fn an_initial_multispan_fit_can_use_the_full_tolerance_between_quarter_stations() {
+    let source = source(
+        1,
+        &[[0., 0.], [0.25, 0.], [0.75, 5e-6]],
+        vec![0., 0., 0.2, 1., 1.],
+    );
+    let candidate = crate::curve_fit::g1::initial_cubic(&source).unwrap();
+    assert!(!crate::curve_fit::g1::within_deviation(&source, &candidate, 5e-7).unwrap());
+    assert!(quarter_stations_fit(&source, &candidate, 5e-7).unwrap());
+    assert!(crate::curve_fit::g1::within_deviation(&source, &candidate, 1e-6).unwrap());
+    let sources = vec![source; 2];
+    let before = sources.clone();
+    assert_eq!(prepare(&sources, 1e-6, None).unwrap(), vec![candidate; 2]);
+    assert!(prepare(&sources, 1e-7, None).is_err());
+    assert_eq!(sources, before);
+}
+
+#[test]
+fn quarter_station_agreement_cannot_certify_an_unsampled_feature() {
+    let source = source(
+        1,
+        &[[0., 0.], [0.04, 0.], [0.05, 1e-6], [0.06, 0.], [1., 0.]],
+        vec![0., 0., 0.04, 0.05, 0.06, 1., 1.],
+    );
+    let candidate = crate::curve_fit::g1::initial_cubic(&source).unwrap();
+    assert!(quarter_stations_fit(&source, &candidate, 5e-8).unwrap());
+    assert!(!crate::curve_fit::g1::within_deviation(&source, &candidate, 1e-7).unwrap());
+    let sources = vec![source; 2];
+    let before = sources.clone();
+    assert!(prepare(&sources, 1e-7, None).is_err());
+    assert_eq!(sources, before);
+}
+
+#[test]
 fn unresolved_bends_and_continuous_tangent_curvature_changes_have_complete_bounds() {
     for c in [
         source(

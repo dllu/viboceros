@@ -1,0 +1,2674 @@
+{
+  "engine": "rhino",
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Python Script ( ResetEngine ): _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (3, 2e-05, 0)\n                 crvB(         1) = (3, 2e-05, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.2,
+              0.3333333333167352
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(       0.4) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934157,
+                1.4814814815180614e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.2,
+              0.6666666666499315
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.15) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(       0.4) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.15000000000500002,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958844,
+                7.407407406067658e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.40740740618199e-07,
+            "parameters": [
+              0.2,
+              0.3333333332834016
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.15) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(      0.25) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.15000000000500002,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976851,
+                3.7037037045061694e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.703703704578514e-07,
+            "parameters": [
+              0.2,
+              0.6666666665814813
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.1875) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(      0.25) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.18750000000625,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.8518518507947505e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077672e-07,
+            "parameters": [
+              0.2,
+              0.33333333315185165
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.1875) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(    0.2125) = (1.03125, 3.125e-07, 0)\n                 crvB(         1) = (1.03125, 3.125e-07, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.18750000000625,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672833e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853712e-08,
+            "parameters": [
+              0.2,
+              0.6666666663148153
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.2-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (3, 2e-05, 0)\n                 crvB(         1) = (3, 2e-05, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.3333333333333333,
+              0.3333333333167352
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(       0.5) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934157,
+                1.4814814815180614e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666666499315
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.25) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(       0.5) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.25000000000833333,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958844,
+                7.407407406067658e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.40740740618199e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.3333333332834016
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.25) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(     0.375) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.25000000000833333,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976851,
+                3.7037037045061694e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.703703704578514e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666665814813
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.3125) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(     0.375) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.31250000001041667,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.8518518507947505e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077672e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.33333333315185165
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.3125) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(   0.34375) = (1.03125, 3.125e-07, 0)\n                 crvB(         1) = (1.03125, 3.125e-07, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.31250000001041667,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672833e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853712e-08,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666663148153
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.3333333333333333-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (3, 2e-05, 0)\n                 crvB(         1) = (3, 2e-05, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.5,
+              0.3333333333167352
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(     0.625) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934157,
+                1.4814814815180614e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.5,
+              0.6666666666499315
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(     0.375) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(     0.625) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.3750000000125,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958844,
+                7.407407406067658e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.40740740618199e-07,
+            "parameters": [
+              0.5,
+              0.3333333332834016
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(     0.375) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(   0.53125) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.3750000000125,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976851,
+                3.7037037045061694e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.703703704578514e-07,
+            "parameters": [
+              0.5,
+              0.6666666665814813
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(   0.46875) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(   0.53125) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.468750000015625,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.8518518507947505e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077672e-07,
+            "parameters": [
+              0.5,
+              0.33333333315185165
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(   0.46875) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(  0.507813) = (1.03125, 3.125e-07, 0)\n                 crvB(         1) = (1.03125, 3.125e-07, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.468750000015625,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672833e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853712e-08,
+            "parameters": [
+              0.5,
+              0.6666666663148153
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.5-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (3, 2e-05, 0)\n                 crvB(         1) = (3, 2e-05, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.8,
+              0.3333333333167352
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(      0.85) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934157,
+                1.4814814815180614e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.8,
+              0.6666666666499315
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(       0.6) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(      0.85) = (1.5, 5e-06, 0)\n                 crvB(         1) = (1.5, 5e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.6000000000200001,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958844,
+                7.407407406067658e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.40740740618199e-07,
+            "parameters": [
+              0.8,
+              0.3333333332834016
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(       0.6) = (0.75, 0, 0)\n                 crvB(         0) = (0.75, 0, 0)\n            end: distance = 0\n                 crvA(    0.8125) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ],
+              [
+                0.750000000025,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.6000000000200001,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976851,
+                3.7037037045061694e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.703703704578514e-07,
+            "parameters": [
+              0.8,
+              0.6666666665814813
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.75) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(    0.8125) = (1.125, 1.25e-06, 0)\n                 crvB(         1) = (1.125, 1.25e-06, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.750000000025,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.8518518507947505e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077672e-07,
+            "parameters": [
+              0.8,
+              0.33333333315185165
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.75) = (0.9375, 0, 0)\n                 crvB(         0) = (0.9375, 0, 0)\n            end: distance = 0\n                 crvA(  0.803125) = (1.03125, 3.125e-07, 0)\n                 crvB(         1) = (1.03125, 3.125e-07, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ],
+              [
+                0.93750000003125,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.750000000025,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672833e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853712e-08,
+            "parameters": [
+              0.8,
+              0.6666666663148153
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-0-0.8-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (3, 2e-05, 0)\n                 crvB(         0) = (3, 2e-05, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                3.0,
+                2e-05,
+                0.0
+              ],
+              [
+                3.0,
+                2e-05,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.2,
+              0.6666666666832648
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.15) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.1499999999975,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934153,
+                1.4814814815180595e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.2,
+              0.3333333333500687
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.15) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(       0.4) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.1499999999975,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958846,
+                7.407407406067669e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.407407406181989e-07,
+            "parameters": [
+              0.2,
+              0.6666666667165981
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.1875) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(       0.4) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.18749999999687503,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976852,
+                3.7037037045061583e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.7037037045784965e-07,
+            "parameters": [
+              0.2,
+              0.33333333341851834
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.1875) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(      0.25) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.18749999999687503,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.851851850794746e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077627e-07,
+            "parameters": [
+              0.2,
+              0.6666666668481483
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(  0.196875) = (1.03125, 3.125e-07, 0)\n                 crvB(         0) = (1.03125, 3.125e-07, 0)\n            end: distance = 0\n                 crvA(      0.25) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ],
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.19687499999671876,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672831e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853711e-08,
+            "parameters": [
+              0.2,
+              0.33333333368518503
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.2-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (3, 2e-05, 0)\n                 crvB(         0) = (3, 2e-05, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                3.0,
+                2e-05,
+                0.0
+              ],
+              [
+                3.0,
+                2e-05,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666666832648
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.25) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.24999999999583333,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934153,
+                1.4814814815180595e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.3333333333333333,
+              0.3333333333500687
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.25) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(       0.5) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.24999999999583333,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958846,
+                7.407407406067669e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.407407406181989e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666667165981
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.3125) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(       0.5) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.31249999999479167,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976852,
+                3.7037037045061583e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.7037037045784965e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.33333333341851834
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.3125) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(     0.375) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.31249999999479167,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.851851850794746e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077627e-07,
+            "parameters": [
+              0.3333333333333333,
+              0.6666666668481483
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(  0.328125) = (1.03125, 3.125e-07, 0)\n                 crvB(         0) = (1.03125, 3.125e-07, 0)\n            end: distance = 0\n                 crvA(     0.375) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ],
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.32812499999453126,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672831e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853711e-08,
+            "parameters": [
+              0.3333333333333333,
+              0.33333333368518503
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.3333333333333333-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (3, 2e-05, 0)\n                 crvB(         0) = (3, 2e-05, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                3.0,
+                2e-05,
+                0.0
+              ],
+              [
+                3.0,
+                2e-05,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.5,
+              0.6666666666832648
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(     0.375) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.37499999999375,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934153,
+                1.4814814815180595e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.5,
+              0.3333333333500687
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(     0.375) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(     0.625) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.37499999999375,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958846,
+                7.407407406067669e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.407407406181989e-07,
+            "parameters": [
+              0.5,
+              0.6666666667165981
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(   0.46875) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(     0.625) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.4687499999921875,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976852,
+                3.7037037045061583e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.7037037045784965e-07,
+            "parameters": [
+              0.5,
+              0.33333333341851834
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(   0.46875) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(   0.53125) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.4687499999921875,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.851851850794746e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077627e-07,
+            "parameters": [
+              0.5,
+              0.6666666668481483
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(  0.492187) = (1.03125, 3.125e-07, 0)\n                 crvB(         0) = (1.03125, 3.125e-07, 0)\n            end: distance = 0\n                 crvA(   0.53125) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ],
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.4921874999917969,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672831e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853711e-08,
+            "parameters": [
+              0.5,
+              0.33333333368518503
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.5-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (3, 2e-05, 0)\n                 crvB(         0) = (3, 2e-05, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 2.96296e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                3.0,
+                2e-05,
+                0.0
+              ],
+              [
+                3.0,
+                2e-05,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.999999999983539,
+                2.962962962723365e-06,
+                0.0
+              ]
+            ],
+            "distance": 2.96296296276909e-06,
+            "parameters": [
+              0.8,
+              0.6666666666832648
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(       0.6) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(         1) = (0, 0, 0)\n                 crvB(         1) = (0, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.48148e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.59999999999,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999934153,
+                1.4814814815180595e-06,
+                0.0
+              ]
+            ],
+            "distance": 1.481481481532693e-06,
+            "parameters": [
+              0.8,
+              0.3333333333500687
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(       0.6) = (1.5, 5e-06, 0)\n                 crvB(         0) = (1.5, 5e-06, 0)\n            end: distance = 0\n                 crvA(      0.85) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 7.40741e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ],
+              [
+                1.500000000025,
+                5.00000000025e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.59999999999,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999958846,
+                7.407407406067669e-07,
+                0.0
+              ]
+            ],
+            "distance": 7.407407406181989e-07,
+            "parameters": [
+              0.8,
+              0.6666666667165981
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.75) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(      0.85) = (0.75, 0, 0)\n                 crvB(         1) = (0.75, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 3.7037e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.7499999999875001,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999976852,
+                3.7037037045061583e-07,
+                0.0
+              ]
+            ],
+            "distance": 3.7037037045784965e-07,
+            "parameters": [
+              0.8,
+              0.33333333341851834
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(      0.75) = (1.125, 1.25e-06, 0)\n                 crvB(         0) = (1.125, 1.25e-06, 0)\n            end: distance = 0\n                 crvA(    0.8125) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1.85185e-07\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ],
+              [
+                1.12500000003125,
+                1.2500000003124974e-06,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.7499999999875001,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999993057,
+                1.851851850794746e-07,
+                0.0
+              ]
+            ],
+            "distance": 1.8518518508077627e-07,
+            "parameters": [
+              0.8,
+              0.6666666668481483
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(    0.7875) = (1.03125, 3.125e-07, 0)\n                 crvB(         0) = (1.03125, 3.125e-07, 0)\n            end: distance = 0\n                 crvA(    0.8125) = (0.9375, 0, 0)\n                 crvB(         1) = (0.9375, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 9.25926e-08\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ],
+              [
+                1.0312500000328124,
+                3.1250000032812444e-07,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.787499999986875,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999994212,
+                9.259259268672831e-08,
+                0.0
+              ]
+            ],
+            "distance": 9.259259268853711e-08,
+            "parameters": [
+              0.8,
+              0.33333333368518503
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-1-0.8-5"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (1, 0, 0)\n                 crvB(         1) = (1, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                0.05,
+                1e-06,
+                0.0
+              ],
+              [
+                0.04999999999999999,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 1e-06,
+            "parameters": [
+              0.5,
+              0.05
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-hidden-0-1.0-0-index"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (1, 0, 0)\n                 crvB(         1) = (1, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                0.05,
+                1e-06,
+                0.0
+              ],
+              [
+                0.04999999999999999,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 1e-06,
+            "parameters": [
+              0.050000000449999894,
+              0.05
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-hidden-0-1.0-0-length"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (1, 0, 0)\n                 crvB(         1) = (1, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                0.05,
+                1e-06,
+                0.0
+              ],
+              [
+                0.04999999999999999,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 1e-06,
+            "parameters": [
+              0.2857142857142857,
+              0.05
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-hidden-1-1.0-0-index"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_returned": true,
+        "command_history": "Command: _-CrvDeviation\nOverlap interval 1 of 1:\n          start: distance = 0\n                 crvA(         0) = (0, 0, 0)\n                 crvB(         0) = (0, 0, 0)\n            end: distance = 0\n                 crvA(         1) = (1, 0, 0)\n                 crvB(         1) = (1, 0, 0)\nMinimum deviation = 0\nMaximum deviation = 1e-06\nPress Enter when done ( KeepMarks=No ): _Enter\nPress Enter when done ( KeepMarks=No )\nCommand: _Cancel",
+        "inputs_retained": true,
+        "sdk": {
+          "minimum": {
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ]
+          },
+          "maximum": {
+            "points": [
+              [
+                0.05,
+                1e-06,
+                0.0
+              ],
+              [
+                0.04999999999999999,
+                0.0,
+                0.0
+              ]
+            ],
+            "distance": 1e-06,
+            "parameters": [
+              0.05000000039999989,
+              0.05
+            ]
+          },
+          "created": true
+        },
+        "created_object_count": 0
+      },
+      "id": "loft-refit-deviation-hidden-1-1.0-0-length"
+    }
+  ],
+  "protocol_version": 1,
+  "provenance": {
+    "request_sha256": "9b6562c9620e3bc9f25b430c6f49a914e2610d6cd79cc0916c89828e0da7d69e",
+    "sources": {
+      "generate_loft_refit_deviation.py": "589f537909656adab694b8668f91b3c5408c5f0c64fb515f871db6d7ac427d44",
+      "fixtures/loft_refit_adaptive_parameter_clocks.json": "b8cf94812e8b8472683bab2ff15811c289be61f8adb6155671ed522240183e1f",
+      "fixtures/loft_refit_hidden_features.json": "0ffd6f6633b47d8f5fcdd218a0be6662c18191c52b522a0df9c803100840e898",
+      "curve_deviation_probe.py": "c5ecec382099559a5fef5e17acdd34cd8e403abc4a6337840e9d85bf2b621922",
+      "geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+      "rhino_worker.py": "8f2d08950f62d74b76c809f6894e9e401b5f576c69a4cd87fab1fb8e63e5c237",
+      "client.py": "d5b384ea36dfe530289f512b132b3f9d8000a8756c112f135cd90911e9d017f4",
+      "structural_sdk.py": "a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

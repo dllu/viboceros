@@ -264,7 +264,8 @@ def _expand_sources_once(paths):
                          'crates/viboceros-command/src/loft.rs',
                          'crates/viboceros-command/src/loft/options.rs',
                          'crates/viboceros-command/src/loft/tests.rs',
-                         'crates/viboceros-command/src/loft/refit_tests.rs'])
+                         'crates/viboceros-command/src/loft/refit_tests.rs',
+                         'crates/viboceros-command/src/loft/refit_tests/multispan.rs'])
     if 'crates/viboceros-geometry/src/curve_rebuild.rs' in expanded:
         expanded.append('crates/viboceros-geometry/src/curve_rebuild/tests.rs')
     if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:

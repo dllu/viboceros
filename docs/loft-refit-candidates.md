@@ -15,11 +15,23 @@ use the initial proposal; if it fails, their adaptive fitting remains unfinished
 Acceptance requires a continuous Bernstein bound on the rounded candidate,
 compared with its complete source. An affine parameter correspondence is tried
 first; closest-point samples can propose a strictly increasing map if needed.
-Every interval of that map must also pass the complete bound, within half the
-requested tolerance. Eight native boundary pairs
-confirm this reserve for two symmetric profiles under scale, frame and domain
-changes. This sufficient certificate can reject fits that Rhino accepts using
-other correspondences; it never substitutes sampled agreement for a bound.
+Every interval of that map must pass the complete bound. Single-Bezier fits
+retain the half-tolerance reserve; eight native boundary pairs confirm it for
+two symmetric profiles under scale, frame and domain changes.
+
+Multispan initial proposals can instead pass quarter, midpoint and three-quarter
+length stations within half tolerance, followed by a complete bound within the
+full requested tolerance. Stations use the existing nine-point incremental batch
+at fractional stopping precision `1e-4`. An unsampled feature exceeding tolerance
+still rejects the fit. This independent selection rule matches 82 complete native
+records across source clocks, affine domains, reversal, degree elevation,
+negative weight gauges, frames, all five styles and document commands at `1e-9`.
+[Initial-station validation](loft-refit-initial-stations-validation.json) also
+retains 52 public deviation measurements: their maxima do not change with source
+clocks, so that metric alone cannot explain adaptive subdivision differences.
+Four of 24 curved transition holdouts still reject a native initial cubic;
+another six need subdivision. These observations do not establish the general
+native adaptive fitting policy.
 
 The tolerance must be smaller than every endpoint chord. The existing 256-profile
 limit applies; certificate degree, arithmetic and work limits remain unchanged.

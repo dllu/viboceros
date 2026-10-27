@@ -40,14 +40,15 @@ pub(super) fn prepare(
             .distance_to(candidate.control_points()[3].point())?;
         // Relative errors >=1 enter a separate native resampling branch. Its
         // basis/domain policy has not been established by this initial fit.
-        // The native smooth proposal reserves half the requested tolerance.
-        // Correspondence proposals may use closest points, but acceptance
-        // requires a complete image bound; unresolved maps need the fitter.
         if tolerance >= chord {
             return Err(unsupported());
         }
         let candidate =
-            if crate::curve_fit::g1::within_deviation(source, &candidate, tolerance * 0.5)? {
+            if crate::curve_fit::g1::within_deviation(source, &candidate, tolerance * 0.5)?
+                || (!single_span
+                    && quarter_stations_fit(source, &candidate, tolerance * 0.5)?
+                    && crate::curve_fit::g1::within_deviation(source, &candidate, tolerance)?)
+            {
                 candidate
             } else {
                 // Native multispan references enter adaptive fitting here.
@@ -69,6 +70,34 @@ pub(super) fn prepare(
         sections.push(candidate);
     }
     Ok(sections)
+}
+
+/// Measured multispan initial fits can exceed the half-tolerance reserve
+/// between these stations. This selection rule cannot certify a fit: the
+/// caller must still prove the complete image bound within full tolerance.
+fn quarter_stations_fit(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+) -> Result<bool, GeometryError> {
+    let sampler = crate::ArcLengthSampler::try_new(
+        crate::CurveRef::NurbsCurve(source),
+        crate::Tolerance::DEFAULT,
+    )?;
+    // Preserve the existing eight-interval incremental fitting clock.
+    let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
+    let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
+    let search = candidate.prepare_closest_parameter_search()?;
+    let numerical =
+        crate::Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;
+    for index in [2, 4, 6] {
+        let point = source.evaluate(parameters[index])?;
+        let parameter = search.closest_parameter(point, numerical)?;
+        if point.distance_to(candidate.evaluate(parameter)?)? > limit {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 #[cfg(test)]

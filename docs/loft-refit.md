@@ -28,9 +28,10 @@ adaptive fitting.
 
 [Smooth proposals](loft-refit-candidates.md) are also supported for sets of
 at least two clamped profiles without resolved tangent breaks. The endpoint-tangent cubic, optionally
-corrected by a common handle scale, must
-have a continuous positional bound within half the requested tolerance; the
-tolerance must be smaller than each endpoint chord. For example, `Refit=0.1`
+corrected by a common handle scale, must have a continuous positional bound.
+Single-Bezier fits retain half the requested tolerance; multispan initial fits
+can use the full tolerance after passing the measured interior-station rule.
+The tolerance must be smaller than each endpoint chord. For example, `Refit=0.1`
 can fit an open polynomial cubic; handle correction remains limited to single
 Bezier sources. Tighter settings may need the pending
 subdivision rules. Unsupported fits fail before document mutation.
