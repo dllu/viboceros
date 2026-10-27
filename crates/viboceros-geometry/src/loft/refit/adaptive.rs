@@ -1,4 +1,4 @@
-//! Bounded adaptive proposals for sources with certified straight regions.
+//! Bounded adaptive cubic proposals with complete final image certificates.
 use super::*;
 use crate::{ArcLengthSampler, CurveRef, ParameterSide, Point3, Tolerance};
 
@@ -83,9 +83,48 @@ pub fn try_propose_joined_linear_refit(
     }
 }
 
+/// Propose joined cubics from the original source, retaining its parameter clock.
+/// A single nine-station incremental length lookup selects all dyadic splits;
+/// interpolation in that lookup is a proposal, not a new length integration.
+/// Local stations and complete interval bounds select raw endpoint-frame pieces.
+/// Their retimed Hermite reconstruction must pass a fresh complete bound against
+/// the original source within `tolerance`, even if the raw assembly cannot.
+///
+/// This geometry proposal does not establish general Rhino adaptive acceptance.
+/// The Loft command retains its separately qualified preparation policy.
+/// `angle` follows [`try_propose_joined_linear_refit`]. Sources above degree 16,
+/// resolved tangent breaks, closed curves or unresolved final proofs return
+/// `None`. Resource and failure limits otherwise match
+/// [`try_propose_adaptive_linear_refit`].
+pub fn try_propose_joined_refit(
+    source: &NurbsCurve,
+    tolerance: Real,
+    angle: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    validate(source, tolerance)?;
+    validate_angle(Some(angle))?;
+    if source.degree() > 16 {
+        return Ok(None);
+    }
+    let angle = corner_angle(Some(angle));
+    let Some(candidate) =
+        pieces::construct(source, tolerance, angle, pieces::SplitClock::SourceLookup)?
+    else {
+        return Ok(None);
+    };
+    let joined = join::construct(&candidate.curve, angle)?;
+    if crate::curve_fit::g1::within_deviation(source, &joined, tolerance)? {
+        Ok(Some(joined))
+    } else {
+        Ok(None)
+    }
+}
+
 mod join;
 mod pieces;
 mod source;
 
+#[cfg(test)]
+mod curved_tests;
 #[cfg(test)]
 mod tests;

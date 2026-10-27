@@ -4,7 +4,8 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
 mod adaptive;
 pub use adaptive::{
-    AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit, try_propose_joined_linear_refit,
+    AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit,
+    try_propose_joined_linear_refit, try_propose_joined_refit,
 };
 mod candidate;
 mod matching;

@@ -217,7 +217,6 @@
     "crates/viboceros-oracle/src/arc_length_batch.rs": "8fcfdec96b5338ebe038a551cc1a57a51d3cd17d1f15d0f9ef030a5d7ed8fcef",
     "crates/viboceros-oracle/tests/interval_length_native.rs": "5cb4b5c7d8fdfda6b949c4579aa6dc3b386d08b816a2478c3c8bd0fedc5cfc95",
     "crates/viboceros-oracle/tests/fitting_clock_native.rs": "456b4f712ab280cdc00af85f746097f36c8836711ff2e9acf7bfac2b32ace4de",
-    "crates/viboceros-oracle/tests/loft_refit_adaptive_join_native.rs": "5c37ab51f62c419bdc392d45a5b4a6afb108aa0818bc3d4259d5c655544a4896",
     "tools/rhino_oracle/loft_scalar_clock_probe.py": "5cfadc297b1476bafe2a3f1f97cebdf8b718a8310381734bd24fcddf1e20f42e",
     "tools/rhino_oracle/test_interval_length_clocks.py": "2db503c0064ef37ed589c01cc7f272d6eeafe9d084525395ff74a74668b8056b",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
@@ -247,6 +246,7 @@
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
     "9ddd2f318590615e9d942d8abb11cf78437a944e:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "4f6ff6f752954a91a49d1b81ee2f70f3a085819a3d61fc93a7a9929a0fabcffe",
     "9ddd2f318590615e9d942d8abb11cf78437a944e:docs/loft-fitting-clock.md": "12118a8d01152ac924d87ac5435540744d0b32502c9c9b8ed4052f5a75a1f8fc",
-    "9ddd2f318590615e9d942d8abb11cf78437a944e:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "f8408e459dda7adab3b98a1c6e32ad7e64ce3b07a4ac7c317e2dad5a1901e31e"
+    "9ddd2f318590615e9d942d8abb11cf78437a944e:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "f8408e459dda7adab3b98a1c6e32ad7e64ce3b07a4ac7c317e2dad5a1901e31e",
+    "d93802265c63b9431793f28e83b1ddf622c5f5b1:crates/viboceros-oracle/tests/loft_refit_adaptive_join_native.rs": "5c37ab51f62c419bdc392d45a5b4a6afb108aa0818bc3d4259d5c655544a4896"
   }
 }

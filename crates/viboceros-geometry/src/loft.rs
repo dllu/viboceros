@@ -18,7 +18,7 @@ pub use refit::{
     AdaptiveLinearRefitProposal, prepare_refitted_loft_sections_with_operations,
     try_loft_nurbs_curves_refitted, try_loft_nurbs_curves_refitted_with_angle,
     try_prepare_refitted_loft_sections, try_prepare_refitted_loft_sections_with_angle,
-    try_propose_adaptive_linear_refit, try_propose_joined_linear_refit,
+    try_propose_adaptive_linear_refit, try_propose_joined_linear_refit, try_propose_joined_refit,
 };
 #[cfg(test)]
 mod tests;

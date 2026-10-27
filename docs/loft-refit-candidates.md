@@ -49,7 +49,8 @@ polygon fitting keep their established paths. A single smooth input uses a
 different native fitting branch and remains unsupported.
 
 [Adaptive piece proposals](loft-refit-adaptive.md) have a separate certified
-kernel API; their final joining is not yet qualified for the Loft command.
+kernel API, including construction from original source charts. General
+adaptive preparation is not yet qualified for the Loft command.
 
 [Multispan validation](loft-refit-multispan-validation.json) covers shallow bends,
 rational region clocks, curvature changes, domain/frame transformations and
