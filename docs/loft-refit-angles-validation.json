@@ -250,7 +250,6 @@
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
     "crates/viboceros-geometry/src/error.rs": "b834b5a068f42e91fe7caab5b7fcf5321531d1b80947d70df84a93260f834504",
-    "crates/viboceros-geometry/src/loft/compatible.rs": "d602e54a58f0e5e515c83af889b9224c42530d6850c57440adddda53b5beee89",
     "crates/viboceros-smlib/Cargo.toml": "13f973cc5eedfcce69ab2d179036f4acd1e1fd887869fd870b561c33df8871d9",
     "crates/viboceros-smlib/build.rs": "70c8959717a15d9d095eeee40a9ceea5ae76fa0d9711cc8749c20d6c87e1607c",
     "crates/viboceros-smlib/src/lib.rs": "2d2c010002502d9bb8ae88a097f963ec3a19df07af18f59c388148ce49afd7de",
@@ -266,8 +265,6 @@
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
     "tools/rhino_oracle/fixtures/loft_refit_adjustment.json": "f13cecea6ba29d46eed0106c456eeae35154eb83f939747202abc76e4c306b47",
     "tools/rhino_oracle/fixtures/loft_refit_polylines.json": "f03aa5dfd5f36103fee168290e93556ff2a6cd1ae0066addd0672efcfd42145e",
-    "crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "2d1cba7a4a45416503c73e1e5010dd95e366fc1d5e410fa125ff9cce7d6319f4",
-    "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "77ea3214bd34a234678aca8930375dddb2ad6d55a40b17623a396e8c6ecd841f",
     "crates/viboceros-oracle/tests/loft_refit_coarse_native.rs": "ba557e1441f8722116725cd3e770229ed7a3f5c90258e7303090d34bc5c489c6",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
     "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
@@ -444,6 +441,9 @@
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
     "22ed6965d2fe59e64a7990d73a09969f42341821:crates/viboceros-geometry/src/curve_fit/g1/tests.rs": "67755931af4cc364966100f7a86a0e3aec295ee15d40d0bbd5f68c86c5e36b73",
     "22ed6965d2fe59e64a7990d73a09969f42341821:crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "0be1ffeb236a780720c9762d07bab10334691c0f2b7607ff405d71824b33429a",
-    "c90bdc1ec088ea11b120e460f706506e08137b95:crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs": "5d6a1bfa7b4d1d6a5379411d51fb40379c34a516a145af4cbc8d3300b2417071"
+    "c90bdc1ec088ea11b120e460f706506e08137b95:crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs": "5d6a1bfa7b4d1d6a5379411d51fb40379c34a516a145af4cbc8d3300b2417071",
+    "f2638521ac8c7bdb064777934d8cb8ec1aec8a28:crates/viboceros-geometry/src/loft/compatible.rs": "d602e54a58f0e5e515c83af889b9224c42530d6850c57440adddda53b5beee89",
+    "f2638521ac8c7bdb064777934d8cb8ec1aec8a28:crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "2d1cba7a4a45416503c73e1e5010dd95e366fc1d5e410fa125ff9cce7d6319f4",
+    "f2638521ac8c7bdb064777934d8cb8ec1aec8a28:crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "77ea3214bd34a234678aca8930375dddb2ad6d55a40b17623a396e8c6ecd841f"
   }
 }

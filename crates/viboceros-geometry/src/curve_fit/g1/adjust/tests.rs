@@ -4,6 +4,31 @@ use crate::Point3;
 use serde_json::Value;
 use std::path::Path;
 
+#[test]
+fn nearly_cancelling_handles_decline_an_ill_conditioned_correction() {
+    let initial = NurbsCurve::try_new(
+        3,
+        [
+            [0., 0., 0.],
+            [2. / 3., 0., 0.],
+            [4. / 3., 2e-5, 0.],
+            [2., 2e-5, 0.],
+        ]
+        .into_iter()
+        .map(|p| Point3::try_from(p).unwrap())
+        .collect(),
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap();
+    let before = initial.clone();
+    assert!(
+        adjusted_cubic_at_point(&initial, Point3::try_new(1., 5e-6, 0.).unwrap(), 1e-6)
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(initial, before);
+}
+
 fn read(family: &str, folder: &str) -> Value {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     serde_json::from_slice(&std::fs::read(root.join(format!("{folder}/{family}.json"))).unwrap())

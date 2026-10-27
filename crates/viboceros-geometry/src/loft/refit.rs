@@ -27,7 +27,7 @@ struct Section {
 /// when its complete image error is bounded by half the tolerance. Multispan
 /// initial fits can instead pass three interior length stations within half
 /// tolerance and a complete full-tolerance image certificate. Affine, nonlinear
-/// coordinate-projection and monotone piecewise affine maps all require a
+/// coordinate-projection and monotone piecewise affine or cubic maps require a
 /// complete certificate. Tolerance must be
 /// smaller than every endpoint chord. Multispan sources use the initial cubic;
 /// common handle correction remains qualified for single-Bezier sources.

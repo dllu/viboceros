@@ -6,6 +6,7 @@ use viboceros_oracle::{ProbeRequest, run_request};
 #[path = "../../../viboceros-geometry/tests/support/loft_rebuild.rs"]
 mod comparison;
 pub use comparison::difference;
+type Proposal = fn(&NurbsCurve, f64, f64) -> Result<Option<NurbsCurve>, GeometryError>;
 
 pub fn read(family: &str, folder: &str) -> Value {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
@@ -30,15 +31,34 @@ pub fn compare(
     count: usize,
     expected: (usize, usize, usize),
     label: &str,
-    propose: fn(&NurbsCurve, f64, f64) -> Result<Option<NurbsCurve>, GeometryError>,
+    propose: Proposal,
 ) {
+    compare_range(family, count, 0..count, expected, label, propose)
+}
+
+/// Independent source shapes can share comparison rules while running in
+/// separate test groups. Every group retains complete records and assertions.
+pub fn compare_range(
+    family: &str,
+    count: usize,
+    range: std::ops::Range<usize>,
+    expected: (usize, usize, usize),
+    label: &str,
+    propose: Proposal,
+) {
+    assert!(range.start < range.end && range.end <= count);
     let query = read(family, "fixtures");
     let native = read(family, "observations");
     let operations = query["operations"].as_array().unwrap();
     let rows = native["results"].as_array().unwrap();
     assert_eq!((operations.len(), rows.len()), (count, count));
     let (mut matched, mut differing, mut declined, mut maximum) = (0, 0, 0, 0_f64);
-    for (op, row) in operations.iter().zip(rows) {
+    for (op, row) in operations
+        .iter()
+        .zip(rows)
+        .skip(range.start)
+        .take(range.len())
+    {
         assert_eq!(op["id"], row["id"]);
         let mut proposed = Vec::new();
         let sources = op["curves"].as_array().unwrap();
@@ -87,7 +107,8 @@ pub fn compare(
         }
     }
     println!(
-        "{label} {family} matched={matched} differing={differing} maximum={maximum} declined={declined}"
+        "{label} {family} matched={matched} differing={differing} maximum={maximum} declined={declined} selection={range:?}"
     );
+    assert_eq!(matched + differing + declined, range.len());
     assert_eq!((matched, differing, declined), expected);
 }

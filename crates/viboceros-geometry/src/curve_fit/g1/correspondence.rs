@@ -3,11 +3,33 @@ use crate::{GeometryError, NurbsCurve, Real, Tolerance};
 use std::collections::{BTreeMap, BinaryHeap};
 
 const MAX_INTERVALS: usize = 256;
+mod anchors;
+mod hermite;
 
 pub(crate) fn within_deviation(
     source: &NurbsCurve,
     candidate: &NurbsCurve,
     limit: Real,
+) -> Result<bool, GeometryError> {
+    certify(source, candidate, limit, None)
+}
+
+/// Seed known source/target span boundaries in normalized parameter fractions.
+/// They guide proposals only; the full exact image certificate still decides.
+pub(crate) fn within_deviation_at_pairs(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+    pairs: &[[Real; 2]],
+) -> Result<bool, GeometryError> {
+    certify(source, candidate, limit, Some(pairs))
+}
+
+fn certify(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+    pairs: Option<&[[Real; 2]]>,
 ) -> Result<bool, GeometryError> {
     if source
         .parameter_curve_deviation_bound(candidate, limit)?
@@ -23,7 +45,15 @@ pub(crate) fn within_deviation(
     let sampler = source.parameter_sampler()?;
     let search = candidate.prepare_closest_parameter_search()?;
     let numerical = Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;
-    let mut stations = Stations::new(source)?;
+    let (mut stations, derivatives) = if let Some(prepared) = pairs
+        .map(|pairs| anchors::prepare(source, candidate, pairs))
+        .transpose()?
+        .flatten()
+    {
+        prepared
+    } else {
+        (Stations::new(source)?, BTreeMap::new())
+    };
     let mut attempted_size = 0;
     for intervals in [8, 16, 32, 64, 128, MAX_INTERVALS] {
         if !stations.refine(intervals + 1) {
@@ -58,6 +88,9 @@ pub(crate) fn within_deviation(
             .mapped_curve_deviation_bound(candidate, &pairs, limit)?
             .is_some()
         {
+            return Ok(true);
+        }
+        if hermite::certify_with_derivatives(source, candidate, &pairs, limit, &derivatives)? {
             return Ok(true);
         }
     }

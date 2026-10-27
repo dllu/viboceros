@@ -13,6 +13,14 @@ pub(crate) fn adjusted_cubic(
     let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
     let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
     let target = source.evaluate(parameters[4])?;
+    adjusted_cubic_at_point(initial, target, limit)
+}
+
+pub(crate) fn adjusted_cubic_at_point(
+    initial: &NurbsCurve,
+    target: crate::Point3,
+    limit: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
     let parameter = initial.closest_parameter(target, Tolerance::DEFAULT)?;
     let point = initial.evaluate(parameter)?;
     if point.distance_to(target)? <= limit {
@@ -28,7 +36,10 @@ pub(crate) fn adjusted_cubic(
     let b = end_handle.scaled(b2)?.to_array();
     let influence = crate::Vector3::try_from(std::array::from_fn(|i| a[i] + b[i]))?;
     let length = influence.length()?;
-    if length == 0. {
+    // Nearly cancelling influences amplify closest-point roundoff into a
+    // spurious large scale. Decline the correction; callers can subdivide.
+    let frame = start_handle.length()?.max(end_handle.length()?);
+    if length <= frame * Real::EPSILON.sqrt() {
         return Ok(None);
     }
     // Normalize before the ratio so squaring a large/tiny handle cannot lose

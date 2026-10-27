@@ -4,8 +4,16 @@ use super::{MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS};
 use crate::integration::cash_karp;
 use crate::{CurveContinuity, GeometryError, NurbsCurve, Real, require_finite};
 use std::borrow::Cow;
+mod fitted;
 #[cfg(test)]
 mod tests;
+pub(super) use fitted::region_breaks as fitted_region_breaks;
+
+#[derive(Clone, Copy)]
+enum RegionPolicy {
+    Geometric,
+    Fitted,
+}
 
 struct Section {
     curve: NurbsCurve,
@@ -19,7 +27,13 @@ pub(super) fn prepare<'a, E: From<GeometryError>>(
     curves: &'a [NurbsCurve],
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
 ) -> Result<Cow<'a, [NurbsCurve]>, E> {
-    prepare_impl(curves, clamp, 1_f64.to_radians().cos(), true)
+    prepare_impl(
+        curves,
+        clamp,
+        1_f64.to_radians().cos(),
+        true,
+        RegionPolicy::Geometric,
+    )
 }
 
 pub(super) fn prepare_refit<'a, E: From<GeometryError>>(
@@ -38,6 +52,23 @@ pub(super) fn prepare_refit<'a, E: From<GeometryError>>(
         clamp,
         cosine,
         curves.iter().all(|c| c.degree() == 1),
+        RegionPolicy::Geometric,
+    )
+}
+
+/// A fitter has already retained its independent C0 region boundaries. Match
+/// those regions even when all fitted profiles initially share their basis.
+/// Ordinary and disabled-fitting Loft retain their geometric region policy.
+pub(super) fn prepare_fitted<'a, E: From<GeometryError>>(
+    curves: &'a [NurbsCurve],
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+) -> Result<Cow<'a, [NurbsCurve]>, E> {
+    prepare_impl(
+        curves,
+        clamp,
+        1_f64.to_radians().cos(),
+        false,
+        RegionPolicy::Fitted,
     )
 }
 
@@ -46,6 +77,7 @@ fn prepare_impl<'a, E: From<GeometryError>>(
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
     cosine: Real,
     preserve_matching_basis: bool,
+    policy: RegionPolicy,
 ) -> Result<Cow<'a, [NurbsCurve]>, E> {
     if curves.is_empty() || curves.len() > MAX_LOFT_SECTIONS {
         return Err(GeometryError::LoftResourceLimit {
@@ -106,7 +138,10 @@ fn prepare_impl<'a, E: From<GeometryError>>(
         }
         let scale = coordinate_scale(&curve);
         let mut breaks = vec![*domain.start()];
-        breaks.extend(region_breaks(&curve, scale, cosine)?);
+        breaks.extend(match policy {
+            RegionPolicy::Geometric => region_breaks(&curve, scale, cosine)?,
+            RegionPolicy::Fitted => independent_breaks(&curve),
+        });
         breaks.push(*domain.end());
         sections.push(Section {
             curve,
@@ -208,7 +243,18 @@ fn region_breaks(
     scale: Real,
     cosine: Real,
 ) -> Result<Vec<Real>, GeometryError> {
-    let candidates = curve
+    let candidates = independent_breaks(curve);
+    if candidates.is_empty() {
+        return Ok(Vec::new());
+    }
+    Ok(geometric_breaks(curve, scale, cosine, CurveContinuity::G2)?
+        .into_iter()
+        .filter(|t| candidates.binary_search_by(|c| c.total_cmp(t)).is_ok())
+        .collect())
+}
+
+fn independent_breaks(curve: &NurbsCurve) -> Vec<Real> {
+    curve
         .knots()
         .chunk_by(|a, b| a == b)
         .filter(|g| {
@@ -217,14 +263,7 @@ fn region_breaks(
                 && g[0] < *curve.domain().end()
         })
         .map(|g| g[0])
-        .collect::<Vec<_>>();
-    if candidates.is_empty() {
-        return Ok(Vec::new());
-    }
-    Ok(geometric_breaks(curve, scale, cosine, CurveContinuity::G2)?
-        .into_iter()
-        .filter(|t| candidates.binary_search_by(|c| c.total_cmp(t)).is_ok())
-        .collect())
+        .collect()
 }
 
 pub(super) fn has_tangent_breaks(curve: &NurbsCurve, angle: Real) -> Result<bool, GeometryError> {
@@ -242,31 +281,6 @@ fn geometric_breaks(
     scale: Real,
     cosine: Real,
     continuity: CurveContinuity,
-) -> Result<Vec<Real>, GeometryError> {
-    geometric_breaks_impl(curve, scale, cosine, continuity, None)
-}
-
-// Composite fitting retains G2 regions at the measured absolute curvature
-// tolerance, in model units. Existing general matching keeps its own policy.
-pub(super) fn fitted_region_breaks(
-    curve: &NurbsCurve,
-    angle: Real,
-) -> Result<Vec<Real>, GeometryError> {
-    geometric_breaks_impl(
-        curve,
-        coordinate_scale(curve),
-        angle.cos(),
-        CurveContinuity::G2,
-        Some(0.01),
-    )
-}
-
-fn geometric_breaks_impl(
-    curve: &NurbsCurve,
-    scale: Real,
-    cosine: Real,
-    continuity: CurveContinuity,
-    curvature_tolerance: Option<Real>,
 ) -> Result<Vec<Real>, GeometryError> {
     // Classification is geometric: remove the world offset and scale before
     // testing curvature. This prevents distant, exact circles gaining breaks
@@ -299,24 +313,13 @@ fn geometric_breaks_impl(
             *x /= local_scale;
         }
     }
-    if let Some(tolerance) = curvature_tolerance {
-        Ok(viboceros_opennurbs::curve_continuity_breaks_with_curvature(
-            curve.degree(),
-            &controls,
-            curve.knots(),
-            continuity,
-            cosine,
-            (tolerance * scale) * local_scale,
-        )?)
-    } else {
-        Ok(viboceros_opennurbs::curve_continuity_breaks(
-            curve.degree(),
-            &controls,
-            curve.knots(),
-            continuity,
-            cosine,
-        )?)
-    }
+    Ok(viboceros_opennurbs::curve_continuity_breaks(
+        curve.degree(),
+        &controls,
+        curve.knots(),
+        continuity,
+        cosine,
+    )?)
 }
 
 // Binary scaling preserves ordinary evaluation operation boundaries and keeps

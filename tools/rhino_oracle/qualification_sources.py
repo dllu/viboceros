@@ -216,6 +216,8 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/curve_fit/g1/adjust.rs',
             'crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs',
             'crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs',
+            'crates/viboceros-geometry/src/curve_fit/g1/correspondence/hermite.rs',
+            'crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate.rs',
             'crates/viboceros-geometry/src/nurbs/closest_point.rs',
             'crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs',
@@ -286,6 +288,7 @@ def _expand_sources_once(paths):
                                    'crates/viboceros-geometry/src/loft/compatible.rs']):
         expanded.extend(['crates/viboceros-geometry/src/loft/parameterize.rs',
                          'crates/viboceros-geometry/src/loft/parameterize/tests.rs',
+                         'crates/viboceros-geometry/src/loft/parameterize/fitted.rs',
                          'crates/viboceros-geometry/src/loft/rebuild.rs',
                          'crates/viboceros-geometry/src/loft/rebuild/tests.rs',
                          'crates/viboceros-geometry/src/loft/refit.rs',

@@ -82,3 +82,30 @@ fn original_source_proposals_validate_before_constructing_output() {
     ));
     assert_eq!(source, before);
 }
+
+#[test]
+fn an_ending_source_corner_keeps_subdivision_instead_of_handle_correction() {
+    let source = NurbsCurve::try_new(
+        1,
+        [
+            [0., 0., 0.],
+            [1., 0., 0.],
+            [1.9999904807207345, 0.004363309284746571, 0.],
+        ]
+        .map(|p| Point3::try_from(p).unwrap())
+        .to_vec(),
+        vec![0., 0., 1., 2., 2.],
+    )
+    .unwrap();
+    let before = source.clone();
+    let raw = pieces::construct(
+        &source,
+        0.001,
+        1_f64.to_radians(),
+        pieces::SplitClock::SourceLookup,
+    )
+    .unwrap()
+    .unwrap();
+    assert_eq!(raw.breaks, [0., 0.25, 0.5, 1.]);
+    assert_eq!(source, before);
+}

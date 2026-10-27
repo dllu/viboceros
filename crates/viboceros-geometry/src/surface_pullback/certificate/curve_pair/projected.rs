@@ -24,6 +24,52 @@ impl NurbsCurve {
         bound(self, other, limit, false).map_err(map_work_error)
     }
 
+    /// Certify a proposed continuous, strictly increasing spline map over both
+    /// complete active domains. Its unused second coordinate is zero. This is
+    /// an internal fitting proposal; the exact image certificate remains the
+    /// only acceptance criterion.
+    pub(crate) fn monotone_spline_curve_deviation_bound(
+        &self,
+        other: &NurbsCurve,
+        map: &NurbsCurve2,
+        limit: Real,
+    ) -> Result<Option<Real>, GeometryError> {
+        (|| {
+            if !limit.is_finite() || limit < 0. {
+                return Err(GeometryError::InvalidTolerance);
+            }
+            let controls = map.control_points();
+            let degree = map.degree();
+            let domain = map.domain();
+            let target = other.domain();
+            if self.degree() > MAX_DEGREE
+                || other.degree() > MAX_DEGREE
+                || degree > MAX_DEGREE
+                || controls.len() > MAX_WORK / 16
+                || !map.knots()[..=degree].iter().all(|t| t == domain.start())
+                || !map.knots()[controls.len()..]
+                    .iter()
+                    .all(|t| t == domain.end())
+                || controls[0].point().x() != *target.start()
+                || controls.last().unwrap().point().x() != *target.end()
+                || controls.iter().any(|p| {
+                    p.point().y() != 0.
+                        || !target.contains(&p.point().x())
+                        || p.weight().is_sign_negative() != controls[0].weight().is_sign_negative()
+                })
+                || map
+                    .knots()
+                    .chunk_by(|a, b| a == b)
+                    .any(|g| g[0] > *domain.start() && g[0] < *domain.end() && g.len() > degree)
+                || !order::certify(map)?
+            {
+                return Ok(None);
+            }
+            image_bound(self, other, map, limit)
+        })()
+        .map_err(map_work_error)
+    }
+
     /// Retain a strictly increasing parameter correspondence for G1 fitting.
     pub(crate) fn monotone_projected_curve_deviation_bound(
         &self,
@@ -111,6 +157,16 @@ fn bound(
     if monotone && !order::certify(&map)? {
         return Ok(None);
     }
+    image_bound(source, other, &map, limit)
+}
+
+fn image_bound(
+    source: &NurbsCurve,
+    other: &NurbsCurve,
+    map: &NurbsCurve2,
+    limit: Real,
+) -> Result<Option<Real>, GeometryError> {
+    let target = other.control_points();
     let surface = NurbsSurface::try_new_rational(
         other.degree(),
         1,
@@ -124,7 +180,7 @@ fn bound(
         other.knots().to_vec(),
         vec![0., 0., 1., 1.],
     )?;
-    surface.parameter_curve_deviation_bound(&map, source, limit)
+    surface.parameter_curve_deviation_bound(map, source, limit)
 }
 
 mod order;

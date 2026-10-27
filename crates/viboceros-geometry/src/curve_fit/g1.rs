@@ -1,9 +1,9 @@
 //! Endpoint-tangent proposal shared by geometric cubic fitting.
 use crate::{GeometryError, NurbsCurve, ParameterSide};
 mod adjust;
-pub(crate) use adjust::adjusted_cubic;
+pub(crate) use adjust::{adjusted_cubic, adjusted_cubic_at_point};
 mod correspondence;
-pub(crate) use correspondence::within_deviation;
+pub(crate) use correspondence::{within_deviation, within_deviation_at_pairs};
 
 /// Initial unit-domain polynomial cubic. Each handle has length
 /// `chord_length * (2 - cos(chord, tangent)^2) / 3`. It interpolates endpoint

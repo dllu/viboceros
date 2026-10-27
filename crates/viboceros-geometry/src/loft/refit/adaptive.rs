@@ -86,8 +86,9 @@ pub fn try_propose_joined_linear_refit(
 /// Propose joined cubics from the original source, retaining its parameter clock.
 /// A single nine-station incremental length lookup selects all dyadic splits;
 /// interpolation in that lookup is a proposal, not a new length integration.
-/// Local stations and complete interval bounds select raw endpoint-frame pieces.
-/// Their retimed Hermite reconstruction must pass a fresh complete bound against
+/// Seven interior stations from that same lookup and complete interval bounds
+/// select raw endpoint-frame pieces, with a common midpoint handle correction
+/// before subdivision. Retiming and C1 reconstruction require a fresh bound against
 /// the original source within `tolerance`, even if the raw assembly cannot.
 ///
 /// This geometry proposal does not establish general Rhino adaptive acceptance.
@@ -113,11 +114,38 @@ pub fn try_propose_joined_refit(
         return Ok(None);
     };
     let joined = join::construct(&candidate.curve, angle)?;
-    if crate::curve_fit::g1::within_deviation(source, &joined, tolerance)? {
-        Ok(Some(joined))
+    let copies = [joined];
+    let mapped = super::super::parameterize::prepare_fitted(&copies, &mut |curve: &NurbsCurve| {
+        curve.clamped_to_active_domain()
+    })?;
+    let joined = mapped[0].clone();
+    let has_regions = joined.knots().chunk_by(|a, b| a == b).any(|g| {
+        g.len() == joined.degree()
+            && g[0] > *joined.domain().start()
+            && g[0] < *joined.domain().end()
+    });
+    let within = if has_regions {
+        let target = joined.knots()[joined.degree()..=joined.control_points().len()]
+            .chunk_by(|a, b| a == b)
+            .map(|g| g[0])
+            .collect::<Vec<_>>();
+        let domain = source.domain();
+        let pairs = candidate
+            .source_parameters
+            .iter()
+            .zip(target)
+            .map(|(&t, q)| {
+                Ok([
+                    crate::nurbs::interval_fraction(t, *domain.start(), *domain.end())?,
+                    q,
+                ])
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        crate::curve_fit::g1::within_deviation_at_pairs(source, &joined, tolerance, &pairs)?
     } else {
-        Ok(None)
-    }
+        crate::curve_fit::g1::within_deviation(source, &joined, tolerance)?
+    };
+    if within { Ok(Some(joined)) } else { Ok(None) }
 }
 
 mod join;

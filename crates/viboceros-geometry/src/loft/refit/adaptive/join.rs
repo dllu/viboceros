@@ -20,7 +20,7 @@ pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, Geo
     for pair in regions.windows(2) {
         let (a, b) = (pair[0], pair[1]);
         let (start, end) = (cuts[a], cuts[b]);
-        let curve = c1_region(raw, &cuts, a, b)?;
+        let curve = c1_region_impl(raw, &cuts, a, b, regions.len() == 2)?;
         controls.extend(
             curve
                 .control_points()
@@ -45,11 +45,22 @@ fn unsupported() -> GeometryError {
     }
 }
 
+#[cfg(test)]
 fn c1_region(
     raw: &NurbsCurve,
     cuts: &[Real],
     first: usize,
     last: usize,
+) -> Result<NurbsCurve, GeometryError> {
+    c1_region_impl(raw, cuts, first, last, true)
+}
+
+fn c1_region_impl(
+    raw: &NurbsCurve,
+    cuts: &[Real],
+    first: usize,
+    last: usize,
+    rebuild: bool,
 ) -> Result<NurbsCurve, GeometryError> {
     let points = &raw.control_points()[3 * first..=3 * last];
     if last - first == 1 {
@@ -89,6 +100,21 @@ fn c1_region(
         source_knots.extend([prefix / total; 3]);
     }
     source_knots.extend([1.; 4]);
+    if !rebuild {
+        let controls = points
+            .iter()
+            .enumerate()
+            .filter_map(|(i, p)| (i == 0 || i + 1 == points.len() || i % 3 != 0).then_some(*p))
+            .collect();
+        let mut knots = vec![0.; 4];
+        let mut prefix = 0.;
+        for width in &widths[..widths.len() - 1] {
+            prefix += width;
+            knots.extend([prefix / total; 2]);
+        }
+        knots.extend([1.; 4]);
+        return NurbsCurve::try_new_rational(3, controls, knots);
+    }
     let source = NurbsCurve::try_new_rational(3, points.to_vec(), source_knots)?;
     let mut jets = target
         .iter()

@@ -19,6 +19,7 @@ pub(super) enum SplitClock {
 pub(super) struct Candidate {
     pub curve: NurbsCurve,
     pub breaks: Vec<Real>,
+    pub source_parameters: Vec<Real>,
 }
 
 pub(super) fn propose(
@@ -63,6 +64,15 @@ pub(super) fn construct(
             Some(sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?)
         }
     };
+    // A common-handle correction is qualified on smooth parameter spans.
+    // Preserve subdivision across source C1 breaks, including suppressed
+    // polyline corners and derivative-speed changes. An ending break also
+    // matters: the constructor deliberately uses its original right tangent.
+    let correction_breaks = if lookup.is_some() {
+        source.parametric_discontinuity_parameters(crate::CurveParametricContinuity::C1)?
+    } else {
+        Vec::new()
+    };
     let domain = source.domain();
     let mut pending = vec![Interval {
         start: *domain.start(),
@@ -85,7 +95,7 @@ pub(super) fn construct(
             to,
             depth,
         } = interval;
-        let piece = crate::curve_fit::g1::initial_cubic_from_frames(
+        let mut piece = crate::curve_fit::g1::initial_cubic_from_frames(
             source.evaluate(start)?,
             source.evaluate(end)?,
             source.tangent_at_on_side(start, ParameterSide::Right)?,
@@ -99,30 +109,50 @@ pub(super) fn construct(
             )?,
         )?;
         let trimmed = source.try_trimmed(start..=end)?;
-        let sampler =
-            ArcLengthSampler::try_new(CurveRef::NurbsCurve(&trimmed), Tolerance::DEFAULT)?;
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
-        let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
+        let parameters = if let Some(lookup) = &lookup {
+            fractions
+                .iter()
+                .map(|f| lookup_parameter(lookup, from + f * (to - from)))
+                .collect()
+        } else {
+            let sampler =
+                ArcLengthSampler::try_new(CurveRef::NurbsCurve(&trimmed), Tolerance::DEFAULT)?;
+            sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?
+        };
         // Samples propose a piece; a complete interval bound decides whether
         // it can be kept. A feature between stations must trigger refinement
         // rather than rejection of the whole assembled proposal at the end.
-        let fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?
+        let mut fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?
             && crate::curve_fit::g1::within_deviation(&trimmed, &piece, tolerance)?;
+        if !fits
+            && lookup.is_some()
+            && correction_breaks
+                .get(correction_breaks.partition_point(|t| *t <= start))
+                .is_none_or(|t| *t > end)
+            && let Some(adjusted) = crate::curve_fit::g1::adjusted_cubic_at_point(
+                &piece,
+                source.evaluate(parameters[4])?,
+                tolerance * 0.5,
+            )?
+            && sampled_fit(source, &adjusted, &parameters, tolerance * 0.5)?
+            && crate::curve_fit::g1::within_deviation(&trimmed, &adjusted, tolerance)?
+        {
+            piece = adjusted;
+            fits = true;
+        }
         if fits {
             if pieces.len() == MAX_PIECES {
                 return Ok(None);
             }
-            pieces.push((to, piece));
+            pieces.push((to, end, piece));
         } else {
             if depth == MAX_DEPTH {
                 return Ok(None);
             }
             let fraction = from + (to - from) * 0.5;
             let mut middle = if let Some(lookup) = &lookup {
-                let station = fraction * 8.;
-                let index = (station.floor() as usize).min(7);
-                let blend = station - index as Real;
-                lookup[index].mul_add(1. - blend, lookup[index + 1] * blend)
+                lookup_parameter(lookup, fraction)
             } else {
                 parameters[4]
             };
@@ -158,7 +188,8 @@ pub(super) fn construct(
     let mut controls = Vec::with_capacity(3 * pieces.len() + 1);
     let mut knots = vec![0.; 4];
     let mut breaks = vec![0.];
-    for (end, curve) in pieces {
+    let mut source_parameters = vec![*domain.start()];
+    for (end, parameter, curve) in pieces {
         controls.extend(
             curve
                 .control_points()
@@ -168,10 +199,15 @@ pub(super) fn construct(
         );
         knots.extend([end; 3]);
         breaks.push(end);
+        source_parameters.push(parameter);
     }
     knots.push(1.);
     let curve = NurbsCurve::try_new_rational(3, controls, knots)?;
-    Ok(Some(Candidate { curve, breaks }))
+    Ok(Some(Candidate {
+        curve,
+        breaks,
+        source_parameters,
+    }))
 }
 
 fn sampled_fit(
@@ -189,4 +225,11 @@ fn sampled_fit(
         }
     }
     Ok(true)
+}
+
+fn lookup_parameter(lookup: &[Real], fraction: Real) -> Real {
+    let station = fraction * 8.;
+    let index = (station.floor() as usize).min(7);
+    let blend = station - index as Real;
+    lookup[index].mul_add(1. - blend, lookup[index + 1] * blend)
 }
