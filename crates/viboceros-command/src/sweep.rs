@@ -135,11 +135,12 @@ impl Command for SweepCommand {
                     .collect(),
             )
         } else {
-            let (rail, sections) =
-                placement::sections(rail.to_nurbs()?, curves, document.tolerance())?;
+            let (rail, sections) = placement::sections(rail, curves, document.tolerance())?;
             (Some(rail), sections)
         };
-        let full_rail_anchor = if let Some(rail) = &automatic_rail {
+        let full_rail_anchor = if !refit.unwrap_or(false)
+            && let Some(rail) = &automatic_rail
+        {
             placement::full_rail_anchor(rail, &sections)?
         } else {
             false
@@ -184,6 +185,8 @@ impl Command for SweepCommand {
     }
 }
 
+#[cfg(test)]
+mod arc_station_tests;
 #[cfg(test)]
 mod automatic_tests;
 #[cfg(test)]

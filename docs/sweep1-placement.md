@@ -18,20 +18,24 @@ maxima. Exact rational span hulls independently certify the returned distance
 bracket. Portable builds use the same certificate with cached numerical point
 queries as initial proposals. The value error is bounded by document tolerance;
 this does not prove parameter uniqueness or choose among coincident branches.
-Explicit stations remain useful for ambiguous placement.
+Explicit stations remain useful for ambiguous placement. For analytic arcs the
+command applies the separately measured [transport parameter policy](sweep1-arc-parameters.md)
+after obtaining the geometric witness; the final transport station need not be
+that nearest-point parameter.
 
 Profiles keep their input order. Descending stations reverse the rail; mixed or
 coincident stations fail. A single profile chooses forward or backward traversal
-according to which half of the rail's arc length contains its station. At an
-existing interior Greville station it anchors a sweep over the complete rail;
+according to which half of the rail's arc length contains its station. With
+`RefitRail=No`, an existing interior Greville station can anchor the complete rail;
 otherwise the sweep begins at the profile. Partial intervals use a cubic refit,
 including the measured straight-rail interior cases with `RefitRail=No`.
 The geometry model rechecks corners and seam continuity when extending its interval.
 
 ## Evidence and limits
 
-The [automatic validation record](sweep1-automatic-validation.json) records checks
-and source bindings. Seven captured straight-rail command surfaces are compared
+The earlier [automatic validation record](sweep1-automatic-validation.json) freezes
+the implementation at commit `8b0df1328`. The [arc validation](sweep1-arc-parameters-validation.json)
+records the subsequent parameter-policy correction. Seven captured straight-rail command surfaces are compared
 through both complete rational boundary curves. Matching V weight rows make the
 surface affine between those curves, so these bounds cover the entire surfaces.
 The same constructions exercise ordered selection, rail names and rail IDs.
@@ -44,8 +48,8 @@ correspondence to the explicit-station model distinguishes that existing behavio
 from automatic placement. The numerical discrepancy alone does not prove that
 the continuous surfaces differ. Further station/direction captures check twelve pairs
 of rail-boundary endpoints; they do not qualify all of those surface interiors.
-The non-Greville arc-at-thirty-degrees capture retains a separate native refit
-endpoint/clock discrepancy and is investigation evidence only.
+The original non-Greville arc-at-thirty-degrees case now has a complete-image
+regression under the corrected transport policy.
 
 The query supports common-sign rational weights, degree at most 16 and at most
 4096 controls per curve. Exact arithmetic, subdivision depth and pair storage

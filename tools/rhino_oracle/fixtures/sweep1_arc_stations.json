@@ -1,0 +1,1955 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.2-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.8531695488854605,
+            0.9270509831248421,
+            0.0
+          ],
+          "end": [
+            3.994437368439644,
+            1.297871376374779,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.2-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.8531695488854605,
+            0.9270509831248421,
+            0.0
+          ],
+          "end": [
+            3.994437368439644,
+            1.297871376374779,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.2-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.8531695488854605,
+            0.9270509831248421,
+            0.0
+          ],
+          "end": [
+            3.994437368439644,
+            1.297871376374779,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.2-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.8531695488854605,
+            0.9270509831248421,
+            0.0
+          ],
+          "end": [
+            3.994437368439644,
+            1.297871376374779,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.35-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.5579204930622765,
+            1.5674956941478464,
+            0.0
+          ],
+          "end": [
+            3.5810886902871863,
+            2.1944939718069847,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.35
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.35-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.5579204930622765,
+            1.5674956941478464,
+            0.0
+          ],
+          "end": [
+            3.5810886902871863,
+            2.1944939718069847,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.35
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.35-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.5579204930622765,
+            1.5674956941478464,
+            0.0
+          ],
+          "end": [
+            3.5810886902871863,
+            2.1944939718069847,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.35
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.35-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.5579204930622765,
+            1.5674956941478464,
+            0.0
+          ],
+          "end": [
+            3.5810886902871863,
+            2.1944939718069847,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.35
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.5-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          "end": [
+            2.9698484809834995,
+            2.9698484809834986,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.5
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.5-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          "end": [
+            2.9698484809834995,
+            2.9698484809834986,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.5
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.5-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          "end": [
+            2.9698484809834995,
+            2.9698484809834986,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.5
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.5-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          "end": [
+            2.9698484809834995,
+            2.9698484809834986,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.5
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.65-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.5674956941478468,
+            2.5579204930622765,
+            0.0
+          ],
+          "end": [
+            2.194493971806985,
+            3.5810886902871863,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.65
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.65-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.5674956941478468,
+            2.5579204930622765,
+            0.0
+          ],
+          "end": [
+            2.194493971806985,
+            3.5810886902871863,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.65
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.65-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.5674956941478468,
+            2.5579204930622765,
+            0.0
+          ],
+          "end": [
+            2.194493971806985,
+            3.5810886902871863,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.65
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.65-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.5674956941478468,
+            2.5579204930622765,
+            0.0
+          ],
+          "end": [
+            2.194493971806985,
+            3.5810886902871863,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.65
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.8-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.9270509831248424,
+            2.8531695488854605,
+            0.0
+          ],
+          "end": [
+            1.2978713763747791,
+            3.994437368439644,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.8-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.121320343559643,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            1.8369701987210297e-16,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.9270509831248424,
+            2.8531695488854605,
+            0.0
+          ],
+          "end": [
+            1.2978713763747791,
+            3.994437368439644,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.8-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.9270509831248424,
+            2.8531695488854605,
+            0.0
+          ],
+          "end": [
+            1.2978713763747791,
+            3.994437368439644,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-quarter-0.8-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.8369701987210297e-16,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          4.71238898038469,
+          4.71238898038469,
+          4.71238898038469
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.9270509831248424,
+            2.8531695488854605,
+            0.0
+          ],
+          "end": [
+            1.2978713763747791,
+            3.994437368439644,
+            0.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.2-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            7.0,
+            -2.25,
+            11.0
+          ],
+          [
+            7.0,
+            -2.5179092927350952,
+            11.574533332339234
+          ],
+          [
+            7.0,
+            -3.1302361332501976,
+            11.738605814759156
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.295230534410569,
+            11.256515107494252
+          ],
+          "end": [
+            7.15,
+            -2.0133227481747964,
+            11.359121150491951
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.2-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            7.0,
+            -2.25,
+            11.0
+          ],
+          [
+            7.0,
+            -2.5179092927350952,
+            11.574533332339234
+          ],
+          [
+            7.0,
+            -3.1302361332501976,
+            11.738605814759156
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.295230534410569,
+            11.256515107494252
+          ],
+          "end": [
+            7.15,
+            -2.0133227481747964,
+            11.359121150491951
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.2-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.349730743616249
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -2.5179092927350952,
+              11.574533332339234
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.785818585470191,
+              11.799335921062218
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -3.1302361332501976,
+              11.738605814759156
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.6544984694978736,
+          0.6544984694978736,
+          1.3089969389957472,
+          1.3089969389957472,
+          1.3089969389957472
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.295230534410569,
+            11.256515107494252
+          ],
+          "end": [
+            7.15,
+            -2.0133227481747964,
+            11.359121150491951
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.2-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.349730743616249
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -2.5179092927350952,
+              11.574533332339234
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.785818585470191,
+              11.799335921062218
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -3.1302361332501976,
+              11.738605814759156
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.6544984694978736,
+          0.6544984694978736,
+          1.3089969389957472,
+          1.3089969389957472,
+          1.3089969389957472
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.295230534410569,
+            11.256515107494252
+          ],
+          "end": [
+            7.15,
+            -2.0133227481747964,
+            11.359121150491951
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.7-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            7.0,
+            -2.25,
+            11.0
+          ],
+          [
+            7.0,
+            -2.5179092927350952,
+            11.574533332339234
+          ],
+          [
+            7.0,
+            -3.1302361332501976,
+            11.738605814759156
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.7434848925057485,
+            11.70476946558943
+          ],
+          "end": [
+            7.15,
+            -2.6408788495080477,
+            11.986677251825203
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.7
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.7-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            7.0,
+            -2.25,
+            11.0
+          ],
+          [
+            7.0,
+            -2.5179092927350952,
+            11.574533332339234
+          ],
+          [
+            7.0,
+            -3.1302361332501976,
+            11.738605814759156
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.7434848925057485,
+            11.70476946558943
+          ],
+          "end": [
+            7.15,
+            -2.6408788495080477,
+            11.986677251825203
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.7
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.7-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.349730743616249
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -2.5179092927350952,
+              11.574533332339234
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.785818585470191,
+              11.799335921062218
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -3.1302361332501976,
+              11.738605814759156
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.6544984694978736,
+          0.6544984694978736,
+          1.3089969389957472,
+          1.3089969389957472,
+          1.3089969389957472
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.7434848925057485,
+            11.70476946558943
+          ],
+          "end": [
+            7.15,
+            -2.6408788495080477,
+            11.986677251825203
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.7
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-oriented-0.7-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.25,
+              11.349730743616249
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -2.5179092927350952,
+              11.574533332339234
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.785818585470191,
+              11.799335921062218
+            ],
+            "weight": 0.9063077870366499
+          },
+          {
+            "point": [
+              7.0,
+              -3.1302361332501976,
+              11.738605814759156
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.6544984694978736,
+          0.6544984694978736,
+          1.3089969389957472,
+          1.3089969389957472,
+          1.3089969389957472
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            -2.7434848925057485,
+            11.70476946558943
+          ],
+          "end": [
+            7.15,
+            -2.6408788495080477,
+            11.986677251825203
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.7
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.2-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            1.25,
+            0.0
+          ],
+          [
+            0.8838834764831843,
+            0.8838834764831844,
+            0.0
+          ],
+          [
+            1.25,
+            7.654042494670958e-17,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.38627124296868426,
+            1.1888206453689418,
+            0.0
+          ],
+          "end": [
+            0.5407797401561579,
+            1.6643489035165187,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.2-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            1.25,
+            0.0
+          ],
+          [
+            0.8838834764831843,
+            0.8838834764831844,
+            0.0
+          ],
+          [
+            1.25,
+            7.654042494670958e-17,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.38627124296868426,
+            1.1888206453689418,
+            0.0
+          ],
+          "end": [
+            0.5407797401561579,
+            1.6643489035165187,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.2-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.2499999999999998,
+              1.25,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.25,
+              7.654042494670958e-17,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.9634954084936207,
+          1.9634954084936207,
+          1.9634954084936207
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.38627124296868426,
+            1.1888206453689418,
+            0.0
+          ],
+          "end": [
+            0.5407797401561579,
+            1.6643489035165187,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.2-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.2499999999999998,
+              1.25,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.25,
+              7.654042494670958e-17,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.9634954084936207,
+          1.9634954084936207,
+          1.9634954084936207
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.38627124296868426,
+            1.1888206453689418,
+            0.0
+          ],
+          "end": [
+            0.5407797401561579,
+            1.6643489035165187,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.2
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.8-analytic-basis",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            1.25,
+            0.0
+          ],
+          [
+            0.8838834764831843,
+            0.8838834764831844,
+            0.0
+          ],
+          [
+            1.25,
+            7.654042494670958e-17,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.1888206453689418,
+            0.3862712429686843,
+            0.0
+          ],
+          "end": [
+            1.6643489035165187,
+            0.540779740156158,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.8-analytic-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            1.25,
+            0.0
+          ],
+          [
+            0.8838834764831843,
+            0.8838834764831844,
+            0.0
+          ],
+          [
+            1.25,
+            7.654042494670958e-17,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.1888206453689418,
+            0.3862712429686843,
+            0.0
+          ],
+          "end": [
+            1.6643489035165187,
+            0.540779740156158,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.8-rational-basis",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.2499999999999998,
+              1.25,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.25,
+              7.654042494670958e-17,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.9634954084936207,
+          1.9634954084936207,
+          1.9634954084936207
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.1888206453689418,
+            0.3862712429686843,
+            0.0
+          ],
+          "end": [
+            1.6643489035165187,
+            0.540779740156158,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    },
+    {
+      "op": "sweep1",
+      "id": "arc-station-reversed-0.8-rational-refit",
+      "rail": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.2499999999999998,
+              1.25,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.25,
+              7.654042494670958e-17,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.9634954084936207,
+          1.9634954084936207,
+          1.9634954084936207
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            1.1888206453689418,
+            0.3862712429686843,
+            0.0
+          ],
+          "end": [
+            1.6643489035165187,
+            0.540779740156158,
+            0.375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "station_fraction": 0.8
+    }
+  ]
+}

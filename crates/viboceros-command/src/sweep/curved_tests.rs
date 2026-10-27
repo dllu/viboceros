@@ -4,7 +4,7 @@ use super::*;
 use serde_json::Value;
 use viboceros_geometry::{CircularArc3, WeightedPoint3};
 
-fn rail(doc: &mut Document, v: &Value) -> ObjectId {
+pub(super) fn rail(doc: &mut Document, v: &Value) -> ObjectId {
     let geometry = match v["type"].as_str().unwrap() {
         "arc" => Geometry::Arc(
             CircularArc3::try_from_three_points(

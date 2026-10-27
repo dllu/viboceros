@@ -197,6 +197,7 @@ def _expand_sources_once(paths):
         paths = [*paths, 'crates/viboceros-command/src/sweep/options.rs',
                  'crates/viboceros-command/src/sweep/tests.rs',
                  'crates/viboceros-command/src/sweep/placement.rs',
+                 'crates/viboceros-command/src/sweep/arc_station_tests.rs',
                  'crates/viboceros-command/src/sweep/automatic_tests.rs',
                  'crates/viboceros-command/src/sweep/curved_tests.rs']
     if 'crates/viboceros-geometry/src/sweep.rs' in paths:

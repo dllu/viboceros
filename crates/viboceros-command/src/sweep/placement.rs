@@ -2,10 +2,11 @@
 use super::*;
 
 pub(super) fn sections(
-    mut rail: NurbsCurve,
+    source: CurveRef<'_>,
     profiles: Vec<NurbsCurve>,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve, Vec<SweepSection>), CommandError> {
+    let mut rail = source.to_nurbs()?;
     let mut sections = Vec::with_capacity(profiles.len());
     for curve in profiles {
         #[cfg(feature = "native-smlib")]
@@ -25,10 +26,15 @@ pub(super) fn sections(
         #[cfg(not(feature = "native-smlib"))]
         let minimum = rail.minimum_distance_with_curve(&curve, tolerance)?;
         let minimum = minimum.ok_or(GeometryError::InvalidSweep {context:"section placement exceeded the certified curve-distance query limits; supply explicit Parameters"})?;
-        sections.push(SweepSection {
-            parameter: minimum.parameters[0],
-            curve,
-        });
+        // The public Rhino command transports analytic arcs using their native
+        // station directly in the rational rail chart. Keep that compatibility
+        // policy here: the geometry query's minimum witness remains unchanged.
+        let parameter = if matches!(source, CurveRef::Arc(_)) {
+            source.parameter_from_nurbs(minimum.parameters[0])?
+        } else {
+            minimum.parameters[0]
+        };
+        sections.push(SweepSection { parameter, curve });
     }
     let reverse = if sections.len() == 1 {
         if rail.is_closed()? {

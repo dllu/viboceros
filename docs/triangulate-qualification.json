@@ -913,7 +913,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1",
+    "tools/rhino_oracle/qualification_sources.py": "4a7b461b7777e824020306e36671dfa49ce6cf1c183f19ec5baa2cdfec2f5672",
     "tools/rhino_oracle/fixtures/triangulate_sdk.json": "9964587659260167612e6777954179afc50cceb1f911f4f91242dc7dd03a8927",
     "tools/rhino_oracle/observations/triangulate_sdk.json": "9444c4e6a9833f832a5aa951f4cbc07421172fc8429e46289d3bd45e0a9eb0ed",
     "tools/rhino_oracle/fixtures/triangulate_command.json": "4c6b58d6495c4c003cbc7516577fe1f86881b29808f369d35d5887b8a6575be5",
