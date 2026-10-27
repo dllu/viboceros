@@ -2763,7 +2763,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "6e5cfabcc78f5401da3dfea39499b784c590d3c427c2a3f9e107186660f02d7e",
+    "tools/rhino_oracle/qualification_sources.py": "5a28c71fd72f52010a9153b26f9afc2954f03e62bc0f4010b6dd8ec46c2f43d7",
     "crates/viboceros-command/src/control_points.rs": "c8e45c0a70dc71ec9982a70f21e49bcc65d8856f4c14a18923fda2687ab6d689",
     "crates/viboceros-command/src/object_selection.rs": "e2b78d2f66fe90a5276afe6bad89f05bbedd12059793578c1236290ce398ea6e",
     "crates/viboceros-command/tests/vertex_seams_native.rs": "d75b83f91acc91ecaf895d928224f6f51a3e568be888e6133a9a93ce687fdb28",

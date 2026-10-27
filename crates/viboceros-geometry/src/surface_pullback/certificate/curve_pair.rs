@@ -4,6 +4,7 @@ use super::*;
 mod correspondence;
 #[cfg(test)]
 mod mapped_tests;
+mod projected;
 #[cfg(test)]
 mod tests;
 

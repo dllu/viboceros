@@ -23,9 +23,11 @@ struct Section {
 /// and redundant collinear vertices disappear; true reversals remain.
 /// With at least two profiles, clamped sources without resolved tangent breaks may
 /// instead use an endpoint-tangent cubic with at most one common handle correction
-/// when its complete image error
-/// is bounded by half the tolerance. Monotone correspondence proposals require
-/// a complete certificate across every matching interval. Tolerance must be
+/// when its complete image error is bounded by half the tolerance. Multispan
+/// initial fits can instead pass three interior length stations within half
+/// tolerance and a complete full-tolerance image certificate. Affine, nonlinear
+/// coordinate-projection and monotone piecewise affine maps all require a
+/// complete certificate. Tolerance must be
 /// smaller than every endpoint chord. Multispan sources use the initial cubic;
 /// common handle correction remains qualified for single-Bezier sources.
 /// Subdivision and mixed open/closed profiles remain unsupported. Separate

@@ -14,7 +14,8 @@ use the initial proposal; if it fails, their adaptive fitting remains unfinished
 
 Acceptance requires a continuous Bernstein bound on the rounded candidate,
 compared with its complete source. An affine parameter correspondence is tried
-first; closest-point samples can propose a strictly increasing map if needed.
+first, followed by a [nonlinear projected map](curve-image-correspondence.md).
+Closest-point samples can still propose a strictly increasing map if needed.
 Every interval of that map must pass the complete bound. Single-Bezier fits
 retain the half-tolerance reserve; eight native boundary pairs confirm it for
 two symmetric profiles under scale, frame and domain changes.
@@ -29,13 +30,14 @@ negative weight gauges, frames, all five styles and document commands at `1e-9`.
 [Initial-station validation](loft-refit-initial-stations-validation.json) also
 retains 52 public deviation measurements: their maxima do not change with source
 clocks, so that metric alone cannot explain adaptive subdivision differences.
-Four of 24 curved transition holdouts still reject a native initial cubic;
-another six need subdivision. These observations do not establish the general
-native adaptive fitting policy.
+The nonlinear proof now certifies all 18 native initial fits among 24 curved
+transition holdouts; six still need subdivision. Native fitting clocks agree
+with the existing incremental batch, so no sampling or tolerance rule changed.
+These observations do not establish the general native adaptive fitting policy.
 
 The tolerance must be smaller than every endpoint chord. The existing 256-profile
 limit applies; certificate degree, arithmetic and work limits remain unchanged.
-Map refinement retains natural source knots and bisects the largest remaining
+The piecewise affine fallback retains natural source knots and bisects the largest remaining
 parameter gaps over at most six attempts. Natural boundaries share the existing
 256-interval budget, with at most 255 cached closest-point queries per profile;
 each attempt uses the bounded certificate.

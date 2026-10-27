@@ -15,6 +15,11 @@ pub(crate) fn within_deviation(
     {
         return Ok(true);
     }
+    match source.monotone_projected_curve_deviation_bound(candidate, limit) {
+        Ok(Some(_)) => return Ok(true),
+        Ok(None) | Err(GeometryError::CurveApproximationLimit) => {}
+        Err(error) => return Err(error),
+    }
     let sampler = source.parameter_sampler()?;
     let search = candidate.prepare_closest_parameter_search()?;
     let numerical = Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;

@@ -50,7 +50,6 @@ fn curved_multispan_initial_fits_match_complete_native_records() {
         }
     }
     println!("CURVED_INITIAL_REFIT matched={matched} pending={pending} maximum={maximum}");
-    // Four native initial cubics still fail this sufficient admission rule;
-    // six other native results require the unfinished subdivision path.
-    assert_eq!((matched, pending, pending_initial), (14, 10, 4));
+    // Only the six native results needing additional pieces remain unsupported.
+    assert_eq!((matched, pending, pending_initial), (18, 6, 0));
 }

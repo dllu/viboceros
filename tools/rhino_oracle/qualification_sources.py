@@ -243,6 +243,9 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/tests.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/correspondence.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/mapped_tests.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected/tests.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected/order.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/linear.rs',
         ])
     if 'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs' in expanded:

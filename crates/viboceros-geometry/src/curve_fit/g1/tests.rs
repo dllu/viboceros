@@ -4,6 +4,32 @@ use serde_json::Value;
 use std::path::Path;
 
 #[test]
+fn image_agreement_does_not_erase_a_retraced_source_traversal() {
+    let source = NurbsCurve::try_new(
+        5,
+        [0., 1., 1., 0., 0., 1.]
+            .map(|x| Point3::try_new(x, 0., 0.).unwrap())
+            .to_vec(),
+        [vec![0.; 6], vec![1.; 6]].concat(),
+    )
+    .unwrap();
+    let candidate = initial_cubic(&source).unwrap();
+    assert!(
+        source
+            .projected_curve_deviation_bound(&candidate, 1e-6)
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        source
+            .monotone_projected_curve_deviation_bound(&candidate, 1e-6)
+            .unwrap()
+            .is_none()
+    );
+    assert!(!within_deviation(&source, &candidate, 1e-6).unwrap());
+}
+
+#[test]
 fn natural_knots_allow_complete_bounds_across_nonuniform_source_clocks() {
     for (start, width) in [(0., 1.), (-3., 10.)] {
         let source = NurbsCurve::try_new(
@@ -11,7 +37,9 @@ fn natural_knots_allow_complete_bounds_across_nonuniform_source_clocks() {
             [0., 0.125, 0.5, 1.]
                 .map(|x| Point3::try_new(x, 0., 0.).unwrap())
                 .to_vec(),
-            [0., 0., 0.17, 0.63, 1., 1.]
+            // Unclamped end knots decline coordinate projection, retaining
+            // coverage of the closest-point/natural-knot fallback.
+            [-1., 0., 0.17, 0.63, 1., 2.]
                 .map(|t| start + width * t)
                 .to_vec(),
         )
@@ -41,7 +69,9 @@ fn oversized_knot_sets_retain_the_uniform_correspondence_proposal() {
             .iter()
             .map(|t| Point3::try_new(t * t, 0., 0.).unwrap())
             .collect(),
-        [vec![0.], fractions, vec![1.]].concat(),
+        // Keep the projected proposal ineligible so this still exercises the
+        // uniform fallback when natural boundaries exceed its interval budget.
+        [vec![-1.], fractions, vec![2.]].concat(),
     )
     .unwrap();
     let candidate = initial_cubic(&source).unwrap();
