@@ -36,9 +36,22 @@ This guard preserves retraced source traversal: Rhino uses 50 or 34 controls for
 the retained retraced-line examples, despite their zero image distance to a line.
 The unrestricted public distance certificate makes no traversal-order claim.
 
-G1 fitting tries the ordered proof after affine correspondence and before the
-existing closest-point map. An inconclusive or exhausted projection retains that fallback's
-255-query, 256-interval limits. [Validation](projected-correspondence-validation.json)
+G1 fitting first tries affine correspondence. A source of degree 2–16 with at
+most 257 controls can also propose a degree-one surrogate using the existing
+degree-reduction routine. A complete pointwise bound must prove that surrogate
+within one millionth of the requested tolerance. The entire reserve is charged;
+downward-rounded subtraction keeps the sum of both proof limits within the
+original request. An affine or strictly ordered projected certificate must then
+cover the surrogate and candidate. Their composition certifies the original
+source, without changing its sampling clock, tangent frames or fitted controls.
+
+An unavailable surrogate retains the original ordered projection and
+closest-point map. The surrogate adds no closest queries, and each continuous
+certificate keeps its existing work limits. The fallback retains its
+255-query, 256-interval limits. [Surrogate validation](curve-certification-surrogates-validation.json)
+records numerical-budget witnesses and saved Rhino comparisons; general CAD
+performance parity remains unqualified. The earlier
+[projection validation](projected-correspondence-validation.json)
 records recovery of four curved Loft initial fits, native fitting clocks and
 64 additional style, command, frame, reversal, gauge, domain and scale cases.
 General adaptive Loft subdivision remains unfinished.

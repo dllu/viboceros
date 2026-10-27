@@ -309,7 +309,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "f56a65c61d4d36fa7e45704f4563e1c06bfe9422b81c4912fab5c257f751750d",
+    "tools/rhino_oracle/qualification_sources.py": "1da1f635b2e71b8845ea09ff0ab4e2f0cc1a252c46c9e6033c732c0a1d0005b1",
     "tools/rhino_oracle/fixtures/insert_point_discovery.json": "fce270107431ad5ba0fcc50e7c8fc9dfe9e49c2d5759f5e6d05682cb147b932f",
     "tools/rhino_oracle/observations/insert_point_discovery.json": "019d2aa207461ae4da777b8fa339c6c916c51d40acee75dec227d8ad2703bbfd",
     "tools/rhino_oracle/fixtures/insert_point_discovery/insert_point_mesh_1.3dm": "9bccbaedb4145aedc20953e94293e93dd6d8b86436e5b5f67c140a55e5fd3b12",

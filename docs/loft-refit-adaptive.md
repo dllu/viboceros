@@ -46,6 +46,8 @@ closest stations, with known fitting boundaries and one-sided parameter speeds
 when available. Exact rational derivative bounds must prove strict parameter
 order. Samples and anchor pairs guide proposals; they cannot establish acceptance
 or hide an unsampled feature. Each certificate stage retains its work budget.
+A [certified linear surrogate](curve-image-correspondence.md) can reduce the
+cost of high-degree proofs while retaining the original source and fit.
 
 Limits remain 128 pieces, depth 24, 512 source controls, source degree 16,
 256 correspondence intervals, 255 closest queries and six refinement rounds.

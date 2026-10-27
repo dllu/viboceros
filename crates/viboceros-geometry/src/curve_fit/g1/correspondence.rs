@@ -5,6 +5,7 @@ use std::collections::{BTreeMap, BinaryHeap};
 const MAX_INTERVALS: usize = 256;
 mod anchors;
 mod hermite;
+mod linear;
 
 pub(crate) fn within_deviation(
     source: &NurbsCurve,
@@ -35,6 +36,9 @@ fn certify(
         .parameter_curve_deviation_bound(candidate, limit)?
         .is_some()
     {
+        return Ok(true);
+    }
+    if linear::certify(source, candidate, limit) {
         return Ok(true);
     }
     match source.monotone_projected_curve_deviation_bound(candidate, limit) {
