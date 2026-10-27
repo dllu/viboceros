@@ -28,6 +28,8 @@ curves are profiles in the document's selection order. `Parameters=` is required
 supply one finite, strictly increasing **native rail parameter** per profile,
 not normalized fractions or distances unless that is the rail's actual domain.
 Profile directions and seams are retained; they are not automatically flipped.
+The [placement investigation](sweep1-placement.md) records separate SDK and
+command behavior for the planned automatic picker.
 
 Parameters just outside a rail endpoint are snapped only within eight machine
 epsilons of the rail's domain length, accommodating endpoint reconstruction

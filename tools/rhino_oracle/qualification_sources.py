@@ -192,6 +192,9 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-command/src/sweep.rs' in paths:
+        paths = [*paths, 'crates/viboceros-command/src/sweep/options.rs',
+                 'crates/viboceros-command/src/sweep/tests.rs']
     if 'crates/viboceros-smlib/src/native/knot_refinement.rs' in paths:
         paths = [*paths,
             'crates/viboceros-smlib/src/native/knot_refinement/loft.rs',

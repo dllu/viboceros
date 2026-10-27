@@ -9796,7 +9796,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "ee1e199ba7513b8bda0d3101e190166411fe310e92767a6510ed93b72db26b45",
+    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
     "crates/viboceros-geometry/src/mesh.rs": "fcf7ff181ab0563452e7491547eb433e393e431c8fb122f5e82504868f6e3286",
     "crates/viboceros-command/tests/insert_point_command.rs": "82f68e48d0138a486ed501bf08b872e044b8741bf53c4469ba59c64da1d56039",
     "crates/viboceros-command/tests/insert_point_staging.rs": "5c170590b950b0cee4de4fa8691f2d651eb5da9701ed08196ebf5d10c7dd659d",

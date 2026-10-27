@@ -1,0 +1,173 @@
+{
+  "feature": "Sweep1 options/test refactor and independent native placement characterization",
+  "source_base_commit": "b21cdc1aa1f4fa9e2183bfd1ce899fe95705c7a3",
+  "automatic_placement_implemented": false,
+  "preservation": {
+    "source_base_commit": "b21cdc1aa1f4fa9e2183bfd1ce899fe95705c7a3",
+    "construction_admission_block_sha256": "7010d4193ab61d4833a4f20bfca541127be4117e0410170c9943c87969954357",
+    "parser_block_sha256": "0d3b3ef1302c3ba9136bb0613d8e37ac1d68263fd2bb262a3252a0a47d657b1c",
+    "construction_and_parser_bytes_preserved": true
+  },
+  "native_captures": {
+    "sweep1_section_placement": {
+      "cases": 14,
+      "sdk_cases": 7,
+      "command_cases": 7,
+      "engine_version": "8.32.26160.13001",
+      "request_sha256": "85a316d1af105072c10ef8caf7149370f4444438ff742b1e8bf09c1f92cf148b",
+      "includes_surface_definitions": false
+    },
+    "sweep1_section_definitions": {
+      "cases": 14,
+      "sdk_cases": 7,
+      "command_cases": 7,
+      "engine_version": "8.32.26160.13001",
+      "request_sha256": "6e491773c318efe92fb26056b12abb48986257bf8d14dd534670ce352599e3d0",
+      "includes_surface_definitions": true
+    }
+  },
+  "scope": [
+    "The existing option parser and full construction/admission block retain their exact original bytes. The five existing command regressions execute on each backend.",
+    "New native captures are investigation evidence, not Viboceros automatic-placement comparisons. Their authored parameters are ignored by Rhino and are not measured native stations.",
+    "Inputs cover straight rails and line profiles only. Endpoint direction and reversed profile order differ between the public SDK and actual command. General curved-rail placement remains open."
+  ],
+  "checks": {
+    "default": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "sweep::tests",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "tests": 5,
+      "exit_code": 0
+    },
+    "native_smlib": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "sweep::tests",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "tests": 5,
+      "exit_code": 0
+    },
+    "default_clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-command",
+        "--all-targets",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    "native_clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-command",
+        "--all-targets",
+        "--features",
+        "native-smlib",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    "python": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "tests": 2071,
+      "exit_code": 0,
+      "seconds": 315.431
+    },
+    "final_record": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_sweep1_section_placement"
+      ],
+      "tests": 3,
+      "exit_code": 0,
+      "seconds": 0.012
+    },
+    "format": {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    "source_inventory": {
+      "records": 134,
+      "bindings": 35837,
+      "unique_inputs": 6420,
+      "staged_content_verified": true
+    }
+  },
+  "sha256": {
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "Cargo.lock": "103e115fac7680002cb3912ec9161b34b3aeb2beaffcecdbe0b52f665c754a98",
+    "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
+    "crates/viboceros-command/Cargo.toml": "c36ddbf11b82fef7456fdb78fc69b8da77f1d7cb8024eaa26b363ba83cbf1d0e",
+    "crates/viboceros-command/src/sweep.rs": "d05784128c37efb1385a6bf3c6528f0c95a5d1807258791ae6e8f18d80d4697d",
+    "crates/viboceros-geometry/src/sweep.rs": "c70e4da604fd93197b6012f46e67b611b766456aafd7babdb151ca2b6d4084d2",
+    "crates/viboceros-geometry/src/sweep/basis.rs": "d0b9a37b43818988d7e0970739614a8fc13dc705948a99d1cd50d9a08e8cdc08",
+    "crates/viboceros-geometry/src/sweep/fit.rs": "c2e18ffc2b31ec7e0a059c7d18a881b8d70a161a054c3aa3c3e5e7380806ae06",
+    "crates/viboceros-geometry/src/sweep/weights.rs": "0a7277fd1e22548dcc86f817473f758466f2076bd08d238e83ed2fe9535bc1ff",
+    "crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6231a144e2ed247bfd764016e410f29ec1eec680b27b4b25e0553db51ae91dcf",
+    "docs/sweep1-placement.md": "283859c8e8464a6cf8115cc4fdafa8fca5d5285f6ef45d3248c141ee01f1b5d4",
+    "docs/sweep1.md": "ae0165af49840e897515a1d5c2a9b22dd9780299a988376fc43af84a0e353319",
+    "tools/rhino_oracle/fixtures/sweep1_section_definitions.json": "6e491773c318efe92fb26056b12abb48986257bf8d14dd534670ce352599e3d0",
+    "tools/rhino_oracle/fixtures/sweep1_section_placement.json": "85a316d1af105072c10ef8caf7149370f4444438ff742b1e8bf09c1f92cf148b",
+    "tools/rhino_oracle/generate_sweep1_section_definitions.py": "425360803f6bbfc3dd9ddbbad840af9f27f3e1f1897c3b0f2cb4c1b87eb30188",
+    "tools/rhino_oracle/generate_sweep1_section_placement.py": "58af82f0638c88a3c1400b54dbc776a58a005307fa205a7dba01f707b962eca0",
+    "tools/rhino_oracle/observations/source_snapshots/0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7.gz": "c10f7abfc6de94f6d06e637df15e74e38828b58a3a29bf45f6af2059c9d9fb94",
+    "tools/rhino_oracle/observations/source_snapshots/425360803f6bbfc3dd9ddbbad840af9f27f3e1f1897c3b0f2cb4c1b87eb30188.gz": "459d6960a746762af7a00f3c567b2f986054e76e7c7f10c38cf0b78e24df3ad4",
+    "tools/rhino_oracle/observations/source_snapshots/58af82f0638c88a3c1400b54dbc776a58a005307fa205a7dba01f707b962eca0.gz": "318b6e9075755b624b46f06950283c42c4ebe0ecc4c44c6a821646785d1cb0d5",
+    "tools/rhino_oracle/observations/source_snapshots/a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231.gz": "2bf823063ab9ff74e0dd9489be8387e3ca4c6785535c734122533c7936eab42e",
+    "tools/rhino_oracle/observations/source_snapshots/d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693.gz": "af3ecc55aca194860c3806ee04bc1c234194d0a9b6a19f99e15e3ce453317efa",
+    "tools/rhino_oracle/observations/source_snapshots/dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9.gz": "fbd17990aa13535271a26444c03b4d43dcb5bcf4857960a33112b159a7230df6",
+    "tools/rhino_oracle/observations/sweep1_section_definitions.json": "d667f8a08c64230cfd58f5bee51c758b045ef445f9653ee9d37cf220189d15af",
+    "tools/rhino_oracle/observations/sweep1_section_placement.json": "e434e8c8abe4a452be7aad45b35971ebbf9d8f94b21a175dc7c39ac82c4e9573",
+    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
+    "tools/rhino_oracle/test_sweep1_section_placement.py": "d8e26800680093410bee829ee38d37d6767661d644ac04fa827188980befb2c1",
+    "crates/viboceros-command/src/sweep/options.rs": "9076ddfcd3c482b2fd129bd5861a1a3767a9dcc0ee29fa719b1ab618612333d9",
+    "crates/viboceros-command/src/sweep/tests.rs": "563cce70599ca1fdeacd92649e531dd3a67bf7c994cfb1a5ae764b6b3afcbde2"
+  },
+  "git_sha256": {
+    "b21cdc1aa1f4fa9e2183bfd1ce899fe95705c7a3:crates/viboceros-command/src/sweep.rs": "73d039405638deb20e99d1046c12933306b7227ddca8e06c3ad92308657086c5"
+  }
+}
