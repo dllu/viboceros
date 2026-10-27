@@ -1,0 +1,1932 @@
+{
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-1",
+      "elapsed_ns": 17974854,
+      "value": {
+        "distance": 1.1597984168313005e-09,
+        "parameter": 0.1268259661125689,
+        "point": [
+          0.5041416062877515,
+          7.654429544201854e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-2",
+      "elapsed_ns": 2853394,
+      "value": {
+        "distance": 3.4488952997123617e-09,
+        "parameter": 0.2532000626615726,
+        "point": [
+          0.5082542724035193,
+          7.928286471565965e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-3",
+      "elapsed_ns": 679016,
+      "value": {
+        "distance": 5.4514916645378174e-09,
+        "parameter": 0.37908737237510937,
+        "point": [
+          0.5123510967997866,
+          8.183703421714222e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-4",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 6.27296199590479e-09,
+        "parameter": 0.504452976962255,
+        "point": [
+          0.5164309431321356,
+          8.419383592540681e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-5",
+      "elapsed_ns": 213623,
+      "value": {
+        "distance": 5.574460846805599e-09,
+        "parameter": 0.6292619596700613,
+        "point": [
+          0.5204926751055342,
+          8.634085759126763e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-6",
+      "elapsed_ns": 167847,
+      "value": {
+        "distance": 3.6062803010082663e-09,
+        "parameter": 0.7534794027353352,
+        "point": [
+          0.5245351563913538,
+          8.826627610832906e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-7-station-7",
+      "elapsed_ns": 167847,
+      "value": {
+        "distance": 1.2401102225855055e-09,
+        "parameter": 0.8770703886673976,
+        "point": [
+          0.5285572506690602,
+          8.99588897666283e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-1",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 1.069748259191328e-08,
+        "parameter": 0.1275026588493468,
+        "point": [
+          0.5365357329214431,
+          9.259139762435248e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-2",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 3.053156053937043e-08,
+        "parameter": 0.2542425954809339,
+        "point": [
+          0.5404898482571557,
+          9.349688236924181e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-3",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 4.221298282061824e-08,
+        "parameter": 0.38018966458655734,
+        "point": [
+          0.5444192271595452,
+          9.413110462169153e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-4",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 4.138652007568579e-08,
+        "parameter": 0.5053782658291357,
+        "point": [
+          0.5483249428781265,
+          9.450084648931928e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-5",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 3.185053311780704e-08,
+        "parameter": 0.6298807564839555,
+        "point": [
+          0.552209252887856,
+          9.461250801389052e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-6",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.8178183874942674e-08,
+        "parameter": 0.7537699801670377,
+        "point": [
+          0.556074429836073,
+          9.447181393364445e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-8-station-7",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 5.6026432857320206e-09,
+        "parameter": 0.8771187802156815,
+        "point": [
+          0.5599227463607849,
+          9.408382897703051e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-1",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 9.94678152524007e-09,
+        "parameter": 0.12469790434921747,
+        "point": [
+          0.5713892597796084,
+          9.150361793870659e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-2",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 2.6507137841405983e-08,
+        "parameter": 0.24888807019971984,
+        "point": [
+          0.5789909649923388,
+          8.872763747361498e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-3",
+      "elapsed_ns": 137329,
+      "value": {
+        "distance": 3.7174492342808816e-08,
+        "parameter": 0.3728675232654596,
+        "point": [
+          0.5865797718631395,
+          8.521992333352067e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-4",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 3.747281267259692e-08,
+        "parameter": 0.4969332893639751,
+        "point": [
+          0.5941738615161278,
+          8.106733474701276e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-5",
+      "elapsed_ns": 373840,
+      "value": {
+        "distance": 2.8688982006610735e-08,
+        "parameter": 0.6213823943272145,
+        "point": [
+          0.6017914150724135,
+          7.635096802752135e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-6",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 1.5632573655435366e-08,
+        "parameter": 0.7465118639485974,
+        "point": [
+          0.60945061364959,
+          7.114839679957992e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.0625-piece-9-station-7",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 4.385057584490316e-09,
+        "parameter": 0.8726187239557871,
+        "point": [
+          0.6171696383628288,
+          6.553592279236317e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-1",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 2.899569697523378e-10,
+        "parameter": 0.12682595745540365,
+        "point": [
+          0.5041416183434771,
+          1.9136075923516946e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-2",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 8.622181591191583e-10,
+        "parameter": 0.25320004653556244,
+        "point": [
+          0.5082542845215337,
+          1.9820718122991404e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-3",
+      "elapsed_ns": 83923,
+      "value": {
+        "distance": 1.3628575522874311e-09,
+        "parameter": 0.3790873503630489,
+        "point": [
+          0.5123511089656291,
+          2.0459260367260773e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-4",
+      "elapsed_ns": 83923,
+      "value": {
+        "distance": 1.5682256103903901e-09,
+        "parameter": 0.5044529520604151,
+        "point": [
+          0.5164309553566919,
+          2.1048460657057786e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-5",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 1.3936068951489637e-09,
+        "parameter": 0.62926193475023,
+        "point": [
+          0.5204926873756086,
+          2.1585215927205347e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-6",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 9.015751168291134e-10,
+        "parameter": 0.7534793815550558,
+        "point": [
+          0.5245351687032214,
+          2.2066570401665e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-7-station-7",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 3.1005015688288196e-10,
+        "parameter": 0.8770703755974585,
+        "point": [
+          0.5285572630203235,
+          2.2489723650557843e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-1",
+      "elapsed_ns": 3929138,
+      "value": {
+        "distance": 2.674379446623467e-09,
+        "parameter": 0.12750265970019706,
+        "point": [
+          0.5365357453440727,
+          2.3147850234610968e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-2",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 7.632897689063602e-09,
+        "parameter": 0.2542425950205215,
+        "point": [
+          0.5404898607027994,
+          2.3374221208691515e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-3",
+      "elapsed_ns": 68665,
+      "value": {
+        "distance": 1.0553248999517105e-08,
+        "parameter": 0.3801896617397369,
+        "point": [
+          0.5444192396264242,
+          2.3532776555347672e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-4",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 1.0346632762946301e-08,
+        "parameter": 0.5053782605040347,
+        "point": [
+          0.5483249553704441,
+          2.3625211807076667e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-5",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 7.962637432964112e-09,
+        "parameter": 0.6298807495384922,
+        "point": [
+          0.5522092654156577,
+          2.365312697767366e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-6",
+      "elapsed_ns": 1304626,
+      "value": {
+        "distance": 4.54455269584668e-09,
+        "parameter": 0.7537699730168163,
+        "point": [
+          0.5560744424037577,
+          2.3617953253233667e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-8-station-7",
+      "elapsed_ns": 2517700,
+      "value": {
+        "distance": 1.4006720779590498e-09,
+        "parameter": 0.8771187751127525,
+        "point": [
+          0.5599227589763972,
+          2.3520956815944585e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-1",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 2.4867264470301324e-09,
+        "parameter": 0.12469792724043906,
+        "point": [
+          0.5713892725868663,
+          2.287590346000861e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-2",
+      "elapsed_ns": 221252,
+      "value": {
+        "distance": 6.626871581698494e-09,
+        "parameter": 0.24888810592015712,
+        "point": [
+          0.5789909779656709,
+          2.218190793959434e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-3",
+      "elapsed_ns": 411987,
+      "value": {
+        "distance": 9.293753111564798e-09,
+        "parameter": 0.3728675635673246,
+        "point": [
+          0.5865797850328262,
+          2.1304979039084895e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-4",
+      "elapsed_ns": 457764,
+      "value": {
+        "distance": 9.368344516421006e-09,
+        "parameter": 0.4969333277165804,
+        "point": [
+          0.5941738749095277,
+          2.026683158600417e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-5",
+      "elapsed_ns": 473022,
+      "value": {
+        "distance": 7.172368636118555e-09,
+        "parameter": 0.6213824260344971,
+        "point": [
+          0.601791428724803,
+          1.908773966170046e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-6",
+      "elapsed_ns": 1098633,
+      "value": {
+        "distance": 3.908216173140844e-09,
+        "parameter": 0.7465118856356207,
+        "point": [
+          0.6094506275738181,
+          1.7787096667550942e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-smooth-1e-05-0.015625-piece-9-station-7",
+      "elapsed_ns": 396729,
+      "value": {
+        "distance": 1.0963026809952048e-09,
+        "parameter": 0.8726187344254602,
+        "point": [
+          0.617169652600254,
+          1.6383978012697245e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-1",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 6.844501774290128e-09,
+        "parameter": 0.10559641869457198,
+        "point": [
+          0.4321619098889339,
+          -3.637236362673057e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-2",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 2.781893371161909e-08,
+        "parameter": 0.21724821896882923,
+        "point": [
+          0.44062979228143534,
+          6.5342440426388e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-3",
+      "elapsed_ns": 83923,
+      "value": {
+        "distance": 5.773942594103828e-08,
+        "parameter": 0.3349406534767139,
+        "point": [
+          0.4495558080181294,
+          1.68883404736157e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-4",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 8.487966438797182e-08,
+        "parameter": 0.458509545486991,
+        "point": [
+          0.4589275057979864,
+          2.7282911156683835e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-5",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 9.442206099759543e-08,
+        "parameter": 0.587591646472623,
+        "point": [
+          0.46871733637563173,
+          3.7539153258608327e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-6",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 7.524020613461573e-08,
+        "parameter": 0.7215655661825071,
+        "point": [
+          0.47887817258099663,
+          4.74422405227613e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-8-station-7",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 3.143423701828432e-08,
+        "parameter": 0.8594840300326386,
+        "point": [
+          0.4893381715781107,
+          5.674694868250354e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-1",
+      "elapsed_ns": 183105,
+      "value": {
+        "distance": 1.630475381292586e-08,
+        "parameter": 0.1262345261872459,
+        "point": [
+          0.5080130103308087,
+          7.07328579944338e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-2",
+      "elapsed_ns": 373840,
+      "value": {
+        "distance": 3.4476162662211426e-08,
+        "parameter": 0.25232949205593413,
+        "point": [
+          0.5160219846424496,
+          7.548887773333765e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-3",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 4.6007749927333305e-08,
+        "parameter": 0.3781375532784708,
+        "point": [
+          0.5240127361286233,
+          7.945075751027241e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-4",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 4.822961644549446e-08,
+        "parameter": 0.5035629312581399,
+        "point": [
+          0.5319791814914739,
+          8.261568361088407e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-5",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 4.063808641783187e-08,
+        "parameter": 0.6285221868054157,
+        "point": [
+          0.5399160211731184,
+          8.49835227822928e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-6",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 2.5522533248470256e-08,
+        "parameter": 0.7529464014518393,
+        "point": [
+          0.5478188779020646,
+          8.655647745365653e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-9-station-7",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 8.649302693844068e-09,
+        "parameter": 0.8767834004037612,
+        "point": [
+          0.5556844378846565,
+          8.733864982262119e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-1",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 1.9630362415004442e-08,
+        "parameter": 0.12670735602985836,
+        "point": [
+          0.5712965868580213,
+          8.654822757594848e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-2",
+      "elapsed_ns": 68665,
+      "value": {
+        "distance": 5.826183691558791e-08,
+        "parameter": 0.2527730802627907,
+        "point": [
+          0.5790431522352435,
+          8.501316835573996e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-3",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 9.184352212102233e-08,
+        "parameter": 0.3782357216277184,
+        "point": [
+          0.5867526585623094,
+          8.27874592163079e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-4",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.0531930846349608e-07,
+        "parameter": 0.5031627140578929,
+        "point": [
+          0.5944292496570702,
+          7.99252462308117e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-5",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 9.319940080346998e-08,
+        "parameter": 0.6276526377157209,
+        "point": [
+          0.602078983226978,
+          7.647713379109091e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-6",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 5.999552125178948e-08,
+        "parameter": 0.7518374595280221,
+        "point": [
+          0.6097099685472316,
+          7.248972100442109e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.0625-piece-10-station-7",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 2.051366995041125e-08,
+        "parameter": 0.8758847648061112,
+        "point": [
+          0.6173325035914147,
+          6.800525074229338e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-1",
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 1.7111249389029557e-09,
+        "parameter": 0.10559639258515428,
+        "point": [
+          0.4321619061684257,
+          -9.093102380407404e-07,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-2",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 6.954693523124767e-09,
+        "parameter": 0.21724817074755556,
+        "point": [
+          0.44062979292286686,
+          1.6335611524113548e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-3",
+      "elapsed_ns": 83923,
+      "value": {
+        "distance": 1.4434787393097034e-08,
+        "parameter": 0.33494058872125837,
+        "point": [
+          0.4495558134993747,
+          4.222086593319887e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-4",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 2.121983822193487e-08,
+        "parameter": 0.45850947159531336,
+        "point": [
+          0.45892751656592035,
+          6.820730600274519e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-5",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 2.3605444913353365e-08,
+        "parameter": 0.5875915729201178,
+        "point": [
+          0.46871735282221827,
+          9.384792400998325e-06,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-6",
+      "elapsed_ns": 160217,
+      "value": {
+        "distance": 1.881000786529951e-08,
+        "parameter": 0.7215655039498529,
+        "point": [
+          0.4788781949588785,
+          1.1860565324946478e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-8-station-7",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 7.858545485825155e-09,
+        "parameter": 0.8594839919333626,
+        "point": [
+          0.48933819999429323,
+          1.41867431755168e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-1",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 4.076183382984962e-09,
+        "parameter": 0.12623451976528416,
+        "point": [
+          0.5080130444752424,
+          1.7683220011704598e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-2",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 8.619057316914339e-09,
+        "parameter": 0.2523294767847097,
+        "point": [
+          0.5160220184970091,
+          1.8872224046011275e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-3",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 1.1501988041542295e-08,
+        "parameter": 0.3781375294818208,
+        "point": [
+          0.524012769673217,
+          1.9862693080835495e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-4",
+      "elapsed_ns": 22888,
+      "value": {
+        "distance": 1.2057477343145809e-08,
+        "parameter": 0.5035629010360241,
+        "point": [
+          0.5319792147064576,
+          2.065392371581123e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-5",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 1.0159594312365234e-08,
+        "parameter": 0.628522154112064,
+        "point": [
+          0.5399160540467403,
+          2.1245882654649203e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-6",
+      "elapsed_ns": 175476,
+      "value": {
+        "distance": 6.380683509741514e-09,
+        "parameter": 0.7529463718453042,
+        "point": [
+          0.5478189104176452,
+          2.1639120508659462e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-9-station-7",
+      "elapsed_ns": 228882,
+      "value": {
+        "distance": 2.162343640400322e-09,
+        "parameter": 0.8767833811430353,
+        "point": [
+          0.5556844700302128,
+          2.1834662820458605e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-1",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 4.907611166324439e-09,
+        "parameter": 0.12670737350780897,
+        "point": [
+          0.5712966182547605,
+          2.1637055724242626e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-2",
+      "elapsed_ns": 45776,
+      "value": {
+        "distance": 1.456551763346983e-08,
+        "parameter": 0.2527731072239863,
+        "point": [
+          0.579043183275911,
+          2.1253290172807638e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-3",
+      "elapsed_ns": 45776,
+      "value": {
+        "distance": 2.2960968871195084e-08,
+        "parameter": 0.37823575164633944,
+        "point": [
+          0.5867526892665359,
+          2.06968621947521e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-4",
+      "elapsed_ns": 53406,
+      "value": {
+        "distance": 2.632992622144143e-08,
+        "parameter": 0.5031627423135283,
+        "point": [
+          0.5944292800532034,
+          1.998130832583305e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-5",
+      "elapsed_ns": 53406,
+      "value": {
+        "distance": 2.3299933438811813e-08,
+        "parameter": 0.6276526603186801,
+        "point": [
+          0.6020790133135269,
+          1.911927967532303e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-6",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 1.4998935486125033e-08,
+        "parameter": 0.7518374744258848,
+        "point": [
+          0.6097099983511467,
+          1.812242601693101e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-rational-1e-05-0.015625-piece-10-station-7",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 5.128446630059984e-09,
+        "parameter": 0.8758847715722795,
+        "point": [
+          0.6173325331570391,
+          1.7001308058272653e-05,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-1",
+      "elapsed_ns": 53406,
+      "value": {
+        "distance": 4.7071606052071395e-09,
+        "parameter": 0.12682601478418415,
+        "point": [
+          0.5041415180835964,
+          0.00030617694055406857,
+          0.00025950800200000166
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-2",
+      "elapsed_ns": 53406,
+      "value": {
+        "distance": 1.3993015235300371e-08,
+        "parameter": 0.2532001683394558,
+        "point": [
+          0.5082541711362984,
+          0.0003171311996445334,
+          0.0002507124086619481
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-3",
+      "elapsed_ns": 45776,
+      "value": {
+        "distance": 2.211091239263644e-08,
+        "parameter": 0.3790875318806294,
+        "point": [
+          0.5123509825978354,
+          0.0003273478655013652,
+          0.00024161672063320822
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-4",
+      "elapsed_ns": 22888,
+      "value": {
+        "distance": 2.5434922673335693e-08,
+        "parameter": 0.5044531766753765,
+        "point": [
+          0.5164308161655597,
+          0.00033677506606839564,
+          0.0002322260368415092
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-5",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 2.2596008771816724e-08,
+        "parameter": 0.6292621741138927,
+        "point": [
+          0.5204925355301029,
+          0.00034536315254008756,
+          0.00022254584532441967
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-6",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 1.461383949007952e-08,
+        "parameter": 0.7534795957965071,
+        "point": [
+          0.5245350043772337,
+          0.0003530648330902149,
+          0.00021258202279770725
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-8-station-7",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 5.02395534620776e-09,
+        "parameter": 0.8770705136395954,
+        "point": [
+          0.5285570863903429,
+          0.00035983530182638954,
+          0.00020234083385858065
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-1",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 4.509130687694801e-08,
+        "parameter": 0.1275025394342604,
+        "point": [
+          0.5365355446667215,
+          0.00037036539022771667,
+          0.00018103781429804
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-2",
+      "elapsed_ns": 38147,
+      "value": {
+        "distance": 1.286911584911662e-07,
+        "parameter": 0.254242425258612,
+        "point": [
+          0.5404896482893127,
+          0.000373987372676116,
+          0.0001699744659167485
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-3",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.7804205145261123e-07,
+        "parameter": 0.38018949443684624,
+        "point": [
+          0.5444190156245508,
+          0.00037652431224914954,
+          0.00015866815895948435
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-4",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.7471162161772814e-07,
+        "parameter": 0.5053781275837415,
+        "point": [
+          0.5483247198261259,
+          0.00037800333555851014,
+          0.00014714164616061527
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-5",
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.3456434495337385e-07,
+        "parameter": 0.6298806668004199,
+        "point": [
+          0.5522090183716388,
+          0.0003784500416414084,
+          0.00013541298921685772
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-6",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 7.685141385924591e-08,
+        "parameter": 0.7537699402048326,
+        "point": [
+          0.5560741838842577,
+          0.0003778873288543123,
+          0.00012349891037893073
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-9-station-7",
+      "elapsed_ns": 68665,
+      "value": {
+        "distance": 2.3698216571146796e-08,
+        "parameter": 0.8771187755390953,
+        "point": [
+          0.5599224889610224,
+          0.0003763354560397859,
+          0.00011141496594214344
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-1",
+      "elapsed_ns": 305176,
+      "value": {
+        "distance": 4.0545788619667887e-08,
+        "parameter": 0.12469757036243968,
+        "point": [
+          0.5713889674365779,
+          0.00036601484444067576,
+          7.434279683049667e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-2",
+      "elapsed_ns": 663757,
+      "value": {
+        "distance": 1.1010389619879634e-07,
+        "parameter": 0.24888758386558907,
+        "point": [
+          0.5789906487160005,
+          0.0003549111003691861,
+          4.921318361622963e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-3",
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 1.5921001714916818e-07,
+        "parameter": 0.3728670222592746,
+        "point": [
+          0.586579430999578,
+          0.0003408804224575202,
+          2.3959882813557014e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-4",
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 1.683928480873985e-07,
+        "parameter": 0.49693286892658595,
+        "point": [
+          0.5941734952586339,
+          0.0003242702390058532,
+          -1.2479948429503831e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-5",
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 1.387910426677063e-07,
+        "parameter": 0.6213821075062287,
+        "point": [
+          0.6017910224232357,
+          0.0003054049318853123,
+          -2.6239774216861293e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-6",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 8.448784610601583e-08,
+        "parameter": 0.7465117210778595,
+        "point": [
+          0.6094501933947093,
+          0.00028459479612854584,
+          -5.08376855718918e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.25-piece-10-station-7",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 2.7896817041913585e-08,
+        "parameter": 0.87261869168771,
+        "point": [
+          0.617169189079889,
+          0.00026214504182203393,
+          -7.485121538724068e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-1",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 1.176624614883417e-09,
+        "parameter": 0.12682596042239888,
+        "point": [
+          0.5041416128282256,
+          7.654429992339277e-05,
+          6.487695073848652e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-2",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 3.497755560328639e-09,
+        "parameter": 0.2532000530700021,
+        "point": [
+          0.5082542781899779,
+          7.928286844016835e-05,
+          6.267804364649962e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-3",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 5.5269500988274875e-09,
+        "parameter": 0.37908736076819355,
+        "point": [
+          0.5123511018421246,
+          8.183703723742289e-05,
+          6.0404112470309555e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-4",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 6.35780549672219e-09,
+        "parameter": 0.5044529646018717,
+        "point": [
+          0.5164309474231294,
+          8.419383829124362e-05,
+          5.8056432026794284e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-5",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 5.648172954650906e-09,
+        "parameter": 0.6292619482792734,
+        "point": [
+          0.5204926786561604,
+          8.634085936983596e-05,
+          5.5636374328214734e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-6",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 3.652919432099004e-09,
+        "parameter": 0.7534793937779923,
+        "point": [
+          0.5245351592073324,
+          8.826627736917815e-05,
+          5.3145408555918047e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-8-station-7",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 1.2558018376624648e-09,
+        "parameter": 0.8770703835312986,
+        "point": [
+          0.5285572527567983,
+          8.995889058439502e-05,
+          5.058510082323051e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-1",
+      "elapsed_ns": 53406,
+      "value": {
+        "distance": 1.1273156587545356e-08,
+        "parameter": 0.12750265205590758,
+        "point": [
+          0.5365357335723923,
+          9.259139780773401e-05,
+          4.5259323591964695e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-2",
+      "elapsed_ns": 68665,
+      "value": {
+        "distance": 3.217351953811075e-08,
+        "parameter": 0.2542425841788902,
+        "point": [
+          0.5404898481983603,
+          9.349688238351813e-05,
+          4.249347470427569e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-3",
+      "elapsed_ns": 152588,
+      "value": {
+        "distance": 4.451126137202576e-08,
+        "parameter": 0.380189650978259,
+        "point": [
+          0.5444192264013897,
+          9.413110456093067e-05,
+          3.9666886007207986e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-4",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 4.367869607325479e-08,
+        "parameter": 0.5053782520394537,
+        "point": [
+          0.5483249414350366,
+          9.45008464411845e-05,
+          3.678524577897948e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-5",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 3.364180404604116e-08,
+        "parameter": 0.6298807440516646,
+        "point": [
+          0.5522092507619368,
+          9.461250806049163e-05,
+          3.3853069570727444e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-6",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 1.9213336586711618e-08,
+        "parameter": 0.753769970712338,
+        "point": [
+          0.5560744270376332,
+          9.447181415506137e-05,
+          3.0874537998252484e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-9-station-7",
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 5.924726430248286e-09,
+        "parameter": 0.8771187749912149,
+        "point": [
+          0.5599227428940655,
+          9.408382945268636e-05,
+          2.7853540154575293e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-1",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 1.0138761695182117e-08,
+        "parameter": 0.12469790636601867,
+        "point": [
+          0.5713892543152231,
+          9.150361966335618e-05,
+          1.858546320365498e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-2",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 2.7532239642940032e-08,
+        "parameter": 0.24888807552397033,
+        "point": [
+          0.5789909581981751,
+          8.872764035968611e-05,
+          1.230303806944546e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-3",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 3.981145964331623e-08,
+        "parameter": 0.37286753225418784,
+        "point": [
+          0.5865797637286078,
+          8.521992754906861e-05,
+          5.98969306466389e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-4",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 4.2107441123993156e-08,
+        "parameter": 0.4969333014391034,
+        "point": [
+          0.5941738520181675,
+          8.10673404070007e-05,
+          -3.122937420038395e-07
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-5",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 3.4705013292062876e-08,
+        "parameter": 0.6213824079771392,
+        "point": [
+          0.6017914041759218,
+          7.63509752112451e-05,
+          -6.56025342790985e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-6",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 2.11260484677263e-08,
+        "parameter": 0.7465118767317754,
+        "point": [
+          0.6094506013091407,
+          7.114840555889337e-05,
+          -1.2709743457437941e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.0625-piece-10-station-7",
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 6.975410413075477e-09,
+        "parameter": 0.8726187325018975,
+        "point": [
+          0.6171696245254386,
+          6.553593315075564e-05,
+          -1.8713135152825128e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-1",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 2.9416877190161666e-10,
+        "parameter": 0.12682595711667652,
+        "point": [
+          0.5041416187528069,
+          1.91360759936328e-05,
+          1.6219236906698687e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-2",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 8.744359501676933e-10,
+        "parameter": 0.25320004595505285,
+        "point": [
+          0.5082542848838044,
+          1.9820718181286417e-05,
+          1.5669509996860398e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-3",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 1.381720815840257e-09,
+        "parameter": 0.37908734963761126,
+        "point": [
+          0.5123511092807752,
+          2.0459260414452645e-05,
+          1.5101027061946745e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-4",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 1.5894381289683904e-09,
+        "parameter": 0.5044529512868409,
+        "point": [
+          0.516430955624845,
+          2.104846069401926e-05,
+          1.4514106800979875e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-5",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 1.412037551637606e-09,
+        "parameter": 0.6292619340252104,
+        "point": [
+          0.5204926875970967,
+          2.1585215954941888e-05,
+          1.3909092223305576e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-6",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 9.132394693645484e-10,
+        "parameter": 0.7534793809752051,
+        "point": [
+          0.5245351688785687,
+          2.2066570421292637e-05,
+          1.3286350621995082e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-8-station-7",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 3.1398064329748695e-10,
+        "parameter": 0.8770703752593075,
+        "point": [
+          0.5285572631502492,
+          2.2489723663280766e-05,
+          1.2646273524629269e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-1",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 2.818300921774822e-09,
+        "parameter": 0.12750265929076038,
+        "point": [
+          0.5365357453852297,
+          2.3147850237507387e-05,
+          1.1314828865938596e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-2",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 8.04339424774477e-09,
+        "parameter": 0.2542425943328212,
+        "point": [
+          0.5404898606997073,
+          2.3374221208942982e-05,
+          1.062336645958674e-05
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-3",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 1.1127827916020313e-08,
+        "parameter": 0.38018966090406203,
+        "point": [
+          0.5444192395795024,
+          2.3532776554413087e-05,
+          9.91671909889635e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-4",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 1.0919686286428569e-08,
+        "parameter": 0.5053782596421774,
+        "point": [
+          0.5483249552802507,
+          2.3625211806324566e-05,
+          9.196308855721764e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-5",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 8.410463066551657e-09,
+        "parameter": 0.6298807487596934,
+        "point": [
+          0.5522092652827322,
+          2.3653126978401865e-05,
+          8.463264616280485e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-6",
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 4.803345808402258e-09,
+        "parameter": 0.7537699724177425,
+        "point": [
+          0.5560744422286005,
+          2.3617953256697697e-05,
+          7.718631538306329e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-9-station-7",
+      "elapsed_ns": 137329,
+      "value": {
+        "distance": 1.4811948952960747e-09,
+        "parameter": 0.8771187747774682,
+        "point": [
+          0.5599227587594539,
+          2.3520956823385797e-05,
+          6.963381893920029e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-1",
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 2.5347265896880035e-09,
+        "parameter": 0.12469792736648604,
+        "point": [
+          0.5713892722453418,
+          2.2875903486956318e-05,
+          4.646362113308803e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-2",
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 6.883157814181638e-09,
+        "parameter": 0.24888810625292335,
+        "point": [
+          0.5789909775410353,
+          2.2181907984689256e-05,
+          3.075755488648627e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-3",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 9.953004844061664e-09,
+        "parameter": 0.3728675641291169,
+        "point": [
+          0.5865797845244173,
+          2.1304979104952948e-05,
+          1.4974189280107185e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-4",
+      "elapsed_ns": 144958,
+      "value": {
+        "distance": 1.0527004492860548e-08,
+        "parameter": 0.49693332847127686,
+        "point": [
+          0.5941738743159045,
+          2.0266831674441584e-05,
+          -7.807804541721965e-08
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-5",
+      "elapsed_ns": 732422,
+      "value": {
+        "distance": 8.67636886937579e-09,
+        "parameter": 0.6213824268579219,
+        "point": [
+          0.601791428041954,
+          1.9087739774242192e-05,
+          -1.6400682000688274e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-6",
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 5.281577008782902e-09,
+        "parameter": 0.7465118864062167,
+        "point": [
+          0.6094506268008038,
+          1.778709680472133e-05,
+          -3.1774408960198383e-06
+        ]
+      }
+    },
+    {
+      "id": "loft-refit-closest-stations-spatial-1e-05-0.015625-piece-10-station-7",
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 1.743885036092945e-09,
+        "parameter": 0.872618734940221,
+        "point": [
+          0.6171696517342307,
+          1.6383978174768678e-05,
+          -4.678288963606215e-06
+        ]
+      }
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "2d0f1801a48fb4b3cae4814cc204b48f6448470f28ecd4ff261c3377365077fe",
+    "sources": {
+      "generate_loft_refit_closest_stations.py": "5ef2f271015a0028ba93ac8568d41c4917f3b824bf1b3dbc8c71d412d53cf8de",
+      "fixtures/loft_refit_closest_stations_inputs.json": "55fdee821f0eb9288c3c98222fa9dc00969acd86043ec7da015d9e6170c72030",
+      "fixtures/loft_refit_join_modes.json": "82011c8180f78176f4296824c1ebcec524b46fba2c6066cb1339c7ae3dcbe97c",
+      "observations/loft_refit_join_modes.json": "44ad678965bfb96fc5205e983e482b414c87d30f403c2119d084eb577cd103c0",
+      "rhino_worker.py": "8f2d08950f62d74b76c809f6894e9e401b5f576c69a4cd87fab1fb8e63e5c237",
+      "client.py": "d5b384ea36dfe530289f512b132b3f9d8000a8756c112f135cd90911e9d017f4",
+      "structural_sdk.py": "a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

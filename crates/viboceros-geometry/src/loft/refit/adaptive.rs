@@ -86,6 +86,8 @@ pub fn try_propose_joined_linear_refit(
 /// Propose joined cubics from the original source, retaining its parameter clock.
 /// A single nine-station incremental length lookup selects all dyadic splits;
 /// interpolation in that lookup is a proposal, not a new length integration.
+/// Coincident interval endpoints trigger bounded subdivision, retaining loops
+/// within an open source instead of attempting a zero-chord cubic.
 /// Seven interior stations from that lookup and complete interval bounds
 /// select raw endpoint-frame pieces, with a common midpoint handle correction
 /// before subdivision. Intervals crossing an interior C1 break keep a complete

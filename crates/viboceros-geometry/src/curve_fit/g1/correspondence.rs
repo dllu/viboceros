@@ -80,6 +80,12 @@ fn certify(
                 if point.distance_to(candidate.evaluate(parameter)?)? > limit {
                     return Ok(false);
                 }
+                // Searches return the candidate's native parameter, while
+                // cached anchors and both mapped certificates use fractions.
+                // Keep the stored curve and its complete proof unchanged.
+                let domain = candidate.domain();
+                let parameter =
+                    crate::nurbs::interval_fraction(parameter, *domain.start(), *domain.end())?;
                 *cached = Some(parameter);
                 parameter
             };

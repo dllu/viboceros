@@ -1,5 +1,7 @@
 use super::*;
 
+mod loops;
+
 fn source() -> NurbsCurve {
     NurbsCurve::try_new(
         1,

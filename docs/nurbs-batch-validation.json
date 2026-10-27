@@ -800,8 +800,6 @@
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-geometry/src/curve_fit/g1.rs": "fc0d24e88e2f6b0e36fd3dc1ca411b923550677d83d59aa69da32b901d488333",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "88cd233240992c25a6beaa1637d69bdbad4a392627d2703875f246d4770c2048",
-    "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "f5d4bc8b5dc69ecda6812264ce73b4d0b7effdd9fb87cda760f4bbac3e4824c6",
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "1bd30a2f80fd3fd3aab50fd1d3c3cefd611d65cd4deca99a8f10e632b1d1246c",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/hermite.rs": "6ab313a7a9c8a5c79cc437484b7fc5ccc32c9683e27f88c9398b20c2afaa8d91",
     "crates/viboceros-geometry/src/loft/compatible.rs": "d602e54a58f0e5e515c83af889b9224c42530d6850c57440adddda53b5beee89",
     "crates/viboceros-geometry/src/loft/parameterize.rs": "a156d194bf699c6aa9b7af1cae27e811a3c7b33ad4c24eaed37883586ad180b3",
@@ -866,6 +864,8 @@
     "c67a780af7134079189901616522d3ad3a046054:crates/viboceros-oracle/tests/loft_refit_original_source_native.rs": "92aae2177faa6dcda014ade5e14c6c41161b995689fd5abb96d6fffd42396297",
     "c67a780af7134079189901616522d3ad3a046054:tools/rhino_oracle/qualification_sources.py": "5c321aa36b48143f3daf875324b188ab1acd600743fe8dc12f6a4f991de07351",
     "c67a780af7134079189901616522d3ad3a046054:docs/loft-refit-adaptive.md": "1d3798d2990f0309e7bdac0bf22e7a95550839fa9424d4cd824fa2f3cae475df",
-    "76dfc79dec2894f10cb24cad2bd88a4061124f6f:crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "33a5fe2c4df97bc21ad7c339efef9192e8ba13869e09490df5d947ecb462313b"
+    "76dfc79dec2894f10cb24cad2bd88a4061124f6f:crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "33a5fe2c4df97bc21ad7c339efef9192e8ba13869e09490df5d947ecb462313b",
+    "2833f7f20527570a6fa28d72950bc9ce0dc8a3d8:crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "f5d4bc8b5dc69ecda6812264ce73b4d0b7effdd9fb87cda760f4bbac3e4824c6",
+    "2833f7f20527570a6fa28d72950bc9ce0dc8a3d8:crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "1bd30a2f80fd3fd3aab50fd1d3c3cefd611d65cd4deca99a8f10e632b1d1246c"
   }
 }

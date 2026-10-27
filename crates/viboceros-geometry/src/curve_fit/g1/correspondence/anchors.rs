@@ -81,8 +81,13 @@ mod tests {
         .unwrap();
         let pairs = [[0., 0.], [0.5, 0.5], [1., 1.]];
         assert!(!super::super::hermite::certify(&source, &candidate, &pairs, 1e-12).unwrap());
-        assert!(
-            super::super::within_deviation_at_pairs(&source, &candidate, 1e-12, &pairs).unwrap()
-        );
+        for chart in [0. ..=1., -3. ..=17., 100. ..=107.] {
+            let target = candidate.try_reparameterized(chart).unwrap();
+            let before = (source.clone(), target.clone());
+            assert!(
+                super::super::within_deviation_at_pairs(&source, &target, 1e-12, &pairs).unwrap()
+            );
+            assert_eq!((source.clone(), target), before);
+        }
     }
 }

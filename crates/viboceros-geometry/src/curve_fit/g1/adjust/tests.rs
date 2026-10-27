@@ -4,6 +4,8 @@ use crate::Point3;
 use serde_json::Value;
 use std::path::Path;
 
+mod closest_stations;
+
 #[test]
 fn nearly_cancelling_handles_decline_an_ill_conditioned_correction() {
     let initial = NurbsCurve::try_new(

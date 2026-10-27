@@ -1,6 +1,6 @@
 # Adaptive Refit proposals
 
-[Loft Refit](loft-refit.md) · [Current validation](loft-refit-stage-reserves-validation.json)
+[Loft Refit](loft-refit.md) · [Current validation](adaptive-curve-domains-validation.json)
 
 The adaptive APIs return certified geometry proposals. Rhino-compatible general
 adaptive command preparation is still unfinished: fitting decisions can produce
@@ -13,6 +13,10 @@ nine-station incremental length lookup supplies all dyadic split locations and
 seven interior acceptance stations per interval. Finer stations interpolate that
 original lookup. Endpoint tangents construct each cubic; a common positive handle
 correction at the original lookup midpoint is tried before subdivision.
+Coincident interval endpoints also trigger subdivision within the same budgets.
+This retains complete loops inside an open source; a zero chord cannot construct
+an endpoint-frame cubic. The assembled result still needs its complete ordered
+source certificate, with known span anchors preserving the return traversal.
 Correction stays within smooth parameter spans; an internal or ending C1 break
 retains subdivision and its original limiting tangent. Half-tolerance samples
 select proposals. An interval crossing an interior source C1 break also needs
@@ -46,6 +50,9 @@ closest stations, with known fitting boundaries and one-sided parameter speeds
 when available. Exact rational derivative bounds must prove strict parameter
 order. Samples and anchor pairs guide proposals; they cannot establish acceptance
 or hide an unsampled feature. Each certificate stage retains its work budget.
+Closest searches use native candidate parameters; cached map stations use
+normalized fractions. Conversion retains the stored candidate domain and the
+complete certificate, including shifted and extreme parameter charts.
 A [certified linear surrogate](curve-image-correspondence.md) can reduce the
 cost of high-degree proofs while retaining the original source and fit.
 
@@ -57,23 +64,17 @@ subdivision continue. Neither image bounds nor parameter order certify topology.
 
 ## Remaining differences
 
-The earlier 48 curved contexts, twelve source-clock transitions and 31
-scale/curvature records remain comparison gates. Independent smooth, rational,
-spatial and quintic sources now receive complete final proofs, but some resulting
-control nets still differ from Rhino. Sixteen curvature-amplitude sweeps preserve
-both joining modes and subdivision counterexamples. Sixty-four additional native
-records cover styles, SDK/document commands, frames, reversal, weight gauges,
-affine domains and model units. Absolute curvature rules can change region counts
-when model units change; reversal also exposes a remaining spatial discrepancy.
-The rebuild retains all 48 curved, twelve clock and 31 scale/curvature matches.
-Numerical NURBS batch retention and complete raw-stage reserves recover all 24
-original unequal-spacing cases at `1e-9`. Independent spacing and tolerance
-holdouts are also recorded in the current validation.
-All ten single-region knot sequences match Native; their rebuilt curves
-also receive complete pointwise bounds against the saved Native curves within
-5% of requested tolerance. Control differences up to `8.4e-8` remain, so those
-bounds do not establish strict surface-record agreement. See the current
-validation for the remaining counterexamples and source bindings.
+Saved comparisons retain 217 of 231 strict surface-record matches at `1e-9`.
+All proposals have complete original-source bounds; fourteen control-net or
+subdivision differences remain. The current validation records their identities,
+source bindings and coverage across commands, styles, charts and model units.
+All ten single-region knot sequences agree with Rhino. Their rebuilt curves also
+have complete pointwise bounds against the saved Native curves within 5% of
+requested tolerance. Control differences up to `8.4e-8` still preclude strict
+surface-record agreement.
+Public closest queries at 147 stations on the affected raw cubics all pass the
+half-tolerance check and agree with the precise search. They do not explain the
+remaining native subdivision choices; the fitting policy remains unchanged.
 
 `try_propose_adaptive_linear_refit` and `try_propose_joined_linear_refit` retain
 an exact polygon proxy and interval-local length clock for straight-region source

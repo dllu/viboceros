@@ -1,12 +1,58 @@
 //! Adaptive endpoint-frame proposals; complete image certificates admit them.
 use super::*;
 
+#[derive(Clone, Copy)]
 struct Interval {
     start: Real,
     end: Real,
     from: Real,
     to: Real,
     depth: usize,
+}
+
+impl Interval {
+    fn subdivide(self, mut middle: Real, knots: &[Real]) -> Option<[Self; 2]> {
+        let Self {
+            start,
+            end,
+            from,
+            to,
+            depth,
+        } = self;
+        if depth == MAX_DEPTH {
+            return None;
+        }
+        let fraction = from + (to - from) * 0.5;
+        // Retain an exact natural boundary when inversion differs only by
+        // rounding; its original right-hand tangent remains authoritative.
+        let roundoff = 16. * Real::EPSILON * (end - start);
+        if let Some(&knot) = knots
+            .iter()
+            .find(|&&k| k > start && k < end && (k - middle).abs() <= roundoff)
+        {
+            middle = knot;
+        }
+        if middle <= start || middle >= end || fraction <= from || fraction >= to {
+            return None;
+        }
+        // The stack visits the left interval first.
+        Some([
+            Self {
+                start: middle,
+                end,
+                from: fraction,
+                to,
+                depth: depth + 1,
+            },
+            Self {
+                start,
+                end: middle,
+                from,
+                to: fraction,
+                depth: depth + 1,
+            },
+        ])
+    }
 }
 
 pub(super) enum SplitClock {
@@ -93,21 +139,8 @@ pub(super) fn construct(
             end,
             from,
             to,
-            depth,
+            ..
         } = interval;
-        let mut piece = crate::curve_fit::g1::initial_cubic_from_frames(
-            source.evaluate(start)?,
-            source.evaluate(end)?,
-            source.tangent_at_on_side(start, ParameterSide::Right)?,
-            source.tangent_at_on_side(
-                end,
-                if end == *domain.end() {
-                    ParameterSide::Left
-                } else {
-                    ParameterSide::Right
-                },
-            )?,
-        )?;
         let trimmed = source.try_trimmed(start..=end)?;
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
         let parameters = if let Some(lookup) = &lookup {
@@ -122,6 +155,31 @@ pub(super) fn construct(
             // local clock; numerical NURBS checkpoint selection is separate.
             sampler.parameters_at_normalized_lengths(&fractions)?
         };
+        let first = source.evaluate(start)?;
+        let last = source.evaluate(end)?;
+        // An open source can contain a complete loop. A zero chord cannot
+        // construct its endpoint-frame cubic or justify dropping the interval.
+        // Subdivide under the same budgets and certify its children normally.
+        if first == last {
+            let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
+                return Ok(None);
+            };
+            pending.extend(children);
+            continue;
+        }
+        let mut piece = crate::curve_fit::g1::initial_cubic_from_frames(
+            first,
+            last,
+            source.tangent_at_on_side(start, ParameterSide::Right)?,
+            source.tangent_at_on_side(
+                end,
+                if end == *domain.end() {
+                    ParameterSide::Left
+                } else {
+                    ParameterSide::Right
+                },
+            )?,
+        )?;
         // Samples propose a piece; a complete interval bound decides whether
         // it can be kept. A feature between stations must trigger refinement
         // rather than rejection of the whole assembled proposal at the end.
@@ -161,42 +219,10 @@ pub(super) fn construct(
             }
             pieces.push((to, end, piece));
         } else {
-            if depth == MAX_DEPTH {
+            let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
                 return Ok(None);
-            }
-            let fraction = from + (to - from) * 0.5;
-            let mut middle = if let Some(lookup) = &lookup {
-                lookup_parameter(lookup, fraction)
-            } else {
-                parameters[4]
             };
-            // Retain an exact natural boundary when inversion differs only by
-            // rounding; its original right-hand tangent remains authoritative.
-            let roundoff = 16. * Real::EPSILON * (end - start);
-            if let Some(&knot) = source
-                .knots()
-                .iter()
-                .find(|&&k| k > start && k < end && (k - middle).abs() <= roundoff)
-            {
-                middle = knot;
-            }
-            if middle <= start || middle >= end || fraction <= from || fraction >= to {
-                return Ok(None);
-            }
-            pending.push(Interval {
-                start: middle,
-                end,
-                from: fraction,
-                to,
-                depth: depth + 1,
-            });
-            pending.push(Interval {
-                start,
-                end: middle,
-                from,
-                to: fraction,
-                depth: depth + 1,
-            });
+            pending.extend(children);
         }
     }
     let mut controls = Vec::with_capacity(3 * pieces.len() + 1);
