@@ -64,6 +64,45 @@ fn independent_checkpoint_acceptance_retains_the_incremental_counterexample() {
 }
 
 #[test]
+fn numerical_endpoint_acceptance_precedes_a_closer_interior_checkpoint() {
+    for (start, width, gauge) in [(0., 1., 1.), (-3., 10., -2.)] {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            [
+                [0., 0., 0.],
+                [0.5, 0., 0.],
+                [2., 0., 0.],
+                [2., 0.25, 0.],
+                [2., 1., 0.],
+            ]
+            .into_iter()
+            .zip([1., 2., 1., 4., 1.])
+            .map(|(p, w)| WeightedPoint3::try_new(Point3::try_from(p).unwrap(), w * gauge).unwrap())
+            .collect(),
+            [0., 0., 0., 1., 1., 2., 2., 2.]
+                .map(|t| start + width * t)
+                .to_vec(),
+        )
+        .unwrap();
+        let before = curve.clone();
+        let sampler =
+            ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+        let fractions = [19. / 1024., 20. / 1024., 1. - 19. / 1024.];
+        assert_eq!(
+            sampler
+                .parameters_at_quadrature_normalized_lengths(&fractions, 0.02)
+                .unwrap(),
+            [start, start, start + 2. * width]
+        );
+        let precise = sampler
+            .parameters_at_normalized_lengths(&fractions)
+            .unwrap();
+        assert!(precise.iter().all(|&t| t > start && t < start + 2. * width));
+        assert_eq!(curve, before);
+    }
+}
+
+#[test]
 fn plateau_queries_choose_the_right_endpoint_and_keep_natural_domain_ends() {
     let curve = NurbsCurve::try_new(
         1,

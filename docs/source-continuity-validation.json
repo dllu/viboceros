@@ -163,7 +163,6 @@
     "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab",
     "crates/viboceros-geometry/tests/loft_domains_native.rs": "f035e69f19c42dddfc9f3bc219fb10ceff6ca342e8d9d9451444b409e22185e4",
     "crates/viboceros-geometry/tests/surface_creases_native.rs": "1a83658ffe4e885484f0f3e8421a6b5f8a3067fe68b233a1c5fabd14561c421f",
-    "tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e",
     "tools/rhino_oracle/loft_refit_source_probe.py": "0da758af1b17526e85f94b8a94e830af02b49c6c2a491f6a0845ac3ce969ddc4",
     "tools/rhino_oracle/loft_refit_probe.py": "31fdf4db7d3eedd0d54eaf99dcdb499f92ccb575ee5a7dc7d4fa6bbd9489c4e0",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
@@ -205,5 +204,8 @@
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "9cd89d3aad50a95045b60f466d39bf5af018ccd015cdfd6f9be8240fc98bc871",
     "crates/viboceros-opennurbs/native/extrusion_cap_projection.h": "43726099974602db55c0bf95b4d37bedabdbda2852d27c5c04e07f3f1ac162ec",
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f"
+  },
+  "git_sha256": {
+    "9ddd2f318590615e9d942d8abb11cf78437a944e:tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e"
   }
 }

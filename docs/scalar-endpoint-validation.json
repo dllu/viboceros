@@ -1,0 +1,263 @@
+{
+  "feature": "Numerical scalar endpoint precedence",
+  "epsilon": 1e-09,
+  "native_reference": "Rhino 8.32.26160.13001 public normalized-length queries",
+  "api": [
+    "ArcLengthSampler::parameter_at_quadrature_normalized_length",
+    "ArcLengthSampler::parameters_at_quadrature_normalized_lengths"
+  ],
+  "native_captures": {
+    "scalar_checkpoint_acceptance": 63,
+    "scalar_endpoint_boundaries": 66
+  },
+  "qualified_comparisons": {
+    "endpoint_queries": 3234,
+    "exact_tolerance_threshold_queries": 526,
+    "maximum_parameter_or_position_difference": 8.899114524108741e-16
+  },
+  "python_suite": {
+    "full_tests": 2032,
+    "full_seconds": 306.915,
+    "passed": true,
+    "latest_targeted_tests": 4,
+    "latest_targeted_passed": true
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "scalar_checkpoint_acceptance_native",
+        "--test",
+        "scalar_clock_native",
+        "--test",
+        "loft_midpoint_clock_native",
+        "--test",
+        "component_clock_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 7
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve::arc_length::",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 41
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "fitting_clock_native",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "--all-targets",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "interval_length_native",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 2
+    }
+  ],
+  "diagnostics": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "scalar_checkpoint_acceptance_native",
+        "--frozen",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": false,
+      "queries": 1180,
+      "strict_mismatches": 14,
+      "maximum_parameter_or_position_difference": 0.27162324880875094,
+      "ignored_by_default": true
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "scalar_checkpoint_acceptance_native",
+        "--frozen",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": false,
+      "queries": 10647,
+      "strict_mismatches": 258,
+      "maximum_parameter_or_position_difference": 0.30886395687494056,
+      "ignored_by_default": true
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "scalar_clock_native",
+        "--frozen",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "passed": false,
+      "queries": 2090,
+      "strict_mismatches": 14,
+      "maximum_parameter_or_position_difference": 0.05757706905101623,
+      "ignored_by_default": true
+    }
+  ],
+  "general_scalar_sdk_parity_qualified": false,
+  "adaptive_loft_policy_changed": false,
+  "existing_native_observations_changed": false,
+  "observations": [
+    "Independent numerical queries accept a natural domain endpoint within the requested stopping error before comparing nearby interior checkpoints. Analytic fast paths, precise inverses and incremental batch policies retain their existing behavior.",
+    "Endpoint thresholds are formed before comparison: target <= error, then target >= total - error. Replacing the latter comparison with total - target <= error or a normalized-fraction comparison changes captured floating-point boundary decisions.",
+    "The first 63 records cover seven NURBS sources, affine domains, reversals and three coarse precisions, with reordered and repeated fractions. All 3,234 endpoint-tolerance queries match exactly. The full 10,647-query family still exposes unresolved interior checkpoint selection.",
+    "The 66 further records include both adjacent floating-point values at each threshold and overlapping endpoint acceptance ranges at 25%, 50% and 75% stopping errors. All 526 exact-threshold and domain-end comparisons match within 1e-9. The complete neighboring-value family remains an ignored strict diagnostic, with unresolved length-rounding ties and interior controls.",
+    "Native and Rust sources remain unchanged. A regression also retains affine charts and negative weight gauges while verifying that precise inverses still return interior points.",
+    "No early-checkpoint heuristic was introduced. First-checkpoint and binary-prefix substitutions regressed the saved scalar references and were rejected. Coarse global parameter lookup and inherited-sample refinement models still fail adaptive Loft source-clock holdouts."
+  ],
+  "sha256": {
+    "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
+    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
+    "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "d92bdc17559fcf9b5f7fdff801505403d34e1045b654bf6fd373e6f128843399",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "f1ccf56b278d9adf19d4188965f1ac19b01e16635e9fc379d91d9eac097e4f63",
+    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "fc5d666f07fc4d3751449c8da57fb4fd0381b0e64fcf4408f55ba0a1ce5c542c",
+    "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
+    "crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "afee2b9d04dd308f59514016bf31827ab69b49b8276099445a53f68f5a3a099f",
+    "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
+    "crates/viboceros-geometry/tests/scalar_checkpoint_acceptance_native.rs": "64ac4de1ab20ee14f6854484a5f8435f25231314e1268aa2632ce787b77a94fd",
+    "crates/viboceros-geometry/tests/scalar_clock_native.rs": "fb3f0a9b9d87d7d07dd8694350d665aa13dd299ee67a33f3ea09c2c48cc27cba",
+    "crates/viboceros-geometry/tests/support/loft_parameters.rs": "ffb76fa2679ee01a08338b5333677cfec50691bf1ecbc3c1ce318787b5e18a6e",
+    "crates/viboceros-oracle/tests/fitting_clock_native.rs": "456b4f712ab280cdc00af85f746097f36c8836711ff2e9acf7bfac2b32ace4de",
+    "tools/rhino_oracle/qualification_sources.py": "8227f8d1948ad28ad50426aa9e88828ffa129d85e23c60da11a21949fd115c48",
+    "tools/rhino_oracle/test_scalar_checkpoint_acceptance.py": "2288b2ba2f94bc7eb86b77d64cda5d0b250011814d946e34a82d1ba865d8c3c1",
+    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "docs/loft-fitting-clock.md": "74b18443e730df41fdf962d10e26c05103e022a9437283970c96bf0a96e2bfc7",
+    "crates/viboceros-geometry/src/nurbs.rs": "3763f2b48cd95aa29d2ddbf61cf4421ecf083438e62b8decc0d13742deaccfda",
+    "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "crates/viboceros-geometry/src/nurbs/parameter_frame.rs": "d6a2b8bdf92a99e7867af9fc7af577e5f64fb1f99a95ffc9e4fde4d6d3fcc2a7",
+    "crates/viboceros-geometry/src/nurbs/integration_frame.rs": "4fdc65f39d58d399f5be67fcc9c1d0e666121f35e2c623d79d27d1a744c822ca",
+    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "58455ad579d33ad1069ea3ccd49af29cc4ab141e4140c47d0f7205bab42c1eee",
+    "crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
+    "crates/viboceros-geometry/src/nurbs/weights.rs": "2e96f8f4febcbaa976b4b777ea027bb1efccde906b6f2553420a669b6bc60501",
+    "crates/viboceros-geometry/src/nurbs/evaluate/exact/tests.rs": "d5c0ec850352e695c51631a742ae9cada090b4e396d35a28099a0a6a039caf6e",
+    "crates/viboceros-geometry/src/nurbs/evaluate/exact.rs": "6e1c28d5fc69c307f0f5121ee604ab22aaaf89b69b4b298f397aa60b690a54c9",
+    "crates/viboceros-geometry/src/nurbs/evaluate/jet.rs": "294a9177a8b20ea3e21f550f4e7926864589782568748d275cae777298d595ca",
+    "crates/viboceros-geometry/src/nurbs/evaluate/query/tests.rs": "fd5917290a2280ddb05bb41074ca216122348ec7422aeea815aae8091a77a0d2",
+    "crates/viboceros-geometry/src/nurbs/evaluate/query.rs": "491f1f059a4439fa5d34be70003d824cd2f3fde15bc47a3a77d3ac7d63ec4098",
+    "crates/viboceros-geometry/src/nurbs/evaluate/scaled_first.rs": "fb8adf207954f411cca7789da673934ed829f0bbfb3a82af67cb474678ab136b",
+    "crates/viboceros-geometry/src/nurbs/evaluate/tangent.rs": "df92387d32cb154165b9b363f0abe21da51c9e071256dc3252089b7d568441f1",
+    "crates/viboceros-geometry/src/nurbs/evaluate/tests/continuation.rs": "e8631758bd1de768ba3eede2c6268711b5cf5685fd77fdc9afd57b86e276ea0c",
+    "crates/viboceros-geometry/src/nurbs/evaluate/tests/range.rs": "81a47347b2d80c1c85f13065c4a3196fa801de03d101e6a472468860b8be2336",
+    "crates/viboceros-geometry/src/nurbs/evaluate/tests.rs": "3cac6bd35f4a87de5930d921b9c99f454ec14412518707afb0c056c5fa8be3e0",
+    "tools/rhino_oracle/generate_scalar_checkpoint_acceptance.py": "901858efdadbc943519edc6db819f4666b3e34535546fa263fa3407dc0517428",
+    "tools/rhino_oracle/fixtures/scalar_checkpoint_acceptance.json": "345a05a33827d1bd17fb15816d2c1f55586e1ee5f25590e1caff587763995191",
+    "tools/rhino_oracle/observations/scalar_checkpoint_acceptance.json": "5aeb567604bd3c5bd7157f60990ed1be9cedcb1dfcef0030bd3341a8c3386696",
+    "tools/rhino_oracle/observations/source_snapshots/901858efdadbc943519edc6db819f4666b3e34535546fa263fa3407dc0517428.gz": "18408a3e0e6412c429b7b0b3eefdd6d9d89f262921629a4c94ed3aaf60af38b1",
+    "tools/rhino_oracle/observations/source_snapshots/ce93123e85a1e7973a1a01df7091cf3c01d372901b7bd1e1894a7495a41cf5cb.gz": "5db0ddc6683e1dc2157f45ca5a7fcfa816c0d8a1c94ba625cec8738aa0f9f361",
+    "tools/rhino_oracle/observations/source_snapshots/5cfadc297b1476bafe2a3f1f97cebdf8b718a8310381734bd24fcddf1e20f42e.gz": "dc5994c09203dd6f1271a0d202935d35cfaf559e2c3eb0fc6b830b175af5f1b7",
+    "tools/rhino_oracle/observations/source_snapshots/8f2d08950f62d74b76c809f6894e9e401b5f576c69a4cd87fab1fb8e63e5c237.gz": "017662cc3c7382fb1a3021d1e973b9b72462cbf8b2973005cbdabf5da693f8f8",
+    "tools/rhino_oracle/observations/source_snapshots/d5b384ea36dfe530289f512b132b3f9d8000a8756c112f135cd90911e9d017f4.gz": "d0344be90c51b7c8eb17e131dc773a6ca6a5e769595398f6187ebc1ffeb2f22b",
+    "tools/rhino_oracle/observations/source_snapshots/a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd.gz": "26c5452d59e2fe178d637a5b89a7f7421aa5aea4069e0468d93b87bc4a0e9b66",
+    "tools/rhino_oracle/observations/source_snapshots/dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9.gz": "fbd17990aa13535271a26444c03b4d43dcb5bcf4857960a33112b159a7230df6",
+    "tools/rhino_oracle/generate_scalar_endpoint_boundaries.py": "e82d3838009e26f240b79f4167b44c608c59045abb00ad05bceb48cbfd9b56d3",
+    "tools/rhino_oracle/fixtures/scalar_endpoint_boundaries.json": "ad291e545b8238428f49f73e3aca81683656789663d4683ba04506238297de7f",
+    "tools/rhino_oracle/observations/scalar_endpoint_boundaries.json": "d3f530162d048bce203a3018895dc18ff5b3c0c214d7eb2ff0af42b578b8cae0",
+    "tools/rhino_oracle/observations/source_snapshots/e82d3838009e26f240b79f4167b44c608c59045abb00ad05bceb48cbfd9b56d3.gz": "932990cdd5040b4f962b03d1060361ad00b8e95654d70f8adf386e21395e91b8",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs": "189e8964e23bcf5bf2fb74bb05ae3cdf7bc054cf31ad70dbeadb86b967973e8f",
+    "crates/viboceros-geometry/tests/loft_midpoint_clock_native.rs": "bb6d84c0f6d756755c9d2073dbeb6f5e05e39869b06b889b9333cc2046444a96",
+    "crates/viboceros-geometry/tests/component_clock_native.rs": "2da3d27768c52eaadc6eaadf6faebf51b430083b55e7c36153da4dcf32fa6c9e",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
+    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "9af8aee27704d626b200f0aeb2e4b9274765f63b5dca61133bfcc1079dac9a8a",
+    "crates/viboceros-geometry/src/nurbs/conics.rs": "f6185937831be9c3ad7f2daf7a829f4a2d69712c62179b47d681862031b5042c",
+    "crates/viboceros-geometry/src/nurbs/tests.rs": "4dd1d1369bd6cc0bd02bb68fa18286bb81cce905dbcf7973b40152d969269cbf",
+    "crates/viboceros-geometry/src/nurbs/tests/conics.rs": "c704accf2bedd4b9f21229faf7f610fc14f591e58c175841a907af3a4e98882f",
+    "crates/viboceros-geometry/src/nurbs/tests/controls.rs": "26ca0095d03f9c164a1263444d9c8c071d9c0b37eeb47b57d4b406e23ad786eb",
+    "crates/viboceros-geometry/src/nurbs/tests/degree_weights.rs": "2bc8f7bd8d37b06334ea53cf3a252cc7a322c79e822f0f1d1958ac78bfc94997",
+    "crates/viboceros-geometry/src/nurbs/tests/evaluation.rs": "7ae52ee519a0482cb9f028cc9a437b72d91b95d6a2a2c90b38337f83b2533b62",
+    "crates/viboceros-geometry/src/nurbs/tests/extension.rs": "b8065259a2f95736d664ebf0de89cc2a2558fde0641426b7080b12ba9fdb449e",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_boundaries.rs": "6b80bec62838269a07dbddf3b0d2980caa9ae36572f8be6d0175d00fe79f4592",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_pieces.rs": "0351a41301b71a1a1a825a58424d7acdd01d1b9181d55ebd46f751015c639501",
+    "crates/viboceros-geometry/src/nurbs/tests/intersections.rs": "5ac8f2a4b6c2502976fd342f54f2426d3132b35a380ca35f723d1e23c8bcfd47",
+    "crates/viboceros-geometry/src/nurbs/tests/knots.rs": "b02f11f865e956bea754c44e3931afc9a6813a3c916b23670942902915738f29",
+    "crates/viboceros-geometry/src/nurbs/tests/projection.rs": "7e2b83359f79e2217fb1a8df0027a338e2d5060ccd62b7b9a7545e004342e78b",
+    "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
+    "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373",
+    "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab"
+  }
+}

@@ -58,8 +58,10 @@ impl ArcLengthSampler<'_> {
     /// checkpoint within the stopping error. This intentionally differs
     /// from incremental batch inversion, which accepts the refined endpoint.
     ///
-    /// Tolerance must be finite and strictly between zero and one. Endpoints
-    /// are exact. Preparation and inverse refinement each allow 65,536 steps;
+    /// Tolerance must be finite and strictly between zero and one. On the
+    /// numerical path, an endpoint within the stopping error takes precedence
+    /// over interior checkpoints. Exact analytic clocks retain their inverses.
+    /// Preparation and inverse refinement each allow 65,536 steps;
     /// all queries share the inverse budget, with 80 bracket updates per root.
     /// The existing 1,048,576-query limit applies. Failure yields no partial
     /// result or source mutation. These estimates are not distance certificates;
@@ -201,17 +203,31 @@ impl ArcLengthSampler<'_> {
             };
             let error = fractional_tolerance * local_length;
             require_finite([error], "incremental arc-length error")?;
+            // Form the distance thresholds before comparison. Subtracting the
+            // target from the total instead changes floating-point boundary
+            // decisions, including queries exactly at the requested tolerance.
+            let endpoint =
+                if fraction == 0. || (policy == InversePolicy::Independent && target <= error) {
+                    Some(nodes[0])
+                } else if fraction == 1.
+                    || (policy == InversePolicy::Independent && target >= total - error)
+                {
+                    Some(*nodes.last().unwrap())
+                } else {
+                    None
+                };
+            if let Some(node) = endpoint {
+                previous = node;
+                out.push(self.source_parameter(node.parameter)?);
+                continue;
+            }
             let near = if (target - lower.distance).abs() < (target - upper.distance).abs() {
                 lower
             } else {
                 upper
             };
-            if fraction == 0. || fraction == 1. || (target - near.distance).abs() <= error {
-                let node = if fraction == 0. {
-                    nodes[0]
-                } else if fraction == 1. {
-                    *nodes.last().unwrap()
-                } else if policy == InversePolicy::Independent {
+            if (target - near.distance).abs() <= error {
+                let node = if policy == InversePolicy::Independent {
                     // All ends of a zero-length plateau have this distance.
                     // Retain the last parameter, including a nearby query
                     // accepted under the requested numerical tolerance.
