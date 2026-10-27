@@ -5,7 +5,10 @@
 The adaptive APIs return certified geometry proposals and support open regular
 [Loft Refit profiles](loft-refit.md). Actual SDK and document preparation retains
 the fitted region policy through shared-basis matching and rechecks any edited
-curve against its original source. Fitting decisions can still produce different
+curve against its original source. The numeric source bound survives preparation;
+a complete bound on subsequent basis edits must fit inside its remaining
+tolerance. This preserves a known certificate across tiny knot changes without
+repeating the original closest-point search. Fitting decisions can still produce different
 control nets even when complete geometric error is bounded.
 
 ## Construction and joining
@@ -43,6 +46,15 @@ The fitted-specific region policy is separate from ordinary and disabled-fitting
 Loft matching. Raw assembly, joining and final certification are distinct: only
 a fresh complete bound against the original source admits the final proposal.
 Errors from these stages never receive separate additive allowances.
+
+Shared-basis preparation proposes a piecewise affine map from the fitted knots
+to their matched region chart. A complete bound compares the prior fit with the
+final curve, including newly inserted knots and rounded controls or end weights.
+The triangle inequality then retains the complete symmetric source-image bound.
+The edit allowance is rounded downward after subtracting the proved source
+error, so both costs remain within the original tolerance. An unproved edit or
+exhausted allowance falls back to direct original-source certification; it cannot
+turn a sampled match into acceptance.
 
 ## Complete certificates
 

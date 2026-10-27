@@ -299,6 +299,8 @@ def _expand_sources_once(paths):
                          'crates/viboceros-geometry/src/loft/refit.rs',
                          'crates/viboceros-geometry/src/loft/refit/preparation.rs',
                          'crates/viboceros-geometry/src/loft/refit/preparation/tests.rs',
+                         'crates/viboceros-geometry/src/loft/refit/preparation/preservation.rs',
+                         'crates/viboceros-geometry/src/loft/refit/preparation/preservation/tests.rs',
                          'crates/viboceros-command/src/loft/refit_tests/adaptive.rs',
                          'crates/viboceros-oracle/tests/loft_refit_adaptive_preparation_native.rs',
                          'crates/viboceros-oracle/tests/support/loft_refit_admission.rs',

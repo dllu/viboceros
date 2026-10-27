@@ -148,7 +148,14 @@ cases! { "loft_refit_adaptive_contexts";
 cases! { "loft_refit_adaptive_shapes";
     quintic_shape_9=9;
     quintic_shape_10=10;
-    quintic_shape_11=11;
+}
+#[test]
+fn quintic_shape_11() {
+    let stats = admission::compare("loft_refit_adaptive_shapes", 11..12);
+    assert_eq!(
+        stats.declined, 0,
+        "shared-basis roundoff lost the source certificate"
+    );
 }
 cases! { "loft_refit_join_modes";
     quintic_join_12=12;

@@ -227,27 +227,7 @@
     },
     {
       "family": "loft_refit",
-      "id": "loft-refit-cubic-0.001-normal"
-    },
-    {
-      "family": "loft_refit",
-      "id": "loft-refit-cubic-0.001-loose"
-    },
-    {
-      "family": "loft_refit",
-      "id": "loft-refit-cubic-0.001-tight"
-    },
-    {
-      "family": "loft_refit",
-      "id": "loft-refit-cubic-0.001-straight"
-    },
-    {
-      "family": "loft_refit",
       "id": "loft-refit-cubic-1e-06-loose"
-    },
-    {
-      "family": "loft_refit",
-      "id": "loft-refit-cubic-0.001-uniform"
     },
     {
       "family": "loft_refit",
@@ -344,10 +324,6 @@
     {
       "family": "loft_refit_shallow_holdouts",
       "id": "loft-refit-shallow-holdout-dyadic-9-rational"
-    },
-    {
-      "family": "loft_refit_adaptive_shapes",
-      "id": "loft-refit-adaptive-shapes-quintic-0.0001"
     }
   ]
 }

@@ -11,6 +11,7 @@ pub(super) enum Mode {
 pub(super) struct Prepared {
     pub curves: Vec<NurbsCurve>,
     pub mode: Mode,
+    deviations: Vec<Real>,
 }
 
 impl Prepared {
@@ -23,6 +24,14 @@ impl Prepared {
         elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
         refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
     ) -> Result<Vec<NurbsCurve>, E> {
+        let charts = if self.mode == Mode::Adaptive {
+            Some(super::super::parameterize::prepare_fitted(
+                &self.curves,
+                clamp,
+            )?)
+        } else {
+            None
+        };
         let result = match self.mode {
             Mode::Original => compatible::prepare_refit_with_operations(
                 &self.curves,
@@ -35,15 +44,25 @@ impl Prepared {
                 compatible::prepare_with_operations(&self.curves, clamp, elevate, refine)
             }
             Mode::Adaptive => {
-                compatible::prepare_fitted_with_operations(&self.curves, clamp, elevate, refine)
+                compatible::match_basis(charts.as_ref().unwrap(), clamp, elevate, refine)
             }
         }?;
-        if self.mode == Mode::Adaptive {
-            for ((source, prior), matched) in sources.iter().zip(&self.curves).zip(&result) {
+        if let Some(charts) = charts {
+            for ((((source, prior), chart), matched), &deviation) in sources
+                .iter()
+                .zip(&self.curves)
+                .zip(charts.iter())
+                .zip(&result)
+                .zip(&self.deviations)
+            {
                 // An identical curve retains the complete proposal certificate.
-                // Reparameterization and rounded shared-basis edits require a
-                // fresh complete proof against the original source.
+                // Otherwise compose its bound with a complete bound on the
+                // basis edits, charging both against the original tolerance.
+                // If that cannot be proved, search directly from the source.
                 if prior != matched
+                    && !preservation::within_remaining_deviation(
+                        prior, chart, matched, deviation, tolerance,
+                    )?
                     && !crate::curve_fit::g1::within_deviation(source, matched, tolerance)?
                 {
                     return Err(unsupported().into());
@@ -66,6 +85,7 @@ fn adaptive(
     angle: Option<Real>,
 ) -> Result<Prepared, GeometryError> {
     let mut fitted = Vec::with_capacity(curves.len());
+    let mut deviations = Vec::with_capacity(curves.len());
     for source in curves {
         let domain = source.domain();
         // Large relative tolerances enter a distinct native resampling branch.
@@ -76,14 +96,18 @@ fn adaptive(
         {
             return Err(unsupported());
         }
-        let Some(curve) = try_propose_joined_refit(source, tolerance, angle.unwrap_or(0.))? else {
+        let Some(proposal) =
+            adaptive::certified_joined_refit(source, tolerance, angle.unwrap_or(0.))?
+        else {
             return Err(unsupported());
         };
-        fitted.push(curve);
+        fitted.push(proposal.curve);
+        deviations.push(proposal.maximum_deviation_bound);
     }
     Ok(Prepared {
         curves: fitted,
         mode: Mode::Adaptive,
+        deviations,
     })
 }
 
@@ -106,6 +130,7 @@ fn initial(
         return Ok(Prepared {
             curves: curves.to_vec(),
             mode: Mode::Original,
+            deviations: Vec::new(),
         });
     }
     let sections = curves
@@ -130,6 +155,7 @@ fn initial(
             return candidate::prepare(curves, fit_tolerance, angle).map(|curves| Prepared {
                 curves,
                 mode: Mode::Initial,
+                deviations: Vec::new(),
             });
         }
         Err(error) => return Err(error),
@@ -147,6 +173,7 @@ fn initial(
     Ok(Prepared {
         curves: matching::prepare(sections, fit_tolerance, angle)?,
         mode: Mode::Initial,
+        deviations: Vec::new(),
     })
 }
 
@@ -164,6 +191,8 @@ pub(super) fn propose(
         result => result,
     }
 }
+
+mod preservation;
 
 #[cfg(test)]
 mod tests;

@@ -107,6 +107,19 @@ pub fn try_propose_joined_refit(
     tolerance: Real,
     angle: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
+    Ok(certified_joined_refit(source, tolerance, angle)?.map(|proposal| proposal.curve))
+}
+
+pub(super) struct CertifiedJoinedRefit {
+    pub curve: NurbsCurve,
+    pub maximum_deviation_bound: Real,
+}
+
+pub(super) fn certified_joined_refit(
+    source: &NurbsCurve,
+    tolerance: Real,
+    angle: Real,
+) -> Result<Option<CertifiedJoinedRefit>, GeometryError> {
     validate(source, tolerance)?;
     validate_angle(Some(angle))?;
     if source.degree() > 16 {
@@ -131,7 +144,7 @@ pub fn try_propose_joined_refit(
             && g[0] > *joined.domain().start()
             && g[0] < *joined.domain().end()
     });
-    let within = if has_regions {
+    let bound = if has_regions {
         let target = joined.knots()[joined.degree()..=joined.control_points().len()]
             .chunk_by(|a, b| a == b)
             .map(|g| g[0])
@@ -148,11 +161,14 @@ pub fn try_propose_joined_refit(
                 ])
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        crate::curve_fit::g1::within_deviation_at_pairs(source, &joined, tolerance, &pairs)?
+        crate::curve_fit::g1::deviation_bound_at_pairs(source, &joined, tolerance, &pairs)?
     } else {
-        crate::curve_fit::g1::within_deviation(source, &joined, tolerance)?
+        crate::curve_fit::g1::deviation_bound(source, &joined, tolerance)?
     };
-    if within { Ok(Some(joined)) } else { Ok(None) }
+    Ok(bound.map(|maximum_deviation_bound| CertifiedJoinedRefit {
+        curve: joined,
+        maximum_deviation_bound,
+    }))
 }
 
 mod join;

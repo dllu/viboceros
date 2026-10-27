@@ -8,28 +8,29 @@ pub(super) fn certify(
     pairs: &[[Real; 2]],
     limit: Real,
 ) -> Result<bool, GeometryError> {
-    certify_with_derivatives(
+    Ok(deviation_bound(
         source,
         candidate,
         pairs,
         limit,
         &std::collections::BTreeMap::new(),
-    )
+    )?
+    .is_some())
 }
 
-pub(super) fn certify_with_derivatives(
+pub(super) fn deviation_bound(
     source: &NurbsCurve,
     candidate: &NurbsCurve,
     pairs: &[[Real; 2]],
     limit: Real,
     derivatives: &std::collections::BTreeMap<u64, [Real; 2]>,
-) -> Result<bool, GeometryError> {
+) -> Result<Option<Real>, GeometryError> {
     let Some(map) = proposal(candidate, pairs, derivatives)? else {
-        return Ok(false);
+        return Ok(None);
     };
     match source.monotone_spline_curve_deviation_bound(candidate, &map, limit) {
-        Ok(bound) => Ok(bound.is_some()),
-        Err(GeometryError::CurveApproximationLimit) => Ok(false),
+        Ok(bound) => Ok(bound),
+        Err(GeometryError::CurveApproximationLimit) => Ok(None),
         Err(error) => Err(error),
     }
 }
@@ -148,7 +149,19 @@ mod tests {
                 .unwrap()
                 .is_none()
         );
-        assert!(certify(&source, &line, &pairs, 1e-12).unwrap());
+        let bound = deviation_bound(
+            &source,
+            &line,
+            &pairs,
+            1e-12,
+            &std::collections::BTreeMap::new(),
+        )
+        .unwrap()
+        .unwrap();
+        assert!(
+            bound < 1e-12,
+            "retain the proved bound for later composition: {bound}"
+        );
     }
 
     #[test]

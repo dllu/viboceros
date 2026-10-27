@@ -55,7 +55,7 @@ fn source_to_proxy_error_cannot_be_added_above_the_candidate_budget() {
             .is_some()
     );
     assert!(!certify(&source, &candidate, limit));
-    assert!(!super::super::certify(&source, &candidate, limit, None).unwrap());
+    assert!(!super::super::within_deviation(&source, &candidate, limit).unwrap());
 }
 
 #[test]

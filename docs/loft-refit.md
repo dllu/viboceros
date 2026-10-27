@@ -26,8 +26,10 @@ Smooth profiles first try a certified [initial cubic](loft-refit-candidates.md)
 and its qualified common-handle correction. Tighter fits use
 [adaptive subdivision, joining and reconstruction](loft-refit-adaptive.md).
 Every final curve requires a complete positional bound against its original
-source; samples only guide proposals. Adaptive common-basis edits require a
-fresh source certificate unless the curve is unchanged. Supplied native backend
+source; samples only guide proposals. Adaptive common-basis edits retain the
+proved source error and certify the complete basis edit within the remaining
+tolerance, rounding that allowance downward. If composition cannot be proved,
+preparation tries a fresh direct source certificate. Supplied native backend
 operations participate in matching and propagate errors before document mutation.
 Parameter correspondence can change. These bounds do not certify topology.
 

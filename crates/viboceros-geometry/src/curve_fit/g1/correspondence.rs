@@ -12,17 +12,35 @@ pub(crate) fn within_deviation(
     candidate: &NurbsCurve,
     limit: Real,
 ) -> Result<bool, GeometryError> {
+    Ok(deviation_bound(source, candidate, limit)?.is_some())
+}
+
+pub(crate) fn deviation_bound(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+) -> Result<Option<Real>, GeometryError> {
     certify(source, candidate, limit, None)
 }
 
 /// Seed known source/target span boundaries in normalized parameter fractions.
 /// They guide proposals only; the full exact image certificate still decides.
+#[cfg(test)]
 pub(crate) fn within_deviation_at_pairs(
     source: &NurbsCurve,
     candidate: &NurbsCurve,
     limit: Real,
     pairs: &[[Real; 2]],
 ) -> Result<bool, GeometryError> {
+    Ok(deviation_bound_at_pairs(source, candidate, limit, pairs)?.is_some())
+}
+
+pub(crate) fn deviation_bound_at_pairs(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+    pairs: &[[Real; 2]],
+) -> Result<Option<Real>, GeometryError> {
     certify(source, candidate, limit, Some(pairs))
 }
 
@@ -31,18 +49,15 @@ fn certify(
     candidate: &NurbsCurve,
     limit: Real,
     pairs: Option<&[[Real; 2]]>,
-) -> Result<bool, GeometryError> {
-    if source
-        .parameter_curve_deviation_bound(candidate, limit)?
-        .is_some()
-    {
-        return Ok(true);
+) -> Result<Option<Real>, GeometryError> {
+    if let Some(bound) = source.parameter_curve_deviation_bound(candidate, limit)? {
+        return Ok(Some(bound));
     }
     if linear::certify(source, candidate, limit) {
-        return Ok(true);
+        return Ok(Some(limit));
     }
     match source.monotone_projected_curve_deviation_bound(candidate, limit) {
-        Ok(Some(_)) => return Ok(true),
+        Ok(Some(bound)) => return Ok(Some(bound)),
         Ok(None) | Err(GeometryError::CurveApproximationLimit) => {}
         Err(error) => return Err(error),
     }
@@ -61,7 +76,7 @@ fn certify(
     let mut attempted_size = 0;
     for intervals in [8, 16, 32, 64, 128, MAX_INTERVALS] {
         if !stations.refine(intervals + 1) {
-            return Ok(false);
+            return Ok(None);
         }
         if stations.parameters.len() == attempted_size {
             continue;
@@ -78,7 +93,7 @@ fn certify(
                 // This only declines a numerical proposal. Accepted fits still
                 // require a complete exact certificate across every interval.
                 if point.distance_to(candidate.evaluate(parameter)?)? > limit {
-                    return Ok(false);
+                    return Ok(None);
                 }
                 // Searches return the candidate's native parameter, while
                 // cached anchors and both mapped certificates use fractions.
@@ -90,21 +105,20 @@ fn certify(
                 parameter
             };
             if pairs.last().is_some_and(|p: &[Real; 2]| p[1] >= parameter) {
-                return Ok(false);
+                return Ok(None);
             }
             pairs.push([fraction, parameter]);
         }
-        if source
-            .mapped_curve_deviation_bound(candidate, &pairs, limit)?
-            .is_some()
-        {
-            return Ok(true);
+        if let Some(bound) = source.mapped_curve_deviation_bound(candidate, &pairs, limit)? {
+            return Ok(Some(bound));
         }
-        if hermite::certify_with_derivatives(source, candidate, &pairs, limit, &derivatives)? {
-            return Ok(true);
+        if let Some(bound) =
+            hermite::deviation_bound(source, candidate, &pairs, limit, &derivatives)?
+        {
+            return Ok(Some(bound));
         }
     }
-    Ok(false)
+    Ok(None)
 }
 
 /// Natural boundaries prevent a correspondence interval from spanning a speed
