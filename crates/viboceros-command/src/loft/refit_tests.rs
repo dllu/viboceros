@@ -1,5 +1,6 @@
 use super::*;
 
+mod adaptive;
 mod multispan;
 
 #[test]
@@ -250,8 +251,8 @@ fn certified_smooth_refit_preserves_sources_and_has_atomic_undo_redo() {
     let after = document.objects().cloned().collect::<Vec<_>>();
     registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
-    // A tighter fit needs adaptive smooth fitting and cannot mutate the document.
-    assert!(registry.execute(&mut document, "Loft Refit=0.001").is_err());
+    // A large relative tolerance still requires an unimplemented resampling path.
+    assert!(registry.execute(&mut document, "Loft Refit=100").is_err());
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     registry.execute(&mut document, "Redo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
@@ -309,7 +310,7 @@ fn adjusted_smooth_refit_preserves_sources_selection_and_redo_on_failure() {
     assert_eq!(document.undo_label(), Some("Loft"));
     registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
-    assert!(registry.execute(&mut document, "Loft Refit=0.001").is_err());
+    assert!(registry.execute(&mut document, "Loft Refit=100").is_err());
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     registry.execute(&mut document, "Redo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);

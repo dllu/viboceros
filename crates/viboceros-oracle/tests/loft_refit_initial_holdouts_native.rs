@@ -50,6 +50,6 @@ fn curved_multispan_initial_fits_match_complete_native_records() {
         }
     }
     println!("CURVED_INITIAL_REFIT matched={matched} pending={pending} maximum={maximum}");
-    // Only the six native results needing additional pieces remain unsupported.
-    assert_eq!((matched, pending, pending_initial), (18, 6, 0));
+    // Adaptive preparation now admits the six additional-piece holdouts too.
+    assert_eq!((matched, pending, pending_initial), (24, 0, 0));
 }

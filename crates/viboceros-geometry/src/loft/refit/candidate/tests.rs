@@ -37,7 +37,14 @@ fn admitted_smooth_cubics_have_a_complete_half_tolerance_certificate() {
         assert!(candidate.control_points().iter().all(|c| c.weight() == 1.));
     }
     assert_eq!(sources, before);
-    assert!(try_prepare_refitted_loft_sections(&sources, 0.001).is_err());
+    assert!(prepare(&sources, 0.001, None).is_err());
+    for (source, fit) in sources
+        .iter()
+        .zip(try_prepare_refitted_loft_sections(&sources, 0.001).unwrap())
+    {
+        assert!(fit.control_points().len() > 4);
+        assert!(crate::curve_fit::g1::within_deviation(source, &fit, 0.001).unwrap());
+    }
     assert_eq!(sources, before);
 }
 
@@ -67,6 +74,13 @@ fn endpoint_and_midpoint_agreement_cannot_hide_an_interior_bump() {
     );
     let sources = vec![source; 2];
     let before = sources.clone();
-    assert!(try_prepare_refitted_loft_sections(&sources, 0.1).is_err());
+    assert!(prepare(&sources, 0.1, None).is_err());
+    for (source, fit) in sources
+        .iter()
+        .zip(try_prepare_refitted_loft_sections(&sources, 0.1).unwrap())
+    {
+        assert!(fit.control_points().len() > 4);
+        assert!(crate::curve_fit::g1::within_deviation(source, &fit, 0.1).unwrap());
+    }
     assert_eq!(sources, before);
 }

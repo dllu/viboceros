@@ -8,7 +8,7 @@ mod comparison;
 
 #[test]
 fn refit_angles_match_native_definitions_or_report_adaptive_fitting_gaps() {
-    compare("loft_refit_angles", 176, (156, 20));
+    compare("loft_refit_angles", 176, (157, 19));
 }
 
 #[test]

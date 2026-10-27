@@ -5,6 +5,8 @@ use viboceros_oracle::{ProbeRequest, run_request};
 #[allow(dead_code)]
 #[path = "../../viboceros-geometry/tests/support/loft_rebuild.rs"]
 mod comparison;
+#[path = "support/loft_refit_legacy.rs"]
+mod legacy;
 
 fn fixture() -> (Value, Value) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
@@ -48,7 +50,7 @@ fn zero_refit_matches_all_native_ordinary_lofts_and_preserves_sources() {
 }
 
 #[test]
-fn curved_refit_matches_native_or_reports_the_remaining_policy() {
+fn initial_curved_sdk_and_document_fits_retain_native_records() {
     let (query, native) = fixture();
     let native_commands: Value = serde_json::from_slice(
         &std::fs::read(
@@ -74,6 +76,12 @@ fn curved_refit_matches_native_or_reports_the_remaining_policy() {
                 .unwrap()
                 .starts_with("loft-refit-polygon-")
         {
+            continue;
+        }
+        // The captured command reference below is the initial quarter fit.
+        // Adaptive cases use their own complete SDK/document records instead.
+        if !legacy::initially_admitted("loft_refit", &op["id"]) {
+            pending += 2;
             continue;
         }
         for command in [false, true] {

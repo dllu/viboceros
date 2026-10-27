@@ -10,6 +10,7 @@ pub use adaptive::{
 mod candidate;
 mod matching;
 mod polyline;
+mod preparation;
 
 struct Section {
     curve: NurbsCurve,
@@ -18,33 +19,20 @@ struct Section {
 
 /// Refit ordered profiles to certified polynomial cubics. Tolerances at most
 /// twice the square root of machine epsilon retain the original definitions.
-/// The polygon path requires same-sign weights and
-/// continuous regions with ordered collinear controls, and
-/// internal bends above the legacy one-degree corner threshold. Constant spans
-/// and redundant collinear vertices disappear; true reversals remain.
-/// With at least two profiles, clamped sources without resolved tangent breaks may
-/// instead use an endpoint-tangent cubic with at most one common handle correction
-/// when its complete image error is bounded by half the tolerance. Multispan
-/// initial fits can instead pass three interior length stations within half
-/// tolerance and a complete full-tolerance image certificate. Affine, nonlinear
-/// coordinate-projection and monotone piecewise affine or cubic maps require a
-/// complete certificate. Tolerance must be
-/// smaller than every endpoint chord. Multispan sources use the initial cubic;
-/// common handle correction remains qualified for single-Bezier sources.
-/// Subdivision and mixed open/closed profiles remain unsupported. Separate
-/// certified adaptive proposals do not establish native command acceptance.
 ///
-/// Collinearity and control order are checked with exact rational arithmetic.
-/// Positive rational basis functions then keep the source on its endpoint
-/// segment. Region matching uses degree-one proxies before constructing a shared
-/// cubic basis. Exact source vertices remain authoritative; direct construction
-/// avoids rounded knot-insertion drift. One final rounding per control bounds
-/// the complete image distance by `fit_tolerance`.
-/// Unclamped endpoints use the shared bounded exact extraction, retaining their
-/// rational values through handle construction and the final error check.
-/// Smooth proposals use the shared endpoint-tangent constructor and correction;
-/// its rounded controls require a continuous exact Bernstein certificate.
-/// This changes parameter correspondence and never mutates the sources.
+/// Straight and polygon sources retain their exact region and corner policy.
+/// Smooth sources first try the initial endpoint-tangent cubic and its qualified
+/// common-handle correction. Open regular sources can then use bounded adaptive
+/// subdivision, joining and C1 reconstruction. Every final fitted curve needs a
+/// complete positional certificate against its original source. Rounded edits
+/// during adaptive shared-basis preparation require a fresh certificate.
+///
+/// Adaptive fitting requires at least two profiles, source degree at most 16,
+/// unresolved tangent breaks only, and tolerance below every endpoint chord.
+/// Fully closed smooth sources, mixed open/closed sets and unproved or exhausted
+/// fits are rejected. Existing certified closed polygon fits remain available.
+/// Matching can change parameter correspondence. Sources are never mutated;
+/// positional certificates do not establish topology or Rhino control-net parity.
 pub fn try_prepare_refitted_loft_sections(
     curves: &[NurbsCurve],
     fit_tolerance: Real,
@@ -85,56 +73,22 @@ fn validate_angle(angle: Option<Real>) -> Result<(), GeometryError> {
 
 fn prepare(
     curves: &[NurbsCurve],
-    fit_tolerance: Real,
+    tolerance: Real,
     angle: Option<Real>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
-    validate_angle(angle)?;
-    if !fit_tolerance.is_finite() || fit_tolerance < 0. {
-        return Err(GeometryError::InvalidTolerance);
+    let prepared = preparation::propose(curves, tolerance, angle)?;
+    if prepared.mode == preparation::Mode::Adaptive {
+        prepared.finish(
+            curves,
+            tolerance,
+            angle,
+            &mut |c: &NurbsCurve| c.clamped_to_active_domain(),
+            &mut |c: &NurbsCurve, d| c.try_change_degree(d, false),
+            &mut |c: &NurbsCurve, k, m| c.try_insert_knot(k, m),
+        )
+    } else {
+        Ok(prepared.curves)
     }
-    if curves.len() > MAX_LOFT_SECTIONS {
-        return Err(GeometryError::LoftResourceLimit {
-            context: "refitted section count",
-            maximum: MAX_LOFT_SECTIONS,
-        });
-    }
-    if fitting_disabled(fit_tolerance) {
-        return Ok(curves.to_vec());
-    }
-    let sections = curves
-        .iter()
-        .map(|source| match straight(source, fit_tolerance) {
-            Err(GeometryError::UnsupportedCurveApproximation { .. }) => {
-                polyline::refit(source, fit_tolerance, angle)
-            }
-            Ok(_) if angle.is_some_and(|a| a > std::f64::consts::FRAC_PI_2) => {
-                Err(GeometryError::UnsupportedCurveApproximation {
-                    context: "Loft Refit currently requires straight-section angles at most pi/2",
-                })
-            }
-            result => result,
-        })
-        .collect::<Result<Vec<_>, GeometryError>>();
-    let sections = match sections {
-        Ok(sections) => sections,
-        Err(GeometryError::UnsupportedCurveApproximation { .. })
-            if curves.len() >= 2 && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
-        {
-            return candidate::prepare(curves, fit_tolerance, angle);
-        }
-        Err(error) => return Err(error),
-    };
-    if let Some(first) = sections.first() {
-        let closed = first.curve.is_closed()?;
-        for section in &sections[1..] {
-            if section.curve.is_closed()? != closed {
-                return Err(GeometryError::UnsupportedCurveApproximation {
-                    context: "Loft Refit currently requires profiles with matching open/closed state",
-                });
-            }
-        }
-    }
-    matching::prepare(sections, fit_tolerance, angle)
 }
 
 /// Loft the refitted ordered sections, retaining the usual style, closed-loft
@@ -210,12 +164,14 @@ pub fn prepare_refitted_loft_sections_with_operations<E: From<GeometryError>>(
     elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
     refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
 ) -> Result<Vec<NurbsCurve>, E> {
-    let sections = prepare(curves, fit_tolerance, angle)?;
-    if fitting_disabled(fit_tolerance) {
-        compatible::prepare_refit_with_operations(&sections, angle, clamp, elevate, refine)
-    } else {
-        compatible::prepare_with_operations(&sections, clamp, elevate, refine)
-    }
+    preparation::propose(curves, fit_tolerance, angle)?.finish(
+        curves,
+        fit_tolerance,
+        angle,
+        clamp,
+        elevate,
+        refine,
+    )
 }
 
 fn straight(source: &NurbsCurve, tolerance: Real) -> Result<Section, GeometryError> {

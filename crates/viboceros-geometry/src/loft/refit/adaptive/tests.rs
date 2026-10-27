@@ -190,8 +190,12 @@ fn joined_proposals_preserve_the_source_and_require_a_complete_final_bound() {
                 .is_some()
         );
         assert_eq!(source, before);
-        // A certified proposal does not establish the native subdivision rule.
-        assert!(try_prepare_refitted_loft_sections(&[source.clone(), source], limit).is_err());
+        let fits =
+            try_prepare_refitted_loft_sections(&[source.clone(), source.clone()], limit).unwrap();
+        for fit in fits {
+            assert!(crate::curve_fit::g1::within_deviation(&source, &fit, limit).unwrap());
+        }
+        assert_eq!(source, before);
     }
 }
 

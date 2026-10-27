@@ -2,8 +2,10 @@
 
 [Loft Refit](loft-refit.md) · [Validation](loft-refit-preparation-validation.json)
 
-The [smooth proposals](loft-refit-candidates.md), including a common handle
-correction, now use a continuous positional bound; subdivision remains unfinished.
+These historical measurements describe initial profile-set preparation.
+Current [adaptive command support](loft-refit.md) retains complete source bounds
+through subdivision, joining and common-basis preparation. Initial
+[smooth proposals](loft-refit-candidates.md) also use a continuous positional bound.
 Public Rhino 8.32 measurements
 isolate a suitable reference: [NurbsCurve.MakeCompatible](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_MakeCompatible.htm) with simplification
 method `2`, the complete profile set, no point ends, and the requested Refit
@@ -46,8 +48,8 @@ preserves resolved corners and matches region charts before constructing a share
 cubic basis. Unclamped rational endpoints remain exact through the final rounding
 bound. New native captures retain 171 cases covering spatial and closed polygons,
 different corner counts, point ends and the one-degree corner threshold.
-Smooth cases and native empty-result cases remain explicit limitations;
-[validation](loft-refit-polylines-validation.json) distinguishes them from matches.
+The historical [validation](loft-refit-polylines-validation.json) distinguishes
+polygon matches from then-unsupported smooth cases and native empty results.
 The earlier straight-profile references remain regressions. Captures are immutable.
 
 ```sh

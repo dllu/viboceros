@@ -1,13 +1,15 @@
-//! Every admitted coarse fit must match the complete public native record.
+//! Preserve strict initial-fit records; adaptive admissions have separate bounds.
 use serde_json::{Value, json};
 use std::path::Path;
 use viboceros_oracle::{ProbeRequest, run_request};
 #[allow(dead_code)]
 #[path = "../../viboceros-geometry/tests/support/loft_rebuild.rs"]
 mod comparison;
+#[path = "support/loft_refit_legacy.rs"]
+mod legacy;
 
 #[test]
-fn certified_smooth_candidates_match_native_or_remain_explicitly_unimplemented() {
+fn legacy_initial_candidates_retain_their_strict_native_records() {
     let (matched, pending, maximum) = compare_families(
         &[
             "loft_refit_coarse",
@@ -58,6 +60,12 @@ fn compare_families(families: &[&str], epsilon: f64) -> (usize, usize, f64) {
             .zip(native["results"].as_array().unwrap())
         {
             assert_eq!(op["id"], row["id"]);
+            // Preserve the original strict subset. Every new admission is
+            // checked continuously in loft_refit_adaptive_preparation_native.
+            if !legacy::initially_admitted(family, &op["id"]) {
+                pending += 1;
+                continue;
+            }
             let mut request = query.clone();
             request["operations"] = json!([op]);
             match run_request(&serde_json::from_value::<ProbeRequest>(request).unwrap()) {

@@ -1,0 +1,353 @@
+{
+  "feature": "Expected adaptive Loft declines; successful new admissions may grow this support set",
+  "cases": [
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quarter-100.0"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-corner-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-corner-0.001-7"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-1e-06-normal"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-1e-06-loose"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-1e-06-tight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-1e-06-straight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-1e-06-uniform"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.001-normal"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.001-loose"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.001-tight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.001-straight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.001-uniform"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.1-normal"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.1-loose"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.1-tight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.1-straight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-circle-0.1-uniform"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-quarter-5"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-quarter-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-small_kink-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-small_kink-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-rectangle-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-rectangle-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-backtrack-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-backtrack-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-rational-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-rational-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-unclamped-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-unclamped-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-acute-0.001-4"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-acute-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-acute-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-obtuse-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-obtuse-0.001-7"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-line-0.001-6"
+    },
+    {
+      "family": "loft_refit_angles",
+      "id": "loft-refit-angle-line-0.001-7"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-cubic-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-circle-0.1"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-circle-1.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-circle-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quadratic-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-polynomial_cubic-100.0"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-quadratic_2-5"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-quadratic_2-6"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-polynomial_cubic-5"
+    },
+    {
+      "family": "loft_refit_angle_holdouts",
+      "id": "loft-refit-angle-smooth-polynomial_cubic-6"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-smooth_cubic-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quintic-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quadratic_0-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quadratic_1-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-quadratic_2-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-polynomial_cubic_0-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-polynomial_cubic_1-100.0"
+    },
+    {
+      "family": "loft_refit_coarse",
+      "id": "loft-refit-coarse-polynomial_cubic_2-100.0"
+    },
+    {
+      "family": "loft_refit_corner_boundary",
+      "id": "loft-refit-corner-boundary-0.002-1.0"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-0.001-normal"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-0.001-loose"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-0.001-tight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-0.001-straight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-1e-06-loose"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-0.001-uniform"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-1e-06-normal"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-1e-06-straight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-1e-06-tight"
+    },
+    {
+      "family": "loft_refit",
+      "id": "loft-refit-cubic-1e-06-uniform"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-10"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-01"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-11"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-10"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-01"
+    },
+    {
+      "family": "loft_refit_polyline_ends",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-11"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-normal-0.001"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-normal-1e-06"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-loose-0.001"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-loose-1e-06"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-tight-0.001"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-tight-1e-06"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-straight-0.001"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-straight-1e-06"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-uniform-0.001"
+    },
+    {
+      "family": "loft_refit_polylines",
+      "id": "loft-refit-polyline-mixed_counts-uniform-1e-06"
+    },
+    {
+      "family": "loft_refit_shallow_angles",
+      "id": "loft-refit-shallow-angle-0.25-0.0-quadratic"
+    },
+    {
+      "family": "loft_refit_shallow_angles",
+      "id": "loft-refit-shallow-angle-0.9-0.0-quadratic"
+    },
+    {
+      "family": "loft_refit_shallow_holdouts",
+      "id": "loft-refit-shallow-holdout-dyadic-10-rational"
+    },
+    {
+      "family": "loft_refit_shallow_holdouts",
+      "id": "loft-refit-shallow-holdout-dyadic-9-rational"
+    },
+    {
+      "family": "loft_refit_adaptive_shapes",
+      "id": "loft-refit-adaptive-shapes-quintic-0.0001"
+    }
+  ]
+}

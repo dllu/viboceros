@@ -20205,7 +20205,7 @@
     }
   ],
   "sha256": {
-    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
+    "Cargo.lock": "103e115fac7680002cb3912ec9161b34b3aeb2beaffcecdbe0b52f665c754a98",
     "crates/viboceros-command/src/component_seams.rs": "924d5e2833753a91ae983f462424092aea53a07d3000655f415ea2f7ebcf0948",
     "crates/viboceros-command/src/component_seams/arguments.rs": "9955b5c4fc6e4e3e2dc4592fe8bdfa4586ccf97b2d6246366ef0f4994d5a4090",
     "crates/viboceros-command/src/component_seams/mode.rs": "79360d68b0769178ccd854d6a84e0ab36dc8a0e2c9228f232010d0f11bbc1d40",
@@ -20493,7 +20493,7 @@
     "tools/rhino_oracle/observations/source_snapshots/e7425248319ba8edb1492a257af9005da7b2deacacb4162d63277e55150eb8d3.gz": "6726fa6eb4202e606514ab8419e102d673e6eeb6553a2016063faface5aa680a",
     "tools/rhino_oracle/observations/source_snapshots/f6edf57ebc5e61618b96ccbb0757a0b5b49650c3d1a55bfaf9393d3a9f41caf7.gz": "552627ad220c100e000722fe667cbc84a05a6c5b7e6bd805761e15db755d6906",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "1c599bd10d3d46ba5597e82af76163fee1f0df5dbcb667d8637795d7b5434475",
+    "tools/rhino_oracle/qualification_sources.py": "ae898b93a93bc2163278727525d347201e54eae3a638580ffe7a090a5cbb4668",
     "tools/rhino_oracle/report_mesh_outline.py": "efb6e16f54bbcf8f14314a12da935f78fe59872ddd4eb6e6881812458719d129",
     "tools/rhino_oracle/report_mesh_outline_command.py": "482963b6bec2514badd86e192e6ebe671ca9154140b15b66628177d17a769cff",
     "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
@@ -20610,7 +20610,7 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "91e3012cb18db9be9bb763dcc4903ba9d9a10a86347c0c31218d39f77f9b74a1",
-    "crates/viboceros-command/src/loft/refit_tests/multispan.rs": "c560db19033ce11a1f08fcd7173c28d6dfdb3d6942957f085da440ac2bd4d206"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "646e3a4028717267463e21c65719557b6fcf292e0fc6c2ad37a3b0fab4347ee2",
+    "crates/viboceros-command/src/loft/refit_tests/multispan.rs": "4fc6a5a03f198f823faaca5ccc03b4e68738fd18213215898bd1634bdd23534a"
   }
 }

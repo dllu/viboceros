@@ -8,7 +8,7 @@ mod comparison;
 
 #[test]
 fn curved_source_inspection_records_match_or_require_subdivision() {
-    compare("loft_refit_curved_clocks", 12, (6, 6));
+    compare("loft_refit_curved_clocks", 12, (12, 0));
 }
 
 #[test]

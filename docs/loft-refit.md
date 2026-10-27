@@ -2,63 +2,58 @@
 
 [Loft](loft.md) · [Section rebuilding](loft-rebuild.md)
 
-`Loft Refit=0.001` refits straight and polygon profiles to polynomial cubics
-before lofting. Open, closed, rational and unclamped profiles are supported,
-including spatial polygons and different corner counts. Sources, selection and
-attributes remain intact; accepting creates one undo step. Interactive Loft
-accepts `Refit` followed by a tolerance, or `RefitTolerance=<value>`.
-`Simplify=Refit` uses the current tolerance, defaulting to `1e-9`;
-`Simplify=None` disables simplification. Rebuild and Refit are mutually exclusive.
-Tolerances through `2 * sqrt(f64::EPSILON)` (approximately `2.98e-8`),
-including zero and equality, preserve the original profile definitions. Loft
-still prepares their common basis and region correspondence. This includes the
-`1e-9` default; choose a larger value to activate fitting.
+`Loft Refit=0.001` refits profiles to polynomial cubics before lofting.
+Straight and polygon profiles support open, closed, rational, unclamped and
+spatial sources, including different corner counts. Open smooth profiles can
+use certified adaptive subdivision and joining. Sources, selection and
+attributes remain intact; accepting creates one undo step.
 
-Active Refit requires same-sign weights and continuous, exactly straight
-regions with ordered controls. Exact rational span extraction admits the source;
-sampled linearity is insufficient. Constant spans and redundant collinear
-vertices disappear; reversals remain. Internal bends must exceed the legacy
-one-degree corner threshold, with a conservative floating boundary margin.
-Shallower bends can use a certified initial cubic; tighter settings still need
-the adaptive smooth fitter.
-Mixed open/closed profile sets remain unsupported.
-[Explicit API angles](loft-refit-angles.md) can retain resolved polygon corners
-or use the existing certified smooth proposals; suppressed corners still need
-adaptive fitting.
+Interactive Loft accepts `Refit` followed by a tolerance, or
+`RefitTolerance=<value>`. `Simplify=Refit` uses the current tolerance, defaulting
+to `1e-9`; `Simplify=None` disables simplification. Rebuild and Refit are mutually
+exclusive. Tolerances through `2 * sqrt(f64::EPSILON)` (approximately `2.98e-8`),
+including zero and equality, retain the original definitions while preparing
+their common basis and region correspondence. Choose a larger value to fit.
 
-[Smooth proposals](loft-refit-candidates.md) are also supported for sets of
-at least two clamped profiles without resolved tangent breaks. The endpoint-tangent cubic, optionally
-corrected by a common handle scale, must have a continuous positional bound.
-Single-Bezier fits retain half the requested tolerance; multispan initial fits
-can use the full tolerance after passing the measured interior-station rule.
-The tolerance must be smaller than each endpoint chord. For example, `Refit=0.1`
-can fit an open polynomial cubic; handle correction remains limited to single
-Bezier sources. Tighter settings may need the pending
-subdivision rules. Unsupported fits fail before document mutation.
+## Fitting and guarantees
 
-Degree-one proxies propose a shared region chart before cubic construction.
-The final controls use exact source vertices, including unclamped endpoints;
-one final rounding per control bounds the complete image distance by the requested
-tolerance. Direct construction in the shared basis avoids knot-insertion drift.
-This preserves geometric images, **not their original parameter correspondence**.
-Segment extraction supports degrees up to 16 under the existing work/bit budgets;
-whole straight profiles retain their previous path. Source and shared sections
-are limited to 512 controls and 256 profiles. Unrepresentable tolerances or region
-lengths fail explicitly.
+Straight regions require same-sign weights and exact rational collinearity and
+control order. Constant spans and redundant collinear vertices disappear;
+reversals remain. Region matching precedes direct shared-basis construction,
+with one final rounding bound against the exact source vertices.
 
-[Polygon validation](loft-refit-polylines-validation.json) covers the new command
-behavior and full native surface records. Adaptive smooth Refit still needs its
-subdivision policy. [Certified joining proposals](loft-refit-adaptive.md) now
-reconstruct C1 regions but remain separate from command acceptance; the separate [source-parameter approximation](cubic-approximation.md)
-is not a substitute. [Profile-set preparation](loft-refit-preparation.md)
-retains the paired-input reference and its limits.
+Smooth profiles first try a certified [initial cubic](loft-refit-candidates.md)
+and its qualified common-handle correction. Tighter fits use
+[adaptive subdivision, joining and reconstruction](loft-refit-adaptive.md).
+Every final curve requires a complete positional bound against its original
+source; samples only guide proposals. Adaptive common-basis edits require a
+fresh source certificate unless the curve is unchanged. Supplied native backend
+operations participate in matching and propagate errors before document mutation.
+Parameter correspondence can change. These bounds do not certify topology.
 
-Earlier [straight-profile checks](loft-refit-lines-validation.json) and the
-[investigation](loft-refit-validation.json) retain historical source bindings.
-Native data and content-addressed producer archives remain immutable.
+Generic adaptive fitting requires at least two open regular profiles, degree at
+most 16, tolerance below every endpoint chord, and no resolved tangent breaks.
+Closed smooth sources, mixed open/closed sets, exhausted budgets and unresolved
+proofs remain unsupported. Explicit [API angles](loft-refit-angles.md) control
+corner retention. Sources and shared sections have a 512-control limit; Loft
+accepts at most 256 profiles.
+
+## Reference comparisons
+
+[Adaptive command validation](adaptive-loft-preparation-validation.json) compares
+the actual SDK and document paths with
+saved Rhino records. Strict control-net comparisons retain their existing
+thresholds. New admissions also require complete polynomial surface bounds
+within the requested tolerance, including rounding in verification-only knot
+refinement. Different control nets can therefore pass a geometric comparison
+while remaining explicit strict mismatches.
+
+[Polygon validation](loft-refit-polylines-validation.json) and the earlier
+[preparation investigation](loft-refit-preparation.md) retain their historical
+source bindings. Native captures and producer archives remain immutable.
 
 ```sh
-cargo test -p viboceros-oracle --test loft_refit_polylines_native --test loft_refit_lines_native --test loft_refit_native
-cargo test -p viboceros-oracle --features native-smlib --test loft_refit_polylines_native --test loft_refit_lines_native --test loft_refit_native
-python3 -m unittest tools.rhino_oracle.test_loft_refit_polylines
+cargo test -p viboceros-oracle --test loft_refit_adaptive_preparation_native --frozen
+cargo test -p viboceros-command --lib loft::refit_tests --frozen
+python3 -m unittest tools.rhino_oracle.test_loft_refit_adaptive_admission
 ```

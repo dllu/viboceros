@@ -189,7 +189,6 @@
   ],
   "sha256": {
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
-    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
     "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
@@ -260,6 +259,7 @@
     "22ed6965d2fe59e64a7990d73a09969f42341821:tools/rhino_oracle/qualification_sources.py": "8227f8d1948ad28ad50426aa9e88828ffa129d85e23c60da11a21949fd115c48",
     "970fb3f0c74522be369d5329181cab68b500390a:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "f1ccf56b278d9adf19d4188965f1ac19b01e16635e9fc379d91d9eac097e4f63",
     "970fb3f0c74522be369d5329181cab68b500390a:docs/loft-fitting-clock.md": "74b18443e730df41fdf962d10e26c05103e022a9437283970c96bf0a96e2bfc7",
-    "970fb3f0c74522be369d5329181cab68b500390a:crates/viboceros-geometry/tests/component_clock_native.rs": "2da3d27768c52eaadc6eaadf6faebf51b430083b55e7c36153da4dcf32fa6c9e"
+    "970fb3f0c74522be369d5329181cab68b500390a:crates/viboceros-geometry/tests/component_clock_native.rs": "2da3d27768c52eaadc6eaadf6faebf51b430083b55e7c36153da4dcf32fa6c9e",
+    "85d130537e64272f21ab4f4b023a5164c4477991:Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424"
   }
 }

@@ -211,7 +211,6 @@
     "crates/viboceros-geometry/tests/loft_midpoint_clock_native.rs": "bb6d84c0f6d756755c9d2073dbeb6f5e05e39869b06b889b9333cc2046444a96",
     "crates/viboceros-geometry/tests/scalar_clock_native.rs": "fb3f0a9b9d87d7d07dd8694350d665aa13dd299ee67a33f3ea09c2c48cc27cba",
     "crates/viboceros-geometry/tests/loft_refit_clock_native.rs": "8471c7dff971a6721164c328b72fe129c67b430faa99fb2d4d19039723adb918",
-    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
     "crates/viboceros-oracle/src/lib.rs": "8485ae38ce6d33b105411caf5cbc596f329402305c7188d582d520d9f2bc475c",
     "crates/viboceros-oracle/src/arc_length_batch.rs": "8fcfdec96b5338ebe038a551cc1a57a51d3cd17d1f15d0f9ef030a5d7ed8fcef",
     "crates/viboceros-oracle/tests/interval_length_native.rs": "5cb4b5c7d8fdfda6b949c4579aa6dc3b386d08b816a2478c3c8bd0fedc5cfc95",
@@ -247,6 +246,7 @@
     "9ddd2f318590615e9d942d8abb11cf78437a944e:docs/loft-fitting-clock.md": "12118a8d01152ac924d87ac5435540744d0b32502c9c9b8ed4052f5a75a1f8fc",
     "9ddd2f318590615e9d942d8abb11cf78437a944e:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "f8408e459dda7adab3b98a1c6e32ad7e64ce3b07a4ac7c317e2dad5a1901e31e",
     "d93802265c63b9431793f28e83b1ddf622c5f5b1:crates/viboceros-oracle/tests/loft_refit_adaptive_join_native.rs": "5c37ab51f62c419bdc392d45a5b4a6afb108aa0818bc3d4259d5c655544a4896",
-    "970fb3f0c74522be369d5329181cab68b500390a:crates/viboceros-geometry/tests/component_clock_native.rs": "2da3d27768c52eaadc6eaadf6faebf51b430083b55e7c36153da4dcf32fa6c9e"
+    "970fb3f0c74522be369d5329181cab68b500390a:crates/viboceros-geometry/tests/component_clock_native.rs": "2da3d27768c52eaadc6eaadf6faebf51b430083b55e7c36153da4dcf32fa6c9e",
+    "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d"
   }
 }

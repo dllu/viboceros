@@ -90,7 +90,11 @@ fn unresolved_bends_and_continuous_tangent_curvature_changes_have_complete_bound
                     .is_some()
             );
         }
-        assert!(try_prepare_refitted_loft_sections(&sources, 1e-6).is_err());
+        assert!(prepare(&sources, 1e-6, None).is_err());
+        for fit in try_prepare_refitted_loft_sections(&sources, 1e-6).unwrap() {
+            assert!(fit.control_points().len() > 4);
+            assert!(crate::curve_fit::g1::within_deviation(&c, &fit, 1e-6).unwrap());
+        }
         assert_eq!(sources, before);
     }
 }
@@ -165,6 +169,13 @@ fn multispan_interior_bumps_cannot_hide_behind_endpoints_and_the_midpoint() {
     );
     let sources = vec![c; 2];
     let before = sources.clone();
-    assert!(try_prepare_refitted_loft_sections(&sources, 0.1).is_err());
+    assert!(prepare(&sources, 0.1, None).is_err());
+    for (source, fit) in sources
+        .iter()
+        .zip(try_prepare_refitted_loft_sections(&sources, 0.1).unwrap())
+    {
+        assert!(fit.control_points().len() > 4);
+        assert!(crate::curve_fit::g1::within_deviation(source, &fit, 0.1).unwrap());
+    }
     assert_eq!(sources, before);
 }

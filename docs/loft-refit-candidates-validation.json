@@ -263,7 +263,6 @@
     "Native adaptive handle adjustment, subdivision, general smooth fitting and explicit angle overrides remain unfinished. The retained full scalar SDK diagnostic remains failing; this feature makes no new scalar parity claim."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/loft/refit/candidate/tests.rs": "ca41063d7bc5ec6f931b8c0a2a02c6ed49d67687402b8941ab36042217250646",
     "tools/rhino_oracle/fixtures/loft_refit_candidate_boundary.json": "f037e891ee9b0e213b5ad31656f8b1f99c333c95f22358a8cf1286948816c25c",
     "tools/rhino_oracle/fixtures/loft_refit_candidates.json": "cb46de557caa8faa5a77dbc31fed3f7fa0205ef24e71445fef5b2ef1cb6d647e",
     "tools/rhino_oracle/fixtures/loft_refit_coarse.json": "d5b9658676cb92181c28dc3d6f1e382b6c7dfc0313f9b7623c7b229c47d72fc3",
@@ -290,7 +289,6 @@
     "tools/rhino_oracle/generate_loft_rebuild.py": "1d33687f0f250802b4ec1545aacb2d7adf9c344040ba39209a9c5526cdccd5ac",
     "tools/rhino_oracle/fixtures/loft.json": "709c140d538d1d6b6400ead31c67bb9755f8a011ded3d7057c5c994b0fc99913",
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
-    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/src/nurbs/smoothing.rs": "41cd2a86078117e2eb676497e21f474ae617767784d0950abd48823004bf2abb",
     "crates/viboceros-geometry/src/nurbs/grips.rs": "e9a444386055417e477b9263d6470a75d35e7bf018bd4c3f81a79b6937a7351d",
@@ -423,6 +421,8 @@
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
     "22ed6965d2fe59e64a7990d73a09969f42341821:crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "0be1ffeb236a780720c9762d07bab10334691c0f2b7607ff405d71824b33429a",
-    "c90bdc1ec088ea11b120e460f706506e08137b95:crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs": "5d6a1bfa7b4d1d6a5379411d51fb40379c34a516a145af4cbc8d3300b2417071"
+    "c90bdc1ec088ea11b120e460f706506e08137b95:crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs": "5d6a1bfa7b4d1d6a5379411d51fb40379c34a516a145af4cbc8d3300b2417071",
+    "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-geometry/src/loft/refit/candidate/tests.rs": "ca41063d7bc5ec6f931b8c0a2a02c6ed49d67687402b8941ab36042217250646",
+    "85d130537e64272f21ab4f4b023a5164c4477991:Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424"
   }
 }

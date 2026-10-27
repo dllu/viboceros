@@ -1,10 +1,12 @@
 # Adaptive Refit proposals
 
-[Loft Refit](loft-refit.md) · [Current validation](adaptive-curve-domains-validation.json)
+[Loft Refit](loft-refit.md) · [Command validation](adaptive-loft-preparation-validation.json)
 
-The adaptive APIs return certified geometry proposals. Rhino-compatible general
-adaptive command preparation is still unfinished: fitting decisions can produce
-different control nets even when the complete geometric error is bounded.
+The adaptive APIs return certified geometry proposals and support open regular
+[Loft Refit profiles](loft-refit.md). Actual SDK and document preparation retains
+the fitted region policy through shared-basis matching and rechecks any edited
+curve against its original source. Fitting decisions can still produce different
+control nets even when complete geometric error is bounded.
 
 ## Construction and joining
 
@@ -64,7 +66,8 @@ subdivision continue. Neither image bounds nor parameter order certify topology.
 
 ## Remaining differences
 
-Saved comparisons retain 217 of 231 strict surface-record matches at `1e-9`.
+Saved [proposal comparisons](adaptive-curve-domains-validation.json) retain
+217 of 231 strict surface-record matches at `1e-9`.
 All proposals have complete original-source bounds; fourteen control-net or
 subdivision differences remain. The current validation records their identities,
 source bindings and coverage across commands, styles, charts and model units.

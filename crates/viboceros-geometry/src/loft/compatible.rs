@@ -31,6 +31,16 @@ pub(super) fn prepare_refit_with_operations<E: From<GeometryError>>(
     match_basis(&parameterized, clamp, elevate, refine)
 }
 
+pub(super) fn prepare_fitted_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+    elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
+    refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
+    let parameterized = super::parameterize::prepare_fitted(curves, clamp)?;
+    match_basis(&parameterized, clamp, elevate, refine)
+}
+
 fn match_basis<E: From<GeometryError>>(
     curves: &[NurbsCurve],
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,

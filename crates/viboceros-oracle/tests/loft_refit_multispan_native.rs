@@ -8,7 +8,7 @@ mod comparison;
 
 #[test]
 fn multispan_proposals_match_native_or_retain_the_adaptive_policy_gap() {
-    compare("loft_refit_multispan", 66, (30, 36));
+    compare("loft_refit_multispan", 66, (66, 0));
 }
 
 #[test]

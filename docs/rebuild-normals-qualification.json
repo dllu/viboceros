@@ -920,7 +920,7 @@
     "Physical native postselection, restricted objects, grips, invalid index repair, general mesh repair, numeric extremes, other units and comparative performance remain unqualified. The command changes normals and removes unused vertices; it does not unify face orientation. Shared native resource limits apply after compaction."
   ],
   "sha256": {
-    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
+    "Cargo.lock": "103e115fac7680002cb3912ec9161b34b3aeb2beaffcecdbe0b52f665c754a98",
     "src/app.rs": "49a2dd7a7b4823043c0a544d219a4127c99c137deb3a58fce299aa823c0f6da1",
     "src/app/object_selection.rs": "096905fbea59e78cdcb2efee64178db61a9ce1359b3d830908d80ffd275ecbd5",
     "src/app/object_selection/rebuild_normals_tests.rs": "ab289426011c19312d4518699f45a12121a971914ce8441446c958a2503a3939",
@@ -1104,7 +1104,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "1c599bd10d3d46ba5597e82af76163fee1f0df5dbcb667d8637795d7b5434475",
+    "tools/rhino_oracle/qualification_sources.py": "ae898b93a93bc2163278727525d347201e54eae3a638580ffe7a090a5cbb4668",
     "tools/rhino_oracle/fixtures/rebuild_normals_sdk.json": "f10d27e064b4c11c615bb0bf633d4f298e4833174bd618abfbec8d2665f3fab2",
     "tools/rhino_oracle/observations/rebuild_normals_sdk.json": "b74843296ad33cd2f3bb95d0606e99edff50509d3c866e2ed64ece3ddceab14d",
     "tools/rhino_oracle/fixtures/rebuild_normals_command.json": "9ab102a645c2158524411591d443e8c407457dc682c20c4765bbc98aa0ddb181",
@@ -1261,7 +1261,7 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "91e3012cb18db9be9bb763dcc4903ba9d9a10a86347c0c31218d39f77f9b74a1",
-    "crates/viboceros-command/src/loft/refit_tests/multispan.rs": "c560db19033ce11a1f08fcd7173c28d6dfdb3d6942957f085da440ac2bd4d206"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "646e3a4028717267463e21c65719557b6fcf292e0fc6c2ad37a3b0fab4347ee2",
+    "crates/viboceros-command/src/loft/refit_tests/multispan.rs": "4fc6a5a03f198f823faaca5ccc03b4e68738fd18213215898bd1634bdd23534a"
   }
 }

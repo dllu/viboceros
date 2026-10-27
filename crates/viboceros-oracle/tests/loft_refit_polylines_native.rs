@@ -7,7 +7,7 @@ use viboceros_oracle::{ProbeRequest, run_request};
 mod comparison;
 
 #[test]
-fn polygon_refit_matches_native_and_retains_unimplemented_smooth_cases() {
+fn polygon_and_suppressed_corner_refits_match_native() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     let mut matched = 0;
     let mut pending = 0;
@@ -39,18 +39,11 @@ fn polygon_refit_matches_native_and_retains_unimplemented_smooth_cases() {
                 continue;
             }
             assert_eq!(op["id"], row["id"]);
-            let smooth = id.contains("-small_kink-")
-                || id
-                    .strip_prefix("loft-refit-corner-angle-")
-                    .is_some_and(|s| s.split('-').next().unwrap().parse::<f64>().unwrap() <= 1.);
             let empty = row["value"]["surfaces"].as_array().unwrap().is_empty();
             let mut request = query.clone();
             request["operations"] = json!([op]);
             let result = run_request(&serde_json::from_value::<ProbeRequest>(request).unwrap());
-            let subdivided = row["value"]["surfaces"][0]["control_count"][1]
-                .as_u64()
-                .is_some_and(|n| n > 4);
-            if (smooth && subdivided) || empty {
+            if empty {
                 let error = result.unwrap_err().to_string();
                 assert!(
                     error.contains(if family == "loft_refit_polyline_ends" {
@@ -76,6 +69,6 @@ fn polygon_refit_matches_native_and_retains_unimplemented_smooth_cases() {
             matched += 1;
         }
     }
-    assert_eq!((matched, pending), (158, 28));
+    assert_eq!((matched, pending), (170, 16));
     println!("LOFT_REFIT_POLYLINES matched={matched} pending={pending} maximum={maximum}");
 }
