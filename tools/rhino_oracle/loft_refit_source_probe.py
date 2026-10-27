@@ -2,6 +2,41 @@
 from loft_refit_probe import cubic_sections
 
 
+def source_structure(curve, geometry, definition):
+    """Inspect an owned source without affecting the fitting operands."""
+    source = curve.DuplicateCurve()
+    nurbs = None
+    try:
+        domain = source.Domain
+        discontinuities = {}
+        for name in ['C1_continuous', 'G1_continuous', 'G2_continuous']:
+            cursor, cuts = domain.T0, []
+            for unused in range(513):
+                found, parameter = source.GetNextDiscontinuity(
+                    getattr(geometry.Continuity, name), cursor, domain.T1)
+                if not found:
+                    break
+                if not cursor < parameter < domain.T1:
+                    raise ValueError('invalid source discontinuity traversal')
+                cuts.append(float(parameter))
+                cursor = parameter
+            else:
+                raise ValueError('source discontinuity budget exceeded')
+            discontinuities[name] = cuts
+        spans = []
+        for i in range(source.SpanCount):
+            span = source.SpanDomain(i)
+            first = source.DerivativeAt(span.T0, 1, geometry.CurveEvaluationSide.Above)[1]
+            last = source.DerivativeAt(span.T1, 1, geometry.CurveEvaluationSide.Below)[1]
+            spans.append(dict(domain=[float(span.T0), float(span.T1)],
+                derivatives=[[float(v.X), float(v.Y), float(v.Z)] for v in [first, last]]))
+        nurbs = source.ToNurbsCurve()
+        return dict(nurbs=definition(nurbs), spans=spans, discontinuities=discontinuities)
+    finally:
+        if nurbs is not None:
+            nurbs.Dispose()
+        source.Dispose()
+
 
 def numerical_clocks(curve):
     # Inspect an owned duplicate so diagnostics cannot affect fitting caches.
@@ -45,6 +80,7 @@ def inspect(curves, tolerance, angle, absolute, geometry, definition):
                         2, 0, tolerance, angle) or [])
                     records.append(dict(simplified=simplify, source_count=count,
                         source_types=[s.GetType().Name for s in sources[:count]],
+                        source_structure=source_structure(sources[0], geometry, definition),
                         numerical_clocks=numerical_clocks(sources[0]),
                         curves=[definition(c) for c in fitted]))
                 finally:

@@ -233,8 +233,7 @@
     "tools/rhino_oracle/observations/source_snapshots/5dacad5b30fad0ff698c275ca09e74fab4086a0eb9360bb48e965cb6b0c46bde.gz": "ec05d3c5410efca551ffd450cad5c1ed86654b9ea4e5bf6ebf6228a9ea258b9f",
     "crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs": "189e8964e23bcf5bf2fb74bb05ae3cdf7bc054cf31ad70dbeadb86b967973e8f",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
-    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
-    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13"
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857"
   },
   "git_sha256": {
     "595da11f4c1a015b910e91188da125c6e2df4fde:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "a6f55f34de55988055d442b146593a4c3d02571fa14a9a0578ef8a00181fe60d",
@@ -244,6 +243,7 @@
     "c0f063428b93b559435508089563f45a156f569c:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200",
     "c0f063428b93b559435508089563f45a156f569c:crates/viboceros-oracle/src/arc_length_batch.rs": "e7c43eb70dc20a934fad524fb0fbc93aa6ce10b52487bd544cc0dad07e2a1eed",
     "c0f063428b93b559435508089563f45a156f569c:tools/rhino_oracle/loft_scalar_clock_probe.py": "7261d3967be0d4c71af4ecfa963521e773fc082b153e728ea680d873e9e401bb",
-    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13"
   }
 }

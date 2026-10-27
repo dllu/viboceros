@@ -329,15 +329,10 @@
   "sha256": {
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
-    "crates/viboceros-geometry/src/lib.rs": "4b7a4c520afb012471dbd002ae70bfc003e02fc0111964cedc6f35ab08667bea",
     "crates/viboceros-geometry/src/loft.rs": "674e5d2434f7e8760718856cf57d66f9b28223fe28dc4e1c8c71d0010600d71c",
     "crates/viboceros-geometry/src/surface_pullback.rs": "c0c0ed5b26e93b54bb1a6c1b88c6cc28d05bb32f13785776fd911b066d2f8721",
     "crates/viboceros-geometry/src/loft/refit.rs": "02c6849cf09a9eac79f4b28c93393fb2a511845d65ad78a4e730c41cfbf6550f",
     "crates/viboceros-geometry/src/loft/parameterize.rs": "63af4a9ac53f9d7e54df5c9accc856b06b141251290313b4c8058ab9889b6a5c",
-    "crates/viboceros-opennurbs/src/lib.rs": "f893c08c3468c20807d67ea5b72d53c4e0801bc7f4bac3b8da643b8384d08ea6",
-    "crates/viboceros-opennurbs/src/curve.rs": "427f42ac025b748487f519f75fea6d318c2ac6807392a034ec678163bc7aa374",
-    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "06477c406bcbf03a3b0165646a05f9cbca28ae3a9b5016542497896c50442ba7",
-    "crates/viboceros-opennurbs/native/curve_discontinuities.h": "9d44f601425a3a9820624d56db7ca004d822cc9398d46c1addb70f928c292757",
     "crates/viboceros-oracle/src/loft.rs": "50e58f5f1194b1871ad10e834711f90b298f3cc301020efc4cc00663b08e8e1c",
     "crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6231a144e2ed247bfd764016e410f29ec1eec680b27b4b25e0553db51ae91dcf",
     "crates/viboceros-command/src/loft.rs": "2afdeeac349f532a7cb6b343e096701200d0875e3d66def29736307fa8879c21",
@@ -422,8 +417,6 @@
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "6cafae75be0f3387ff84912064409bd1afcfdd40400bdaa3753804c260f71c10",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
     "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
-    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
-    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
     "crates/viboceros-opennurbs/native/curve_tangents.h": "99be0dc2d58cfcc999e8b8402fd18eb9ca0b3cd7173a3195b2121bf047ddded7",
     "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
@@ -464,6 +457,13 @@
   "git_sha256": {
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:tools/rhino_oracle/qualification_sources.py": "c1cd033b977ebfcf2f374ca3977f689cd0a5bd127d07d0e0a9b437343d68d868",
     "c0f063428b93b559435508089563f45a156f569c:docs/loft-refit-adaptive.md": "d4d47ffe96d3cbc9a88a8c1818e9752718969997631547e8b6c667e35f8a27eb",
-    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/lib.rs": "4b7a4c520afb012471dbd002ae70bfc003e02fc0111964cedc6f35ab08667bea",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/src/lib.rs": "f893c08c3468c20807d67ea5b72d53c4e0801bc7f4bac3b8da643b8384d08ea6",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/src/curve.rs": "427f42ac025b748487f519f75fea6d318c2ac6807392a034ec678163bc7aa374",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/src/curve/discontinuities.rs": "06477c406bcbf03a3b0165646a05f9cbca28ae3a9b5016542497896c50442ba7",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuities.h": "9d44f601425a3a9820624d56db7ca004d822cc9398d46c1addb70f928c292757",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5"
   }
 }

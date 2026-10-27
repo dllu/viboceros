@@ -324,6 +324,8 @@ def _expand_sources_once(paths):
                         for name in ['conics', 'controls', 'degree_weights', 'evaluation',
                                      'extension', 'extension_boundaries', 'extension_pieces',
                                      'intersections', 'knots', 'projection', 'topology', 'trimming'])
+    if 'crates/viboceros-geometry/src/nurbs/discontinuities.rs' in expanded:
+        expanded.append('crates/viboceros-geometry/tests/source_continuity_native.rs')
     if 'crates/viboceros-oracle/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-oracle/src/curve_path_extrusion.rs')
     if 'crates/viboceros-oracle/tests/support/surface_apex.rs' in expanded:

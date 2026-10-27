@@ -40,6 +40,13 @@ source images can produce different fitted control counts, so a polygon proxy
 cannot establish native subdivision by geometric equivalence alone. Direct
 [interval-clock measurements](interval-clock-validation.json) retain the
 corresponding scalar length queries; they do not qualify a sampling rule.
+Sixty-four source inspections preserve fitted definitions under degree elevation,
+affine chart changes and polyline simplification. Every measured source has a
+C1 break but no G1/G2 break; that distinction alone does not select subdivision.
+`NurbsCurve::parametric_discontinuity_parameters` exposes the public OpenNURBS
+C0/C1/C2 query alongside geometric continuity, retaining the source chart.
+[Source-continuity validation](source-continuity-validation.json) records these
+comparisons and limiting derivatives without extending adaptive admission.
 
 Invalid inputs, exhausted budgets and unresolved certificates produce no partial
 fit or source mutation. Limits remain 128 pieces, depth 24 and 512 source

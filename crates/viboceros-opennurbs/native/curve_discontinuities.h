@@ -9,7 +9,7 @@ static int32_t vibo_curve_discontinuities_impl(uint32_t degree, size_t count,
   set_error(error,capacity,"");
   try {
     if(!found || !parameters || count<2 || count>1000000 || degree==0 || degree>=count ||
-       knot_count!=count+degree+1 || continuity_kind<0 || continuity_kind>2 ||
+       knot_count!=count+degree+1 || continuity_kind<0 || continuity_kind>5 ||
        !std::isfinite(cos_angle_tolerance) || cos_angle_tolerance < -1. || cos_angle_tolerance > 1. ||
        !std::isfinite(curvature_tolerance) || curvature_tolerance < 0.) {
       set_error(error,capacity,"Invalid curve discontinuity buffers or tolerance");return 0;
@@ -23,8 +23,14 @@ static int32_t vibo_curve_discontinuities_impl(uint32_t degree, size_t count,
     const auto* curve=ON_Curve::Cast(owned.get());
     if(!curve){set_error(error,capacity,message.empty()?"Invalid curve discontinuity source":message);return 0;}
     const auto domain=curve->Domain();double start=domain[0],parameter=0.;int hint=0;
-    const auto continuity=continuity_kind==2?ON::continuity::G2_continuous:
-        continuity_kind==1?ON::continuity::Gsmooth_continuous:ON::continuity::G1_continuous;
+    auto continuity=ON::continuity::G1_continuous;
+    switch(continuity_kind) {
+      case 1: continuity=ON::continuity::Gsmooth_continuous;break;
+      case 2: continuity=ON::continuity::G2_continuous;break;
+      case 3: continuity=ON::continuity::C0_continuous;break;
+      case 4: continuity=ON::continuity::C1_continuous;break;
+      case 5: continuity=ON::continuity::C2_continuous;break;
+    }
     while(curve->GetNextDiscontinuity(continuity,start,domain[1],&parameter,&hint,nullptr,cos_angle_tolerance,curvature_tolerance)) {
       if(!(parameter>start && parameter<domain[1]) || *found>=knot_count) {
         set_error(error,capacity,"Invalid curve discontinuity traversal");return 0;

@@ -405,7 +405,6 @@
     "crates/viboceros-geometry/src/nurbs/closest_point/tests/span_coverage.rs": "e28b2094f715fb2d0a90d8df05a66e39abd1f8e314814dd8fd5fd47a9d8e60fb",
     "crates/viboceros-geometry/src/nurbs/decompose.rs": "30e9fe6c7d2f2d2e9b0c44bfcf86ee042ad499810ed96a92d0c5fa772d773591",
     "crates/viboceros-geometry/src/nurbs/decompose/tests.rs": "ada2fd6a1762e8eef0945d7bf22db0b6a6960547496d3bb12cc1bb3e9f05e49c",
-    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
     "crates/viboceros-geometry/src/nurbs/edit_point_insertion.rs": "5cc9fbed941f08d707aa029e4385cd91017d6939ca6670ac6f5119590cf7fbfd",
     "crates/viboceros-geometry/src/nurbs/edit_point_insertion/tests.rs": "36a2b67430fd2554cb0bfacdf829e816e3fe79797c76c3e32e3f2e2f25ceed56",
     "crates/viboceros-geometry/src/nurbs/ellipticity.rs": "b17e2f7b9a62eaff8e79a4d3013f466b142f7f28625911534b693a80d127f2fb",
@@ -536,8 +535,7 @@
     "tools/rhino_oracle/observations/scalar_linearity.json": "31d01e9347b0cf67ff55cf69291582dbca1fd0cc7817b424416b57dec6ad5bbf",
     "tools/rhino_oracle/observations/source_snapshots/63e83f89dd7e8f8692c517d325114cf755d69448dabdd7fca99ed285c989d3f0.gz": "9cf4417706ae8c8dfaab18d068a17fffa099acef28d0f8aba36c0b48ac620c13",
     "crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs": "189e8964e23bcf5bf2fb74bb05ae3cdf7bc054cf31ad70dbeadb86b967973e8f",
-    "crates/viboceros-smlib/native/surface_apex_extrusion.h": "1a7b1b21a26074670770e3edb15f3d292b9c6433e067d8387fa36d6aaed0ade2",
-    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5"
+    "crates/viboceros-smlib/native/surface_apex_extrusion.h": "1a7b1b21a26074670770e3edb15f3d292b9c6433e067d8387fa36d6aaed0ade2"
   },
   "git_sha256": {
     "fbbe12f659fb814c0dddaa57617f09292c35be56:crates/viboceros-smlib/src/native/knot_refinement.rs": "426ede226d35dcce94dbd3a5f6f9a97156a0451de22cfa72f430ee5ef79b8655",
@@ -555,7 +553,9 @@
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:docs/loft-fitting-clock.md": "aeae180522d17933a01aadd6eb3975367529fb6bce43903bff63fa0833576fda",
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "0b4b5ac93c9addc4d810c5a584cc453fb04a2843d7e63f90b6b74e61e8400e2b",
     "c0f063428b93b559435508089563f45a156f569c:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200",
-    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5"
   },
   "python_suite": {
     "tests": 1995,

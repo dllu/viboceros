@@ -1,0 +1,209 @@
+{
+  "feature": "Parametric curve continuity and source-clock diagnostics",
+  "native_reference": "Rhino 8.32.26160.13001 public curve discontinuities and limiting derivatives",
+  "epsilon": 1e-09,
+  "api": {
+    "type": "CurveParametricContinuity",
+    "levels": [
+      "C0",
+      "C1",
+      "C2"
+    ],
+    "kernel_method": "NurbsCurve::parametric_discontinuity_parameters",
+    "adapter_function": "curve_parametric_continuity_breaks",
+    "source_chart_retained": true,
+    "strictly_interior": true,
+    "source_mutation": false,
+    "controls_limit": 1000000,
+    "native_constructor_validation_retained": true,
+    "surface_geometric_policy_changed": false
+  },
+  "native_comparisons": {
+    "records": 64,
+    "continuity_queries": 768,
+    "limiting_derivatives": 1024,
+    "maximum_difference": 1.7763568394002505e-15
+  },
+  "python_suite": {
+    "tests": 2029,
+    "seconds": 303.34,
+    "passed": true
+  },
+  "adaptive_command_acceptance_qualified": false,
+  "general_scalar_sdk_parity_qualified": false,
+  "existing_native_observations_changed": false,
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-opennurbs",
+        "--lib",
+        "curve::discontinuities",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 4
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "source_continuity_native",
+        "--test",
+        "loft_domains_native",
+        "--test",
+        "surface_creases_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 4
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "loft::",
+        "--frozen"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 60
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--features",
+        "native-smlib",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "passed": true,
+      "tests": 2029
+    }
+  ],
+  "observations": [
+    "New C0/C1/C2 queries delegate to public OpenNURBS through the existing owned constructor, buffer limits and strict interior traversal. Parametric derivatives depend on the source chart; geometric G1/G2/Gsmooth policies retain their existing enum and selector values.",
+    "Analytic adapter tests distinguish a straight locus with a speed jump from one with a pure second-derivative jump. They cover affine chart changes and negative homogeneous gauges. Sources rejected by native NURBS validation, including full-order interior knots, return errors rather than empty continuity results.",
+    "The 64 frozen profile sets compare original, shifted-domain, degree 3 and degree 5representations in both directions and at two fit tolerances. Native source inspection also retains simplified PolylineCurve definitions, C1/G1/G2 breaks and limiting derivatives on owned duplicates.",
+    "All 768 continuity and 1,024 limiting-derivative comparisons match within 1e-9. Existing geometric region and surface-crease regressions remain passing; two pre-existing raw/near-tie diagnostics remain ignored.",
+    "Native fitted definitions remain invariant within 1e-9 under tested degree elevation, affine charts and polyline simplification. All measured sources have one C1 break and no G1/G2 breaks; the existence of a C1 break alone does not determine the varying fitted topology.",
+    "No subdivision heuristic was admitted. A separate fixed-topology prototype interpolating nine measured length parameters reconstructs the two tight default-clock control nets to about 1e-15, but fails other source clocks. It uses native target knots and is not a qualified adaptive algorithm."
+  ],
+  "sha256": {
+    "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "crates/viboceros-opennurbs/Cargo.toml": "9b668e8fae591bcb025e5286981dd05289192abff586834fe219a578c9e1af30",
+    "crates/viboceros-opennurbs/build.rs": "25eafad52479bdd64caf928585ba2652877b6466c92fd4937dce290b0edeccc3",
+    "crates/viboceros-opennurbs/src/lib.rs": "543de4ad7f94145f79750e1cb4869ef30afab5a38f9f25ac8bf9609e2a27ed9e",
+    "crates/viboceros-opennurbs/src/curve.rs": "a9aad4bc2dddb386d6fed0c6c2614989070941c7396e896df57e4a3da8fbe103",
+    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "822a2b212d918c6cb8fa179744258d6ae655e4868f63e577e7275fd8a234334c",
+    "crates/viboceros-opennurbs/native/curve_discontinuities.h": "f130962df522d096b6753d342bab011a79ef7bbe2500561a89ea6ae5387bf70d",
+    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "a7d086596fa493c138370a73cddbce3815d78c4b14fe7579c8724f1abf40b21e",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "6cafae75be0f3387ff84912064409bd1afcfdd40400bdaa3753804c260f71c10",
+    "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
+    "crates/viboceros-geometry/src/lib.rs": "ce30d74bc6ae65c69607039362bb1c0262f0ae2eca76fa94713ee1441699ddb4",
+    "crates/viboceros-geometry/src/nurbs.rs": "3763f2b48cd95aa29d2ddbf61cf4421ecf083438e62b8decc0d13742deaccfda",
+    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "9af8aee27704d626b200f0aeb2e4b9274765f63b5dca61133bfcc1079dac9a8a",
+    "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab",
+    "crates/viboceros-geometry/tests/loft_domains_native.rs": "f035e69f19c42dddfc9f3bc219fb10ceff6ca342e8d9d9451444b409e22185e4",
+    "crates/viboceros-geometry/tests/surface_creases_native.rs": "1a83658ffe4e885484f0f3e8421a6b5f8a3067fe68b233a1c5fabd14561c421f",
+    "tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e",
+    "tools/rhino_oracle/loft_refit_source_probe.py": "0da758af1b17526e85f94b8a94e830af02b49c6c2a491f6a0845ac3ce969ddc4",
+    "tools/rhino_oracle/loft_refit_probe.py": "31fdf4db7d3eedd0d54eaf99dcdb499f92ccb575ee5a7dc7d4fa6bbd9489c4e0",
+    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "tools/rhino_oracle/test_source_continuity.py": "b42f1c46203c38056d5bf52c05076d8487e9c82cb37483b55c2e1388cb01421b",
+    "docs/loft-refit-adaptive.md": "e62b2d2095af8ac238f4702ebcf65a238a6900edce8cbcf0cf19e3c6c2701839",
+    "tools/rhino_oracle/generate_loft_refit_source_continuity.py": "75be4a7dc8c55015c5a3f05cd15645a7850b724305ca5445b4e5b6fec9379089",
+    "tools/rhino_oracle/fixtures/loft_refit_source_continuity.json": "10b752b6a6824454a1b6a87bd1d53c4ca9edd2cd0ef482dee263452a55eaaf05",
+    "tools/rhino_oracle/observations/loft_refit_source_continuity.json": "df98f7fffe616584983aafcba02664a08f5a2f5f23ed6694046d86955b43eca3",
+    "tools/rhino_oracle/observations/source_snapshots/75be4a7dc8c55015c5a3f05cd15645a7850b724305ca5445b4e5b6fec9379089.gz": "d77f60bcc84ec818fa3c510705c8e0758fd8c6afcaff5fc7b3cf323c0cc86004",
+    "tools/rhino_oracle/observations/source_snapshots/b8cf94812e8b8472683bab2ff15811c289be61f8adb6155671ed522240183e1f.gz": "2c1248defdfa7eafb1262f7ebb646eb8b1a049990dfb59d46a9b6a58624ffc82",
+    "tools/rhino_oracle/observations/source_snapshots/0da758af1b17526e85f94b8a94e830af02b49c6c2a491f6a0845ac3ce969ddc4.gz": "d4f440f8998835b875f0a0213d2900097bf5c85e6170177ba25424a57089b754",
+    "tools/rhino_oracle/observations/source_snapshots/31fdf4db7d3eedd0d54eaf99dcdb499f92ccb575ee5a7dc7d4fa6bbd9489c4e0.gz": "f45e71f24a07d3daebe2f72ae7e19274d85c2d746fb46d2789e1153e27ed4216",
+    "tools/rhino_oracle/observations/source_snapshots/8f2d08950f62d74b76c809f6894e9e401b5f576c69a4cd87fab1fb8e63e5c237.gz": "017662cc3c7382fb1a3021d1e973b9b72462cbf8b2973005cbdabf5da693f8f8",
+    "tools/rhino_oracle/observations/source_snapshots/d5b384ea36dfe530289f512b132b3f9d8000a8756c112f135cd90911e9d017f4.gz": "d0344be90c51b7c8eb17e131dc773a6ca6a5e769595398f6187ebc1ffeb2f22b",
+    "tools/rhino_oracle/observations/source_snapshots/a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd.gz": "26c5452d59e2fe178d637a5b89a7f7421aa5aea4069e0468d93b87bc4a0e9b66",
+    "tools/rhino_oracle/observations/source_snapshots/dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9.gz": "fbd17990aa13535271a26444c03b4d43dcb5bcf4857960a33112b159a7230df6",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
+    "crates/viboceros-geometry/src/nurbs/conics.rs": "f6185937831be9c3ad7f2daf7a829f4a2d69712c62179b47d681862031b5042c",
+    "crates/viboceros-geometry/src/nurbs/tests.rs": "4dd1d1369bd6cc0bd02bb68fa18286bb81cce905dbcf7973b40152d969269cbf",
+    "crates/viboceros-geometry/src/nurbs/tests/conics.rs": "c704accf2bedd4b9f21229faf7f610fc14f591e58c175841a907af3a4e98882f",
+    "crates/viboceros-geometry/src/nurbs/tests/controls.rs": "26ca0095d03f9c164a1263444d9c8c071d9c0b37eeb47b57d4b406e23ad786eb",
+    "crates/viboceros-geometry/src/nurbs/tests/degree_weights.rs": "2bc8f7bd8d37b06334ea53cf3a252cc7a322c79e822f0f1d1958ac78bfc94997",
+    "crates/viboceros-geometry/src/nurbs/tests/evaluation.rs": "7ae52ee519a0482cb9f028cc9a437b72d91b95d6a2a2c90b38337f83b2533b62",
+    "crates/viboceros-geometry/src/nurbs/tests/extension.rs": "b8065259a2f95736d664ebf0de89cc2a2558fde0641426b7080b12ba9fdb449e",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_boundaries.rs": "6b80bec62838269a07dbddf3b0d2980caa9ae36572f8be6d0175d00fe79f4592",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_pieces.rs": "0351a41301b71a1a1a825a58424d7acdd01d1b9181d55ebd46f751015c639501",
+    "crates/viboceros-geometry/src/nurbs/tests/intersections.rs": "5ac8f2a4b6c2502976fd342f54f2426d3132b35a380ca35f723d1e23c8bcfd47",
+    "crates/viboceros-geometry/src/nurbs/tests/knots.rs": "b02f11f865e956bea754c44e3931afc9a6813a3c916b23670942902915738f29",
+    "crates/viboceros-geometry/src/nurbs/tests/projection.rs": "7e2b83359f79e2217fb1a8df0027a338e2d5060ccd62b7b9a7545e004342e78b",
+    "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
+    "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373",
+    "crates/viboceros-opennurbs/native/curve_tangents.h": "99be0dc2d58cfcc999e8b8402fd18eb9ca0b3cd7173a3195b2121bf047ddded7",
+    "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
+    "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263",
+    "crates/viboceros-opennurbs/src/curve/tangents.rs": "dea679afab06d648bf1ffa74cde8c7e34dd5b0d7a97f4b03fb78bb16705a6c8b",
+    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
+    "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "9cd89d3aad50a95045b60f466d39bf5af018ccd015cdfd6f9be8240fc98bc871",
+    "crates/viboceros-opennurbs/native/extrusion_cap_projection.h": "43726099974602db55c0bf95b4d37bedabdbda2852d27c5c04e07f3f1ac162ec",
+    "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f"
+  }
+}

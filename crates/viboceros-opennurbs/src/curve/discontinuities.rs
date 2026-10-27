@@ -1,4 +1,4 @@
-//! Interior G1, G2, or aesthetic smoothness breaks from public OpenNURBS.
+//! Interior parametric or geometric continuity breaks from public OpenNURBS.
 use super::{CurveQueryError, c_char, c_int};
 
 /// Public OpenNURBS geometric continuity policies, independent of curve speed.
@@ -8,6 +8,17 @@ pub enum CurveContinuity {
     G1 = 0,
     Gsmooth = 1,
     G2 = 2,
+}
+
+/// Parametric continuity includes position and the indicated derivatives.
+/// Derivative magnitudes depend on the source chart, so a speed change can
+/// introduce C1 or C2 breaks even when the image remains geometrically smooth.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(i32)]
+pub enum CurveParametricContinuity {
+    C0 = 0,
+    C1 = 1,
+    C2 = 2,
 }
 
 unsafe extern "C" {
@@ -82,6 +93,45 @@ pub fn curve_continuity_breaks_with_curvature(
     cos_angle_tolerance: f64,
     curvature_tolerance: f64,
 ) -> Result<Vec<f64>, CurveQueryError> {
+    query_breaks(
+        degree,
+        controls,
+        knots,
+        continuity as c_int,
+        cos_angle_tolerance,
+        curvature_tolerance,
+    )
+}
+
+/// Strictly interior C0, C1 or C2 breaks using native parametric predicates.
+/// Returned parameters retain the source domain. Closed seams are excluded;
+/// no source pointers are retained. Limits and failure behavior match the
+/// geometric query. Geometric angular/curvature settings do not apply here.
+/// Sources rejected by the native NURBS constructor return an error.
+pub fn curve_parametric_continuity_breaks(
+    degree: usize,
+    controls: &[[f64; 4]],
+    knots: &[f64],
+    continuity: CurveParametricContinuity,
+) -> Result<Vec<f64>, CurveQueryError> {
+    query_breaks(
+        degree,
+        controls,
+        knots,
+        3 + continuity as c_int,
+        1_f64.to_radians().cos(),
+        f64::EPSILON.sqrt(),
+    )
+}
+
+fn query_breaks(
+    degree: usize,
+    controls: &[[f64; 4]],
+    knots: &[f64],
+    continuity_kind: c_int,
+    cos_angle_tolerance: f64,
+    curvature_tolerance: f64,
+) -> Result<Vec<f64>, CurveQueryError> {
     let degree = u32::try_from(degree)
         .map_err(|_| CurveQueryError("Curve degree exceeds native range".into()))?;
     if degree == 0
@@ -109,7 +159,7 @@ pub fn curve_continuity_breaks_with_curvature(
             controls.as_flattened().as_ptr(),
             knots.len(),
             knots.as_ptr(),
-            continuity as c_int,
+            continuity_kind,
             cos_angle_tolerance,
             curvature_tolerance,
             &mut found,
@@ -142,6 +192,67 @@ pub fn curve_continuity_breaks_with_curvature(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parametric_orders_distinguish_speed_and_acceleration_from_geometric_smoothness() {
+        let cases = [
+            (
+                1,
+                vec![0., 1., 3.],
+                vec![0., 0., 0.5, 1., 1.],
+                [false, true, true],
+            ),
+            (
+                3,
+                vec![0., 1. / 3., 2. / 3., 1., 4. / 3., 1.5, 2.],
+                vec![0., 0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1., 1.],
+                [false, false, true],
+            ),
+        ];
+        for (degree, xs, knots, expected) in cases {
+            for (start, width) in [(0., 1.), (100., 7.)] {
+                let knots = knots.iter().map(|t| start + width * t).collect::<Vec<_>>();
+                for weight in [1., -2.] {
+                    let controls = xs.iter().map(|&x| [x, 0., 0., weight]).collect::<Vec<_>>();
+                    let before = controls.clone();
+                    for (level, breaks) in [
+                        CurveParametricContinuity::C0,
+                        CurveParametricContinuity::C1,
+                        CurveParametricContinuity::C2,
+                    ]
+                    .into_iter()
+                    .zip(expected)
+                    {
+                        let actual =
+                            curve_parametric_continuity_breaks(degree, &controls, &knots, level)
+                                .unwrap();
+                        let wanted = if breaks {
+                            vec![start + width * 0.5]
+                        } else {
+                            vec![]
+                        };
+                        assert_eq!(actual, wanted, "{degree} {level:?}");
+                    }
+                    if !expected[0] {
+                        for level in [CurveContinuity::G1, CurveContinuity::G2] {
+                            assert!(
+                                curve_continuity_breaks(
+                                    degree,
+                                    &controls,
+                                    &knots,
+                                    level,
+                                    1_f64.to_radians().cos()
+                                )
+                                .unwrap()
+                                .is_empty()
+                            );
+                        }
+                    }
+                    assert_eq!(controls, before);
+                }
+            }
+        }
+    }
     #[test]
     fn public_smoothness_preserves_near_tangents_and_native_closed_seams() {
         let w = 0.5_f64.sqrt();
@@ -266,5 +377,31 @@ mod tests {
         let mut invalid = controls;
         invalid[1][3] = 0.;
         assert!(curve_discontinuities(1, &invalid, &[0., 0., 1., 1.], true, 0.).is_err());
+        assert!(
+            curve_parametric_continuity_breaks(
+                1,
+                &controls,
+                &[0., 1.],
+                CurveParametricContinuity::C1
+            )
+            .is_err()
+        );
+        let positional_jump = [
+            [0., 0., 0., 1.],
+            [1., 0., 0., 1.],
+            [2., 0., 0., 1.],
+            [3., 0., 0., 1.],
+        ];
+        // Full-order interior knots fail the native NURBS constructor. Queries
+        // return that error, rather than treating an unimportable source as C0.
+        assert!(
+            curve_parametric_continuity_breaks(
+                1,
+                &positional_jump,
+                &[0., 0., 0.5, 0.5, 1., 1.],
+                CurveParametricContinuity::C0
+            )
+            .is_err()
+        );
     }
 }

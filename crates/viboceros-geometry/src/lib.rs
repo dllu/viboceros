@@ -355,7 +355,7 @@ pub use sweep::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection, SweepSurfaceO
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};
-pub use viboceros_opennurbs::CurveContinuity;
+pub use viboceros_opennurbs::{CurveContinuity, CurveParametricContinuity};
 
 /// Scalar type used throughout the geometry kernel.
 pub type Real = f64;

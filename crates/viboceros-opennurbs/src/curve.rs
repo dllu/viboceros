@@ -3,8 +3,9 @@ use std::ffi::{c_char, c_int};
 mod discontinuities;
 mod polyline;
 pub use discontinuities::{
-    CurveContinuity, curve_continuity_breaks, curve_continuity_breaks_with_curvature,
-    curve_discontinuities,
+    CurveContinuity, CurveParametricContinuity, curve_continuity_breaks,
+    curve_continuity_breaks_with_curvature, curve_discontinuities,
+    curve_parametric_continuity_breaks,
 };
 mod recognition;
 mod speeds;
