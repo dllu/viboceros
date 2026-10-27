@@ -203,7 +203,6 @@
     "crates/viboceros-geometry/tests/scalar_clock_native.rs": "fb3f0a9b9d87d7d07dd8694350d665aa13dd299ee67a33f3ea09c2c48cc27cba",
     "crates/viboceros-geometry/tests/support/loft_parameters.rs": "ffb76fa2679ee01a08338b5333677cfec50691bf1ecbc3c1ce318787b5e18a6e",
     "crates/viboceros-oracle/tests/fitting_clock_native.rs": "456b4f712ab280cdc00af85f746097f36c8836711ff2e9acf7bfac2b32ace4de",
-    "tools/rhino_oracle/qualification_sources.py": "8227f8d1948ad28ad50426aa9e88828ffa129d85e23c60da11a21949fd115c48",
     "tools/rhino_oracle/test_scalar_checkpoint_acceptance.py": "2288b2ba2f94bc7eb86b77d64cda5d0b250011814d946e34a82d1ba865d8c3c1",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "docs/loft-fitting-clock.md": "74b18443e730df41fdf962d10e26c05103e022a9437283970c96bf0a96e2bfc7",
@@ -259,5 +258,8 @@
     "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
     "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373",
     "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab"
+  },
+  "git_sha256": {
+    "22ed6965d2fe59e64a7990d73a09969f42341821:tools/rhino_oracle/qualification_sources.py": "8227f8d1948ad28ad50426aa9e88828ffa129d85e23c60da11a21949fd115c48"
   }
 }

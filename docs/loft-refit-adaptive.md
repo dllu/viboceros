@@ -13,8 +13,14 @@ while removing nonlinear rational clocks. Its vertices must be exactly
 representable. Each interval reuses the shared endpoint-tangent cubic constructor;
 an interior endpoint uses the original right-hand tangent. Seven interior length
 stations propose pieces with a half-tolerance reserve. Sampling cannot establish
-acceptance: the complete assembled curve needs a continuous Bernstein bound
-within the requested tolerance, including errors between stations.
+acceptance: a missing complete interval bound triggers further subdivision,
+including features between stations. The complete assembled curve still needs a
+fresh continuous Bernstein bound within the requested tolerance.
+Correspondence proposals retain natural source knots within their existing
+256-interval budget, so nonuniform source clocks do not hide span boundaries.
+The [refinement validation](adaptive-refinement-validation.json) records small
+feature, reversal, model-unit and resource-limit regressions alongside 16 native
+profiles whose features fall between all nine global length stations.
 
 `try_propose_joined_linear_refit` adds composite C1 reconstruction. It partitions
 the raw curve by G2 breaks using an absolute curvature tolerance of `0.01` in

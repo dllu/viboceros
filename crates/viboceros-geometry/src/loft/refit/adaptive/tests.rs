@@ -70,8 +70,77 @@ fn sampling_cannot_hide_a_bump_between_the_interior_stations() {
         assert_eq!(source.evaluate(t).unwrap().y(), 0.);
     }
     let before = source.clone();
+    let fit = try_propose_adaptive_linear_refit(&source, 1e-7)
+        .unwrap()
+        .unwrap();
+    assert!(fit.curve.control_points().len() > 4);
+    assert!(fit.maximum_deviation_bound <= 1e-7);
+    let peak = Point3::try_new(0.05, 1e-6, 0.).unwrap();
+    let search = fit.curve.prepare_closest_parameter_search().unwrap();
+    let parameter = search.closest_parameter(peak, Tolerance::DEFAULT).unwrap();
     assert!(
-        try_propose_adaptive_linear_refit(&source, 1e-7)
+        peak.distance_to(fit.curve.evaluate(parameter).unwrap())
+            .unwrap()
+            <= 1e-7
+    );
+    assert!(crate::curve_fit::g1::within_deviation(&source, &fit.curve, 1e-7).unwrap());
+    assert_eq!(source, before);
+}
+
+#[test]
+fn separate_small_features_are_retained_across_reversal_and_model_units() {
+    for scale in [1., 1024.] {
+        let points = [
+            [0., 0.],
+            [0.049, 0.],
+            [0.05, 1e-6],
+            [0.051, 0.],
+            [0.949, 0.],
+            [0.95, -1e-6],
+            [0.951, 0.],
+            [1., 0.],
+        ]
+        .map(|p| p.map(|c| c * scale));
+        let forward = polyline(&points);
+        for source in [forward.clone(), forward.reversed().unwrap()] {
+            let before = source.clone();
+            let limit = 1e-7 * scale;
+            let fit = try_propose_adaptive_linear_refit(&source, limit)
+                .unwrap()
+                .unwrap();
+            assert!(fit.maximum_deviation_bound <= limit);
+            let joined = try_propose_joined_linear_refit(&source, limit, 0.)
+                .unwrap()
+                .unwrap();
+            for curve in [&fit.curve, &joined] {
+                let search = curve.prepare_closest_parameter_search().unwrap();
+                let numerical = Tolerance::try_new(limit * 1e-4, 1e-12, 1e-10).unwrap();
+                for p in [points[2], points[5]] {
+                    let peak = Point3::try_new(p[0], p[1], 0.).unwrap();
+                    let t = search.closest_parameter(peak, numerical).unwrap();
+                    assert!(peak.distance_to(curve.evaluate(t).unwrap()).unwrap() <= limit);
+                }
+                assert!(crate::curve_fit::g1::within_deviation(&source, curve, limit).unwrap());
+            }
+            assert_eq!(source, before);
+        }
+    }
+}
+
+#[test]
+fn unresolved_features_exhaust_the_existing_piece_budget_without_partial_output() {
+    let mut points = vec![[0., 0.]];
+    for index in 1..=168 {
+        let center = index as Real * 0.0002;
+        points.extend([[center - 1e-5, 0.], [center, 2e-8], [center + 1e-5, 0.]]);
+    }
+    points.push([1., 0.]);
+    let source = polyline(&points);
+    let before = source.clone();
+    assert!(source::linear_image_proxy(&source).unwrap().is_some());
+    assert!(!crate::loft::parameterize::has_tangent_breaks(&source, 1_f64.to_radians()).unwrap());
+    assert!(
+        try_propose_adaptive_linear_refit(&source, 1e-9)
             .unwrap()
             .is_none()
     );

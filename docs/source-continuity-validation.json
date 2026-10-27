@@ -167,7 +167,6 @@
     "tools/rhino_oracle/loft_refit_probe.py": "31fdf4db7d3eedd0d54eaf99dcdb499f92ccb575ee5a7dc7d4fa6bbd9489c4e0",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/test_source_continuity.py": "b42f1c46203c38056d5bf52c05076d8487e9c82cb37483b55c2e1388cb01421b",
-    "docs/loft-refit-adaptive.md": "e62b2d2095af8ac238f4702ebcf65a238a6900edce8cbcf0cf19e3c6c2701839",
     "tools/rhino_oracle/generate_loft_refit_source_continuity.py": "75be4a7dc8c55015c5a3f05cd15645a7850b724305ca5445b4e5b6fec9379089",
     "tools/rhino_oracle/fixtures/loft_refit_source_continuity.json": "10b752b6a6824454a1b6a87bd1d53c4ca9edd2cd0ef482dee263452a55eaaf05",
     "tools/rhino_oracle/observations/loft_refit_source_continuity.json": "df98f7fffe616584983aafcba02664a08f5a2f5f23ed6694046d86955b43eca3",
@@ -206,6 +205,7 @@
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f"
   },
   "git_sha256": {
-    "9ddd2f318590615e9d942d8abb11cf78437a944e:tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e"
+    "9ddd2f318590615e9d942d8abb11cf78437a944e:tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e",
+    "22ed6965d2fe59e64a7990d73a09969f42341821:docs/loft-refit-adaptive.md": "e62b2d2095af8ac238f4702ebcf65a238a6900edce8cbcf0cf19e3c6c2701839"
   }
 }

@@ -58,7 +58,11 @@ pub(super) fn propose(
             ArcLengthSampler::try_new(CurveRef::NurbsCurve(&trimmed), Tolerance::DEFAULT)?;
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
         let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
-        let fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?;
+        // Samples propose a piece; a complete interval bound decides whether
+        // it can be kept. A feature between stations must trigger refinement
+        // rather than rejection of the whole assembled proposal at the end.
+        let fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?
+            && crate::curve_fit::g1::within_deviation(&trimmed, &piece, tolerance)?;
         if fits {
             if pieces.len() == MAX_PIECES {
                 return Ok(None);

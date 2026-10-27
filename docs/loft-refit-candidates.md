@@ -23,8 +23,12 @@ other correspondences; it never substitutes sampled agreement for a bound.
 
 The tolerance must be smaller than every endpoint chord. The existing 256-profile
 limit applies; certificate degree, arithmetic and work limits remain unchanged.
-Map refinement allows 8–256 intervals over six attempts, caching at most 255
-closest-point queries per profile; each attempt uses the bounded certificate.
+Map refinement retains natural source knots and bisects the largest remaining
+parameter gaps over at most six attempts. Natural boundaries share the existing
+256-interval budget, with at most 255 cached closest-point queries per profile;
+each attempt uses the bounded certificate.
+If all knots cannot fit in that budget or fractional chart, the former uniform
+proposal remains available.
 Coincident endpoints, closed profiles, unresolved certificates,
 and fits needing subdivision retain explicit errors. Straight and
 polygon fitting keep their established paths. A single smooth input uses a

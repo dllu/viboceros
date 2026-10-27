@@ -20,7 +20,9 @@ const MAX_DEPTH: usize = 24;
 /// no resolved one-degree tangent breaks. The source image and limiting frames
 /// are retained through an exact, uniformly parameterized polygon proxy.
 /// Seven interior stations select pieces using half the requested tolerance;
-/// acceptance requires a complete image bound within the requested tolerance.
+/// Complete interval bounds also trigger subdivision when stations miss a
+/// feature. The assembled result requires a fresh complete image bound within
+/// the requested tolerance.
 /// This raw result retains C0 joins. The command path does not use these
 /// proposals while adaptive acceptance remains unqualified. Limits are 128 pieces,
 /// depth 24, 512 source controls, and the shared exact-arithmetic work limits.

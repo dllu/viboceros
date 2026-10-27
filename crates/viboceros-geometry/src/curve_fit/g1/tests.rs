@@ -2,6 +2,58 @@ use super::*;
 use crate::{Point3, Real, WeightedPoint3};
 use serde_json::Value;
 use std::path::Path;
+
+#[test]
+fn natural_knots_allow_complete_bounds_across_nonuniform_source_clocks() {
+    for (start, width) in [(0., 1.), (-3., 10.)] {
+        let source = NurbsCurve::try_new(
+            1,
+            [0., 0.125, 0.5, 1.]
+                .map(|x| Point3::try_new(x, 0., 0.).unwrap())
+                .to_vec(),
+            [0., 0., 0.17, 0.63, 1., 1.]
+                .map(|t| start + width * t)
+                .to_vec(),
+        )
+        .unwrap();
+        let before = source.clone();
+        let candidate = initial_cubic(&source).unwrap();
+        assert!(
+            source
+                .parameter_curve_deviation_bound(&candidate, 1e-10)
+                .unwrap()
+                .is_none()
+        );
+        assert!(within_deviation(&source, &candidate, 1e-10).unwrap());
+        assert_eq!(source, before);
+    }
+}
+
+#[test]
+fn oversized_knot_sets_retain_the_uniform_correspondence_proposal() {
+    let intervals = 257;
+    let fractions = (0..=intervals)
+        .map(|i| i as Real / intervals as Real)
+        .collect::<Vec<_>>();
+    let source = NurbsCurve::try_new(
+        1,
+        fractions
+            .iter()
+            .map(|t| Point3::try_new(t * t, 0., 0.).unwrap())
+            .collect(),
+        [vec![0.], fractions, vec![1.]].concat(),
+    )
+    .unwrap();
+    let candidate = initial_cubic(&source).unwrap();
+    assert!(
+        source
+            .parameter_curve_deviation_bound(&candidate, 1e-5)
+            .unwrap()
+            .is_none()
+    );
+    assert!(within_deviation(&source, &candidate, 1e-5).unwrap());
+}
+
 pub(super) fn curve(d: &Value) -> NurbsCurve {
     NurbsCurve::try_new_rational(
         d["degree"].as_u64().unwrap() as usize,

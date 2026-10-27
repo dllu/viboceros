@@ -263,7 +263,6 @@
     "Native adaptive handle adjustment, subdivision, general smooth fitting and explicit angle overrides remain unfinished. The retained full scalar SDK diagnostic remains failing; this feature makes no new scalar parity claim."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "0be1ffeb236a780720c9762d07bab10334691c0f2b7607ff405d71824b33429a",
     "crates/viboceros-geometry/src/loft/refit/candidate/tests.rs": "ca41063d7bc5ec6f931b8c0a2a02c6ed49d67687402b8941ab36042217250646",
     "tools/rhino_oracle/fixtures/loft_refit_candidate_boundary.json": "f037e891ee9b0e213b5ad31656f8b1f99c333c95f22358a8cf1286948816c25c",
     "tools/rhino_oracle/fixtures/loft_refit_candidates.json": "cb46de557caa8faa5a77dbc31fed3f7fa0205ef24e71445fef5b2ef1cb6d647e",
@@ -423,6 +422,7 @@
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad",
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
-    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5"
+    "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
+    "22ed6965d2fe59e64a7990d73a09969f42341821:crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "0be1ffeb236a780720c9762d07bab10334691c0f2b7607ff405d71824b33429a"
   }
 }
