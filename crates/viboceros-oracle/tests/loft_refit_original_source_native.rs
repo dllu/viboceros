@@ -30,8 +30,18 @@ fn source_lookup_keeps_the_prior_scale_and_curvature_matches() {
 }
 
 #[test]
-fn source_lookup_recovers_reversed_equal_spacing_and_retains_unequal_counterexamples() {
-    compare("loft_refit_unequal_sampling", 24, (20, 4, 0));
+fn source_lookup_and_complete_stage_reserves_match_all_unequal_sources() {
+    compare("loft_refit_unequal_sampling", 24, (24, 0, 0));
+}
+
+#[test]
+fn independent_spacing_and_tolerance_holdouts_match_native() {
+    compare("loft_refit_stage_reserves", 24, (24, 0, 0));
+}
+
+#[test]
+fn derivative_breaks_match_across_source_degrees_and_parameter_charts() {
+    compare("loft_refit_source_continuity", 64, (64, 0, 0));
 }
 
 // Shape groups are independent; keep slow exact certificates concurrent.

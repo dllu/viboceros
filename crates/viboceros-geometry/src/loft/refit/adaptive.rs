@@ -86,9 +86,10 @@ pub fn try_propose_joined_linear_refit(
 /// Propose joined cubics from the original source, retaining its parameter clock.
 /// A single nine-station incremental length lookup selects all dyadic splits;
 /// interpolation in that lookup is a proposal, not a new length integration.
-/// Seven interior stations from that same lookup and complete interval bounds
+/// Seven interior stations from that lookup and complete interval bounds
 /// select raw endpoint-frame pieces, with a common midpoint handle correction
-/// before subdivision. A single curvature region selects fresh dyadic Hermite
+/// before subdivision. Intervals crossing an interior C1 break keep a complete
+/// half-tolerance reserve. A single curvature region selects fresh dyadic Hermite
 /// intervals after retiming, with complete half-tolerance pointwise bounds.
 /// C1 reconstruction requires a fresh complete bound against
 /// the original source within `tolerance`, even if the raw assembly cannot.

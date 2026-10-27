@@ -1,6 +1,6 @@
 # Adaptive Refit proposals
 
-[Loft Refit](loft-refit.md) · [Current validation](nurbs-batch-validation.json)
+[Loft Refit](loft-refit.md) · [Current validation](loft-refit-stage-reserves-validation.json)
 
 The adaptive APIs return certified geometry proposals. Rhino-compatible general
 adaptive command preparation is still unfinished: fitting decisions can produce
@@ -15,8 +15,12 @@ original lookup. Endpoint tangents construct each cubic; a common positive handl
 correction at the original lookup midpoint is tried before subdivision.
 Correction stays within smooth parameter spans; an internal or ending C1 break
 retains subdivision and its original limiting tangent. Half-tolerance samples
-select proposals. A complete interval certificate must
-also pass within the requested tolerance, including features between stations.
+select proposals. An interval crossing an interior source C1 break also needs
+a complete half-tolerance certificate, including features between stations.
+This retains a reserve for C1 reconstruction when the corner's peak is missed
+by the lookup stations. Smooth intervals and exact ending breaks retain their
+full-tolerance interval bound. Every assembled result still needs its fresh
+complete original-source certificate.
 
 Joining uses an absolute curvature-vector difference of `0.01` in inverse model
 units and the explicit corner angle. The general G2 query's additional relative
@@ -60,9 +64,9 @@ records cover styles, SDK/document commands, frames, reversal, weight gauges,
 affine domains and model units. Absolute curvature rules can change region counts
 when model units change; reversal also exposes a remaining spatial discrepancy.
 The rebuild retains all 48 curved, twelve clock and 31 scale/curvature matches.
-[Numerical NURBS batch retention](nurbs-batch-validation.json) brings the
-unequal-source matches to twenty of 24 at `1e-9`, recovering all three reversed
-equal-spacing cases while retaining the earlier seventeen matches.
+Numerical NURBS batch retention and complete raw-stage reserves recover all 24
+original unequal-spacing cases at `1e-9`. Independent spacing and tolerance
+holdouts are also recorded in the current validation.
 All ten single-region knot sequences match Native; their rebuilt curves
 also receive complete pointwise bounds against the saved Native curves within
 5% of requested tolerance. Control differences up to `8.4e-8` remain, so those

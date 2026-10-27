@@ -125,8 +125,20 @@ pub(super) fn construct(
         // Samples propose a piece; a complete interval bound decides whether
         // it can be kept. A feature between stations must trigger refinement
         // rather than rejection of the whole assembled proposal at the end.
+        // An unresolved interior C1 break needs a continuous half-tolerance
+        // reserve before reconstruction; seven lookup stations can miss its
+        // peak. Smooth intervals and exact ending breaks keep their measured
+        // fitting policy. This uses derivative continuity, not source degree.
+        let local_bound = if correction_breaks
+            .get(correction_breaks.partition_point(|t| *t <= start))
+            .is_some_and(|t| *t < end)
+        {
+            tolerance * 0.5
+        } else {
+            tolerance
+        };
         let mut fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?
-            && crate::curve_fit::g1::within_deviation(&trimmed, &piece, tolerance)?;
+            && crate::curve_fit::g1::within_deviation(&trimmed, &piece, local_bound)?;
         if !fits
             && lookup.is_some()
             && correction_breaks
@@ -138,7 +150,7 @@ pub(super) fn construct(
                 tolerance * 0.5,
             )?
             && sampled_fit(source, &adjusted, &parameters, tolerance * 0.5)?
-            && crate::curve_fit::g1::within_deviation(&trimmed, &adjusted, tolerance)?
+            && crate::curve_fit::g1::within_deviation(&trimmed, &adjusted, local_bound)?
         {
             piece = adjusted;
             fits = true;
@@ -235,3 +247,6 @@ fn lookup_parameter(lookup: &[Real], fraction: Real) -> Real {
     let blend = station - index as Real;
     lookup[index].mul_add(1. - blend, lookup[index + 1] * blend)
 }
+
+#[cfg(test)]
+mod tests;

@@ -824,7 +824,6 @@
     "tools/rhino_oracle/test_loft_refit_adaptive_contexts.py": "d39ef2605509011db0f46fdf02945c17d684e55a0c6810faca62a726a7f98241",
     "tools/rhino_oracle/test_loft_refit_join_modes.py": "dc4a073b77d6d2f959c7757d4913375896b390a9f9fdd044895ec495b246000c",
     "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
-    "crates/viboceros-geometry/src/loft/refit/adaptive.rs": "9d509b741ae98bc483c384953797f8a4b7e97354c42cb708854d1def85864b5f",
     "crates/viboceros-geometry/src/loft/refit/adaptive/join.rs": "efb738ceea43ae98a2a41a68c32e69309ff24e4f9e59a278f8e90ce24f024ae8",
     "crates/viboceros-geometry/src/loft/refit/adaptive/join/rebuild.rs": "5556fba24f7c8b8715b31585465eb4f8638a6708e913d563e33dc1f9e9bc206c",
     "crates/viboceros-geometry/src/loft/refit/adaptive/join/rebuild/tests.rs": "902aae0a1fe82a0d34ef6b0fe98d549920031117b769732ca2844e63ff85b7d3",
@@ -832,10 +831,8 @@
     "crates/viboceros-geometry/src/loft/tests.rs": "f606d93f49a23d9470f9011580e934867c55e83e3b7dab81082899cdfeb2ce14",
     "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "e5e86bcfa076f7a6e1ae1c45a7842a89247dd0402545dbf096f36681041bcb5a",
     "crates/viboceros-geometry/src/curve/arc_length/incremental/constant.rs": "2621c2cf036d0ecbf17a8eb618af0a25ac8a2caa0f8329135e648fafaac87f5e",
-    "crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs": "eb77e0b551c9ae9cd12c5244c3081d97f3dc408d3ef4f024fdb83c298e0409e8",
     "crates/viboceros-geometry/tests/component_clock_native.rs": "eeacc5609bedba955ad5836c920b1556d365e4007c1b70a5b1af495ba46762f4",
     "crates/viboceros-geometry/tests/nurbs_batch_native.rs": "ea21a47e7a3c33666bdf304b5ef0b87ceec2950556bc31071086500c0e364624",
-    "crates/viboceros-oracle/tests/loft_refit_original_source_native.rs": "92aae2177faa6dcda014ade5e14c6c41161b995689fd5abb96d6fffd42396297",
     "tools/rhino_oracle/arc_length_batch_probe.py": "81dc974b35f0ba4c636bbf2c160eab5091f5f348df97493eb5e85c7e9b1da420",
     "tools/rhino_oracle/test_nurbs_batch_history.py": "f7095484bfc8a5d85549883a1a3892399c219bdfe6ea5f3553e782b51cbfd495",
     "tools/rhino_oracle/generate_nurbs_batch_boundaries.py": "15e308bcc3bad58feb2e4acffd63a55792939c0f42db653529f1f9067d4d4d1b",
@@ -862,8 +859,13 @@
     "tools/rhino_oracle/observations/nurbs_batch_holdouts.json": "0bfc3e526c2967670606a94f869a28096360a2c0875c02c572373be95c88f84e",
     "tools/rhino_oracle/observations/source_snapshots/cdaf132645fff49985bc452117a429d7d6afe1172fbe501ec84a0c0732fe6eb9.gz": "d65f1d2344ef1120af9cae21ac27f5312e0b7d7aa5cc54d99f2e6f044fae71a6",
     "tools/rhino_oracle/observations/source_snapshots/81dc974b35f0ba4c636bbf2c160eab5091f5f348df97493eb5e85c7e9b1da420.gz": "7a9680f07b3e1e10200815606b89ae1e1351a90d143682c1210870b4e3b443d9",
-    "tools/rhino_oracle/qualification_sources.py": "5c321aa36b48143f3daf875324b188ab1acd600743fe8dc12f6a4f991de07351",
-    "docs/loft-fitting-clock.md": "7de8794e215be58854c015ce1d0498864824b992bc606d40cd8d5b159ef79af5",
-    "docs/loft-refit-adaptive.md": "1d3798d2990f0309e7bdac0bf22e7a95550839fa9424d4cd824fa2f3cae475df"
+    "docs/loft-fitting-clock.md": "7de8794e215be58854c015ce1d0498864824b992bc606d40cd8d5b159ef79af5"
+  },
+  "git_sha256": {
+    "c67a780af7134079189901616522d3ad3a046054:crates/viboceros-geometry/src/loft/refit/adaptive.rs": "9d509b741ae98bc483c384953797f8a4b7e97354c42cb708854d1def85864b5f",
+    "c67a780af7134079189901616522d3ad3a046054:crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs": "eb77e0b551c9ae9cd12c5244c3081d97f3dc408d3ef4f024fdb83c298e0409e8",
+    "c67a780af7134079189901616522d3ad3a046054:crates/viboceros-oracle/tests/loft_refit_original_source_native.rs": "92aae2177faa6dcda014ade5e14c6c41161b995689fd5abb96d6fffd42396297",
+    "c67a780af7134079189901616522d3ad3a046054:tools/rhino_oracle/qualification_sources.py": "5c321aa36b48143f3daf875324b188ab1acd600743fe8dc12f6a4f991de07351",
+    "c67a780af7134079189901616522d3ad3a046054:docs/loft-refit-adaptive.md": "1d3798d2990f0309e7bdac0bf22e7a95550839fa9424d4cd824fa2f3cae475df"
   }
 }
