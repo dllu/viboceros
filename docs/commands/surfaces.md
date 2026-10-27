@@ -76,11 +76,15 @@ the endpoint-weight normalization policy for rational profiles.
 
 ## One-rail sweeps
 
-`Sweep1 Parameters=0 RailName=Rail` sweeps selected profiles along a named curve;
-without `RailName`, the last selected curve is the rail. Explicit native rail
-parameters are required, one per profile in selection order. `RefitRail=No`
-(default) retains the rail's rational basis when all profile stations are existing
-Greville sites; otherwise interior profiles trigger a refit. `RefitRail=Yes`
+`Sweep1` places profiles automatically: select the rail first, then profiles in
+traversal order, or specify `RailName=name` or `RailId=id` and select only profiles.
+Starting the command before selection opens the curve picker. See
+[automatic placement](../sweep1-placement.md) for interval and direction choices.
+
+Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous
+policy: without a named rail or ID, the last selected curve is the rail. Supply
+one native rail parameter per profile. `RefitRail=No` (default) uses the shared
+rail-basis policy, including the implicit refits described above. `RefitRail=Yes`
 refits the rail to cubic arc-length form before interpolating transported profiles.
 Both paths permit multiple profiles, with compatibility limits described below.
 Retained-basis construction uses Local blending in rational rail parameters,
