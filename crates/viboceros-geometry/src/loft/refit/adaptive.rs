@@ -88,7 +88,9 @@ pub fn try_propose_joined_linear_refit(
 /// interpolation in that lookup is a proposal, not a new length integration.
 /// Seven interior stations from that same lookup and complete interval bounds
 /// select raw endpoint-frame pieces, with a common midpoint handle correction
-/// before subdivision. Retiming and C1 reconstruction require a fresh bound against
+/// before subdivision. A single curvature region selects fresh dyadic Hermite
+/// intervals after retiming, with complete half-tolerance pointwise bounds.
+/// C1 reconstruction requires a fresh complete bound against
 /// the original source within `tolerance`, even if the raw assembly cannot.
 ///
 /// This geometry proposal does not establish general Rhino adaptive acceptance.
@@ -113,7 +115,9 @@ pub fn try_propose_joined_refit(
     else {
         return Ok(None);
     };
-    let joined = join::construct(&candidate.curve, angle)?;
+    let Some(joined) = join::construct_refined(&candidate.curve, angle, tolerance)? else {
+        return Ok(None);
+    };
     let copies = [joined];
     let mapped = super::super::parameterize::prepare_fitted(&copies, &mut |curve: &NurbsCurve| {
         curve.clamped_to_active_domain()

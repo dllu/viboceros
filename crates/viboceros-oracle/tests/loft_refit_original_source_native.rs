@@ -31,7 +31,7 @@ fn source_lookup_keeps_the_prior_scale_and_curvature_matches() {
 
 #[test]
 fn source_lookup_does_not_qualify_unequal_polyline_subdivision() {
-    compare("loft_refit_unequal_sampling", 24, (7, 17, 0));
+    compare("loft_refit_unequal_sampling", 24, (17, 7, 0));
 }
 
 // Shape groups are independent; keep slow exact certificates concurrent.

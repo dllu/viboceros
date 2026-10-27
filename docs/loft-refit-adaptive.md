@@ -1,6 +1,6 @@
 # Adaptive Refit proposals
 
-[Loft Refit](loft-refit.md) · [Current validation](loft-refit-regions-validation.json)
+[Loft Refit](loft-refit.md) · [Current validation](loft-refit-c1-rebuild-validation.json)
 
 The adaptive APIs return certified geometry proposals. Rhino-compatible general
 adaptive command preparation is still unfinished: fitting decisions can produce
@@ -22,7 +22,10 @@ Joining uses an absolute curvature-vector difference of `0.01` in inverse model
 units and the explicit corner angle. The general G2 query's additional relative
 curvature allowance does not apply to this fitting rule. Adjacent handle lengths
 set the retimed piece widths. A single curvature region is rebuilt by cubic
-Hermite interpolation at the original fitting cuts. Multiple regions retain the
+Hermite interpolation on fresh dyadic intervals in its retimed parameter clock.
+Seven half-tolerance stations propose each interval; a continuous pointwise bound
+within half tolerance also covers features between stations. The assembled curve
+still requires a fresh complete bound against the original source. Multiple regions retain the
 retimed handles and remove redundant C1 controls; their C0 region boundaries
 remain authoritative during subsequent length-based chart matching.
 
@@ -56,7 +59,13 @@ both joining modes and subdivision counterexamples. Sixty-four additional native
 records cover styles, SDK/document commands, frames, reversal, weight gauges,
 affine domains and model units. Absolute curvature rules can change region counts
 when model units change; reversal also exposes a remaining spatial discrepancy.
-See the current validation for exact counts, tolerances and source bindings.
+The new rebuild retains all 48 curved, twelve clock and 31 scale/curvature
+matches, and improves unequal-source matches from seven to seventeen of 24 at
+`1e-9`. All ten single-region knot sequences match Native; their rebuilt curves
+also receive complete pointwise bounds against the saved Native curves within
+5% of requested tolerance. Control differences up to `8.4e-8` remain, so those
+bounds do not establish strict surface-record agreement. See the current
+validation for the remaining counterexamples and source bindings.
 
 `try_propose_adaptive_linear_refit` and `try_propose_joined_linear_refit` retain
 an exact polygon proxy and interval-local length clock for straight-region source

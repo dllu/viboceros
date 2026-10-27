@@ -1,5 +1,26 @@
 //! Retiming and Hermite reconstruction within curvature-continuous regions.
 use super::*;
+mod rebuild;
+
+/// The retimed region has its own parameter clock. Its C1 rebuild chooses
+/// intervals afresh instead of inheriting the endpoint-frame fitting cuts.
+/// Only the original-source caller can certify the final assembled proposal.
+pub(super) fn construct_refined(
+    raw: &NurbsCurve,
+    angle: Real,
+    tolerance: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    if !super::super::super::parameterize::fitted_region_breaks(raw, angle)?.is_empty() {
+        return construct(raw, angle).map(Some);
+    }
+    let cuts = raw
+        .knots()
+        .chunk_by(|a, b| a == b)
+        .map(|g| g[0])
+        .collect::<Vec<_>>();
+    let retimed = c1_region_impl(raw, &cuts, 0, cuts.len() - 1, false)?;
+    rebuild::propose(&retimed, tolerance)
+}
 
 pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, GeometryError> {
     let cuts = raw
