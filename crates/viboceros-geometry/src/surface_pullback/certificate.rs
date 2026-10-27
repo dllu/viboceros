@@ -8,6 +8,7 @@ mod affine;
 mod algebra;
 mod cubic;
 mod curve;
+mod curve_minimum;
 mod curve_pair;
 mod interval;
 mod linear;

@@ -57,7 +57,7 @@
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "Cargo.lock": "103e115fac7680002cb3912ec9161b34b3aeb2beaffcecdbe0b52f665c754a98",
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
-    "crates/viboceros-geometry/src/lib.rs": "a5b1321bd237f3efee5882c59a89cdbfe34669b5d2c7804d45ce80313aa07e48",
+    "crates/viboceros-geometry/src/lib.rs": "8140f8ea67efb4ab43a87f95a683a5c79131d9d812eaf974255302e52224b7a6",
     "crates/viboceros-geometry/src/loft.rs": "8ee614b19efdb5ac4ab227ca6b15bc143ccb1a5dee8901c4c5ec208dd158c01a",
     "crates/viboceros-geometry/src/loft/compatible.rs": "82eed6e470e581a1dcb32bc9ba38a8d280a448ca10f33b24e4020d18536eabb3",
     "crates/viboceros-geometry/src/loft/interpolate.rs": "0e335fa9dde61b401b162f54ed1e04996348e80c43dc4bb652ded9c00caa3a76",
@@ -164,7 +164,7 @@
     "tools/rhino_oracle/observations/source_snapshots/fde78185c5d0d778527c23b1fa320ba8363b49fcf578ec0bfa422af8a472d3b7.gz": "e34a8eeeed3f1b5f15de2726d880175a91438036a4ff94a1b7e2f7bad3be8d60",
     "tools/rhino_oracle/observations/source_snapshots/fede0d3ef3f62bcd52dbed935868c627ee58ccf42a306ce3db9e0ceb02146484.gz": "d449342d6e5ff1db8fe69c6503f06b12ed0c84e3d7248bf81232dd82cea23de0",
     "tools/rhino_oracle/observations/source_snapshots/ff65057ba2dff5d89f991e748558067cafbb9466cb1cbc13d349c9669e012242.gz": "30c33df6df35ce011f3e879c1bfb5811e3e2b394396233373eb75f3a507cc118",
-    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
+    "tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1",
     "tools/rhino_oracle/test_insert_point_command.py": "15e7c5731f4af32afd97775b3e8fd51ea2fcecf7045ee3f3400cc83b83e69595",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
     "crates/viboceros-geometry/src/loft/points.rs": "7d14bd3a2ab2d034c7a6963a72e4a05a70a7b0b379e5f9984414d339463552f2",
@@ -190,7 +190,7 @@
     "crates/viboceros-geometry/src/curve_fit/constraints_tests.rs": "fac8294fd228907be0c607d0f88d10780fd11b00a08b26b7d6c3bafb1cec0aba",
     "crates/viboceros-geometry/src/curve_fit/station_tests.rs": "7b2cd78fc436e38d059421906f617aa0818805413cc61dea31e6feda7989382c",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "fb017bbe68e5b9e8e47479b9eebd672e7b3cc8c85efb212ac03d33d60588a0d1",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "6fe1840c2046d52caa02c935c49a93b7488473ad65032bd43988faceb46c571e",
     "crates/viboceros-geometry/src/nurbs/closest_point.rs": "bd25e488155e0f3028b569f91fe57caf48c262cbaf375b8c73b99ef2e1c541cb",
     "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "f12c9aa0f97de444b65f432dd929d8861d1cf4577a123c4f650f739648e73be3",
     "crates/viboceros-geometry/src/nurbs/closest_point/refine.rs": "2c764819f604e4dea0786b0a3b70e7be2ed56aa740c43701f753052d1333f008",
@@ -275,6 +275,11 @@
     "tools/rhino_oracle/fixtures/loft_refit_preparation_baseline.json": "15e171f0e92eb004286c217a87b97f7afcd7c51669440d0936c8e5974b3b5119",
     "tools/rhino_oracle/fixtures/loft_refit_preparation_declines.json": "645d860a2d80ed3d2e420d77c70a6c1164097449b6f49bf6d2f223e9d905e15f",
     "crates/viboceros-geometry/src/loft/refit/preparation/preservation.rs": "1ba4b83d4a09aa8bf4bf92d903dfa24ea6ca8e87aec0b0dbc542b9893dce4eae",
-    "crates/viboceros-geometry/src/loft/refit/preparation/preservation/tests.rs": "ae306b5950bdce281f8d3a3bd580f743d9ed9bf49171bcb79d6aab81a0ff3d87"
+    "crates/viboceros-geometry/src/loft/refit/preparation/preservation/tests.rs": "ae306b5950bdce281f8d3a3bd580f743d9ed9bf49171bcb79d6aab81a0ff3d87",
+    "crates/viboceros-geometry/src/curve_distance.rs": "c1104a713d2887eaad6a79282c25337692411e216822e61c1e5182fcb73d71c8",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs": "672a68ccc63fd1a25210142011977f287a5f61c31b42ab4b85078a051d5ef48c",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs": "5a1749e6c25215a68485b08325be2b0cf2e96ab16a240c8c39ecc18fa559e2c4",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/witness.rs": "52f7cbf687138923b56add807a491d1bcbbb745064d38a56986d6dafc5184179",
+    "crates/viboceros-geometry/tests/curve_minimum.rs": "f5c4135f5a3e3e08c56d7247dfa66356e84a46111456a9b8ae24d8be30b07035"
   }
 }

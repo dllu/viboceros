@@ -880,7 +880,7 @@
     "crates/viboceros-geometry/src/nurbs/tests/projection.rs": "7e2b83359f79e2217fb1a8df0027a338e2d5060ccd62b7b9a7545e004342e78b",
     "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
     "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "6fe1840c2046d52caa02c935c49a93b7488473ad65032bd43988faceb46c571e",
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs": "d733be755cf8529dc60d705fd5e20479a7953b09aeca9df27e232f82f24317a1",
     "crates/viboceros-geometry/src/surface_pullback/certificate/cubic/tests.rs": "57101ff7b6919ba8d78a470ed6225c59aba3e4891e5cb0aa5f1d7b4b37f0b486",
@@ -1090,8 +1090,13 @@
     "tools/rhino_oracle/observations/source_snapshots/f13cecea6ba29d46eed0106c456eeae35154eb83f939747202abc76e4c306b47.gz": "e1002bb29586835c26dbecf4d273e86a444c340394011f16152b1348bddc085f",
     "tools/rhino_oracle/observations/source_snapshots/f6e1842eea195ab3efd0f2a99da89ea7cd60285c210c38e22cd6fb0cacdda90e.gz": "8c9850a328f934098b5e4f8ba9011d12a52636a525caaa4f69a1905d6ea555fd",
     "tools/rhino_oracle/observations/source_snapshots/fa30b75a38da3cbb67e85e78f84a9ce4f5c6ff43d47bb8b4e2a41740cde7fa76.gz": "86f165d2b4dc9c5aa6a586cbaaab7fe1005ac24f5aa4c8e43d0ec790875f6986",
-    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
-    "tools/rhino_oracle/test_loft_refit_preparation_validation.py": "cfa008e6c911994141999f8d454969fbb8dd7015cdc0ee23a7d86db638a46779"
+    "tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1",
+    "tools/rhino_oracle/test_loft_refit_preparation_validation.py": "cfa008e6c911994141999f8d454969fbb8dd7015cdc0ee23a7d86db638a46779",
+    "crates/viboceros-geometry/src/curve_distance.rs": "c1104a713d2887eaad6a79282c25337692411e216822e61c1e5182fcb73d71c8",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs": "672a68ccc63fd1a25210142011977f287a5f61c31b42ab4b85078a051d5ef48c",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs": "5a1749e6c25215a68485b08325be2b0cf2e96ab16a240c8c39ecc18fa559e2c4",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/witness.rs": "52f7cbf687138923b56add807a491d1bcbbb745064d38a56986d6dafc5184179",
+    "crates/viboceros-geometry/tests/curve_minimum.rs": "f5c4135f5a3e3e08c56d7247dfa66356e84a46111456a9b8ae24d8be30b07035"
   },
   "expected_declines": [
     {

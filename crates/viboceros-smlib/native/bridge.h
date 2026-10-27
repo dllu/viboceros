@@ -156,6 +156,8 @@ int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count,
 void vb_curve_free(VbCurve *curve);
 int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *second,
     const double intervals[4], double tolerance, double parameters[4], char *error, size_t capacity);
+int vb_curve_minimum_distance(const VbCurve *first, const VbCurve *second,
+    const double intervals[4], double tolerance, double parameters[2], char *error, size_t capacity);
 typedef struct VbCurveIntersections VbCurveIntersections;
 typedef struct VbCurveIntersection {
     int overlap;

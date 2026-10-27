@@ -161,24 +161,7 @@ impl Sweep1 {
         if start >= end {
             return Err(invalid("empty swept rail interval").into());
         }
-        // A rail kink needs a miter construction, not an interpolated jump of
-        // transported profiles. Reject it until that topology is constructed.
-        let trimmed = rail.to_owned().try_trimmed(start..=end)?;
-        if trimmed
-            .as_ref()
-            .to_nurbs()?
-            .has_full_multiplicity_kink(tolerance)?
-        {
-            return Err(invalid("rail corners require sweep miter construction").into());
-        }
-        let closed_rail = trimmed.as_ref().is_closed()?;
-        if closed_rail {
-            let first = trimmed.as_ref().evaluate_with_tangent(start)?.tangent();
-            let last = trimmed.as_ref().evaluate_with_tangent(end)?.tangent();
-            if first.as_vector().angle_to(last.as_vector())? > tolerance.angular() {
-                return Err(invalid("rail seam corner requires sweep miter construction").into());
-            }
-        }
+        let closed_rail = validate_rail_interval(rail, start..=end, tolerance)?;
         let curves = sections.iter().map(|s| s.curve.clone()).collect::<Vec<_>>();
         if curves
             .iter()
@@ -256,6 +239,22 @@ impl Sweep1 {
             })
             .collect::<Result<Vec<_>, _>>()?;
         Ok(())
+    }
+
+    /// Extend a single anchored profile across the complete active rail. The
+    /// profile remains constrained at its original station; frame transport
+    /// starts at the rail's start. The entire new interval is checked for
+    /// corners and seam continuity before preparing the local section again.
+    pub fn try_on_full_rail(mut self) -> Result<Self, GeometryError> {
+        if self.sections.len() != 1 {
+            return Err(invalid("full-rail anchoring requires one profile"));
+        }
+        let domain = self.rail.as_ref().domain();
+        self.closed_rail =
+            validate_rail_interval(self.rail.as_ref(), domain.clone(), self.tolerance)?;
+        self.domain = domain;
+        self.prepare_local_controls()?;
+        Ok(self)
     }
 
     pub fn domain(&self) -> RangeInclusive<Real> {
@@ -470,6 +469,36 @@ impl Sweep1 {
         }
         Ok(frames)
     }
+}
+
+fn validate_rail_interval(
+    rail: CurveRef<'_>,
+    domain: RangeInclusive<Real>,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    // A rail kink needs a miter construction, not an interpolated jump of
+    // transported profiles. Reject it until that topology is constructed.
+    let start = *domain.start();
+    let end = *domain.end();
+    let trimmed = rail.to_owned().try_trimmed(domain)?;
+    if trimmed
+        .as_ref()
+        .to_nurbs()?
+        .has_full_multiplicity_kink(tolerance)?
+    {
+        return Err(invalid("rail corners require sweep miter construction"));
+    }
+    let closed_rail = trimmed.as_ref().is_closed()?;
+    if closed_rail {
+        let first = trimmed.as_ref().evaluate_with_tangent(start)?.tangent();
+        let last = trimmed.as_ref().evaluate_with_tangent(end)?.tangent();
+        if first.as_vector().angle_to(last.as_vector())? > tolerance.angular() {
+            return Err(invalid(
+                "rail seam corner requires sweep miter construction",
+            ));
+        }
+    }
+    Ok(closed_rail)
 }
 
 fn invalid(context: &'static str) -> GeometryError {

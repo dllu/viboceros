@@ -40,6 +40,8 @@ mod rebuild_mesh_tests;
 mod rebuild_normals_tests;
 mod reduce_polyline;
 #[cfg(test)]
+mod sweep_tests;
+#[cfg(test)]
 mod triangulate_tests;
 #[cfg(test)]
 mod unify_normals_tests;
@@ -172,6 +174,32 @@ impl PendingObjectCommand {
         }
         if self.description.command == "RailRevolve" {
             return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
+        }
+        if self.description.command == "Sweep1" {
+            if self.command_override.as_ref().is_some_and(|input| {
+                input.split_whitespace().any(|word| {
+                    let name = word
+                        .split('=')
+                        .next()
+                        .unwrap()
+                        .trim_start_matches(['_', '-']);
+                    name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
+                })
+            }) {
+                return "Select profiles in order; Enter sweeps along the specified rail, Esc cancels";
+            }
+            if self.command_override.as_ref().is_some_and(|input| {
+                input.split_whitespace().any(|word| {
+                    word.split('=')
+                        .next()
+                        .unwrap()
+                        .trim_start_matches(['_', '-'])
+                        .eq_ignore_ascii_case("Parameters")
+                })
+            }) {
+                return "Select profiles in parameter order, then the rail last; Enter sweeps, Esc cancels";
+            }
+            return "Select the rail first, then profiles in order (or only profiles for a named rail); Enter sweeps, Esc cancels";
         }
         if self.description.command == "Divide" {
             return if self.phase == ObjectPromptPhase::Selecting {
@@ -781,7 +809,7 @@ impl VibocerosApp {
             return true;
         }
         let required = match description.command {
-            "RailRevolve" => {
+            "RailRevolve" | "Sweep1" => {
                 if words.iter().skip(1).any(|w| {
                     let name = w.split('=').next().unwrap().trim_start_matches(['_', '-']);
                     name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
@@ -944,13 +972,16 @@ impl VibocerosApp {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
-            let rail_revolve_partial = (description.command == "RailRevolve").then(|| {
-                self.document
-                    .selected_objects()
-                    .filter(|o| description.filter.accepts_object(o))
-                    .map(|o| o.id())
-                    .collect::<Vec<_>>()
-            });
+            let selection_before = (description.command == "Sweep1")
+                .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
+            let rail_revolve_partial = matches!(description.command, "RailRevolve" | "Sweep1")
+                .then(|| {
+                    self.document
+                        .selected_objects()
+                        .filter(|o| description.filter.accepts_object(o))
+                        .map(|o| o.id())
+                        .collect::<Vec<_>>()
+                });
             self.document.clear_selection();
             if let Some(ids) = rail_revolve_partial {
                 let _ = self
@@ -974,6 +1005,7 @@ impl VibocerosApp {
                     | "ExtrudeSrfToPoint"
                     | "ExtrudeSrfTapered"
                     | "RailRevolve"
+                    | "Sweep1"
                     | "Circle FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
@@ -991,7 +1023,7 @@ impl VibocerosApp {
                 measurement_display_units,
                 command_override,
                 excluded_object: None,
-                selection_before: None,
+                selection_before,
                 cloud_removal: None,
                 cloud_action_target: None,
                 special_selection: None,

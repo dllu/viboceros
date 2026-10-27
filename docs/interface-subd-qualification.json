@@ -17606,7 +17606,7 @@
     "src/app/interactive_state/prompts.rs": "5aecc95a6bfa34f4c25d0d24f56bf9b8919ad6b4fc3bffbcbbb5097248bb24bc",
     "src/app/intersect_two_sets.rs": "9726292ed4d67d0449696621bae5034d4dc49828b817b3e838230a15d63f8bbb",
     "src/app/iplane.rs": "b9a2585cf970461df3f3ffa18f77fd658244c29fad8e2b53a788a6b6e728fa01",
-    "src/app/object_selection.rs": "096905fbea59e78cdcb2efee64178db61a9ce1359b3d830908d80ffd275ecbd5",
+    "src/app/object_selection.rs": "05b5eb99aa4e8a5bac771dd387446ff2960b150c6bf15ea02edd0c06a45fec89",
     "src/app/object_selection/control_polygon_tests.rs": "ef0bfead8c03cad41c9348c6e26629a4a67a7d22d3a4fcf1ecd788c676a48e23",
     "src/app/object_selection/mesh_boolean_tests.rs": "bb8e64cc82219e55d1286cb2f4f05dbd864e492de68d6b4bc102ebe80e471a01",
     "src/app/object_selection/mesh_conversion.rs": "08a4f0de4a5e2536ba5b545dba92339d5c6aa5317fb49851f6b8088b589f3b15",
@@ -17679,7 +17679,7 @@
     "tools/rhino_oracle/observations/source_snapshots/3b67cf8fa6f590e3bdbd5a3744ebbc8beab08bd6b0413c0d653dd4153d752543.gz": "c6df47edb99674713eaf2a39c87ae641363094dcd24cb5fd02fceb3aff74bfda",
     "tools/rhino_oracle/observations/source_snapshots/8e8e2c6c987a69b093ede61823da45c2f8775977276630f3b428a3f6ceeb324c.gz": "e68074d0a437f72894cc279ba3fd9c16ebb6345d735e3deac1d7c881b2146b25",
     "tools/rhino_oracle/observations/source_snapshots/920c932aff1beb93d20916fc8090f96bdc83c37b1657c7538f636d50dcafe880.gz": "bf488af432eabab60a50722c767e90d432890704930e8a63e1f3fc2b6a379f00",
-    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
+    "tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1",
     "tools/rhino_oracle/references/interface_subd.py": "920c932aff1beb93d20916fc8090f96bdc83c37b1657c7538f636d50dcafe880",
     "tools/rhino_oracle/report_interface_subd.py": "581b168427438d0ddded7f7efe95d51ddbd9a6a7682a34e0ed208bc134d12a1b",
     "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
@@ -17691,6 +17691,7 @@
     "src/app/loft.rs": "419ef59d93fbffe1bf3450c3b343fe047ce05075b1bd27c5a5d83daa8d38d6b5",
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
-    "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d"
+    "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
+    "src/app/object_selection/sweep_tests.rs": "d01d02544b80b563ea7e693591374c23adba83dac1f9ff3e1fd4837e6e7ffb18"
   }
 }

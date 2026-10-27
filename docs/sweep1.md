@@ -22,21 +22,24 @@ SelLast
 Sweep1 RailName=Rail Parameters=0
 ```
 
-`RailName` resolves one unique curve name case-insensitively; the rail need not
-be selected. Without it, the last selected curve is the rail. Other selected
-curves are profiles in the document's selection order. `Parameters=` is required:
-supply one finite, strictly increasing **native rail parameter** per profile,
-not normalized fractions or distances unless that is the rail's actual domain.
-Profile directions and seams are retained; they are not automatically flipped.
-The [placement investigation](sweep1-placement.md) records separate SDK and
-command behavior for the planned automatic picker.
+`Sweep1` can place profiles automatically: select the rail first, then profiles
+in traversal order, or select only profiles and specify `RailName=name` or
+`RailId=id`. The viewport picker accepts the same order. See
+[automatic placement](sweep1-placement.md) for direction, interval choices and
+qualification limits.
+
+Explicit `Parameters=` scripts retain their existing policy: without a named
+rail or ID, the **last** selected curve is the rail. Supply one finite, strictly
+increasing native rail parameter per profile. These are not normalized fractions
+or distances unless that is the rail's actual domain. Profile directions and
+seams are retained. A named rail must be unique, selectable, and a curve.
 
 Parameters just outside a rail endpoint are snapped only within eight machine
 epsilons of the rail's domain length, accommodating endpoint reconstruction
 roundoff. Meaningful extrapolation, nonfinite values, and section parameters
 that cease to be strictly increasing after snapping are rejected.
 
-The sweep runs from the first profile's station to the last profile's station.
+With explicit parameters, the sweep runs from the first profile's station to the last profile's station.
 A single profile instead sweeps forward from its station to the rail's end.
 Inputs, attributes, groups, and selection remain unchanged. The new unselected
 B-rep uses the current layer; profile creases split into shared-topology faces.
@@ -276,7 +279,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
 
 General closed-rail holonomy correction and cyclic profile blending, rail miters,
 complete unrefitted multi-profile compatibility,
-automatic section placement/seam alignment, viewport picking, and remaining
+automatic branch/seam alignment and remaining
 Rhino rebuild/refit options are not implemented. These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately

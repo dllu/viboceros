@@ -30,6 +30,7 @@ APPLICATION_MODULES = [
     'src/viewport/insert_point.rs',
     'src/app/crease_native_tests.rs',
     'src/app/object_selection.rs',
+    'src/app/object_selection/sweep_tests.rs',
     'src/app/object_selection/triangulate_tests.rs',
     'src/app/object_selection/rebuild_normals_tests.rs',
     'src/app/object_selection/rebuild_mesh_tests.rs',
@@ -194,7 +195,12 @@ def with_shared_sources(paths):
 def _expand_sources_once(paths):
     if 'crates/viboceros-command/src/sweep.rs' in paths:
         paths = [*paths, 'crates/viboceros-command/src/sweep/options.rs',
-                 'crates/viboceros-command/src/sweep/tests.rs']
+                 'crates/viboceros-command/src/sweep/tests.rs',
+                 'crates/viboceros-command/src/sweep/placement.rs',
+                 'crates/viboceros-command/src/sweep/automatic_tests.rs',
+                 'crates/viboceros-command/src/sweep/curved_tests.rs']
+    if 'crates/viboceros-geometry/src/sweep.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/sweep_anchoring.rs']
     if 'crates/viboceros-smlib/src/native/knot_refinement.rs' in paths:
         paths = [*paths,
             'crates/viboceros-smlib/src/native/knot_refinement/loft.rs',
@@ -246,6 +252,13 @@ def _expand_sources_once(paths):
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'crates/viboceros-geometry/src/surface_pullback/certificate.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-geometry/src/curve_distance.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/witness.rs',
+            'crates/viboceros-geometry/tests/curve_minimum.rs',
+        ])
         expanded.extend([
             'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/cubic/tests.rs',

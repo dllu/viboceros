@@ -2547,10 +2547,9 @@ extern "C" int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, s
     });
 }
 
-extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *second,
-    const double intervals[4], double tolerance, double parameters[4],
-    char *error, size_t capacity) {
-    return guarded(error,capacity,[&] {
+// Shared native minimum proposal; the extrema path retains its final witness checks.
+static void curve_minimum_distance(const VbCurve *first, const VbCurve *second,
+    const double intervals[4], double tolerance, double parameters[2]) {
         require(first && second && intervals && parameters && std::isfinite(tolerance) && tolerance>0.,
                 "Invalid curve distance query");
         require(first->points.size()/4<=4096 && second->points.size()/4<=4096,
@@ -2565,7 +2564,33 @@ extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *se
         check(first->value->GlobalCurveSolve(a,*second->value,b,SM_SO_MINIMIZE,tolerance,
                 nullptr,nullptr,SM_SR_SINGLE,solutions),"minimum curve distance");
         require(solutions.GetSize()>0,"Native curve minimum returned no location");
-        parameters[2]=solutions[0].m_vStart[0];parameters[3]=solutions[0].m_vStart[1];
+        parameters[0]=solutions[0].m_vStart[0];parameters[1]=solutions[0].m_vStart[1];
+}
+
+extern "C" int vb_curve_minimum_distance(const VbCurve *first, const VbCurve *second,
+    const double intervals[4], double tolerance, double parameters[2],
+    char *error, size_t capacity) {
+    return guarded(error,capacity,[&] {
+        curve_minimum_distance(first,second,intervals,tolerance,parameters);
+        for(size_t i=0;i<2;++i) {
+            require(std::isfinite(parameters[i]),"Nonfinite curve minimum parameter");
+            const double low=intervals[2*i], high=intervals[2*i+1];
+            const double bounded=std::clamp(parameters[i],low,high);
+            const double roundoff=64.*std::numeric_limits<double>::epsilon()
+                *std::max({1.,std::abs(low),std::abs(high)});
+            require(std::abs(parameters[i]-bounded)<=roundoff,"Curve minimum left active interval");
+            parameters[i]=bounded;
+        }
+    });
+}
+
+extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *second,
+    const double intervals[4], double tolerance, double parameters[4],
+    char *error, size_t capacity) {
+    return guarded(error,capacity,[&] {
+        require(parameters,"Missing curve distance output");
+        curve_minimum_distance(first,second,intervals,tolerance,parameters+2);
+        SmExtent1d a(intervals[0],intervals[1]),b(intervals[2],intervals[3]);
         double maximum[2]{},pa[2]{},pb[2]{};
         check(first->value->CurveMaxDistanceBetween(a,*second->value,b.GetMin(),b.GetMax(),0,
                 nullptr,maximum[0],&pa[0],&pb[0]),"first directed curve deviation");

@@ -224,7 +224,6 @@ fn selected_profiles_and_named_rail_create_one_undoable_brep() {
     registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     for invalid in [
-        "Sweep1 RailName=Rail",
         "Sweep1 RailName=Rail Parameters=0,5",
         "Sweep1 RailName=Rail Parameters=5",
         "Sweep1 RailName=Rail Parameters=0 Axis=0,0,1",

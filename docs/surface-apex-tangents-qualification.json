@@ -31744,8 +31744,8 @@
     "crates/viboceros-smlib/Cargo.toml": "13f973cc5eedfcce69ab2d179036f4acd1e1fd887869fd870b561c33df8871d9",
     "crates/viboceros-smlib/build.rs": "70c8959717a15d9d095eeee40a9ceea5ae76fa0d9711cc8749c20d6c87e1607c",
     "crates/viboceros-smlib/native/CMakeLists.txt": "491dc5384bb21b3f16986dbd9304b3927ec527ed0b5749a2d13f8e1c25f9aa83",
-    "crates/viboceros-smlib/native/bridge.cpp": "aa63073bdc65f8ee3902e95679241b29b558072b92a3580e207c5a5ce5587e32",
-    "crates/viboceros-smlib/native/bridge.h": "4eebaa542888f3ad2d6c00a0fb667aeb5987a8bb23c85e04c0c254daef28029d",
+    "crates/viboceros-smlib/native/bridge.cpp": "c4796190b1e769b485b97303d521ccafb19e447341be30c2b81f1bc451855099",
+    "crates/viboceros-smlib/native/bridge.h": "f7664d0a27206dda38c2077c952411dcab921d0e1377d60099653ab655c34214",
     "crates/viboceros-smlib/native/surface_apex_extrusion.h": "1a7b1b21a26074670770e3edb15f3d292b9c6433e067d8387fa36d6aaed0ade2",
     "crates/viboceros-smlib/src/native/surface_extrusion.rs": "e160903d678f2db23fb96ff551f2af156eb434b1f0fc87b23f2588007219c010",
     "crates/viboceros-smlib/tests/curve_continuity.rs": "b9f64d944fd6de7b878737583b94177260bfb22034e471adb69376f3f45525e7",
@@ -31788,7 +31788,7 @@
     "src/app/interactive_state/prompts.rs": "5aecc95a6bfa34f4c25d0d24f56bf9b8919ad6b4fc3bffbcbbb5097248bb24bc",
     "src/app/intersect_two_sets.rs": "9726292ed4d67d0449696621bae5034d4dc49828b817b3e838230a15d63f8bbb",
     "src/app/iplane.rs": "b9a2585cf970461df3f3ffa18f77fd658244c29fad8e2b53a788a6b6e728fa01",
-    "src/app/object_selection.rs": "096905fbea59e78cdcb2efee64178db61a9ce1359b3d830908d80ffd275ecbd5",
+    "src/app/object_selection.rs": "05b5eb99aa4e8a5bac771dd387446ff2960b150c6bf15ea02edd0c06a45fec89",
     "src/app/object_selection/control_polygon_tests.rs": "ef0bfead8c03cad41c9348c6e26629a4a67a7d22d3a4fcf1ecd788c676a48e23",
     "src/app/object_selection/mesh_boolean_tests.rs": "bb8e64cc82219e55d1286cb2f4f05dbd864e492de68d6b4bc102ebe80e471a01",
     "src/app/object_selection/mesh_conversion.rs": "08a4f0de4a5e2536ba5b545dba92339d5c6aa5317fb49851f6b8088b589f3b15",
@@ -31881,7 +31881,7 @@
     "tools/rhino_oracle/observations/surface_apex_tangent_angles.json": "159feab38037c2571fba771645c2c1956dbb8647db71eec264f9c68b67d36555",
     "tools/rhino_oracle/observations/surface_apex_tangent_threshold.json": "9acf777bdeb4507ae211f73b3bb958c7d6148b6976833ae96e12f0093701ad09",
     "tools/rhino_oracle/observations/surface_apex_tangents.json": "f061e581f829b348a9bf2638c8fc92c287767ce94eb65cdeda909bbce822d56c",
-    "tools/rhino_oracle/qualification_sources.py": "330df3d8f5e483c385362fa8db0ff99d968a1d08aa5dde18957f9a473e9ac545",
+    "tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1",
     "tools/rhino_oracle/report_surface_apex_native.py": "2a77e4b6af528c80d8d5d2f81fcf5dec4ed6cc27c72a66694ed128f53f54f2b5",
     "tools/rhino_oracle/report_surface_apex_tangents.py": "547e18b313e8f48c7ca65beba86f1eafa920e3fca4d877459f777905b3865da6",
     "tools/rhino_oracle/surface_apex_command_probe.py": "8d34c7d1e79daa5435121e48f3270ad1b70618c45d694d546edc2598554c209f",
@@ -31918,6 +31918,7 @@
     "crates/viboceros-geometry/src/brep/surface_partition/g1/extract.rs": "265da1ea93ea223861ff122c360b87f070e631e4d5049276ee00f20c1421219f",
     "crates/viboceros-geometry/src/bezier.rs": "758426eed4d35be3c0a928120e7ac607c6cd1059d6c827f78950fad22759f033",
     "crates/viboceros-geometry/src/bezier/polynomial.rs": "9b6227607fcd9954c904b89665f42338a6fefbe8d7327cd76075d3f14d337a0b",
-    "crates/viboceros-geometry/src/brep/surface_partition/g1/exact_ray.rs": "a51abd99d4cecfa33dcbc27034653dd114df6d0a9ba0ba4fcb68df5adf250929"
+    "crates/viboceros-geometry/src/brep/surface_partition/g1/exact_ray.rs": "a51abd99d4cecfa33dcbc27034653dd114df6d0a9ba0ba4fcb68df5adf250929",
+    "src/app/object_selection/sweep_tests.rs": "d01d02544b80b563ea7e693591374c23adba83dac1f9ff3e1fd4837e6e7ffb18"
   }
 }

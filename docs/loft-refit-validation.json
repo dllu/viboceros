@@ -107,8 +107,6 @@
     "tools/rhino_oracle/fixtures/loft.json": "709c140d538d1d6b6400ead31c67bb9755f8a011ded3d7057c5c994b0fc99913",
     "tools/rhino_oracle/observations/loft_rebuild.json": "e1ab73be6a87e0a9a478788f2f5a38ce3dbc3b5d523cc91fbadcd453b213bfcd",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "crates/viboceros-smlib/native/bridge.cpp": "aa63073bdc65f8ee3902e95679241b29b558072b92a3580e207c5a5ce5587e32",
-    "crates/viboceros-smlib/native/bridge.h": "4eebaa542888f3ad2d6c00a0fb667aeb5987a8bb23c85e04c0c254daef28029d",
     "crates/viboceros-smlib/native/knot_refinement.cpp": "869ca9682fcebcc41a5bb68181102e6b987955c6afcc1497cdfcb04f214d282d",
     "crates/viboceros-smlib/native/knot_refinement.h": "c2c062c177bf12124cfe1b36d6b8dd876410ba863e7b93584a4d946be8883ca9",
     "crates/viboceros-smlib/build.rs": "70c8959717a15d9d095eeee40a9ceea5ae76fa0d9711cc8749c20d6c87e1607c",
@@ -159,6 +157,8 @@
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad",
     "f46175d9e8d5eca9408c545d95a96e66e1fad2d6:crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
-    "85d130537e64272f21ab4f4b023a5164c4477991:Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424"
+    "85d130537e64272f21ab4f4b023a5164c4477991:Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
+    "a308fd29dcfadad35d9d67e1ca36c2e8b0c676fb:crates/viboceros-smlib/native/bridge.cpp": "aa63073bdc65f8ee3902e95679241b29b558072b92a3580e207c5a5ce5587e32",
+    "a308fd29dcfadad35d9d67e1ca36c2e8b0c676fb:crates/viboceros-smlib/native/bridge.h": "4eebaa542888f3ad2d6c00a0fb667aeb5987a8bb23c85e04c0c254daef28029d"
   }
 }

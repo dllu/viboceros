@@ -387,7 +387,6 @@
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
     "crates/viboceros-geometry/src/curve_fit/adaptive.rs": "f55668222afb298b423453f783828f7b24a9741025080af43442068dd10bac9e",
     "crates/viboceros-geometry/src/curve_fit/adaptive/tests.rs": "45808f9c195a545c2c99ad24d6082dab40f264ed98e09d8261c13d03a8473931",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
     "crates/viboceros-geometry/src/nurbs/closest_point.rs": "bd25e488155e0f3028b569f91fe57caf48c262cbaf375b8c73b99ef2e1c541cb",
     "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "f12c9aa0f97de444b65f432dd929d8861d1cf4577a123c4f650f739648e73be3",
     "crates/viboceros-geometry/src/nurbs/closest_point/refine.rs": "2c764819f604e4dea0786b0a3b70e7be2ed56aa740c43701f753052d1333f008",
@@ -435,6 +434,7 @@
     "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-geometry/src/loft/refit/candidate/tests.rs": "ca41063d7bc5ec6f931b8c0a2a02c6ed49d67687402b8941ab36042217250646",
     "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-oracle/tests/loft_refit_multispan_native.rs": "175e145fc5414d7a4d628674f71c80474c49ae4b7130bca9d332c43101a89f49",
     "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-oracle/tests/loft_refit_shallow_native.rs": "11ea514557317c08fc27c339509dd8c123574629f7abcefa6a9b666dea8b08fa",
-    "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-oracle/tests/loft_refit_angles_native.rs": "070f2fca6a2e5965e2d78f19f39f6706f872fe6a8f0fc610b48f0f3db6cc990e"
+    "85d130537e64272f21ab4f4b023a5164c4477991:crates/viboceros-oracle/tests/loft_refit_angles_native.rs": "070f2fca6a2e5965e2d78f19f39f6706f872fe6a8f0fc610b48f0f3db6cc990e",
+    "a308fd29dcfadad35d9d67e1ca36c2e8b0c676fb:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad"
   }
 }

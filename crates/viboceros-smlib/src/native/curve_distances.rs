@@ -4,6 +4,15 @@ use super::*;
 use viboceros_geometry::CurveRef;
 pub use viboceros_geometry::{CurveDistanceExtrema, CurveDistanceWitness};
 unsafe extern "C" {
+    fn vb_curve_minimum_distance(
+        first: *const NativeCurve,
+        second: *const NativeCurve,
+        intervals: *const f64,
+        tolerance: f64,
+        parameters: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curve_distance_extrema(
         first: *const NativeCurve,
         second: *const NativeCurve,
@@ -24,6 +33,29 @@ pub fn curve_distance_extrema(
     second: CurveRef<'_>,
     intervals: [[f64; 2]; 2],
     tolerance: Tolerance,
+) -> Result<Option<CurveDistanceExtrema>, Error> {
+    query(first, second, intervals, tolerance, false)
+}
+
+/// Numerical minimum-distance proposal on explicit normalized source intervals.
+/// Reuses SMLib's global curve solver without computing either directed maximum.
+/// Original source images and independent point projections validate the
+/// witness. This does not certify a global minimum or its parameter uniqueness.
+pub fn curve_minimum_distance(
+    first: CurveRef<'_>,
+    second: CurveRef<'_>,
+    intervals: [[f64; 2]; 2],
+    tolerance: Tolerance,
+) -> Result<Option<CurveDistanceWitness>, Error> {
+    Ok(query(first, second, intervals, tolerance, true)?.map(|result| result.minimum))
+}
+
+fn query(
+    first: CurveRef<'_>,
+    second: CurveRef<'_>,
+    intervals: [[f64; 2]; 2],
+    tolerance: Tolerance,
+    minimum_only: bool,
 ) -> Result<Option<CurveDistanceExtrema>, Error> {
     for interval in intervals {
         if interval
@@ -69,7 +101,12 @@ pub fn curve_distance_extrema(
         intervals[1][1],
     ];
     call(|error, capacity| unsafe {
-        vb_curve_distance_extrema(
+        let solve = if minimum_only {
+            vb_curve_minimum_distance
+        } else {
+            vb_curve_distance_extrema
+        };
+        solve(
             imported[0].handle.as_ptr(),
             imported[1].handle.as_ptr(),
             input.as_ptr(),
@@ -79,6 +116,10 @@ pub fn curve_distance_extrema(
             capacity,
         )
     })?;
+    if minimum_only {
+        parameters[2] = parameters[0];
+        parameters[3] = parameters[1];
+    }
     let witness = |parameters: [f64; 2]| -> Result<CurveDistanceWitness, Error> {
         let mut native = [0.; 2];
         let mut points = [origin; 2];
@@ -129,9 +170,11 @@ pub fn curve_distance_extrema(
         }
         Ok(distances)
     };
-    let directed = nearest(&maximum)?;
-    if maximum.distance > directed[0].max(directed[1]) + tolerance.absolute() {
-        return Err(Error::InvalidOutput);
+    if !minimum_only {
+        let directed = nearest(&maximum)?;
+        if maximum.distance > directed[0].max(directed[1]) + tolerance.absolute() {
+            return Err(Error::InvalidOutput);
+        }
     }
     let directed = nearest(&minimum)?;
     if minimum.distance > directed[0].min(directed[1]) + tolerance.absolute() {

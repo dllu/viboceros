@@ -1,0 +1,396 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "line-height-1.0",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "line-height-2.5",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            2.5
+          ],
+          "end": [
+            2.0,
+            0.0,
+            2.5
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "line-height-4.0",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            4.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            4.0
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "spatial-direction-0.49",
+      "rail": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              4.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.454998,
+            1.70471,
+            1.147629
+          ],
+          "end": [
+            2.454998,
+            1.70471,
+            2.1476290000000002
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "spatial-direction-0.51",
+      "rail": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              4.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.545002,
+            1.7946900000000001,
+            1.102671
+          ],
+          "end": [
+            2.545002,
+            1.7946900000000001,
+            2.102671
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "spatial-direction-0.55",
+      "rail": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              4.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            2.7252500000000004,
+            1.9662500000000003,
+            1.018875
+          ],
+          "end": [
+            2.7252500000000004,
+            1.9662500000000003,
+            2.018875
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "spatial-direction-0.75",
+      "rail": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              4.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.65625,
+            2.53125,
+            0.984375
+          ],
+          "end": [
+            3.65625,
+            2.53125,
+            1.984375
+          ]
+        }
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true
+    }
+  ]
+}

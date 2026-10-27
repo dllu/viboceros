@@ -31,7 +31,8 @@ mod curve_extension;
 mod curve_fillet_contacts;
 mod curve_intersections;
 pub use curve_distances::{
-    CurveDistanceExtrema, CurveDistanceWitness, curve_distance_extrema, projected_curve_intervals,
+    CurveDistanceExtrema, CurveDistanceWitness, curve_distance_extrema, curve_minimum_distance,
+    projected_curve_intervals,
 };
 mod curve_surface_intersections;
 mod surface_intersections;

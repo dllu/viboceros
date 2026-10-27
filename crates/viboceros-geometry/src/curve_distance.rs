@@ -7,6 +7,20 @@ pub use overlap::preserve_transverse_curve_ends;
 #[cfg(test)]
 mod tests;
 
+/// A near-minimum on the complete images of two stored NURBS curves.
+/// `upper_distance` bounds the exact separation at the returned native
+/// parameters and one-sided limits. The true minimum lies in
+/// `[upper_distance - maximum_error, upper_distance]`. Points are rounded for
+/// display; their rounded distance need not equal that exact-image bound.
+#[derive(Clone, Debug)]
+pub struct CurveMinimumDistance {
+    pub parameters: [f64; 2],
+    pub sides: [crate::ParameterSide; 2],
+    pub points: [Point3; 2],
+    pub upper_distance: f64,
+    pub maximum_error: f64,
+}
+
 #[derive(Clone, Debug)]
 pub struct CurveDistanceWitness {
     /// Fractions in each source's NURBS chart, preserving the requested visit.

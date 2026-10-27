@@ -3,7 +3,8 @@ use super::*;
 #[derive(Debug)]
 pub(super) struct Options {
     pub(super) rail_name: Option<String>,
-    pub(super) parameters: Vec<Real>,
+    pub(super) rail_id: Option<ObjectId>,
+    pub(super) parameters: Option<Vec<Real>>,
     pub(super) roadlike: Option<bool>,
     pub(super) axis: Option<UnitVector3>,
     pub(super) global: Option<bool>,
@@ -15,10 +16,17 @@ impl Options {
         let (mut rail_name, mut parameters, mut roadlike, mut axis, mut global) =
             (None, None, None, None, None);
         let mut refit = None;
+        let mut rail_id = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            if option_name_eq(name, "RailName") && rail_name.is_none() && !value.is_empty() {
+            if option_name_eq(name, "RailName")
+                && rail_name.is_none()
+                && rail_id.is_none()
+                && !value.is_empty()
+            {
                 rail_name = Some(value);
+            } else if option_name_eq(name, "RailId") && rail_id.is_none() && rail_name.is_none() {
+                rail_id = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?);
             } else if option_name_eq(name, "Parameters") && parameters.is_none() {
                 parameters = Some(
                     value
@@ -47,12 +55,12 @@ impl Options {
                 return Err(CommandError::Usage(USAGE));
             }
         }
-        let parameters = parameters.ok_or(CommandError::Usage(USAGE))?;
         if axis.is_some() && !roadlike.unwrap_or(false) {
             return Err(CommandError::Usage(USAGE));
         }
         Ok(Self {
             rail_name: rail_name.map(str::to_owned),
+            rail_id,
             parameters,
             roadlike,
             axis,

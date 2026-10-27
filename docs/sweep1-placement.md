@@ -1,44 +1,67 @@
-# Sweep1 section placement
+# Automatic Sweep1 placement
 
 [Sweep1](sweep1.md) · [Rhino oracle](oracle.md)
 
-The [validation record](sweep1-placement-validation.json) binds the refactor,
-original command source, capture inputs, archived producers and regression checks.
+Select the rail first, then profiles in traversal order, and run `Sweep1`.
+Alternatively, select only the profiles and run `Sweep1 RailName=Rail` or
+`Sweep1 RailId=id`. Starting the command before selection opens a curve picker;
+Enter builds one B-rep and Escape restores the previous selection. Options such
+as `RefitRail=Yes` and `FrameStyle=Roadlike Axis=0,1,0` can be supplied inline.
 
-Automatic rail/profile picking is still pending. The current command requires
-explicit `Parameters=`. Option parsing and regression tests now live in
-`crates/viboceros-command/src/sweep/`, separate from construction and admission.
+Scripts with explicit `Parameters=` keep the previous last-selected-rail policy.
+Names resolve case-insensitively and must be unique. Rail and profiles are retained;
+construction is atomic and undoable. Profile directions and seams are retained.
 
-Two immutable captures retain seven independently authored inputs through both
-the public Rhino SDK and actual `Sweep1` command: start, interior and end
-profiles, an offset profile, a sloped profile, and two interior profiles in both
-selection orders. The [placement capture](../tools/rhino_oracle/observations/sweep1_section_placement.json)
-has 14 results; the [definition capture](../tools/rhino_oracle/observations/sweep1_section_definitions.json)
-adds 14 complete NURBS surface records and wider closest-point queries.
-Each capture records its request hash and archived producer bytes.
+Automatic placement finds a near-minimum between each complete profile and rail.
+Linux native builds reuse SMLib's minimum solver, without computing distance
+maxima. Exact rational span hulls independently certify the returned distance
+bracket. Portable builds use the same certificate with cached numerical point
+queries as initial proposals. The value error is bounded by document tolerance;
+this does not prove parameter uniqueness or choose among coincident branches.
+Explicit stations remain useful for ambiguous placement.
 
-For the straight rail from Z=0 to Z=5, the interior profile at Z=2 produces
-control bounds Z=2 to Z=5. An offset profile at that height retains its offset.
-The sloped profile has bounds Z=1 to Z=8 because its own height remains part
-of the swept geometry.
+Profiles keep their input order. Descending stations reverse the rail; mixed or
+coincident stations fail. A single profile chooses forward or backward traversal
+according to which half of the rail's arc length contains its station. At an
+existing interior Greville station it anchors a sweep over the complete rail;
+otherwise the sweep begins at the profile. Partial intervals use a cubic refit,
+including the measured straight-rail interior cases with `RefitRail=No`.
+The geometry model rechecks corners and seam continuity when extending its interval.
 
-The SDK and command differ in two cases. A single profile at the rail end
-produces SDK control bounds Z=5 to Z=10; the command instead sweeps back to Z=0.
-For profiles selected at Z=4 then Z=1, the command retains bounds Z=1 to Z=4,
-while the SDK result has a control hull reaching Z=0 and Z=5. These observations
-require explicit handling of rail direction and profile order in the future
-interactive workflow. They do not establish rules for all curved rails.
-Both reversed-order results retain the first section at Z=4 and the last at Z=1.
-Sorting profiles silently into increasing original rail parameters would therefore
-lose the measured traversal.
+## Evidence and limits
 
-The fixture's `parameters` field is consumed by Viboceros's existing explicit
-station harness; Rhino receives the source curves and determines placement itself.
-Those authored numbers are not measured Rhino station outputs. The new captures
-are investigation inputs, rather than a claim that automatic placement is
-implemented or that sampled closest points certify equal surfaces.
+The [automatic validation record](sweep1-automatic-validation.json) records checks
+and source bindings. Seven captured straight-rail command surfaces are compared
+through both complete rational boundary curves. Matching V weight rows make the
+surface affine between those curves, so these bounds cover the entire surfaces.
+The same constructions exercise ordered selection, rail names and rail IDs.
+
+Eight additional curved command captures include start, interior, end and reversed
+profiles on an arc and a spatial cubic. Bidirectional world-space samples are
+numerical comparisons, not complete surface proofs. The spatial reversed case
+retains a sampled discrepancy above `1e-6`; a separate complete
+correspondence to the explicit-station model distinguishes that existing behavior
+from automatic placement. The numerical discrepancy alone does not prove that
+the continuous surfaces differ. Further station/direction captures check twelve pairs
+of rail-boundary endpoints; they do not qualify all of those surface interiors.
+The non-Greville arc-at-thirty-degrees capture retains a separate native refit
+endpoint/clock discrepancy and is investigation evidence only.
+
+The query supports common-sign rational weights, degree at most 16 and at most
+4096 controls per curve. Exact arithmetic, subdivision depth and pair storage
+are bounded; unsupported or inconclusive queries fail before editing the document.
+Distance certification does not certify surface topology or frame compatibility.
+General branch choice, profile seam alignment, closed-rail holonomy and rail
+miters remain unfinished.
+
+The earlier [refactor and placement record](sweep1-placement-validation.json)
+measures the code at commit `a308fd29d`, before automatic placement. Its archived
+SDK/command datasets remain unchanged, including their differing end-profile and
+reversed-order behavior. Authored `parameters` in those older fixtures are hints
+for the explicit harness, not measured Rhino stations.
 
 ```sh
-python3 -m unittest tools.rhino_oracle.test_sweep1_section_placement
-cargo test -p viboceros-command --lib sweep::tests --frozen
+cargo test -p viboceros-command --lib sweep:: --frozen
+cargo test -p viboceros-geometry --test curve_minimum --test sweep_anchoring --frozen
+python3 -m unittest tools.rhino_oracle.test_sweep1_automatic
 ```

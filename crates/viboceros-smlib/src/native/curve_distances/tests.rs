@@ -4,6 +4,72 @@ use viboceros_geometry::{Circle3, Curve3, LineSegment, Polyline3, Vector3};
 fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
 }
+
+#[test]
+fn minimum_only_query_preserves_native_circle_parameters_and_trimmed_ranges() {
+    let circle = Circle3::try_new(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        2.,
+        Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let line = LineSegment::try_new(
+        Point3::try_new(3., 1., -3.).unwrap(),
+        Point3::try_new(3., 1., 3.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for (intervals, expected) in [
+        ([[0., 0.25], [0.2, 0.8]], 10_f64.sqrt() - 2.),
+        ([[0.25, 0.5], [0.2, 0.8]], 10_f64.sqrt()),
+    ] {
+        let r = curve_minimum_distance(
+            CurveRef::Circle(&circle),
+            CurveRef::Line(&line),
+            intervals,
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .unwrap();
+        assert!((r.distance - expected).abs() < 1e-8, "{r:?}");
+        for (i, c) in [CurveRef::Circle(&circle), CurveRef::Line(&line)]
+            .into_iter()
+            .enumerate()
+        {
+            assert!((intervals[i][0]..=intervals[i][1]).contains(&r.normalized_parameters[i]));
+            assert!(
+                c.evaluate(r.parameters[i])
+                    .unwrap()
+                    .distance_to(r.points[i])
+                    .unwrap()
+                    < 1e-9
+            );
+        }
+    }
+    assert!(
+        curve_minimum_distance(
+            CurveRef::Circle(&circle),
+            CurveRef::Line(&line),
+            [[0., 0.], [0., 1.]],
+            Tolerance::DEFAULT
+        )
+        .unwrap()
+        .is_none()
+    );
+    assert!(
+        curve_minimum_distance(
+            CurveRef::Circle(&circle),
+            CurveRef::Line(&line),
+            [[f64::NAN, 1.], [0., 1.]],
+            Tolerance::DEFAULT
+        )
+        .is_err()
+    );
+}
 fn curve(v: &Value) -> Curve3 {
     match v["type"].as_str().unwrap() {
         "line" => Curve3::Line(

@@ -1,7 +1,7 @@
 use super::*;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 Parameters=native-rail-parameters [RailName=name] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No]";
 
 pub(super) fn model(
     rail: CurveRef<'_>,
@@ -49,6 +49,7 @@ pub(super) fn fitted_model_surface(sweep: &Sweep1) -> Result<NurbsSurface, Comma
 }
 
 mod options;
+mod placement;
 use options::Options;
 
 pub(super) struct SweepCommand;
@@ -58,9 +59,25 @@ impl Command for SweepCommand {
         "Sweep1"
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Options::parse(arguments)?;
+        Ok(Some(ObjectSelectionPrompt {
+            command: "Sweep1",
+            filter: ObjectSelectionFilter::Curves,
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            options: vec![],
+            menus: vec![],
+            choices: vec![],
+        }))
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let Options {
             rail_name,
+            rail_id,
             parameters,
             roadlike,
             axis,
@@ -69,8 +86,16 @@ impl Command for SweepCommand {
         } = Options::parse(arguments)?;
         let rail_name = rail_name.as_deref();
         let selected = selected_ids(document)?;
-        let rail_id =
-            extrude_along_curve::resolve_curve_along_curve_path(document, &selected, rail_name)?;
+        let rail_id = if let Some(id) = rail_id {
+            id
+        } else if rail_name.is_some() || parameters.is_some() {
+            extrude_along_curve::resolve_curve_along_curve_path(document, &selected, rail_name)?
+        } else {
+            selected[0]
+        };
+        if !document.is_object_selectable(rail_id) {
+            return Err(CommandError::Usage(USAGE));
+        }
         let rail = document
             .object(rail_id)
             .unwrap()
@@ -81,22 +106,53 @@ impl Command for SweepCommand {
             .into_iter()
             .filter(|id| *id != rail_id)
             .collect::<Vec<_>>();
-        if profiles.len() != parameters.len() {
+        if profiles.is_empty()
+            || parameters
+                .as_ref()
+                .is_some_and(|p| profiles.len() != p.len())
+        {
             return Err(CommandError::Usage(USAGE));
         }
-        let sections = profiles
+        let curves = profiles
             .iter()
-            .zip(parameters)
-            .map(|(id, parameter)| {
+            .map(|id| {
                 let curve = document
                     .object(*id)
                     .unwrap()
                     .geometry()
                     .nurbs_curve_representation()?
                     .ok_or(CommandError::Usage(USAGE))?;
-                Ok(SweepSection { parameter, curve })
+                Ok(curve)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
+        let (automatic_rail, sections) = if let Some(parameters) = parameters {
+            (
+                None,
+                curves
+                    .into_iter()
+                    .zip(parameters)
+                    .map(|(curve, parameter)| SweepSection { parameter, curve })
+                    .collect(),
+            )
+        } else {
+            let (rail, sections) =
+                placement::sections(rail.to_nurbs()?, curves, document.tolerance())?;
+            (Some(rail), sections)
+        };
+        let full_rail_anchor = if let Some(rail) = &automatic_rail {
+            placement::full_rail_anchor(rail, &sections)?
+        } else {
+            false
+        };
+        // Captured partial line intervals use a cubic refit. Keeping the line
+        // basis instead changes the geometry between two interior profiles.
+        let automatic_partial = automatic_rail.as_ref().is_some_and(|rail| {
+            !full_rail_anchor
+                && (sections[0].parameter != *rail.domain().start()
+                    || (sections.len() > 1
+                        && sections.last().unwrap().parameter != *rail.domain().end()))
+        });
+        let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
         let style = if roadlike.unwrap_or(false) {
             SweepFrameStyle::Roadlike(axis.unwrap_or(UnitVector3::try_new(
                 0.,
@@ -112,8 +168,11 @@ impl Command for SweepCommand {
         } else {
             SweepBlend::Local
         };
-        let sweep = model(rail, &sections, style, blend, document.tolerance())?;
-        let surface = surface(&sweep, refit.unwrap_or(false))?;
+        let mut sweep = model(rail, &sections, style, blend, document.tolerance())?;
+        if full_rail_anchor {
+            sweep = sweep.try_on_full_rail()?;
+        }
+        let surface = surface(&sweep, refit.unwrap_or(false) || automatic_partial)?;
         let [u, v] = surface.sampled_kink_parameters(document.tolerance().angular())?;
         let brep = Brep::try_surface_grid(&surface, &u, &v, document.tolerance())?;
         let count = brep.faces().len();
@@ -125,5 +184,9 @@ impl Command for SweepCommand {
     }
 }
 
+#[cfg(test)]
+mod automatic_tests;
+#[cfg(test)]
+mod curved_tests;
 #[cfg(test)]
 mod tests;
