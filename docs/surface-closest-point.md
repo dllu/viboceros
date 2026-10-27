@@ -8,6 +8,10 @@ Other surfaces use a bounded search that samples the UV domain, refines up to
 sixteen promising starts, and independently checks the four natural boundary
 curves. The implementation is isolated in `nurbs_surface/closest_point.rs`.
 
+Call [the certified distance query](surface-distance-bounds.md) when a global
+distance bracket is required. It independently bounds the complete tensor
+image while retaining this numerical search as a source of witness proposals.
+
 Seed points use [batched tensor-grid evaluation](surface-grid-evaluation.md),
 reusing homogeneous U contractions within each V span while retaining the scalar
 arithmetic order, sample coverage, and per-cell failure fallback.

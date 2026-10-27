@@ -191,7 +191,8 @@
     "tools/rhino_oracle/observations/source_snapshots/6946b697bedf9029986c393af480314f33db87a04fde2fd72ab2a0a7295634e5.gz": "d78d805786d8db69060eb1ea73ade2da02ede79e7db99d460d7178ebb828da78",
     "tools/rhino_oracle/observations/source_snapshots/8c5218798138ec409941985104571edaa39ca98a9acba12fe05d90f9fc6106ea.gz": "660b490c38686fd36a0cc9602411cdbe38b8d0588b4e8ee2cd760b034d2a026c",
     "tools/rhino_oracle/observations/source_snapshots/a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846.gz": "77ba573e46fe2ada14e76655eae036a394a1ce91e8c709cfe56da3bbc5caa3e2",
-    "tools/rhino_oracle/observations/source_snapshots/f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894.gz": "7e934b69e8f63f51a42ec446dc87a9e90c019d023407ee5c24fedb96ef46b40a"
+    "tools/rhino_oracle/observations/source_snapshots/f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894.gz": "7e934b69e8f63f51a42ec446dc87a9e90c019d023407ee5c24fedb96ef46b40a",
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
   },
   "validation_git_sha256": {
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/closed-polyline-qualification.json": "8845d4db892d608cff324022347d24a3bd9436b41e30c6cac9a0dc99d5762939",
@@ -255,5 +256,6 @@
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:tools/rhino_oracle/subd_edit_scene.py": "f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894",
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:tools/rhino_oracle/test_soft_crease.py": "4eeec750aa37d10ea8ee55166a36b43b0ab2635a717bad351094be14b3e79bda",
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/crease-ui-validation.json": "bdc6b674164f5658d8054275eb2d9b1c79d8fd73577c964ddd3103a22be3a724"
-  }
+  },
+  "inventory_update_only": true
 }

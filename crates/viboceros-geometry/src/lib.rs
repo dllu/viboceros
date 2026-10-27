@@ -165,6 +165,8 @@ pub use smoothing::{SmoothingCoordinates, SmoothingOptions};
 mod spiral;
 mod spline_collocation;
 mod surface_curvature;
+mod surface_distance;
+pub use surface_distance::SurfaceMinimumDistance;
 mod surface_pullback;
 pub use surface_pullback::PreparedSurfaceCurveBounds;
 mod sweep;

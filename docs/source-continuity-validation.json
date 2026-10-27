@@ -201,11 +201,13 @@
     "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "9cd89d3aad50a95045b60f466d39bf5af018ccd015cdfd6f9be8240fc98bc871",
     "crates/viboceros-opennurbs/native/extrusion_cap_projection.h": "43726099974602db55c0bf95b4d37bedabdbda2852d27c5c04e07f3f1ac162ec",
-    "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f"
+    "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
   },
   "git_sha256": {
     "9ddd2f318590615e9d942d8abb11cf78437a944e:tools/rhino_oracle/qualification_sources.py": "6aaee277b83c4fc6ee9eb186f598328d52f84725f9f0ad32f9f77551c9297d5e",
     "22ed6965d2fe59e64a7990d73a09969f42341821:docs/loft-refit-adaptive.md": "e62b2d2095af8ac238f4702ebcf65a238a6900edce8cbcf0cf19e3c6c2701839",
     "d93802265c63b9431793f28e83b1ddf622c5f5b1:crates/viboceros-geometry/src/lib.rs": "ce30d74bc6ae65c69607039362bb1c0262f0ae2eca76fa94713ee1441699ddb4"
-  }
+  },
+  "inventory_update_only": true
 }

@@ -302,5 +302,9 @@
   "artifact_git_sha256": {
     "0c85fd337d79601e2051193599f802203e25b60b:README.md": "e68964eee562f38398b0736ce19bfd9e324ad327ad1009adcdf4c7afb396cbf7",
     "0c85fd337d79601e2051193599f802203e25b60b:docs/surface-parameter-frames.md": "fdb4fc17b146100f2b93c90bf9ac5767af85ddd09ade08eb7281aa7ec55184c0"
-  }
+  },
+  "sha256": {
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
+  },
+  "inventory_update_only": true
 }

@@ -3,6 +3,7 @@ use super::*;
 mod linear;
 #[cfg(test)]
 mod tests;
+pub(super) type DistancePatch = ([[Rational; 2]; 2], Vec<H>);
 
 pub(super) struct Surface {
     degree: [usize; 2],
@@ -75,6 +76,37 @@ impl Surface {
             isocurve: None,
         }))
     }
+    pub(super) fn distance_patches(
+        &mut self,
+        budget: &mut Budget,
+    ) -> Result<Vec<DistancePatch>, GeometryError> {
+        let mut result = Vec::new();
+        for su in self.spans[0].clone() {
+            for sv in self.spans[1].clone() {
+                let span = [su, sv];
+                let domain = std::array::from_fn(|axis| {
+                    [
+                        self.knots[axis][span[axis]].clone(),
+                        self.knots[axis][span[axis] + 1].clone(),
+                    ]
+                });
+                result.push((domain, self.patch(span, budget)?));
+            }
+        }
+        Ok(result)
+    }
+
+    pub(super) fn point_value(
+        &mut self,
+        span: [usize; 2],
+        uv: Uv,
+        budget: &mut Budget,
+    ) -> Result<H, GeometryError> {
+        // Curve-isocurve acceleration expects at least two UV controls.
+        // A discrete witness uses the degree-zero tensor image directly.
+        Ok(self.tensor_image(span, &[uv], budget)?.remove(0))
+    }
+
     pub fn in_domain(&self, bounds: &[[Rational; 2]]) -> bool {
         (0..2).all(|axis| {
             bounds[axis][0] >= self.knots[axis][self.degree[axis]]
@@ -132,15 +164,22 @@ impl Surface {
         bounds: &[[Rational; 2]],
         budget: &mut Budget,
     ) -> Result<Option<[usize; 2]>, GeometryError> {
-        budget.charge(self.spans[0].len() + self.spans[1].len())?;
         let mut patch = [0; 2];
         for axis in 0..2 {
-            let Some(span) = self.spans[axis].iter().copied().find(|&span| {
-                bounds[axis][0] >= self.knots[axis][span]
-                    && bounds[axis][1] <= self.knots[axis][span + 1]
-            }) else {
+            let spans = &self.spans[axis];
+            budget.charge((usize::BITS - spans.len().leading_zeros()) as usize + 1)?;
+            // The first span ending at/after the upper bound is the only
+            // possible containing span. A point on a knot retains the left
+            // span, while an interval starting there selects the right span.
+            let index = spans.partition_point(|&span| self.knots[axis][span + 1] < bounds[axis][1]);
+            let Some(&span) = spans.get(index) else {
                 return Ok(None);
             };
+            if bounds[axis][0] < self.knots[axis][span]
+                || bounds[axis][1] > self.knots[axis][span + 1]
+            {
+                return Ok(None);
+            }
             patch[axis] = span;
         }
         Ok(Some(patch))

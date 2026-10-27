@@ -261,6 +261,13 @@ def _expand_sources_once(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'crates/viboceros-geometry/src/surface_pullback/certificate.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-geometry/src/surface_distance.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/surface_minimum.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/surface_minimum/patch.rs',
+            'crates/viboceros-geometry/tests/surface_minimum.rs',
+            'crates/viboceros-geometry/tests/curve_minimum_precision.rs',
+            'crates/viboceros-geometry/tests/sweep_surface_distance.rs',
             'crates/viboceros-geometry/src/curve_distance.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs',

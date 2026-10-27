@@ -13,7 +13,7 @@
   "continuous_error_certificate": false,
   "performance_qualified": false,
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "8140f8ea67efb4ab43a87f95a683a5c79131d9d812eaf974255302e52224b7a6",
+    "crates/viboceros-geometry/src/lib.rs": "6d9e9fd5ac0f5a46abcdc811643780659c5763685b9f0541db2d034b5fe181eb",
     "crates/viboceros-geometry/src/nurbs.rs": "3763f2b48cd95aa29d2ddbf61cf4421ecf083438e62b8decc0d13742deaccfda",
     "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "9af8aee27704d626b200f0aeb2e4b9274765f63b5dca61133bfcc1079dac9a8a",
     "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
@@ -56,7 +56,7 @@
     "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/d29c7322db26822bc6e4e0c3f15b384896238267a9cbdc55b764a126f64e436d.gz": "ae2a11533562b48d5704b3b3663e575d6fbed369ce30920364e8c5b74bb60b75",
-    "tools/rhino_oracle/qualification_sources.py": "3953e7c8a13b8ef400fd75cda77ea02a1662376410edf68e4e69cdffec6de223",
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6",
     "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
     "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",

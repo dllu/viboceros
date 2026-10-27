@@ -95,28 +95,6 @@ impl PartialOrd for Pair {
     }
 }
 
-// sqrt(upper^2)-sqrt(lower) <= epsilon, compared exactly without square roots.
-fn within_gap(
-    upper: Real,
-    lower: &Rational,
-    epsilon: Real,
-    budget: &mut Budget,
-) -> Result<bool, GeometryError> {
-    let upper = rational(upper);
-    let e = rational(epsilon);
-    let e2 = &e * &e;
-    let d = &upper * &upper - lower - &e2;
-    budget.check(&d)?;
-    if d <= Rational::zero() {
-        return Ok(true);
-    }
-    let a = &d * &d;
-    let b = rational(4.) * e2 * lower;
-    budget.check(&a)?;
-    budget.check(&b)?;
-    Ok(a <= b)
-}
-
 fn minimum(
     curves: [&NurbsCurve; 2],
     tolerance: Tolerance,
@@ -153,9 +131,9 @@ fn minimum(
     while let Some(mut pair) = queue.pop() {
         search.budget.charge(1)?;
         if let Some(best) = &search.best {
-            if within_gap(
+            if algebra::within_gap(
                 best.result.upper_distance,
-                &pair.lower,
+                &pair.lower.clone().min(best.square.clone()),
                 tolerance.absolute(),
                 &mut search.budget,
             )? {
@@ -228,7 +206,7 @@ fn minimum(
         }
     }
     if let Some(best) = search.best
-        && within_gap(
+        && algebra::within_gap(
             best.result.upper_distance,
             &best.square,
             tolerance.absolute(),

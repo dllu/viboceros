@@ -94,7 +94,6 @@
     "crates/viboceros-geometry/src/curve_fit/station_tests.rs": "7b2cd78fc436e38d059421906f617aa0818805413cc61dea31e6feda7989382c",
     "crates/viboceros-geometry/src/spline_collocation.rs": "8abe7a91ffbdea3c146a0102c277a94549f0c837148124c9af93a8f26aa7c45e",
     "crates/viboceros-geometry/src/spline_collocation/banded.rs": "a205d028f0c14499ebe80fe6cf33fa7394586e29b164a21d8acd7f801a0e6d18",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/surface_rebuild.rs": "d367ce6574f2c6e944da1df1c95d0dcdf504a0e05392e71c1764e780c125f2b8",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
@@ -139,6 +138,11 @@
     "75d6d887b970085885e296668ccf39ec0829bb3d:crates/viboceros-geometry/src/curve_fit.rs": "1b378776573c404f25a187255abd66efe602f1e3fa2c7753cb0bbb8531266a2a",
     "adb7608d1b17d33b42294eed49fda241c0dd7a4e:Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "adb7608d1b17d33b42294eed49fda241c0dd7a4e:Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f"
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f",
+    "abb2d4706c6b2971ebd80baf21b3094d08e981a2:crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9"
+  },
+  "inventory_update_only": true,
+  "sha256": {
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
   }
 }

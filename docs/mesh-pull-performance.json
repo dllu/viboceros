@@ -58,7 +58,6 @@
     "crates/viboceros-geometry/src/mesh/projection/pull/tests.rs": "14d25107b047a4e316d30f6d7f4f4dc0f31c3f7ffaa7651cf3635f55e8744c6a",
     "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "9ff46c78989c9a7d5f9c4d269842d9fea9ddd6ad6da83d32d338d45e0c787046",
     "crates/viboceros-geometry/src/surface_pullback/certificate/polyline/tests.rs": "136b91932e3467602788560ae092172c2df0793fcd1612655c9ee544b45b4363",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "tools/rhino_oracle/mesh_pull_performance.py": "b52287549c83c46799c8c201e63a6d7aae5697bb7e181ea40b67d76dbbcd6ca7",
     "tools/rhino_oracle/test_mesh_pull_performance.py": "ffc5c9547cba101eee8aaf0b49c6077baa73b669a839104ec275381a14f9a7d3",
     "docs/commands/pull-mesh.md": "43c000b9b8909ab5006980dcd3810665b50ba5859940b20c2e345f44e1009d3e",
@@ -75,6 +74,11 @@
   },
   "source_git_sha256": {
     "ef94479d0c780100fe5a5cabdb249bf160157539:Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
-    "ef94479d0c780100fe5a5cabdb249bf160157539:Cargo.lock": "eccc1b22dbb16e80b61bd03d8f7d98dffbfc882b8c13dd594f199754cec05d15"
+    "ef94479d0c780100fe5a5cabdb249bf160157539:Cargo.lock": "eccc1b22dbb16e80b61bd03d8f7d98dffbfc882b8c13dd594f199754cec05d15",
+    "abb2d4706c6b2971ebd80baf21b3094d08e981a2:crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9"
+  },
+  "inventory_update_only": true,
+  "sha256": {
+    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
   }
 }

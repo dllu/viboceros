@@ -134,3 +134,33 @@ pub(super) fn split<const D: usize>(
     right.reverse();
     Ok((left, right))
 }
+
+// sqrt(upper^2)-sqrt(lower) <= epsilon, compared exactly without square roots.
+pub(super) fn within_gap(
+    upper: Real,
+    lower: &Rational,
+    epsilon: Real,
+    budget: &mut Budget,
+) -> Result<bool, GeometryError> {
+    // Avoid constructing a ratio between extreme squared distance scales
+    // when the zero lower bound already decides the comparison exactly.
+    if upper <= epsilon {
+        return Ok(true);
+    }
+    if lower.is_zero() {
+        return Ok(false);
+    }
+    let upper = rational(upper);
+    let e = rational(epsilon);
+    let e2 = &e * &e;
+    let d = &upper * &upper - lower - &e2;
+    budget.check(&d)?;
+    if d <= Rational::zero() {
+        return Ok(true);
+    }
+    let a = &d * &d;
+    let b = rational(4.) * e2 * lower;
+    budget.check(&a)?;
+    budget.check(&b)?;
+    Ok(a <= b)
+}

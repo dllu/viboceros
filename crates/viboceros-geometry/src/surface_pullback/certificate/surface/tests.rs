@@ -2,6 +2,51 @@ use super::*;
 use crate::{WeightedPoint2, WeightedPoint3};
 
 #[test]
+fn span_lookup_matches_closed_interval_containment_at_and_between_knots() {
+    let surface = NurbsSurface::try_new(
+        1,
+        1,
+        4,
+        3,
+        (0..3)
+            .flat_map(|j| (0..4).map(move |i| Point3::try_new(i as Real, j as Real, 0.).unwrap()))
+            .collect(),
+        vec![0., 0., 1., 2., 3., 3.],
+        vec![0., 0., 1., 2., 2.],
+    )
+    .unwrap();
+    let mut budget = Budget(MAX_WORK);
+    let exact = Surface::new(&surface, &mut budget).unwrap().unwrap();
+    let us = [-1., 0., 0.5, 1., 1.5, 2., 2.5, 3., 4.];
+    let vs = [-1., 0., 0.5, 1., 1.5, 2., 3.];
+    for (i, &a) in us.iter().enumerate() {
+        for &b in &us[i..] {
+            for (j, &c) in vs.iter().enumerate() {
+                for &d in &vs[j..] {
+                    let bounds = [[rational(a), rational(b)], [rational(c), rational(d)]];
+                    let mut expected = Some([0; 2]);
+                    for (axis, bound) in bounds.iter().enumerate() {
+                        if let Some(span) = exact.spans[axis].iter().copied().find(|&span| {
+                            bound[0] >= exact.knots[axis][span]
+                                && bound[1] <= exact.knots[axis][span + 1]
+                        }) {
+                            expected.as_mut().unwrap()[axis] = span;
+                        } else {
+                            expected = None;
+                            break;
+                        }
+                    }
+                    assert_eq!(
+                        exact.containing_patch(&bounds, &mut budget).unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn nonlinear_isocurve_images_equal_full_rational_tensor_products() {
     for gauge in [1., -2., 1e-280] {
         let surface = NurbsSurface::try_new_rational(

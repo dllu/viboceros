@@ -47,8 +47,10 @@ profiles on an arc and a spatial cubic. Bidirectional world-space samples are
 numerical comparisons, not complete surface proofs. The spatial reversed case
 retains a sampled discrepancy above `1e-6`; a separate complete
 correspondence to the explicit-station model distinguishes that existing behavior
-from automatic placement. The numerical discrepancy alone does not prove that
-the continuous surfaces differ. Further station/direction captures check twelve pairs
+from automatic placement. That numerical comparison alone does not prove
+different continuous images. A separate [surface-distance certificate](surface-distance-bounds.md)
+now proves an image gap above `2.376e-6` for the reversed spatial model constructed
+at the capture's `1e-7` tolerance. Further station/direction captures check twelve pairs
 of rail-boundary endpoints; they do not qualify all of those surface interiors.
 The original non-Greville arc-at-thirty-degrees case now has a complete-image
 regression under the corrected transport policy.
