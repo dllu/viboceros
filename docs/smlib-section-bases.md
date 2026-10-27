@@ -64,7 +64,7 @@ documented whole-domain surface outer-knot padding discrepancy. Of the additiona
 three closed-circle Sweep1 records, the refitted world-space case fully matches
 Rhino. The other two retain their previously documented off-surface closest-point
 residuals and dense nonrational versus exact rational circle-basis difference;
-see [Sweep1 qualification](sweep1.md). Their raw failures remain recorded. Native
+see [Sweep1 qualification](sweep1/validation.md). Their raw failures remain recorded. Native
 section matching does not change those existing geometry/representation policies.
 
 Native degree, resource, chart and weight restrictions remain those of the

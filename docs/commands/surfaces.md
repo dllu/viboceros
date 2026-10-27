@@ -98,8 +98,9 @@ are retained; one unselected B-rep is added on the current layer with atomic und
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular
 rail with one profile. General closed-rail holonomy correction, miters,
-automatic section placement, and complete Rhino multi-section blending are
-not implemented.
+general branch/seam choices, and complete Rhino multi-section blending remain
+unimplemented. Automatic placement follows the qualified interval and direction
+policy linked above.
 
 ## Face and isocurve extraction
 

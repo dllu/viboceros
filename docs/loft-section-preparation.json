@@ -100,7 +100,7 @@
     "crates/viboceros-smlib/tests/loft_parameters_native.rs": "78fd1cc244da3bcbae302bcdba4400ff6b5d8d489b87d5d1caada06d567b165d",
     "docs/loft-validation.md": "06897a1c22fe376d0903acf1ea0cfb0ceb2fd1375530fd173752d7ac65d7779c",
     "docs/loft.md": "6a44b6b1e588dc7657b801f76469fa58f029cddb9205f8201004958fc7378cbe",
-    "docs/smlib-section-bases.md": "5229c2f09761e39ea8301f0fab3c10357402e100c66085208b2fa19c9d731261",
+    "docs/smlib-section-bases.md": "67b70434ce3210f883016bbb0055c3454a189620ae7cbc9bb51165bd2cba9248",
     "third_party/opennurbs/opennurbs_curve.cpp": "7169f4dfdcaa79c9ec9f66a1c92132e00e63cf72cddf39e2ef140a75cdbc04df",
     "third_party/opennurbs/opennurbs_evaluate_nurbs.cpp": "6485f97b1b21e139106739f048e9856cacac7449f5f2b1b093c41253eafea967",
     "third_party/opennurbs/opennurbs_nurbscurve.cpp": "dd9d2aaacb0d2e8217f4eda9b6fbb19d85b93f64209d01e01a01199e7ce59981",
