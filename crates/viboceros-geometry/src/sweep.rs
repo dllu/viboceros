@@ -8,6 +8,8 @@ use std::ops::RangeInclusive;
 
 mod basis;
 mod fit;
+mod point_ends;
+pub use point_ends::SweepEndPoints;
 mod rail;
 use rail::validate_rail_interval;
 #[cfg(test)]
@@ -325,6 +327,11 @@ impl Sweep1 {
                     .sections
                     .partition_point(|s| s.parameter <= t)
                     .saturating_sub(1);
+                // Authored constraints, including collapsed pole rows, must not
+                // acquire roundoff from a local/world frame round trip.
+                if t == self.sections[index].parameter {
+                    return Ok(self.sections[index].curve.clone());
+                }
                 let next = (index + 1).min(self.sections.len() - 1);
                 let mut f = if index == next || t == self.sections[index].parameter {
                     0.0

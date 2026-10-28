@@ -112,7 +112,7 @@
     "tools/rhino_oracle/arc_length_batch_comparison.py": "3d1e747472207fa19781a10a80c46f9416f6a0c564b91c674f748e01a8c629b4",
     "tools/rhino_oracle/test_arc_length_batch.py": "a7bd18693abe40d9489239d3c06cda292dbd80394f12fa1efa0232b99c561dce",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
-    "tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
+    "tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65"
   },
   "fixture_sha256": {
     "tools/rhino_oracle/fixtures/arc_length_batch.json": "0759f45a3d6c7106c603f4f21feac32cf21a15e6316e2e774d4d9decfce20e5b"
@@ -137,7 +137,8 @@
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:crates/viboceros-geometry/src/error.rs": "fbc521df660226a364a405a1279897a88afe0f4680d7de66dfcc28d0f633770c",
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/prepared-curve-length.md": "8fec0549b37393f87221e8bfbea4c6dae76c6458b89b58423d01dd799f96f418",
     "765530fee9f3820cbaf89b238553cfaa9a3d5112:crates/viboceros-oracle/src/arc_length_batch.rs": "403db9b0ea11e046bd8296692737fd9da4c55497ac037e808b5b1d963d77796c",
-    "970fb3f0c74522be369d5329181cab68b500390a:tools/rhino_oracle/arc_length_batch_probe.py": "6c2e62395ca424c608212a7b17ca47659bd15a2993158af448293e0cb357294e"
+    "970fb3f0c74522be369d5329181cab68b500390a:tools/rhino_oracle/arc_length_batch_probe.py": "6c2e62395ca424c608212a7b17ca47659bd15a2993158af448293e0cb357294e",
+    "dc0dd91bdd92d641203f78a0124e5efd754cdab8:tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6"
   },
   "inventory_update_only": true
 }

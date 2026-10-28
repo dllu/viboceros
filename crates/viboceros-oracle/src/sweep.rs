@@ -2,7 +2,7 @@ use super::curve_join_close::CurveInput;
 use super::*;
 #[cfg(not(feature = "native-smlib"))]
 use viboceros_geometry::Sweep1;
-use viboceros_geometry::{SweepBlend, SweepFrameStyle, SweepSection};
+use viboceros_geometry::{SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
 #[cfg(test)]
 mod tests {
@@ -136,6 +136,10 @@ pub struct SweepFixture {
     pub closed: bool,
     #[serde(default)]
     pub refit_rail: bool,
+    #[serde(default)]
+    pub start_point: Option<[f64; 3]>,
+    #[serde(default)]
+    pub end_point: Option<[f64; 3]>,
 }
 
 pub(super) fn run(
@@ -174,16 +178,33 @@ pub(super) fn run(
         1 => SweepBlend::Global,
         _ => return Err(ProbeError::FixtureInvariant("invalid sweep blend")),
     };
+    let ends = SweepEndPoints {
+        start: fixture.start_point.map(Point3::try_from).transpose()?,
+        end: fixture.end_point.map(Point3::try_from).transpose()?,
+    };
     let build = || {
         if fixture.command {
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
             #[cfg(feature = "native-smlib")]
-            let model =
-                viboceros_smlib::sweep_model(rail.as_ref(), &sections, style, blend, tolerance)
-                    .map_err(CommandError::from)?;
+            let model = viboceros_smlib::sweep_model_with_point_ends(
+                rail.as_ref(),
+                &sections,
+                ends,
+                style,
+                blend,
+                tolerance,
+            )
+            .map_err(CommandError::from)?;
             #[cfg(not(feature = "native-smlib"))]
-            let model = Sweep1::try_new(rail.as_ref(), &sections, style, blend, tolerance)?;
+            let model = Sweep1::try_new_with_point_ends(
+                rail.as_ref(),
+                &sections,
+                ends,
+                style,
+                blend,
+                tolerance,
+            )?;
             #[cfg(feature = "native-smlib")]
             let surface =
                 viboceros_smlib::sweep_surface(&model, true).map_err(CommandError::from)?;
@@ -255,6 +276,14 @@ fn command_surfaces(
     );
     if let Some([x, y, z]) = fixture.roadlike_axis {
         text.push_str(&format!(" FrameStyle=Roadlike Axis={x},{y},{z}"));
+    }
+    for (name, point) in [
+        ("StartPoint", fixture.start_point),
+        ("EndPoint", fixture.end_point),
+    ] {
+        if let Some([x, y, z]) = point {
+            text.push_str(&format!(" {name}={x},{y},{z}"));
+        }
     }
     registry.execute(&mut document, &text)?;
     let mut surfaces = Vec::new();

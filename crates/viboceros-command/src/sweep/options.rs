@@ -9,6 +9,7 @@ pub(super) struct Options {
     pub(super) axis: Option<UnitVector3>,
     pub(super) global: Option<bool>,
     pub(super) refit: Option<bool>,
+    pub(super) ends: SweepEndPoints,
 }
 
 impl Options {
@@ -17,6 +18,7 @@ impl Options {
             (None, None, None, None, None);
         let mut refit = None;
         let mut rail_id = None;
+        let mut ends = SweepEndPoints::default();
         for argument in arguments {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if option_name_eq(name, "RailName")
@@ -51,6 +53,10 @@ impl Options {
                 global = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             } else if option_name_eq(name, "RefitRail") && refit.is_none() {
                 refit = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
+            } else if option_name_eq(name, "StartPoint") && ends.start.is_none() {
+                ends.start = Some(parse_single_option_point(value, USAGE)?);
+            } else if option_name_eq(name, "EndPoint") && ends.end.is_none() {
+                ends.end = Some(parse_single_option_point(value, USAGE)?);
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -66,6 +72,7 @@ impl Options {
             axis,
             global,
             refit,
+            ends,
         })
     }
 }

@@ -27,17 +27,43 @@ pub fn sweep_model(
         style,
         blend,
         tolerance,
-        &mut |curves, maximum, limit| {
-            viboceros_geometry::prepare_nurbs_sections_with_operations(
-                curves,
-                maximum,
-                limit,
-                viboceros_geometry::SectionWeightScale::Common,
-                &mut clamp_curve,
-                &mut |curve, degree| change_curve_degree(curve, degree, false),
-                &mut insert_curve_knot,
-            )
-        },
+        &mut prepare_sweep_sections,
+    )
+}
+
+/// Prepare real sections natively before constructing exact point-pole rows.
+pub fn sweep_model_with_point_ends(
+    rail: viboceros_geometry::CurveRef<'_>,
+    sections: &[viboceros_geometry::SweepSection],
+    ends: viboceros_geometry::SweepEndPoints,
+    style: viboceros_geometry::SweepFrameStyle,
+    blend: viboceros_geometry::SweepBlend,
+    tolerance: Tolerance,
+) -> Result<viboceros_geometry::Sweep1, Error> {
+    viboceros_geometry::Sweep1::try_new_with_point_ends_and_section_preparation(
+        rail,
+        sections,
+        ends,
+        style,
+        blend,
+        tolerance,
+        &mut prepare_sweep_sections,
+    )
+}
+
+fn prepare_sweep_sections(
+    curves: &[NurbsCurve],
+    maximum: usize,
+    limit: viboceros_geometry::GeometryError,
+) -> Result<Vec<NurbsCurve>, Error> {
+    viboceros_geometry::prepare_nurbs_sections_with_operations(
+        curves,
+        maximum,
+        limit,
+        viboceros_geometry::SectionWeightScale::Common,
+        &mut clamp_curve,
+        &mut |curve, degree| change_curve_degree(curve, degree, false),
+        &mut insert_curve_knot,
     )
 }
 

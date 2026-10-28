@@ -88,8 +88,8 @@ pub use knot_refinement::{
     remove_curve_multiple_knots, remove_periodic_surface_knot, remove_surface_knot,
     remove_surface_multiple_knots, split_curve, split_curve_at_parameters, split_surface, subcurve,
     subcurve_at_arc_length, surface_isocurve, surface_single_span_patches, surface_tweens,
-    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_curve,
-    trim_surface, trim_surface_direction,
+    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_model_with_point_ends,
+    sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
 mod coplanar_merge;
 mod face_creases;

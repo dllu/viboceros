@@ -1,0 +1,304 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "start-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            5.0
+          ]
+        }
+      ],
+      "parameters": [
+        5.0
+      ],
+      "blend": 0,
+      "inspect_definition": true,
+      "start_point": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "command": true,
+      "refit_rail": false
+    },
+    {
+      "op": "sweep1",
+      "id": "end-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "blend": 0,
+      "inspect_definition": true,
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false
+    },
+    {
+      "op": "sweep1",
+      "id": "both-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            2.5
+          ],
+          "end": [
+            2.0,
+            0.0,
+            2.5
+          ]
+        }
+      ],
+      "parameters": [
+        2.5
+      ],
+      "blend": 0,
+      "inspect_definition": true,
+      "start_point": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false
+    },
+    {
+      "op": "sweep1",
+      "id": "both-global-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            2.5
+          ],
+          "end": [
+            2.0,
+            0.0,
+            2.5
+          ]
+        }
+      ],
+      "parameters": [
+        2.5
+      ],
+      "blend": 1,
+      "inspect_definition": true,
+      "start_point": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false
+    },
+    {
+      "op": "sweep1",
+      "id": "offset-end-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "blend": 0,
+      "inspect_definition": true,
+      "end_point": [
+        1.0,
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false
+    },
+    {
+      "op": "sweep1",
+      "id": "multiple-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "end": [
+            2.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            4.0
+          ],
+          "end": [
+            1.0,
+            0.0,
+            4.0
+          ]
+        }
+      ],
+      "parameters": [
+        1.0,
+        4.0
+      ],
+      "blend": 0,
+      "inspect_definition": true,
+      "start_point": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false
+    }
+  ]
+}

@@ -40,7 +40,7 @@ epsilons of the rail's domain length, accommodating endpoint reconstruction
 roundoff. Meaningful extrapolation, nonfinite values, and section parameters
 that cease to be strictly increasing after snapping are rejected.
 
-With explicit parameters, the sweep runs from the first profile's station to the last profile's station.
+Without point ends, explicit parameters sweep from the first profile's station to the last profile's station.
 A single profile instead sweeps forward from its station to the rail's end.
 Inputs, attributes, groups, and selection remain unchanged. The new unselected
 B-rep uses the current layer; profile creases split into shared-topology faces.
@@ -56,6 +56,7 @@ command and kernel tests; a circular profile produces a native one-face solid.
 | --- | --- |
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
+| `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
 | `FrameStyle=Roadlike Axis=0,0,1` | Keep a frame direction perpendicular to both rail tangent and fixed axis; default axis is world Z. Parallel tangent/axis is an error. |
 | `GlobalShapeBlending=No` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |

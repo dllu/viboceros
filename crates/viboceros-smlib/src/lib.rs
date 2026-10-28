@@ -46,8 +46,9 @@ pub use native::{
     split_curve_at_parameters, split_surface, subcurve, subcurve_at_arc_length,
     surface_brep_intersection_events, surface_face_intersection_events,
     surface_intersection_events, surface_isocurve, surface_single_span_patches, surface_tweens,
-    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_blend_parent,
-    trim_curve, trim_surface, trim_surface_direction, two_rail_sweep_surface,
+    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_model_with_point_ends,
+    sweep_surface, trim_blend_parent, trim_curve, trim_surface, trim_surface_direction,
+    two_rail_sweep_surface,
 };
 #[cfg(feature = "native")]
 use viboceros_opennurbs as _;

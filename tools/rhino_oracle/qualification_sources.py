@@ -196,6 +196,7 @@ def _expand_sources_once(paths):
     if 'crates/viboceros-command/src/sweep.rs' in paths:
         paths = [*paths, 'crates/viboceros-command/src/sweep/options.rs',
                  'crates/viboceros-command/src/sweep/tests.rs',
+                 'crates/viboceros-command/src/sweep/point_tests.rs',
                  'crates/viboceros-command/src/sweep/placement.rs',
                  'crates/viboceros-command/src/sweep/arc_station_tests.rs',
                  'crates/viboceros-command/src/sweep/automatic_tests.rs',
@@ -203,6 +204,10 @@ def _expand_sources_once(paths):
     if 'crates/viboceros-geometry/src/sweep.rs' in paths:
         paths = [*paths,
                  'crates/viboceros-geometry/src/sweep/rail.rs',
+                 'crates/viboceros-geometry/src/sweep/point_ends.rs',
+                 'crates/viboceros-geometry/tests/sweep_point_ends.rs',
+                 'crates/viboceros-geometry/tests/support/positive_tensor.rs',
+                 'crates/viboceros-oracle/tests/sweep_point_ends.rs',
                  'crates/viboceros-geometry/src/sweep/basis.rs',
                  'crates/viboceros-geometry/src/sweep/fit.rs',
                  'crates/viboceros-geometry/src/sweep/weights.rs',

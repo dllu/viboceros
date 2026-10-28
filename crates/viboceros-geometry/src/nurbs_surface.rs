@@ -3221,6 +3221,37 @@ impl NurbsSurface {
             SurfaceIsoDirection::U => self.control_point_count_u,
             SurfaceIsoDirection::V => self.control_point_count_v,
         };
+        // At a clamped endpoint the basis selects one stored control exactly.
+        // Copy it before homogenization, which can move an exact pole by an
+        // ulp and turn a singular boundary into a spurious topological edge.
+        let fixed_count = fixed_knots.len() - fixed_degree - 1;
+        let endpoint = if fixed_parameter == fixed_knots[fixed_degree]
+            && fixed_knots[..=fixed_degree]
+                .iter()
+                .all(|&t| t == fixed_parameter)
+        {
+            Some(0)
+        } else if fixed_parameter == fixed_knots[fixed_count]
+            && fixed_knots[fixed_count..]
+                .iter()
+                .all(|&t| t == fixed_parameter)
+        {
+            Some(fixed_count - 1)
+        } else {
+            None
+        };
+        if let Some(fixed) = endpoint {
+            return Ok((0..varying_count)
+                .map(|varying| match direction {
+                    SurfaceIsoDirection::U => {
+                        self.control_points[self.control_index(varying, fixed)]
+                    }
+                    SurfaceIsoDirection::V => {
+                        self.control_points[self.control_index(fixed, varying)]
+                    }
+                })
+                .collect());
+        }
         let mut result = Vec::with_capacity(varying_count);
         for varying in 0..varying_count {
             let control_at = |fixed| match direction {

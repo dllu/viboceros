@@ -6,6 +6,23 @@ pub(super) fn sections(
     profiles: Vec<NurbsCurve>,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve, Vec<SweepSection>), CommandError> {
+    sections_with_direction(source, profiles, tolerance, false)
+}
+
+pub(super) fn sections_with_point_ends(
+    source: CurveRef<'_>,
+    profiles: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+) -> Result<(NurbsCurve, Vec<SweepSection>), CommandError> {
+    sections_with_direction(source, profiles, tolerance, true)
+}
+
+fn sections_with_direction(
+    source: CurveRef<'_>,
+    profiles: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+    retain_direction: bool,
+) -> Result<(NurbsCurve, Vec<SweepSection>), CommandError> {
     let mut rail = source.to_nurbs()?;
     let mut sections = Vec::with_capacity(profiles.len());
     for curve in profiles {
@@ -50,7 +67,7 @@ pub(super) fn sections(
     } else {
         sections[0].parameter > sections[1].parameter
     };
-    if reverse {
+    if reverse && !retain_direction {
         rail = rail.reversed()?;
         for section in &mut sections {
             section.parameter = -section.parameter;

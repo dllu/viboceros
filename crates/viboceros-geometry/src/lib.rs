@@ -353,7 +353,9 @@ pub use spiral::{
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN,
 };
 pub use surface_curvature::SurfaceCurvature;
-pub use sweep::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection, SweepSurfaceOperations};
+pub use sweep::{
+    Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection, SweepSurfaceOperations,
+};
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};

@@ -1,7 +1,7 @@
 use super::*;
-use viboceros_geometry::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
+use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn model(
     rail: CurveRef<'_>,
@@ -18,6 +18,30 @@ pub(super) fn model(
     #[cfg(not(feature = "native-smlib"))]
     {
         Ok(Sweep1::try_new(rail, sections, style, blend, tolerance)?)
+    }
+}
+
+pub(super) fn model_with_point_ends(
+    rail: CurveRef<'_>,
+    sections: &[SweepSection],
+    ends: SweepEndPoints,
+    style: SweepFrameStyle,
+    blend: SweepBlend,
+    tolerance: Tolerance,
+) -> Result<Sweep1, CommandError> {
+    if ends.is_empty() {
+        return model(rail, sections, style, blend, tolerance);
+    }
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::sweep_model_with_point_ends(rail, sections, ends, style, blend, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(Sweep1::try_new_with_point_ends(
+            rail, sections, ends, style, blend, tolerance,
+        )?)
     }
 }
 
@@ -83,6 +107,7 @@ impl Command for SweepCommand {
             axis,
             global,
             refit,
+            ends,
         } = Options::parse(arguments)?;
         let rail_name = rail_name.as_deref();
         let selected = selected_ids(document)?;
@@ -135,10 +160,15 @@ impl Command for SweepCommand {
                     .collect(),
             )
         } else {
-            let (rail, sections) = placement::sections(rail, curves, document.tolerance())?;
+            let (rail, sections) = if ends.is_empty() {
+                placement::sections(rail, curves, document.tolerance())?
+            } else {
+                placement::sections_with_point_ends(rail, curves, document.tolerance())?
+            };
             (Some(rail), sections)
         };
-        let full_rail_anchor = if !refit.unwrap_or(false)
+        let full_rail_anchor = if ends.is_empty()
+            && !refit.unwrap_or(false)
             && let Some(rail) = &automatic_rail
         {
             placement::full_rail_anchor(rail, &sections)?
@@ -169,11 +199,15 @@ impl Command for SweepCommand {
         } else {
             SweepBlend::Local
         };
-        let mut sweep = model(rail, &sections, style, blend, document.tolerance())?;
+        let mut sweep =
+            model_with_point_ends(rail, &sections, ends, style, blend, document.tolerance())?;
         if full_rail_anchor {
             sweep = sweep.try_on_full_rail()?;
         }
-        let surface = surface(&sweep, refit.unwrap_or(false) || automatic_partial)?;
+        let surface = surface(
+            &sweep,
+            refit.unwrap_or(false) || automatic_partial || !ends.is_empty(),
+        )?;
         let [u, v] = surface.sampled_kink_parameters(document.tolerance().angular())?;
         let brep = Brep::try_surface_grid(&surface, &u, &v, document.tolerance())?;
         let count = brep.faces().len();
@@ -191,5 +225,7 @@ mod arc_station_tests;
 mod automatic_tests;
 #[cfg(test)]
 mod curved_tests;
+#[cfg(test)]
+mod point_tests;
 #[cfg(test)]
 mod tests;

@@ -2345,7 +2345,7 @@ def _sweep1(operation, iterations, tolerance):
                 raise ValueError("roadlike Sweep1 command instrumentation is not implemented")
             def macro(ids):
                 Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
-                return _sweep1_macro(operation, ids)
+                return _sweep1_macro(operation, ids, any(curve.IsClosed for curve in owned[1:]))
             value, elapsed = _curve_surface_command(owned, macro, iterations, "sweep",
                 lambda obj: _sweep1_record(obj.Geometry, operation), verify_script=True)
             records = [face for output in value["outputs"] for face in output]
@@ -2356,7 +2356,9 @@ def _sweep1(operation, iterations, tolerance):
                 brep.Dispose()
             del result[:]
             result.extend(Rhino.Geometry.Brep.CreateFromSweep(
-                rail, owned[1:], Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+                rail, owned[1:],
+                _point(operation["start_point"]) if "start_point" in operation else Rhino.Geometry.Point3d.Unset,
+                _point(operation["end_point"]) if "end_point" in operation else Rhino.Geometry.Point3d.Unset,
                 System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if "roadlike_axis" in operation else 0),
                 _vector(operation["roadlike_axis"]) if "roadlike_axis" in operation else Rhino.Geometry.Vector3d.Unset,
                 operation.get("closed", False),
@@ -2372,12 +2374,20 @@ def _sweep1(operation, iterations, tolerance):
             geometry.Dispose()
 
 
-def _sweep1_macro(operation, ids):
+def _sweep1_macro(operation, ids, closed_profiles=False):
     # Rhino's script options differ from the labels in the sweep dialog.
     # Set all supported sticky choices explicitly, independent of prior runs.
     text = "_-Sweep1 '_-SelID %s " % ids[0]
+    point_text = lambda value: ",".join(format(float(x), ".17g") for x in value)
+    if "start_point" in operation:
+        text += " _Point " + point_text(operation["start_point"]) + " "
     text += " ".join("'_-SelID %s" % i for i in ids[1:])
-    text += " _Enter _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
+    if "end_point" in operation:
+        text += " _Point " + point_text(operation["end_point"])
+    text += "" if "end_point" in operation else " _Enter"
+    if closed_profiles:
+        text += " _Enter"  # Accept the authored closed-profile seams.
+    text += " _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
         "Global" if operation.get("blend", 0) else "Local",
         "Yes" if operation.get("refit_rail", False) else "No")
     return text
