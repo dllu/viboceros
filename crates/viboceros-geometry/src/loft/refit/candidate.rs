@@ -102,7 +102,10 @@ fn quarter_stations_fit(
     )?;
     // Preserve the existing eight-interval incremental fitting clock.
     let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
-    let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
+    let parameters = sampler.parameters_at_incremental_normalized_lengths(
+        &fractions,
+        crate::curve_fit::g1::FITTING_BATCH_TOLERANCE,
+    )?;
     let search = candidate.prepare_closest_parameter_search()?;
     let numerical =
         crate::Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;

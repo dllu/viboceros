@@ -3,6 +3,8 @@ use crate::{GeometryError, NurbsCurve, ParameterSide};
 mod adjust;
 pub(crate) use adjust::{adjusted_cubic, adjusted_cubic_at_point};
 mod correspondence;
+// Public batch request corresponding to the measured 1e-4 fitting clock.
+pub(crate) const FITTING_BATCH_TOLERANCE: crate::Real = 0.01;
 pub(crate) use correspondence::reconstruction_deviation_bound;
 #[cfg(test)]
 pub(crate) use correspondence::within_deviation_at_pairs;

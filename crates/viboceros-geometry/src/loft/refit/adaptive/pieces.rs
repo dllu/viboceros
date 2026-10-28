@@ -119,7 +119,10 @@ pub(super) fn construct_with_scope(
             let sampler =
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
             let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
-            Some(sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?)
+            Some(sampler.parameters_at_incremental_normalized_lengths(
+                &fractions,
+                crate::curve_fit::g1::FITTING_BATCH_TOLERANCE,
+            )?)
         }
     };
     // A common-handle correction is qualified on smooth parameter spans.

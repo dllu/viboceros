@@ -11,7 +11,8 @@ pub(crate) fn adjusted_cubic(
 ) -> Result<Option<NurbsCurve>, GeometryError> {
     let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
     let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
-    let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
+    let parameters = sampler
+        .parameters_at_incremental_normalized_lengths(&fractions, super::FITTING_BATCH_TOLERANCE)?;
     let target = source.evaluate(parameters[4])?;
     adjusted_cubic_at_point(initial, target, limit)
 }

@@ -49,7 +49,10 @@ fn coincident_interval_endpoints_subdivide_without_losing_an_interior_loop() {
     let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
     assert_eq!(
         sampler
-            .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+            .parameters_at_incremental_normalized_lengths(
+                &fractions,
+                crate::curve_fit::g1::FITTING_BATCH_TOLERANCE
+            )
             .unwrap()[4],
         0.5
     );

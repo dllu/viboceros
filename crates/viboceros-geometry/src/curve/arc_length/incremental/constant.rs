@@ -1,6 +1,6 @@
-//! Measured tolerance policy for constant-speed numerical NURBS batches.
+//! Shared numerical batch tolerance and constant-speed NURBS regressions.
 use super::*;
-pub(super) fn checkpoint_tolerance(fractional_tolerance: Real) -> Real {
+pub(super) fn batch_tolerance(fractional_tolerance: Real) -> Real {
     // Cold-curve resolution captures expose the transition at 1e-5 and the
     // coarse-request cap. Independent spatial holdouts exercise both sides
     // of these thresholds, natural knots and interior quadrature checkpoints.

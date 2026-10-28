@@ -930,5 +930,7 @@
     "tools/rhino_oracle/observations/source_snapshots/39d53287980e18e87683e3fbeec2ce825d0cad19749c1a739b87fed5f549a9fa.gz": "1c510a6363760060bc9950d02f586fe456fb21e35a99f9c8efff2abec7220efd",
     "tools/rhino_oracle/observations/source_snapshots/81dc974b35f0ba4c636bbf2c160eab5091f5f348df97493eb5e85c7e9b1da420.gz": "7a9680f07b3e1e10200815606b89ae1e1351a90d143682c1210870b4e3b443d9",
     "tools/rhino_oracle/observations/source_snapshots/741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea.gz": "c32adbca40a47a30cec9e91bf86ee9c810462e2d80564eb0aec6a7437245691c"
-  }
+  },
+  "measurement_revision": "c378d2a1ce183ae4e660bd618419fbda5677e06f",
+  "measurement_scope": "Historical representation proofs and pre-correction numerical clock mismatches. Source bindings are retained at measurement_revision; the current curved batch policy and fresh implementation replay are recorded in refit-clock-validation.json."
 }

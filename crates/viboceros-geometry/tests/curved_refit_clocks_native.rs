@@ -30,7 +30,7 @@ fn curved_fitting_batches_match_native_and_complete_initial_images_are_certified
         let sampler =
             ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
         let parameters = sampler
-            .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+            .parameters_at_incremental_normalized_lengths(&fractions, 1e-2)
             .unwrap();
         let paired = &row["value"]["refit_sources"][1];
         let clock = &paired["numerical_clocks"][3];

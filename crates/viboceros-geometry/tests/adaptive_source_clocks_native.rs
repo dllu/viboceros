@@ -33,7 +33,7 @@ fn independent_adaptive_sources_retain_the_measured_fitting_clock() {
         let sampler =
             ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
         let parameters = sampler
-            .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+            .parameters_at_incremental_normalized_lengths(&fractions, 1e-2)
             .unwrap();
         let clock = &row["value"]["refit_sources"][1]["numerical_clocks"][3];
         assert_eq!(clock["fractional_tolerance"], 1e-2);

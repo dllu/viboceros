@@ -19,13 +19,15 @@ impl ArcLengthSampler<'_> {
     /// Invert nondecreasing normalized lengths using incremental quadrature.
     ///
     /// Each accepted approximate point becomes the next query's origin. The
-    /// stopping error is `fractional_tolerance * integrated_total_length` for
-    /// each increment. A polycurve uses its containing component's length.
+    /// NURBS requests below `1e-5` retain their fractional stopping error;
+    /// coarser requests use `min(fractional_tolerance, 0.01) / 100` for both
+    /// integration and inversion. The resulting error is scaled by total
+    /// length. A polycurve uses its containing component's length.
     /// Errors can accumulate. Results depend on earlier
     /// fractions in the batch. Use `parameters_at_normalized_lengths` for
     /// precise, order-independent geometry queries.
     /// Constant-speed multispan NURBS retain numerical checkpoints and the
-    /// accepted prefix, with a tighter stopping error for coarse requests.
+    /// accepted prefix under the same request normalization.
     /// Analytic primitives and polylines retain their precise length clocks.
     ///
     /// The method reuses Cash–Karp integration, retains span boundaries and
@@ -148,6 +150,13 @@ impl ArcLengthSampler<'_> {
             }
             return Ok(parameters);
         }
+        let fractional_tolerance = if policy == InversePolicy::Incremental
+            && matches!(self.curve(), CurveRef::NurbsCurve(_))
+        {
+            constant::batch_tolerance(fractional_tolerance)
+        } else {
+            fractional_tolerance
+        };
         let trace = self.integration_trace(
             fractional_tolerance,
             false,
@@ -210,11 +219,7 @@ impl ArcLengthSampler<'_> {
             } else {
                 total
             };
-            let error = if constant_nurbs_batch {
-                constant::checkpoint_tolerance(fractional_tolerance)
-            } else {
-                fractional_tolerance
-            } * local_length;
+            let error = fractional_tolerance * local_length;
             require_finite([error], "incremental arc-length error")?;
             // Form the distance thresholds before comparison. Subtracting the
             // target from the total instead changes floating-point boundary

@@ -52,7 +52,10 @@ fn independently_constructed_pieces_match_complete_native_images_at_observed_cut
             ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as f64 / 8.);
         let lookup = sampler
-            .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+            .parameters_at_incremental_normalized_lengths(
+                &fractions,
+                crate::curve_fit::g1::FITTING_BATCH_TOLERANCE,
+            )
             .unwrap();
         let parameter = |fraction: f64| {
             let station = fraction * 8.;

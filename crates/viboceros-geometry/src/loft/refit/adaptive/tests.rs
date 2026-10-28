@@ -64,7 +64,10 @@ fn sampling_cannot_hide_a_bump_between_the_interior_stations() {
         ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
     let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
     let parameters = sampler
-        .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+        .parameters_at_incremental_normalized_lengths(
+            &fractions,
+            crate::curve_fit::g1::FITTING_BATCH_TOLERANCE,
+        )
         .unwrap();
     for t in parameters {
         assert_eq!(source.evaluate(t).unwrap().y(), 0.);

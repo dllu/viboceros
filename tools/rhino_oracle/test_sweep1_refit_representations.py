@@ -10,13 +10,21 @@ from .generate_sweep1_refit_representations import (
 from .generate_sweep1_refit_representation_diagnostics import (
     FAMILY as DIAGNOSTICS, request as diagnostics,
 )
+from .generate_sweep1_refit_clock_resolutions import (
+    FAMILY as RESOLUTIONS, request as resolutions,
+)
+from .generate_sweep1_refit_clock_holdouts import (
+    FAMILY as HOLDOUTS, request as holdouts,
+)
 
 
 class SweepRefitRepresentationTests(unittest.TestCase):
     def test_recipes_and_native_producers_are_frozen(self):
         for family, query, count in [(INPUT_FAMILY, input_request(), 8),
                                      (FAMILY, request(), 16),
-                                     (DIAGNOSTICS, diagnostics(), 32)]:
+                                     (DIAGNOSTICS, diagnostics(), 32),
+                                     (RESOLUTIONS, resolutions(), 5),
+                                     (HOLDOUTS, holdouts(), 5)]:
             with self.subTest(family=family):
                 fixture = (HERE / ('fixtures/' + family + '.json')).read_bytes()
                 observed = json.loads((HERE / ('observations/' + family + '.json')).read_bytes())
@@ -42,6 +50,19 @@ class SweepRefitRepresentationTests(unittest.TestCase):
             self.assertEqual(inserted['parameter'], .3)
             self.assertEqual(inserted['multiplicity'], 1)
             self.assertEqual(elevated['curve'], inserted['curve'])
+
+    def test_resolution_capture_keeps_single_and_multiple_span_controls(self):
+        operations = resolutions()['operations']
+        self.assertEqual(len(operations), 5)
+        self.assertEqual(operations[-1]['id'], 'single-quadratic')
+        self.assertEqual(len(set(operations[-1]['curve']['knots'])), 2)
+        for operation in operations:
+            self.assertEqual(operation['fractions'], [i / 8. for i in range(9)])
+            self.assertEqual([s['fractional_tolerance'] for s in
+                              operation['inspect_numerical_batch']],
+                             [1e-8, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2])
+            self.assertTrue(all(not s['history'] for s in
+                                operation['inspect_numerical_batch']))
 
     def test_sweep_variants_keep_the_same_refit_tolerances(self):
         profiles = json.loads((HERE / PROFILES).read_text())['profiles']

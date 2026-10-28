@@ -12,8 +12,8 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Re-entered C1 profiles | 12/12 | 8/12 |
 | Combined | 98/98 | 91/98 |
 
-The [implementation replay](refit-reentry-validation.json) at `d1def348c`
-covers all 98 cases on both backends, retaining seven failing image assertions: three base fine profiles
+The [current replay](refit-clock-validation.json) covers all 98 cases on both
+backends, retaining seven failing image assertions: three base fine profiles
 and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
 pass. The [earlier base record](refit-development-validation.json) retains its
 measured source bindings for commit `46371ad4e`.
@@ -59,7 +59,9 @@ uses independently constructed input curves, not purported Rhino intermediates.
 [Representation diagnostics](refit-representation-validation.json) certify 12
 equivalent inputs at `1e-12`, then compare 16 native sweep images. Knot insertion
 changes two images beyond `1e-7`; degree elevation and affine domains retain
-the tested images. Fresh length batches expose 16 unqualified multi-span clock
-cases. Production fitting is unchanged pending a justified correction.
+the tested images. The [clock correction](refit-clock-validation.json) resolves
+all 16 fresh multi-span batches and adds 450 precision queries. Numerical NURBS
+batches share request normalization; fitting retains its measured public request
+of `0.01`, giving an effective tolerance of `1e-4`.
 The other historical qualification inventories still describe `main` before
 this branch and must be refreshed before merging.

@@ -310,11 +310,24 @@ def _expand_sources_once(paths):
         paths = [*paths,
             'crates/viboceros-geometry/src/curve/arc_length/incremental/constant.rs',
             'crates/viboceros-geometry/tests/nurbs_batch_native.rs',
+            'crates/viboceros-geometry/tests/nurbs_curved_batch_native.rs',
             'crates/viboceros-geometry/tests/scalar_checkpoint_acceptance_native.rs',
             'crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs',
             'crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs',
             'crates/viboceros-geometry/tests/loft_midpoint_clock_native.rs',
             'crates/viboceros-geometry/tests/component_clock_native.rs',
+        ]
+    if 'crates/viboceros-geometry/tests/nurbs_curved_batch_native.rs' in paths:
+        paths = [*paths,
+            'tools/rhino_oracle/generate_sweep1_refit_clock_resolutions.py',
+            'tools/rhino_oracle/generate_sweep1_refit_clock_holdouts.py',
+            'tools/rhino_oracle/fixtures/sweep1_refit_clock_resolutions.json',
+            'tools/rhino_oracle/observations/sweep1_refit_clock_resolutions.json',
+            'tools/rhino_oracle/fixtures/sweep1_refit_clock_holdouts.json',
+            'tools/rhino_oracle/observations/sweep1_refit_clock_holdouts.json',
+            'tools/rhino_oracle/arc_length_batch_probe.py',
+            'tools/rhino_oracle/geometry_validity_probe.py',
+            'tools/rhino_oracle/test_sweep1_refit_representations.py',
         ]
     if 'crates/viboceros-geometry/src/curve_fit.rs' in paths:
         paths = [*paths,

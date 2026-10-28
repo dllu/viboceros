@@ -32,7 +32,10 @@ fn an_unsampled_corner_cannot_spend_the_c1_reconstruction_reserve() {
                     .unwrap();
             let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
             let lookup = sampler
-                .parameters_at_incremental_normalized_lengths(&fractions, 1e-4)
+                .parameters_at_incremental_normalized_lengths(
+                    &fractions,
+                    crate::curve_fit::g1::FITTING_BATCH_TOLERANCE,
+                )
                 .unwrap();
             let parameters = fractions.map(|f| lookup_parameter(&lookup, 0.625 + f * 0.0625));
             let candidate = crate::curve_fit::g1::initial_cubic_from_frames(

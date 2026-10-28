@@ -41,10 +41,10 @@ fn read(family: &str, folder: &str) -> Value {
 fn incremental_stations_match_public_nurbs_batches_at_both_precisions() {
     let mut count = 0;
     let mut maximum = 0_f64;
-    for (family, precision) in [
-        ("loft_refit_adjustment", 1e-6),
-        ("loft_refit_adjustment_fit_clock", 1e-4),
-        ("loft_refit_adjustment_ellipses", 1e-4),
+    for family in [
+        "loft_refit_adjustment",
+        "loft_refit_adjustment_fit_clock",
+        "loft_refit_adjustment_ellipses",
     ] {
         let query = read(family, "fixtures");
         let native = read(family, "observations");
@@ -61,6 +61,9 @@ fn incremental_stations_match_public_nurbs_batches_at_both_precisions() {
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT)
                     .unwrap();
             let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
+            let precision = op["refit_adjustment_fractional_tolerance"]
+                .as_f64()
+                .unwrap_or(1e-4);
             let parameters = sampler
                 .parameters_at_incremental_normalized_lengths(&fractions, precision)
                 .unwrap();
