@@ -5,16 +5,13 @@ This development branch implements `Refit=0.01` and
 Rebuild and Refit are mutually exclusive. Real profile copies are fitted before
 adding point-end poles, and authored rail stations are retained.
 
-The last complete replay, at `d8339b121`, proved 83 of 86 complete Rhino surface
-images on both backends within `1e-7`. Two tight-tolerance circles fail construction, and a fine quadratic
-remains unproved. All three failures remain in the
-acceptance tests. See the [development record](refit-development-validation.json).
+Both backends construct all 86 cases and prove 83 complete Rhino surface images
+within `1e-7`. Three fine-profile images still differ from Rhino; their assertions
+remain in the acceptance tests. See the
+[development record](refit-development-validation.json).
 Complete image agreement and command/UI qualification remain outstanding.
 The existing qualification records describe `main` before this development
 branch; their source inventories have not been refreshed for this prototype.
-The subsequent module split preserves the fitting implementation; focused
-comparisons retain the same circle failures. The development record distinguishes
-the full replay's source revision from the current source inventory.
 
 Section Refit remains in development. Its comparison epsilon is `1e-7`;
 successful construction alone does not establish Rhino compatibility.
@@ -50,6 +47,12 @@ curves, and certifies complete intermediate curve images. It reconstructs each
 profile at the shared interpolation stations before checking a fresh complete
 bound against its original input. Inserting knots after independent
 reconstruction gives different mixed-profile geometry.
+
+Known fitting-span correspondences receive a proposal budget proportional to
+their active spline spans, capped at 1024 intervals. Smaller proposals run first.
+This removes two closed-fit construction failures caused by the former fixed
+budget. Every accepted map still needs the same complete exact image bound;
+the nominal tolerance and arithmetic-work limits are unchanged.
 
 A nominal Refit tolerance is not an established final source-distance bound.
 The [exact Bernstein regression](../../tools/rhino_oracle/test_sweep1_refit.py) retains a

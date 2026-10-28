@@ -1,16 +1,13 @@
 {
-  "status": "development; three acceptance cases still fail",
+  "status": "development; all cases construct and three image comparisons still fail",
   "refit_implemented": true,
   "full_sweep1_compatibility": false,
   "comparison_epsilon": 1e-07,
   "total_cases": 86,
-  "constructed": 84,
+  "constructed": 86,
   "complete_image_passes": 83,
-  "unproved_images": 1,
-  "construction_gaps": [
-    "REFIT_CONSTRUCTION_GAP \"closed-refit-1e-06\": curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate",
-    "REFIT_CONSTRUCTION_GAP \"nurbs-circle-1e-06\": curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate"
-  ],
+  "unproved_images": 3,
+  "construction_gaps": [],
   "base_cases": 70,
   "base_passes": 67,
   "controlled_cases": 16,
@@ -53,7 +50,7 @@
         "--nocapture"
       ],
       "exit_code": 101,
-      "seconds": 274.02800822257996
+      "seconds": 429.6617548465729
     },
     "native_images": {
       "args": [
@@ -73,9 +70,9 @@
         "--nocapture"
       ],
       "exit_code": 101,
-      "seconds": 331.6637020111084
+      "seconds": 447.1595652103424
     },
-    "join_regressions": {
+    "correspondence_regressions": {
       "args": [
         "cargo",
         "test",
@@ -83,10 +80,10 @@
         "-p",
         "viboceros-geometry",
         "--lib",
-        "loft::refit::adaptive::join::"
+        "curve_fit::g1::correspondence::"
       ],
       "exit_code": 0,
-      "seconds": 69.07978558540344
+      "seconds": 0.6922523975372314
     },
     "sweep_invariants": {
       "args": [
@@ -99,7 +96,7 @@
         "sweep::refit::"
       ],
       "exit_code": 0,
-      "seconds": 0.10328125953674316
+      "seconds": 0.10547685623168945
     },
     "portable_clippy": {
       "args": [
@@ -117,7 +114,7 @@
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 42.8029146194458
+      "seconds": 38.979625940322876
     },
     "native_clippy": {
       "args": [
@@ -137,25 +134,46 @@
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 53.044777631759644
+      "seconds": 46.693827390670776
     }
   },
   "additional_checks": {
-    "join_regressions": {
+    "correspondence_regressions": {
       "exit_code": 0,
-      "tests": 7
+      "tests_passed": 7,
+      "ignored_timing_diagnostics": 1
     },
     "sweep_geometry_invariants": {
       "exit_code": 0,
       "tests": 2
     },
+    "closed_c1_regression": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "a_closed_c1_refit_can_certify",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "tests": 1,
+      "parameter_domains": 2
+    },
     "frozen_native_python_checks": {
       "exit_code": 0,
-      "tests": 10
+      "tests": 13
     },
     "rustfmt": {
       "exit_code": 0,
-      "development_rust_files": 22
+      "files": [
+        "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs",
+        "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs",
+        "crates/viboceros-geometry/src/loft/refit/adaptive/curved_tests.rs"
+      ]
     }
   },
   "images": [
@@ -224,6 +242,14 @@
       "native_controls": 9
     },
     {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-06",
+      "native_controls": 194
+    },
+    {
       "actual_controls": 10,
       "complete_image_bound": 9.820882000655408e-13,
       "epsilon": 1e-07,
@@ -422,6 +448,14 @@
       "family": "sweep1_refit_commands",
       "id": "two-closed-refit-0.01",
       "native_controls": 10
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-1e-06",
+      "native_controls": 194
     },
     {
       "actual_controls": 10,
@@ -821,7 +855,7 @@
     "crates/viboceros-geometry/src/sweep/refit/tests.rs": "dda918f909cbcbf7ec8e41cce5fba0ac1121005c84f929b8885c47215a58b75b",
     "crates/viboceros-oracle/tests/sweep_refit.rs": "bcff02ec1e4292547fc5405ddcacabb0a804ee3891fa306001ac4d6ff8458e21",
     "crates/viboceros-oracle/tests/sweep_refit_common_handles.rs": "d96df9ae0cb86d4f2b6df67597fbdcb585420fa5118dc7bcabcca24cad5fc022",
-    "docs/sweep1/refitting.md": "53b08e80eda76861820cc54ffc7953713421bc9f2b2d37af150b299678e36c47",
+    "docs/sweep1/refitting.md": "f716bc64de278c8ae70d7594f773d4dba9a2952a3ff9d1f4d8407fa7ed04b1ee",
     "crates/viboceros-geometry/src/lib.rs": "e35da236197b980fb9889f3dddc378ae27a354a9dede4d4292a5c4e66b443501",
     "crates/viboceros-command/src/lib.rs": "a0ec6833486802b9fb2c1b90281ef6b70d005426e791b7f4646cbde4743f2092",
     "crates/viboceros-oracle/src/lib.rs": "8485ae38ce6d33b105411caf5cbc596f329402305c7188d582d520d9f2bc475c",
@@ -931,7 +965,7 @@
     "tools/rhino_oracle/fixtures/loft_refit_preparation_baseline.json": "15e171f0e92eb004286c217a87b97f7afcd7c51669440d0936c8e5974b3b5119",
     "tools/rhino_oracle/fixtures/loft_refit_preparation_declines.json": "645d860a2d80ed3d2e420d77c70a6c1164097449b6f49bf6d2f223e9d905e15f",
     "crates/viboceros-geometry/src/loft/refit/adaptive/tests.rs": "ec333eac9bffbb132fbdf84539e1d8d3754ecb05ffa9c74a8b4bdd6e4e393525",
-    "crates/viboceros-geometry/src/loft/refit/adaptive/curved_tests.rs": "437b81f545daa0546ab363d6b931174d658e5afb2056fb126ca66496402c5d27",
+    "crates/viboceros-geometry/src/loft/refit/adaptive/curved_tests.rs": "bcd59d2ea2476df0103bdee3398b50d33d346a91d3d3e7d7524745d07d4ef4b0",
     "crates/viboceros-geometry/src/loft/refit/adaptive/source.rs": "a468175c8c9e6f234b199b6faf4f8988ea5f9ac509c8b663ca3680cf1cfa0ab3",
     "crates/viboceros-geometry/src/loft/refit/adaptive/pieces/tests.rs": "710c8e02ffe21aed1ec756d547416331ca3e1128e3ec5b440f89c27022ef097b",
     "crates/viboceros-geometry/src/loft/refit/adaptive/pieces/tests/loops.rs": "d66e9faa734744e3ad08e95b9519f541842925a998d2773eb688ceec4d74f330",
@@ -1075,11 +1109,11 @@
     "crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "88cd233240992c25a6beaa1637d69bdbad4a392627d2703875f246d4770c2048",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "90b1c498d337817a0c37674d4a2ae714fad81862988933691db967063a6121a5",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests/closest_stations.rs": "e552208a56a19be8fc172786406cad15f3bf448889fccb40ea2419144f935f34",
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "fb017bbe68e5b9e8e47479b9eebd672e7b3cc8c85efb212ac03d33d60588a0d1",
+    "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "d1913a2375e26999aae579290e1b032ba2c71ada2f7cc9093cb0b717060a5a0e",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/linear.rs": "d705c71f1dd16809ab93ec97ad368288109439f0e71a7295093617b01d7ec825",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/linear/tests.rs": "1d453e1ed94145b1514e56177f944c6bfa9b30964fb1f01ec4b27af4f39cca6d",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/hermite.rs": "fbe73ad40f61d793fe341cc1a5500d23f3afd96d4e036094860a4edaba70a5e3",
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "0abf9edebfa36ed6034191cb4898b32cbbda6356f05462e4f154613bca08067e",
+    "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "507ea0c67a89bcc23e0a8c05672c6a4ec0653f2b1b621ecd81e41feb7669130c",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e6a4ba8bd4948ecb27aaf9c1c099034821e9b4c6eaccb25891de7792005a92e0",
     "crates/viboceros-geometry/src/nurbs/closest_point.rs": "bd25e488155e0f3028b569f91fe57caf48c262cbaf375b8c73b99ef2e1c541cb",
     "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "f12c9aa0f97de444b65f432dd929d8861d1cf4577a123c4f650f739648e73be3",
@@ -1191,6 +1225,14 @@
       "native_controls": 9
     },
     {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-06",
+      "native_controls": 194
+    },
+    {
       "actual_controls": 10,
       "complete_image_bound": 9.753781778364148e-13,
       "epsilon": 1e-07,
@@ -1389,6 +1431,14 @@
       "family": "sweep1_refit_commands",
       "id": "two-closed-refit-0.01",
       "native_controls": 10
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-1e-06",
+      "native_controls": 194
     },
     {
       "actual_controls": 10,
@@ -1768,65 +1818,10 @@
     }
   ],
   "full_image_replay": {
-    "source_revision": "d8339b121430aa78a50e0f3edcd10f0c8825e2c1",
-    "source_inventory_verified_against_revision": true,
-    "replayed_after_module_extraction": false,
-    "note": "The 83/86 results and original checks describe the complete replay at this revision. The subsequent change moves the Sweep-specific functions to a module without changing the fitting body. Focused checks below validate the move; no new full replay is claimed."
-  },
-  "post_refactor_checks": {
-    "native_focused_images": {
-      "args": [
-        "cargo",
-        "test",
-        "--frozen",
-        "-p",
-        "viboceros-oracle",
-        "--features",
-        "native-smlib",
-        "--test",
-        "sweep_refit_closed",
-        "--test",
-        "sweep_refit_pairs",
-        "--no-fail-fast",
-        "--",
-        "--nocapture"
-      ],
-      "exit_code": 101,
-      "total_cases": 13,
-      "complete_image_passes": 11,
-      "construction_gaps": [
-        "closed-refit-1e-06",
-        "nurbs-circle-1e-06"
-      ],
-      "note": "Research subsets supplement the complete 86-case acceptance tests, which retain every failure."
-    },
-    "python": {
-      "args": [
-        "python3",
-        "-m",
-        "unittest",
-        "tools.rhino_oracle.test_sweep1_refit",
-        "tools.rhino_oracle.test_sweep1_refit_common_handles",
-        "tools.rhino_oracle.test_sweep1_refit_legacy"
-      ],
-      "exit_code": 0,
-      "tests": 13
-    },
-    "clippy": {
-      "args": [
-        "cargo",
-        "clippy",
-        "--frozen",
-        "-p",
-        "viboceros-geometry",
-        "--lib",
-        "--",
-        "-D",
-        "warnings"
-      ],
-      "exit_code": 0
-    },
-    "module_move_equivalence": "Both extracted functions match their previous formatted bodies exactly after function-name and relative-module-path substitutions."
+    "base_revision": "161b22b5b7b11aac1515f5e25774fe1db43d7fd9",
+    "source_state": "base revision plus the implementation source hashes in sha256",
+    "replayed_after_module_extraction": true,
+    "note": "All 86 acceptance cases replayed on both backends. Both targets retain failing assertions for the same three image differences at epsilon 1e-7."
   },
   "legacy_public_api_diagnostic": {
     "native_cases": 12,
@@ -1835,5 +1830,13 @@
     "fixture": "tools/rhino_oracle/fixtures/sweep1_refit_legacy_diagnostics.json",
     "observations": "tools/rhino_oracle/observations/sweep1_refit_legacy_diagnostics.json",
     "role": "Native API diagnostic only; does not extend or reduce the 86-case implementation acceptance scope."
+  },
+  "native_constructed": 86,
+  "native_unproved_images": 3,
+  "correspondence_budget": {
+    "minimum_intervals": 256,
+    "intervals_per_active_source_and_target_span": 8,
+    "maximum_intervals": 1024,
+    "applies_to": "Validated known span correspondences; unsuccessful smaller proposals are refined progressively. Unanchored fitting retains its previous budget. Exact image-distance and arithmetic-work limits are unchanged."
   }
 }

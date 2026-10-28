@@ -64,17 +64,20 @@ fn certify(
     let sampler = source.parameter_sampler()?;
     let search = candidate.prepare_closest_parameter_search()?;
     let numerical = Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;
+    let mut maximum_intervals = MAX_INTERVALS;
     let (mut stations, derivatives) = if let Some(prepared) = pairs
         .map(|pairs| anchors::prepare(source, candidate, pairs))
         .transpose()?
         .flatten()
     {
+        maximum_intervals = anchors::interval_budget(source, candidate);
         prepared
     } else {
         (Stations::new(source)?, BTreeMap::new())
     };
     let mut attempted_size = 0;
-    for intervals in [8, 16, 32, 64, 128, MAX_INTERVALS] {
+    for exponent in 3..=maximum_intervals.ilog2() {
+        let intervals = 1_usize << exponent;
         if !stations.refine(intervals + 1) {
             return Ok(None);
         }

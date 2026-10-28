@@ -3,6 +3,24 @@ use super::*;
 
 type AnchoredStations = (Stations, BTreeMap<u64, [Real; 2]>);
 
+/// Known span correspondences can need more stations than a single smooth fit.
+/// Refine only after the smaller proposals fail, with eight intervals per
+/// active source/target span and a hard cap of 1024. The complete certificate
+/// retains the same tolerance and exact-arithmetic work limits.
+pub(super) fn interval_budget(source: &NurbsCurve, candidate: &NurbsCurve) -> usize {
+    let spans = |curve: &NurbsCurve| {
+        curve.knots()[curve.degree()..=curve.control_points().len()]
+            .windows(2)
+            .filter(|p| p[0] < p[1])
+            .count()
+    };
+    spans(source)
+        .saturating_add(spans(candidate))
+        .saturating_mul(8)
+        .clamp(MAX_INTERVALS, 1024)
+        .next_power_of_two()
+}
+
 pub(super) fn prepare(
     source: &NurbsCurve,
     candidate: &NurbsCurve,

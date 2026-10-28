@@ -1,5 +1,59 @@
 use super::*;
 
+#[test]
+fn a_closed_c1_refit_can_certify_its_constructed_span_correspondence() {
+    use serde_json::Value;
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../tools/rhino_oracle/fixtures/sweep1_refit_sdk_holdouts.json");
+    let input: Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+    let definition = &input["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|op| op["id"] == "nurbs-circle-1e-06")
+        .unwrap()["sections"][0];
+    let original = NurbsCurve::try_new_rational(
+        definition["degree"].as_u64().unwrap() as usize,
+        definition["control_points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| {
+                let xyz = std::array::from_fn::<_, 3, _>(|i| p["point"][i].as_f64().unwrap());
+                crate::WeightedPoint3::try_new(
+                    Point3::try_from(xyz).unwrap(),
+                    p["weight"].as_f64().unwrap(),
+                )
+                .unwrap()
+            })
+            .collect(),
+        definition["knots"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_f64().unwrap())
+            .collect(),
+    )
+    .unwrap();
+    let before = original.clone();
+    let tolerance = 1e-6;
+    let first = certified_joined_refit_with_scope(&original, tolerance, 0., FitPolicy::sweep(1))
+        .unwrap()
+        .unwrap();
+    for domain in [0. ..=1., -3. ..=17.] {
+        let source = first.curve.try_reparameterized(domain).unwrap();
+        let source_before = source.clone();
+        let second = certified_joined_refit_with_scope(&source, tolerance, 0., FitPolicy::sweep(1))
+            .unwrap()
+            .expect("a dense C1 profile needs a larger correspondence proposal budget");
+        assert!(first.maximum_deviation_bound <= tolerance);
+        assert!(second.maximum_deviation_bound <= tolerance);
+        assert!(first.maximum_deviation_bound + second.maximum_deviation_bound <= 2. * tolerance);
+        assert_eq!(source, source_before);
+    }
+    assert_eq!(original, before);
+}
+
 fn unequal_source() -> NurbsCurve {
     NurbsCurve::try_new(
         3,
