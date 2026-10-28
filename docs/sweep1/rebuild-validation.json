@@ -726,7 +726,6 @@
     "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
     "crates/viboceros-opennurbs/src/lib.rs": "543de4ad7f94145f79750e1cb4869ef30afab5a38f9f25ac8bf9609e2a27ed9e",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
-    "crates/viboceros-oracle/src/sweep.rs": "936cf4ce5c32f73ab90d06f4f0fd983e31f9edd48c690e42d62cebd11720280d",
     "crates/viboceros-oracle/tests/sweep_point_ends.rs": "d69b3c003f42c4e96ba19a3b61b1a0b0f0b6de7da2b6bd6aedf178aec55e4806",
     "crates/viboceros-oracle/tests/sweep_rebuild.rs": "1214f23c5f3381a8947f87854f2f4f2fd26e5f135bd71013b8f2842580deede9",
     "crates/viboceros-oracle/tests/sweep_roadlike.rs": "6ec60b8e31a349f3716bf973081ffea7202235da46cba491c16f9b56b75ab5c2",
@@ -785,5 +784,9 @@
     "tools/rhino_oracle/test_sweep1_rebuild.py": "939c538199cf97c031024756f36759e31c6d4a0bb3e213ede84faef13ba42e1d",
     "tools/rhino_oracle/test_sweep1_roadlike.py": "7a047d384c71b47468d5d691afdca2d997b24bebfaba1dd6e33e3fa5b5bd334a",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562"
-  }
+  },
+  "git_sha256": {
+    "31fdcdb01f73398cdd6770006326638ebc6c1db8:crates/viboceros-oracle/src/sweep.rs": "936cf4ce5c32f73ab90d06f4f0fd983e31f9edd48c690e42d62cebd11720280d"
+  },
+  "inventory_update_only": true
 }

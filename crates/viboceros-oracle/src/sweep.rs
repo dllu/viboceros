@@ -262,7 +262,9 @@ pub(super) fn run(
                 for i in 0..=8 {
                     let u = *surface.domain_u().start() * (1.0 - i as f64 / 8.0)
                         + *surface.domain_u().end() * i as f64 / 8.0;
-                    samples.push(surface.evaluate(u, j as f64 / 8.0)?.to_array());
+                    let v = *surface.domain_v().start() * (1.0 - j as f64 / 8.0)
+                        + *surface.domain_v().end() * j as f64 / 8.0;
+                    samples.push(surface.evaluate(u, v)?.to_array());
                 }
             }
         }
