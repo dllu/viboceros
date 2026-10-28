@@ -88,6 +88,7 @@ fn adaptive(
 ) -> Result<Prepared, GeometryError> {
     let mut fitted = Vec::with_capacity(curves.len());
     let mut deviations = Vec::with_capacity(curves.len());
+    let mut reconstruction_sources = Vec::with_capacity(curves.len());
     for source in curves {
         let domain = source.domain();
         // Large relative tolerances enter a distinct native resampling branch.
@@ -110,6 +111,42 @@ fn adaptive(
         };
         fitted.push(proposal.curve);
         deviations.push(proposal.maximum_deviation_bound);
+        reconstruction_sources.push(proposal.reconstruction_source);
+    }
+    if curves.len() > 1 && scope.policy.geometric_rebuild {
+        let mut cuts = fitted
+            .iter()
+            .flat_map(|c| c.knots().iter().copied())
+            .collect::<Vec<_>>();
+        cuts.sort_by(Real::total_cmp);
+        cuts.dedup();
+        if cuts.len() > MAX_LOFT_SECTION_CONTROLS / 2 {
+            return Err(GeometryError::LoftResourceLimit {
+                context: "shared reconstruction controls",
+                maximum: MAX_LOFT_SECTION_CONTROLS,
+            });
+        }
+        for (i, proxy) in reconstruction_sources.iter().enumerate() {
+            let Some(proxy) = proxy else {
+                continue;
+            };
+            let own = fitted[i]
+                .knots()
+                .chunk_by(|a, b| a == b)
+                .map(|g| g[0])
+                .collect::<Vec<_>>();
+            if own == cuts {
+                continue;
+            }
+            let rebuilt = adaptive::reconstruct_at_cuts(proxy, &cuts)?;
+            let Some(bound) =
+                crate::curve_fit::g1::deviation_bound(&curves[i], &rebuilt, tolerance)?
+            else {
+                return Err(unsupported());
+            };
+            fitted[i] = rebuilt;
+            deviations[i] = bound;
+        }
     }
     Ok(Prepared {
         curves: fitted,

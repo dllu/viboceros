@@ -132,6 +132,37 @@ fn complete_interval_bound_refines_a_feature_missed_by_all_seven_stations() {
     );
     assert!(rebuilt.evaluate(0.0390625).unwrap().y() > 0.0099);
     assert_eq!(source, before);
+
+    let image = propose_image(&source, &source, 1e-4).unwrap().unwrap();
+    assert!(image.control_points().len() > 4);
+    assert!(
+        source
+            .parameter_curve_deviation_bound(&image, 1e-4)
+            .unwrap()
+            .is_some()
+    );
+    assert!(image.evaluate(0.0390625).unwrap().y() > 0.0099);
+    assert_eq!(source, before);
+}
+
+#[test]
+fn image_reconstruction_keeps_the_original_input_budget() {
+    let line = |height| {
+        NurbsCurve::try_new(
+            1,
+            [0., 1.]
+                .map(|x| Point3::try_new(x, height, 0.).unwrap())
+                .to_vec(),
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap()
+    };
+    let original = line(0.);
+    let proxy = line(0.00075);
+    let before = (original.clone(), proxy.clone());
+    assert!(propose(&proxy, 0.001).unwrap().is_some());
+    assert!(propose_image(&proxy, &original, 0.001).unwrap().is_none());
+    assert_eq!((original, proxy), before);
 }
 
 #[test]

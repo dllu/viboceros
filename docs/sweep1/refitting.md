@@ -5,11 +5,11 @@ This development branch implements `Refit=0.01` and
 Rebuild and Refit are mutually exclusive. Real profile copies are fitted before
 adding point-end poles, and authored rail stations are retained.
 
-The portable replay currently proves 80 of 86 complete Rhino surface images
-within `1e-7`. Two tight-tolerance circles fail construction; a fine quadratic
-and three multi-profile cases remain unproved. All six failures remain in the
+Both backends currently prove 83 of 86 complete Rhino surface images
+within `1e-7`. Two tight-tolerance circles fail construction, and a fine quadratic
+remains unproved. All three failures remain in the
 acceptance tests. See the [development record](refit-development-validation.json).
-Native-backend image replay and command/UI qualification remain outstanding.
+Complete image agreement and command/UI qualification remain outstanding.
 The existing qualification records describe `main` before this development
 branch; their source inventories have not been refreshed for this prototype.
 
@@ -35,6 +35,12 @@ smooth profile. Straight and polygon profiles retain their separate fitting
 path. Every accepted pass has its own complete source-distance certificate;
 two passes can accumulate more error against the original profile than the
 nominal tolerance. This does not yet explain every adaptive case.
+
+Batch reconstruction samples the original profiles as well as the intermediate
+curves, and certifies complete intermediate curve images. It reconstructs each
+profile at the shared interpolation stations before checking a fresh complete
+bound against its original input. Inserting knots after independent
+reconstruction gives different mixed-profile geometry.
 
 A nominal Refit tolerance is not an established final source-distance bound.
 The [exact Bernstein regression](../../tools/rhino_oracle/test_sweep1_refit.py) retains a

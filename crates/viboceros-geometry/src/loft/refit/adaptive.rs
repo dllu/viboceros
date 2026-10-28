@@ -20,18 +20,21 @@ const MAX_DEPTH: usize = 24;
 pub(super) struct FitPolicy {
     pub(super) closed: bool,
     pub(super) single: bool,
+    pub(super) geometric_rebuild: bool,
 }
 
 impl FitPolicy {
     pub(super) const LOFT: Self = Self {
         closed: false,
         single: false,
+        geometric_rebuild: false,
     };
 
     pub(super) fn sweep(section_count: usize) -> Self {
         Self {
             closed: true,
             single: section_count == 1,
+            geometric_rebuild: true,
         }
     }
 
@@ -137,6 +140,14 @@ pub fn try_propose_joined_refit(
 pub(super) struct CertifiedJoinedRefit {
     pub curve: NurbsCurve,
     pub maximum_deviation_bound: Real,
+    pub reconstruction_source: Option<NurbsCurve>,
+}
+
+pub(super) fn reconstruct_at_cuts(
+    source: &NurbsCurve,
+    cuts: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    join::reconstruct_at_cuts(source, cuts)
 }
 
 pub(super) fn certified_joined_refit(
@@ -169,13 +180,19 @@ pub(super) fn certified_joined_refit_with_scope(
     else {
         return Ok(None);
     };
-    let joined = if policy.single {
-        Some(join::construct_smooth(&candidate.curve)?)
+    let (joined, reconstruction_source) = if policy.single {
+        (join::construct_smooth(&candidate.curve)?, None)
     } else {
-        join::construct_refined(&candidate.curve, angle, tolerance)?
-    };
-    let Some(joined) = joined else {
-        return Ok(None);
+        let Some(refined) = join::construct_refined_with_policy(
+            &candidate.curve,
+            angle,
+            tolerance,
+            policy.geometric_rebuild.then_some(source),
+        )?
+        else {
+            return Ok(None);
+        };
+        (refined.curve, refined.source)
     };
     let copies = [joined];
     let mapped = super::super::parameterize::prepare_fitted(&copies, &mut |curve: &NurbsCurve| {
@@ -211,6 +228,7 @@ pub(super) fn certified_joined_refit_with_scope(
     Ok(bound.map(|maximum_deviation_bound| CertifiedJoinedRefit {
         curve: joined,
         maximum_deviation_bound,
+        reconstruction_source,
     }))
 }
 

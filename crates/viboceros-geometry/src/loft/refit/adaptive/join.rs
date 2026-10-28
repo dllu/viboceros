@@ -2,6 +2,18 @@
 use super::*;
 mod rebuild;
 
+pub(super) struct Refinement {
+    pub curve: NurbsCurve,
+    pub source: Option<NurbsCurve>,
+}
+
+pub(super) fn reconstruct_at_cuts(
+    source: &NurbsCurve,
+    cuts: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    rebuild::interpolate(source, cuts)
+}
+
 pub(super) fn construct_smooth(raw: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
     let cuts = raw
         .knots()
@@ -14,13 +26,28 @@ pub(super) fn construct_smooth(raw: &NurbsCurve) -> Result<NurbsCurve, GeometryE
 /// The retimed region has its own parameter clock. Its C1 rebuild chooses
 /// intervals afresh instead of inheriting the endpoint-frame fitting cuts.
 /// Only the original-source caller can certify the final assembled proposal.
+#[cfg(test)]
 pub(super) fn construct_refined(
     raw: &NurbsCurve,
     angle: Real,
     tolerance: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
+    Ok(construct_refined_with_policy(raw, angle, tolerance, None)?.map(|r| r.curve))
+}
+
+pub(super) fn construct_refined_with_policy(
+    raw: &NurbsCurve,
+    angle: Real,
+    tolerance: Real,
+    original: Option<&NurbsCurve>,
+) -> Result<Option<Refinement>, GeometryError> {
     if !super::super::super::parameterize::fitted_region_breaks(raw, angle)?.is_empty() {
-        return construct(raw, angle).map(Some);
+        return construct(raw, angle).map(|curve| {
+            Some(Refinement {
+                curve,
+                source: None,
+            })
+        });
     }
     let cuts = raw
         .knots()
@@ -28,7 +55,15 @@ pub(super) fn construct_refined(
         .map(|g| g[0])
         .collect::<Vec<_>>();
     let retimed = c1_region_impl(raw, &cuts, 0, cuts.len() - 1, false)?;
-    rebuild::propose(&retimed, tolerance)
+    let curve = if let Some(original) = original {
+        rebuild::propose_image(&retimed, original, tolerance)
+    } else {
+        rebuild::propose(&retimed, tolerance)
+    }?;
+    Ok(curve.map(|curve| Refinement {
+        curve,
+        source: original.map(|_| retimed),
+    }))
 }
 
 pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, GeometryError> {
