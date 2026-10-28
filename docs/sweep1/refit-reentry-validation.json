@@ -1,36 +1,41 @@
 {
-  "status": "development; seven of 98 implementation cases remain unqualified",
+  "status": "development; all 98 implementation cases construct and seven complete-image comparisons remain unqualified",
   "complete_rhino_compatibility": false,
   "comparison_epsilon": 1e-07,
   "combined_implementation_cases": {
     "total_cases": 98,
-    "constructed": 96,
+    "constructed": 98,
     "complete_image_passes": 91,
-    "image_gaps": 5,
-    "construction_gaps": 2
+    "image_gaps": 7,
+    "construction_gaps": 0
   },
   "base_replay": {
-    "revision": "46371ad4ef944a57d8e42ac061a8843955d03962",
-    "record": "refit-development-validation.json",
+    "base_revision": "647812612fd559f43a5ab3ee5a922720d404db7d",
+    "source_bindings_field": "sha256",
     "cases": 86,
     "constructed": 86,
     "complete_image_passes": 83,
-    "replayed_this_iteration": false,
-    "source_bindings_verified_at_revision": 472
+    "replayed_this_iteration": true,
+    "backends": [
+      "portable",
+      "native-smlib"
+    ],
+    "historical_record": "refit-development-validation.json",
+    "historical_measurement_revision": "46371ad4ef944a57d8e42ac061a8843955d03962",
+    "prior_base_image_rows_unchanged": true
   },
-  "source_state": "Base revision plus test additions and a native-only unit-weight storage diagnostic. Rust runtime implementation is unchanged: the sole edit to an existing Rust file adds a cfg(test) module. No acceptance epsilon, assertion, case or fitting policy was weakened.",
+  "source_state": "Base revision plus the source bindings below. Runtime reconstruction now retries failed final proofs with target-knot witnesses and tangent-frame correspondence proposals. Source and target parameter clocks are normalized independently. Ordinary fitting and subdivision proposals, epsilon, complete-image certificate and arithmetic-work limits remain unchanged. All 98 cases were replayed on both backends; the prior 86 base rows and ten constructed C1 rows are unchanged within each backend.",
   "portable_reentry": {
     "cases": 12,
-    "constructed": 10,
+    "constructed": 12,
     "complete_image_passes": 8,
     "image_gaps": [
+      "nurbs-circle-1e-06-c1-pair",
       "nurbs-circle-1e-06-c1-single",
+      "open-refit-1e-06-c1-pair",
       "open-refit-1e-06-c1-single"
     ],
-    "construction_gaps": {
-      "open-refit-1e-06-c1-pair": "curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate",
-      "nurbs-circle-1e-06-c1-pair": "curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate"
-    },
+    "construction_gaps": {},
     "images": [
       {
         "actual_controls": 14,
@@ -57,6 +62,14 @@
         "native_controls": 24
       },
       {
+        "actual_controls": 50,
+        "complete_image_bound": null,
+        "epsilon": 1e-07,
+        "family": "sweep1_refit_stage_reentry",
+        "id": "open-refit-1e-06-c1-pair",
+        "native_controls": 58
+      },
+      {
         "actual_controls": 44,
         "complete_image_bound": 9.325873406851323e-15,
         "epsilon": 1e-07,
@@ -71,6 +84,14 @@
         "family": "sweep1_refit_stage_reentry",
         "id": "nurbs-circle-1e-06-c1-single",
         "native_controls": 66
+      },
+      {
+        "actual_controls": 34,
+        "complete_image_bound": null,
+        "epsilon": 1e-07,
+        "family": "sweep1_refit_stage_reentry",
+        "id": "nurbs-circle-1e-06-c1-pair",
+        "native_controls": 186
       },
       {
         "actual_controls": 98,
@@ -117,16 +138,15 @@
   },
   "native_reentry": {
     "cases": 12,
-    "constructed": 10,
+    "constructed": 12,
     "complete_image_passes": 8,
     "image_gaps": [
+      "nurbs-circle-1e-06-c1-pair",
       "nurbs-circle-1e-06-c1-single",
+      "open-refit-1e-06-c1-pair",
       "open-refit-1e-06-c1-single"
     ],
-    "construction_gaps": {
-      "open-refit-1e-06-c1-pair": "curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate",
-      "nurbs-circle-1e-06-c1-pair": "curve approximation is unsupported: Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate"
-    },
+    "construction_gaps": {},
     "images": [
       {
         "actual_controls": 14,
@@ -153,6 +173,14 @@
         "native_controls": 24
       },
       {
+        "actual_controls": 50,
+        "complete_image_bound": null,
+        "epsilon": 1e-07,
+        "family": "sweep1_refit_stage_reentry",
+        "id": "open-refit-1e-06-c1-pair",
+        "native_controls": 58
+      },
+      {
         "actual_controls": 44,
         "complete_image_bound": 3.7405418776785996e-15,
         "epsilon": 1e-07,
@@ -167,6 +195,14 @@
         "family": "sweep1_refit_stage_reentry",
         "id": "nurbs-circle-1e-06-c1-single",
         "native_controls": 66
+      },
+      {
+        "actual_controls": 34,
+        "complete_image_bound": null,
+        "epsilon": 1e-07,
+        "family": "sweep1_refit_stage_reentry",
+        "id": "nurbs-circle-1e-06-c1-pair",
+        "native_controls": 186
       },
       {
         "actual_controls": 98,
@@ -241,13 +277,17 @@
       }
     ],
     "scope": "Complete boundary curve images at observed test-only subdivision cuts. Independently built G1 cubics and midpoint handle corrections use the frozen independent C1 source profiles. Production code never consults observed cuts or native control nets.",
-    "implication": "The fine single-profile gap is in subdivision selection; the existing piece construction can reproduce both fine native boundaries within epsilon."
+    "implication": "The fine single-profile gap is in subdivision selection; the existing piece construction can reproduce both fine native boundaries within epsilon.",
+    "measurement_revision": "647812612fd559f43a5ab3ee5a922720d404db7d",
+    "replayed_this_iteration": false
   },
   "public_closest_point_calibration": {
     "queries": 140,
     "comparison_epsilon": 1e-07,
     "maximum_point_difference": 7.945989586073368e-10,
-    "scope": "Viboceros and public Rhino Curve.ClosestPoint on independent candidate cubics and seven source stations. This does not identify private fitter calls or certify unsampled curve intervals."
+    "scope": "Viboceros and public Rhino Curve.ClosestPoint on independent candidate cubics and seven source stations. This does not identify private fitter calls or certify unsampled curve intervals.",
+    "measurement_revision": "647812612fd559f43a5ab3ee5a922720d404db7d",
+    "replayed_this_iteration": false
   },
   "equivalent_storage_calibration": {
     "cases": 12,
@@ -314,82 +354,52 @@
       }
     ],
     "scope": "Complete public Rhino sweep surface images for unit-weight rational and non-rational profile storage. Equal control counts alone are not used as evidence.",
-    "api_documentation": "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Methods_T_Rhino_Geometry_Collections_NurbsCurvePointList.htm"
+    "api_documentation": "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Methods_T_Rhino_Geometry_Collections_NurbsCurvePointList.htm",
+    "measurement_revision": "647812612fd559f43a5ab3ee5a922720d404db7d",
+    "replayed_this_iteration": false
   },
   "checks": [
     {
-      "name": "closest",
+      "name": "correspondence",
       "args": [
         "cargo",
         "test",
         "--frozen",
         "-p",
-        "viboceros-oracle",
-        "--test",
-        "sweep_refit_closest",
-        "--",
-        "--nocapture"
+        "viboceros-geometry",
+        "--lib",
+        "curve_fit::g1::correspondence::"
       ],
       "exit_code": 0,
-      "seconds": 37.13049244880676
+      "seconds": 0.6675810813903809
     },
     {
-      "name": "native_reentry",
+      "name": "join_regressions",
       "args": [
         "cargo",
         "test",
         "--frozen",
         "-p",
-        "viboceros-oracle",
-        "--features",
-        "native-smlib",
-        "--test",
-        "sweep_refit_reentry",
-        "--",
-        "--nocapture"
-      ],
-      "exit_code": 101,
-      "seconds": 231.10152077674866
-    },
-    {
-      "name": "portable_clippy",
-      "args": [
-        "cargo",
-        "clippy",
-        "--frozen",
-        "-p",
-        "viboceros-oracle",
-        "--test",
-        "sweep_refit_reentry",
-        "--test",
-        "sweep_refit_closest",
-        "--",
-        "-D",
-        "warnings"
+        "viboceros-geometry",
+        "--lib",
+        "loft::refit::adaptive::join::"
       ],
       "exit_code": 0,
-      "seconds": 42.815232276916504
+      "seconds": 34.894339084625244
     },
     {
-      "name": "native_clippy",
+      "name": "fitted_charts",
       "args": [
         "cargo",
-        "clippy",
+        "test",
         "--frozen",
         "-p",
-        "viboceros-oracle",
-        "--features",
-        "native-smlib",
-        "--test",
-        "sweep_refit_reentry",
-        "--test",
-        "sweep_refit_closest",
-        "--",
-        "-D",
-        "warnings"
+        "viboceros-geometry",
+        "--lib",
+        "loft::parameterize::fitted::tests::"
       ],
       "exit_code": 0,
-      "seconds": 60.30644679069519
+      "seconds": 0.08429169654846191
     },
     {
       "name": "geometry_clippy",
@@ -406,28 +416,31 @@
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 18.069417238235474
+      "seconds": 36.363940954208374
     },
     {
-      "name": "polynomial_images",
+      "name": "portable_clippy",
       "args": [
         "cargo",
-        "test",
+        "clippy",
         "--frozen",
         "-p",
         "viboceros-oracle",
-        "--features",
-        "native-smlib",
         "--test",
-        "sweep_refit_polynomial",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--test",
+        "sweep_refit_reentry",
         "--",
-        "--nocapture"
+        "-D",
+        "warnings"
       ],
       "exit_code": 0,
-      "seconds": 16.876182317733765
+      "seconds": 24.423550128936768
     },
     {
-      "name": "polynomial_clippy",
+      "name": "native_clippy",
       "args": [
         "cargo",
         "clippy",
@@ -437,32 +450,43 @@
         "--features",
         "native-smlib",
         "--test",
-        "sweep_refit_polynomial",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--test",
+        "sweep_refit_reentry",
         "--",
         "-D",
         "warnings"
       ],
       "exit_code": 0,
-      "seconds": 0.25164246559143066
-    }
-  ],
-  "additional_checks": {
-    "fixed_partition_geometry_test": {
+      "seconds": 53.20128893852234
+    },
+    {
+      "name": "native_images",
       "args": [
         "cargo",
         "test",
         "--frozen",
         "-p",
-        "viboceros-geometry",
-        "--lib",
-        "independently_constructed_pieces_match_complete_native_images_at_observed_cuts",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--test",
+        "sweep_refit_reentry",
+        "--no-fail-fast",
         "--",
         "--nocapture"
       ],
-      "exit_code": 0,
-      "cases": 4
+      "exit_code": 101,
+      "seconds": 766.6096289157867
     },
-    "portable_reentry": {
+    {
+      "name": "portable_images",
       "args": [
         "cargo",
         "test",
@@ -470,35 +494,69 @@
         "-p",
         "viboceros-oracle",
         "--test",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--test",
         "sweep_refit_reentry",
+        "--no-fail-fast",
         "--",
         "--nocapture"
       ],
       "exit_code": 101,
-      "tests_passed": 1,
-      "tests_failed": 1
+      "seconds": 797.8002736568451
+    }
+  ],
+  "additional_checks": {
+    "reconstructed_profile_regressions": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "loft::refit::adaptive::reconstruction_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "tests": 2,
+      "scope": "Complete source bounds after independent source/target reparameterization; displaced target rejection; retraced source traversal rejection; unchanged inputs."
     },
     "frozen_native_python": {
+      "args": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_sweep1_refit",
+        "tools.rhino_oracle.test_sweep1_refit_common_handles",
+        "tools.rhino_oracle.test_sweep1_refit_legacy",
+        "tools.rhino_oracle.test_sweep1_refit_calibration"
+      ],
       "exit_code": 0,
       "tests": 21
     },
     "rustfmt": {
       "exit_code": 0,
-      "owned_rust_files": 5
+      "owned_rust_files": 6
+    },
+    "diff_check": {
+      "exit_code": 0
     }
   },
   "historical_qualification_inventories_refreshed": false,
-  "next_investigation": "Inspect fine C1 paired-profile reconstruction: it enforces original-source half-tolerance samples although the raw proxy currently has only a complete nominal-tolerance bound. Determine whether an incompatible proxy/source reserve causes refinement exhaustion before changing policy. For the fine single profiles, preserve the proven G1 construction and investigate admission without using observed cuts in production.",
+  "next_investigation": "Fine-profile subdivision/admission still gives seven incomplete native images. The former half-reserve incompatibility hypothesis did not explain the construction failures: both tested proxy witnesses are within half tolerance. The construction fix improves the final correspondence proposal while retaining exact acceptance. Keep observed Native partitions test-only and consider open-source SMLib N_ApproxG1CrvWithCrv before adding fitting machinery. Historical main qualification inventories must be refreshed before merging.",
   "sha256": {
     "crates/viboceros-command/src/sweep.rs": "350808c143242e5b952faafaf09ffd047cb54db3be6dc677f65a460ae000e8f8",
     "crates/viboceros-command/src/sweep/options.rs": "d273321c6369c8b03aea3a6a1b3f63d063498d914239361a0e364b7a62db5234",
     "crates/viboceros-geometry/src/loft.rs": "0a5ab3de3c0029d932198421f281f6a440ba2025988c3197348d6029ae051594",
     "crates/viboceros-geometry/src/loft/refit.rs": "e4461a2a2e23caab671122bc396103bc591040ec42f22860e2ae0784d15146b1",
-    "crates/viboceros-geometry/src/loft/refit/adaptive.rs": "f17240dcda0e2b4e608c23a3b34fe3be6bdad6887e328dd7f7daa2eeef907d67",
+    "crates/viboceros-geometry/src/loft/refit/adaptive.rs": "4389da564bdd72fbdc8152f3b10274b8d81a8ddcd0eb439147347e5de4b25914",
     "crates/viboceros-geometry/src/loft/refit/adaptive/join.rs": "d6bb2a57f4848b2a04f8829ed5303d83b5b44e71010a5e3d4c77716f939c5dfd",
     "crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs": "21b72487989a2f158c68f629e0aaac183f42b526aab096d1c084a045472fd8cf",
     "crates/viboceros-geometry/src/loft/refit/candidate.rs": "7fc94ef4f7178b207401ab70266567681077fddbcc62b5ce714c731ff2000563",
-    "crates/viboceros-geometry/src/loft/refit/preparation.rs": "99c395b7fa6f8d755ef5275afcad6ddda422b6d144294956e67deea43a4c55a5",
+    "crates/viboceros-geometry/src/loft/refit/preparation.rs": "01de85029232dd79a684d9bcad434bd3f035e08648c0e6b4c9ecf8f50e1078d7",
     "crates/viboceros-geometry/src/loft/refit/preparation/tests.rs": "189bb3c2fac7299d667dbae9b69089ad3432653323111c896c40ba2d063b4f6a",
     "crates/viboceros-geometry/src/sweep.rs": "b2a532cd3d4293fc6317d2da469156aa6a9c208a40867c137770ea02bc53a9f9",
     "crates/viboceros-oracle/src/sweep.rs": "641e166daf66d414467a83ab2c7958e0b9e7dd2f060c15aba4c788829c4579d8",
@@ -510,7 +568,7 @@
     "crates/viboceros-geometry/src/sweep/refit/tests.rs": "dda918f909cbcbf7ec8e41cce5fba0ac1121005c84f929b8885c47215a58b75b",
     "crates/viboceros-oracle/tests/sweep_refit.rs": "bcff02ec1e4292547fc5405ddcacabb0a804ee3891fa306001ac4d6ff8458e21",
     "crates/viboceros-oracle/tests/sweep_refit_common_handles.rs": "d96df9ae0cb86d4f2b6df67597fbdcb585420fa5118dc7bcabcca24cad5fc022",
-    "docs/sweep1/refitting.md": "5e91329c978e468a15d504fee96d4e76554d8cb251a3fa99819ded4af2a4c888",
+    "docs/sweep1/refitting.md": "b2bba5029a3b703a2070fc05b3193891a7c1643fa17300d8b3ea3a3309dc9684",
     "crates/viboceros-geometry/src/lib.rs": "e35da236197b980fb9889f3dddc378ae27a354a9dede4d4292a5c4e66b443501",
     "crates/viboceros-command/src/lib.rs": "a0ec6833486802b9fb2c1b90281ef6b70d005426e791b7f4646cbde4743f2092",
     "crates/viboceros-oracle/src/lib.rs": "8485ae38ce6d33b105411caf5cbc596f329402305c7188d582d520d9f2bc475c",
@@ -757,18 +815,18 @@
     "crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs": "83605c795a6a36bead90513c0ca9cc2df72b41620b20805f323b730eb1187b37",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "90c78d789a1ef618c66a9397bf51ac29b9e6bc30a4f5e4863fb53ec2c5ebf858",
+    "tools/rhino_oracle/qualification_sources.py": "a9212a30a144cc9330d24535c9759cd414ce469b1c242b90aa4bbc9afc79a6a3",
     "crates/viboceros-geometry/src/curve_fit/adaptive.rs": "f55668222afb298b423453f783828f7b24a9741025080af43442068dd10bac9e",
     "crates/viboceros-geometry/src/curve_fit/adaptive/tests.rs": "45808f9c195a545c2c99ad24d6082dab40f264ed98e09d8261c13d03a8473931",
-    "crates/viboceros-geometry/src/curve_fit/g1.rs": "cc1f1880a0510d2d4c8e3714701456026bd7b41457255556bec04dae5df773d6",
+    "crates/viboceros-geometry/src/curve_fit/g1.rs": "6c460eefc126975805c80dac3d8d776fb92b13590a244957db7e9c93a72f2d89",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "88cd233240992c25a6beaa1637d69bdbad4a392627d2703875f246d4770c2048",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "90b1c498d337817a0c37674d4a2ae714fad81862988933691db967063a6121a5",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests/closest_stations.rs": "e552208a56a19be8fc172786406cad15f3bf448889fccb40ea2419144f935f34",
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "d1913a2375e26999aae579290e1b032ba2c71ada2f7cc9093cb0b717060a5a0e",
+    "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "7ef51aea1fbaecf7f10437c13a4653c2afe1e12635d9131026bef756456cfbfa",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/linear.rs": "d705c71f1dd16809ab93ec97ad368288109439f0e71a7295093617b01d7ec825",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/linear/tests.rs": "1d453e1ed94145b1514e56177f944c6bfa9b30964fb1f01ec4b27af4f39cca6d",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence/hermite.rs": "fbe73ad40f61d793fe341cc1a5500d23f3afd96d4e036094860a4edaba70a5e3",
-    "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "507ea0c67a89bcc23e0a8c05672c6a4ec0653f2b1b621ecd81e41feb7669130c",
+    "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs": "50b3e6528bc355ebc78822fc5ddf9115f2aecf2844c14038bbce17d2abe48307",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e6a4ba8bd4948ecb27aaf9c1c099034821e9b4c6eaccb25891de7792005a92e0",
     "crates/viboceros-geometry/src/nurbs/closest_point.rs": "bd25e488155e0f3028b569f91fe57caf48c262cbaf375b8c73b99ef2e1c541cb",
     "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "f12c9aa0f97de444b65f432dd929d8861d1cf4577a123c4f650f739648e73be3",
@@ -978,6 +1036,1536 @@
     "tools/rhino_oracle/observations/sweep1_refit_polynomial.json": "35818e45122b0442e5ad96a297369f0eb7929bffd7a5a0e7af0ca5a78b1c3ba4",
     "tools/rhino_oracle/observations/source_snapshots/631e0dd4ce66e89756b4322e4516e33fab26aaa170adcbe5138a7936060c54ed.gz": "fbecc09877367fc91ee1e9a77beac08c47f96b547b704b0a1ade0b6c4d8bffcc",
     "tools/rhino_oracle/observations/source_snapshots/122cd50aa87041be034f1571610a532cd829ba442a4681b99f07f5a0a9d60d8a.gz": "5d1733c70b4e929685c6192012cfdbc1e6eec22ce4d42634ee3b2f13517d0691",
-    "docs/sweep1/refit-development-validation.json": "146ab75125928fb21c7f012773bda521c6ed3bcf4c01b35743dce228d147eb90"
+    "docs/sweep1/refit-development-validation.json": "146ab75125928fb21c7f012773bda521c6ed3bcf4c01b35743dce228d147eb90",
+    "crates/viboceros-geometry/src/loft/refit/adaptive/reconstruction_tests.rs": "cb0d5f533db68a8391a89a6c17990a3c615536abd80fba1fef4cd3946d80947d"
+  },
+  "portable_images": [
+    {
+      "actual_controls": 3,
+      "complete_image_bound": 9.325873406851323e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.0",
+      "native_controls": 3
+    },
+    {
+      "actual_controls": 3,
+      "complete_image_bound": 9.325873406851323e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-1e-09",
+      "native_controls": 3
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-1e-06",
+      "native_controls": 50
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.1",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 9,
+      "complete_image_bound": 3.121211995340851e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.0",
+      "native_controls": 9
+    },
+    {
+      "actual_controls": 9,
+      "complete_image_bound": 3.121211995340851e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-09",
+      "native_controls": 9
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-06",
+      "native_controls": 194
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.1",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.83559936685055e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "rational-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.1791517608555626e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "rational-refit-0.01",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 7,
+      "complete_image_bound": 1.2866284363699447e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "polyline-refit-0.001",
+      "native_controls": 7
+    },
+    {
+      "actual_controls": 7,
+      "complete_image_bound": 1.2866284363699447e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "polyline-refit-0.01",
+      "native_controls": 7
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 2.0338900941620732e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-open-refit-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.3796503083716594e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.0982653152475602e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-closed-refit-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 8.427165793202005e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.1",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.820882000655408e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.1",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.83559936685055e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "rational-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.1791517608555626e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "rational-refit-0.01",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 8,
+      "complete_image_bound": 1.2866284363699447e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "polyline-refit-0.001",
+      "native_controls": 8
+    },
+    {
+      "actual_controls": 8,
+      "complete_image_bound": 1.2866284363699447e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "polyline-refit-0.01",
+      "native_controls": 8
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 2.0338900941620732e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-open-refit-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.3796503083716594e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.0982653152475602e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-closed-refit-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 8.427165793202005e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-1e-06",
+      "native_controls": 194
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.5152135208326494e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 1.9046180098434065e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "closed-cubic-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.0193079801551959e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "closed-cubic-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.2802867410937546e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.0",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.336907499688404e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.336907499688404e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.0272017858843364e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "mixed-open-closed",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3116420317339405e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "open-end",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.78440586522983e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "closed-end",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 6.205995241371173e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "closed-both",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.344571376916025e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "retained-arc",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 6.605173216245052e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-0.5-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 6.371603780499238e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-0.5-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.817636077058213e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-0.5-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 6.371603780499238e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-0.5-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-1.0-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 8.991280100927193e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-1.0-0.001",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3154826225004533e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-1.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.218704883203369e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-1.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.3438202787231106e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-2.0-0.001",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 2.0447901598841635e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-2.0-0.001",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.625413677064869e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-2.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.3818462513096893e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-2.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.4900404646104656e-08,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-10.0-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.5726051743551328e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-10.0-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.825927132740698e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-10.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 9.745664843106074e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-10.0-0.01",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3146254070948664e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "domain-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3146254070948664e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "domain-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.808153915044332e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "elevated-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.808153915044332e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "elevated-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.565257282992952e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "reversed-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.565257282992952e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "reversed-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 9.367054706165747e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "translated-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 9.367054706165747e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "translated-0.01",
+      "native_controls": 4
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1589556681545406e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.7476472094052678e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-2-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.5018211733050621e-12,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.679991940008267e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-2-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1537365501840185e-09,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.97-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 7.706936423446288e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.97-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.182799699625689e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1340879907111044e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-2-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.4432286400708326e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-2-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 2.752276861285808e-12,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.995-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.995-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.0-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.0-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 2.2213897509796838e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.01-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1690450971862622e-14,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.01-1-0.01"
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 8.409550598882073e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-single",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.2116987467857436e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-single",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-single",
+      "native_controls": 24
+    },
+    {
+      "actual_controls": 50,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-pair",
+      "native_controls": 58
+    },
+    {
+      "actual_controls": 44,
+      "complete_image_bound": 9.325873406851323e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-disabled",
+      "native_controls": 44
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-single",
+      "native_controls": 66
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-pair",
+      "native_controls": 186
+    },
+    {
+      "actual_controls": 98,
+      "complete_image_bound": 1.1150706856514228e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-disabled",
+      "native_controls": 98
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": 5.45949632832758e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-pair",
+      "native_controls": 16
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 7.066715887909709e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-disabled",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 5.8272131325837215e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-pair",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 7.0993771815433025e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-disabled",
+      "native_controls": 10
+    }
+  ],
+  "native_images": [
+    {
+      "actual_controls": 3,
+      "complete_image_bound": 3.4118174799431535e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.0",
+      "native_controls": 3
+    },
+    {
+      "actual_controls": 3,
+      "complete_image_bound": 3.4118174799431535e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-1e-09",
+      "native_controls": 3
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-1e-06",
+      "native_controls": 50
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 5.079017993388785e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "open-refit-0.1",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 9,
+      "complete_image_bound": 2.2953190990534536e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.0",
+      "native_controls": 9
+    },
+    {
+      "actual_controls": 9,
+      "complete_image_bound": 2.2953190990534536e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-09",
+      "native_controls": 9
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-1e-06",
+      "native_controls": 194
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "closed-refit-0.1",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.835081314523282e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "rational-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.1791452094879634e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "rational-refit-0.01",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 7,
+      "complete_image_bound": 5.636967193322539e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "polyline-refit-0.001",
+      "native_controls": 7
+    },
+    {
+      "actual_controls": 7,
+      "complete_image_bound": 5.636967193322539e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "polyline-refit-0.01",
+      "native_controls": 7
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 2.0338099965006813e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-open-refit-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.2896553983251577e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.097658061767316e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-closed-refit-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 7.88179250100241e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk",
+      "id": "two-closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 5.079017993388785e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "open-refit-0.1",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.753781778364148e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "closed-refit-0.1",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.835081314523282e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "rational-refit-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.1791452094879634e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "rational-refit-0.01",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 8,
+      "complete_image_bound": 5.636967193322539e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "polyline-refit-0.001",
+      "native_controls": 8
+    },
+    {
+      "actual_controls": 8,
+      "complete_image_bound": 5.636967193322539e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "polyline-refit-0.01",
+      "native_controls": 8
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 2.0338099965006813e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-open-refit-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.2896553983251577e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-open-refit-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.097658061767316e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-closed-refit-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 7.88179250100241e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_commands",
+      "id": "two-closed-refit-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-1e-06",
+      "native_controls": 194
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.4473113166077904e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "nurbs-circle-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 1.904569720146175e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "closed-cubic-0.001",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.0188114645033863e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "closed-cubic-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 5.506869461406381e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.0",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 6.141740591160702e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 6.141740591160702e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "different-corners-0.01",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.763765650683828e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_sdk_holdouts",
+      "id": "mixed-open-closed",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.308311362660065e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "open-end",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 9.740432514856111e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "closed-end",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 6.205995732026306e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "closed-both",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.344571376916025e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_command_holdouts",
+      "id": "retained-arc",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 6.562473211645147e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-0.5-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 5.918004153455104e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-0.5-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 3.741163174716438e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-0.5-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 5.918004153455104e-14,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-0.5-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-1.0-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 8.990663841542267e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-1.0-0.001",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3102739698942264e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-1.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.161370094829882e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-1.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 6,
+      "complete_image_bound": 1.3437530012980344e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-2.0-0.001",
+      "native_controls": 6
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 2.0447163468996264e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-2.0-0.001",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.618327380546414e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-2.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 2.3005225912913087e-13,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-2.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.4900378405427618e-08,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-10.0-0.001",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 18,
+      "complete_image_bound": 1.5725746631614179e-09,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-10.0-0.001",
+      "native_controls": 18
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.825662743230111e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "single-scale-10.0-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 9.745460492837667e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "equal-pair-scale-10.0-0.01",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3096561523265415e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "domain-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 1.3096561523265415e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "domain-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.80280427176764e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "elevated-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.80280427176764e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "elevated-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.564653333674479e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "reversed-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 8.564653333674479e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "reversed-0.01",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 9.366521799192888e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "translated-0.001",
+      "native_controls": 4
+    },
+    {
+      "actual_controls": 4,
+      "complete_image_bound": 9.366521799192888e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_contexts",
+      "id": "translated-0.01",
+      "native_controls": 4
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1588982961482237e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.7475907963273272e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-2-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.496279816571145e-12,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.679934099975543e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.9-2-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1537310851377352e-09,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.97-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 7.706374413024056e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.97-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.1822216764796655e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 1.1340360262985641e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-2-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.079017993388785e-15,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.442682207554e-11,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.99-2-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 2.7470807677913646e-12,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.995-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.079017993388785e-15,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-0.995-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.079017993388785e-15,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.0-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.079017993388785e-15,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.0-1-0.01"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 2.2213364820138224e-10,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.01-1-0.001"
+    },
+    {
+      "comparison_epsilon": 1e-07,
+      "complete_image_bound": 5.229113683229595e-15,
+      "family": "sweep1_refit_common_handles",
+      "id": "common-1.01-1-0.01"
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 8.409086456048856e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-single",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 1.2116527637834576e-10,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-single",
+      "native_controls": 10
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-single",
+      "native_controls": 24
+    },
+    {
+      "actual_controls": 50,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-pair",
+      "native_controls": 58
+    },
+    {
+      "actual_controls": 44,
+      "complete_image_bound": 3.7405418776785996e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "open-refit-1e-06-c1-disabled",
+      "native_controls": 44
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-single",
+      "native_controls": 66
+    },
+    {
+      "actual_controls": 34,
+      "complete_image_bound": null,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-pair",
+      "native_controls": 186
+    },
+    {
+      "actual_controls": 98,
+      "complete_image_bound": 4.308144472692006e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "nurbs-circle-1e-06-c1-disabled",
+      "native_controls": 98
+    },
+    {
+      "actual_controls": 16,
+      "complete_image_bound": 5.459024809544384e-11,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-pair",
+      "native_controls": 16
+    },
+    {
+      "actual_controls": 14,
+      "complete_image_bound": 3.143823874908504e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.001-c1-disabled",
+      "native_controls": 14
+    },
+    {
+      "actual_controls": 12,
+      "complete_image_bound": 5.822540317030562e-12,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-pair",
+      "native_controls": 12
+    },
+    {
+      "actual_controls": 10,
+      "complete_image_bound": 3.1461320696760236e-15,
+      "epsilon": 1e-07,
+      "family": "sweep1_refit_stage_reentry",
+      "id": "closed-cubic-0.01-c1-disabled",
+      "native_controls": 10
+    }
+  ],
+  "reconstruction_certificate": {
+    "ordinary_proof_preserved": true,
+    "fallback": "Invert active target knot points with source closest-parameter witnesses, then propose monotone correspondences with normalized tangent-frame derivatives at all refinement stations. Numerical witnesses only propose the map. The original complete spline-image certificate must still prove the nominal bound.",
+    "scope": "Final geometric batch reconstruction; ordinary fitting and Loft parametric reconstruction retain their previous policy.",
+    "distance_and_arithmetic_limits_changed": false,
+    "independent_parameter_clocks": true,
+    "newly_constructed_pairs": [
+      {
+        "id": "open-refit-1e-06-c1-pair",
+        "actual_controls": 50,
+        "native_controls": 58,
+        "native_image_proved": false
+      },
+      {
+        "id": "nurbs-circle-1e-06-c1-pair",
+        "actual_controls": 34,
+        "native_controls": 186,
+        "native_image_proved": false
+      }
+    ]
   }
 }

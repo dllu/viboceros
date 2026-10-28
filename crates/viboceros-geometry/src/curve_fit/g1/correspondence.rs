@@ -50,6 +50,33 @@ fn certify(
     limit: Real,
     pairs: Option<&[[Real; 2]]>,
 ) -> Result<Option<Real>, GeometryError> {
+    certify_frames(source, candidate, limit, pairs, false)
+}
+
+/// A reconstructed curve supplies natural target-knot witnesses in addition
+/// to the source stations. Tangent frames guide a higher-order correspondence;
+/// only the unchanged complete image certificate can admit the final result.
+pub(crate) fn reconstruction_deviation_bound(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+) -> Result<Option<Real>, GeometryError> {
+    if let Some(bound) = deviation_bound(source, candidate, limit)? {
+        return Ok(Some(bound));
+    }
+    let Some(pairs) = anchors::target_knots(source, candidate, limit)? else {
+        return Ok(None);
+    };
+    certify_frames(source, candidate, limit, Some(&pairs), true)
+}
+
+fn certify_frames(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+    pairs: Option<&[[Real; 2]]>,
+    frames: bool,
+) -> Result<Option<Real>, GeometryError> {
     if let Some(bound) = source.parameter_curve_deviation_bound(candidate, limit)? {
         return Ok(Some(bound));
     }
@@ -65,7 +92,8 @@ fn certify(
     let search = candidate.prepare_closest_parameter_search()?;
     let numerical = Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;
     let mut maximum_intervals = MAX_INTERVALS;
-    let (mut stations, derivatives) = if let Some(prepared) = pairs
+    let target_sampler = frames.then(|| candidate.parameter_sampler()).transpose()?;
+    let (mut stations, mut derivatives) = if let Some(prepared) = pairs
         .map(|pairs| anchors::prepare(source, candidate, pairs))
         .transpose()?
         .flatten()
@@ -109,6 +137,18 @@ fn certify(
             };
             if pairs.last().is_some_and(|p: &[Real; 2]| p[1] >= parameter) {
                 return Ok(None);
+            }
+            if let Some(target_sampler) = &target_sampler
+                && !derivatives.contains_key(&bits)
+            {
+                let a = sampler.evaluate_with_derivative(fraction)?.1;
+                let b = target_sampler.evaluate_with_derivative(parameter)?.1;
+                if let Ok(direction) = b.normalized_nonzero() {
+                    let derivative = a.dot(direction.as_vector())? / b.length()?;
+                    if derivative.is_finite() {
+                        derivatives.entry(bits).or_insert([derivative.max(0.); 2]);
+                    }
+                }
             }
             pairs.push([fraction, parameter]);
         }

@@ -139,8 +139,9 @@ fn adaptive(
                 continue;
             }
             let rebuilt = adaptive::reconstruct_at_cuts(proxy, &cuts)?;
-            let Some(bound) =
-                crate::curve_fit::g1::deviation_bound(&curves[i], &rebuilt, tolerance)?
+            let Some(bound) = crate::curve_fit::g1::reconstruction_deviation_bound(
+                &curves[i], &rebuilt, tolerance,
+            )?
             else {
                 return Err(unsupported());
             };

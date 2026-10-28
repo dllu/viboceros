@@ -9,16 +9,14 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Cases | Constructed | Complete surface images proved |
 | --- | ---: | ---: |
 | Base SDK, command and controlled sweeps | 86/86 | 83/86 |
-| Re-entered C1 profiles | 10/12 | 8/12 |
-| Combined | 96/98 | 91/98 |
+| Re-entered C1 profiles | 12/12 | 8/12 |
+| Combined | 98/98 | 91/98 |
 
-The [base replay](refit-development-validation.json) retains its measured source
-bindings for commit `46371ad4e`. The
-[re-entry record](refit-reentry-validation.json) adds all 12 C1 cases, including
-the failing assertions. The three base fine-profile images still differ. Two
-fine C1 single-profile images also differ, and two fine C1 profile pairs fail
-to construct. Coarse single profiles, coarse pairs and disabled fitting pass
-the new complete-image comparisons on both backends.
+The [current replay](refit-reentry-validation.json) covers all 98 cases on both
+backends, retaining seven failing image assertions: three base fine profiles
+and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
+pass. The [earlier base record](refit-development-validation.json) retains its
+measured source bindings for commit `46371ad4e`.
 
 UI regressions cover a circular section on a line: both tolerance getters,
 `Simplify`, explicit and automatic stations, cancellation, and local and model
@@ -33,6 +31,11 @@ produce different boundaries when supplied alone or in a pair. Batch fitting
 checks original profiles and intermediate curves, reconstructs at shared
 interpolation stations, and requires a fresh complete original-source bound.
 Inserting knots after independent reconstruction gives different geometry.
+Target-knot witnesses and tangent frames now propose correspondences for the
+final reconstruction certificate, removing two false construction failures.
+The complete image proof still gates acceptance; fitting and subdivision are
+unchanged. Regression tests cover independent parameter clocks, displaced
+curves and retraced source visits.
 
 Known span correspondences receive progressively refined proposal budgets,
 scaled to their active spline spans and capped at 1024 intervals. Distance and

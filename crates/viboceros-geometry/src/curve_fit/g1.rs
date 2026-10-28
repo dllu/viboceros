@@ -3,6 +3,7 @@ use crate::{GeometryError, NurbsCurve, ParameterSide};
 mod adjust;
 pub(crate) use adjust::{adjusted_cubic, adjusted_cubic_at_point};
 mod correspondence;
+pub(crate) use correspondence::reconstruction_deviation_bound;
 #[cfg(test)]
 pub(crate) use correspondence::within_deviation_at_pairs;
 pub(crate) use correspondence::{deviation_bound, deviation_bound_at_pairs, within_deviation};

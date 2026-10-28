@@ -210,6 +210,7 @@ pub(super) fn certified_joined_refit_with_scope(
             .map(|g| g[0])
             .collect::<Vec<_>>();
         let domain = source.domain();
+        let target_domain = joined.domain();
         let pairs = candidate
             .source_parameters
             .iter()
@@ -217,11 +218,17 @@ pub(super) fn certified_joined_refit_with_scope(
             .map(|(&t, q)| {
                 Ok([
                     crate::nurbs::interval_fraction(t, *domain.start(), *domain.end())?,
-                    q,
+                    crate::nurbs::interval_fraction(
+                        q,
+                        *target_domain.start(),
+                        *target_domain.end(),
+                    )?,
                 ])
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         crate::curve_fit::g1::deviation_bound_at_pairs(source, &joined, tolerance, &pairs)?
+    } else if policy.geometric_rebuild {
+        crate::curve_fit::g1::reconstruction_deviation_bound(source, &joined, tolerance)?
     } else {
         crate::curve_fit::g1::deviation_bound(source, &joined, tolerance)?
     };
@@ -238,5 +245,7 @@ mod source;
 
 #[cfg(test)]
 mod curved_tests;
+#[cfg(test)]
+mod reconstruction_tests;
 #[cfg(test)]
 mod tests;

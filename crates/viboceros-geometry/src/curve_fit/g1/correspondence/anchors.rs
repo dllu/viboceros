@@ -3,6 +3,40 @@ use super::*;
 
 type AnchoredStations = (Stations, BTreeMap<u64, [Real; 2]>);
 
+/// Invert target knot points numerically without altering either curve. These
+/// witnesses need ordered complete-domain coverage; they are never proofs.
+pub(super) fn target_knots(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    limit: Real,
+) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
+    let knots = candidate.knots()[candidate.degree()..=candidate.control_points().len()]
+        .chunk_by(|a, b| a == b)
+        .map(|g| g[0])
+        .collect::<Vec<_>>();
+    if knots.len() > MAX_INTERVALS + 1 {
+        return Ok(None);
+    }
+    let search = source.prepare_closest_parameter_search()?;
+    let numerical = Tolerance::try_new((limit * 1e-6).max(Real::from_bits(1)), 1e-12, 1e-10)?;
+    let a = source.domain();
+    let b = candidate.domain();
+    let mut pairs = vec![[0., 0.]];
+    for &knot in &knots[1..knots.len() - 1] {
+        let parameter = search.closest_parameter(candidate.evaluate(knot)?, numerical)?;
+        let pair = [
+            crate::nurbs::interval_fraction(parameter, *a.start(), *a.end())?,
+            crate::nurbs::interval_fraction(knot, *b.start(), *b.end())?,
+        ];
+        if (0..2).any(|i| pair[i] <= pairs.last().unwrap()[i] || pair[i] >= 1.) {
+            return Ok(None);
+        }
+        pairs.push(pair);
+    }
+    pairs.push([1., 1.]);
+    Ok(Some(pairs))
+}
+
 /// Known span correspondences can need more stations than a single smooth fit.
 /// Refine only after the smaller proposals fail, with eight intervals per
 /// active source/target span and a hard cap of 1024. The complete certificate

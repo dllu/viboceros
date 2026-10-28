@@ -422,6 +422,7 @@ def _expand_sources_once(paths):
                          'crates/viboceros-geometry/src/loft/refit/adaptive.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/tests.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/curved_tests.rs',
+                         'crates/viboceros-geometry/src/loft/refit/adaptive/reconstruction_tests.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/source.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/pieces/tests.rs',
