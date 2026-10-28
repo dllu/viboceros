@@ -6,6 +6,14 @@ Ownership and sampling policy are shared by SDK and actual command paths.
 
 
 def validate(operation):
+    legacy = operation.get("legacy_refit", False)
+    if type(legacy) is not bool:
+        raise ValueError("legacy_refit must be a boolean")
+    if legacy and (operation.get("command", False) or
+                   operation.get("refit_tolerance") is None or
+                   any(key in operation for key in ["start_point", "end_point", "roadlike_axis"]) or
+                   operation.get("roadlike", False)):
+        raise ValueError("legacy_refit supports only freeform SDK Refit without point ends")
     fit = operation.get("refit_tolerance")
     if fit is not None:
         import math
@@ -50,6 +58,17 @@ def run(host, operation, iterations, tolerance):
             for brep in result:
                 brep.Dispose()
             del result[:]
+            if operation.get("legacy_refit", False):
+                sweep = Rhino.Geometry.SweepOneRail()
+                sweep.SweepTolerance = tolerance["absolute"]
+                sweep.AngleToleranceRadians = tolerance["angular"]
+                sweep.ClosedSweep = operation.get("closed", False)
+                sweep.GlobalShapeBlending = bool(operation.get("blend", 0))
+                sweep.MiterType = 0
+                result.extend(sweep.PerformSweepRefit(
+                    rail, owned[1] if len(owned) == 2 else owned[1:],
+                    operation["refit_tolerance"]) or [])
+                return
             result.extend(Rhino.Geometry.Brep.CreateFromSweep(
                 rail, owned[1:],
                 host["_point"](operation["start_point"]) if "start_point" in operation else Rhino.Geometry.Point3d.Unset,

@@ -804,7 +804,7 @@
     "crates/viboceros-command/src/sweep.rs": "350808c143242e5b952faafaf09ffd047cb54db3be6dc677f65a460ae000e8f8",
     "crates/viboceros-command/src/sweep/options.rs": "d273321c6369c8b03aea3a6a1b3f63d063498d914239361a0e364b7a62db5234",
     "crates/viboceros-geometry/src/loft.rs": "0a5ab3de3c0029d932198421f281f6a440ba2025988c3197348d6029ae051594",
-    "crates/viboceros-geometry/src/loft/refit.rs": "9153e26a153c43bfec463447e1dba581b6611cbad4def0f9450070f4d23cb9e4",
+    "crates/viboceros-geometry/src/loft/refit.rs": "e4461a2a2e23caab671122bc396103bc591040ec42f22860e2ae0784d15146b1",
     "crates/viboceros-geometry/src/loft/refit/adaptive.rs": "f17240dcda0e2b4e608c23a3b34fe3be6bdad6887e328dd7f7daa2eeef907d67",
     "crates/viboceros-geometry/src/loft/refit/adaptive/join.rs": "d6bb2a57f4848b2a04f8829ed5303d83b5b44e71010a5e3d4c77716f939c5dfd",
     "crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs": "21b72487989a2f158c68f629e0aaac183f42b526aab096d1c084a045472fd8cf",
@@ -821,7 +821,7 @@
     "crates/viboceros-geometry/src/sweep/refit/tests.rs": "dda918f909cbcbf7ec8e41cce5fba0ac1121005c84f929b8885c47215a58b75b",
     "crates/viboceros-oracle/tests/sweep_refit.rs": "bcff02ec1e4292547fc5405ddcacabb0a804ee3891fa306001ac4d6ff8458e21",
     "crates/viboceros-oracle/tests/sweep_refit_common_handles.rs": "d96df9ae0cb86d4f2b6df67597fbdcb585420fa5118dc7bcabcca24cad5fc022",
-    "docs/sweep1/refitting.md": "de1b9814f8ad337f11f5dd8c5d7095673d34b10fb1829b5e17ab525061da9216",
+    "docs/sweep1/refitting.md": "53b08e80eda76861820cc54ffc7953713421bc9f2b2d37af150b299678e36c47",
     "crates/viboceros-geometry/src/lib.rs": "e35da236197b980fb9889f3dddc378ae27a354a9dede4d4292a5c4e66b443501",
     "crates/viboceros-command/src/lib.rs": "a0ec6833486802b9fb2c1b90281ef6b70d005426e791b7f4646cbde4743f2092",
     "crates/viboceros-oracle/src/lib.rs": "8485ae38ce6d33b105411caf5cbc596f329402305c7188d582d520d9f2bc475c",
@@ -859,7 +859,7 @@
     "tools/rhino_oracle/generate_sweep1_refit_contexts.py": "2a116b050c57bc017546bd9728f0e3e5ec57c328b23f072aec8fb76ce8af9a61",
     "tools/rhino_oracle/generate_sweep1_refit_common_handles.py": "9a0f7f45d6630af1128ff89d57f372e73cc050c91db47be39079a50ef6f75c23",
     "tools/rhino_oracle/generate_sweep1_rebuild.py": "0351bbcec4353e7c08d01fce348adcad3b0d754fa3b1d62fb933c4c891b5221c",
-    "tools/rhino_oracle/sweep1_probe.py": "832d7cc3c2f4601dd9a0be10fdff99cac43c85a9e9994b1f656a77099ddef6da",
+    "tools/rhino_oracle/sweep1_probe.py": "1f9383e518c0cb1d2c83ebf5bf65851f0c02316057de9f1c2381a1caeb6a256d",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/test_sweep1_refit.py": "8e18e5070d41829f3a2f831d96ef244f1feeead4d54e515c5ac655a50d9682ad",
     "tools/rhino_oracle/test_sweep1_refit_common_handles.py": "7f793f28266ec143242d647cc333216587ee1f846d6d34763e3f84b303d940fe",
@@ -1115,7 +1115,14 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/linear.rs": "e66674476d977da32b4401d2b21a4bf7ba5f7b768231099f9c66ce030a6c8734",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "c691e282eedbd01bad1ff1633b881df9005adafced1d5338777497b0e4d0bfc0",
-    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf"
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/loft/refit/sweep.rs": "e2e8b7de4c5d3c2e4c86d58d01c0d63d029f87f2255c2d5caba61874227eec95",
+    "tools/rhino_oracle/generate_sweep1_refit_legacy_diagnostics.py": "a28da9ff9bba24174a236fb8e4d5f935d77f0f4c6349b5a07affb855a575807d",
+    "tools/rhino_oracle/test_sweep1_refit_legacy.py": "dcec703999371200a0d8266de1b5b15e4c84018a65a0c14817cc6eda19be2fc8",
+    "tools/rhino_oracle/fixtures/sweep1_refit_legacy_diagnostics.json": "b0b95097e30826e261bf2b169c036481de2890a98c447bc9186ed2f86007ee0a",
+    "tools/rhino_oracle/observations/sweep1_refit_legacy_diagnostics.json": "1208801eb43792d2fc58d7d1cd847ea8affa50433b1d987428a88bf300310b6b",
+    "tools/rhino_oracle/observations/source_snapshots/a28da9ff9bba24174a236fb8e4d5f935d77f0f4c6349b5a07affb855a575807d.gz": "fc760bd9626b0437ffbd382b4f9e96cd8a361e76b3fe5537a50a56f7ff4757f1",
+    "tools/rhino_oracle/observations/source_snapshots/1f9383e518c0cb1d2c83ebf5bf65851f0c02316057de9f1c2381a1caeb6a256d.gz": "b1ebc31db7d2b58c02829d97d3ac45db3ffc14ce4e2974f2fa6486688bb6d63d"
   },
   "native_complete_image_passes": 83,
   "native_images": [
@@ -1759,5 +1766,74 @@
       "family": "sweep1_refit_common_handles",
       "id": "common-1.01-1-0.01"
     }
-  ]
+  ],
+  "full_image_replay": {
+    "source_revision": "d8339b121430aa78a50e0f3edcd10f0c8825e2c1",
+    "source_inventory_verified_against_revision": true,
+    "replayed_after_module_extraction": false,
+    "note": "The 83/86 results and original checks describe the complete replay at this revision. The subsequent change moves the Sweep-specific functions to a module without changing the fitting body. Focused checks below validate the move; no new full replay is claimed."
+  },
+  "post_refactor_checks": {
+    "native_focused_images": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "sweep_refit_closed",
+        "--test",
+        "sweep_refit_pairs",
+        "--no-fail-fast",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "total_cases": 13,
+      "complete_image_passes": 11,
+      "construction_gaps": [
+        "closed-refit-1e-06",
+        "nurbs-circle-1e-06"
+      ],
+      "note": "Research subsets supplement the complete 86-case acceptance tests, which retain every failure."
+    },
+    "python": {
+      "args": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_sweep1_refit",
+        "tools.rhino_oracle.test_sweep1_refit_common_handles",
+        "tools.rhino_oracle.test_sweep1_refit_legacy"
+      ],
+      "exit_code": 0,
+      "tests": 13
+    },
+    "clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    "module_move_equivalence": "Both extracted functions match their previous formatted bodies exactly after function-name and relative-module-path substitutions."
+  },
+  "legacy_public_api_diagnostic": {
+    "native_cases": 12,
+    "distinct_inputs": 6,
+    "identical_surface_definition_pairs": 6,
+    "fixture": "tools/rhino_oracle/fixtures/sweep1_refit_legacy_diagnostics.json",
+    "observations": "tools/rhino_oracle/observations/sweep1_refit_legacy_diagnostics.json",
+    "role": "Native API diagnostic only; does not extend or reduce the 86-case implementation acceptance scope."
+  }
 }
