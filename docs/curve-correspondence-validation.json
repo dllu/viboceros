@@ -183,7 +183,7 @@
     "docs/cubic-approximation.md": "10628119e240422da8d70e86f728a29a2c3af6821471e15ac6ae75975d783549",
     "docs/loft-refit-preparation.md": "47318311f85185bbd713c0107991bd942eadd057ddc81551b74742c331f1b563",
     "docs/loft-refit-preparation-validation.json": "674693f7f06f44083d6bfbdfdb4282a47a1e649f6960ceec2bf7e010ff4eb06e",
-    "docs/cubic-approximation-validation.json": "865afe811c66bbeeb9ee88f87c1649528d8ee92b6d33139ec4d25beb651cfb4b",
+    "docs/cubic-approximation-validation.json": "132f4b8869df4f7743e1adc97fec386c8c4b271989d93fd773e1e10459122b8a",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e6a4ba8bd4948ecb27aaf9c1c099034821e9b4c6eaccb25891de7792005a92e0",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "c691e282eedbd01bad1ff1633b881df9005adafced1d5338777497b0e4d0bfc0",
@@ -264,7 +264,7 @@
     "crates/viboceros-geometry/tests/curve_minimum_precision.rs": "b7f331047cc3d33a17cd5ad986b1de35f4319d2bcb95ab4c2ad602113bfd3aa0",
     "crates/viboceros-geometry/tests/sweep_surface_distance.rs": "e676a18e7da54b257bf36ab0a9c5fa759c983130f24b34b4f0aec5da7f3c7719",
     "crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "fd187f97c15c4b7e7ba6ceae075385128ddcba8ca0d701e05b348b560aa545cf",
-    "tools/rhino_oracle/sweep1_probe.py": "849a6ad6fc20d18132ac9daa30ab5da0b2cf6d26b2ab5309f3a082f4297cec37",
+    "tools/rhino_oracle/sweep1_probe.py": "832d7cc3c2f4601dd9a0be10fdff99cac43c85a9e9994b1f656a77099ddef6da",
     "tools/rhino_oracle/structural_sdk.py": "adc5ecee09ff66551c884e93388276c52e9164c0dfd46b6a6bbe51e4fbb9097d"
   }
 }

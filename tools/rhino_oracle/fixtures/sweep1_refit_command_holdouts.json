@@ -1,0 +1,256 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "open-end",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01,
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-end",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01,
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ]
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-both",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            2.5
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        2.5
+      ],
+      "command": true,
+      "refit_rail": true,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01,
+      "end_point": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "start_point": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "op": "sweep1",
+      "id": "retained-arc",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            0.0,
+            0.8786796564403576
+          ],
+          [
+            3.0,
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    }
+  ]
+}

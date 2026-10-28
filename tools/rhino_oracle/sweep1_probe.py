@@ -6,7 +6,19 @@ Ownership and sampling policy are shared by SDK and actual command paths.
 
 
 def validate(operation):
+    fit = operation.get("refit_tolerance")
+    if fit is not None:
+        import math
+        valid = not isinstance(fit, bool) and isinstance(fit, (int, float))
+        try:
+            valid = valid and not math.isnan(fit) and not math.isinf(fit) and fit >= 0
+        except (TypeError, ValueError, OverflowError):
+            valid = False
+        if not valid:
+            raise ValueError("Sweep1 refit tolerance must be finite and nonnegative")
     count = operation.get("rebuild_point_count", 0)
+    if fit is not None and count:
+        raise ValueError("Sweep1 Rebuild and Refit are mutually exclusive")
     if type(count) is not int or not 0 <= count <= 512:
         raise ValueError("Sweep1 rebuild point count must be an integer from 0 to 512")
     if operation.get("command", False) and 0 < count < 3:
@@ -47,8 +59,8 @@ def run(host, operation, iterations, tolerance):
                 operation.get("closed", False),
                 System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
                 System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
-                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 1 if operation.get("rebuild_point_count", 0) else 0),
-                operation.get("rebuild_point_count", 0), 0.0,
+                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 2 if operation.get("refit_tolerance") is not None else (1 if operation.get("rebuild_point_count", 0) else 0)),
+                operation.get("rebuild_point_count", 0), operation.get("refit_tolerance") or 0.0,
             ) or [])
 
         _, elapsed = host["_measure"](iterations, build)
@@ -90,7 +102,11 @@ def macro(operation, ids, closed_profiles=False):
     else:
         text += " _Style=_Freeform"
     count = operation.get("rebuild_point_count", 0)
-    text += " _Simplify=_Rebuild _RebuildCount=%d" % count if count else " _Simplify=_None"
+    fit = operation.get("refit_tolerance")
+    if fit is not None:
+        text += " _Simplify=_Refit _RefitTolerance=%.17g" % fit
+    else:
+        text += " _Simplify=_Rebuild _RebuildCount=%d" % count if count else " _Simplify=_None"
     text += " _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
         "Global" if operation.get("blend", 0) else "Local",
         "Yes" if operation.get("refit_rail", False) else "No")

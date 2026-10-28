@@ -157,6 +157,15 @@ not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately
 from geometry comparisons; dense-to-banded solving alone did not remove the
 cost of repeated accurate arc-length inversion.
+
+Cross-section Refit remains in development. The native oracle accepts
+`refit_tolerance` independently of rail refitting and rejects simultaneous
+section rebuilding. Frozen `sweep1_refit_*` captures contain 70 sweep cases and
+16 public `Curve.Fit` diagnostics, with archived producers. Identical translated
+profile pairs use a different fitting policy from one profile; `Curve.Fit`
+also produces a different result. Complete geometry comparison for Viboceros
+section refitting remains unfinished.
+
 An exact-key, bounded sample cache reduced single-profile spatial timings from
 about 43 ms to 25 ms, versus 15 ms Freeform and 12 ms Roadlike in Rhino under
 FEX/Wine. Two-profile spatial construction measured 26 ms versus 19 ms.

@@ -218,7 +218,7 @@
     "crates/viboceros-smlib/tests/loft_rebuild_native.rs": "75fe6aae2e1229a7edef5f1282d5a3c8e9bfe26554ad40f8fb7fe29728aba140",
     "docs/commands/surfaces.md": "f2407ee4c3b0c7f780ca71aed7a3dd562f2561e13ec946ae530ebd908f6b513b",
     "docs/loft-ordering.md": "e54d8e1b76d732f974eee12df55a14d778112dcd8ae5a2396ed6292836bae091",
-    "docs/loft-rebuild-validation.json": "89b6fcae04b8130c0c77e9a926d8d4261092652be7a6a68024a546c99f911668",
+    "docs/loft-rebuild-validation.json": "94623920031e5fdd18daae86a185129332a30f0c301ad7559e7067ba3bdb2b38",
     "docs/loft-rebuild.md": "057510e4e1decdbd74d80e7a6449d397c48c3cfe9e0670e0ab9d002b9466dd7b",
     "docs/loft-section-preparation.json": "80c77d37af7fce8430b92d8c30cba949c7913c0e5eb2b9c1cccf5efd4b5b408e",
     "docs/loft-validation.md": "06897a1c22fe376d0903acf1ea0cfb0ceb2fd1375530fd173752d7ac65d7779c",
@@ -551,7 +551,7 @@
     "src/app/sweep/selection.rs": "900577d94de311809f936d7efcad12c5d64f9f49242486b65b51ccc176c628f3",
     "src/app/sweep/tests.rs": "0e318d2d65f14b3638986594f400efa2452a4e72851f68e3a5547860928344f5",
     "crates/viboceros-geometry/src/section_rebuild.rs": "f73c26a3f59fba31215a3c748cf3cc9785fff2dad4ac5f8d2be80386a0192dd8",
-    "tools/rhino_oracle/sweep1_probe.py": "849a6ad6fc20d18132ac9daa30ab5da0b2cf6d26b2ab5309f3a082f4297cec37",
+    "tools/rhino_oracle/sweep1_probe.py": "832d7cc3c2f4601dd9a0be10fdff99cac43c85a9e9994b1f656a77099ddef6da",
     "tools/rhino_oracle/structural_sdk.py": "adc5ecee09ff66551c884e93388276c52e9164c0dfd46b6a6bbe51e4fbb9097d"
   }
 }
