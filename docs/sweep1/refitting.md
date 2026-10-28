@@ -12,8 +12,8 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Re-entered C1 profiles | 12/12 | 8/12 |
 | Combined | 98/98 | 91/98 |
 
-The [current replay](refit-reentry-validation.json) covers all 98 cases on both
-backends, retaining seven failing image assertions: three base fine profiles
+The [implementation replay](refit-reentry-validation.json) at `d1def348c`
+covers all 98 cases on both backends, retaining seven failing image assertions: three base fine profiles
 and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
 pass. The [earlier base record](refit-development-validation.json) retains its
 measured source bindings for commit `46371ad4e`.
@@ -56,5 +56,10 @@ The legacy and modern Sweep APIs agree on their tested inputs; varying SDK
 sweep tolerance leaves the five tested profile definitions unchanged.
 All 140 public closest-point queries match Viboceros within `1e-7`. C1 re-entry
 uses independently constructed input curves, not purported Rhino intermediates.
+[Representation diagnostics](refit-representation-validation.json) certify 12
+equivalent inputs at `1e-12`, then compare 16 native sweep images. Knot insertion
+changes two images beyond `1e-7`; degree elevation and affine domains retain
+the tested images. Fresh length batches expose 16 unqualified multi-span clock
+cases. Production fitting is unchanged pending a justified correction.
 The other historical qualification inventories still describe `main` before
 this branch and must be refreshed before merging.

@@ -2567,5 +2567,7 @@
         "native_image_proved": false
       }
     ]
-  }
+  },
+  "measurement_revision": "d1def348c3a33f750fb0d2f5c3c44d3f81dcadba",
+  "measurement_scope": "Full 98-case implementation replay on both backends at measurement_revision. These source bindings are retained at that revision; later representation diagnostics and their source bindings are recorded separately. Production Rust is unchanged by those diagnostic additions."
 }

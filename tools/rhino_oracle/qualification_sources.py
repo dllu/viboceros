@@ -223,6 +223,21 @@ def _expand_sources_once(paths):
                  'tools/rhino_oracle/fixtures/sweep1_refit_polynomial.json',
                  'tools/rhino_oracle/observations/sweep1_refit_polynomial.json',
                  'tools/rhino_oracle/observations/sweep1_refit_stage_reentry.json']
+    if 'crates/viboceros-oracle/tests/sweep_refit_representations.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/loft_parameters.rs',
+                 'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
+                 'tools/rhino_oracle/generate_sweep1_refit_representations.py',
+                 'tools/rhino_oracle/generate_sweep1_refit_representation_diagnostics.py',
+                 'tools/rhino_oracle/test_sweep1_refit_representations.py',
+                 'tools/rhino_oracle/capture_sources/sweep1_refit_c1_profiles.json',
+                 'tools/rhino_oracle/arc_length_batch_probe.py',
+                 'tools/rhino_oracle/geometry_validity_probe.py']
+        for family in ['sweep1_refit_representation_inputs',
+                       'sweep1_refit_representations',
+                       'sweep1_refit_representation_diagnostics']:
+            paths.extend('tools/rhino_oracle/' + directory + '/' + family + '.json'
+                         for directory in ['fixtures', 'observations'])
     if 'src/app/sweep.rs' in paths:
         paths = [*paths, 'src/app/sweep/refit_tests.rs']
     if 'src/app/sweep/refit_tests.rs' in paths:
