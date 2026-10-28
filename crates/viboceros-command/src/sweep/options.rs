@@ -10,10 +10,26 @@ pub struct Options {
     pub axis: Option<UnitVector3>,
     pub global: Option<bool>,
     pub refit: Option<bool>,
+    pub rebuild_point_count: usize,
     pub ends: SweepEndPoints,
 }
 
 impl Options {
+    /// Value getters accepted by both scripted and interactive Sweep1 input.
+    pub const VALUE_OPTIONS: &[&str] = &[
+        "RailName",
+        "RailId",
+        "Parameters",
+        "FrameStyle",
+        "Axis",
+        "GlobalShapeBlending",
+        "RefitRail",
+        "Rebuild",
+        "RebuildPointCount",
+        "RebuildCount",
+        "Simplify",
+    ];
+
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
         Self::default().updated(arguments)
     }
@@ -22,6 +38,7 @@ impl Options {
     pub fn updated(&self, arguments: &[&str]) -> Result<Self, CommandError> {
         let mut result = self.clone();
         let mut seen = 0u16;
+        let mut simplify = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             let key = match name
@@ -81,6 +98,24 @@ impl Options {
                     result.ends.end = Some(parse_single_option_point(value, USAGE)?);
                     128
                 }
+                "rebuild" | "rebuildpointcount" | "rebuildcount" => {
+                    result.rebuild_point_count = value
+                        .parse::<usize>()
+                        .ok()
+                        .filter(|n| (*n == 0 || *n >= 3) && *n <= Sweep1::MAX_SECTION_CONTROLS)
+                        .ok_or(CommandError::Usage(USAGE))?;
+                    256
+                }
+                "simplify" => {
+                    simplify = Some(
+                        match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                            "none" => false,
+                            "rebuild" => true,
+                            _ => return Err(CommandError::Usage(USAGE)),
+                        },
+                    );
+                    512
+                }
                 _ => return Err(CommandError::Usage(USAGE)),
             };
             if seen & key != 0 {
@@ -93,6 +128,11 @@ impl Options {
         }
         if result.axis.is_some() && !result.roadlike.unwrap_or(false) {
             return Err(CommandError::Usage(USAGE));
+        }
+        match simplify {
+            Some(false) => result.rebuild_point_count = 0,
+            Some(true) if result.rebuild_point_count == 0 => result.rebuild_point_count = 5,
+            _ => {}
         }
         Ok(result)
     }
@@ -114,6 +154,9 @@ impl Options {
     /// Canonical command arguments for the shared command executor.
     pub fn arguments(&self) -> String {
         let mut words = Vec::new();
+        if self.rebuild_point_count != 0 {
+            words.push(format!("Rebuild={}", self.rebuild_point_count));
+        }
         if let Some(name) = &self.rail_name {
             words.push(format!("RailName={name}"));
         }
@@ -165,6 +208,47 @@ impl Options {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn rebuild_modes_share_aliases_and_atomic_option_updates() {
+        let source = Options::parse(&["Simplify=Rebuild"]).unwrap();
+        assert_eq!(source.rebuild_point_count, 5);
+        for name in ["Rebuild", "RebuildCount", "RebuildPointCount"] {
+            let next = source.updated(&[&format!("{name}=7")]).unwrap();
+            assert_eq!(next.rebuild_point_count, 7);
+            assert_eq!(
+                Options::parse(&next.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
+                next
+            );
+            assert!(Options::VALUE_OPTIONS.contains(&name));
+        }
+        for bad in [
+            "Rebuild=1",
+            "Rebuild=2",
+            "Rebuild=513",
+            "Rebuild=-1",
+            "Rebuild=NaN",
+            "Simplify=Refit",
+            "Rebuild=5 RebuildCount=6",
+        ] {
+            assert!(
+                source
+                    .updated(&bad.split_whitespace().collect::<Vec<_>>())
+                    .is_err()
+            );
+            assert_eq!(source.rebuild_point_count, 5);
+        }
+        assert_eq!(
+            source
+                .updated(&["Simplify=None"])
+                .unwrap()
+                .rebuild_point_count,
+            0
+        );
+        assert_eq!(
+            source.updated(&["Rebuild=0"]).unwrap().rebuild_point_count,
+            0
+        );
+    }
     #[test]
     fn updating_points_preserves_other_choices_and_serializes_for_execution() {
         let source = Options::parse(&[

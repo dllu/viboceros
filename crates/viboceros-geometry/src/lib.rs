@@ -160,6 +160,8 @@ mod point_projection;
 mod polycurve;
 mod polyline;
 mod section_basis;
+mod section_rebuild;
+pub use section_rebuild::try_rebuild_nurbs_sections_with;
 mod smoothing;
 pub use smoothing::{SmoothingCoordinates, SmoothingOptions};
 mod spiral;

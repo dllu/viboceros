@@ -1,6 +1,28 @@
 //! Native Loft and Sweep section preparation.
 use super::*;
 
+/// Rebuild real sweep profiles with native basis evaluation and interpolation.
+pub fn rebuild_sweep_sections(
+    sections: &[viboceros_geometry::SweepSection],
+    point_count: usize,
+    tolerance: Tolerance,
+) -> Result<Vec<viboceros_geometry::SweepSection>, Error> {
+    viboceros_geometry::Sweep1::rebuild_sections_with(
+        sections,
+        point_count,
+        tolerance,
+        &mut |curve, count, degree, tol| {
+            viboceros_geometry::try_rebuild_open_curve_with_interpolation(
+                viboceros_geometry::CurveRef::NurbsCurve(curve),
+                count,
+                degree,
+                tol,
+                &mut solve_rebuild_interpolation,
+            )
+        },
+    )
+}
+
 /// Share section-region parameters, then match degree, knots and endpoint
 /// weights with existing native clamping, exact elevation and refinement.
 pub fn prepare_loft_sections(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, Error> {

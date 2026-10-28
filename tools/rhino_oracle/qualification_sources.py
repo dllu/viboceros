@@ -198,11 +198,17 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in ['crates/viboceros-geometry/src/lib.rs',
+                               'crates/viboceros-geometry/src/loft/rebuild.rs']):
+        paths = [*paths, 'crates/viboceros-geometry/src/section_rebuild.rs']
+    if 'crates/viboceros-geometry/src/section_rebuild.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/src/curve_rebuild.rs']
     if 'crates/viboceros-command/src/sweep.rs' in paths:
         paths = [*paths, 'crates/viboceros-command/src/sweep/options.rs',
                  'crates/viboceros-command/src/sweep/tests.rs',
                  'crates/viboceros-command/src/sweep/point_tests.rs',
                  'crates/viboceros-command/src/sweep/roadlike_tests.rs',
+                 'crates/viboceros-command/src/sweep/rebuild_tests.rs',
                  'crates/viboceros-command/src/sweep/placement.rs',
                  'crates/viboceros-command/src/sweep/arc_station_tests.rs',
                  'crates/viboceros-command/src/sweep/automatic_tests.rs',
@@ -211,6 +217,11 @@ def _expand_sources_once(paths):
         paths = [*paths,
                  'crates/viboceros-geometry/src/sweep/rail.rs',
                  'crates/viboceros-geometry/src/sweep/roadlike.rs',
+                 'crates/viboceros-geometry/src/sweep/rebuild.rs',
+                 'crates/viboceros-geometry/src/section_rebuild.rs',
+                 'crates/viboceros-oracle/tests/sweep_rebuild.rs',
+                 'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
                  'crates/viboceros-geometry/src/sweep/point_ends.rs',
                  'crates/viboceros-geometry/tests/sweep_point_ends.rs',
                  'crates/viboceros-geometry/tests/support/positive_tensor.rs',
@@ -444,6 +455,7 @@ def _expand_sources_once(paths):
     if 'crates/viboceros-oracle/src/interface.rs' in expanded:
         expanded.append('crates/viboceros-oracle/src/interface/tests.rs')
     if 'tools/rhino_oracle/rhino_worker.py' in expanded:
+        expanded.extend(['tools/rhino_oracle/sweep1_probe.py', 'tools/rhino_oracle/structural_sdk.py'])
         expanded.append('tools/rhino_oracle/interface_commands_probe.py')
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')

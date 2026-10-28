@@ -254,7 +254,7 @@
     "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
     "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373",
     "crates/viboceros-geometry/tests/source_continuity_native.rs": "94bef75ee65d41d5e3547b996a885fdc7d9932a0657eddea44287fff4989e8ab",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "git_sha256": {
     "22ed6965d2fe59e64a7990d73a09969f42341821:tools/rhino_oracle/qualification_sources.py": "8227f8d1948ad28ad50426aa9e88828ffa129d85e23c60da11a21949fd115c48",
@@ -264,7 +264,8 @@
     "85d130537e64272f21ab4f4b023a5164c4477991:Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
     "dc0dd91bdd92d641203f78a0124e5efd754cdab8:tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6",
     "a4eb5070793539b000f97c284edf319dfecc17e7:tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65",
-    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8"
+    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
   },
   "inventory_update_only": true
 }

@@ -55,6 +55,7 @@ command and kernel tests; a circular profile produces a native one-face solid.
 | Option | Implemented behavior |
 | --- | --- |
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
+| `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |

@@ -5833,8 +5833,8 @@
     "crates/viboceros-smlib/native/bridge.cpp": "c4796190b1e769b485b97303d521ccafb19e447341be30c2b81f1bc451855099",
     "crates/viboceros-smlib/native/bridge.h": "f7664d0a27206dda38c2077c952411dcab921d0e1377d60099653ab655c34214",
     "crates/viboceros-smlib/native/mesh_boolean.h": "25c3806d399850c0ffb4534c04c6f5e422c75b4db22bd98a7811a9d54406ec35",
-    "crates/viboceros-smlib/src/lib.rs": "7f49eeb4f9da8972abf03bae4cb0cf1439456a7070ab18e91e2a42157b9f17cc",
-    "crates/viboceros-smlib/src/native.rs": "0cca6f97f48d49ee93aba09f2b291b1f692b0e09c3105be50529e1517eea1c31",
+    "crates/viboceros-smlib/src/lib.rs": "434e323d554e12a0be8a28cbd52836e875bbae696cf9d79c71a60d6138ef9775",
+    "crates/viboceros-smlib/src/native.rs": "53da101f5e5974a5a55cd3f9b065bf78c456dd42d2e5fd97404dda4233d159d8",
     "crates/viboceros-smlib/src/native/mesh_boolean.rs": "bd548c857f9bdd2282f992b371e8f062bf92f33d4bdd0fec049307c6642abe8e",
     "crates/viboceros-smlib/tests/mesh_boolean.rs": "680a29f116d6581b2317d1da5796748d64a5b03ebaa6b3c3b0c03897b5e97228",
     "crates/viboceros-smlib/tests/support/mesh_boolean.rs": "2c1a618f032b8b0118e5c1e208efacf014d3e4e3e4fd9208e8402d7e40862ab5",
@@ -5865,10 +5865,10 @@
     "tools/rhino_oracle/observations/source_snapshots/c1453029b18410d4c8ba5f05b2f918813a10777ea50427301e456be3c97f414e.gz": "4a3c293b8a2e4379bca3856c8073271ba51b3074edbbdcc5bbb7b38a9ab23246",
     "tools/rhino_oracle/observations/source_snapshots/c848aabb01acb3752893d9f890c21e3f062b2d47e0923656b29a605c5ab782d8.gz": "6850d4baa89dbe7e9e4cffe821e0d482efade4bd63cd6febfbafcc2bdf97daa3",
     "tools/rhino_oracle/observations/source_snapshots/cda2aaeb84f5e2df817e020148104cd8cd457b6a2e5cc10c6287adf7489f680a.gz": "0cf66cebe10bdd0b8472b182cf6d9d22153248293af6da09b59bc5c6f9663afa",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9",
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3",
     "tools/rhino_oracle/report_mesh_boolean.py": "603bb8950f3755b7f290dd178be4569ec1b2aad60e1b93e98d5acb134922670c",
-    "tools/rhino_oracle/rhino_worker.py": "5cf54728caec12ea559a888309e86cc7b6b0675d213c16ce55f4148a99e4fc3e",
-    "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
+    "tools/rhino_oracle/rhino_worker.py": "99a6183ce762cd693b7a2807bb98d42f833c8b4f0cf84ef07f6ce9b24471e61a",
+    "tools/rhino_oracle/structural_sdk.py": "adc5ecee09ff66551c884e93388276c52e9164c0dfd46b6a6bbe51e4fbb9097d",
     "tools/rhino_oracle/test_mesh_boolean.py": "e49fc46f8725b452a4ccfe424c57ed170cd5ccf509efe09b445322e6185e47c0",
     "tools/rhino_oracle/mesh_boolean_command_cases.py": "5522e21f7fc96e1930aab6a68651fe37e93a5a50e8e62f7473534f07c381dc2f",
     "tools/rhino_oracle/mesh_boolean_option_cases.py": "3c7d5170747d015928e6b8469c1b48167a8294f35d32aad67274ce3a9d48da5c",
@@ -5894,6 +5894,7 @@
     "crates/viboceros-smlib/tests/curve_continuity.rs": "b9f64d944fd6de7b878737583b94177260bfb22034e471adb69376f3f45525e7",
     "crates/viboceros-opennurbs/native/curve_discontinuities.h": "f130962df522d096b6753d342bab011a79ef7bbe2500561a89ea6ae5387bf70d",
     "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "a7d086596fa493c138370a73cddbce3815d78c4b14fe7579c8724f1abf40b21e",
-    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "822a2b212d918c6cb8fa179744258d6ae655e4868f63e577e7275fd8a234334c"
+    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "822a2b212d918c6cb8fa179744258d6ae655e4868f63e577e7275fd8a234334c",
+    "tools/rhino_oracle/sweep1_probe.py": "849a6ad6fc20d18132ac9daa30ab5da0b2cf6d26b2ab5309f3a082f4297cec37"
   }
 }

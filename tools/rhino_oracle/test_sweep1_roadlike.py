@@ -1,5 +1,4 @@
 """Roadlike command axes, documented defaults, and immutable SDK diagnostics."""
-import ast
 import gzip
 import hashlib
 import json
@@ -9,13 +8,6 @@ import unittest
 from .generate_sweep1_roadlike_default import request
 
 HERE = Path(__file__).resolve().parent
-
-
-def worker_function(name, **dependencies):
-    tree = ast.parse((HERE / 'rhino_worker.py').read_text())
-    node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == name)
-    exec(compile(ast.Module(body=[node], type_ignores=[]), '<sweep1>', 'exec'), dependencies)
-    return dependencies[name]
 
 
 class SweepRoadlikeTests(unittest.TestCase):
@@ -48,7 +40,7 @@ class SweepRoadlikeTests(unittest.TestCase):
         self.assertIn('rail.TryGetPlane', workers['sweep1_roadlike_automatic'])
 
     def test_axis_getter_receives_explicit_points_or_cplane_acceptance(self):
-        macro = worker_function('_sweep1_macro')
+        from .sweep1_probe import macro
         explicit = macro({'roadlike_axis': [0, 1, 0]}, ['rail', 'profile'])
         self.assertIn(' _Style=_Roadlike 0,0,0 0,1,0 _Simplify=', explicit)
         automatic = macro({'roadlike': True}, ['rail', 'profile'])
@@ -57,7 +49,8 @@ class SweepRoadlikeTests(unittest.TestCase):
         self.assertIn(' _Point 0,0,5 _Enter _Style=_Roadlike 0,0,0 0,1,0', closed)
 
     def test_sdk_default_uses_public_plane_query_without_overriding_explicit_axis(self):
-        axis = worker_function('_sweep1_roadlike_axis', _xyz=lambda value: list(value))
+        from .sweep1_probe import roadlike_axis
+        axis = lambda op, rail, tol: roadlike_axis(op, rail, tol, list)
         class Rail:
             def __init__(self, planar):
                 self.planar = planar

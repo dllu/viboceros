@@ -23,6 +23,68 @@ fn pick(app: &mut VibocerosApp, id: ObjectId) {
     });
 }
 #[test]
+fn rebuilding_sections_uses_shared_value_getters_local_undo_and_model_undo() {
+    let (mut app, ids) = setup();
+    app.document
+        .select_objects_direct([], SelectionMode::Replace)
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(
+        &mut app,
+        &format!("Sweep1 RailId={} Parameters=2.5", ids[0]),
+    );
+    pick(&mut app, ids[1]);
+    enter(&mut app, "Simplify");
+    enter(&mut app, "Rebuild");
+    assert_eq!(
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .state
+            .options
+            .rebuild_point_count,
+        5
+    );
+    enter(&mut app, "RebuildCount");
+    enter(&mut app, "7");
+    assert_eq!(
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .state
+            .options
+            .rebuild_point_count,
+        7
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .state
+            .options
+            .rebuild_point_count,
+        5
+    );
+    enter(&mut app, "");
+    assert!(app.sweep_session.is_none(), "{:?}", app.command_log);
+    for source in &before {
+        assert_eq!(app.document.object(source.id()), Some(source));
+    }
+    let surface = app
+        .document
+        .objects()
+        .find_map(|o| match o.geometry() {
+            Geometry::Brep(b) => Some(b.faces()[0].surface()),
+            _ => None,
+        })
+        .unwrap();
+    assert_eq!(surface.degree_v(), 3);
+    assert_eq!(surface.control_point_count_v(), 6);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+#[test]
 fn sweep_picked_poles_use_snapping_filters_units_and_one_model_undo() {
     let (mut app, ids) = setup();
     let before = app.document.objects().cloned().collect::<Vec<_>>();

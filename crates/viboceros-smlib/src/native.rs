@@ -83,7 +83,7 @@ pub use knot_refinement::{
     loft_surface_rebuilt, loft_surface_refitted, loft_surface_refitted_with_angle,
     loft_surface_with_end_points, make_curve_non_periodic, make_curve_periodic,
     make_surface_non_periodic, make_surface_periodic, match_curve_end, morph_interpolation,
-    point_grid_brep, prepare_loft_sections, rebuild_curve, rebuild_surface,
+    point_grid_brep, prepare_loft_sections, rebuild_curve, rebuild_surface, rebuild_sweep_sections,
     reduce_curve_knots_in_range, remove_curve_knot, remove_curve_knot_at_value,
     remove_curve_multiple_knots, remove_periodic_surface_knot, remove_surface_knot,
     remove_surface_multiple_knots, split_curve, split_curve_at_parameters, split_surface, subcurve,

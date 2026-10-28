@@ -281,7 +281,6 @@
     "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
     "crates/viboceros-command/src/loft.rs": "2afdeeac349f532a7cb6b343e096701200d0875e3d66def29736307fa8879c21",
     "crates/viboceros-oracle/src/main.rs": "4085792d2d21b01f6ce191620fec3da10385c46956b9669500c0c0505e2c23a5",
-    "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/generate_loft_refit_policy.py": "4ac520606f2fc3d706d930fe82dd52263205dde4981c3e98590821a5f4f41626",
     "tools/rhino_oracle/generate_loft_refit.py": "e2b82b6eba71510cb1da0bbe21baed6181599a7b06ad1a212a994a6801378c6f",
@@ -359,7 +358,6 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/src/loft/parameterize/tests.rs": "400ca000e64308b01da643d735ad0b9175083ae0f215ff098e720dbec5d5254c",
-    "crates/viboceros-geometry/src/loft/rebuild.rs": "a2bc023117d221db63611e5de20dfebd12cfb002189fe3b3f12b0c48bbf6a9c2",
     "crates/viboceros-geometry/src/loft/rebuild/tests.rs": "6a9f615a76f0fcf38f222a49d5d775314cfe219bb96720cd97f5cd8a53e52534",
     "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "bc37468944604a436a59321f25ef89df2dc81bfcb917bac0e671f38819a4d7f6",
     "crates/viboceros-geometry/tests/support/loft_rebuild.rs": "668b312194c4eef23d367f0c7fac9750e217ad44d42a954c1726128f2b64835b",
@@ -417,7 +415,7 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected/tests.rs": "a5f4441de7de15343f32f993de65d9d33c5a247aeea33004eb9ca59e51b3e6a8",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/projected/order.rs": "08bb415ea1d59caf3c245379a5bdad4271402f50d1d87b997fbfcb15a5beadf5",
     "crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "fd187f97c15c4b7e7ba6ceae075385128ddcba8ca0d701e05b348b560aa545cf",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "git_sha256": {
     "2d2466eea2570fd95605bcd4892224bb118a2188:crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404",
@@ -462,7 +460,10 @@
     "abb2d4706c6b2971ebd80baf21b3094d08e981a2:crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "dc0dd91bdd92d641203f78a0124e5efd754cdab8:tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6",
     "a4eb5070793539b000f97c284edf319dfecc17e7:tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65",
-    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8"
+    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:crates/viboceros-geometry/src/loft/rebuild.rs": "a2bc023117d221db63611e5de20dfebd12cfb002189fe3b3f12b0c48bbf6a9c2",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
   },
   "inventory_update_only": true
 }

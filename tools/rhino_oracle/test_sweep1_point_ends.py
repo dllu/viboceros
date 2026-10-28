@@ -1,5 +1,4 @@
 """Frozen point-end captures and actual scripted selection/option transitions."""
-import ast
 import gzip
 import hashlib
 import json
@@ -66,11 +65,7 @@ class SweepPointEndsTests(unittest.TestCase):
             self.assertEqual(check['exit_code'], 0)
 
     def test_macro_advances_through_point_and_closed_seam_prompts(self):
-        tree = ast.parse((HERE / 'rhino_worker.py').read_text())
-        node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == '_sweep1_macro')
-        host = {}
-        exec(compile(ast.Module(body=[node], type_ignores=[]), '<sweep1-macro>', 'exec'), host)
-        macro = host['_sweep1_macro']
+        from .sweep1_probe import macro
         plain = macro({}, ['rail', 'profile'])
         self.assertEqual(plain, "_-Sweep1 '_-SelID rail '_-SelID profile _Enter _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_Local _RefitRail=_No _Enter")
         ended = macro({'start_point': [0, 0, 0], 'end_point': [0, 0, 5], 'refit_rail': True}, ['rail', 'profile'])

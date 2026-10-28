@@ -127,6 +127,8 @@ pub struct SweepFixture {
     #[serde(default)]
     pub roadlike: bool,
     #[serde(default)]
+    pub rebuild_point_count: usize,
+    #[serde(default)]
     pub blend: u8,
     #[serde(default)]
     pub queries: Option<Vec<[f64; 3]>>,
@@ -190,9 +192,33 @@ pub(super) fn run(
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
             #[cfg(feature = "native-smlib")]
+            let rebuilt = if fixture.rebuild_point_count > 1 {
+                Some(
+                    viboceros_smlib::rebuild_sweep_sections(
+                        &sections,
+                        fixture.rebuild_point_count,
+                        tolerance,
+                    )
+                    .map_err(CommandError::from)?,
+                )
+            } else {
+                None
+            };
+            #[cfg(not(feature = "native-smlib"))]
+            let rebuilt = if fixture.rebuild_point_count > 1 {
+                Some(Sweep1::rebuild_sections(
+                    &sections,
+                    fixture.rebuild_point_count,
+                    tolerance,
+                )?)
+            } else {
+                None
+            };
+            let sections = rebuilt.as_deref().unwrap_or(&sections);
+            #[cfg(feature = "native-smlib")]
             let model = viboceros_smlib::sweep_model_with_point_ends(
                 rail.as_ref(),
-                &sections,
+                sections,
                 ends,
                 style,
                 blend,
@@ -202,7 +228,7 @@ pub(super) fn run(
             #[cfg(not(feature = "native-smlib"))]
             let model = Sweep1::try_new_with_point_ends(
                 rail.as_ref(),
-                &sections,
+                sections,
                 ends,
                 style,
                 blend,
@@ -281,6 +307,9 @@ fn command_surfaces(
         text.push_str(&format!(" FrameStyle=Roadlike Axis={x},{y},{z}"));
     } else if fixture.roadlike {
         text.push_str(" FrameStyle=Roadlike");
+    }
+    if fixture.rebuild_point_count != 0 {
+        text.push_str(&format!(" Rebuild={}", fixture.rebuild_point_count));
     }
     for (name, point) in [
         ("StartPoint", fixture.start_point),

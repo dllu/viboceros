@@ -2332,105 +2332,28 @@ def _edge_surface_record(brep, comparison_degree):
             "singular_trims": sum(1 for trim in brep.Trims if trim.TrimType == Rhino.Geometry.BrepTrimType.Singular)}
 
 
-def _sweep1(operation, iterations, tolerance):
-    owned, result = [], []
+def _sweep1_module():
     try:
-        rail = _join_close_input(operation["rail"])
-        owned.append(rail)
-        for definition in operation["sections"]:
-            owned.append(_join_close_input(definition))
+        import sweep1_probe
+    except ImportError:
+        from tools.rhino_oracle import sweep1_probe
+    return sweep1_probe
 
-        if operation.get("command", False):
-            def macro(ids):
-                Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
-                return _sweep1_macro(operation, ids, any(curve.IsClosed for curve in owned[1:]))
-            value, elapsed = _curve_surface_command(owned, macro, iterations, "sweep",
-                lambda obj: _sweep1_record(obj.Geometry, operation), verify_script=True)
-            records = [face for output in value["outputs"] for face in output]
-            return records, 0
 
-        roadlike_axis = _sweep1_roadlike_axis(operation, rail, tolerance)
-
-        def build():
-            for brep in result:
-                brep.Dispose()
-            del result[:]
-            result.extend(Rhino.Geometry.Brep.CreateFromSweep(
-                rail, owned[1:],
-                _point(operation["start_point"]) if "start_point" in operation else Rhino.Geometry.Point3d.Unset,
-                _point(operation["end_point"]) if "end_point" in operation else Rhino.Geometry.Point3d.Unset,
-                System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if operation.get("roadlike", False) or "roadlike_axis" in operation else 0),
-                _vector(roadlike_axis) if roadlike_axis is not None else Rhino.Geometry.Vector3d.Unset,
-                operation.get("closed", False),
-                System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
-                System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
-                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 0), 0, 0.0,
-            ) or [])
-
-        _, elapsed = _measure(iterations, build)
-        return [face for brep in result for face in _sweep1_record(brep, operation)], elapsed
-    finally:
-        for geometry in result + owned:
-            geometry.Dispose()
+def _sweep1(operation, iterations, tolerance):
+    return _sweep1_module().run(globals(), operation, iterations, tolerance)
 
 
 def _sweep1_roadlike_axis(operation, rail, tolerance):
-    """Apply documented dialog defaults; SDK Unset has different behavior."""
-    axis = operation.get("roadlike_axis")
-    if axis is None and operation.get("roadlike", False):
-        planar, plane = rail.TryGetPlane(tolerance["absolute"])
-        axis = _xyz(plane.ZAxis) if planar else [0., 0., 1.]
-    return axis
+    return _sweep1_module().roadlike_axis(operation, rail, tolerance, _xyz)
 
 
 def _sweep1_macro(operation, ids, closed_profiles=False):
-    # Rhino's script options differ from the labels in the sweep dialog.
-    # Set all supported sticky choices explicitly, independent of prior runs.
-    text = "_-Sweep1 '_-SelID %s " % ids[0]
-    point_text = lambda value: ",".join(format(float(x), ".17g") for x in value)
-    if "start_point" in operation:
-        text += " _Point " + point_text(operation["start_point"]) + " "
-    text += " ".join("'_-SelID %s" % i for i in ids[1:])
-    if "end_point" in operation:
-        text += " _Point " + point_text(operation["end_point"])
-    text += "" if "end_point" in operation else " _Enter"
-    if closed_profiles:
-        text += " _Enter"  # Accept the authored closed-profile seams.
-    if operation.get("roadlike", False) or "roadlike_axis" in operation:
-        text += " _Style=_Roadlike"
-        if "roadlike_axis" in operation:
-            text += " 0,0,0 " + point_text(operation["roadlike_axis"])
-        else:
-            text += " _Enter"  # Script getter explicitly accepts CPlane Z.
-    else:
-        text += " _Style=_Freeform"
-    text += " _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
-        "Global" if operation.get("blend", 0) else "Local",
-        "Yes" if operation.get("refit_rail", False) else "No")
-    return text
+    return _sweep1_module().macro(operation, ids, closed_profiles)
 
 
 def _sweep1_record(brep, operation):
-    if not brep.IsValid:
-        raise ValueError("Rhino sweep produced an invalid BRep")
-    surfaces = []
-    for face in brep.Faces:
-        samples = []
-        if operation.get("queries") is not None:
-            for query in operation["queries"]:
-                found, u, v = face.ClosestPoint(_point(query))
-                if not found:
-                    raise ValueError("sweep surface closest point failed")
-                samples.append(_xyz(face.PointAt(u, v)))
-        else:
-            samples = [_xyz(face.PointAt(face.Domain(0).ParameterAt(i/8.0),
-                                        face.Domain(1).ParameterAt(j/8.0)))
-                       for j in range(9) for i in range(9)]
-        record = {"samples": samples}
-        if operation.get("inspect_definition", False):
-            record["definition"] = _nurbs_surface_definition(face)
-        surfaces.append(record)
-    return surfaces
+    return _sweep1_module().record(globals(), brep, operation)
 
 
 def _loft_surface_record(surface, operation):

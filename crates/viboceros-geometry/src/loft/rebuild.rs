@@ -52,52 +52,17 @@ pub fn try_prepare_rebuilt_loft_sections_with<E: From<GeometryError>>(
     } else {
         validate_end_points(curves.len(), style, ends)?;
     }
-    if point_count > MAX_LOFT_SECTION_CONTROLS {
-        return Err(GeometryError::LoftResourceLimit {
+    crate::try_rebuild_nurbs_sections_with(
+        curves,
+        point_count,
+        MAX_LOFT_SECTION_CONTROLS,
+        GeometryError::LoftResourceLimit {
             context: "rebuilt section control count",
             maximum: MAX_LOFT_SECTION_CONTROLS,
-        }
-        .into());
-    }
-    let counts = curves
-        .iter()
-        .map(|c| {
-            let is_closed = CurveRef::NurbsCurve(c).is_closed()?;
-            let n = if point_count < 2 || (is_closed && point_count < 3) {
-                0
-            } else {
-                point_count + usize::from(is_closed)
-            };
-            if n > MAX_LOFT_SECTION_CONTROLS {
-                return Err(GeometryError::LoftResourceLimit {
-                    context: "rebuilt section control count including seam",
-                    maximum: MAX_LOFT_SECTION_CONTROLS,
-                });
-            }
-            Ok(n)
-        })
-        .collect::<Result<Vec<_>, GeometryError>>()?;
-    curves
-        .iter()
-        .zip(counts)
-        .map(|(source, count)| {
-            if count == 0 {
-                return Ok(source.clone());
-            }
-            let degree = (point_count - 1).min(3);
-            let curve = rebuild(source, count, degree, tolerance)?;
-            if curve.degree() != degree
-                || curve.control_points().len() != count
-                || curve.control_points().iter().any(|p| p.weight() != 1.)
-            {
-                return Err(GeometryError::InvalidControlNet {
-                    context: "Loft rebuild backend returned an inconsistent layout",
-                }
-                .into());
-            }
-            Ok(curve)
-        })
-        .collect()
+        },
+        tolerance,
+        rebuild,
+    )
 }
 
 #[cfg(test)]

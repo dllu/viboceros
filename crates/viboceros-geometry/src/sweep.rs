@@ -11,6 +11,7 @@ mod fit;
 mod point_ends;
 pub use point_ends::SweepEndPoints;
 mod rail;
+mod rebuild;
 mod roadlike;
 use rail::validate_rail_interval;
 #[cfg(test)]
@@ -81,6 +82,8 @@ pub struct Sweep1 {
 impl Sweep1 {
     /// Maximum profile constraints, including any point ends.
     pub const MAX_SECTIONS: usize = MAX_SECTIONS;
+    /// Maximum controls in a prepared real profile, including its seam.
+    pub const MAX_SECTION_CONTROLS: usize = MAX_SECTION_CONTROLS;
 
     pub fn try_new(
         rail: CurveRef<'_>,

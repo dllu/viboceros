@@ -383,7 +383,6 @@
     "tools/rhino_oracle/knot_reduction_probe.py": "4e0fbfbe4c045b01d46856aa6bc31c411a11df5562d1655ff8246f5a0e630bba",
     "tools/rhino_oracle/test_knot_reduction.py": "b3d40b3fe8394a1151a17b5d4a5279fa5f73e81fe8d6c0b6934885a57b0da7d2",
     "tools/rhino_oracle/client.py": "d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693",
-    "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/fixtures/knot_reduction.json": "2893dee67345575f48c25c57e1422d9e9718191cf0f24db70cbf4157452383ca",
     "tools/rhino_oracle/observations/knot_reduction.json": "edfc744744d5403adebeb3404bf0ab6c37793af6c17c9f37d76d8edddec70ec0",
@@ -555,7 +554,7 @@
     "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "a7d086596fa493c138370a73cddbce3815d78c4b14fe7579c8724f1abf40b21e",
     "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "822a2b212d918c6cb8fa179744258d6ae655e4868f63e577e7275fd8a234334c",
     "crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "fd187f97c15c4b7e7ba6ceae075385128ddcba8ca0d701e05b348b560aa545cf",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "git_sha256": {
     "fbbe12f659fb814c0dddaa57617f09292c35be56:crates/viboceros-smlib/src/native/knot_refinement.rs": "426ede226d35dcce94dbd3a5f6f9a97156a0451de22cfa72f430ee5ef79b8655",
@@ -590,7 +589,9 @@
     "abb2d4706c6b2971ebd80baf21b3094d08e981a2:crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "1ae314f79b719957a2b4f0d9faa61c41cce1b067726efac21853773f2ea5218a",
     "dc0dd91bdd92d641203f78a0124e5efd754cdab8:tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6",
     "a4eb5070793539b000f97c284edf319dfecc17e7:tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65",
-    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8"
+    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
   },
   "python_suite": {
     "tests": 1995,

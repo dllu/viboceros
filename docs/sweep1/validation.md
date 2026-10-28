@@ -151,7 +151,8 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
 General closed-rail holonomy correction and cyclic profile blending, rail miters,
 complete unrefitted multi-profile compatibility,
 automatic branch/seam alignment and remaining
-Rhino rebuild/refit options are not implemented. These are explicit limits,
+Rhino section-refit options are not implemented. Section rebuilding now has
+[separate complete-image checks](rebuilding.md). These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately
 from geometry comparisons; dense-to-banded solving alone did not remove the

@@ -126807,7 +126807,7 @@
     "crates/viboceros-geometry/src/edge_insertion.rs": "4c22e7f30c0cf0d5b60bbf01b0a3cf5f812fbab8eb814aa2bb80d06694f95be5",
     "crates/viboceros-geometry/src/edge_insertion/crossings.rs": "fe7312d6d83b30866886db56288af54a66179f9089905b221125aa6496673422",
     "crates/viboceros-geometry/src/edge_insertion/polygons.rs": "0eae7a74c74332fade464a68550865930bf1957f60843c2a8bd05b32922d8439",
-    "crates/viboceros-geometry/src/lib.rs": "cb9b5a2898dbcd86309e9733ce3cb522fe81b0af4a0a2dc18b672156c427b024",
+    "crates/viboceros-geometry/src/lib.rs": "e35da236197b980fb9889f3dddc378ae27a354a9dede4d4292a5c4e66b443501",
     "crates/viboceros-geometry/src/mesh/alignment.rs": "e3a1ba2c33713e265ef474c197a3c9fd46729af227f6dad4ad9332c0dfad5bb1",
     "crates/viboceros-geometry/src/mesh/append.rs": "2fbcba3e39a9b9a25ceb864d12a2daee0cd2368cc50073829fde29d106d0eced",
     "crates/viboceros-geometry/src/mesh/aspect_ratio.rs": "eb3a14c99ce93a64ca5952c7d20fadc62b9ba0e721e6ab5ee52a334f2ef1aacf",
@@ -127292,7 +127292,7 @@
     "tools/rhino_oracle/observations/source_snapshots/fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23.gz": "3a34b50a7c5e949e51c1f2e685115e49a0486a8a615266285d2dd5f89f938c73",
     "tools/rhino_oracle/observations/source_snapshots/fde5b7f5a6d281e9c893884257cdc0ccd2f6547994b7150d482c668853f5a763.gz": "37e6bcd12bd62c40edf7e1c72aee19b2ae5b20af91a9fe7e27fad29cf259409d",
     "tools/rhino_oracle/owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9",
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3",
     "tools/rhino_oracle/report_extract_point_components.py": "51429b23e5bbb130a51855df73675e729fe5bba6b0dc9c3cd413b171141b025e",
     "tools/rhino_oracle/report_extract_points.py": "7e46df249f70c71e78f704768a9b8c1aed3e654ecf6fbd2a36ab7ff4a8166d83",
     "tools/rhino_oracle/test_component_picking.py": "54939857d975ccb4a9cef693510392246821b33f2b04820d27ada68c6c19b852",
@@ -127344,8 +127344,11 @@
     "src/app/object_selection/sweep_tests.rs": "d01d02544b80b563ea7e693591374c23adba83dac1f9ff3e1fd4837e6e7ffb18",
     "src/app/curve_selection.rs": "082b199b19bdb1c4e10b142b2187237882441bb61f8dfbd019e203c4e52b0bef",
     "src/app/sweep.rs": "6fc2aec4e75d06558c124985d2bd8de64dacb759b5b2f1badb2e9eeffc38aafd",
-    "src/app/sweep/input.rs": "6d830ee62a0c06565edf7a9adc18f7d2edac153a307d9a560f97aa81a06fe5a1",
+    "src/app/sweep/input.rs": "4b7d2c2e7ee52e886b1fd8e2936b2fab632985d2b2fd3c3d190b79ca0809d8d8",
     "src/app/sweep/selection.rs": "900577d94de311809f936d7efcad12c5d64f9f49242486b65b51ccc176c628f3",
-    "src/app/sweep/tests.rs": "c5800d7862868127edbf8ed457c9223fd0174c48b432e9a6d439160b00fb332d"
+    "src/app/sweep/tests.rs": "0e318d2d65f14b3638986594f400efa2452a4e72851f68e3a5547860928344f5",
+    "crates/viboceros-geometry/src/section_rebuild.rs": "f73c26a3f59fba31215a3c748cf3cc9785fff2dad4ac5f8d2be80386a0192dd8",
+    "crates/viboceros-geometry/src/curve_rebuild.rs": "7ca19621b1cc00aade428278d1504b24b38795e2ebdae34a159b90525e78da1a",
+    "crates/viboceros-geometry/src/curve_rebuild/tests.rs": "4b91abc1cb5aab0d4e4435b11e01f1c252b46c9430de72ab87d615dae28cde95"
   }
 }

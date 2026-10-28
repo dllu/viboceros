@@ -1,7 +1,23 @@
 use super::*;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+
+pub(super) fn rebuild_sections(
+    sections: &[SweepSection],
+    count: usize,
+    tolerance: Tolerance,
+) -> Result<Vec<SweepSection>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::rebuild_sweep_sections(sections, count, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(Sweep1::rebuild_sections(sections, count, tolerance)?)
+    }
+}
 
 pub(super) fn model(
     rail: CurveRef<'_>,
@@ -107,6 +123,7 @@ impl Command for SweepCommand {
             axis,
             global,
             refit,
+            rebuild_point_count,
             ends,
         } = Options::parse(arguments)?;
         let rail_name = rail_name.as_deref();
@@ -192,6 +209,11 @@ impl Command for SweepCommand {
             SweepFrameStyle::Freeform
         };
         let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
+        let sections = if rebuild_point_count > 1 {
+            rebuild_sections(&sections, rebuild_point_count, document.tolerance())?
+        } else {
+            sections
+        };
         let blend = if global.unwrap_or(false) {
             SweepBlend::Global
         } else {
@@ -228,5 +250,7 @@ mod point_tests;
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
+mod rebuild_tests;
 #[cfg(test)]
 mod roadlike_tests;

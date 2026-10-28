@@ -125,17 +125,10 @@ impl VibocerosApp {
             self.select_sweep_objects(ids, SelectionMode::Remove);
         } else if let Some(option) = p.value {
             self.update_sweep_options(&format!("{option}={input}"));
-        } else if let Some(option) = [
-            "RefitRail",
-            "GlobalShapeBlending",
-            "FrameStyle",
-            "Axis",
-            "Parameters",
-            "RailName",
-            "RailId",
-        ]
-        .into_iter()
-        .find(|n| name.eq_ignore_ascii_case(n))
+        } else if let Some(option) = Options::VALUE_OPTIONS
+            .iter()
+            .copied()
+            .find(|n| name.eq_ignore_ascii_case(n))
         {
             self.sweep_session.as_mut().unwrap().value = Some(option);
             self.push_log(format!("Sweep1: enter {option}"));

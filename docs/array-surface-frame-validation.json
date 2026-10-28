@@ -78,7 +78,7 @@
   "sha256": {
     "docs/commands/array-surface.md": "6a70b92aeade26b849402ad17fb19da43f1cc3cf9cee2eaa16ebde17187f1250",
     "docs/surface-parameter-frames.md": "917b7843d60e74b1e6124b14520a887eec3042b08d5cd7c515995f7d7ff78242",
-    "tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "git_sha256": {
     "25fef7b1bc01d18586f39aa1eb59b82eead208d4:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
@@ -109,7 +109,8 @@
     "f34466d4dcb24de472964bfd0e45ea3c4161f9c3:crates/viboceros-opennurbs/src/surface.rs": "d3b705927286a173681caff73054a81c1f1112352a91545ff9a3d2d9f15fd47f",
     "dc0dd91bdd92d641203f78a0124e5efd754cdab8:tools/rhino_oracle/qualification_sources.py": "715e62647c81715552d2540cc387103ad18b304a769669102f57a219be7f15e6",
     "a4eb5070793539b000f97c284edf319dfecc17e7:tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65",
-    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8"
+    "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
   },
   "inventory_update_only": true
 }
