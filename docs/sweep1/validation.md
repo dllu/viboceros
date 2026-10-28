@@ -165,6 +165,10 @@ section rebuilding. Frozen `sweep1_refit_*` captures contain 70 sweep cases and
 profile pairs use a different fitting policy from one profile; `Curve.Fit`
 also produces a different result. Complete geometry comparison for Viboceros
 section refitting remains unfinished.
+The exact Bernstein certificate in `test_sweep1_refit.py` also proves that the
+`0.001` native setting leaves a source point more than `0.0015` from the output
+profile boundary. The setting and a certified continuous deviation bound need
+separate semantics; agreement with Rhino still requires the geometry comparison.
 
 An exact-key, bounded sample cache reduced single-profile spatial timings from
 about 43 ms to 25 ms, versus 15 ms Freeform and 12 ms Roadlike in Rhino under

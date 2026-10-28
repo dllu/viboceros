@@ -2,6 +2,8 @@
 import gzip
 import hashlib
 import json
+from fractions import Fraction
+from math import comb
 from pathlib import Path
 import subprocess
 import sys
@@ -118,6 +120,49 @@ class SweepRefitTests(unittest.TestCase):
         self.assertEqual(single['control_count'][1], 4)
         self.assertEqual(batch['control_count'][1], 12)
         self.assertEqual(len(fitted['control_points']), 11)
+
+    def test_native_refit_setting_is_not_a_continuous_boundary_distance_guarantee(self):
+        rows = json.loads((HERE / 'observations/sweep1_refit_sdk.json').read_bytes())['results']
+        definition = next(row['value'][0]['definition'] for row in rows
+                          if row['id'] == 'open-refit-0.001')
+        nu, nv = definition['control_count']
+        self.assertEqual((definition['degree'][1], nv), (3, 4))
+        self.assertEqual(len(set(definition['knots_v'])), 2)
+        controls = definition['control_points'][::nu]
+        self.assertTrue(all(cp['weight'] == 1. for cp in controls))
+        # Exact source point on the captured quadratic (0,0), (1,2), (3,0).
+        t = Fraction(279, 500)
+        point = [2*t + t*t, 4*t*(1-t), Fraction(0)]
+        vectors = [[Fraction(cp['point'][c]) - point[c] for c in range(3)]
+                   for cp in controls]
+        lower_bound = Fraction(3, 2000)
+        coefficients = []
+        # Degree-six Bernstein coefficients of squared distance minus 0.0015^2.
+        for k in range(7):
+            coefficient = -lower_bound**2
+            for i in range(4):
+                j = k-i
+                if 0 <= j < 4:
+                    coefficient += Fraction(comb(3, i)*comb(3, j), comb(6, k))*sum(
+                        a*b for a, b in zip(vectors[i], vectors[j]))
+            coefficients.append(coefficient)
+        pending = [(coefficients, 0)]
+        nodes = 0
+        while pending:
+            values, depth = pending.pop()
+            nodes += 1
+            self.assertLess(nodes, 256)
+            self.assertLess(depth, 24)
+            if min(values) > 0:
+                continue
+            # Exact de Casteljau halves partition the entire parameter interval.
+            left, right = [values[0]], [values[-1]]
+            while len(values) > 1:
+                values = [(a+b)/2 for a, b in zip(values, values[1:])]
+                left.append(values[0])
+                right.append(values[-1])
+            pending.extend([(left, depth+1), (list(reversed(right)), depth+1)])
+        self.assertGreater(lower_bound, Fraction(.001))
 
 
 if __name__ == '__main__':
