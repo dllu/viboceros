@@ -1,75 +1,57 @@
 # Section Refit development
 
-This development branch implements `Refit=0.01` and
-`Simplify=Refit RefitTolerance=0.01` through the command and JSON adapters.
-Rebuild and Refit are mutually exclusive. Real profile copies are fitted before
-adding point-end poles, and authored rail stations are retained.
+`Refit=0.01` and `Simplify=Refit RefitTolerance=0.01` fit copies of real
+profiles before point-end poles are added. Rebuild and Refit are mutually
+exclusive, and authored rail stations are retained.
 
-Both backends construct all 86 cases and prove 83 complete Rhino surface images
-within `1e-7`. Three fine-profile images still differ from Rhino; their assertions
-remain in the acceptance tests. See the
-[development record](refit-development-validation.json).
-UI regressions exercise a circular section on a line: both tolerance getters,
-`Simplify` selection, explicit and automatic stations, cancellation, and local
-and document undo/redo. Broader command/UI qualification and the three image
-differences remain outstanding. Whole-surface comparison charges rounding from
-U-degree elevation when the UI and SDK choose different rail degrees; matching
+Compatibility remains incomplete at comparison epsilon `1e-7`:
+
+| Cases | Constructed | Complete surface images proved |
+| --- | ---: | ---: |
+| Base SDK, command and controlled sweeps | 86/86 | 83/86 |
+| Re-entered C1 profiles | 10/12 | 8/12 |
+| Combined | 96/98 | 91/98 |
+
+The [base replay](refit-development-validation.json) retains its measured source
+bindings for commit `46371ad4e`. The
+[re-entry record](refit-reentry-validation.json) adds all 12 C1 cases, including
+the failing assertions. The three base fine-profile images still differ. Two
+fine C1 single-profile images also differ, and two fine C1 profile pairs fail
+to construct. Coarse single profiles, coarse pairs and disabled fitting pass
+the new complete-image comparisons on both backends.
+
+UI regressions cover a circular section on a line: both tolerance getters,
+`Simplify`, explicit and automatic stations, cancellation, and local and model
+undo/redo. Broader UI qualification remains outstanding. Exact squared-distance
+Bernstein bounds resolve the former concentric-circle placement failure.
+Whole-surface comparisons charge rounding from U-degree elevation; matching
 end rows alone cannot establish agreement.
-Automatic placement uses complete curve-distance brackets. Exact Bernstein
-squared-distance bounds retain the radial information needed for concentric
-circles, which previously exhausted the convex-hull search. Witness validation,
-distance tolerance and query budgets remain unchanged.
-The existing qualification records describe `main` before this development
-branch; their source inventories have not been refreshed for this prototype.
 
-Section Refit remains in development. Its comparison epsilon is `1e-7`;
-successful construction alone does not establish Rhino compatibility.
-The native oracle accepts `refit_tolerance` independently of rail refitting and
-rejects simultaneous section rebuilding. Frozen captures retain 70 base sweep
-cases, 16 controlled cubic sweeps, and 16 public `Curve.Fit` diagnostics. The
-public curve fitter produces different outputs from section Refit.
+Single smooth profiles use two independently certified fitting passes.
+Straight and polygon profiles keep their separate path. The same profile can
+produce different boundaries when supplied alone or in a pair. Batch fitting
+checks original profiles and intermediate curves, reconstructs at shared
+interpolation stations, and requires a fresh complete original-source bound.
+Inserting knots after independent reconstruction gives different geometry.
 
-The [controlled inputs](../../tools/rhino_oracle/fixtures/sweep1_refit_common_handles.json)
-and [Rhino outputs](../../tools/rhino_oracle/observations/sweep1_refit_common_handles.json)
-isolate endpoint-handle fitting. Six cubic profiles share endpoints and tangent
-directions, with common handle scales from 0.9 to 1.01. Sixteen SDK recipes use
-one profile or two translated copies, at fitting tolerances 0.001 and 0.01.
-Producer sources are frozen in the capture's content-addressed archive.
+Known span correspondences receive progressively refined proposal budgets,
+scaled to their active spline spans and capped at 1024 intervals. Distance and
+arithmetic-work limits remain unchanged. A nominal Refit tolerance is not a
+final source-distance guarantee: two passes accumulate error, and the
+[exact regression](../../tools/rhino_oracle/test_sweep1_refit.py) retains a native
+0.001 fit more than 0.0015 from a source point.
 
-The same profile can produce different fitted boundaries when supplied alone
-or as part of a pair. At scale 0.99 and tolerance 0.01, the single-profile output
-retains the initial endpoint-frame cubic, while the pair uses adjusted handles.
-Independent repeated-fit experiments support a second fitting pass for a single
-smooth profile. Straight and polygon profiles retain their separate fitting
-path. Every accepted pass has its own complete source-distance certificate;
-two passes can accumulate more error against the original profile than the
-nominal tolerance. This does not yet explain every adaptive case.
+The new boundary-construction test uses Rhino-observed subdivisions only in
+test inputs. Independently constructed G1 pieces match all four complete native
+boundary curves, including the fine quadratic and circle, within `1e-7`.
+Production fitting never reads those cuts or native control nets. The remaining
+fine single-profile problem is subdivision selection.
 
-The [public API diagnostic](../../tools/rhino_oracle/observations/sweep1_refit_legacy_diagnostics.json)
-compares `SweepOneRail.PerformSweepRefit` with `Brep.CreateFromSweep` on six
-single-profile inputs. Each pair has identical complete surface definitions,
-including both tight-tolerance source shapes. Choosing the legacy API does not
-expose a different intermediate fit on these inputs.
-
-Two further frozen SDK diagnostics retain 27 recipes. Re-entering independently
-constructed C1 profiles changes some outputs; these inputs are not claimed to
-be Rhino's internal curves. Varying SDK sweep tolerance from `1e-9` to `1e-5`
-leaves all five tested profile definitions unchanged. The section Refit
-tolerance remains independent of that setting. These captures diagnose fitting
-behavior and do not expand the 86 implementation acceptance cases.
-
-Batch reconstruction samples the original profiles as well as the intermediate
-curves, and certifies complete intermediate curve images. It reconstructs each
-profile at the shared interpolation stations before checking a fresh complete
-bound against its original input. Inserting knots after independent
-reconstruction gives different mixed-profile geometry.
-
-Known fitting-span correspondences receive a proposal budget proportional to
-their active spline spans, capped at 1024 intervals. Smaller proposals run first.
-This removes two closed-fit construction failures caused by the former fixed
-budget. Every accepted map still needs the same complete exact image bound;
-the nominal tolerance and arithmetic-work limits are unchanged.
-
-A nominal Refit tolerance is not an established final source-distance bound.
-The [exact Bernstein regression](../../tools/rhino_oracle/test_sweep1_refit.py) retains a
-native 0.001 fit whose boundary is more than 0.0015 from a source point.
+Public API diagnostics retain controlled handles, `Curve.Fit`, legacy Sweep,
+SDK sweep tolerance, closest points and equivalent rational storage forms.
+The legacy and modern Sweep APIs agree on their tested inputs; varying SDK
+sweep tolerance leaves the five tested profile definitions unchanged.
+All 140 public closest-point queries match Viboceros within `1e-7`. C1 re-entry
+uses independently constructed input curves, not purported Rhino intermediates.
+The other historical qualification inventories still describe `main` before
+this branch and must be refreshed before merging.

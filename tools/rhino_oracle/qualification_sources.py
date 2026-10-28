@@ -199,6 +199,30 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-geometry/src/curve_fit/g1.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/src/curve_fit/g1/sweep_partitions.rs',
+                 'tools/rhino_oracle/capture_sources/sweep1_refit_native_partitions.json',
+                 'tools/rhino_oracle/capture_sources/sweep1_refit_c1_profiles.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_sdk.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_sdk_holdouts.json']
+    if 'crates/viboceros-oracle/tests/sweep_refit_reentry.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
+                 'crates/viboceros-geometry/tests/support/sweep_atlas.rs',
+                 'tools/rhino_oracle/fixtures/sweep1_refit_stage_reentry.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_stage_reentry.json']
+    if 'crates/viboceros-oracle/tests/sweep_refit_closest.rs' in paths:
+        paths = [*paths, 'tools/rhino_oracle/generate_sweep1_refit_closest.py',
+                 'tools/rhino_oracle/capture_sources/sweep1_refit_closest_inputs.json',
+                 'tools/rhino_oracle/fixtures/sweep1_refit_closest.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_closest.json']
+    if 'crates/viboceros-oracle/tests/sweep_refit_polynomial.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
+                 'tools/rhino_oracle/generate_sweep1_refit_polynomial.py',
+                 'tools/rhino_oracle/fixtures/sweep1_refit_polynomial.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_polynomial.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_stage_reentry.json']
     if 'src/app/sweep.rs' in paths:
         paths = [*paths, 'src/app/sweep/refit_tests.rs']
     if 'src/app/sweep/refit_tests.rs' in paths:

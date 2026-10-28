@@ -50,4 +50,6 @@ pub(crate) fn initial_cubic_from_frames(
 }
 
 #[cfg(test)]
+mod sweep_partitions;
+#[cfg(test)]
 mod tests;

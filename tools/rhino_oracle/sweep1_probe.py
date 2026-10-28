@@ -6,6 +6,14 @@ Ownership and sampling policy are shared by SDK and actual command paths.
 
 
 def validate(operation):
+    polynomial = operation.get("polynomial_profiles", False)
+    if type(polynomial) is not bool:
+        raise ValueError("polynomial_profiles must be a boolean")
+    if polynomial and (operation.get("command", False) or not operation.get("sections") or
+                       any(section.get("type") != "nurbs" or not section.get("control_points") or
+                           any(point.get("weight") != 1. for point in section["control_points"])
+                           for section in operation["sections"])):
+        raise ValueError("polynomial_profiles requires unit-weight SDK NURBS profiles")
     sweep_tolerance = operation.get("sdk_sweep_tolerance")
     if "sdk_sweep_tolerance" in operation:
         import math
@@ -52,6 +60,11 @@ def run(host, operation, iterations, tolerance):
         owned.append(rail)
         for definition in operation["sections"]:
             owned.append(host["_join_close_input"](definition))
+        if operation.get("polynomial_profiles", False):
+            for curve in owned[1:]:
+                if (any(point.Weight != 1. for point in curve.Points) or
+                        not curve.Points.MakeNonRational() or curve.IsRational):
+                    raise ValueError("unit-weight profile could not be made non-rational")
 
         if operation.get("command", False):
             def macro(ids):

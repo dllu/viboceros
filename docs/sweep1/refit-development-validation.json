@@ -2126,5 +2126,8 @@
     "acceptance_cases_added": 0,
     "c1_reentry": "The independently constructed C1 inputs are not claimed to be Rhino internal intermediates. Re-entering them changes some Native fits.",
     "sdk_tolerance": "For all five tested profiles, complete Native definitions are identical at SDK sweep tolerances 1e-9, 1e-7 and 1e-5 while section Refit tolerance is held fixed."
-  }
+  },
+  "measurement_revision": "46371ad4ef944a57d8e42ac061a8843955d03962",
+  "current_development_record": "refit-reentry-validation.json",
+  "measurement_scope": "Historical base 86-case replay. The sha256 bindings are retained for measurement_revision; additional cases and current bindings are recorded separately."
 }
