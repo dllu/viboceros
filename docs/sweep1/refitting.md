@@ -9,7 +9,16 @@ Both backends construct all 86 cases and prove 83 complete Rhino surface images
 within `1e-7`. Three fine-profile images still differ from Rhino; their assertions
 remain in the acceptance tests. See the
 [development record](refit-development-validation.json).
-Complete image agreement and command/UI qualification remain outstanding.
+UI regressions exercise a circular section on a line: both tolerance getters,
+`Simplify` selection, explicit and automatic stations, cancellation, and local
+and document undo/redo. Broader command/UI qualification and the three image
+differences remain outstanding. Whole-surface comparison charges rounding from
+U-degree elevation when the UI and SDK choose different rail degrees; matching
+end rows alone cannot establish agreement.
+Automatic placement uses complete curve-distance brackets. Exact Bernstein
+squared-distance bounds retain the radial information needed for concentric
+circles, which previously exhausted the convex-hull search. Witness validation,
+distance tolerance and query budgets remain unchanged.
 The existing qualification records describe `main` before this development
 branch; their source inventories have not been refreshed for this prototype.
 
@@ -41,6 +50,13 @@ compares `SweepOneRail.PerformSweepRefit` with `Brep.CreateFromSweep` on six
 single-profile inputs. Each pair has identical complete surface definitions,
 including both tight-tolerance source shapes. Choosing the legacy API does not
 expose a different intermediate fit on these inputs.
+
+Two further frozen SDK diagnostics retain 27 recipes. Re-entering independently
+constructed C1 profiles changes some outputs; these inputs are not claimed to
+be Rhino's internal curves. Varying SDK sweep tolerance from `1e-9` to `1e-5`
+leaves all five tested profile definitions unchanged. The section Refit
+tolerance remains independent of that setting. These captures diagnose fitting
+behavior and do not expand the 86 implementation acceptance cases.
 
 Batch reconstruction samples the original profiles as well as the intermediate
 curves, and certifies complete intermediate curve images. It reconstructs each

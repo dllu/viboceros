@@ -5,6 +5,8 @@ use viboceros_command::sweep::Options;
 use viboceros_document::GeometrySnapshot;
 
 mod input;
+#[cfg(test)]
+mod refit_tests;
 mod selection;
 #[cfg(test)]
 mod tests;
@@ -37,9 +39,14 @@ impl Session {
             (Some(End::Start), _, _) => "Pick the Sweep1 start point; Esc cancels",
             (Some(End::Finish), _, _) => "Pick the Sweep1 end point; Esc cancels",
             (_, Some(_), _) => "Enter the Sweep1 option value; Undo returns, Esc cancels",
-            (_, _, true) => "Enter creates the sweep; StartPoint/EndPoint/Undo; Esc cancels",
+            (_, _, true) => {
+                "Enter creates the sweep; Simplify/Refit/StartPoint/EndPoint/Undo; Esc cancels"
+            }
+            _ if self.state.rail.is_some() => {
+                "Select profiles in order; Point/StartPoint/EndPoint/Simplify/Refit/RefitRail/FrameStyle/Undo; Enter sweeps"
+            }
             _ => {
-                "Select rail and profiles in order; Point/StartPoint/EndPoint/RefitRail/FrameStyle/Undo; Enter sweeps"
+                "Select rail and profiles in order; Point/StartPoint/EndPoint/Simplify/Refit/RefitRail/FrameStyle/Undo; Enter sweeps"
             }
         }
     }

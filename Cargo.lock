@@ -3752,6 +3752,8 @@ dependencies = [
  "bytemuck",
  "eframe",
  "nalgebra",
+ "num-rational",
+ "num-traits",
  "pollster",
  "serde_json",
  "viboceros-command",

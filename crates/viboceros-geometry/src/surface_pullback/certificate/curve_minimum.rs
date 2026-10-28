@@ -4,6 +4,7 @@ use crate::{CurveMinimumDistance, ParameterSide};
 use std::{cell::OnceCell, cmp::Ordering, collections::BinaryHeap, ops::Range, rc::Rc};
 
 mod hull;
+mod polynomial;
 mod witness;
 use hull::{Hull, axis_lower, box_lower, tree};
 use witness::Search;
@@ -148,6 +149,12 @@ fn minimum(
             if lower >= best.square {
                 continue;
             }
+            if lower > pair.lower {
+                pair.lower = lower;
+                queue.push(pair);
+                continue;
+            }
+            let lower = polynomial::lower(&pair.hulls, &mut search.budget)?;
             if lower > pair.lower {
                 pair.lower = lower;
                 queue.push(pair);

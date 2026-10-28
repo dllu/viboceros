@@ -34,6 +34,155 @@
   "command_ui_qualification_complete": false,
   "source_tolerance_semantics": "Single smooth profiles use two independently certified passes; the nominal tolerance is not a final source-distance guarantee.",
   "checks": {
+    "portable_ui": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::sweep::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 68.80225229263306
+    },
+    "native_ui": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::sweep::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 63.53900599479675
+    },
+    "geometry_clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "profile_row_degrees",
+        "--test",
+        "curve_minimum_radial",
+        "--test",
+        "curve_minimum",
+        "--test",
+        "curve_minimum_precision",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 27.27409267425537
+    },
+    "portable_placement": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "sweep::automatic_tests::automatic_placement_matches_complete_rhino_command_surfaces_in_both_directions"
+      ],
+      "exit_code": 0,
+      "seconds": 91.27927136421204
+    },
+    "portable_app_clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 44.24556636810303
+    },
+    "portable_oracle_clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 24.9358651638031
+    },
+    "native_placement": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "sweep::automatic_tests::automatic_placement_matches_complete_rhino_command_surfaces_in_both_directions"
+      ],
+      "exit_code": 0,
+      "seconds": 31.558202028274536
+    },
+    "native_app_clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 69.6762306690216
+    },
+    "native_oracle_clippy": {
+      "args": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "sweep_refit",
+        "--test",
+        "sweep_refit_common_handles",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 15.05498194694519
+    },
     "portable_images": {
       "args": [
         "cargo",
@@ -50,7 +199,7 @@
         "--nocapture"
       ],
       "exit_code": 101,
-      "seconds": 429.6617548465729
+      "seconds": 406.41472578048706
     },
     "native_images": {
       "args": [
@@ -70,111 +219,50 @@
         "--nocapture"
       ],
       "exit_code": 101,
-      "seconds": 447.1595652103424
-    },
-    "correspondence_regressions": {
-      "args": [
-        "cargo",
-        "test",
-        "--frozen",
-        "-p",
-        "viboceros-geometry",
-        "--lib",
-        "curve_fit::g1::correspondence::"
-      ],
-      "exit_code": 0,
-      "seconds": 0.6922523975372314
-    },
-    "sweep_invariants": {
-      "args": [
-        "cargo",
-        "test",
-        "--frozen",
-        "-p",
-        "viboceros-geometry",
-        "--lib",
-        "sweep::refit::"
-      ],
-      "exit_code": 0,
-      "seconds": 0.10547685623168945
-    },
-    "portable_clippy": {
-      "args": [
-        "cargo",
-        "clippy",
-        "--frozen",
-        "-p",
-        "viboceros-oracle",
-        "--test",
-        "sweep_refit",
-        "--test",
-        "sweep_refit_common_handles",
-        "--",
-        "-D",
-        "warnings"
-      ],
-      "exit_code": 0,
-      "seconds": 38.979625940322876
-    },
-    "native_clippy": {
-      "args": [
-        "cargo",
-        "clippy",
-        "--frozen",
-        "-p",
-        "viboceros-oracle",
-        "--features",
-        "native-smlib",
-        "--test",
-        "sweep_refit",
-        "--test",
-        "sweep_refit_common_handles",
-        "--",
-        "-D",
-        "warnings"
-      ],
-      "exit_code": 0,
-      "seconds": 46.693827390670776
+      "seconds": 431.7129421234131
     }
   },
   "additional_checks": {
-    "correspondence_regressions": {
-      "exit_code": 0,
-      "tests_passed": 7,
-      "ignored_timing_diagnostics": 1
-    },
-    "sweep_geometry_invariants": {
-      "exit_code": 0,
-      "tests": 2
-    },
-    "closed_c1_regression": {
+    "portable_curve_minima": {
       "args": [
         "cargo",
         "test",
         "--frozen",
         "-p",
         "viboceros-geometry",
-        "--lib",
-        "a_closed_c1_refit_can_certify",
-        "--",
-        "--nocapture"
+        "--test",
+        "curve_minimum",
+        "--test",
+        "curve_minimum_precision",
+        "--test",
+        "curve_minimum_radial"
       ],
       "exit_code": 0,
-      "tests": 1,
-      "parameter_domains": 2
+      "tests": 11,
+      "radial_queries": 38
+    },
+    "portable_degree_elevation": {
+      "args": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "profile_row_degrees"
+      ],
+      "exit_code": 0,
+      "tests": 3
     },
     "frozen_native_python_checks": {
       "exit_code": 0,
-      "tests": 13
+      "tests": 17
     },
     "rustfmt": {
       "exit_code": 0,
-      "files": [
-        "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs",
-        "crates/viboceros-geometry/src/curve_fit/g1/correspondence/anchors.rs",
-        "crates/viboceros-geometry/src/loft/refit/adaptive/curved_tests.rs"
-      ]
-    }
+      "scope": "All Rust files added or changed by this iteration."
+    },
+    "scope": "Historical qualification inventories are not refreshed. The complete repository Python suite is not qualified by these focused tests."
   },
   "images": [
     {
@@ -855,11 +943,11 @@
     "crates/viboceros-geometry/src/sweep/refit/tests.rs": "dda918f909cbcbf7ec8e41cce5fba0ac1121005c84f929b8885c47215a58b75b",
     "crates/viboceros-oracle/tests/sweep_refit.rs": "bcff02ec1e4292547fc5405ddcacabb0a804ee3891fa306001ac4d6ff8458e21",
     "crates/viboceros-oracle/tests/sweep_refit_common_handles.rs": "d96df9ae0cb86d4f2b6df67597fbdcb585420fa5118dc7bcabcca24cad5fc022",
-    "docs/sweep1/refitting.md": "f716bc64de278c8ae70d7594f773d4dba9a2952a3ff9d1f4d8407fa7ed04b1ee",
+    "docs/sweep1/refitting.md": "ad746987fd57f6591fe15b7655c153a70fbabe357e3b7c1119e5e81e5399a53f",
     "crates/viboceros-geometry/src/lib.rs": "e35da236197b980fb9889f3dddc378ae27a354a9dede4d4292a5c4e66b443501",
     "crates/viboceros-command/src/lib.rs": "a0ec6833486802b9fb2c1b90281ef6b70d005426e791b7f4646cbde4743f2092",
     "crates/viboceros-oracle/src/lib.rs": "8485ae38ce6d33b105411caf5cbc596f329402305c7188d582d520d9f2bc475c",
-    "crates/viboceros-geometry/tests/support/profile_rows.rs": "04545b5a28e05a343a8c21eefc9e42734a1e1cf908acf0af6cca96dda4d0900c",
+    "crates/viboceros-geometry/tests/support/profile_rows.rs": "e3f86b261846d7ab74bb6fead9d225b590c0d0f4e8e7cda49e261d40f577f59b",
     "crates/viboceros-geometry/tests/support/sweep_atlas.rs": "ef5104b9ea21225e98633d145f6b9564fd5d47ff3828161356b5ea42b91a991e",
     "crates/viboceros-geometry/tests/support/nurbs_surface.rs": "2dee379da740ee5a295e67fc7d7a74a55fda1d03eb1ead8009febec13444b7af",
     "tools/rhino_oracle/fixtures/sweep1_refit_sdk.json": "cc296a3f0e0ffb7c78bf01a7cc4df284824706e36782ed17707c55bc188a890f",
@@ -893,7 +981,7 @@
     "tools/rhino_oracle/generate_sweep1_refit_contexts.py": "2a116b050c57bc017546bd9728f0e3e5ec57c328b23f072aec8fb76ce8af9a61",
     "tools/rhino_oracle/generate_sweep1_refit_common_handles.py": "9a0f7f45d6630af1128ff89d57f372e73cc050c91db47be39079a50ef6f75c23",
     "tools/rhino_oracle/generate_sweep1_rebuild.py": "0351bbcec4353e7c08d01fce348adcad3b0d754fa3b1d62fb933c4c891b5221c",
-    "tools/rhino_oracle/sweep1_probe.py": "1f9383e518c0cb1d2c83ebf5bf65851f0c02316057de9f1c2381a1caeb6a256d",
+    "tools/rhino_oracle/sweep1_probe.py": "d89c4f690b62e3ae4384aad68938be86ea16beebe29bc4fca5db350fe4012551",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/test_sweep1_refit.py": "8e18e5070d41829f3a2f831d96ef244f1feeead4d54e515c5ac655a50d9682ad",
     "tools/rhino_oracle/test_sweep1_refit_common_handles.py": "7f793f28266ec143242d647cc333216587ee1f846d6d34763e3f84b303d940fe",
@@ -1102,7 +1190,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs": "83605c795a6a36bead90513c0ca9cc2df72b41620b20805f323b730eb1187b37",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "8ff4258092968647385c469eefbb4ad70766603e4481e5e6e6982bb60ec1ab58",
+    "tools/rhino_oracle/qualification_sources.py": "547fe7b96465f94f18f574454e76abf383bed63f02a240420ebcb5c59efada2e",
     "crates/viboceros-geometry/src/curve_fit/adaptive.rs": "f55668222afb298b423453f783828f7b24a9741025080af43442068dd10bac9e",
     "crates/viboceros-geometry/src/curve_fit/adaptive/tests.rs": "45808f9c195a545c2c99ad24d6082dab40f264ed98e09d8261c13d03a8473931",
     "crates/viboceros-geometry/src/curve_fit/g1.rs": "2362f8d15384288af19fa72b75f0f6e23061080c57b2411d9b1eb0f81f486d59",
@@ -1133,7 +1221,7 @@
     "crates/viboceros-geometry/tests/curve_minimum_precision.rs": "b7f331047cc3d33a17cd5ad986b1de35f4319d2bcb95ab4c2ad602113bfd3aa0",
     "crates/viboceros-geometry/tests/sweep_surface_distance.rs": "e676a18e7da54b257bf36ab0a9c5fa759c983130f24b34b4f0aec5da7f3c7719",
     "crates/viboceros-geometry/src/curve_distance.rs": "c1104a713d2887eaad6a79282c25337692411e216822e61c1e5182fcb73d71c8",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs": "c8d73b6c16c7aeada1a5c36c64594bbafe23d14256a76993d5739b89d21af46a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs": "75883f0a0dcf60348383c7c3f11d6a7a32d4812f6d1da03313b51b4933b86fc1",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs": "5a1749e6c25215a68485b08325be2b0cf2e96ab16a240c8c39ecc18fa559e2c4",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/witness.rs": "52f7cbf687138923b56add807a491d1bcbbb745064d38a56986d6dafc5184179",
     "crates/viboceros-geometry/tests/curve_minimum.rs": "f5c4135f5a3e3e08c56d7247dfa66356e84a46111456a9b8ae24d8be30b07035",
@@ -1156,7 +1244,157 @@
     "tools/rhino_oracle/fixtures/sweep1_refit_legacy_diagnostics.json": "b0b95097e30826e261bf2b169c036481de2890a98c447bc9186ed2f86007ee0a",
     "tools/rhino_oracle/observations/sweep1_refit_legacy_diagnostics.json": "1208801eb43792d2fc58d7d1cd847ea8affa50433b1d987428a88bf300310b6b",
     "tools/rhino_oracle/observations/source_snapshots/a28da9ff9bba24174a236fb8e4d5f935d77f0f4c6349b5a07affb855a575807d.gz": "fc760bd9626b0437ffbd382b4f9e96cd8a361e76b3fe5537a50a56f7ff4757f1",
-    "tools/rhino_oracle/observations/source_snapshots/1f9383e518c0cb1d2c83ebf5bf65851f0c02316057de9f1c2381a1caeb6a256d.gz": "b1ebc31db7d2b58c02829d97d3ac45db3ffc14ce4e2974f2fa6486688bb6d63d"
+    "tools/rhino_oracle/observations/source_snapshots/1f9383e518c0cb1d2c83ebf5bf65851f0c02316057de9f1c2381a1caeb6a256d.gz": "b1ebc31db7d2b58c02829d97d3ac45db3ffc14ce4e2974f2fa6486688bb6d63d",
+    "Cargo.lock": "8d2324ac97fdadfa1958d14d071f92ab8af18c8d71151cef4963e638fda08a49",
+    "Cargo.toml": "cc63c4184e74bfbd16b8781c515cb7f46615d94b03cd47ff675649463058c7a3",
+    "src/app/sweep.rs": "53be7269a7b78e58252747a6c9dc8efd3687551fc63b2df3a0e6e6d98b31d253",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/polynomial.rs": "274a7cb74f0f4974ea7643dd501cf4755b3d92cb248c156b808f2ff1afcb90ef",
+    "crates/viboceros-geometry/tests/curve_minimum_radial.rs": "8edae5ccfdddac281eff10c2044e5707375b583a202f1ea99572b4996cb71bd7",
+    "crates/viboceros-geometry/tests/profile_row_degrees.rs": "2b8915bd53f91cf484402a5b44fc7273be82bb8c604d78b49b39ab4eb1ec33de",
+    "crates/viboceros-geometry/tests/support/profile_rows/degree.rs": "88116d54172e6010d0c294c761bb753302ee909c98db05061eab35c5b4b6763b",
+    "src/app/sweep/refit_tests.rs": "807a504594d2981fc4384ae2e4150a48c25390963ca13635bc430605003d1981",
+    "tools/rhino_oracle/capture_sources/sweep1_refit_c1_profiles.json": "bd1532ff2f4407dc9718b78e918bc289a4e592f87a9720f6bdda17b544436ed9",
+    "tools/rhino_oracle/generate_sweep1_refit_stage_reentry.py": "f196559698b89f402aa884cb452f108f16bc9df5234f35bdeb8a116a9454d789",
+    "tools/rhino_oracle/generate_sweep1_refit_sweep_tolerance.py": "67008e2cd869704a631bdce283f9c097358f59908d687ef92cce45771ed8487a",
+    "tools/rhino_oracle/test_sweep1_refit_calibration.py": "624969d6a7feb3e70389d6526c63858679f2cbb5dfb749b9ec9a2554a001e86b",
+    "tools/rhino_oracle/fixtures/sweep1_refit_stage_reentry.json": "926cb09d9d155cd55b34ee1c11f34cd47e599452207d7d75366826e5bd34111e",
+    "tools/rhino_oracle/observations/sweep1_refit_stage_reentry.json": "170b1a0e7ce7867d9927e2443cfedc788ffdfba5d8f2de5997e7d92d0aeb2c74",
+    "tools/rhino_oracle/observations/source_snapshots/f196559698b89f402aa884cb452f108f16bc9df5234f35bdeb8a116a9454d789.gz": "9471abe6ae8e290ccf0cd6912bd6641e1716952417f2aafd6eb8b13be9604fb1",
+    "tools/rhino_oracle/observations/source_snapshots/bd1532ff2f4407dc9718b78e918bc289a4e592f87a9720f6bdda17b544436ed9.gz": "d94fecfe4418db088b9b216f21673ed91f9f4df9d18d29fd4a0ddafd721879f1",
+    "tools/rhino_oracle/fixtures/sweep1_refit_sweep_tolerance.json": "de4e92cd5153e5304f7ea85e0dfc9611121a4d24ce90ac981631f9da9d72f6ec",
+    "tools/rhino_oracle/observations/sweep1_refit_sweep_tolerance.json": "b3b13cb3a5b464f512fc188de5c3220db0527985ddaa29619b91b903b88bb339",
+    "tools/rhino_oracle/observations/source_snapshots/67008e2cd869704a631bdce283f9c097358f59908d687ef92cce45771ed8487a.gz": "4e0a9f619e7f81480805bfcebfababcf5134ff39c5777d9c3e3c12d02f63471a",
+    "tools/rhino_oracle/observations/source_snapshots/d89c4f690b62e3ae4384aad68938be86ea16beebe29bc4fca5db350fe4012551.gz": "905bcb0b53df3abfa94338d4fa6cabd1addba6a0e979884500be0f1a1a55fe5d",
+    "src/main.rs": "acbcdde01e752bfb943c6a9e156ce9f8d48170690ba736be77381a28495c3f4a",
+    "src/app.rs": "4a1e1713eab9eaa657f71788a9c3e615928f62eb8adf2a2a163049c1345f6a92",
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "src/app/object_selection/mesh_trim_tests.rs": "982736aaccc857cd813f4b70568b2eda660c7474c377969f1726473c232bd4de",
+    "crates/viboceros-command/tests/support/mesh_trim.rs": "c542629eb772f9f8d9be50dd201d1b99a1b81c003c0806af9f12bd7b03d25f05",
+    "src/app/object_selection/mesh_intersect_tests.rs": "04c8f173df71cb71e5b77cacc5830532f6d388eed915d13a09815bf93ebe06cd",
+    "src/app/object_selection/mesh_self_intersect_tests.rs": "4728e7e830722245ccbbd1987ed2d75cee1765f69e160491af5272cc4eede8ca",
+    "src/app/object_selection/mesh_split_tests.rs": "5b95351863e4da805277293df400787dbd7e3e1231915806bb0e5ccfb1c097da",
+    "crates/viboceros-command/tests/support/mesh_split.rs": "16c49948504b9deba8acdfc6d0a69eb07b062c4797971e895264f4b789907b26",
+    "crates/viboceros-command/tests/support/mesh_self_intersect.rs": "bf2945cb7551babd628949ea875c8e2adce1f2f5d807f3352fc3326d0c09a832",
+    "crates/viboceros-command/tests/support/mesh_intersect.rs": "61a968e269f5cddd141f0643eb55e7a20389b8bfedb47167f6b3b0a97b72e829",
+    "src/app/object_selection/mesh_boolean_tests.rs": "bb8e64cc82219e55d1286cb2f4f05dbd864e492de68d6b4bc102ebe80e471a01",
+    "crates/viboceros-command/tests/support/mesh_boolean.rs": "e24d057aabffa65cba4024687373ec73a41734e84c82059d82d20e045fa2279d",
+    "src/app/object_selection/mesh_outline_tests.rs": "37e7cd83c3046b8a225d1287a5977a838cc21be082aca20d50e3c13953b5ac97",
+    "crates/viboceros-command/tests/support/mesh_outline.rs": "a7c95d5930f92ad8e3409e7a200bcdec1aaccdae2523efa617b5ea8398871279",
+    "src/viewport/scene.rs": "61ca36c1f2edf039a6d8784181a6202b465293f3150423b98ad921015155c532",
+    "src/viewport/display_cache.rs": "9ba11215ca671ec2b86ee6aedd477363dbf52124435738242a9300c82235f88e",
+    "src/viewport/mesh_normals.rs": "4477c9766a613638f82c30c4c4e8993b8de393616f11c8c9a623a08f5fa74aec",
+    "src/viewport/mesh_normals/tests.rs": "46e047623be25445a53727f1755c6e3aeaaaa16c8078690cac1587ed1a66c9a8",
+    "src/viewport/insert_point.rs": "1d6b1d37b9702a356584dc7ecc573327ef60b9966c0e5b3f20185e917b6b45ef",
+    "src/app/crease_native_tests.rs": "72d0efa01990de306b4aa81c5397894ca1c7c23721e271979b3605b5265b900e",
+    "src/app/object_selection.rs": "eddaf45aa58615b9e93ec3c0a4be679875be96f46e5afa47b74c6071e6644da8",
+    "src/app/object_selection/sweep_tests.rs": "d01d02544b80b563ea7e693591374c23adba83dac1f9ff3e1fd4837e6e7ffb18",
+    "src/app/object_selection/triangulate_tests.rs": "763b754b23f7832bfce385a727a2536f690a610d30f23a38c3cc428db7e862c3",
+    "src/app/object_selection/rebuild_normals_tests.rs": "ab289426011c19312d4518699f45a12121a971914ce8441446c958a2503a3939",
+    "src/app/object_selection/rebuild_mesh_tests.rs": "12a1ae0142d6a1a0312df647b5f7e50f94c9c46b65ce8dd65d4f0c8d26b75576",
+    "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
+    "crates/viboceros-command/tests/support/rebuild_mesh.rs": "daa94ff9704882b1c7f29e18ffaff178200e9b9ca588134f2f07251801e9d18f",
+    "crates/viboceros-command/tests/support/rebuild_normals.rs": "04673e72ae355c28e696544c1a8859491721b04974fe7069352bee17f2bab96d",
+    "crates/viboceros-command/tests/support/unify_normals.rs": "bcd483a5483a8faabfc44d75423c989aaa9045961b118ace964ecdd90c4d48b3",
+    "crates/viboceros-command/tests/support/triangulate.rs": "8f54ddc72c5b7e92fc507837f9e5c6601679a50d4da573a15c0c68e2dc2a7731",
+    "src/app/object_selection/mesh_conversion.rs": "08a4f0de4a5e2536ba5b545dba92339d5c6aa5317fb49851f6b8088b589f3b15",
+    "src/app/object_selection/mesh_conversion/face_sample.rs": "ea77c4ca962ab056419cec18e8933d2ae5efa65cfa1ebd76dfd752e6273ef009",
+    "src/app/object_selection/mesh_conversion/face_sample_tests.rs": "0c0bf8f0d09c0b786f1128454ac8761d4d46e273abbd1acc64e20841086afe88",
+    "src/app/component_selection.rs": "be51539f2ca4b5342ae0614265cdae34cdd715d21049cf2d041b7cd3cbc469bf",
+    "src/viewport/component_picking.rs": "b858dae089428fa0c18991287354f425233882e5db986cab9c0d95796b1d1ac6",
+    "src/viewport/polygon_components/tests.rs": "808ca569dc1717dae8e5554f845f41b3727d4c1d21a37cdfb7c7c7d4b6b1d7ad",
+    "crates/viboceros-command/tests/support/nonplanar_sample.rs": "27297eef1d3739016056fce2676fc887e1332ea9fb02316d6569892271b8e45b",
+    "src/app/object_selection/mesh_conversion/tests.rs": "127ab5684cc64b66456c200631dad9d4411fbe23cf6a70732b762eb2f851531b",
+    "crates/viboceros-command/tests/support/mesh_command.rs": "4121745b55d6e2a2c5012e098497c409cabb1d2da5afafbca5b932e88c630161",
+    "crates/viboceros-command/tests/support/mesh_conversion.rs": "59ba61dbaf543aa86ad88524db80b633c17275d5e24239ef99cc5cabe8da14e1",
+    "src/app/object_selection/quadrangulate_mesh/tests.rs": "63f1307802642e32b1c2d8926e6b90b739fa528dce9461147c06bd345b591ddb",
+    "src/app/transform_sources.rs": "1a39d2b867c6adbb0039e2f22d60923e164b0d530df33bc922391b6541ee673e",
+    "src/app/extract_points.rs": "b9df0328517f47c78e194408a03cae0144e2b00446c71ea43304129d5730eaa8",
+    "src/app/extract_points/tests.rs": "e4242d378098f03371fab02528b189103d37656e250e417ca95e310fa482e07c",
+    "src/app/extract_points/ranges_tests.rs": "326a42ce7f341d65e14dbdc4c4f87fc0a06551da818aff81c9bec6efa5e5c1d8",
+    "src/app/extract_points/edge_ranges_tests.rs": "2b941899607519f26668bf9c8c703cfa9624233ef038ec5649910400a7265da9",
+    "src/app/extract_points/input_order.rs": "af67d3e43c67df2ccc32f3efaa1d6de004f8ba4dac6a928d7e1c050d830f5667",
+    "src/app/extract_points/order_tests.rs": "5de941eecf600720a1c95f41720d1dbf34366c8587febf779e8162856ebd7d66",
+    "src/app/extract_points/whole_subd_tests.rs": "2d5ed47732f615c18d5b979dd68e3666d9f8ab961af8c1f31d31b41d8c11b316",
+    "src/app/subd_display.rs": "71c64548ea2dda9062c5fd14310d1fc148f5ccd40798c9f0d20de3e1830550f7",
+    "src/viewport/polygon_edges.rs": "f047ed1c7daed68a3f10ed0ba5168c8a3ee62dabae90c7e825c624c3ea273840",
+    "src/viewport/polygon_edges/tests.rs": "365beb37c1900e732670cb811bb4864571b40a6345378de8e395314303558eda",
+    "src/app/control_polygon.rs": "66c91c22c4fc08bb30eeae50451619517d28c3d25afa5d4e346d36b58be14c74",
+    "src/app/curve_extraction_subcurve.rs": "80adfcd9d652c7cffc4ff30122edac5a8bff18a005310e191e3f0e8c7d178cec",
+    "src/app/control_polygon/tests.rs": "b77180c64bfe1e5eb7421d48eb968f8c833b92bd881c8bdc3a7496264b539363",
+    "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6",
+    "src/app/intersect_two_sets.rs": "9726292ed4d67d0449696621bae5034d4dc49828b817b3e838230a15d63f8bbb",
+    "src/app/uv_subcurve_input.rs": "7fddd2e4e3701a48ff385f8b2ad2e9da513182d54a6dd508f2c5d8594072bfdb",
+    "src/app/uv_subcurve_input/edges.rs": "b21bba894f1160c3d7afc076525ea5c98236d81ecda6633a236f0e7608317cbc",
+    "src/app/uv_subcurve_input/entry.rs": "4efa12ae6a19c0ba11ff5bfab9b45fac1741ebcdbf834ffec7a37756260076ef",
+    "src/app/uv_subcurve_input/points.rs": "c40673abb5581070eff8e6e1b539ececa6adb812263a2002122a966681a03fa8",
+    "src/app/uv_subcurve_input/state.rs": "6012dd3e2af939e7ff5f49b2578fd06ac959f91f4a825809de8d8a0a22a77435",
+    "src/app/apply_curves.rs": "d588e8d6e013b05d36960226749de3b910cefb3f27401008daf2a0d6e2b50b64",
+    "src/app/boolean_solids.rs": "97b10d5921a13f0fce1523bfc87b05801bb7381a20f6746e786826ccd4dc7b64",
+    "src/app/boolean_solids/mesh_trim.rs": "328983e73ee890f9dbb5b7fcd5b6a79699af9a9a3976fd0bfbd9419323bd7f90",
+    "src/app/boolean_solids/mesh_partition.rs": "4638942ba926e2b85d291963ba5ace71415d2725001310caf23d56f18ae13dea",
+    "src/app/boolean_solids/input.rs": "cc1b7fd52c339c8ebae03c2ba8c6a0d81954be014a258ff3334990d3bd6df32d",
+    "src/app/boolean_solids/options.rs": "741f72aa8d1ba5c919b9bb607a6b9e74dbebe007e9ee9d2c0aad460f369a4f3b",
+    "src/app/boolean_solids/selection.rs": "1e05ab7558d58de6cca5d7c14933e642fa6c89bf711c168b803858b06a7d80b2",
+    "src/app/curve_deviation/subcurves.rs": "fcd4e79ffd6d9f825e8cc54eb9274539468fb347180eaf22ee99f35e8fa85101",
+    "src/app/project_plane.rs": "4ec0ed28513526c05e4dd5590c966287bbb3ede4d45c30948ffa1631be54f4f3",
+    "src/app/iplane.rs": "b9a2585cf970461df3f3ffa18f77fd658244c29fad8e2b53a788a6b6e728fa01",
+    "src/app/point_deviation.rs": "ab9a223d3a0b09c6c5068023236a3210be9266a6e86c07de93e680207cee4ba5",
+    "src/app/project.rs": "8e7376543cc9cb91ad12688e08f3c3bf6a4322a76c634822096127eaf286a9c0",
+    "src/app/object_selection/control_polygon_tests.rs": "ef0bfead8c03cad41c9348c6e26629a4a67a7d22d3a4fcf1ecd788c676a48e23",
+    "src/app/soft_crease.rs": "35c9a496d5b4f1b7a752b13e999624391f2692d300220f57d41e21230232511b",
+    "src/app/soft_crease/tests.rs": "5cd15b68572f29b2caf94b912c3915dc6d07389313598bc1a354338d95ba0132",
+    "src/app/soft_crease/tests/native.rs": "26d9cbd2d285653744b9682ba8de9c6f92bb546cb9a85bec2335c551730a4c2b",
+    "src/app/crease/tests/vertex_seams.rs": "c0dffdd58ceb8cdcef55a9fd14307fe197e1fe2552efc81d5c2716a98a8bedd7",
+    "src/app/crease/mode.rs": "314a6d10ca5ac25c679893cffd622fce932038d8d65a3dfe346226c6ecda626c",
+    "src/app/subd_spin_edge.rs": "b5c566795e33fac8b8202cf8815e2cf2c8580464648377d0d64f0ed506e925ab",
+    "src/app/crease/tests/subd_spin_edge.rs": "f5317bfa584f3f9b68095a9da2399afe861064928135d4a7e49bcdbc63793a7c",
+    "src/app/insert_point.rs": "646e84c5cfb4c9c2a2f3e8122ada54ebfff8ba1130eaea7d1d296ed7184fcff1",
+    "src/app/crease/tests/insert_point.rs": "f2cf209177a7b65a7fe3b28b80fc80a979ebf28fec845abdc739c300bf6e31ef",
+    "crates/viboceros-command/tests/support/insert_point.rs": "6a28c0f226c4a58edcfc4505a78cdf70d97a8a94316ea204212ca647175e4859",
+    "crates/viboceros-command/tests/support/subd_spin_edge.rs": "54294d02182e8ee6d4615fc97bfac21b6e08494a100df1359c9574e0088d8b80",
+    "src/app/crease/tests/edge_seams.rs": "981275cf511598df522b9ff48c77675271c34d77cf6b83e15d9463a283c72257",
+    "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
+    "src/app/drafting_input.rs": "ff8153814db433bb7679c9859d70792186c7c5bbda926b3b0929a8b52a0538e5",
+    "src/app/interactive_cancel.rs": "3a7a0cc82badd804e2797d37a4d81fa14353a37ce9319237c134ffcf8641d74b",
+    "src/app/interactive_start.rs": "e34b9827542d0403606428577564306d4dab88f4ba2c5e4897dad1323a093622",
+    "src/app/interactive_state/metadata.rs": "034eb221d9fd9a5a60ee212e36de17a329a7fb754f4b9fc4c95df156744671a7",
+    "src/app/interactive_state/mod.rs": "2586a90046324bca1262c220689145a165b776849b09e2dc17cd2d0f005014f4",
+    "src/app/interactive_state/prompts.rs": "d98922c37187bd24124cff25bce800876ce28edd16ba4b7ed691870f4ad10acb",
+    "src/app/prompt_cancel.rs": "5afe3ad548ed26a6fc3b626d332a0243bf7684b6d14b1ae04b657969fac8d3de",
+    "src/app/selection_input.rs": "450eaf0d506d5e82d28ac32006c65ad559cf90065e4c40eceda35a9af82a1a70",
+    "src/app/sidebar.rs": "958abfb9ed49f76a5d69f82d1a4ce0cf2c5f6a7f1899509901c1786e57b02841",
+    "src/app/tests/arc_input.rs": "4e20965c46689f9bfe53fe77d870f25f5056bb95c8d9c64eb4ecae840a545a5c",
+    "src/app/tests/command_focus.rs": "47574bf3360cbc2209caa04a444c15bd6fb66035e3165ab31bc2277e01c8e429",
+    "src/app/tests/loft_options.rs": "29d246c8f0a082621592fc141b5ffc6e8ddfc983c4c23352f1931699ec1e8d06",
+    "src/app/tests/loft_input.rs": "76e43d095ef7c5bb7e43479214e8965c1b2182ed21af1fe27dbe27aa2838642e",
+    "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
+    "src/app/loft.rs": "2a2d01972306a367b57c089a27620b1d377a2fa97856a76601dd1f13cbf7ea95",
+    "src/app/curve_selection.rs": "082b199b19bdb1c4e10b142b2187237882441bb61f8dfbd019e203c4e52b0bef",
+    "src/app/sweep/input.rs": "4b7d2c2e7ee52e886b1fd8e2936b2fab632985d2b2fd3c3d190b79ca0809d8d8",
+    "src/app/sweep/selection.rs": "900577d94de311809f936d7efcad12c5d64f9f49242486b65b51ccc176c628f3",
+    "src/app/sweep/tests.rs": "0e318d2d65f14b3638986594f400efa2452a4e72851f68e3a5547860928344f5",
+    "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
+    "src/app/loft/selection.rs": "4d9c73d421636041454454e521fb6156ae18c9e5d3a5787ae25522439df3b2cb",
+    "src/app/tests/curve_input.rs": "bbc1b9b0da91964171eb06989f4c0c02267f08015e67a75ed8ffe63d049d32f1",
+    "src/app/tests/extrusion_input.rs": "b905153752c72e87a39d83266ebff3a06fc73db934f1899faff334b9bde261c7",
+    "src/app/tests/extract_points.rs": "f88595c60b1dcf99ffd1bf79f57ed687ff0d47e42c71ec2f4e92671960009647",
+    "src/app/tests/polyline_closure.rs": "f215e64f86f7ac2628d272145108dc7661ac269e8000ba54c2ca316749309fd5",
+    "crates/viboceros-geometry/tests/support/polyline_closure.rs": "43c664f83cfbba75c4e781e22a80859d333a610d1b96a7dedb3da641415a3e39",
+    "src/app/tests/face_edge_input.rs": "5a3073701e8da3181f8e3306badcc2fcc2f6b175740891dc1d612b0c204e4abc",
+    "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
+    "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
+    "src/app/tests/mod.rs": "cb29aa9d78b56b156e72d862970a01e56847941af403f340a1b44f761186c153",
+    "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
+    "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
+    "src/app/tests/selection_sidebar.rs": "91e05888ec0c505b8992aeb987f09e8f712d30a269d1af34bac66ae6687f85ea",
+    "src/app/tests/transform_input.rs": "55a0ee3f30c857ed9d65aae08f983bbaf11cff65ad8b53b85855ca386467b214",
+    "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
+    "src/app/ui.rs": "d135bb752f98fa28a7dd0443f3ae7d2e0771e1ea73a2bcf0d398d96aec187535",
+    "src/app/viewport_input.rs": "10630534234ca8ac3fe469c0f58df3087cf575254c14aac1bc0a1a8b892adf7e",
+    "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
+    "crates/viboceros-command/tests/support/frozen_scene.rs": "2ae32554550c6a6870df9c08798b3f55e0f8263fbd439ec6c4c611277e147845",
+    "src/viewport/display_cache/subd.rs": "6a2c769367a60aff44cd69af6f64223dc6189b2c6a96f9a51ff24aedab7220e1",
+    "src/viewport/display_cache/subd_tests.rs": "42734500cbcbb0e7487e0e5827174fdcd442fc28271aa576a4bcaf41e23a60c2"
   },
   "native_complete_image_passes": 83,
   "native_images": [
@@ -1818,10 +2056,10 @@
     }
   ],
   "full_image_replay": {
-    "base_revision": "161b22b5b7b11aac1515f5e25774fe1db43d7fd9",
+    "base_revision": "d243476500d9bdf05a5ce9aa2332133669612498",
     "source_state": "base revision plus the implementation source hashes in sha256",
-    "replayed_after_module_extraction": true,
-    "note": "All 86 acceptance cases replayed on both backends. Both targets retain failing assertions for the same three image differences at epsilon 1e-7."
+    "replayed_after_degree_elevation_extension": true,
+    "note": "All 86 acceptance cases replayed on both backends. All prior per-case measurements are unchanged. Both acceptance targets retain failing assertions for the same three image differences at epsilon 1e-7."
   },
   "legacy_public_api_diagnostic": {
     "native_cases": 12,
@@ -1838,5 +2076,55 @@
     "intervals_per_active_source_and_target_span": 8,
     "maximum_intervals": 1024,
     "applies_to": "Validated known span correspondences; unsuccessful smaller proposals are refined progressively. Unanchored fitting retains its previous budget. Exact image-distance and arithmetic-work limits are unchanged."
+  },
+  "interactive_refit": {
+    "qualified_scope": "A single circular section on a straight rail selected by explicit RailId, on both backends. Three getter workflows are compared against the complete closed-refit-0.001 Native SDK surface at epsilon 1e-7.",
+    "getters": [
+      "Refit 0.001 with explicit station",
+      "RefitTolerance 0.01 with automatic station",
+      "Simplify Refit with explicit station"
+    ],
+    "lifecycle": [
+      "source preservation",
+      "one model undo step",
+      "model undo and redo",
+      "invalid and nonfinite inputs remain editable",
+      "Rebuild and Refit mutual exclusion",
+      "local undo restores Refit",
+      "cancellation while a tolerance value is pending preserves model redo"
+    ],
+    "tests_per_backend": 13,
+    "new_refit_tests_per_backend": 2,
+    "broader_command_ui_qualification_complete": false
+  },
+  "automatic_station_fix": {
+    "method": "Exact rational squared-distance Bernstein lower bounds on extracted curve-span parameter rectangles. Existing univariate Bernstein products construct separable moment products; no analytic-circle recognition or numerical-only acceptance.",
+    "reason": "Convex hulls alone exhaust the shared query budget on a circle concentric with its straight rail.",
+    "preserved": "Exact witness reevaluation, distance tolerance, work and bit budgets, full active images and one-sided limits.",
+    "regressions": "End and interior stations, both source orders and rail directions, positive and negative rational gauges, a dented rational section, witness precision, short spans, jumps, extreme coordinates and unsupported input."
+  },
+  "degree_elevation_comparison": {
+    "method": "Certify every complete U column before comparing same-degree tensors; exact positive separability and a bound on stored-weight perturbations extend column bounds to the complete surface.",
+    "regressions": [
+      "Both source orders and reversed U",
+      "Degree-elevation rounding cannot disappear at epsilon 1e-30",
+      "Matching end rows cannot hide a changed interior U row",
+      "Coupled original U/V weights are declined"
+    ]
+  },
+  "additional_native_diagnostics": {
+    "families": [
+      {
+        "family": "sweep1_refit_stage_reentry",
+        "recipes": 12
+      },
+      {
+        "family": "sweep1_refit_sweep_tolerance",
+        "recipes": 15
+      }
+    ],
+    "acceptance_cases_added": 0,
+    "c1_reentry": "The independently constructed C1 inputs are not claimed to be Rhino internal intermediates. Re-entering them changes some Native fits.",
+    "sdk_tolerance": "For all five tested profiles, complete Native definitions are identical at SDK sweep tolerances 1e-9, 1e-7 and 1e-5 while section Refit tolerance is held fixed."
   }
 }

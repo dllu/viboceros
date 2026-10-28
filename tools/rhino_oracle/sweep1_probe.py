@@ -6,6 +6,16 @@ Ownership and sampling policy are shared by SDK and actual command paths.
 
 
 def validate(operation):
+    sweep_tolerance = operation.get("sdk_sweep_tolerance")
+    if "sdk_sweep_tolerance" in operation:
+        import math
+        valid = not isinstance(sweep_tolerance, bool) and isinstance(sweep_tolerance, (int, float))
+        try:
+            valid = valid and not math.isnan(sweep_tolerance) and not math.isinf(sweep_tolerance) and sweep_tolerance > 0.
+        except (TypeError, ValueError, OverflowError):
+            valid = False
+        if not valid or operation.get("command", False):
+            raise ValueError("sdk_sweep_tolerance requires a finite positive SDK tolerance")
     legacy = operation.get("legacy_refit", False)
     if type(legacy) is not bool:
         raise ValueError("legacy_refit must be a boolean")
@@ -60,7 +70,7 @@ def run(host, operation, iterations, tolerance):
             del result[:]
             if operation.get("legacy_refit", False):
                 sweep = Rhino.Geometry.SweepOneRail()
-                sweep.SweepTolerance = tolerance["absolute"]
+                sweep.SweepTolerance = operation.get("sdk_sweep_tolerance", tolerance["absolute"])
                 sweep.AngleToleranceRadians = tolerance["angular"]
                 sweep.ClosedSweep = operation.get("closed", False)
                 sweep.GlobalShapeBlending = bool(operation.get("blend", 0))
@@ -78,7 +88,7 @@ def run(host, operation, iterations, tolerance):
                 operation.get("closed", False),
                 System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
                 System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
-                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 2 if operation.get("refit_tolerance") is not None else (1 if operation.get("rebuild_point_count", 0) else 0)),
+                operation.get("sdk_sweep_tolerance", tolerance["absolute"]), System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 2 if operation.get("refit_tolerance") is not None else (1 if operation.get("rebuild_point_count", 0) else 0)),
                 operation.get("rebuild_point_count", 0), operation.get("refit_tolerance") or 0.0,
             ) or [])
 

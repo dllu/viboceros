@@ -113,6 +113,7 @@ APPLICATION_MODULES = [
     'src/app/sweep/input.rs',
     'src/app/sweep/selection.rs',
     'src/app/sweep/tests.rs',
+    'src/app/sweep/refit_tests.rs',
     'src/app/loft/input.rs',
     'src/app/loft/selection.rs',
     'src/app/tests/curve_input.rs',
@@ -198,6 +199,15 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'src/app/sweep.rs' in paths:
+        paths = [*paths, 'src/app/sweep/refit_tests.rs']
+    if 'src/app/sweep/refit_tests.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
+                 'tools/rhino_oracle/observations/sweep1_refit_sdk.json']
+    if 'crates/viboceros-geometry/tests/support/profile_rows.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/profile_rows/degree.rs',
+                 'crates/viboceros-geometry/tests/profile_row_degrees.rs']
     if any(p in paths for p in ['crates/viboceros-geometry/src/lib.rs',
                                'crates/viboceros-geometry/src/loft/rebuild.rs']):
         paths = [*paths, 'crates/viboceros-geometry/src/section_rebuild.rs']
@@ -311,8 +321,10 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/curve_distance.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/hull.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/polynomial.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_minimum/witness.rs',
             'crates/viboceros-geometry/tests/curve_minimum.rs',
+            'crates/viboceros-geometry/tests/curve_minimum_radial.rs',
         ])
         expanded.extend([
             'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs',

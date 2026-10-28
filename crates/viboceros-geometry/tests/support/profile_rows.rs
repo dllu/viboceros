@@ -2,6 +2,8 @@
 use num_rational::BigRational as Rational;
 use num_traits::{Signed, ToPrimitive, Zero};
 use viboceros_geometry::{GeometryError, NurbsCurve, NurbsSurface};
+#[path = "profile_rows/degree.rs"]
+mod degree;
 
 fn rat(x: f64) -> Rational {
     Rational::from_float(x).unwrap()
@@ -108,7 +110,25 @@ fn complete_oriented_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Op
     // Every curve certificate receives the original binary knots. Charge U
     // clock changes through complete column proofs before matching V rows.
     if a.degree_u() != b.degree_u() || a.control_point_count_u() != b.control_point_count_u() {
-        return None;
+        let (source, desired, reverse) = if a.degree_u() < b.degree_u() {
+            (a, b.degree_u(), false)
+        } else if b.degree_u() < a.degree_u() {
+            (b, a.degree_u(), true)
+        } else {
+            return None;
+        };
+        let (elevated, error) = degree::elevated_u(source, desired, limit)?;
+        if error >= limit {
+            return None;
+        }
+        let remaining = (limit - error).next_down();
+        let bound = if reverse {
+            complete_oriented_bound(a, &elevated, remaining)?
+        } else {
+            complete_oriented_bound(&elevated, b, remaining)?
+        };
+        let bound = (error + bound).next_up();
+        return (bound <= limit).then_some(bound);
     }
     let u_error = u_clock_bound(a, b, limit)?;
     let (a, b) = (rows(a), rows(b));
