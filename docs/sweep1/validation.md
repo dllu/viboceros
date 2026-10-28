@@ -20,6 +20,8 @@ captured reversed spatial case still has an image gap above `2.376e-6`. That is 
 construction difference. A close witness or successful closest-point search on
 another case does not establish complete surface agreement. Full Sweep1
 compatibility remains unfinished.
+The separate [Global blending comparison](global-blending.md) now retains 18
+complete definitions, passing controls, and certified multi-profile gap witnesses.
 
 ## Native regressions
 
