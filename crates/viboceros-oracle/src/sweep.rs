@@ -129,6 +129,8 @@ pub struct SweepFixture {
     #[serde(default)]
     pub rebuild_point_count: usize,
     #[serde(default)]
+    pub refit_tolerance: Option<f64>,
+    #[serde(default)]
     pub blend: u8,
     #[serde(default)]
     pub queries: Option<Vec<[f64; 3]>>,
@@ -152,6 +154,11 @@ pub(super) fn run(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let rail = fixture.rail.geometry()?;
+    if fixture.rebuild_point_count != 0 && fixture.refit_tolerance.is_some() {
+        return Err(ProbeError::FixtureInvariant(
+            "Sweep1 Rebuild and Refit are mutually exclusive",
+        ));
+    }
     if fixture.closed {
         return Err(ProbeError::FixtureInvariant(
             "closed sweep closure is not implemented",
@@ -192,7 +199,12 @@ pub(super) fn run(
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
             #[cfg(feature = "native-smlib")]
-            let rebuilt = if fixture.rebuild_point_count > 1 {
+            let rebuilt = if let Some(tolerance) = fixture.refit_tolerance {
+                Some(
+                    viboceros_smlib::refit_sweep_sections(&sections, tolerance)
+                        .map_err(CommandError::from)?,
+                )
+            } else if fixture.rebuild_point_count > 1 {
                 Some(
                     viboceros_smlib::rebuild_sweep_sections(
                         &sections,
@@ -205,7 +217,9 @@ pub(super) fn run(
                 None
             };
             #[cfg(not(feature = "native-smlib"))]
-            let rebuilt = if fixture.rebuild_point_count > 1 {
+            let rebuilt = if let Some(tolerance) = fixture.refit_tolerance {
+                Some(Sweep1::refit_sections(&sections, tolerance)?)
+            } else if fixture.rebuild_point_count > 1 {
                 Some(Sweep1::rebuild_sections(
                     &sections,
                     fixture.rebuild_point_count,
@@ -312,6 +326,9 @@ fn command_surfaces(
     }
     if fixture.rebuild_point_count != 0 {
         text.push_str(&format!(" Rebuild={}", fixture.rebuild_point_count));
+    }
+    if let Some(tolerance) = fixture.refit_tolerance {
+        text.push_str(&format!(" RefitTolerance={tolerance}"));
     }
     for (name, point) in [
         ("StartPoint", fixture.start_point),

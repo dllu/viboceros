@@ -2,6 +2,15 @@
 use super::*;
 mod rebuild;
 
+pub(super) fn construct_smooth(raw: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
+    let cuts = raw
+        .knots()
+        .chunk_by(|a, b| a == b)
+        .map(|g| g[0])
+        .collect::<Vec<_>>();
+    c1_region_impl(raw, &cuts, 0, cuts.len() - 1, false)
+}
+
 /// The retimed region has its own parameter clock. Its C1 rebuild chooses
 /// intervals afresh instead of inheriting the endpoint-frame fitting cuts.
 /// Only the original-source caller can certify the final assembled proposal.

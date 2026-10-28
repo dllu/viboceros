@@ -97,7 +97,19 @@ pub(super) fn construct(
     angle: Real,
     clock: SplitClock,
 ) -> Result<Option<Candidate>, GeometryError> {
-    if source.is_closed()? || super::super::super::parameterize::has_tangent_breaks(source, angle)?
+    construct_with_scope(source, tolerance, angle, clock, FitPolicy::LOFT)
+}
+
+pub(super) fn construct_with_scope(
+    source: &NurbsCurve,
+    tolerance: Real,
+    angle: Real,
+    clock: SplitClock,
+    policy: FitPolicy,
+) -> Result<Option<Candidate>, GeometryError> {
+    let closed = source.is_closed()?;
+    if (!policy.closed && closed)
+        || super::super::super::parameterize::has_tangent_breaks(source, angle)?
     {
         return Ok(None);
     }
@@ -160,7 +172,7 @@ pub(super) fn construct(
         // An open source can contain a complete loop. A zero chord cannot
         // construct its endpoint-frame cubic or justify dropping the interval.
         // Subdivide under the same budgets and certify its children normally.
-        if first == last {
+        if first == last || (policy.single && closed && interval.depth < 2) {
             let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
                 return Ok(None);
             };
@@ -195,7 +207,8 @@ pub(super) fn construct(
         } else {
             tolerance
         };
-        let mut fits = sampled_fit(source, &piece, &parameters, tolerance * 0.5)?
+        let sample_limit = policy.sample_limit(tolerance);
+        let mut fits = sampled_fit(source, &piece, &parameters, sample_limit)?
             && crate::curve_fit::g1::within_deviation(&trimmed, &piece, local_bound)?;
         if !fits
             && lookup.is_some()
@@ -205,9 +218,9 @@ pub(super) fn construct(
             && let Some(adjusted) = crate::curve_fit::g1::adjusted_cubic_at_point(
                 &piece,
                 source.evaluate(parameters[4])?,
-                tolerance * 0.5,
+                sample_limit,
             )?
-            && sampled_fit(source, &adjusted, &parameters, tolerance * 0.5)?
+            && sampled_fit(source, &adjusted, &parameters, sample_limit)?
             && crate::curve_fit::g1::within_deviation(&trimmed, &adjusted, local_bound)?
         {
             piece = adjusted;

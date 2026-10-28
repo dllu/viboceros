@@ -84,12 +84,12 @@ pub use knot_refinement::{
     loft_surface_with_end_points, make_curve_non_periodic, make_curve_periodic,
     make_surface_non_periodic, make_surface_periodic, match_curve_end, morph_interpolation,
     point_grid_brep, prepare_loft_sections, rebuild_curve, rebuild_surface, rebuild_sweep_sections,
-    reduce_curve_knots_in_range, remove_curve_knot, remove_curve_knot_at_value,
-    remove_curve_multiple_knots, remove_periodic_surface_knot, remove_surface_knot,
-    remove_surface_multiple_knots, split_curve, split_curve_at_parameters, split_surface, subcurve,
-    subcurve_at_arc_length, surface_isocurve, surface_single_span_patches, surface_tweens,
-    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_model_with_point_ends,
-    sweep_surface, trim_curve, trim_surface, trim_surface_direction,
+    reduce_curve_knots_in_range, refit_sweep_sections, remove_curve_knot,
+    remove_curve_knot_at_value, remove_curve_multiple_knots, remove_periodic_surface_knot,
+    remove_surface_knot, remove_surface_multiple_knots, split_curve, split_curve_at_parameters,
+    split_surface, subcurve, subcurve_at_arc_length, surface_isocurve, surface_single_span_patches,
+    surface_tweens, surface_tweens_refitted, surface_tweens_sampled, sweep_model,
+    sweep_model_with_point_ends, sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
 mod coplanar_merge;
 mod face_creases;

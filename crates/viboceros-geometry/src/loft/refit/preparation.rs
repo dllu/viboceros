@@ -11,6 +11,7 @@ pub(super) enum Mode {
 pub(super) struct Prepared {
     pub curves: Vec<NurbsCurve>,
     pub mode: Mode,
+    pub smooth: bool,
     deviations: Vec<Real>,
 }
 
@@ -83,21 +84,27 @@ fn adaptive(
     curves: &[NurbsCurve],
     tolerance: Real,
     angle: Option<Real>,
+    scope: FitScope,
 ) -> Result<Prepared, GeometryError> {
     let mut fitted = Vec::with_capacity(curves.len());
     let mut deviations = Vec::with_capacity(curves.len());
     for source in curves {
         let domain = source.domain();
         // Large relative tolerances enter a distinct native resampling branch.
-        if tolerance
-            >= source
-                .evaluate(*domain.start())?
-                .distance_to(source.evaluate(*domain.end())?)?
+        if !(scope.policy.closed && source.is_closed()?)
+            && tolerance
+                >= source
+                    .evaluate(*domain.start())?
+                    .distance_to(source.evaluate(*domain.end())?)?
         {
             return Err(unsupported());
         }
-        let Some(proposal) =
-            adaptive::certified_joined_refit(source, tolerance, angle.unwrap_or(0.))?
+        let Some(proposal) = adaptive::certified_joined_refit_with_scope(
+            source,
+            tolerance,
+            angle.unwrap_or(0.),
+            scope.policy,
+        )?
         else {
             return Err(unsupported());
         };
@@ -107,6 +114,7 @@ fn adaptive(
     Ok(Prepared {
         curves: fitted,
         mode: Mode::Adaptive,
+        smooth: true,
         deviations,
     })
 }
@@ -115,6 +123,7 @@ fn initial(
     curves: &[NurbsCurve],
     fit_tolerance: Real,
     angle: Option<Real>,
+    scope: FitScope,
 ) -> Result<Prepared, GeometryError> {
     validate_angle(angle)?;
     if !fit_tolerance.is_finite() || fit_tolerance < 0. {
@@ -130,6 +139,7 @@ fn initial(
         return Ok(Prepared {
             curves: curves.to_vec(),
             mode: Mode::Original,
+            smooth: false,
             deviations: Vec::new(),
         });
     }
@@ -150,13 +160,17 @@ fn initial(
     let sections = match sections {
         Ok(sections) => sections,
         Err(GeometryError::UnsupportedCurveApproximation { .. })
-            if curves.len() >= 2 && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
+            if curves.len() >= scope.minimum_curves
+                && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
         {
-            return candidate::prepare(curves, fit_tolerance, angle).map(|curves| Prepared {
-                curves,
-                mode: Mode::Initial,
-                deviations: Vec::new(),
-            });
+            return candidate::prepare_with_policy(curves, fit_tolerance, angle, scope.policy).map(
+                |curves| Prepared {
+                    curves,
+                    mode: Mode::Initial,
+                    smooth: true,
+                    deviations: Vec::new(),
+                },
+            );
         }
         Err(error) => return Err(error),
     };
@@ -173,6 +187,7 @@ fn initial(
     Ok(Prepared {
         curves: matching::prepare(sections, fit_tolerance, angle)?,
         mode: Mode::Initial,
+        smooth: false,
         deviations: Vec::new(),
     })
 }
@@ -182,11 +197,21 @@ pub(super) fn propose(
     tolerance: Real,
     angle: Option<Real>,
 ) -> Result<Prepared, GeometryError> {
-    match initial(curves, tolerance, angle) {
+    propose_with_scope(curves, tolerance, angle, FitScope::LOFT)
+}
+
+pub(super) fn propose_with_scope(
+    curves: &[NurbsCurve],
+    tolerance: Real,
+    angle: Option<Real>,
+    scope: FitScope,
+) -> Result<Prepared, GeometryError> {
+    match initial(curves, tolerance, angle, scope) {
         Err(GeometryError::UnsupportedCurveApproximation { .. })
-            if curves.len() >= 2 && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
+            if curves.len() >= scope.minimum_curves
+                && angle.is_none_or(|a| a <= std::f64::consts::FRAC_PI_2) =>
         {
-            adaptive(curves, tolerance, angle)
+            adaptive(curves, tolerance, angle, scope)
         }
         result => result,
     }

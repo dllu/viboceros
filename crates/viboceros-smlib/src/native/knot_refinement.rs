@@ -21,7 +21,8 @@ use interpolation::{
 pub use loft::{
     fit_sweep_model_surface, loft_surface, loft_surface_rebuilt, loft_surface_refitted,
     loft_surface_refitted_with_angle, loft_surface_with_end_points, prepare_loft_sections,
-    rebuild_sweep_sections, sweep_model, sweep_model_with_point_ends, sweep_surface,
+    rebuild_sweep_sections, refit_sweep_sections, sweep_model, sweep_model_with_point_ends,
+    sweep_surface,
 };
 pub use trim::{
     change_curve_seam, change_surface_seam, curve_bezier_spans, split_curve,

@@ -88,6 +88,7 @@ fn baseline() -> Value {
                 &sources,
                 op["refit_tolerance"].as_f64().unwrap(),
                 op["refit_angle_tolerance"].as_f64(),
+                FitScope::LOFT,
             )
             .is_ok();
             assert_eq!(sources, before);

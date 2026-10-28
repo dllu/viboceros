@@ -16,6 +16,30 @@ pub struct AdaptiveLinearRefitProposal {
 const MAX_PIECES: usize = 128;
 const MAX_DEPTH: usize = 24;
 
+#[derive(Clone, Copy)]
+pub(super) struct FitPolicy {
+    pub(super) closed: bool,
+    pub(super) single: bool,
+}
+
+impl FitPolicy {
+    pub(super) const LOFT: Self = Self {
+        closed: false,
+        single: false,
+    };
+
+    pub(super) fn sweep(section_count: usize) -> Self {
+        Self {
+            closed: true,
+            single: section_count == 1,
+        }
+    }
+
+    pub(super) fn sample_limit(self, tolerance: Real) -> Real {
+        tolerance * if self.single { 1. } else { 0.5 }
+    }
+}
+
 /// Propose bounded adaptive cubics for exactly extracted straight regions with
 /// no resolved one-degree tangent breaks. The source image and limiting frames
 /// are retained through an exact, uniformly parameterized polygon proxy.
@@ -120,18 +144,37 @@ pub(super) fn certified_joined_refit(
     tolerance: Real,
     angle: Real,
 ) -> Result<Option<CertifiedJoinedRefit>, GeometryError> {
+    certified_joined_refit_with_scope(source, tolerance, angle, FitPolicy::LOFT)
+}
+
+pub(super) fn certified_joined_refit_with_scope(
+    source: &NurbsCurve,
+    tolerance: Real,
+    angle: Real,
+    policy: FitPolicy,
+) -> Result<Option<CertifiedJoinedRefit>, GeometryError> {
     validate(source, tolerance)?;
     validate_angle(Some(angle))?;
     if source.degree() > 16 {
         return Ok(None);
     }
     let angle = corner_angle(Some(angle));
-    let Some(candidate) =
-        pieces::construct(source, tolerance, angle, pieces::SplitClock::SourceLookup)?
+    let Some(candidate) = pieces::construct_with_scope(
+        source,
+        tolerance,
+        angle,
+        pieces::SplitClock::SourceLookup,
+        policy,
+    )?
     else {
         return Ok(None);
     };
-    let Some(joined) = join::construct_refined(&candidate.curve, angle, tolerance)? else {
+    let joined = if policy.single {
+        Some(join::construct_smooth(&candidate.curve)?)
+    } else {
+        join::construct_refined(&candidate.curve, angle, tolerance)?
+    };
+    let Some(joined) = joined else {
         return Ok(None);
     };
     let copies = [joined];
@@ -144,7 +187,7 @@ pub(super) fn certified_joined_refit(
             && g[0] > *joined.domain().start()
             && g[0] < *joined.domain().end()
     });
-    let bound = if has_regions {
+    let bound = if has_regions || policy.single {
         let target = joined.knots()[joined.degree()..=joined.control_points().len()]
             .chunk_by(|a, b| a == b)
             .map(|g| g[0])

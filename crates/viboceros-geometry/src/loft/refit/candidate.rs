@@ -1,11 +1,22 @@
 //! Admit an initial or corrected G1 proposal after a continuous source proof.
 use super::*;
 
+#[cfg(test)]
 pub(super) fn prepare(
     curves: &[NurbsCurve],
     tolerance: Real,
     angle: Option<Real>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
+    prepare_with_policy(curves, tolerance, angle, adaptive::FitPolicy::LOFT)
+}
+
+pub(super) fn prepare_with_policy(
+    curves: &[NurbsCurve],
+    tolerance: Real,
+    angle: Option<Real>,
+    policy: adaptive::FitPolicy,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let limit = policy.sample_limit(tolerance);
     let unsupported = || GeometryError::UnsupportedCurveApproximation {
         context: "Loft Refit currently requires certified straight regions or certified smooth cubics; adaptive subdivision remains unfinished",
     };
@@ -43,30 +54,35 @@ pub(super) fn prepare(
         if tolerance >= chord {
             return Err(unsupported());
         }
-        let candidate =
-            if crate::curve_fit::g1::within_deviation(source, &candidate, tolerance * 0.5)?
-                || (!single_span
-                    && quarter_stations_fit(source, &candidate, tolerance * 0.5)?
-                    && crate::curve_fit::g1::within_deviation(source, &candidate, tolerance)?)
-            {
-                candidate
-            } else {
-                // Native multispan references enter adaptive fitting here.
-                // A common handle correction is qualified only for a single
-                // Bezier source, even if it could satisfy a positional bound.
-                if !single_span {
-                    return Err(unsupported());
-                }
-                let Some(adjusted) =
-                    crate::curve_fit::g1::adjusted_cubic(source, &candidate, tolerance * 0.5)?
-                else {
-                    return Err(unsupported());
-                };
-                if !crate::curve_fit::g1::within_deviation(source, &adjusted, tolerance * 0.5)? {
-                    return Err(unsupported());
-                }
-                adjusted
+        let candidate = if crate::curve_fit::g1::within_deviation(source, &candidate, limit)?
+            || (!single_span
+                && quarter_stations_fit(source, &candidate, limit)?
+                && crate::curve_fit::g1::within_deviation(source, &candidate, tolerance)?)
+        {
+            candidate
+        } else {
+            // Native multispan references enter adaptive fitting here.
+            // A common handle correction is qualified only for a single
+            // Bezier source, even if it could satisfy a positional bound.
+            if !single_span {
+                return Err(unsupported());
+            }
+            // The complete initial proposal has already failed. A fitting
+            // midpoint alone must not prevent the single-profile correction;
+            // its rounded output still needs the full source certificate.
+            let Some(adjusted) = crate::curve_fit::g1::adjusted_cubic(
+                source,
+                &candidate,
+                if policy.single { 0. } else { limit },
+            )?
+            else {
+                return Err(unsupported());
             };
+            if !crate::curve_fit::g1::within_deviation(source, &adjusted, limit)? {
+                return Err(unsupported());
+            }
+            adjusted
+        };
         sections.push(candidate);
     }
     Ok(sections)

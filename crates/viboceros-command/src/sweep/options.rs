@@ -11,6 +11,7 @@ pub struct Options {
     pub global: Option<bool>,
     pub refit: Option<bool>,
     pub rebuild_point_count: usize,
+    pub refit_tolerance: Option<Real>,
     pub ends: SweepEndPoints,
 }
 
@@ -28,6 +29,8 @@ impl Options {
         "RebuildPointCount",
         "RebuildCount",
         "Simplify",
+        "Refit",
+        "RefitTolerance",
     ];
 
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
@@ -109,12 +112,20 @@ impl Options {
                 "simplify" => {
                     simplify = Some(
                         match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                            "none" => false,
-                            "rebuild" => true,
+                            "none" => 0,
+                            "rebuild" => 1,
+                            "refit" => 2,
                             _ => return Err(CommandError::Usage(USAGE)),
                         },
                     );
                     512
+                }
+                "refit" | "refittolerance" => {
+                    result.refit_tolerance = Some(parse_finite_real(value)?);
+                    if result.refit_tolerance.unwrap() < 0. {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    1024
                 }
                 _ => return Err(CommandError::Usage(USAGE)),
             };
@@ -129,9 +140,30 @@ impl Options {
         if result.axis.is_some() && !result.roadlike.unwrap_or(false) {
             return Err(CommandError::Usage(USAGE));
         }
+        if (seen & 256 != 0 || simplify == Some(1)) && (seen & 1024 != 0 || simplify == Some(2)) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        if seen & 256 != 0 {
+            result.refit_tolerance = None;
+        }
+        if seen & 1024 != 0 {
+            result.rebuild_point_count = 0;
+        }
         match simplify {
-            Some(false) => result.rebuild_point_count = 0,
-            Some(true) if result.rebuild_point_count == 0 => result.rebuild_point_count = 5,
+            Some(0) => {
+                result.rebuild_point_count = 0;
+                result.refit_tolerance = None;
+            }
+            Some(1) => {
+                result.refit_tolerance = None;
+                if result.rebuild_point_count == 0 {
+                    result.rebuild_point_count = 5;
+                }
+            }
+            Some(2) => {
+                result.rebuild_point_count = 0;
+                result.refit_tolerance.get_or_insert(0.01);
+            }
             _ => {}
         }
         Ok(result)
@@ -154,6 +186,9 @@ impl Options {
     /// Canonical command arguments for the shared command executor.
     pub fn arguments(&self) -> String {
         let mut words = Vec::new();
+        if let Some(tolerance) = self.refit_tolerance {
+            words.push(format!("RefitTolerance={tolerance}"));
+        }
         if self.rebuild_point_count != 0 {
             words.push(format!("Rebuild={}", self.rebuild_point_count));
         }
@@ -227,7 +262,6 @@ mod tests {
             "Rebuild=513",
             "Rebuild=-1",
             "Rebuild=NaN",
-            "Simplify=Refit",
             "Rebuild=5 RebuildCount=6",
         ] {
             assert!(
@@ -248,6 +282,66 @@ mod tests {
             source.updated(&["Rebuild=0"]).unwrap().rebuild_point_count,
             0
         );
+    }
+
+    #[test]
+    fn refit_updates_replace_rebuilding_and_round_trip_without_changing_rail_options() {
+        let source = Options::parse(&[
+            "RailName=Rail",
+            "Parameters=0,5",
+            "Rebuild=7",
+            "RefitRail=Yes",
+            "FrameStyle=Roadlike",
+            "Axis=0,1,0",
+        ])
+        .unwrap();
+        for name in ["Refit", "RefitTolerance"] {
+            let fitted = source.updated(&[&format!("{name}=0.03")]).unwrap();
+            assert_eq!(fitted.rebuild_point_count, 0);
+            assert_eq!(fitted.refit_tolerance, Some(0.03));
+            let mut restored = fitted.clone();
+            restored.refit_tolerance = None;
+            restored.rebuild_point_count = 7;
+            assert_eq!(restored, source);
+            assert_eq!(
+                Options::parse(&fitted.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
+                fitted
+            );
+            assert!(Options::VALUE_OPTIONS.contains(&name));
+            let rebuilt = fitted.updated(&["RebuildCount=9"]).unwrap();
+            assert_eq!(rebuilt.refit_tolerance, None);
+            assert_eq!(rebuilt.rebuild_point_count, 9);
+            let disabled = fitted.updated(&["Simplify=None"]).unwrap();
+            assert_eq!(disabled.refit_tolerance, None);
+            assert_eq!(disabled.rebuild_point_count, 0);
+        }
+    }
+
+    #[test]
+    fn invalid_refit_updates_are_atomic() {
+        let source = Options::parse(&["Simplify=Refit", "RefitTolerance=0.01"]).unwrap();
+        let before = source.clone();
+        for arguments in [
+            "Refit=-1",
+            "Refit=NaN",
+            "Refit=inf",
+            "Refit=bad",
+            "Refit=0.1 RefitTolerance=0.2",
+            "Refit=0.1 Rebuild=7",
+            "Simplify=Refit Rebuild=5",
+            "Simplify=Rebuild RefitTolerance=0.01",
+        ] {
+            assert!(
+                source
+                    .updated(&arguments.split_whitespace().collect::<Vec<_>>())
+                    .is_err(),
+                "{arguments}"
+            );
+            assert_eq!(source, before);
+        }
+        let retained = source.updated(&["RefitTolerance=0"]).unwrap();
+        assert_eq!(retained.refit_tolerance, Some(0.));
+        assert_eq!(retained.rebuild_point_count, 0);
     }
     #[test]
     fn updating_points_preserves_other_choices_and_serializes_for_execution() {

@@ -1,6 +1,19 @@
 //! Native Loft and Sweep section preparation.
 use super::*;
 
+pub fn refit_sweep_sections(
+    sections: &[viboceros_geometry::SweepSection],
+    tolerance: f64,
+) -> Result<Vec<viboceros_geometry::SweepSection>, Error> {
+    viboceros_geometry::Sweep1::refit_sections_with_operations(
+        sections,
+        tolerance,
+        &mut clamp_curve,
+        &mut |c, d| change_curve_degree(c, d, false),
+        &mut insert_curve_knot,
+    )
+}
+
 /// Rebuild real sweep profiles with native basis evaluation and interpolation.
 pub fn rebuild_sweep_sections(
     sections: &[viboceros_geometry::SweepSection],

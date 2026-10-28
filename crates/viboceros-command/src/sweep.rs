@@ -1,7 +1,7 @@
 use super::*;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild|Refit] [RefitTolerance=distance] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -16,6 +16,21 @@ pub(super) fn rebuild_sections(
     #[cfg(not(feature = "native-smlib"))]
     {
         Ok(Sweep1::rebuild_sections(sections, count, tolerance)?)
+    }
+}
+
+pub(super) fn refit_sections(
+    sections: &[SweepSection],
+    tolerance: Real,
+) -> Result<Vec<SweepSection>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::refit_sweep_sections(sections, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(Sweep1::refit_sections(sections, tolerance)?)
     }
 }
 
@@ -124,6 +139,7 @@ impl Command for SweepCommand {
             global,
             refit,
             rebuild_point_count,
+            refit_tolerance,
             ends,
         } = Options::parse(arguments)?;
         let rail_name = rail_name.as_deref();
@@ -209,7 +225,9 @@ impl Command for SweepCommand {
             SweepFrameStyle::Freeform
         };
         let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
-        let sections = if rebuild_point_count > 1 {
+        let sections = if let Some(tolerance) = refit_tolerance {
+            refit_sections(&sections, tolerance)?
+        } else if rebuild_point_count > 1 {
             rebuild_sections(&sections, rebuild_point_count, document.tolerance())?
         } else {
             sections

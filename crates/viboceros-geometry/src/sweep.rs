@@ -12,6 +12,7 @@ mod point_ends;
 pub use point_ends::SweepEndPoints;
 mod rail;
 mod rebuild;
+mod refit;
 mod roadlike;
 use rail::validate_rail_interval;
 #[cfg(test)]
