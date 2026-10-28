@@ -158,17 +158,9 @@ unfinished: short release timings for the spatial refitter are tracked separatel
 from geometry comparisons; dense-to-banded solving alone did not remove the
 cost of repeated accurate arc-length inversion.
 
-Cross-section Refit remains in development. The native oracle accepts
-`refit_tolerance` independently of rail refitting and rejects simultaneous
-section rebuilding. Frozen `sweep1_refit_*` captures contain 70 sweep cases and
-16 public `Curve.Fit` diagnostics, with archived producers. Identical translated
-profile pairs use a different fitting policy from one profile; `Curve.Fit`
-also produces a different result. Complete geometry comparison for Viboceros
-section refitting remains unfinished.
-The exact Bernstein certificate in `test_sweep1_refit.py` also proves that the
-`0.001` native setting leaves a source point more than `0.0015` from the output
-profile boundary. The setting and a certified continuous deviation bound need
-separate semantics; agreement with Rhino still requires the geometry comparison.
+Cross-section Refit remains in development. The [Refit notes](refitting.md)
+cover its frozen native cases, fitting-pass experiments, and a certified nominal
+tolerance counterexample. Complete geometry comparison remains unfinished.
 
 An exact-key, bounded sample cache reduced single-profile spatial timings from
 about 43 ms to 25 ms, versus 15 ms Freeform and 12 ms Roadlike in Rhino under
