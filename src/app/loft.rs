@@ -162,7 +162,7 @@ impl VibocerosApp {
 
     pub(super) fn cancel_loft(&mut self, announce: bool) {
         if let Some(p) = self.loft_prompt.take() {
-            self.restore_loft_selection(p.before);
+            self.restore_curve_selection(p.before);
             if announce {
                 self.push_log("Loft canceled".into());
             }

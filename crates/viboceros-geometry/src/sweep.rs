@@ -78,6 +78,9 @@ pub struct Sweep1 {
 }
 
 impl Sweep1 {
+    /// Maximum profile constraints, including any point ends.
+    pub const MAX_SECTIONS: usize = MAX_SECTIONS;
+
     pub fn try_new(
         rail: CurveRef<'_>,
         sections: &[SweepSection],

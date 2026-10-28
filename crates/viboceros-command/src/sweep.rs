@@ -74,7 +74,7 @@ pub(super) fn fitted_model_surface(sweep: &Sweep1) -> Result<NurbsSurface, Comma
 
 mod options;
 mod placement;
-use options::Options;
+pub use options::Options;
 
 pub(super) struct SweepCommand;
 

@@ -186,7 +186,7 @@ impl PendingObjectCommand {
                     name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
                 })
             }) {
-                return "Select profiles in order; Enter sweeps along the specified rail, Esc cancels";
+                return "Select profiles in order; Point/StartPoint/EndPoint/Undo; Enter sweeps along the specified rail, Esc cancels";
             }
             if self.command_override.as_ref().is_some_and(|input| {
                 input.split_whitespace().any(|word| {
@@ -197,9 +197,9 @@ impl PendingObjectCommand {
                         .eq_ignore_ascii_case("Parameters")
                 })
             }) {
-                return "Select profiles in parameter order, then the rail last; Enter sweeps, Esc cancels";
+                return "Select profiles in parameter order, then the rail last; Point/StartPoint/EndPoint/Undo; Enter sweeps, Esc cancels";
             }
-            return "Select the rail first, then profiles in order (or only profiles for a named rail); Enter sweeps, Esc cancels";
+            return "Select the rail first, then profiles in order (or only profiles for a named rail); Point/StartPoint/EndPoint/Undo; Enter sweeps, Esc cancels";
         }
         if self.description.command == "Divide" {
             return if self.phase == ObjectPromptPhase::Selecting {
@@ -537,6 +537,9 @@ impl VibocerosApp {
             return self
                 .picking_replace_block()
                 .then_some(ObjectSelectionFilter::Blocks);
+        }
+        if let Some(p) = &self.sweep_session {
+            return p.selecting().then_some(ObjectSelectionFilter::Curves);
         }
         if let Some(p) = &self.loft_prompt {
             return p.selecting().then_some(ObjectSelectionFilter::Curves);
@@ -982,11 +985,17 @@ impl VibocerosApp {
                         .map(|o| o.id())
                         .collect::<Vec<_>>()
                 });
-            self.document.clear_selection();
-            if let Some(ids) = rail_revolve_partial {
+            if description.command == "Sweep1" {
                 let _ = self
                     .document
-                    .select_objects_direct(ids, SelectionMode::Replace);
+                    .set_transient_selection(rail_revolve_partial.unwrap_or_default());
+            } else {
+                self.document.clear_selection();
+                if let Some(ids) = rail_revolve_partial {
+                    let _ = self
+                        .document
+                        .select_objects_direct(ids, SelectionMode::Replace);
+                }
             }
             let command_override = (matches!(
                 description.command,
@@ -1044,6 +1053,7 @@ impl VibocerosApp {
         self.initialize_reduce_polyline(input);
         self.initialize_mesh_conversion(input);
         self.initialize_weight_prompt(input);
+        self.initialize_sweep_prompt(input);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -1075,6 +1085,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.sweep_session.is_some() {
+            return false;
+        }
         if self.continue_mesh_conversion(input) {
             return true;
         }
@@ -1815,6 +1828,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
+        self.clear_sweep_input();
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
@@ -1855,7 +1869,9 @@ impl VibocerosApp {
                 self.component_selection.clear();
             }
             if let Some(selection_before) = pending.selection_before {
-                if let Err(error) = self
+                if pending.description.command == "Sweep1" {
+                    self.restore_curve_selection(selection_before);
+                } else if let Err(error) = self
                     .document
                     .select_objects_direct(selection_before, SelectionMode::Replace)
                 {
@@ -1895,6 +1911,10 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
+        if self.sweep_session.is_some() {
+            self.select_sweep_objects(ids, mode);
+            return;
+        }
         let Some(filter) = self
             .object_prompt
             .as_ref()

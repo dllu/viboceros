@@ -6,6 +6,7 @@ impl InteractiveCommand {
         match self {
             Self::FaceCreate { .. } => "3DFace",
             Self::LoftPoint => "Loft",
+            Self::SweepPoint => "Sweep1",
             Self::RemapCPlane => "RemapCPlane",
             Self::PolylineOnMesh { .. } => "PolylineOnMesh",
             Self::InterpolateCurveOnSurface { .. } => "InterpCrvOnSrf",
@@ -177,7 +178,7 @@ impl InteractiveCommand {
             | Self::SubDCone { anchor: base }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
-            Self::LoftPoint | Self::RemapCPlane => None,
+            Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
             | Self::Flow { start } => start,

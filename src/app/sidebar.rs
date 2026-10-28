@@ -21,6 +21,7 @@ impl VibocerosApp {
             || self.planar_boolean_prompt.is_some()
             || self.tween_surfaces_prompt.is_some()
             || self.loft_prompt.is_some()
+            || self.sweep_session.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()

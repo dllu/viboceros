@@ -8,6 +8,30 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
+    /// Replace temporary object picks in supplied order, without changing
+    /// SelPrev or model undo/redo. The caller restores its prior selection on
+    /// cancellation. Validate all ids before modifying any selection state.
+    pub fn set_transient_selection(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        let mut selection = BTreeSet::new();
+        let order = ids
+            .into_iter()
+            .filter(|id| selection.insert(*id))
+            .collect::<Vec<_>>();
+        self.validate_selection_seeds(&selection)?;
+        selection.retain(|id| self.is_object_selectable(*id));
+        let order = order
+            .into_iter()
+            .filter(|id| selection.contains(id))
+            .collect();
+        let changed = self.selection.symmetric_difference(&selection).count();
+        self.selection = selection;
+        self.selection_order = order;
+        Ok(changed)
+    }
+
     /// Replaces selection with exact outputs of a document-editing command.
     /// Unlike picking, this neither expands groups nor rejects hidden/locked
     /// results inherited from a selected source. UI picking must use
@@ -1301,5 +1325,41 @@ mod tests {
             );
             assert_eq!(document.object(ids[1]).unwrap().attributes.locked, locked);
         }
+    }
+}
+
+#[cfg(test)]
+mod transient_tests {
+    use super::*;
+    #[test]
+    fn transient_selection_preserves_previous_picks_and_order_and_rejects_missing_ids_atomically() {
+        let mut doc = Document::default();
+        let ids = (0..3)
+            .map(|i| {
+                doc.add_geometry(Geometry::Point(
+                    crate::Point3::try_new(i as f64, 0., 0.).unwrap(),
+                ))
+                .unwrap()
+            })
+            .collect::<Vec<_>>();
+        doc.select_objects_direct([ids[0]], SelectionMode::Replace)
+            .unwrap();
+        doc.select_objects_direct([ids[1]], SelectionMode::Replace)
+            .unwrap();
+        let before = format!("{doc:?}");
+        doc.set_transient_selection([ids[2], ids[1], ids[2]])
+            .unwrap();
+        assert_eq!(
+            doc.selected_object_ids().collect::<Vec<_>>(),
+            [ids[2], ids[1]]
+        );
+        let invalid = ObjectId::new();
+        let during = format!("{doc:?}");
+        assert!(doc.set_transient_selection([ids[0], invalid]).is_err());
+        assert_eq!(format!("{doc:?}"), during);
+        doc.set_transient_selection([ids[1]]).unwrap();
+        assert_eq!(format!("{doc:?}"), before);
+        assert_eq!(doc.select_previous(true), 1);
+        assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
     }
 }

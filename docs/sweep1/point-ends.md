@@ -19,8 +19,27 @@ rail direction when either is present. Explicit `Parameters=` supplies stations
 only for real profiles. As with ordinary sweeps, symmetric or ambiguous nearest-station
 queries can require explicit parameters. A profile at the same station as a point end is an error;
 the command never discards that profile. At least one real profile is required.
-The viewport picker accepts these coordinate options; an interactive `Point`
-getter is still pending.
+The viewport picker accepts these coordinate options and interactive point picks.
+
+## Interactive picking
+
+Start `Sweep1`, select the rail, and enter `Point` before selecting profiles to
+pick a start pole. After selecting profiles, `Point` picks the end pole. Explicit
+`StartPoint` and `EndPoint` choose either end directly. Enter creates the surface;
+Escape cancels. Append `Point` to the initial command to open the getter with
+preselected curves. A named rail also permits a start pole before profile picks.
+
+Point getters use ordinary snaps, coordinate filters, units, relative coordinates,
+and transparent CPlane changes. Local `Undo` revises a pick, point end, or option
+without consuming model undo/redo. Options such as `RefitRail` and `Parameters`
+accept either a following value or `name=value`. Invalid options and failed
+construction keep the picker editable. Changed or unavailable sources cancel
+before construction. Temporary curve picks preserve `SelPrev` and ignore groups.
+
+[Interactive validation](picking-validation.json) records the picker, history, and
+portable/native regression checks.
+
+## Construction
 
 Point-ended commands use a cubic rail fit for either `RefitRail` setting, as in
 the captured Rhino commands. Local blending, frame options, source preservation,

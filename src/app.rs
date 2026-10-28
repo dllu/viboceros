@@ -180,6 +180,7 @@ mod curve_array;
 mod curve_deviation;
 mod curve_preview;
 mod curve_prompt;
+mod curve_selection;
 mod distance;
 mod domain;
 mod drafting_input;
@@ -208,6 +209,7 @@ mod loft;
 mod prompt_cancel;
 mod selection_input;
 mod sidebar;
+mod sweep;
 mod ui;
 mod viewport_input;
 use interactive_state::{
@@ -397,6 +399,7 @@ pub struct VibocerosApp {
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
     loft_prompt: Option<loft::Prompt>,
+    sweep_session: Option<sweep::Session>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
@@ -554,6 +557,7 @@ impl VibocerosApp {
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
             loft_prompt: None,
+            sweep_session: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
@@ -758,7 +762,7 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.continue_loft_point_option(&input) {
+        if self.continue_sweep_point_option(&input) || self.continue_loft_point_option(&input) {
             return;
         }
         if self.try_one_shot_snap(&input) {
@@ -818,7 +822,7 @@ impl VibocerosApp {
         if self.continue_boolean_two(&input) {
             return;
         }
-        if self.try_continue_object_prompt(&input) {
+        if self.continue_sweep_input(&input) || self.try_continue_object_prompt(&input) {
             return;
         }
         if self.continue_rail_revolve_input(&input) {
@@ -947,6 +951,7 @@ impl VibocerosApp {
             || self.start_reparameterize(&input)
             || self.start_fillet_surface(&input)
             || self.start_loft(&input)
+            || self.start_sweep_point_input(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)

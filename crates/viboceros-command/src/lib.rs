@@ -496,7 +496,7 @@ mod points;
 mod visibility_selection;
 pub use point_matrix::{PointGridOptions, point_grid_vertical_frame};
 pub mod rail_revolve;
-mod sweep;
+pub mod sweep;
 mod sweep_two_rails;
 #[cfg(test)]
 use curve_domain::{CURVE_SEAM_USAGE, REPARAMETERIZE_USAGE, SUBCURVE_USAGE};

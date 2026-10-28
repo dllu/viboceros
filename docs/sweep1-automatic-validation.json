@@ -390,7 +390,7 @@
     "tools/rhino_oracle/observations/sweep1_automatic_direction.json": "de33679de5d36757ccc21edc77eb9db32fd3a129a3233b4f240fb99ef95847bb",
     "tools/rhino_oracle/observations/sweep1_automatic_stations.json": "29069dbb3ec0408eef11e03a334f4732e724fdac590720303a7db7724d43288c",
     "tools/rhino_oracle/observations/sweep1_section_definitions.json": "d667f8a08c64230cfd58f5bee51c758b045ef445f9653ee9d37cf220189d15af",
-    "tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65"
+    "tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8"
   },
   "git_sha256": {
     "8b0df132823c34b4a5f223530af3c09e5e634245:crates/viboceros-command/src/sweep.rs": "b417887babf455cd0ac34fa237d399283127fc23bbc39781b871a6d3b684d0cb",

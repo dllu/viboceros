@@ -61,20 +61,6 @@ impl VibocerosApp {
             .iter()
             .map(|(id, _)| *id)
             .collect::<Vec<_>>();
-        self.restore_loft_selection(ids);
-    }
-
-    pub(in crate::app) fn restore_loft_selection(&mut self, ids: Vec<ObjectId>) {
-        if self.document.selected_object_ids().eq(ids.iter().copied()) {
-            return;
-        }
-        self.document.clear_selection();
-        for id in ids {
-            if self.document.is_object_selectable(id) {
-                let _ = self
-                    .document
-                    .select_objects_direct([id], SelectionMode::Add);
-            }
-        }
+        self.restore_curve_selection(ids);
     }
 }

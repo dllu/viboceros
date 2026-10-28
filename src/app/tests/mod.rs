@@ -284,6 +284,7 @@ pub(super) fn test_app() -> VibocerosApp {
         planar_boolean_prompt: None,
         tween_surfaces_prompt: None,
         loft_prompt: None,
+        sweep_session: None,
         blend_surface_prompt: None,
         fillet_surface_prompt: None,
         reparameterize_prompt: None,
