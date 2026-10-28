@@ -220,6 +220,8 @@ def _expand_sources_once(paths):
                  'crates/viboceros-geometry/src/sweep/rebuild.rs',
                  'crates/viboceros-geometry/src/section_rebuild.rs',
                  'crates/viboceros-oracle/tests/sweep_rebuild.rs',
+                 'crates/viboceros-oracle/tests/sweep_regions.rs',
+                 'crates/viboceros-geometry/tests/support/sweep_atlas.rs',
                  'crates/viboceros-geometry/tests/support/nurbs_surface.rs',
                  'crates/viboceros-geometry/tests/support/profile_rows.rs',
                  'crates/viboceros-geometry/src/sweep/point_ends.rs',
@@ -232,6 +234,14 @@ def _expand_sources_once(paths):
                  'crates/viboceros-geometry/src/sweep/tests.rs',
                  'crates/viboceros-geometry/tests/sweep_anchoring.rs',
                  'crates/viboceros-geometry/tests/sweep_knot_continuity.rs']
+    if 'crates/viboceros-oracle/tests/sweep_regions.rs' in paths:
+        paths = [*paths, 'tools/rhino_oracle/generate_sweep1_section_regions.py',
+                 'tools/rhino_oracle/generate_sweep1_section_region_holdouts.py',
+                 'tools/rhino_oracle/test_sweep1_regions.py',
+                 'tools/rhino_oracle/fixtures/sweep1_section_regions.json',
+                 'tools/rhino_oracle/observations/sweep1_section_regions.json',
+                 'tools/rhino_oracle/fixtures/sweep1_section_region_holdouts.json',
+                 'tools/rhino_oracle/observations/sweep1_section_region_holdouts.json']
     if 'crates/viboceros-geometry/src/sweep/roadlike.rs' in paths:
         paths = [*paths,
                  'crates/viboceros-geometry/src/curve/orientation.rs',

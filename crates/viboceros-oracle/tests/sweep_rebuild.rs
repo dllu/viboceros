@@ -151,3 +151,48 @@ fn row_certificate_accepts_refinement_affine_domains_and_common_weight_scales() 
     .unwrap();
     assert!(profile_rows::complete_bound(&a, &b, 1e-12).unwrap() <= 1e-12);
 }
+
+#[test]
+fn row_certificate_accepts_u_reflections_and_rejects_displaced_images() {
+    use viboceros_geometry::{NurbsSurface, Point3};
+    let a = profile_surface().try_insert_knot_u(0.25, 1).unwrap();
+    let b = a.try_reversed_u().unwrap();
+    assert!(profile_rows::complete_bound(&a, &b, 1e-12).unwrap() <= 1e-12);
+    let displaced = NurbsSurface::try_new(
+        b.degree_u(),
+        b.degree_v(),
+        b.control_point_count_u(),
+        b.control_point_count_v(),
+        b.control_points()
+            .iter()
+            .map(|p| {
+                let p = p.point();
+                Point3::try_new(p.x(), p.y(), p.z() + 0.001).unwrap()
+            })
+            .collect(),
+        b.knots_u().to_vec(),
+        b.knots_v().to_vec(),
+    )
+    .unwrap();
+    assert!(profile_rows::complete_bound(&a, &displaced, 1e-7).is_none());
+}
+
+#[test]
+fn row_certificate_charges_u_knot_roundoff_instead_of_snapping_it() {
+    use viboceros_geometry::NurbsSurface;
+    let a = profile_surface().try_insert_knot_u(0.25, 1).unwrap();
+    let mut knots = a.knots_u().to_vec();
+    knots[3] = knots[3].next_up();
+    let b = NurbsSurface::try_new_rational(
+        a.degree_u(),
+        a.degree_v(),
+        a.control_point_count_u(),
+        a.control_point_count_v(),
+        a.control_points().to_vec(),
+        knots,
+        a.knots_v().to_vec(),
+    )
+    .unwrap();
+    let bound = profile_rows::complete_bound(&a, &b, 1e-12).unwrap();
+    assert!(bound > 0. && bound <= 1e-12, "{bound}");
+}

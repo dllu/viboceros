@@ -605,7 +605,7 @@
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/tests/curve_continuity.rs": "b9f64d944fd6de7b878737583b94177260bfb22034e471adb69376f3f45525e7",
     "docs/sweep1-arc-parameters.md": "9beab6853020f4dea028336cded0e5a48ad4de52ec6e9512270e3c3828fd2f82",
-    "docs/sweep1-automatic-validation.json": "dd00c0517823379ab3c7b3e7f7c41f48bd9ef60795582a03aa02f7400bbcf7ca",
+    "docs/sweep1-automatic-validation.json": "dfd3402100fde65720f00d3658c82fb701d2a82ced599dc458be40876c1cbe14",
     "docs/sweep1-placement.md": "9639d881a4db02f1584c1119be065438ad029fbe27f45479d235e18dc39e985c",
     "docs/sweep1-rail-intervals.md": "c2bdd7931f8d197d21364e3ea11ba4b00b7f7e7a6c903ba33ed0098dfb8e890f",
     "third_party/patches/usd-brep-curve-continuity.cmake": "30e07ba6eaae12e34ae76bca34838f408d4f18952eca88497bf42f35fcaa19b1",
@@ -626,7 +626,7 @@
     "tools/rhino_oracle/observations/sweep1_refit_intervals.json": "dee910dcc3c9bab43907e042772a7f393e457c072219787ede4e14386a5abb5d",
     "tools/rhino_oracle/test_sweep1_arc_parameters.py": "e7666f4d32f2dc1fe947879456f6a186a77aa76589456d14dffa5d189cb771c5",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562",
-    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
+    "tools/rhino_oracle/qualification_sources.py": "8ff4258092968647385c469eefbb4ad70766603e4481e5e6e6982bb60ec1ab58"
   },
   "rail_interval_regressions": {
     "test_functions": 3,
@@ -675,7 +675,8 @@
     "dea23111fd94355f6bb982d5c73d6decefaaa9b6:crates/viboceros-command/src/sweep/arc_station_tests.rs": "a5def1005e739fcc46d0695042194fad25d4a8bfcafa8ca41d8bf6766064f30e",
     "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
     "195f7d445596675cf7ca36a77e567d35a8c93863:crates/viboceros-geometry/src/lib.rs": "cb9b5a2898dbcd86309e9733ce3cb522fe81b0af4a0a2dc18b672156c427b024",
-    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9",
+    "5f293869f95216c8cfe6872c37cd764a18d28403:tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "inventory_update_only": true
 }

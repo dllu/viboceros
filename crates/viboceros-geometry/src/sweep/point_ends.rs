@@ -76,6 +76,9 @@ impl Sweep1 {
             return Err(invalid("sweep sections require positive rational weights").into());
         }
         let curves = sections.iter().map(|s| s.curve.clone()).collect::<Vec<_>>();
+        let curves = crate::loft::prepare_section_regions(&curves, &mut |curve: &NurbsCurve| {
+            curve.clamped_to_active_domain()
+        })?;
         let prepared = prepare(
             &curves,
             MAX_SECTION_CONTROLS,

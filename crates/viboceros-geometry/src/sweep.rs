@@ -110,7 +110,8 @@ impl Sweep1 {
     }
 
     /// Retain rail/frame/blending policy while delegating exact common-basis
-    /// section preparation. The callback receives the current resource limit.
+    /// section preparation after shared region correspondence. The callback
+    /// receives the current resource limit; weights retain Sweep1's policy.
     pub fn try_new_with_section_preparation<E: From<GeometryError>>(
         rail: CurveRef<'_>,
         sections: &[SweepSection],
@@ -181,6 +182,9 @@ impl Sweep1 {
         {
             return Err(invalid("sweep sections require positive rational weights").into());
         }
+        let curves = crate::loft::prepare_section_regions(&curves, &mut |curve: &NurbsCurve| {
+            curve.clamped_to_active_domain()
+        })?;
         let curves = prepare(
             &curves,
             MAX_SECTION_CONTROLS,

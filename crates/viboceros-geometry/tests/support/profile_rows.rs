@@ -93,17 +93,24 @@ fn upper(x: &Rational) -> Option<f64> {
 }
 
 pub fn complete_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
+    complete_oriented_bound(a, b, limit).or_else(|| {
+        // Negation and reordering of stored knots/controls preserve the exact
+        // surface image. Rhino may choose the opposite rail direction.
+        let reversed = b.try_reversed_u().ok()?;
+        complete_oriented_bound(a, &reversed, limit)
+    })
+}
+
+fn complete_oriented_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
     if !limit.is_finite() || limit <= 0. {
         return None;
     }
-    // Shared U clocks are compared exactly from stored binary knots/endpoints;
-    // curve certificates below receive ORIGINAL knots without rounded retiming.
-    if a.degree_u() != b.degree_u()
-        || normalized_u(a) != normalized_u(b)
-        || a.control_point_count_u() != b.control_point_count_u()
-    {
+    // Every curve certificate receives the original binary knots. Charge U
+    // clock changes through complete column proofs before matching V rows.
+    if a.degree_u() != b.degree_u() || a.control_point_count_u() != b.control_point_count_u() {
         return None;
     }
+    let u_error = u_clock_bound(a, b, limit)?;
     let (a, b) = (rows(a), rows(b));
     let delta = a
         .u_weights
@@ -118,6 +125,7 @@ pub fn complete_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<
     let error = upper(
         &(a.weight_error
             + b.weight_error
+            + rat(u_error)
             + Rational::from_integer(2.into()) * delta * &b.radius / minimum),
     )?;
     if error >= limit {
@@ -125,6 +133,34 @@ pub fn complete_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<
     }
     let remaining = (limit - error).next_down();
     let rows = a.curves.iter().zip(&b.curves).collect::<Vec<_>>();
+    let squared_limit = rat(remaining).pow(2);
+    for (a, b) in &rows {
+        let clamped = |c: &NurbsCurve| {
+            c.knots()[..=c.degree()]
+                .iter()
+                .all(|k| k == c.domain().start())
+                && c.knots()[c.control_points().len()..]
+                    .iter()
+                    .all(|k| k == c.domain().end())
+        };
+        if clamped(a) && clamped(b) {
+            for (a, b) in [
+                (a.control_points().first()?, b.control_points().first()?),
+                (a.control_points().last()?, b.control_points().last()?),
+            ] {
+                let distance: Rational = a
+                    .point()
+                    .to_array()
+                    .into_iter()
+                    .zip(b.point().to_array())
+                    .map(|(a, b)| (rat(a) - rat(b)).pow(2))
+                    .sum();
+                if distance > squared_limit {
+                    return None;
+                }
+            }
+        }
+    }
     // Poles make some rows constant. Propose a map from the largest control
     // hull, then validate the SAME map on every complete row and knot limit.
     let anchor = rows
@@ -153,6 +189,40 @@ pub fn complete_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<
         }
     }
     None
+}
+
+fn u_clock_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
+    if normalized_u(a) == normalized_u(b) {
+        return Some(0.);
+    }
+    let mut maximum = 0_f64;
+    for v in 0..b.control_point_count_v() {
+        // The ideal separable tensor uses weights r[u]*w[v]. Its U curves
+        // have the original first-column weights up to a common gauge.
+        let controls = (0..b.control_point_count_u())
+            .map(|u| {
+                viboceros_geometry::WeightedPoint3::try_new(
+                    b.control_point(u, v).unwrap().point(),
+                    b.control_point(u, 0).unwrap().weight(),
+                )
+                .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let original =
+            NurbsCurve::try_new_rational(b.degree_u(), controls.clone(), b.knots_u().to_vec())
+                .ok()?;
+        let retimed =
+            NurbsCurve::try_new_rational(b.degree_u(), controls, a.knots_u().to_vec()).ok()?;
+        let bound = match original.parameter_curve_deviation_bound(&retimed, limit) {
+            Ok(Some(bound)) => bound,
+            Ok(None) | Err(GeometryError::CurveApproximationLimit) => return None,
+            Err(e) => panic!("invalid U-clock certificate: {e}"),
+        };
+        maximum = maximum.max(bound);
+    }
+    // The positive rational V coefficients are convex weights. The maximum
+    // of these complete U-column bounds covers the entire ideal tensor.
+    Some(maximum)
 }
 fn correspondence(a: &NurbsCurve, b: &NurbsCurve, segments: usize) -> Option<Vec<[f64; 2]>> {
     let mut pairs = vec![[0., 0.]];

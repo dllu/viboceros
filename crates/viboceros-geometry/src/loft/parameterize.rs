@@ -23,7 +23,7 @@ struct Section {
     scale: Real,
 }
 
-pub(super) fn prepare<'a, E: From<GeometryError>>(
+pub(crate) fn prepare<'a, E: From<GeometryError>>(
     curves: &'a [NurbsCurve],
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
 ) -> Result<Cow<'a, [NurbsCurve]>, E> {

@@ -329,7 +329,6 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "07a4c0aced5f93815a4ba2423989791777d44bc579a6c8fa506ac5f08d1d9a4f",
     "crates/viboceros-geometry/src/sweep/basis.rs": "d0b9a37b43818988d7e0970739614a8fc13dc705948a99d1cd50d9a08e8cdc08",
     "crates/viboceros-geometry/src/sweep/fit.rs": "c2e18ffc2b31ec7e0a059c7d18a881b8d70a161a054c3aa3c3e5e7380806ae06",
-    "crates/viboceros-geometry/src/sweep/point_ends.rs": "47e5e4e1add87b2510fadb27c9bf3bc7bf0d632ce6ffb3bbbd7b513e07dad35a",
     "crates/viboceros-geometry/src/sweep/rail.rs": "77c32d92fa44a57201a336ead8306ad43f227d1682e995606e7a6b646311e9f3",
     "crates/viboceros-geometry/src/sweep/roadlike.rs": "0cb57f1366696a651b5b5a4636e844d040919c90f66288ab070ee623a6f362ca",
     "crates/viboceros-geometry/src/sweep/tests.rs": "2e823d88a2cc9611b622fd3914b29fc28a44399d6d5fa2e9cea7718ced753d68",
@@ -388,7 +387,7 @@
     "tools/rhino_oracle/observations/sweep1_roadlike_explicit.json": "80569673eff2d345fb4bb67c927c134ff213c6579555c3619c5eb56ee96d376e",
     "tools/rhino_oracle/observations/sweep1_roadlike_sdk_default.json": "087a0899e2c6d4f97ea4c9ce40aa35e7f46017124c629fd89cdf8912ce04255c",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562",
-    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
+    "tools/rhino_oracle/qualification_sources.py": "8ff4258092968647385c469eefbb4ad70766603e4481e5e6e6982bb60ec1ab58"
   },
   "git_sha256": {
     "195f7d445596675cf7ca36a77e567d35a8c93863:crates/viboceros-command/src/sweep.rs": "2bf198e68bb7ed01ffbae908ca1baffb3f09a93b0e26d1d03eabb858faa44ef4",
@@ -400,7 +399,9 @@
     "195f7d445596675cf7ca36a77e567d35a8c93863:docs/sweep1.md": "803b9ae0db9e7229bfcb6e1ddfde336c0a49271c4b8cea9ff5035339c107fcfa",
     "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9",
     "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/rhino_worker.py": "5cf54728caec12ea559a888309e86cc7b6b0675d213c16ce55f4148a99e4fc3e",
-    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/test_sweep1_roadlike.py": "ee9fc609098e39f104f0eeea4ba86ec3b626c0ea149b82cde11e714e3b455745"
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/test_sweep1_roadlike.py": "ee9fc609098e39f104f0eeea4ba86ec3b626c0ea149b82cde11e714e3b455745",
+    "5f293869f95216c8cfe6872c37cd764a18d28403:crates/viboceros-geometry/src/sweep/point_ends.rs": "47e5e4e1add87b2510fadb27c9bf3bc7bf0d632ce6ffb3bbbd7b513e07dad35a",
+    "5f293869f95216c8cfe6872c37cd764a18d28403:tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "inventory_update_only": true
 }

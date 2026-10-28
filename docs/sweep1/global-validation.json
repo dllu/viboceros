@@ -636,7 +636,7 @@
     "tools/rhino_oracle/observations/sweep1_global_shapes.json": "15bf46938631b87245adefcc4095469332cc41e1f1af7c6cec7822aaa47ed234",
     "tools/rhino_oracle/test_surface_distance_bounds.py": "825e88773bed2fd7f0304ce52f06f74e301f3e1b0ee23820e1746774318ac81a",
     "tools/rhino_oracle/test_sweep1_global_shapes.py": "48ecd7e98b01af036be3459422612489b8be31cc49b038809b031886cb2431f3",
-    "tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
+    "tools/rhino_oracle/qualification_sources.py": "8ff4258092968647385c469eefbb4ad70766603e4481e5e6e6982bb60ec1ab58"
   },
   "git_sha256": {
     "dc0dd91bdd92d641203f78a0124e5efd754cdab8:crates/viboceros-geometry/src/lib.rs": "6d9e9fd5ac0f5a46abcdc811643780659c5763685b9f0541db2d034b5fe181eb",
@@ -646,7 +646,8 @@
     "a4eb5070793539b000f97c284edf319dfecc17e7:tools/rhino_oracle/qualification_sources.py": "7219d5ab24aec59c457d9bf7c54bfebf1d99a08e1c9dfee8a79329e043847a65",
     "dea23111fd94355f6bb982d5c73d6decefaaa9b6:tools/rhino_oracle/qualification_sources.py": "d54724e206a97f9845c31193d944d945115182b9805d2d7354c466841909dfb8",
     "195f7d445596675cf7ca36a77e567d35a8c93863:docs/sweep1/validation.md": "4f2fc88bc098c33c9de82fb0d69dbfcecf7e6a63b5c9c01806a5f900aea02e88",
-    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9"
+    "195f7d445596675cf7ca36a77e567d35a8c93863:tools/rhino_oracle/qualification_sources.py": "14d397c670c6f137b5280e77a4f89932359092423bb7c1a2724a435af13920d9",
+    "5f293869f95216c8cfe6872c37cd764a18d28403:tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
   "inventory_update_only": true
 }

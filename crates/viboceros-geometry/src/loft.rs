@@ -5,6 +5,7 @@ use crate::{GeometryError, NurbsCurve, NurbsSurface, Real, WeightedPoint3};
 mod compatible;
 mod interpolate;
 mod parameterize;
+pub(crate) use parameterize::prepare as prepare_section_regions;
 mod points;
 mod rebuild;
 mod refit;

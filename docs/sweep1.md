@@ -73,7 +73,8 @@ reproduces all Rhino multi-section results; see [validation](sweep1/validation.m
 
 The [construction guide](sweep1/construction.md) describes section matching,
 frame transport, rational weight policy, retained/refitted rail bases, and
-continuous-model fitting. Construction is bounded by 256 profiles, 512 controls
+continuous-model fitting. [Region correspondence](sweep1/regions.md) covers
+profiles with unequal corner counts. Construction is bounded by 256 profiles, 512 controls
 per matched profile, 4,096 rail-fit/final U controls, and 262,144 surface controls.
 Native builds reuse usd-brep/SMLib for section preparation and interpolation.
 
