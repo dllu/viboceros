@@ -183,17 +183,15 @@ impl Command for SweepCommand {
                     || (sections.len() > 1
                         && sections.last().unwrap().parameter != *rail.domain().end()))
         });
-        let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
         let style = if roadlike.unwrap_or(false) {
-            SweepFrameStyle::Roadlike(axis.unwrap_or(UnitVector3::try_new(
-                0.,
-                0.,
-                1.,
-                document.tolerance(),
-            )?))
+            match axis {
+                Some(axis) => SweepFrameStyle::Roadlike(axis),
+                None => SweepFrameStyle::roadlike_default(rail, document.tolerance())?,
+            }
         } else {
             SweepFrameStyle::Freeform
         };
+        let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
         let blend = if global.unwrap_or(false) {
             SweepBlend::Global
         } else {
@@ -229,3 +227,6 @@ mod curved_tests;
 mod point_tests;
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod roadlike_tests;

@@ -1,0 +1,531 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "xy-retained",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "xy-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            2.1213203435596424,
+            0.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": true,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "xz-retained",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            0.0,
+            2.1213203435596424
+          ],
+          [
+            0.0,
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "xz-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.1213203435596424,
+            0.0,
+            2.1213203435596424
+          ],
+          [
+            0.0,
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": true,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "yz-retained",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            2.1213203435596424,
+            2.1213203435596424
+          ],
+          [
+            0.0,
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            3.0,
+            0.0
+          ],
+          "end": [
+            1.0,
+            3.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "yz-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            2.1213203435596424,
+            2.1213203435596424
+          ],
+          [
+            0.0,
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            3.0,
+            0.0
+          ],
+          "end": [
+            1.0,
+            3.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": true,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "oblique-retained",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.1213203435596424,
+            4.121320343559642,
+            3.0
+          ],
+          [
+            1.633974596215561,
+            4.366025403784438,
+            4.732050807568878
+          ],
+          [
+            -0.22474487139158916,
+            3.2247448713915894,
+            5.449489742783179
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.1213203435596424,
+            4.121320343559642,
+            3.0
+          ],
+          "end": [
+            3.698670612749268,
+            3.543970074370016,
+            3.5773502691896257
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "oblique-refit",
+      "rail": {
+        "type": "arc",
+        "points": [
+          [
+            3.1213203435596424,
+            4.121320343559642,
+            3.0
+          ],
+          [
+            1.633974596215561,
+            4.366025403784438,
+            4.732050807568878
+          ],
+          [
+            -0.22474487139158916,
+            3.2247448713915894,
+            5.449489742783179
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            3.1213203435596424,
+            4.121320343559642,
+            3.0
+          ],
+          "end": [
+            3.698670612749268,
+            3.543970074370016,
+            3.5773502691896257
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": true,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "line-x",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          5.0,
+          0.0,
+          0.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "line-z",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    },
+    {
+      "op": "sweep1",
+      "id": "spatial",
+      "rail": {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -1.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              5.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "roadlike": true,
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true
+    }
+  ]
+}

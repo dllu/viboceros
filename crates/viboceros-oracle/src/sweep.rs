@@ -125,6 +125,8 @@ pub struct SweepFixture {
     #[serde(default)]
     pub roadlike_axis: Option<[f64; 3]>,
     #[serde(default)]
+    pub roadlike: bool,
+    #[serde(default)]
     pub blend: u8,
     #[serde(default)]
     pub queries: Option<Vec<[f64; 3]>>,
@@ -171,6 +173,7 @@ pub(super) fn run(
         .collect::<Result<Vec<_>, ProbeError>>()?;
     let style = match fixture.roadlike_axis {
         Some(axis) => SweepFrameStyle::Roadlike(Vector3::try_from(axis)?.normalized_nonzero()?),
+        None if fixture.roadlike => SweepFrameStyle::roadlike_default(rail.as_ref(), tolerance)?,
         None => SweepFrameStyle::Freeform,
     };
     let blend = match fixture.blend {
@@ -276,6 +279,8 @@ fn command_surfaces(
     );
     if let Some([x, y, z]) = fixture.roadlike_axis {
         text.push_str(&format!(" FrameStyle=Roadlike Axis={x},{y},{z}"));
+    } else if fixture.roadlike {
+        text.push_str(" FrameStyle=Roadlike");
     }
     for (name, point) in [
         ("StartPoint", fixture.start_point),

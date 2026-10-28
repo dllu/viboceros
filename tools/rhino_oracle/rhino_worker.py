@@ -2341,8 +2341,6 @@ def _sweep1(operation, iterations, tolerance):
             owned.append(_join_close_input(definition))
 
         if operation.get("command", False):
-            if "roadlike_axis" in operation:
-                raise ValueError("roadlike Sweep1 command instrumentation is not implemented")
             def macro(ids):
                 Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
                 return _sweep1_macro(operation, ids, any(curve.IsClosed for curve in owned[1:]))
@@ -2350,6 +2348,8 @@ def _sweep1(operation, iterations, tolerance):
                 lambda obj: _sweep1_record(obj.Geometry, operation), verify_script=True)
             records = [face for output in value["outputs"] for face in output]
             return records, 0
+
+        roadlike_axis = _sweep1_roadlike_axis(operation, rail, tolerance)
 
         def build():
             for brep in result:
@@ -2359,8 +2359,8 @@ def _sweep1(operation, iterations, tolerance):
                 rail, owned[1:],
                 _point(operation["start_point"]) if "start_point" in operation else Rhino.Geometry.Point3d.Unset,
                 _point(operation["end_point"]) if "end_point" in operation else Rhino.Geometry.Point3d.Unset,
-                System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if "roadlike_axis" in operation else 0),
-                _vector(operation["roadlike_axis"]) if "roadlike_axis" in operation else Rhino.Geometry.Vector3d.Unset,
+                System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if operation.get("roadlike", False) or "roadlike_axis" in operation else 0),
+                _vector(roadlike_axis) if roadlike_axis is not None else Rhino.Geometry.Vector3d.Unset,
                 operation.get("closed", False),
                 System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
                 System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
@@ -2372,6 +2372,15 @@ def _sweep1(operation, iterations, tolerance):
     finally:
         for geometry in result + owned:
             geometry.Dispose()
+
+
+def _sweep1_roadlike_axis(operation, rail, tolerance):
+    """Apply documented dialog defaults; SDK Unset has different behavior."""
+    axis = operation.get("roadlike_axis")
+    if axis is None and operation.get("roadlike", False):
+        planar, plane = rail.TryGetPlane(tolerance["absolute"])
+        axis = _xyz(plane.ZAxis) if planar else [0., 0., 1.]
+    return axis
 
 
 def _sweep1_macro(operation, ids, closed_profiles=False):
@@ -2387,7 +2396,15 @@ def _sweep1_macro(operation, ids, closed_profiles=False):
     text += "" if "end_point" in operation else " _Enter"
     if closed_profiles:
         text += " _Enter"  # Accept the authored closed-profile seams.
-    text += " _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
+    if operation.get("roadlike", False) or "roadlike_axis" in operation:
+        text += " _Style=_Roadlike"
+        if "roadlike_axis" in operation:
+            text += " 0,0,0 " + point_text(operation["roadlike_axis"])
+        else:
+            text += " _Enter"  # Script getter explicitly accepts CPlane Z.
+    else:
+        text += " _Style=_Freeform"
+    text += " _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
         "Global" if operation.get("blend", 0) else "Local",
         "Yes" if operation.get("refit_rail", False) else "No")
     return text

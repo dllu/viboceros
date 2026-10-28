@@ -11,6 +11,7 @@ mod fit;
 mod point_ends;
 pub use point_ends::SweepEndPoints;
 mod rail;
+mod roadlike;
 use rail::validate_rail_interval;
 #[cfg(test)]
 mod tests;

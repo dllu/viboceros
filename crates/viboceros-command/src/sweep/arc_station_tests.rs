@@ -43,7 +43,7 @@ fn boundary(atlas: &[&NurbsSurface], v: usize) -> NurbsCurve {
     NurbsCurve::try_new_rational(degree, controls, knots).unwrap()
 }
 
-fn ruled_bound(a: &[&NurbsSurface], b: &[&NurbsSurface], limit: Real) -> Option<Real> {
+pub(super) fn ruled_bound(a: &[&NurbsSurface], b: &[&NurbsSurface], limit: Real) -> Option<Real> {
     let curves = [0, 1].map(|v| [boundary(a, v), boundary(b, v)]);
     for segments in [1, 64, 128, 256] {
         let mut correspondence = vec![[0., 0.]];
