@@ -294,3 +294,58 @@ fn partial_grip_edits_rollback_and_exchange_display_state_across_history() {
     doc.redo().unwrap();
     assert!(doc.control_point_locations(id).is_none());
 }
+
+#[test]
+fn scoped_point_display_off_preserves_other_modes_hidden_grips_selection_and_history() {
+    let mut doc = Document::default();
+    let curve = NurbsCurve::try_clamped_uniform(
+        2,
+        (0..4)
+            .map(|i| Point3::try_new(i as f64, 0., 0.).unwrap())
+            .collect(),
+    )
+    .unwrap();
+    let ids = (0..3)
+        .map(|_| {
+            doc.add_geometry(Geometry::NurbsCurve(curve.clone()))
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    doc.enable_control_points([ids[0], ids[2]]).unwrap();
+    doc.enable_edit_points([ids[1]]).unwrap();
+    let hidden = ControlPointId {
+        object: ids[2],
+        index: 1,
+    };
+    doc.select_control_points([hidden], SelectionMode::Add)
+        .unwrap();
+    doc.hide_selected_control_points();
+    let selected = ControlPointId {
+        object: ids[2],
+        index: 0,
+    };
+    doc.select_control_points([selected], SelectionMode::Add)
+        .unwrap();
+    doc.select_objects_direct([ids[0]], SelectionMode::Add)
+        .unwrap();
+    doc.add_geometry(Geometry::Point(Point3::try_new(99., 0., 0.).unwrap()))
+        .unwrap();
+    doc.undo().unwrap();
+    let undo = doc.undo_label().map(str::to_owned);
+    let redo = doc.redo_label().map(str::to_owned);
+    let old = doc.control_points[&ids[2]].clone();
+    assert_eq!(
+        doc.disable_control_points_for_objects([ids[0], ids[0], ids[1], ObjectId::new()]),
+        2
+    );
+    assert!(doc.control_point_locations(ids[0]).is_none());
+    assert!(doc.control_point_locations(ids[1]).is_none());
+    assert_eq!(doc.control_points[&ids[2]].points, old.points);
+    assert_eq!(doc.control_points[&ids[2]].selected, old.selected);
+    assert_eq!(doc.control_points[&ids[2]].hidden, old.hidden);
+    assert!(doc.is_selected(ids[0]));
+    assert!(doc.selected_control_points().any(|(g, _)| g == selected));
+    assert_eq!(doc.is_control_point_hidden(hidden), Some(true));
+    assert_eq!(doc.undo_label(), undo.as_deref());
+    assert_eq!(doc.redo_label(), redo.as_deref());
+}

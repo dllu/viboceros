@@ -1,0 +1,1858 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "id": "curve-control-postselect-peer",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": true,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [],
+            "on": false,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Success",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-control-postselect-grip",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [],
+            "on": false,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Success",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-control-postcancel-peer",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": true,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-control-postcancel-grip",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-control-postcancel",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-edit-postselect-peer",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": true,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [],
+            "on": false,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Success",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-edit-postselect-grip",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [],
+            "on": false,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Success",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-edit-postcancel-peer",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": true,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-edit-postcancel-grip",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "curve-edit-postcancel",
+      "value": {
+        "unchanged": true,
+        "redo_witness_confirmed": true,
+        "peer_selected": false,
+        "redo_preserved": false,
+        "after": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ],
+        "command_result": "Cancel",
+        "getter_opened": true,
+        "before": [
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          },
+          {
+            "grips": [
+              {
+                "hidden": false,
+                "index": 0,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 1,
+                "point": [
+                  1.259259259259259,
+                  1.7777777777777775,
+                  0.22222222222222227
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 2,
+                "point": [
+                  2.7407407407407405,
+                  1.5555555555555556,
+                  -0.22222222222222215
+                ],
+                "selected": false
+              },
+              {
+                "hidden": false,
+                "index": 3,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false
+              }
+            ],
+            "on": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "f046da6cb5facc6883692946e87df739593d3c983717753d3747fca0d52e5927",
+    "sources": {
+      "generate_pt_off_selected_lifecycle.py": "e045c4f825e6c13fee35a1f56e19ffdc4e699a5cbc4429e300cded28731fc8e3",
+      "pt_off_selected_probe.py": "8ebe122b9aff89ba43b243b22db1f58e16c849e8defa04c9a826ba547bf4fa26",
+      "hide_pt_input.py": "91d60ea4c80917c1ce77ad84bbf4b763cd8c4875f53484127abbe19a132a88ee",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "5835803ac11c27f573d42994692bec55b296e2297d592fba55da719ed7b475fe",
+      "client.py": "abacfb1c445c9d6be57058302950f8fa4d8141cfbb6d3b77d20e16252a3e9822",
+      "structural_sdk.py": "046d2b356e6ffc0fce523e1ec79f277db06e5b4526814cb4eb6a82e8591549f4",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

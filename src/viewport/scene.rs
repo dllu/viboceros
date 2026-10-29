@@ -343,7 +343,7 @@ impl Viewport {
                     continue;
                 }
             } else if let Some(filter) = preview {
-                if !filter.accepts_object(object) {
+                if !filter.accepts_in_document(document, object) {
                     continue;
                 }
             } else if !attributes.is_visible() {

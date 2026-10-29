@@ -143,6 +143,7 @@ mod polyline_closure;
 mod polyline_closure_reference;
 mod polyline_on_mesh;
 mod primitive_input;
+mod pt_off_selected;
 mod round_primitive_input;
 mod selection_sidebar;
 #[cfg(feature = "native-smlib")]

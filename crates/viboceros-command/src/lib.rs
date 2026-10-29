@@ -789,6 +789,12 @@ pub trait Command: Send + Sync {
         Ok(())
     }
 
+    /// Apply command-start effects before opening its object getter, including
+    /// effects that survive cancellation. Direct execution calls this explicitly.
+    fn begin_object_selection(&self, _document: &mut Document) -> Result<(), CommandError> {
+        Ok(())
+    }
+
     /// Runs after command-first selection. Commands may have different cleanup
     /// policies than when invoked on objects selected before command startup.
     fn run_postselected(
@@ -882,6 +888,21 @@ pub trait Command: Send + Sync {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
 
+    /// Finish a getter whose command-start effects have already been applied.
+    fn run_after_object_selection(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+        projection: Option<picking::Projection>,
+    ) -> Result<String, CommandError> {
+        if let Some(projection) = projection {
+            self.run_with_pick_projection(document, arguments, context, true, projection)
+        } else {
+            self.run_postselected(document, arguments, context)
+        }
+    }
+
     fn run_with_pick_projection(
         &self,
         document: &mut Document,
@@ -936,6 +957,13 @@ pub struct CommandRegistry {
     rebuild_mesh_preferences: std::sync::Arc<remembered::Remembered<MeshRebuildOptions>>,
     mesh_from_lines_preferences:
         std::sync::Arc<remembered::Remembered<mesh_from_lines::Preferences>>,
+}
+
+#[derive(Clone, Copy)]
+enum InvocationSelection {
+    Preselected,
+    Postselected,
+    StartedGetter,
 }
 
 impl CommandRegistry {
@@ -1137,6 +1165,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(control_points::PointsOffCommand)
+            .expect("unique built-in command");
+        registry
+            .register(control_points::PtOffSelectedCommand)
             .expect("unique built-in command");
         registry
             .register(control_points::EditPointsOnCommand)
@@ -2260,7 +2291,14 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, false, None, None)
+        self.execute_invocation(
+            document,
+            input,
+            context,
+            InvocationSelection::Preselected,
+            None,
+            None,
+        )
     }
 
     pub fn execute_postselected(
@@ -2269,7 +2307,33 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, true, None, None)
+        self.execute_invocation(
+            document,
+            input,
+            context,
+            InvocationSelection::Postselected,
+            None,
+            None,
+        )
+    }
+
+    /// Complete a getter started with `begin_object_selection`, without repeating
+    /// command-start history effects. The picked owners are postselected inputs.
+    pub fn execute_after_object_selection(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+        projection: Option<picking::Projection>,
+    ) -> Result<String, CommandError> {
+        self.execute_invocation(
+            document,
+            input,
+            context,
+            InvocationSelection::StartedGetter,
+            None,
+            projection,
+        )
     }
 
     /// Accept one atomic step of an already-started interactive command.
@@ -2282,7 +2346,14 @@ impl CommandRegistry {
         context: CommandContext,
         group: &mut viboceros_document::HistoryGroup,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, false, Some(group), None)
+        self.execute_invocation(
+            document,
+            input,
+            context,
+            InvocationSelection::Preselected,
+            Some(group),
+            None,
+        )
     }
 
     /// Execute a point getter with the active camera; other commands retain
@@ -2299,7 +2370,11 @@ impl CommandRegistry {
             document,
             input,
             context,
-            postselected,
+            if postselected {
+                InvocationSelection::Postselected
+            } else {
+                InvocationSelection::Preselected
+            },
             None,
             Some(projection),
         )
@@ -2310,10 +2385,11 @@ impl CommandRegistry {
         document: &mut Document,
         input: &str,
         context: CommandContext,
-        postselected: bool,
+        selection_stage: InvocationSelection,
         group: Option<&mut viboceros_document::HistoryGroup>,
         projection: Option<picking::Projection>,
     ) -> Result<String, CommandError> {
+        let postselected = !matches!(selection_stage, InvocationSelection::Preselected);
         let mut tokens = input.trim_start().splitn(2, char::is_whitespace);
         let name = tokens
             .next()
@@ -2360,7 +2436,9 @@ impl CommandRegistry {
             (arguments, None)
         };
         let run = |document: &mut Document| {
-            if let Some(projection) = projection {
+            if matches!(selection_stage, InvocationSelection::StartedGetter) {
+                command.run_after_object_selection(document, &arguments, context, projection)
+            } else if let Some(projection) = projection {
                 command.run_with_pick_projection(
                     document,
                     &arguments,

@@ -1,0 +1,1580 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-none-none"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": false,
+            "grips": [],
+            "selected": false
+          },
+          {
+            "on": false,
+            "grips": [],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-none-PointsOff"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "Cancel",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nSelect objects to turn points off: _Cancel\nSelect objects to turn points off\nNothing to redo.\n",
+        "undo_called": true,
+        "undo_witness_removed": false,
+        "redo_preserved": false,
+        "peer_selected": false,
+        "getter_opened": true,
+        "after": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-none-PtOffSelected"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": true
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": true
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-owner-none"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": true
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": false,
+            "grips": [],
+            "selected": true
+          },
+          {
+            "on": false,
+            "grips": [],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-owner-PointsOff"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "Success",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": true
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nNothing to redo.\n",
+        "undo_called": true,
+        "undo_witness_removed": false,
+        "redo_preserved": false,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": false,
+            "grips": [],
+            "selected": true
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-owner-PtOffSelected"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-grip-none"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "NotInvoked",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nRedoing Selected point display Redo witness\n",
+        "undo_called": false,
+        "undo_witness_removed": false,
+        "redo_preserved": true,
+        "peer_selected": false,
+        "getter_opened": false,
+        "after": [
+          {
+            "on": false,
+            "grips": [],
+            "selected": false
+          },
+          {
+            "on": false,
+            "grips": [],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-grip-PointsOff"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "command_result": "Cancel",
+        "unchanged": true,
+        "before": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "redo_witness_confirmed": true,
+        "history": "\nSelect objects to turn points off: _Cancel\nSelect objects to turn points off\nNothing to redo.\n",
+        "undo_called": true,
+        "undo_witness_removed": false,
+        "redo_preserved": false,
+        "peer_selected": false,
+        "getter_opened": true,
+        "after": [
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          },
+          {
+            "on": true,
+            "grips": [
+              {
+                "index": 0,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              {
+                "index": 1,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  1.0,
+                  3.0,
+                  1.0
+                ]
+              },
+              {
+                "index": 2,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  3.0,
+                  2.0,
+                  -1.0
+                ]
+              },
+              {
+                "index": 3,
+                "hidden": false,
+                "selected": false,
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ],
+            "selected": false
+          }
+        ],
+        "undo_sources_unchanged": true,
+        "api_redo": false
+      },
+      "id": "curve-control-undo-grip-PtOffSelected"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "bbf5f583784489dc86bcd0a5a14ee3efdf7ff730c02e93f6cf34acbcc1b5d661",
+    "sources": {
+      "generate_pt_off_selected_undo.py": "5abcea66b7b686f3ac4e61300759e67a48053a787c288dbb4b60ba76569f3028",
+      "pt_off_selected_probe.py": "1bcadec80ecd7ce5ba0331cb6d8c8c375c83cee8edc3b31d8a65bdaf9e257632",
+      "hide_pt_input.py": "91d60ea4c80917c1ce77ad84bbf4b763cd8c4875f53484127abbe19a132a88ee",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "5835803ac11c27f573d42994692bec55b296e2297d592fba55da719ed7b475fe",
+      "client.py": "dfbb581bac41227033ca0ad564a0dcab823b2b4b53f81bbe1328ba6aa7787037",
+      "structural_sdk.py": "046d2b356e6ffc0fce523e1ec79f277db06e5b4526814cb4eb6a82e8591549f4",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

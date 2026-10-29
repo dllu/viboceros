@@ -72,6 +72,7 @@ mod interface;
 mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
+pub mod pt_off_selected;
 pub mod select_uv_rows;
 mod self_intersect;
 mod surface_closest;
@@ -342,6 +343,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PtOffSelected {
+        id: String,
+        #[serde(flatten)]
+        fixture: pt_off_selected::Fixture,
+    },
     #[serde(alias = "grip_weight_nurbs")]
     GripWeight {
         id: String,
@@ -2804,6 +2810,7 @@ impl Operation {
             | Self::ShrinkTrimmedSrfCommand { id, .. }
             | Self::ExtractSrfCommand { id, .. }
             | Self::CopyOptionsCommand { id, .. }
+            | Self::PtOffSelected { id, .. }
             | Self::GripNavigation { id, .. }
             | Self::GripVisibility { id, .. }
             | Self::DeleteGrips { id, .. }
@@ -3338,6 +3345,7 @@ fn execute(
         Operation::GripVisibility { fixture, .. } => grip_visibility::run(fixture, iterations)?,
         Operation::DeleteGrips { fixture, .. } => delete_grips::run(fixture, iterations)?,
         Operation::GripWeight { fixture, .. } => grip_weight::run(fixture, iterations)?,
+        Operation::PtOffSelected { fixture, .. } => pt_off_selected::run(fixture, iterations)?,
         Operation::GripNavigation { fixture, .. } => grip_navigation::run(fixture, iterations)?,
         Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
         Operation::ExtractSrfCommand { fixture, .. } => extract_surface::run(fixture, tolerance)?,

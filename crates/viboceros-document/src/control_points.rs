@@ -259,9 +259,21 @@ impl Document {
             .copied()
             .filter(|&id| self.object(id).is_some())
             .collect::<Vec<_>>();
-        let count = active.len();
-        for id in active {
-            self.control_points.remove(&id);
+        self.disable_control_points_for_objects(active)
+    }
+
+    /// Turn off control or edit-point display for these existing owners only.
+    /// Duplicate/unknown IDs have no effect. This transient state does not
+    /// change geometry, object selection, Undo or Redo.
+    pub fn disable_control_points_for_objects(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> usize {
+        let mut count = 0;
+        for id in ids {
+            if self.object(id).is_some() && self.control_points.remove(&id).is_some() {
+                count += 1;
+            }
         }
         count
     }

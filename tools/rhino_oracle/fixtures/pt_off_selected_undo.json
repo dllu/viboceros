@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-none-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-none",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-none-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-none",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-none-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-none",
+      "control_action": "PtOffSelected"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-owner-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-owner",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-owner-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-owner",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-owner-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-owner",
+      "control_action": "PtOffSelected"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-grip-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-grip",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-grip-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-grip",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-undo-grip-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "undo-grip",
+      "control_action": "PtOffSelected"
+    }
+  ]
+}

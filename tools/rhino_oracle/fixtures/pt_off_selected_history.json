@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-none-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "none",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-none-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "none",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-none-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "none",
+      "control_action": "PtOffSelected"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-owner-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-owner-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-owner-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner",
+      "control_action": "PtOffSelected"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-grip-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "grip",
+      "control_action": "none"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-grip-PointsOff",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "grip",
+      "control_action": "PointsOff"
+    },
+    {
+      "op": "pt_off_selected_history",
+      "id": "curve-control-grip-PtOffSelected",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "grip",
+      "control_action": "PtOffSelected"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-//! Control-point display commands leave model history and Redo intact.
+//! Transient control and edit-point display commands.
 use super::*;
 
 pub(super) struct PointsOnCommand;
@@ -75,3 +75,81 @@ impl Command for EditPointsOnCommand {
         Ok(format!("Edit points on for {count} object(s)"))
     }
 }
+
+/// Unlike PointsOff, native PtOffSelected discards Redo at command startup.
+pub(super) struct PtOffSelectedCommand;
+impl Command for PtOffSelectedCommand {
+    fn name(&self) -> &'static str {
+        "PtOffSelected"
+    }
+    fn records_history(&self) -> bool {
+        false
+    }
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        require_consumed(arguments, 0, "PtOffSelected")?;
+        Ok(Some(ObjectSelectionPrompt {
+            command: "PtOffSelected",
+            filter: ObjectSelectionFilter::PointDisplayOwners,
+            options: Vec::new(),
+            menus: Vec::new(),
+            choices: Vec::new(),
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+        }))
+    }
+    fn begin_object_selection(&self, document: &mut Document) -> Result<(), CommandError> {
+        run_command_transaction(document, self.name(), |document| {
+            document.record_accepted_unchanged_command()?;
+            Ok(())
+        })
+    }
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "PtOffSelected")?;
+        self.begin_object_selection(document)?;
+        close_selected_displays(document, false)
+    }
+    fn run_after_object_selection(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+        _projection: Option<picking::Projection>,
+    ) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "PtOffSelected")?;
+        close_selected_displays(document, true)
+    }
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "PtOffSelected")?;
+        self.begin_object_selection(document)?;
+        close_selected_displays(document, true)
+    }
+}
+
+fn close_selected_displays(
+    document: &mut Document,
+    postselected: bool,
+) -> Result<String, CommandError> {
+    let ids = document
+        .selected_objects()
+        .filter(|o| ObjectSelectionFilter::PointDisplayOwners.accepts_in_document(document, o))
+        .map(|o| o.id())
+        .collect::<Vec<_>>();
+    if ids.is_empty() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    let count = document.disable_control_points_for_objects(ids.iter().copied());
+    if postselected {
+        document.select_objects_direct(ids, SelectionMode::Remove)?;
+    }
+    Ok(format!("Points off for {count} object(s)"))
+}
+
+#[cfg(test)]
+mod tests;

@@ -47,6 +47,7 @@ pub enum ObjectSelectionFilter {
     LineFitPoints,
     ControlPoints,
     EditPoints,
+    PointDisplayOwners,
     ControlPolygons,
     ExtractPoints,
     Grips,
@@ -61,6 +62,18 @@ pub enum ObjectSelectionFilter {
 }
 
 impl ObjectSelectionFilter {
+    /// Evaluate filters that depend on transient document state as well as geometry.
+    pub fn accepts_in_document(
+        self,
+        document: &Document,
+        object: &viboceros_document::Object,
+    ) -> bool {
+        match self {
+            Self::PointDisplayOwners => document.control_point_locations(object.id()).is_some(),
+            _ => self.accepts_object(object),
+        }
+    }
+
     /// Apply both geometry and attribute restrictions to a document object.
     /// Visibility and locking remain the caller's selection-policy decision.
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
@@ -126,7 +139,7 @@ impl ObjectSelectionFilter {
                 geometry,
                 Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_)
             ),
-            Self::Grips => false,
+            Self::Grips | Self::PointDisplayOwners => false,
             Self::ControlPoints => geometry.supports_control_points(),
             Self::EditPoints => geometry.supports_edit_points(),
             Self::ControlPolygons => crate::extract_control_polygon::accepts(geometry),
@@ -396,6 +409,26 @@ impl ObjectSelectionPrompt {
 }
 
 impl CommandRegistry {
+    /// Start an object-selection command before any picks, even if it is canceled.
+    pub fn begin_object_selection(
+        &self,
+        document: &mut Document,
+        prompt: &ObjectSelectionPrompt,
+    ) -> Result<(), CommandError> {
+        let name = normalize_command_name(
+            prompt
+                .command
+                .split_whitespace()
+                .next()
+                .ok_or(CommandError::EmptyInput)?,
+        );
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].begin_object_selection(document)
+    }
+
     /// Whether Enter without any eligible pick ends this query.
     pub fn cancel_empty_object_selection(&self, prompt: &ObjectSelectionPrompt) -> bool {
         self.lookup

@@ -450,7 +450,7 @@ fn selection_candidate(
         return false;
     }
     match preview {
-        Some(filter) => filter.accepts_object(object),
+        Some(filter) => filter.accepts_in_document(document, object),
         None => {
             attributes.is_visible()
                 && !attributes.is_locked()

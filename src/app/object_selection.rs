@@ -258,6 +258,9 @@ impl PendingObjectCommand {
                 "Enter a positive control point weight; Enter uses the default, Esc cancels"
             };
         }
+        if self.description.filter == ObjectSelectionFilter::PointDisplayOwners {
+            return "Select objects with control or edit points on; Enter turns points off, Esc cancels";
+        }
         if self.description.command == "HidePt" {
             return "Select control or edit points to hide; Enter hides, Esc cancels";
         }
@@ -734,11 +737,12 @@ impl VibocerosApp {
             let Some(target) = self.point_cloud_prompt_target(input) else {
                 return false;
             };
-            if self
-                .document
-                .selected_objects()
-                .any(|object| object.id() != target && description.filter.accepts_object(object))
-            {
+            if self.document.selected_objects().any(|object| {
+                object.id() != target
+                    && description
+                        .filter
+                        .accepts_in_document(&self.document, object)
+            }) {
                 return false;
             }
             let selection_before = self.document.selected_object_ids().collect();
@@ -838,7 +842,7 @@ impl VibocerosApp {
         let selected_objects = self
             .document
             .selected_objects()
-            .filter(|o| description.filter.accepts_object(o))
+            .filter(|o| description.filter.accepts_in_document(&self.document, o))
             .filter(|o| {
                 graph_allowed
                     .as_ref()
@@ -969,19 +973,27 @@ impl VibocerosApp {
             }
         } else {
             self.cancel_interactive_command(false);
+            if let Err(error) = self
+                .commands
+                .begin_object_selection(&mut self.document, &description)
+            {
+                self.push_log(format!("Error: {error}"));
+                return true;
+            }
             if description.allows_selection_options()
                 && let Err(error) = self.commands.accept_object_selection_options(&description)
             {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
-            let selection_before = (description.command == "Sweep1")
+            let selection_before = (description.command == "Sweep1"
+                || description.filter == ObjectSelectionFilter::PointDisplayOwners)
                 .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
             let rail_revolve_partial = matches!(description.command, "RailRevolve" | "Sweep1")
                 .then(|| {
                     self.document
                         .selected_objects()
-                        .filter(|o| description.filter.accepts_object(o))
+                        .filter(|o| description.filter.accepts_in_document(&self.document, o))
                         .map(|o| o.id())
                         .collect::<Vec<_>>()
                 });
@@ -989,7 +1001,7 @@ impl VibocerosApp {
                 let _ = self
                     .document
                     .set_transient_selection(rail_revolve_partial.unwrap_or_default());
-            } else {
+            } else if description.filter != ObjectSelectionFilter::PointDisplayOwners {
                 self.document.clear_selection();
                 if let Some(ids) = rail_revolve_partial {
                     let _ = self
@@ -1193,7 +1205,7 @@ impl VibocerosApp {
                 let all = self
                     .document
                     .objects()
-                    .filter(|object| filter.accepts_object(object))
+                    .filter(|object| filter.accepts_in_document(&self.document, object))
                     .filter(|object| {
                         self.document
                             .layer(object.attributes().layer_id())
@@ -1258,7 +1270,12 @@ impl VibocerosApp {
                 ) && self
                     .document
                     .selected_objects()
-                    .filter(|o| pending.description.filter.accepts_object(o))
+                    .filter(|o| {
+                        pending
+                            .description
+                            .filter
+                            .accepts_in_document(&self.document, o)
+                    })
                     .count()
                     == 1
                 {
@@ -1279,7 +1296,10 @@ impl VibocerosApp {
                 let has_eligible_picks =
                     self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
-                            && pending.description.filter.accepts_object(o)
+                            && pending
+                                .description
+                                .filter
+                                .accepts_in_document(&self.document, o)
                             && graph_allowed
                                 .as_ref()
                                 .is_none_or(|ids| ids.contains(&o.id()))
@@ -1454,22 +1474,26 @@ impl VibocerosApp {
             let context = viboceros_command::CommandContext {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),
             };
-            let result =
-                if let Some(projection) = self.viewports[self.active_viewport].pick_projection() {
-                    self.commands.execute_with_pick_projection(
-                        &mut self.document,
-                        &command,
-                        context,
-                        pending.postselected,
-                        projection,
-                    )
-                } else if pending.postselected {
-                    self.commands
-                        .execute_postselected(&mut self.document, &command, context)
-                } else {
-                    self.commands
-                        .execute_in_context(&mut self.document, &command, context)
-                };
+            let result = if pending.postselected {
+                self.commands.execute_after_object_selection(
+                    &mut self.document,
+                    &command,
+                    context,
+                    self.viewports[self.active_viewport].pick_projection(),
+                )
+            } else if let Some(projection) = self.viewports[self.active_viewport].pick_projection()
+            {
+                self.commands.execute_with_pick_projection(
+                    &mut self.document,
+                    &command,
+                    context,
+                    pending.postselected,
+                    projection,
+                )
+            } else {
+                self.commands
+                    .execute_in_context(&mut self.document, &command, context)
+            };
             match result {
                 Ok(message) => {
                     self.object_prompt = None;
@@ -1555,7 +1579,10 @@ impl VibocerosApp {
                     .selectable_objects()
                     .filter(|o| {
                         Some(o.id()) != pending.excluded_object
-                            && pending.description.filter.accepts_object(o)
+                            && pending
+                                .description
+                                .filter
+                                .accepts_in_document(&self.document, o)
                     })
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
@@ -1871,13 +1898,19 @@ impl VibocerosApp {
             if let Some(selection_before) = pending.selection_before {
                 if pending.description.command == "Sweep1" {
                     self.restore_curve_selection(selection_before);
+                } else if pending.description.filter == ObjectSelectionFilter::PointDisplayOwners {
+                    if let Err(error) = self.document.set_transient_selection(selection_before) {
+                        self.push_log(format!("Error restoring selection: {error}"));
+                    }
                 } else if let Err(error) = self
                     .document
                     .select_objects_direct(selection_before, SelectionMode::Replace)
                 {
                     self.push_log(format!("Error restoring selection: {error}"));
                 }
-            } else if pending.postselected {
+            } else if pending.postselected
+                && pending.description.filter != ObjectSelectionFilter::PointDisplayOwners
+            {
                 self.document.clear_selection();
             }
             self.command_input.clear();
@@ -1931,7 +1964,10 @@ impl VibocerosApp {
             let eligible = self
                 .document
                 .objects()
-                .filter(|object| requested.contains(&object.id()) && filter.accepts_object(object))
+                .filter(|object| {
+                    requested.contains(&object.id())
+                        && filter.accepts_in_document(&self.document, object)
+                })
                 .filter(|object| {
                     self.document
                         .layer(object.attributes().layer_id())
@@ -1974,7 +2010,7 @@ impl VibocerosApp {
             .selectable_objects()
             .filter(|object| requested.contains(&object.id()))
             .filter(|object| Some(object.id()) != excluded)
-            .filter(|object| filter.accepts_object(object))
+            .filter(|object| filter.accepts_in_document(&self.document, object))
             .filter(|object| {
                 allowed
                     .as_ref()

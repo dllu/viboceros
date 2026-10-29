@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postselect-peer",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postselect-peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postselect-grip",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postselect-grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postcancel-peer",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postcancel-peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postcancel-grip",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postcancel-grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postcancel",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postcancel"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-postselect-peer",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "postselect-peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-postselect-grip",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "postselect-grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-postcancel-peer",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "postcancel-peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-postcancel-grip",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "postcancel-grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-postcancel",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "postcancel"
+    }
+  ]
+}

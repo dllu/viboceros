@@ -248,7 +248,8 @@ impl Viewport {
             document
                 .objects()
                 .filter(|object| {
-                    filter.accepts_object(object) && selection_candidate(document, object, preview)
+                    filter.accepts_in_document(document, object)
+                        && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {
                     let display = self.display_cache.borrow_mut().get(
@@ -416,7 +417,7 @@ impl Viewport {
         let mut hits = Vec::new();
         for object in document.objects() {
             if Some(object.id()) == excluded
-                || !filter.accepts_object(object)
+                || !filter.accepts_in_document(document, object)
                 || !selection_candidate(document, object, preview)
             {
                 continue;
@@ -570,7 +571,8 @@ impl Viewport {
         document
             .objects()
             .filter(|object| {
-                filter.accepts_object(object) && selection_candidate(document, object, preview)
+                filter.accepts_in_document(document, object)
+                    && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
                 let display = self.display_cache.borrow_mut().get(
@@ -608,7 +610,8 @@ impl Viewport {
         document
             .objects()
             .filter(|object| {
-                filter.accepts_object(object) && selection_candidate(document, object, preview)
+                filter.accepts_in_document(document, object)
+                    && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
                 let display = self.display_cache.borrow_mut().get(
@@ -649,7 +652,8 @@ impl Viewport {
         document
             .objects()
             .filter(|object| {
-                filter.accepts_object(object) && selection_candidate(document, object, preview)
+                filter.accepts_in_document(document, object)
+                    && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
                 let display = self.display_cache.borrow_mut().get(
@@ -699,7 +703,7 @@ impl Viewport {
                 .objects()
                 .filter(|object| {
                     object.id() != source_id
-                        && filter.accepts_object(object)
+                        && filter.accepts_in_document(document, object)
                         && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {
@@ -752,7 +756,7 @@ impl Viewport {
                 .objects()
                 .filter(|object| {
                     object.id() != source_id
-                        && filter.accepts_object(object)
+                        && filter.accepts_in_document(document, object)
                         && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {

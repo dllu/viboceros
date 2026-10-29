@@ -1,0 +1,228 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "pt_off_selected",
+      "id": "line-control-owner",
+      "kind": "line",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "line-control-grip",
+      "kind": "line",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "line-edit-owner",
+      "kind": "line",
+      "mode": "edit",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "line-edit-grip",
+      "kind": "line",
+      "mode": "edit",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-owner",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-grip",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-owner",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-edit-grip",
+      "kind": "curve",
+      "mode": "edit",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "rational-control-owner",
+      "kind": "rational",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "rational-control-grip",
+      "kind": "rational",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "rational-edit-owner",
+      "kind": "rational",
+      "mode": "edit",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "rational-edit-grip",
+      "kind": "rational",
+      "mode": "edit",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "surface-control-owner",
+      "kind": "surface",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "surface-control-grip",
+      "kind": "surface",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "mesh-control-owner",
+      "kind": "mesh",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "mesh-control-grip",
+      "kind": "mesh",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "subd-control-owner",
+      "kind": "subd",
+      "mode": "control",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "subd-control-grip",
+      "kind": "subd",
+      "mode": "control",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "subd-edit-owner",
+      "kind": "subd",
+      "mode": "edit",
+      "pattern": "owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "subd-edit-grip",
+      "kind": "subd",
+      "mode": "edit",
+      "pattern": "grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-both-owners",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "both-owners"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-both-grips",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "both-grips"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-none",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "none"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-peer",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-mixed",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "mixed"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-group-owner",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "group-owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-group-grip",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "group-grip"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-owner-peer",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner-peer"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-off-owner",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "off-owner"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-postselect",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "postselect"
+    },
+    {
+      "op": "pt_off_selected",
+      "id": "curve-control-owner-hidden-peer",
+      "kind": "curve",
+      "mode": "control",
+      "pattern": "owner-hidden-peer"
+    }
+  ]
+}

@@ -170,6 +170,8 @@ PROBES = {
     'mesh_face_collapse_mode': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'mesh_face_collapse_getter': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'mesh_face_collapse': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe')),
+    'pt_off_selected_history': ('pt_off_selected_probe', ('join_probe','merge_edges_probe','hide_pt_input')),
+    'pt_off_selected': ('pt_off_selected_probe', ('join_probe','merge_edges_probe','hide_pt_input')),
     'typed_selection': ('typed_selection_probe', ('join_probe','merge_edges_probe')),
     'flow_line': ('flow_line_probe', ('flow_probe','geometry_validity_probe','merge_edges_probe','join_probe')),
     'flow_grips': ('flow_grips_probe', ('geometry_validity_probe','flow_probe','merge_edges_probe','join_probe')),

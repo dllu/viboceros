@@ -33,7 +33,7 @@ class GripVisibilityTests(TestCase):
         self.assertEqual(sum(row['value']['redo_retained'] for row in r['results']), 31)
         for name, expected in r['provenance']['sources'].items():
             data = (HERE / name).read_bytes()
-            if hashlib.sha256(data).hexdigest() != expected and name in ('rhino_worker.py', 'structural_sdk.py'):
+            if hashlib.sha256(data).hexdigest() != expected and name in ('rhino_worker.py', 'structural_sdk.py', 'hide_pt_input.py'):
                 data = gzip.decompress((HERE / 'observations/source_snapshots' / (expected + '.gz')).read_bytes())
             self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
         for name, expected in r['provenance']['fixtures'].items():

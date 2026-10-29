@@ -5,6 +5,12 @@ purple squares; selected points appear orange. `PointsOff` hides all control
 points and clears grip selection while retaining object selection. These display
 commands preserve model geometry, Undo and Redo.
 
+[`PtOffSelected`](commands/pt-off-selected.md) closes displays on selected owners
+only, preserving unrelated object and grip picks. It also supports command-first
+owner selection. Starting this command discards Redo, including on Cancel;
+it adds one unchanged-command Undo step. Replaying that step leaves the point
+display unchanged.
+
 `HidePt` hides selected visible grips, or opens a grip picker when none are
 selected. `ShowPt` reveals hidden grips on enabled displays. Hidden grips keep
 their original indices and locations; they do not draw or participate in mouse,
