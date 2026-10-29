@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "flat-corner",
+      "case": "flat-corner"
+    },
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "cyclic-flat-corner",
+      "case": "cyclic-flat-corner"
+    },
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "reversed-flat-corner",
+      "case": "reversed-flat-corner"
+    },
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "tilted-flat-corner",
+      "case": "tilted-flat-corner"
+    },
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "untouched-flat-corner",
+      "case": "untouched-flat-corner"
+    },
+    {
+      "op": "mesh_insert_degenerate",
+      "id": "both-components",
+      "case": "both-components"
+    }
+  ]
+}

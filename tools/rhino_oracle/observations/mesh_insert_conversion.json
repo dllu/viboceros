@@ -1,0 +1,1260 @@
+{
+  "iterations": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              4
+            ],
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.7930946291560099,
+              0.0,
+              0.0
+            ],
+            [
+              3.19846547314578,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-edge-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              0,
+              1,
+              5
+            ],
+            [
+              1,
+              4,
+              5
+            ],
+            [
+              2,
+              0,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              4.0,
+              0.6011508951406646,
+              0.0
+            ],
+            [
+              4.0,
+              2.407289002557545,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-edge-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.407289002557545,
+              0.0
+            ],
+            [
+              0.0,
+              0.6011508951406646,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-edge-3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              4,
+              5
+            ],
+            [
+              0,
+              1,
+              4
+            ],
+            [
+              1,
+              2,
+              4
+            ],
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              0,
+              5,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.55076726342711,
+              0.0
+            ],
+            [
+              0.0,
+              1.6561381074168797,
+              0.0
+            ],
+            [
+              0.0,
+              0.4576726342710993,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-three"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.6011508951406646,
+              0.0
+            ],
+            [
+              0.0,
+              2.407289002557545,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-reverse"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.55076726342711,
+              0.0
+            ],
+            [
+              0.0,
+              1.95153452685422,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "flat-same-high"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              4
+            ],
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.7930946291560099,
+              0.0,
+              0.0
+            ],
+            [
+              3.19846547314578,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-edge-0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              3,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              4.0,
+              0.6011508951406646,
+              0.24046035805626578
+            ],
+            [
+              4.0,
+              2.407289002557545,
+              0.962915601023018
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-edge-1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              4,
+              5
+            ],
+            [
+              0,
+              1,
+              4
+            ],
+            [
+              1,
+              2,
+              4
+            ],
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              0,
+              5,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.5848149968170295,
+              0.34464199957560393
+            ],
+            [
+              0.0,
+              1.7058125509554496,
+              0.22744167346072663
+            ],
+            [
+              0.0,
+              0.5282809725371063,
+              0.0704374630049475
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-three"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.6692530629111333,
+              0.08923374172148445
+            ],
+            [
+              0.0,
+              2.4438429064430025,
+              0.32584572085906705
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-reverse"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              4,
+              5
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              1.1170467617462778,
+              0.14893956823283705
+            ],
+            [
+              0.0,
+              0.5282809725371063,
+              0.0704374630049475
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-same-low"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.5848149968170295,
+              0.34464199957560393
+            ],
+            [
+              0.0,
+              1.9960492076078582,
+              0.26613989434771446
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "warped-same-high"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              1,
+              5
+            ],
+            [
+              1,
+              0,
+              4
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              1,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.4438429064430025,
+              0.32584572085906705
+            ],
+            [
+              0.0,
+              0.6692530629111333,
+              0.08923374172148445
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "warped-reversed-face"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              2,
+              1,
+              5
+            ],
+            [
+              2,
+              0,
+              1
+            ],
+            [
+              2,
+              3,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.4438429064430025,
+              0.32584572085906705
+            ],
+            [
+              0.0,
+              0.6692530629111333,
+              0.08923374172148445
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              1.2
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "warped-cyclic-face"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              0,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              -0.8040664961636829,
+              2.4121994884910487,
+              0.0
+            ],
+            [
+              -0.20314578005115083,
+              0.6094373401534525,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              6.0,
+              1.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -1.0,
+              3.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      "id": "skewed-flat"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              4,
+              5
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              4.833097571464139,
+              0.3222065047642759
+            ],
+            [
+              0.0,
+              1.2368048797048632,
+              0.08245365864699089
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              6.0,
+              1.2
+            ],
+            [
+              0.0,
+              6.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "tall-warp"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.3914411597181116,
+              0.3188588212957482
+            ],
+            [
+              0.0,
+              0.6168513161862426,
+              0.08224684215816568
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "triangle"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "result_valid": true,
+        "validity_log": [
+          "True",
+          "None"
+        ],
+        "valid": true,
+        "converted": true,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              2.3914411597181116,
+              0.3188588212957482
+            ],
+            [
+              0.0,
+              0.6168513161862426,
+              0.08224684215816568
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.4
+            ]
+          ]
+        }
+      },
+      "id": "triangle-ngon"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "431370c331503c370517be1772f2a051d95a13a3f2c66b23a59b790d8cc80410",
+    "sources": {
+      "generate_mesh_insert_conversion.py": "8053d99b6236f1d0db11cfc7e734cadc13e2d14382bce215006e7ac4e4911741",
+      "generate_mesh_insert_validation.py": "d2cd79615571884755e2c1c6954b7c51c5c9dc93121bef759d5a7425749f3db7",
+      "mesh_insert_validation_probe.py": "a415114a0eb3cf2f164bacfb8ea366b92374b4796a266fcfb6a840fa6f98fec9",
+      "fixtures/mesh_insert_validation_assets.json": "ba230eadc50ae4fd042633deda82f66b266afc1bb464220d18bbcf5eea6382a5",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "0ccc32c8a431f38e52930fe5453e9624dbf2aa1cdfd5dfd6c8b6f93786df0069",
+      "structural_sdk.py": "defdf57ddacec651c4b9afb254120a0ebd7adee7b439c74ef4b1c8e655856cf9",
+      "rhino_worker.py": "2e990986a5b91e795d5b9c3f715fb8351258f1f3b77c897a86b6f16702928560",
+      "oracle_errors.py": "dba935b91b74e1d300e54049c06468df4aa83846a0dd7ed89df0187739abde1a",
+      "capture_preflight.py": "96c61ac732c40be972f0d15282eb782243e4f521b5f80ec6f8349be32814c7a5",
+      "capture_preflight_geometry.py": "ce4872f392946d60e81def365c2aa717ac742e540fea23691a802baa9103ddbc",
+      "capture_preflight_construction.py": "c4faf12bbbd4eb6efa6485859bbc3d10121dd6c3b475379fa09b45cf45c4b351",
+      "capture_preflight_surfaces.py": "f18119b51c37d31b8fb6a07d63eabc36aa0498f17111cf641e8db54380566040",
+      "capture_preflight_components.py": "5cd6d71fb2358085c31e63dd56b3cea854d9daec1f78b1a525a8088734af7a1b",
+      "capture_preflight_curves.py": "197cb7c5bf715f96e2f66cc541637564e1ada98b0225a7e9aa731121a5f73ae6",
+      "capture_preflight_modeling.py": "12e6eed2bf8173e302b668d9e07d20d0f16ad4f6f3f91b79b31bcb27aad68ab9",
+      "capture_preflight_picking.py": "0a7a71d2fcf407fc84d1ecb7e7c4838e13c2fa0045f8c6447a05f4d860cc22fe",
+      "capture_preflight_common.py": "f9e8bad940a9f33f541fcb5a2f27fefd1d4de2993c5e95e03439f49577142ee3",
+      "capture_family.py": "9a64c5c67362c1a5e21990674921ebabfffde45007c0cdab9d0517abe1a4dfbe"
+    }
+  }
+}

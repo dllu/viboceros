@@ -232,6 +232,33 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+MESH_INSERT_SOURCE_MODULES = [
+    'crates/viboceros-geometry/src/mesh/insert.rs',
+    'crates/viboceros-geometry/src/mesh/insert/source.rs',
+    'crates/viboceros-geometry/src/mesh/face_records.rs',
+    'crates/viboceros-geometry/src/mesh/native.rs',
+    'crates/viboceros-geometry/src/mesh/triangulate.rs',
+    'crates/viboceros-geometry/src/edge_insertion.rs',
+    'crates/viboceros-geometry/tests/mesh_insert_sources.rs',
+    'crates/viboceros-command/tests/mesh_insert_paths.rs',
+    'src/app/crease/tests/insert_point.rs',
+    'tools/rhino_oracle/mesh_insert_inputs.py',
+    'tools/rhino_oracle/mesh_insert_evidence.py',
+    'tools/rhino_oracle/mesh_insert_paths_cases.py',
+    'tools/rhino_oracle/mesh_insert_paths_probe.py',
+    'tools/rhino_oracle/generate_mesh_insert_paths.py',
+    'tools/rhino_oracle/generate_mesh_insert_disconnected.py',
+    'tools/rhino_oracle/mesh_insert_degenerate_cases.py',
+    'tools/rhino_oracle/mesh_insert_degenerate_probe.py',
+    'tools/rhino_oracle/generate_mesh_insert_degenerate.py',
+    'tools/rhino_oracle/mesh_insert_validation_probe.py',
+    'tools/rhino_oracle/generate_mesh_insert_validation.py',
+    'tools/rhino_oracle/generate_mesh_insert_conversion.py',
+    'tools/rhino_oracle/generate_insert_point_mesh_repeats.py',
+    'tools/rhino_oracle/test_mesh_insert_sources.py',
+    'tools/rhino_oracle/fixtures/mesh_insert_retained_gaps.json',
+]
+
 SUBD_INSERT_MODULES = [
     'crates/viboceros-geometry/src/edge_insertion.rs',
     'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
@@ -364,6 +391,8 @@ def with_shared_sources(paths):
 def _expand_sources_once(paths):
     if 'tools/rhino_oracle/capture_family.py' in paths or any(p in paths for p in ORACLE_CLIENT_MODULES):
         paths = [*paths, *ORACLE_CLIENT_MODULES]
+    if any(p in paths for p in MESH_INSERT_SOURCE_MODULES):
+        paths = [*paths, *MESH_INSERT_SOURCE_MODULES]
     if any(p in paths for p in SUBD_INSERT_MODULES):
         paths = [*paths, *SUBD_INSERT_MODULES]
     if any(p in paths for p in SUBD_FACE_CUSTOM_MODULES):

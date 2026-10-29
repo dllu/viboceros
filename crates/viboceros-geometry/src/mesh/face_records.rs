@@ -96,16 +96,26 @@ pub(super) fn validate_geometry(
     tolerance: Tolerance,
 ) -> Result<(), GeometryError> {
     for (index, face) in faces.iter().copied().enumerate() {
-        match face {
-            MeshFace::Triangle(triangle) => {
-                validate_triangle(vertices, triangle, index, false, tolerance)?
-            }
-            MeshFace::Quad([a, b, c, d]) => {
-                validate_triangle(vertices, [a, b, c], index, true, tolerance)?;
-                validate_triangle(vertices, [a, c, d], index, true, tolerance)?;
-                if vertices[b as usize] == vertices[d as usize] {
-                    return Err(GeometryError::DegenerateQuad { face: index });
-                }
+        validate_face(vertices, face, index, tolerance)?;
+    }
+    Ok(())
+}
+
+pub(super) fn validate_face(
+    vertices: &[Point3],
+    face: MeshFace,
+    index: usize,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    match face {
+        MeshFace::Triangle(triangle) => {
+            validate_triangle(vertices, triangle, index, false, tolerance)?
+        }
+        MeshFace::Quad([a, b, c, d]) => {
+            validate_triangle(vertices, [a, b, c], index, true, tolerance)?;
+            validate_triangle(vertices, [a, c, d], index, true, tolerance)?;
+            if vertices[b as usize] == vertices[d as usize] {
+                return Err(GeometryError::DegenerateQuad { face: index });
             }
         }
     }

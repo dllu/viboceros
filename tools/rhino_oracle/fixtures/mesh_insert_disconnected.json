@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_insert_paths",
+      "id": "islands-reject",
+      "case": "islands-reject"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "islands-reverse",
+      "case": "islands-reverse"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "islands-return",
+      "case": "islands-return"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "islands-undo",
+      "case": "islands-undo"
+    }
+  ]
+}

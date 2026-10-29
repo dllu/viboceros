@@ -5,8 +5,8 @@
 `SubD::try_insert_edge_path` and `TriangleMesh::try_insert_edge_path` accept
 ordered normalized picks on original topology edges. A shared plan inserts
 explicit points before automatic crossings and connects consecutive picks
-through incident faces. Disconnected components receive their own points
-without an invented bridge. Crossing inserted chords return an error.
+through incident faces. A disconnected pick returns an error and leaves the
+previous accepted preview unchanged. Crossing inserted chords return an error.
 
 SubD edits use public OpenNURBS `SplitEdge` and face-local-index `SplitFace`
 operations in one archive decode/edit/encode, retaining existing tags and
@@ -94,3 +94,8 @@ Perspective point picking has local spatial-edge tests, but native perspective
 crossing paths, changing views, constrained Osnap, grips, arbitrary spatial or
 non-manifold topology, continuous surface error and comparative performance
 remain unqualified. Full Rhino parity is not claimed.
+
+[Mesh source and rejection qualification](mesh-insert-sources.md) covers retained
+quads with collinear corners, raw native triangulation and disconnected picks.
+It also retains additional repeated-edge diagnostics and failed Native inputs;
+the tessellation gaps above remain unresolved.

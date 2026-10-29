@@ -110,6 +110,26 @@ def prepare(client, request, interaction=None):
         if any(op.get('op') == 'mesh_face_collapse_click' for op in operations):
             from .mesh_face_collapse_picker import FaceCollapsePicker
             interaction = FaceCollapsePicker()
+    if any(op.get('op') == 'mesh_insert_conversion' for op in request.get('operations', [])):
+        require_dedicated_capture(client, request, 'mesh_insert_conversion',
+            'Mesh insertion conversion requires a private dedicated one-iteration capture')
+    if any(op.get('op') == 'mesh_insert_validation' for op in request.get('operations', [])):
+        require_dedicated_capture(client, request, 'mesh_insert_validation',
+            'Mesh insertion validation requires a private dedicated one-iteration capture')
+    if any(op.get('op') == 'mesh_insert_degenerate' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'mesh_insert_degenerate',
+            'Flat-corner insertion requires a private dedicated one-iteration capture')
+        from .mesh_insert_degenerate_cases import CASES,validate
+        from .catenary_point_picker import CatenaryPointPicker
+        for op in operations:validate(op)
+        interaction=CatenaryPointPicker(dict(operations=[dict(id=op['id'],actions=CASES[op['case']]['actions'])for op in operations]))
+    if any(op.get('op') == 'mesh_insert_paths' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'mesh_insert_paths',
+            'Mesh insertion paths require a private dedicated one-iteration capture')
+        from .mesh_insert_paths_cases import CASES,validate
+        from .catenary_point_picker import CatenaryPointPicker
+        for op in operations:validate(op)
+        interaction=CatenaryPointPicker(dict(operations=[dict(id=op['id'],actions=CASES[op['case']]['actions'])for op in operations]))
     if any(op.get('op') == 'subd_insert_order' for op in request.get('operations', [])):
         operations = require_dedicated_capture(client, request, 'subd_insert_order',
             'SubD insertion holdouts require a private dedicated one-iteration capture')

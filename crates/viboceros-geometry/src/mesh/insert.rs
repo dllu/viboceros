@@ -3,6 +3,7 @@ use super::*;
 mod ngons;
 mod pairing;
 mod regions;
+mod source;
 use crate::{
     PolygonEdgePoint,
     edge_insertion::{Plan, invalid},
@@ -21,7 +22,7 @@ impl TriangleMesh {
         // Existing mesh facets may contain features below the document's
         // modelling tolerance. Insertion does not collapse those features.
         let tolerance = Tolerance::MESH_VALIDATION;
-        self.validate_face_geometry(tolerance)?;
+        source::validate(self, tolerance)?;
         let topology = self.topology_data();
         let faces = self
             .faces
@@ -192,8 +193,16 @@ impl TriangleMesh {
                 }
             }
         }
+        // Retain unchanged source records, including a valid polygon whose
+        // fixed diagonal contains a zero-area triangle. New records remain
+        // subject to the ordinary strict geometric admission policy.
+        for (index, (&face, &source)) in records.iter().zip(&face_sources).enumerate() {
+            if face != self.faces[source] {
+                face_records::validate_face(&vertices, face, index, tolerance)?;
+            }
+        }
         let mut result =
-            Self::try_new_faces(vertices, records, tolerance)?.try_with_vertex_colors(colors)?;
+            Self::try_from_face_records(vertices, records)?.try_with_vertex_colors(colors)?;
         result.vertex_channels = channels.finish();
         ngons::rebuild(self, result, &plan, &face_sources, &polygon_groups)
     }

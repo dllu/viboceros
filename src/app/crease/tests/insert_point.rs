@@ -283,3 +283,16 @@ fn prefixed_undo_remains_local_and_prefixed_enter_finishes() {
         assert!(app.document.undo_label().is_none());
     }
 }
+
+#[test]
+fn flat_corner_sources_and_rejected_island_picks_match_native_getters_and_history() {
+    for family in ["mesh_insert_degenerate", "mesh_insert_disconnected"] {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join(format!("tools/rhino_oracle/observations/{family}.json"));
+        let capture: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+        for row in capture["results"].as_array().unwrap() {
+            replay(row, family, "MESH_SOURCE_GETTER");
+        }
+    }
+}

@@ -93,10 +93,12 @@ impl Plan {
                 plan.chords.push([ends[0], ends[1]]);
             } else {
                 let crossings = crossings::trace(&plan, faces, pair, ends, view_normal)?;
-                if clamp_subd && crossings.is_empty() {
-                    return Err(invalid(
-                        "SubD insertion points have no connected projected path",
-                    ));
+                if crossings.is_empty() {
+                    return Err(invalid(if clamp_subd {
+                        "SubD insertion points have no connected projected path"
+                    } else {
+                        "mesh insertion points have no connected projected path"
+                    }));
                 }
                 let mut previous = ends[0];
                 for pick in crossings {
@@ -106,7 +108,7 @@ impl Plan {
                     }
                     previous = vertex;
                 }
-                // Mesh paths retain disconnected points; SubD paths reject them above.
+                // A valid crossing path connects the two accepted edge points.
                 if previous != ends[0] {
                     plan.chords.push([previous, ends[1]]);
                 }

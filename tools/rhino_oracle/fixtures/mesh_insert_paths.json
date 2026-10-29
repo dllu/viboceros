@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-edge-0",
+      "case": "flat-edge-0"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-edge-1",
+      "case": "flat-edge-1"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-edge-2",
+      "case": "flat-edge-2"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-edge-3",
+      "case": "flat-edge-3"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-three",
+      "case": "flat-three"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-reverse",
+      "case": "flat-reverse"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-same-low",
+      "case": "flat-same-low"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "flat-same-high",
+      "case": "flat-same-high"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-edge-0",
+      "case": "warped-edge-0"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-edge-1",
+      "case": "warped-edge-1"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-edge-2",
+      "case": "warped-edge-2"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-edge-3",
+      "case": "warped-edge-3"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-three",
+      "case": "warped-three"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-reverse",
+      "case": "warped-reverse"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-same-low",
+      "case": "warped-same-low"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-same-high",
+      "case": "warped-same-high"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-reversed-face",
+      "case": "warped-reversed-face"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-cyclic-face",
+      "case": "warped-cyclic-face"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "warped-ngon",
+      "case": "warped-ngon"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "skewed-flat",
+      "case": "skewed-flat"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "trapezoid",
+      "case": "trapezoid"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "tall-warp",
+      "case": "tall-warp"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "wide-warp",
+      "case": "wide-warp"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "rotated-warp",
+      "case": "rotated-warp"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "mesh_insert_paths",
+      "id": "triangle-ngon",
+      "case": "triangle-ngon"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-edge-0",
+      "case": "flat-edge-0"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-edge-1",
+      "case": "flat-edge-1"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-edge-3",
+      "case": "flat-edge-3"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-three",
+      "case": "flat-three"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-reverse",
+      "case": "flat-reverse"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "flat-same-high",
+      "case": "flat-same-high"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-edge-0",
+      "case": "warped-edge-0"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-edge-1",
+      "case": "warped-edge-1"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-three",
+      "case": "warped-three"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-reverse",
+      "case": "warped-reverse"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-same-low",
+      "case": "warped-same-low"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-same-high",
+      "case": "warped-same-high"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-reversed-face",
+      "case": "warped-reversed-face"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "warped-cyclic-face",
+      "case": "warped-cyclic-face"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "skewed-flat",
+      "case": "skewed-flat"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "tall-warp",
+      "case": "tall-warp"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "mesh_insert_conversion",
+      "id": "triangle-ngon",
+      "case": "triangle-ngon"
+    }
+  ]
+}

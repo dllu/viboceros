@@ -45,6 +45,10 @@ PROBES = {
     'quadrangulate_mesh_command': ('quad_command_probe', ('quad_command_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'mesh_quad_conversion': ('quad_conversion_probe', ('quad_conversion_cases','mesh_channel_capture','join_probe','merge_edges_probe')),
     'insert_point_mesh_sdk': ('insert_point_mesh_sdk_probe', ('insert_point_mesh_sdk_cases','insert_point_mesh_methods','insert_point_spatial_sdk','insert_point_spatial_sdk_cases','join_probe','merge_edges_probe')),
+    'mesh_insert_conversion': ('mesh_insert_validation_probe', ('join_probe','merge_edges_probe')),
+    'mesh_insert_validation': ('mesh_insert_validation_probe', ('join_probe','merge_edges_probe')),
+    'mesh_insert_degenerate': ('mesh_insert_degenerate_probe', ('mesh_insert_degenerate_cases','conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','insert_point_spatial_layout_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
+    'mesh_insert_paths': ('mesh_insert_paths_probe', ('mesh_insert_paths_cases','conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','insert_point_spatial_layout_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'insert_point_command': ('insert_point_probe', ('conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','insert_point_spatial_layout_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_spin_edge': ('subd_spin_edge_probe', ('subd_edit_scene','conic_getter_input','managed_mouse_callback','snap_environment','number_token','subd_spin_edge_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'component_seams_subd': ('component_seams_subd_probe', ('component_seams_subd_cases','component_edge_seams_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
@@ -256,6 +260,10 @@ def stage_helpers(request, source_directory, destination):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'mesh_insert_validation_probe' in modules:
+        asset = Path('fixtures/mesh_insert_validation_assets.json')
+        (destination/asset.parent).mkdir(exist_ok=True)
+        shutil.copyfile(source_directory/asset,destination/asset)
     if 'subd_insert_custom_probe' in modules:
         for name in ['subd_face_custom_assets.json','subd_face_custom_holdout_assets.json']:
             asset = Path('fixtures')/name

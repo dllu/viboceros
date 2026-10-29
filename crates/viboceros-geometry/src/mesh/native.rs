@@ -4,6 +4,17 @@ impl TriangleMesh {
     /// Face-only native edits retain raw vertices and stored channels exactly.
     pub(super) fn decode_native_face_conversion(
         &self,
+        data: viboceros_opennurbs::MeshData,
+    ) -> Result<Self, GeometryError> {
+        let result = self.decode_native_face_records(data)?;
+        result.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        Ok(result)
+    }
+
+    /// A storage conversion may retain zero-area native face records. It
+    /// still verifies vertex storage and every structural face/attribute index.
+    pub(super) fn decode_native_face_records(
+        &self,
         mut data: viboceros_opennurbs::MeshData,
     ) -> Result<Self, GeometryError> {
         if data.vertices.len() != self.vertices.len()
@@ -25,7 +36,6 @@ impl TriangleMesh {
         let mut result = Self::from_open_nurbs_data(data)?.retain_boundary_matched_ngons(ngons);
         result.vertex_colors = self.vertex_colors.clone();
         result.vertex_channels = self.vertex_channels.clone();
-        result.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
         Ok(result)
     }
 
