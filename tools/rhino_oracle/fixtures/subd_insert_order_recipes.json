@@ -1,0 +1,589 @@
+{
+  "reverse-cross": {
+    "seed": "combined-strip",
+    "asset": "base",
+    "points": [
+      [
+        4.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  },
+  "right-prefix": {
+    "seed": "combined-strip",
+    "asset": "base",
+    "points": [
+      [
+        4.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  },
+  "reverse-three": {
+    "seed": "combined-strip",
+    "asset": "base",
+    "points": [
+      [
+        4.0,
+        1.0,
+        0.0
+      ],
+      [
+        2.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          2.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  },
+  "cross-undo-prefix": {
+    "seed": "combined-strip",
+    "asset": "base",
+    "points": [
+      [
+        4.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Undo",
+      "Enter"
+    ],
+    "merge": null
+  },
+  "merged-left-prefix": {
+    "seed": "combined-neighbor",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "merged-reverse-cross": {
+    "seed": "combined-neighbor",
+    "asset": "base",
+    "points": [
+      [
+        6.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          6.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "merged-reverse-three": {
+    "seed": "combined-neighbor",
+    "asset": "base",
+    "points": [
+      [
+        6.0,
+        1.0,
+        0.0
+      ],
+      [
+        4.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          6.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "merged-cross-undo": {
+    "seed": "combined-neighbor",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        6.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          6.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Undo",
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "disjoint-left-prefix": {
+    "seed": "combined-disjoint",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "disjoint-reverse": {
+    "seed": "combined-disjoint",
+    "asset": "base",
+    "points": [
+      [
+        13.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          13.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "disjoint-return": {
+    "seed": "combined-disjoint",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        13.0,
+        1.0,
+        0.0
+      ],
+      [
+        4.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          13.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "disjoint-reject-undo": {
+    "seed": "combined-disjoint",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        13.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          13.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Undo",
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1
+    ]
+  },
+  "grid-two": {
+    "seed": "combined-grid-L",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        4.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  },
+  "grid-reverse-three": {
+    "seed": "combined-grid-L",
+    "asset": "base",
+    "points": [
+      [
+        3.0,
+        4.0,
+        0.0
+      ],
+      [
+        4.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          3.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          4.0,
+          1.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  },
+  "merged-grid-reverse": {
+    "seed": "combined-grid-L",
+    "asset": "base",
+    "points": [
+      [
+        4.0,
+        3.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          4.0,
+          3.0,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": [
+      0,
+      1,
+      2
+    ]
+  },
+  "same-edge-reverse": {
+    "seed": "combined-strip",
+    "asset": "base",
+    "points": [
+      [
+        0.0,
+        1.5,
+        0.0
+      ],
+      [
+        0.0,
+        0.5,
+        0.0
+      ]
+    ],
+    "actions": [
+      {
+        "click": [
+          0.0,
+          1.5,
+          0.0
+        ]
+      },
+      {
+        "click": [
+          0.0,
+          0.5,
+          0.0
+        ]
+      },
+      "Enter"
+    ],
+    "merge": null
+  }
+}

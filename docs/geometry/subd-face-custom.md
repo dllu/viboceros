@@ -62,6 +62,9 @@ cargo test -p viboceros --bin viboceros app::merge_faces::
 python3 -m unittest tools.rhino_oracle.test_subd_face_custom
 ```
 
+[InsertPoint qualification](subd-insert.md) covers allocating edge splits, incomplete
+UVW corners and disconnected-pick rejection.
+
 Material-table references, texture image rendering, arbitrary nonmanifold regions,
 other editing commands and comparative performance need further work. The new API
 handles stored corner coordinates; it does not certify those other behaviors.

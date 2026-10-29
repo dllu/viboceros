@@ -232,6 +232,30 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+SUBD_INSERT_MODULES = [
+    'crates/viboceros-geometry/src/edge_insertion.rs',
+    'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
+    'crates/viboceros-geometry/src/subd/insert.rs',
+    'crates/viboceros-geometry/tests/subd_edge_insert.rs',
+    'crates/viboceros-opennurbs/native/subd_insert.h',
+    'crates/viboceros-command/src/insert_point.rs',
+    'crates/viboceros-io/tests/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_control_comparison.rs',
+    'crates/viboceros-io/tests/support/subd_insert_custom.rs',
+    'crates/viboceros-io/tests/support/subd_insert_identity.rs',
+    'src/app/crease/tests.rs',
+    'src/app/crease/tests/insert_custom.rs',
+    'src/app/insert_point.rs',
+    'tools/rhino_oracle/subd_insert_custom_cases.py',
+    'tools/rhino_oracle/subd_insert_custom_probe.py',
+    'tools/rhino_oracle/generate_subd_insert_custom.py',
+    'tools/rhino_oracle/subd_insert_order_cases.py',
+    'tools/rhino_oracle/subd_insert_order_probe.py',
+    'tools/rhino_oracle/generate_subd_insert_order.py',
+    'tools/rhino_oracle/generate_subd_insert_repeat.py',
+    'tools/rhino_oracle/test_subd_insert_custom.py',
+]
+
 SUBD_FACE_CUSTOM_MODULES = [
     'crates/viboceros-opennurbs/native/subd_texture_points.h',
     'crates/viboceros-opennurbs/native/subd.h',
@@ -340,6 +364,8 @@ def with_shared_sources(paths):
 def _expand_sources_once(paths):
     if 'tools/rhino_oracle/capture_family.py' in paths or any(p in paths for p in ORACLE_CLIENT_MODULES):
         paths = [*paths, *ORACLE_CLIENT_MODULES]
+    if any(p in paths for p in SUBD_INSERT_MODULES):
+        paths = [*paths, *SUBD_INSERT_MODULES]
     if any(p in paths for p in SUBD_FACE_CUSTOM_MODULES):
         paths = [*paths, *SUBD_FACE_CUSTOM_MODULES]
     if any(p in paths for p in SUBD_EDIT_HISTORY_MODULES):

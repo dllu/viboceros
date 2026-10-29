@@ -2,6 +2,8 @@
 mod allocation;
 #[path = "support/subd_face_custom.rs"]
 mod custom;
+#[path = "support/subd_insert_custom.rs"]
+mod insertion;
 #[path = "support/subd_face_properties.rs"]
 mod properties;
 #[path = "support/subd_face_merge.rs"]
@@ -57,4 +59,10 @@ fn allocating_subdivision_after_native_merges_preserves_component_ids_and_geomet
 fn native_material_channels_and_custom_texture_points_survive_edits_and_readback() {
     initialize_optional_kernel();
     custom::audit();
+}
+
+#[test]
+fn native_insertion_preserves_custom_data_and_allocated_component_ids() {
+    initialize_optional_kernel();
+    insertion::audit();
 }

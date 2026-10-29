@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-boundary",
+      "case": "combined-boundary"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-interior",
+      "case": "combined-interior"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-face",
+      "case": "combined-face"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-cross",
+      "case": "combined-cross"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-three",
+      "case": "combined-three"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-adjacent",
+      "case": "combined-adjacent"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-same-edge",
+      "case": "combined-same-edge"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-local-undo",
+      "case": "combined-local-undo"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-undo-all",
+      "case": "combined-undo-all"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "combined-cancel",
+      "case": "combined-cancel"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "material-cross",
+      "case": "material-cross"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "material-same",
+      "case": "material-same"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "texture-cross",
+      "case": "texture-cross"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "texture-missing",
+      "case": "texture-missing"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "coherent-three",
+      "case": "coherent-three"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "constant-cross",
+      "case": "constant-cross"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "pentagon-cross",
+      "case": "pentagon-cross"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "grid-three",
+      "case": "grid-three"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "merged-neighbor",
+      "case": "merged-neighbor"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "merged-neighbor-three",
+      "case": "merged-neighbor-three"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "merged-grid",
+      "case": "merged-grid"
+    },
+    {
+      "op": "subd_insert_custom",
+      "id": "merged-disjoint",
+      "case": "merged-disjoint"
+    }
+  ]
+}

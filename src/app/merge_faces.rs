@@ -199,3 +199,6 @@ mod tests;
 
 #[cfg(test)]
 mod custom_tests;
+
+#[cfg(test)]
+pub(super) use tests::support::models as native_models;

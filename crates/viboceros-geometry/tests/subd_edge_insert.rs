@@ -90,16 +90,16 @@ fn disconnected_picks_do_not_bridge_separate_components() {
         vec![vec![0, 1, 2, 3], vec![4, 5, 6, 7]],
     )
     .unwrap();
-    let out = s
-        .try_insert_edge_path(
+    let before = s.archive().to_vec();
+    assert!(
+        s.try_insert_edge_path(
             &[pick(&s, 0, 3, 0.5), pick(&s, 5, 6, 0.5)],
             None,
-            Tolerance::default(),
+            Tolerance::DEFAULT,
         )
-        .unwrap();
-    assert_eq!(out.faces().len(), 2);
-    assert_eq!(out.control_points().len(), 10);
-    assert!(out.faces().iter().all(|f| f.len() == 5));
+        .is_err()
+    );
+    assert_eq!(s.archive(), before);
 }
 #[test]
 fn default_face_projection_and_translated_rotated_paths_preserve_crossings() {
@@ -196,4 +196,49 @@ fn repeated_points_noops_and_resource_limits_keep_valid_topology() {
     assert_eq!(one.faces(), repeated.faces());
     assert!(s.try_insert_edge_path(&vec![pick; 257], None, tol).is_err());
     SubD::try_from_archive(repeated.archive()).unwrap();
+}
+
+#[test]
+fn edge_splits_keep_existing_uvw_prefixes_and_leave_new_corners_unset() {
+    let source = source();
+    let texture = vec![[0., 0., 1.], [1., 0., 2.], [1., 1., 3.], [0., 1., 4.]];
+    let source = source
+        .try_with_face_texture_points(&[(0, Some(texture.clone()))])
+        .unwrap();
+    let original = source.archive().to_vec();
+    let picks = [pick(&source, 0, 3, 0.25), pick(&source, 0, 3, 0.75)];
+    let path = source
+        .try_insert_edge_path(&picks, None, Tolerance::DEFAULT)
+        .unwrap();
+    let mut expected = texture.into_iter().map(Some).collect::<Vec<_>>();
+    expected.extend([None, None]);
+    assert_eq!(path.face_texture_points(), &[Some(expected.clone()), None]);
+    assert_eq!(
+        SubD::try_from_archive(path.archive())
+            .unwrap()
+            .face_texture_points(),
+        &[Some(expected.clone()), None]
+    );
+    assert_eq!(source.archive(), original);
+    // The single-edge binding must also retain an already incomplete prefix.
+    let point = Point3::try_new(0., 1.5, 0.).unwrap();
+    let first = source
+        .try_insert_edge_vertex(picks[0].edge, point)
+        .unwrap()
+        .unwrap()
+        .subd;
+    assert_eq!(
+        first.face_texture_points()[0].as_ref().unwrap().last(),
+        Some(&None)
+    );
+    let next = pick(&first, 0, 6, 0.5);
+    let point = first.control_points()[0]
+        .midpoint(first.control_points()[6])
+        .unwrap();
+    let second = first
+        .try_insert_edge_vertex(next.edge, point)
+        .unwrap()
+        .unwrap()
+        .subd;
+    assert_eq!(second.face_texture_points(), &[Some(expected), None]);
 }

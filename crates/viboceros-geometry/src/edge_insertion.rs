@@ -66,7 +66,7 @@ impl Plan {
             edge_faces,
             inserted: BTreeMap::new(),
         };
-        // Explicit points precede automatic crossings, matching native identities.
+        // Resolve explicit points before tracing segments over the source cage.
         let mut vertices = Vec::with_capacity(picks.len());
         for &pick in picks {
             if !pick.parameter.is_finite() || !(0.0..=1.0).contains(&pick.parameter) {
@@ -93,6 +93,11 @@ impl Plan {
                 plan.chords.push([ends[0], ends[1]]);
             } else {
                 let crossings = crossings::trace(&plan, faces, pair, ends, view_normal)?;
+                if clamp_subd && crossings.is_empty() {
+                    return Err(invalid(
+                        "SubD insertion points have no connected projected path",
+                    ));
+                }
                 let mut previous = ends[0];
                 for pick in crossings {
                     let vertex = plan.insert(pick, tolerance)?;
@@ -101,7 +106,7 @@ impl Plan {
                     }
                     previous = vertex;
                 }
-                // A disconnected path inserts its edge points without inventing a bridge.
+                // Mesh paths retain disconnected points; SubD paths reject them above.
                 if previous != ends[0] {
                     plan.chords.push([previous, ends[1]]);
                 }

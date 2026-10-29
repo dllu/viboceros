@@ -110,6 +110,20 @@ def prepare(client, request, interaction=None):
         if any(op.get('op') == 'mesh_face_collapse_click' for op in operations):
             from .mesh_face_collapse_picker import FaceCollapsePicker
             interaction = FaceCollapsePicker()
+    if any(op.get('op') == 'subd_insert_order' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'subd_insert_order',
+            'SubD insertion holdouts require a private dedicated one-iteration capture')
+        from .subd_insert_order_cases import CASES,validate
+        from .catenary_point_picker import CatenaryPointPicker
+        for op in operations:validate(op)
+        interaction = CatenaryPointPicker(dict(operations=[dict(id=op['id'],actions=CASES[op['case']]['actions'])for op in operations]))
+    if any(op.get('op') == 'subd_insert_custom' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'subd_insert_custom',
+            'SubD custom insertion requires a private dedicated one-iteration capture')
+        from .subd_insert_custom_cases import CASES,validate
+        from .catenary_point_picker import CatenaryPointPicker
+        for op in operations:validate(op)
+        interaction = CatenaryPointPicker(dict(operations=[dict(id=op['id'],actions=CASES[op['case']]['actions'])for op in operations]))
     if any(op.get('op') == 'subd_face_custom_holdout' for op in request.get('operations', [])):
         operations = require_dedicated_capture(client, request, 'subd_face_custom_holdout',
             'SubD custom-face holdouts require a private dedicated one-iteration capture')

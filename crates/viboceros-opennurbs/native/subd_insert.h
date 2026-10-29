@@ -21,6 +21,26 @@ template<class Component> inline size_t ordinal(ON_SubD& subd,const Component* v
   auto rows=active_components<Component>(subd);auto found=std::find(rows.begin(),rows.end(),value);
   require(found!=rows.end(),"Missing inserted SubD component");return static_cast<size_t>(found-rows.begin());
 }
+// SplitEdge grows incident polygons without initializing their new UVW slots.
+// Rhino retains the stored prefix and marks each added slot unset, including
+// faces whose previous edits left spare texture-point capacity behind.
+inline const ON_SubDEdge* split_edge(ON_SubD& subd,ON_SubDEdge* edge,ON_3dPoint point) {
+  struct TexturePoints {const ON_SubDFace* face;std::vector<ON_3dPoint> points;};
+  std::vector<TexturePoints> textures;
+  for(unsigned i=0;i<edge->FaceCount();++i) {
+    const auto* face=edge->Face(i);
+    if(!face || !face->TexturePointsAreSet())continue;
+    TexturePoints saved{face,{}};saved.points.reserve(face->EdgeCount()+1);
+    for(unsigned j=0;j<face->EdgeCount();++j)saved.points.push_back(face->TexturePoint(j));
+    textures.push_back(std::move(saved));
+  }
+  const auto* added=subd.SplitEdge(edge,point);
+  if(added)for(auto& saved:textures) {
+    saved.points.resize(saved.face->EdgeCount(),ON_3dPoint::NanPoint);
+    require(subd.AddFaceTexturePoints(saved.face,saved.points.data(),saved.points.size()),"Cannot retain split SubD face texture points");
+  }
+  return added;
+}
 }
 extern "C" int vibo_subd_insert_vertex(const uint8_t* bytes,size_t count,size_t index,
     const double* point,size_t* vertex,size_t* new_edge,int* changed,
@@ -33,7 +53,7 @@ extern "C" int vibo_subd_insert_vertex(const uint8_t* bytes,size_t count,size_t 
     require(index<edges.size() && subd->VertexCount()<vibo_subd::component_limit,"Invalid or excessive SubD edge split");
     auto* source=edges[index];
     if(location==source->m_vertex[0]->ControlNetPoint() || location==source->m_vertex[1]->ControlNetPoint())return extract(*subd);
-    if(const auto* edge=subd->SplitEdge(source,location)) {
+    if(const auto* edge=vibo_subd::split_edge(*subd,source,location)) {
       subd->UpdateAllTagsAndSectorCoefficients(false);subd->ClearEvaluationCache();
       *vertex=vibo_subd::ordinal(*subd,edge->m_vertex[0]);*new_edge=vibo_subd::ordinal(*subd,edge);*changed=1;
     }
@@ -81,7 +101,7 @@ extern "C" int vibo_subd_insert_path(const uint8_t* bytes,size_t count,
       require(part!=parts.end(),"Repeated SubD insertion edge point");
       const ON_3dPoint point(locations[3*i],locations[3*i+1],locations[3*i+2]);
       require(point.IsValid(),"Invalid SubD insertion location");
-      const auto* added=subd->SplitEdge(const_cast<ON_SubDEdge*>(part->edge),point);
+      const auto* added=vibo_subd::split_edge(*subd,const_cast<ON_SubDEdge*>(part->edge),point);
       require(added!=nullptr,"SubD insertion edge split failed");
       vertices.push_back(const_cast<ON_SubDVertex*>(added->m_vertex[0]));
       const double last=part->last;part->last=parameter;
