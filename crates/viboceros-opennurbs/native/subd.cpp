@@ -21,6 +21,7 @@ struct ViboSubDResult {
   std::vector<double> points, surface_points, corner_normals, edge_sharpness;
   std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces, edge_face_counts;
   std::vector<uint32_t> vertex_ids, edge_ids, face_ids;
+  std::vector<uint32_t> face_colors, face_materials;
   size_t boundary_edge_count=0;
 };
 namespace {
@@ -69,6 +70,10 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   if(!evaluated) std::sort(faces.begin(),faces.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
   for (auto* f:faces) {
     out->face_ids.push_back(f->m_id);
+    const auto color=f->PerFaceColor();
+    out->face_colors.push_back(uint32_t(color.Red()) | (uint32_t(color.Green())<<8) |
+      (uint32_t(color.Blue())<<16) | (uint32_t(color.Alpha())<<24));
+    out->face_materials.push_back(static_cast<uint32_t>(f->MaterialChannelIndex()));
     if(retained_faces && retained_faces->count(f->m_id)==0) out->selected_faces.push_back(static_cast<uint32_t>(out->face_sizes.size()));
     out->face_sizes.push_back(f->EdgeCount());
     if(sources) out->face_sources.push_back(sources->at(f->m_level_zero_face_id));
@@ -285,7 +290,8 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
     r->mesh_ngons.data(),r->mesh_ngon_vertices.data(),r->mesh_ngon_faces.data(),
     r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data(),
     r->vertex_ids.size(),r->edge_ids.size(),r->face_ids.size(),
-    r->vertex_ids.data(),r->edge_ids.data(),r->face_ids.data()};return 1;
+    r->vertex_ids.data(),r->edge_ids.data(),r->face_ids.data(),
+    r->face_colors.data(),r->face_materials.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
@@ -378,3 +384,4 @@ extern "C" int vibo_subd_from_mesh(const ViboMeshView* input,int corners,int cre
 }
 
 #include "subd_merge.h"
+#include "subd_face_properties.h"

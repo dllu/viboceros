@@ -2,7 +2,7 @@ use super::*;
 use crate::app::tests::test_app;
 use crate::viewport::ComponentClick;
 #[path = "../../../crates/viboceros-command/tests/support/merge_faces.rs"]
-mod support;
+pub(super) mod support;
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command_input();

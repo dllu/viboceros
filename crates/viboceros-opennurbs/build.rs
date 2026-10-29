@@ -22,6 +22,7 @@ fn main() {
         "subd_spin.h",
         "subd_merge.h",
         "subd_merge_selection.h",
+        "subd_face_properties.h",
         "subd_insert.h",
         "subd_soft_crease.h",
         "subd_chains.h",

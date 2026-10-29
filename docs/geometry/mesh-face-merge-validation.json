@@ -47,13 +47,13 @@
     "Nonmanifold regions and arbitrary per-face custom data outside the qualified corpus"
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "3f05b75092fc05ef3700fdbac375860c41be8869098888529ad80f7433c22c86",
+    "crates/viboceros-geometry/src/lib.rs": "4f1952a7eafb37ce985b7ef9230c61d4481873545e65efbce53f8c8885a9acc5",
     "crates/viboceros-geometry/src/mesh.rs": "607bc489138f0f16a471a6fc60b2b20aa4b451c944e9bc799e8bf63065e603e9",
     "crates/viboceros-geometry/src/mesh/merge_faces.rs": "7985db89062f3931c797c35ccfc363ad87d850e062a5c01bca0828584743d485",
     "crates/viboceros-geometry/src/mesh/merge_faces/tests.rs": "d94fb72db0bccb7da8fb3807ec47ea7895be23684a3b0de5049ecd396f124178",
     "crates/viboceros-geometry/tests/mesh_face_merge.rs": "f68e99ece4471a2e95c569667645893cb60b19cc1025e57e4766d3f831666ac3",
     "crates/viboceros-geometry/tests/support/mesh_face_merge.rs": "a94cb210c8625d9dd6ffe4aa053f33fe37625eb9af93c8ef0953e34921dd8b94",
-    "crates/viboceros-opennurbs/build.rs": "cfd80889a5523b4567ea4b5a5b8a1158dc6d1be28338aa26b7fd853f4a46e3cd",
+    "crates/viboceros-opennurbs/build.rs": "1f59a33684e6544f5a095612152d11b247485c94a53c492c696f992fc2ef9c7a",
     "crates/viboceros-opennurbs/native/mesh_merge.h": "790043304e3a3af0f633a5507826be1389f04943aac7fac64e86595da09f7b18",
     "crates/viboceros-opennurbs/native/mesh_merge_selection.h": "e01094945f55a2eddb45fcab320f461623f72cf5de5d9b836fe1ad2c04a40086",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "7cf3e69f83247bd6bc9dd99e9ef85cc9bc7513c7c48ace2b40d0a9a109963de2",

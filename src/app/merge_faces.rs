@@ -191,4 +191,6 @@ impl VibocerosApp {
 }
 
 #[cfg(test)]
+mod face_properties_tests;
+#[cfg(test)]
 mod tests;

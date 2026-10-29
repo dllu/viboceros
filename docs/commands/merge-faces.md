@@ -48,7 +48,10 @@ meshes varies with Results=NotSelected. Only that replacement run is compared by
 identity; Viboceros uses deterministic document order. Selected result order,
 other owner order and Undo order remain strict.
 
-Future SubD component allocation, nonmanifold regions and per-face custom data
+Future SubD component allocation, nonmanifold regions and custom face textures
 remain outside the qualified corpus. An earlier 14-case capture is retained as a
 diagnostic: four postselection records contain invalid source archive fields.
 The corrected capture supplies the admitted archive seeds.
+
+[SubD face-color validation](../geometry/subd-face-properties.md) additionally
+covers color clearing, retained neighbors, sequential merges and Undo/Redo.

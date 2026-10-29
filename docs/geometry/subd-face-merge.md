@@ -64,6 +64,10 @@ Unchanged commands clear component selections and add no Undo entry; changed
 commands preserve attributes and undo/redo exactly. `input_timer_fired` records
 timer activity and does not establish getter opening.
 
-Future ID allocation, nonmanifold regions and per-face custom properties remain
+Future ID allocation, nonmanifold regions, material merging and custom face textures remain
 outside the qualified corpus. Multiple owners, Results and application
 selection/history are covered by the separate command receipt.
+
+[Per-face colors](subd-face-properties.md) have a separate native corpus:
+merged faces clear their colors while untouched and unchanged faces retain them,
+including sequential merges and Undo/Redo.

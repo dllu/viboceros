@@ -47,6 +47,8 @@ APPLICATION_MODULES = [
     'src/app/component_selection/history.rs',
     'src/app/merge_faces.rs',
     'src/app/merge_faces/tests.rs',
+    'src/app/merge_faces/face_properties_tests.rs',
+    'src/viewport/scene/subd_face_colors.rs',
     'src/viewport/component_picking.rs',
     'src/viewport/polygon_components/tests.rs',
     'crates/viboceros-command/tests/support/nonplanar_sample.rs',
@@ -205,6 +207,26 @@ MERGE_COMMAND_MODULES = [
     'src/viewport/component_picking/merge_tests.rs',
 ]
 
+SUBD_FACE_PROPERTY_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_face_properties.h',
+    'crates/viboceros-opennurbs/native/subd.cpp',
+    'crates/viboceros-opennurbs/native/subd.h',
+    'crates/viboceros-opennurbs/src/subd/face_properties.rs',
+    'crates/viboceros-opennurbs/src/subd.rs',
+    'crates/viboceros-opennurbs/src/lib.rs',
+    'crates/viboceros-opennurbs/build.rs',
+    'crates/viboceros-geometry/src/subd/face_properties.rs',
+    'crates/viboceros-geometry/src/subd.rs',
+    'crates/viboceros-geometry/src/lib.rs',
+    'crates/viboceros-io/tests/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_face_properties.rs',
+    'src/app/merge_faces/face_properties_tests.rs',
+    'src/viewport/display_cache.rs',
+    'src/viewport/display_cache/subd.rs',
+    'src/viewport/scene.rs',
+    'src/viewport/scene/subd_face_colors.rs',
+]
+
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
@@ -244,6 +266,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in SUBD_FACE_PROPERTY_MODULES):
+        paths = [*paths, *SUBD_FACE_PROPERTY_MODULES]
     if any(p in paths for p in MERGE_COMMAND_MODULES):
         paths = [*paths, *MERGE_COMMAND_MODULES]
     if any(p in paths for p in SUBD_MERGE_MODULES):

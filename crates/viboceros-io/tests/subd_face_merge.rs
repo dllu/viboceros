@@ -1,3 +1,5 @@
+#[path = "support/subd_face_properties.rs"]
+mod properties;
 #[path = "support/subd_face_merge.rs"]
 mod support;
 fn initialize_optional_kernel() {
@@ -33,4 +35,10 @@ fn native_archives_preserve_definition_ids_limit_points_and_sharpness() {
 fn all_native_merges_match_topology_properties_and_component_identities() {
     initialize_optional_kernel();
     support::face_merge_matches_native_topology_properties_and_component_identities();
+}
+
+#[test]
+fn native_face_colors_and_sequential_merges_preserve_geometry_and_properties() {
+    initialize_optional_kernel();
+    properties::audit();
 }

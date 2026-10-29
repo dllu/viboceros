@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 use viboceros_geometry::{SubD, Tolerance};
 use viboceros_io::{ThreeDmGeometry, read_3dm_file};
 
-fn native_value(v: &Value) -> Value {
+pub(super) fn native_value(v: &Value) -> Value {
     let ids: Vec<u32> = serde_json::from_value(v["vertex_ids"].clone()).unwrap();
     let sorted = |id_key: &str, build: &dyn Fn(usize, u32) -> Value| {
         let mut rows = v[id_key]
@@ -27,14 +27,14 @@ fn native_value(v: &Value) -> Value {
         "faces": sorted("face_ids", &|i,id| json!([id,v["faces"][i].as_array().unwrap().iter().map(|j|ids[j.as_u64().unwrap() as usize]).collect::<Vec<_>>()]))
     })
 }
-fn actual_value(s: &SubD) -> Value {
+pub(super) fn actual_value(s: &SubD) -> Value {
     json!({
         "vertices":s.vertex_ids().iter().enumerate().map(|(i,id)| json!([id,s.control_points()[i].to_array(),s.vertex_tags()[i],s.surface_points()[i].to_array()])).collect::<Vec<_>>(),
         "edges":s.edge_ids().iter().enumerate().map(|(i,id)|json!([id,s.edges()[i].map(|j|s.vertex_ids()[j as usize]),s.edge_tags()[i]])).collect::<Vec<_>>(),
         "faces":s.face_ids().iter().enumerate().map(|(i,id)|json!([id,s.faces()[i].iter().map(|&j|s.vertex_ids()[j as usize]).collect::<Vec<_>>()])).collect::<Vec<_>>()
     })
 }
-fn compare(actual: &Value, expected: &Value, path: &str) {
+pub(super) fn compare(actual: &Value, expected: &Value, path: &str) {
     match (actual, expected) {
         (Value::Number(a), Value::Number(b)) if b.is_f64() => {
             assert!(
@@ -57,7 +57,7 @@ fn compare(actual: &Value, expected: &Value, path: &str) {
         _ => assert_eq!(actual, expected, "{path}"),
     }
 }
-fn read(encoded: &Value) -> SubD {
+pub(super) fn read(encoded: &Value) -> SubD {
     let file = tempfile::NamedTempFile::new().unwrap();
     std::fs::write(
         file.path(),

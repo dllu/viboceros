@@ -1108,6 +1108,12 @@ class OracleClient:
             if any(op.get('op') == 'mesh_face_collapse_click' for op in operations):
                 from .mesh_face_collapse_picker import FaceCollapsePicker
                 interaction = FaceCollapsePicker()
+        if any(op.get('op') == 'subd_merge_properties' for op in request.get('operations', [])):
+            operations = request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
+                    or request.get('iterations', 1) != 1 or not 1 <= len(operations) <= 64
+                    or any(op.get('op') != 'subd_merge_properties' for op in operations)):
+                raise OracleProtocolError('SubD properties require a private dedicated one-iteration capture')
         if any(op.get('op') == 'merge_faces_command' for op in request.get('operations', [])):
             operations = request['operations']
             if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int

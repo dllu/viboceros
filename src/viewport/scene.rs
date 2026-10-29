@@ -20,6 +20,12 @@ struct AffineMeshTransform {
     reverse_normals: bool,
 }
 
+struct MeshAppearance<'a> {
+    color: Color32,
+    member_colors_enabled: bool,
+    triangle_colors: Option<&'a [Option<[u8; 4]>]>,
+}
+
 fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
     [vector.x as f32, vector.y as f32, vector.z as f32]
 }
@@ -593,8 +599,11 @@ impl Viewport {
                             &mut scene,
                             mesh,
                             display.normals(),
-                            object.face_color,
-                            object.face_member_colors_enabled,
+                            MeshAppearance {
+                                color: object.face_color,
+                                member_colors_enabled: object.face_member_colors_enabled,
+                                triangle_colors: display.triangle_colors(),
+                            },
                             object.transform.map(|transform| AffineMeshTransform {
                                 transform,
                                 normals: normal_transform.unwrap(),
@@ -724,8 +733,11 @@ impl Viewport {
             scene,
             mesh,
             &mesh_normals::mesh_corner_normals(mesh),
-            color,
-            true,
+            MeshAppearance {
+                color,
+                member_colors_enabled: true,
+                triangle_colors: None,
+            },
             None,
         );
     }
@@ -735,14 +747,13 @@ impl Viewport {
         scene: &mut GpuSceneBuilder,
         mesh: &TriangleMesh,
         corner_normals: &[[NaVector3<Real>; 3]],
-        color: Color32,
-        member_colors_enabled: bool,
+        appearance: MeshAppearance<'_>,
         transform: Option<AffineMeshTransform>,
     ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
-            color_with_alpha(color, 35)
+            color_with_alpha(appearance.color, 35)
         } else {
-            color
+            appearance.color
         };
         let gpu_color = color_to_gpu(face_color);
         for (triangle_index, normals) in corner_normals.iter().enumerate() {
@@ -785,18 +796,25 @@ impl Viewport {
                 continue;
             };
             let normals = normals.map(vector_to_gpu);
-            let vertex_colors = if member_colors_enabled {
-                mesh.vertex_colors().map(|colors| {
-                    mesh.triangles()[triangle_index].map(|index| {
-                        let [red, green, blue, transparency] = colors[index as usize];
-                        let alpha = if self.display_mode == DisplayMode::Ghosted {
-                            35
-                        } else {
-                            255 - transparency
-                        };
-                        color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
+            let vertex_colors = if appearance.member_colors_enabled {
+                let rgba = |[red, green, blue, transparency]: [u8; 4]| {
+                    let alpha = if self.display_mode == DisplayMode::Ghosted {
+                        35
+                    } else {
+                        255 - transparency
+                    };
+                    color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
+                };
+                appearance
+                    .triangle_colors
+                    .and_then(|colors| colors[triangle_index])
+                    .map(|color| [rgba(color); 3])
+                    .or_else(|| {
+                        mesh.vertex_colors().map(|colors| {
+                            mesh.triangles()[triangle_index]
+                                .map(|index| rgba(colors[index as usize]))
+                        })
                     })
-                })
             } else {
                 None
             }
@@ -844,6 +862,8 @@ impl Viewport {
 
 #[cfg(test)]
 mod assembly_tests;
+#[cfg(test)]
+mod subd_face_colors;
 
 #[cfg(test)]
 mod mirror_tests;

@@ -5,6 +5,7 @@ mod chains;
 mod control_net;
 mod crease;
 mod edges;
+mod face_properties;
 mod insert;
 mod merge;
 mod remap;
@@ -15,6 +16,7 @@ pub use chains::subd_edge_chains;
 pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
+pub use face_properties::{SubDFaceProperties, subd_set_face_properties};
 pub use insert::{subd_insert_face_edge, subd_insert_path, subd_insert_vertex};
 pub use merge::{SubDMergeComponent, subd_merge_faces};
 pub use remap::subd_remap_vertices;
@@ -34,6 +36,7 @@ pub struct SubDData {
     pub vertex_ids: Vec<u32>,
     pub edge_ids: Vec<u32>,
     pub face_ids: Vec<u32>,
+    pub face_properties: Vec<SubDFaceProperties>,
     /// New or rewritten control-face ordinals reported by an editing operation.
     pub selected_faces: Vec<u32>,
     pub boundary_edge_count: usize,
@@ -101,6 +104,8 @@ struct View {
     vertex_ids: *const u32,
     edge_ids: *const u32,
     face_ids: *const u32,
+    face_colors: *const u32,
+    face_materials: *const u32,
 }
 #[repr(C)]
 struct NativeResult {
@@ -300,10 +305,25 @@ fn call(
         })
         .collect();
     let mesh_ngons = unsafe { control_net::ngons(&v)? };
+    let face_colors = unsafe { copy(v.face_colors, v.face_id_count) };
+    let face_materials = unsafe { copy(v.face_materials, v.face_id_count) };
+    let face_properties = face_colors
+        .into_iter()
+        .zip(face_materials)
+        .map(|(c, m)| {
+            Ok(SubDFaceProperties {
+                color: (c != u32::MAX).then_some(c.to_le_bytes()),
+                material_channel: m
+                    .try_into()
+                    .map_err(|_| SubDError("Invalid face material channel".into()))?,
+            })
+        })
+        .collect::<Result<Vec<_>, SubDError>>()?;
     Ok(SubDData {
         vertex_ids: unsafe { copy(v.vertex_ids, v.vertex_id_count) },
         edge_ids: unsafe { copy(v.edge_ids, v.edge_id_count) },
         face_ids: unsafe { copy(v.face_ids, v.face_id_count) },
+        face_properties,
         selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
         boundary_edge_count: v.boundary_edge_count,
         face_sources: unsafe { copy(v.face_sources, v.face_source_count) },

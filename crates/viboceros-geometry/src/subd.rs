@@ -13,6 +13,7 @@ mod cylinder;
 mod edges;
 mod ellipsoid;
 mod extrusion_conversion;
+mod face_properties;
 mod insert;
 mod interpolation;
 mod merge;
@@ -30,6 +31,7 @@ pub use append::SubDAppendResult;
 pub use chains::{SubDDirectedEdge, SubDEdgeChain};
 pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
+pub use face_properties::SubDFaceProperties;
 pub use insert::SubDVertexInsertion;
 pub use merge::{SubDFaceMergeResult, SubDMergeComponent};
 pub use mesh_conversion::SubDFromMeshOptions;
@@ -74,6 +76,7 @@ impl SubD {
         if data.vertex_ids.len() != data.points.len()
             || data.edge_ids.len() != data.edges.len()
             || data.face_ids.len() != data.faces.len()
+            || data.face_properties.len() != data.faces.len()
             || data.edge_sharpness.len() != data.edges.len()
             || data.edge_face_counts.len() != data.edges.len()
         {

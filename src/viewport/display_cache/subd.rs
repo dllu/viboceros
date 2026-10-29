@@ -1,6 +1,30 @@
 //! Flat control nets and smooth native sector normals share source topology.
 use super::*;
 impl DisplayGeometry {
+    pub(in crate::viewport) fn triangle_colors(&self) -> Option<&[Option<[u8; 4]>]> {
+        self.triangle_colors
+            .get_or_init(|| {
+                let Geometry::SubD(subd) = &*self.geometry else {
+                    return None;
+                };
+                if subd.face_properties().iter().all(|p| p.color.is_none()) {
+                    return None;
+                }
+                let mesh = self.mesh()?;
+                let sources = self.face_sources()?;
+                Some(
+                    mesh.faces()
+                        .iter()
+                        .enumerate()
+                        .flat_map(|(i, face)| {
+                            let color = subd.face_properties()[sources[i]].color;
+                            std::iter::repeat_n(color, if face.is_triangle() { 1 } else { 2 })
+                        })
+                        .collect(),
+                )
+            })
+            .as_deref()
+    }
     pub(super) fn subd_flat(subd: &viboceros_geometry::SubD) -> Option<GeneratedDisplayMesh> {
         let (mesh, face_sources) = subd
             .control_net_mesh_with_face_sources(

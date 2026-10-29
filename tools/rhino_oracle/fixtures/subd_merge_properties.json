@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-first",
+      "case": "strip-first"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-first",
+      "case": "strip-reversed-picks-first"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-second",
+      "case": "strip-second"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-second",
+      "case": "strip-reversed-picks-second"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-different",
+      "case": "strip-different"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-different",
+      "case": "strip-reversed-picks-different"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-same",
+      "case": "strip-same"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-same",
+      "case": "strip-reversed-picks-same"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-transparent",
+      "case": "strip-transparent"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-transparent",
+      "case": "strip-reversed-picks-transparent"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-unset",
+      "case": "strip-unset"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-reversed-picks-unset",
+      "case": "strip-reversed-picks-unset"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-retain-neighbor",
+      "case": "strip-retain-neighbor"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-retain-first",
+      "case": "strip-retain-first"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-sequential",
+      "case": "strip-sequential"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "strip-edge",
+      "case": "strip-edge"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "tri-vertex",
+      "case": "tri-vertex"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "single-noop",
+      "case": "single-noop"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "ring-hole-noop",
+      "case": "ring-hole-noop"
+    },
+    {
+      "op": "subd_merge_properties",
+      "id": "ring-partial",
+      "case": "ring-partial"
+    }
+  ]
+}
