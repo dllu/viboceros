@@ -93,12 +93,9 @@ impl VibocerosApp {
         true
     }
     fn accept_subdivision_output(&mut self, out: SubdivisionOutcome) {
-        if let Err(error) = self
-            .component_selection
-            .replace_subdivision_faces(&self.document, out.selected_faces)
-        {
-            self.push_log(format!("Error: {error}"));
-        }
+        // Native child picks exist during EndCommand but are cleared before
+        // control returns to the command line, including queued keyboard input.
+        self.component_selection.clear();
         self.push_log(out.message);
     }
 }

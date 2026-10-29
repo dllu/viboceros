@@ -5,6 +5,7 @@ use super::*;
 pub(in crate::app) struct ComponentReplay {
     owners: std::sync::Arc<[ObjectId]>,
     faces: std::sync::Arc<[ComponentPick]>,
+    witnesses: std::sync::Arc<[(ObjectId, GeometrySnapshot)]>,
 }
 
 impl ComponentSelection {
@@ -19,14 +20,50 @@ impl ComponentSelection {
             self.history.insert(
                 id,
                 ComponentReplay {
+                    witnesses: owners
+                        .iter()
+                        .filter_map(|&id| {
+                            document
+                                .object(id)
+                                .map(|o| (id, o.geometry_snapshot().clone()))
+                        })
+                        .collect::<Vec<_>>()
+                        .into(),
                     owners: owners.into(),
                     faces: faces.into(),
                 },
             );
         }
     }
+    pub(super) fn invalidate_result_picks(
+        &mut self,
+        removed: &BTreeMap<ComponentPick, GeometrySnapshot>,
+    ) {
+        if removed.is_empty() {
+            return;
+        }
+        for selection in self.history.values_mut() {
+            let keep = |pick: &ComponentPick| {
+                removed.get(pick).is_none_or(|snapshot| {
+                    !selection
+                        .witnesses
+                        .iter()
+                        .any(|(id, w)| *id == pick.object && w.shares_storage_with(snapshot))
+                })
+            };
+            if selection.faces.iter().any(|p| !keep(p)) {
+                selection.faces = selection
+                    .faces
+                    .iter()
+                    .copied()
+                    .filter(keep)
+                    .collect::<Vec<_>>()
+                    .into();
+            }
+        }
+    }
     pub(in crate::app) fn history_action(
-        &self,
+        &mut self,
         document: &Document,
         input: &str,
     ) -> Option<(ComponentReplay, bool)> {
@@ -39,6 +76,22 @@ impl ComponentSelection {
         } else {
             None
         }?;
+        if !redo && self.history.contains_key(&id) {
+            // Only original result faces still selected on the live output
+            // survive Redo. Later picks do not become command results.
+            let live = self
+                .valid_picks(document)
+                .into_iter()
+                .collect::<std::collections::BTreeSet<_>>();
+            let selection = self.history.get_mut(&id).unwrap();
+            selection.faces = selection
+                .faces
+                .iter()
+                .copied()
+                .filter(|p| live.contains(p))
+                .collect::<Vec<_>>()
+                .into();
+        }
         self.history
             .get(&id)
             .cloned()
@@ -50,7 +103,7 @@ impl ComponentSelection {
         action: (ComponentReplay, bool),
     ) -> Result<(), &'static str> {
         let (selection, redo) = action;
-        self.release_objects(&selection.owners);
+        self.release_objects_impl(&selection.owners, false);
         if redo {
             self.apply(document, selection.faces.to_vec(), ComponentAction::Add)?;
         }

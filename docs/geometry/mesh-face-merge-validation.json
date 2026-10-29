@@ -67,5 +67,7 @@
   "changed_outputs_require_fixed_triangle_validation": true,
   "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
   "upstream_mesh_source_sha256": "3b10dffc566abe18e0dbf971aedd8f2bf11939c6f9559d21a8dd1e02404ade7a",
-  "color_alpha_conversion": "RhinoCommon opacity = 255 - stored ON_Color transparency"
+  "color_alpha_conversion": "RhinoCommon opacity = 255 - stored ON_Color transparency",
+  "additional_edit_history_receipt": "subd-edit-history-validation.json",
+  "checks_scope": "Original qualification; current follow-up results are in additional_edit_history_receipt."
 }

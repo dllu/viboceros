@@ -599,6 +599,12 @@ impl Document {
             // model history label, version, changed-object set and Redo stack.
             if let Some(entry) = self.history.undo.last_mut() {
                 for edit in transaction.edits {
+                    // Result capture runs first on Undo and last on Redo.
+                    let position = entry
+                        .edits
+                        .iter()
+                        .rposition(|e| matches!(e, Edit::ResultSelectionOnReplay { .. }))
+                        .unwrap_or(entry.edits.len());
                     if let (
                         Some(Edit::SelectionReleasedOnReplay {
                             ids,
@@ -610,19 +616,21 @@ impl Document {
                             grips: next_grips,
                             grip_displays: next_displays,
                         },
-                    ) = (entry.edits.last_mut(), &edit)
-                    {
+                    ) = (
+                        position.checked_sub(1).and_then(|i| entry.edits.get_mut(i)),
+                        &edit,
+                    ) {
                         ids.extend(next);
                         grips.extend(next_grips);
                         grip_displays.extend(next_displays);
-                        grip_displays.sort_unstable();
-                        grip_displays.dedup();
+                        for values in [ids, grip_displays] {
+                            values.sort_unstable();
+                            values.dedup();
+                        }
                         grips.sort_unstable();
                         grips.dedup();
-                        ids.sort_unstable();
-                        ids.dedup();
                     } else {
-                        entry.edits.push(edit);
+                        entry.edits.insert(position, edit);
                     }
                 }
             }
@@ -1884,6 +1892,7 @@ impl Document {
             }
             Edit::CommandAcceptedWithoutChanges
             | Edit::SelectionReleasedOnReplay { .. }
+            | Edit::ResultSelectionOnReplay { .. }
             | Edit::ControlPointsChanged { .. }
             | Edit::ControlPointsDeleted { .. }
             | Edit::ControlPointWeightsChanged { .. }

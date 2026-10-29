@@ -28,10 +28,22 @@ use history::ComponentReplay;
 
 impl ComponentSelection {
     pub(super) fn release_objects(&mut self, ids: &[ObjectId]) {
+        self.release_objects_impl(ids, true);
+    }
+    fn release_objects_impl(&mut self, ids: &[ObjectId], invalidate: bool) {
         let ids = ids
             .iter()
             .copied()
             .collect::<std::collections::BTreeSet<_>>();
+        if invalidate {
+            let removed = self
+                .picks
+                .iter()
+                .filter(|(p, _)| ids.contains(&p.object))
+                .map(|(&p, s)| (p, s.clone()))
+                .collect();
+            self.invalidate_result_picks(&removed);
+        }
         self.picks.retain(|p, _| !ids.contains(&p.object));
         self.order.retain(|p| !ids.contains(&p.object));
         self.clear_choices();
@@ -108,24 +120,9 @@ impl ComponentSelection {
         }
         Ok(self.order.clone())
     }
-    pub(super) fn replace_subdivision_faces(
-        &mut self,
-        document: &Document,
-        faces: Vec<(ObjectId, usize)>,
-    ) -> Result<(), &'static str> {
-        let picks = faces
-            .into_iter()
-            .map(|(object, index)| ComponentPick {
-                object,
-                index,
-                kind: ComponentSelectionKind::SubDFace,
-            })
-            .collect();
-        self.clear();
-        self.apply(document, picks, ComponentAction::Add)
-    }
     pub(super) fn clear(&mut self) {
-        self.picks.clear();
+        let removed = std::mem::take(&mut self.picks);
+        self.invalidate_result_picks(&removed);
         self.order.clear();
         self.clear_choices();
     }
@@ -165,7 +162,9 @@ impl ComponentSelection {
             if matches!(action, ComponentAction::Remove)
                 || (matches!(action, ComponentAction::Toggle) && self.picks.contains_key(&pick))
             {
-                self.picks.remove(&pick);
+                if let Some(snapshot) = self.picks.remove(&pick) {
+                    self.invalidate_result_picks(&BTreeMap::from([(pick, snapshot)]));
+                }
                 self.order.retain(|old| *old != pick);
             } else {
                 if !self.picks.contains_key(&pick) {

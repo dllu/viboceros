@@ -48,6 +48,7 @@ APPLICATION_MODULES = [
     'src/app/merge_faces.rs',
     'src/app/merge_faces/tests.rs',
     'src/app/merge_faces/face_properties_tests.rs',
+    'src/app/merge_faces/allocation_tests.rs',
     'src/viewport/scene/subd_face_colors.rs',
     'src/viewport/component_picking.rs',
     'src/viewport/polygon_components/tests.rs',
@@ -227,6 +228,48 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+SUBD_EDIT_HISTORY_MODULES = [
+    'crates/viboceros-document/src/lib.rs',
+    'crates/viboceros-document/src/history.rs',
+    'crates/viboceros-document/src/history_group.rs',
+    'crates/viboceros-document/src/selection.rs',
+    'crates/viboceros-document/src/selection/replay_tests.rs',
+    'crates/viboceros-command/src/merge_faces.rs',
+    'crates/viboceros-command/tests/merge_faces.rs',
+    'crates/viboceros-command/tests/support/merge_faces.rs',
+    'crates/viboceros-io/tests/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_allocation.rs',
+    'src/app/component_selection.rs',
+    'src/app/component_selection/history.rs',
+    'src/app/component_selection/dispatch.rs',
+    'src/app/merge_faces.rs',
+    'src/app/merge_faces/tests.rs',
+    'src/app/merge_faces/face_properties_tests.rs',
+    'src/app/merge_faces/allocation_tests.rs',
+    'src/app/subdivide.rs',
+    'src/app/subdivide/tests.rs',
+    'crates/viboceros-command/src/subdivide.rs',
+    'crates/viboceros-geometry/src/subd.rs',
+    'crates/viboceros-opennurbs/native/subd_codec.h',
+    'crates/viboceros-opennurbs/src/subd.rs',
+    'crates/viboceros-opennurbs/native/subd.cpp',
+    'crates/viboceros-opennurbs/native/subd_merge.h',
+    'crates/viboceros-opennurbs/native/subd_merge_selection.h',
+    'tools/rhino_oracle/subd_state.py',
+    'tools/rhino_oracle/subd_merge_allocation_cases.py',
+    'tools/rhino_oracle/subd_merge_allocation_probe.py',
+    'tools/rhino_oracle/subd_result_history_probe.py',
+    'tools/rhino_oracle/test_subd_edit_history.py',
+    'tools/rhino_oracle/generate_subd_merge_allocation.py',
+    'tools/rhino_oracle/generate_subd_merge_allocation_finish.py',
+    'tools/rhino_oracle/generate_subd_merge_allocation_live.py',
+    'tools/rhino_oracle/generate_subd_merge_allocation_keyboard.py',
+    'tools/rhino_oracle/generate_subd_result_history.py',
+    'tools/rhino_oracle/generate_subd_result_history_reselect.py',
+    'tools/rhino_oracle/fixtures/subd_merge_allocation_recipes.json',
+]
+
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
@@ -266,6 +309,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in SUBD_EDIT_HISTORY_MODULES):
+        paths = [*paths, *SUBD_EDIT_HISTORY_MODULES]
     if any(p in paths for p in SUBD_FACE_PROPERTY_MODULES):
         paths = [*paths, *SUBD_FACE_PROPERTY_MODULES]
     if any(p in paths for p in MERGE_COMMAND_MODULES):

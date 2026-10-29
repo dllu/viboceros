@@ -6,9 +6,11 @@ creates one Undo entry. Repeat the command for another level.
 
 Select whole objects before running the command, or run it and select objects
 at the prompt, then press Enter. Ctrl+Shift clicks and selection windows can
-select mesh or SubD faces before or during the prompt. New children of a partial
-SubD selection remain selected. Selecting every SubD face follows the whole-object
-path and clears component selection. Mesh component selection clears after editing.
+select mesh or SubD faces before or during the prompt. Component selection clears
+when the command finishes. Rhino briefly selects partial SubD children during its
+command callback; those picks are gone when control returns to the command line.
+Select children explicitly to refine them again. Selecting every SubD face follows
+the whole-object path.
 Escape cancels; `SelNone` clears the prompt's whole-object and face selection.
 
 Scripts can target zero-based stored face indices on selected objects:
@@ -56,3 +58,6 @@ Native captures use public component-selection APIs. Viewport gesture tests
 independently cover our frontend. Full native parity and performance remain
 unqualified. The [discovery capture](../../tools/rhino_oracle/observations/subdivide_discovery.json)
 retains rejected option experiments separately from the supported totals.
+
+[Sequential edit validation](../geometry/subd-edit-history.md) checks component IDs,
+SDK/archive copies, completed-command selection and MergeFaces→SubDivide history.

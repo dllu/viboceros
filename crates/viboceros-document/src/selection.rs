@@ -8,6 +8,31 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
+    /// Pair with input-pick cleanup, and append after geometry edits. Output
+    /// picks made before Undo are distinct from the command's original input.
+    pub fn remember_command_result_selection_on_replay(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        let ids = self
+            .resolve_object_indices(ids)?
+            .into_iter()
+            .map(|i| self.objects[i].id)
+            .collect::<Vec<_>>();
+        if !ids.is_empty() {
+            self.record_edit(
+                "Remember result selection",
+                Edit::ResultSelectionOnReplay {
+                    ids,
+                    selected: vec![],
+                },
+            );
+        }
+        Ok(())
+    }
     /// Replace temporary object picks in supplied order, without changing
     /// SelPrev or model undo/redo. The caller restores its prior selection on
     /// cancellation. Validate all ids before modifying any selection state.

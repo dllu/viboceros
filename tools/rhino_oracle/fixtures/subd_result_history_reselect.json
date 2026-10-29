@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_result_history",
+      "id": "keep",
+      "case": "keep"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "clear",
+      "case": "clear"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "other_face",
+      "case": "other_face"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "edge",
+      "case": "edge"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "vertex",
+      "case": "vertex"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "whole",
+      "case": "whole"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "face_and_edge",
+      "case": "face_and_edge"
+    },
+    {
+      "op": "subd_result_history",
+      "id": "face_and_vertex",
+      "case": "face_and_vertex"
+    }
+  ]
+}

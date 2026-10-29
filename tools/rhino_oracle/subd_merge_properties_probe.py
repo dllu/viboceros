@@ -9,6 +9,7 @@ def run(op,host,iterations,tolerance):
     validate(op)
     from subd_edit_scene import Scene
     from merge_faces_command_input import run as drive
+    from subd_state import snapshot as state_snapshot
     if iterations!=1 or host['Rhino'].Commands.Command.InCommand():raise ValueError('owned idle workflow required')
     case=CASES[op['case']]
     class ColoredScene(Scene):
@@ -18,16 +19,7 @@ def run(op,host,iterations,tolerance):
                 if color is not None:f.PerFaceColor=self.S.Drawing.Color.FromArgb(*color)
             return g
     with ColoredScene(case,host)as scene:
-        def snapshot():
-            rows=scene.snapshot()
-            for row,obj in zip(rows,sorted(list(scene.doc.Objects),key=lambda o:o.RuntimeSerialNumber)):
-                if 'subd'not in row:continue
-                g=obj.Geometry
-                row['subd'].update(vertex_ids=[int(v.Id)for v in scene.vertices(g)],edge_ids=[int(e.Id)for e in g.Edges],
-                    face_ids=[int(f.Id)for f in g.Faces],
-                    face_colors=[None if f.PerFaceColor.IsEmpty else [int(f.PerFaceColor.R),int(f.PerFaceColor.G),int(f.PerFaceColor.B),int(f.PerFaceColor.A)]for f in g.Faces])
-                row['selected_faces']=[int(f.Id)for f in g.Faces if obj.IsSubObjectSelected(f.ComponentIndex())]
-            return rows
+        snapshot=lambda:state_snapshot(scene)
         option=drive(host,'Selected')
         before=snapshot();source_archive=scene.archive();steps=[]
         for requested in case['steps']:

@@ -8,9 +8,11 @@ ordinals. The [MergeFaces command](../commands/merge-faces.md) uses this kernel.
 
 Native vertex, edge and face IDs are available alongside the control tables,
 which are sorted by ID. These identities survive editing and archive readback;
-ordinals can change after components disappear. Archive serialization can
-normalize inactive ID-allocation counters; future allocation parity is not yet
-qualified. Existing component ID tables are compared exactly.
+ordinals can change after components disappear. Archive serialization normalizes
+legacy maximum-ID fields. [Sequential edit validation](subd-edit-history.md)
+checks actual global/local SubDivide allocation after merging, including public
+SDK and archive copies. Existing and allocated component ID tables match exactly
+in that corpus; other allocating edits remain unqualified.
 
 ## Region and cleanup behavior
 
@@ -64,8 +66,8 @@ Unchanged commands clear component selections and add no Undo entry; changed
 commands preserve attributes and undo/redo exactly. `input_timer_fired` records
 timer activity and does not establish getter opening.
 
-Future ID allocation, nonmanifold regions, material merging and custom face textures remain
-outside the qualified corpus. Multiple owners, Results and application
+Other allocating edits, nonmanifold regions, material merging and custom face
+textures remain outside the qualified corpus. Multiple owners, Results and application
 selection/history are covered by the separate command receipt.
 
 [Per-face colors](subd-face-properties.md) have a separate native corpus:

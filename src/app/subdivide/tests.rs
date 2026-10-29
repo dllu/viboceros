@@ -67,7 +67,21 @@ fn subdivision_getters_replay_native_whole_objects_components_and_history() {
         for &(id, index) in &components {
             face(&mut app, id, index);
         }
+        let mut reselect = Vec::new();
         for step in value["steps"].as_array().unwrap() {
+            for (id, index) in std::mem::take(&mut reselect) {
+                face(&mut app, id, index);
+            }
+            let children = if value["input"]["reselect_children"] == true {
+                let mut copy = app.document.clone();
+                app.prepare_subdivision()
+                    .unwrap()
+                    .commit(&mut copy, false)
+                    .unwrap()
+                    .selected_faces
+            } else {
+                Vec::new()
+            };
             enter(&mut app, "SubDivide");
             if components.is_empty() && value["input"]["preselected"] != true {
                 assert!(
@@ -93,7 +107,7 @@ fn subdivision_getters_replay_native_whole_objects_components_and_history() {
             );
             std::mem::swap(&mut scene.doc, &mut app.document);
             native::check(&scene, &step["after"]);
-            let children = app
+            let live = app
                 .component_selection
                 .checked_picks(&scene.doc)
                 .unwrap()
@@ -101,7 +115,11 @@ fn subdivision_getters_replay_native_whole_objects_components_and_history() {
                 .filter(|p| p.kind == ComponentSelectionKind::SubDFace)
                 .map(|p| (p.object, p.index))
                 .collect::<Vec<_>>();
-            native::check_children(&scene, &children, &step["after"]);
+            assert!(live.is_empty(), "native callback child picks are transient");
+            if value["input"]["reselect_children"] == true {
+                native::check_children(&scene, &children, &step["after"]);
+                reselect = children;
+            }
             std::mem::swap(&mut scene.doc, &mut app.document);
         }
         app.component_selection.clear();
@@ -169,12 +187,7 @@ fn subdivision_prompt_selects_faces_after_start_and_cancellation_preserves_redo(
         .component_selection
         .checked_picks(&app.document)
         .unwrap();
-    assert_eq!(picks.len(), 4);
-    assert!(
-        picks
-            .iter()
-            .all(|p| p.kind == ComponentSelectionKind::SubDFace)
-    );
+    assert!(picks.is_empty());
     std::mem::swap(&mut scene.doc, &mut app.document);
     native::check(&scene, &value["steps"][0]["after"]);
 }

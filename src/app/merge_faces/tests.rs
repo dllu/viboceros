@@ -210,8 +210,10 @@ fn consecutive_equal_history_labels_restore_only_their_own_result_components() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.redo_entry_id(), Some(entries[0]));
     enter(&mut app, "Redo");
-    assert!(!picks(&app).is_empty());
-    assert!(picks(&app).iter().all(|t| t.object == f.ids["Input 0"]));
+    // SelNone cleared the first command's live results before the second
+    // command. Native Redo does not resurrect that discarded face selection.
+    assert!(picks(&app).is_empty());
+    assert_eq!(app.document.undo_entry_id(), Some(entries[0]));
     enter(&mut app, "SelNone");
     enter(&mut app, "Redo");
     assert!(picks(&app).iter().all(|t| t.object == f.ids["Input 1"]));

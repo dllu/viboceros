@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_merge_allocation",
+      "id": "three-left-global",
+      "case": "three-left-global"
+    },
+    {
+      "op": "subd_merge_allocation",
+      "id": "three-left-local",
+      "case": "three-left-local"
+    },
+    {
+      "op": "subd_merge_allocation",
+      "id": "grid-L-local",
+      "case": "grid-L-local"
+    },
+    {
+      "op": "subd_merge_allocation",
+      "id": "disjoint-local",
+      "case": "disjoint-local"
+    }
+  ]
+}

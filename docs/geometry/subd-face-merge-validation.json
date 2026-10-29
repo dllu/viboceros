@@ -46,9 +46,9 @@
     "crates/viboceros-geometry/src/subd/merge.rs": "025a92626708e3e6b4267eac1bd2852aa672dfc0347f939383485aaaf883f730",
     "crates/viboceros-geometry/src/subd/merge/tests.rs": "8c5e4104d8dc2ae5e7a64b2069b2f709ff51eedcbcaf1de3e8ee7d923d932909",
     "crates/viboceros-geometry/src/subd.rs": "bf6b05aedf46b4e5aaf08f892832b74b11aee3a7b791bd9304c654edd2cce4dd",
-    "crates/viboceros-io/tests/subd_face_merge.rs": "e5ea2ec3115a19145079833ee940f380b0d7e54593b4af2e28111be7e97b753a",
-    "crates/viboceros-io/tests/support/subd_face_merge.rs": "27a5ae6bd166c1dc7d9c19b356c2dd5e6024b01a897e8e0b6b4f848abf211223",
-    "tools/rhino_oracle/qualification_sources.py": "407e38aa3d3249983cebe67c91430b2200b0421f42957726968b2789ec36b4e1",
+    "crates/viboceros-io/tests/subd_face_merge.rs": "a2e70eef01f68566e428cad6f0a1b45077fb9df48e7d9ba4c0e837a72d7595e2",
+    "crates/viboceros-io/tests/support/subd_face_merge.rs": "d20353b9e31874d58bf28a67a13340e7c1a4a2b83636910d1f33bfcc2c9e9029",
+    "tools/rhino_oracle/qualification_sources.py": "3a3521a6991e25413c68f11566fff376290214ae61bb6a43d6ad03b7ab84cf0e",
     "tools/rhino_oracle/test_subd_merge_kernel.py": "bf4d99d8abe41ced72fbf4bc18f92321edf034d3a6b95b2be0bf1f3001e2a5bb",
     "crates/viboceros-geometry/src/lib.rs": "4f1952a7eafb37ce985b7ef9230c61d4481873545e65efbce53f8c8885a9acc5",
     "crates/viboceros-opennurbs/src/lib.rs": "ec3cd01598c589f929f87dbeaa5f2aedcf1396466cbc0f5ed4f6489f4de22ccb",
@@ -58,10 +58,12 @@
     "crates/viboceros-opennurbs/src/subd/face_properties.rs": "6e18f6c1388c91dadae60ee9c17bfc6a9879dd54d024f4aacd1e6062b9ea0d0b",
     "crates/viboceros-geometry/src/subd/face_properties.rs": "636bf75eb537f2656efb1eeaefd16499fd875b4404f9fad12c91f040b1194134",
     "crates/viboceros-io/tests/support/subd_face_properties.rs": "5cb84024377f59dba6c9c5001c49dd757a4af4138591e43d2bc104a38cc285fb",
-    "src/app/merge_faces/face_properties_tests.rs": "26c20bdfb3721b5e5fae5c71854addc973139dade59cfbd351dbda0a2038495c",
+    "src/app/merge_faces/face_properties_tests.rs": "157e890a6a66d923e22d226c9796d0b20d9598b58847362e873ef5d7157b8fbc",
     "src/viewport/display_cache.rs": "572c3b1b1782f5bdbd3168c8487a1e4a40cbbe46061cb6fe6ed0eba9c1b0f3b0",
     "src/viewport/display_cache/subd.rs": "4c2fdff979da63e3fa1dff99b8f7e4d4d9d146973e8d89addbb6285d58114b97",
     "src/viewport/scene.rs": "f892736da3f7a0973c7034b36632ece99c4379df6cc8aeb115930a0e1c9656c8",
     "src/viewport/scene/subd_face_colors.rs": "709014da00503e7a8a573814a6538b7742d04870e65b8d3591a7315dd85a1015"
-  }
+  },
+  "additional_edit_history_receipt": "subd-edit-history-validation.json",
+  "checks_scope": "Original qualification; current follow-up results are in additional_edit_history_receipt."
 }

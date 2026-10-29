@@ -46,6 +46,35 @@ fn check(app: &VibocerosApp, id: ObjectId, rows: &Value) {
     assert_eq!(app.document.objects().len(), rows.as_array().unwrap().len());
 }
 
+pub(super) fn setup(encoded: &Value) -> (VibocerosApp, ObjectId, Geometry) {
+    let mut models = support::models(encoded);
+    let mut app = test_app();
+    let (id, geometry) = models.remove("Input 0").unwrap();
+    app.document
+        .add_geometry_with_metadata_and_id(
+            geometry.clone(),
+            viboceros_document::ObjectAttributes::on_layer(app.document.current_layer_id())
+                .with_name("Input 0"),
+            std::collections::BTreeMap::new(),
+            Some(id),
+        )
+        .unwrap();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    let (witness, point) = models.remove("Undo witness").unwrap();
+    app.document
+        .add_geometry_with_metadata_and_id(
+            point,
+            viboceros_document::ObjectAttributes::on_layer(app.document.current_layer_id())
+                .with_name("Undo witness"),
+            std::collections::BTreeMap::new(),
+            Some(witness),
+        )
+        .unwrap();
+    app.document.clear_selection();
+    (app, id, geometry)
+}
+
 #[test]
 fn native_colored_subd_getters_sequential_history_and_noops_restore_face_properties() {
     let data: Value = serde_json::from_str(
@@ -57,31 +86,7 @@ fn native_colored_subd_getters_sequential_history_and_noops_restore_face_propert
     .unwrap();
     for row in data["results"].as_array().unwrap() {
         let v = &row["value"];
-        let mut models = support::models(&v["source_3dm"]);
-        let mut app = test_app();
-        let (id, geometry) = models.remove("Input 0").unwrap();
-        app.document
-            .add_geometry_with_metadata_and_id(
-                geometry.clone(),
-                viboceros_document::ObjectAttributes::on_layer(app.document.current_layer_id())
-                    .with_name("Input 0"),
-                std::collections::BTreeMap::new(),
-                Some(id),
-            )
-            .unwrap();
-        app.document.clear_selection();
-        app.document.clear_history().unwrap();
-        let (witness, point) = models.remove("Undo witness").unwrap();
-        app.document
-            .add_geometry_with_metadata_and_id(
-                point,
-                viboceros_document::ObjectAttributes::on_layer(app.document.current_layer_id())
-                    .with_name("Undo witness"),
-                std::collections::BTreeMap::new(),
-                Some(witness),
-            )
-            .unwrap();
-        app.document.clear_selection();
+        let (mut app, id, geometry) = setup(&v["source_3dm"]);
         check(&app, id, &v["before"]);
         for step in v["steps"].as_array().unwrap() {
             app.component_selection.clear();

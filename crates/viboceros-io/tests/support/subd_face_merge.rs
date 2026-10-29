@@ -273,7 +273,7 @@ pub fn face_merge_matches_native_topology_properties_and_component_identities() 
     );
 }
 
-fn differences_between(
+pub(super) fn differences_between(
     actual: &Value,
     expected: &Value,
     path: &str,

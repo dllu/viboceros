@@ -108,6 +108,10 @@ impl Document {
                         ids.clear();
                         *reselected = None;
                     }
+                    Edit::ResultSelectionOnReplay { ids, selected } => {
+                        ids.clear();
+                        selected.clear();
+                    }
                     _ => {}
                 }
             }

@@ -74,7 +74,7 @@ class SubDFacePropertiesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory()as directory:
             stage_helpers(q,HERE,Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()}, {
-                'subd_merge_properties_probe.py','subd_merge_properties_cases.py','merge_faces_command_cases.py',
+                'subd_merge_properties_probe.py','subd_merge_properties_cases.py','subd_state.py','merge_faces_command_cases.py',
                 'merge_faces_command_input.py','subd_edit_scene.py','subd_box_probe.py','number_token.py',
                 'join_probe.py','merge_edges_probe.py'})
 

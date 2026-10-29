@@ -1,3 +1,5 @@
+#[path = "support/subd_allocation.rs"]
+mod allocation;
 #[path = "support/subd_face_properties.rs"]
 mod properties;
 #[path = "support/subd_face_merge.rs"]
@@ -41,4 +43,10 @@ fn all_native_merges_match_topology_properties_and_component_identities() {
 fn native_face_colors_and_sequential_merges_preserve_geometry_and_properties() {
     initialize_optional_kernel();
     properties::audit();
+}
+
+#[test]
+fn allocating_subdivision_after_native_merges_preserves_component_ids_and_geometry() {
+    initialize_optional_kernel();
+    allocation::audit();
 }

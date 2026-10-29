@@ -264,3 +264,64 @@ fn grip_replay_release_is_atomic_transient_and_does_not_replace_owner_geometry()
     assert!(!doc.commit_transaction().unwrap());
     assert_eq!(doc.redo_label(), redo.as_deref());
 }
+
+#[test]
+fn result_selection_replays_after_folded_noops_and_preserves_unrelated_picks() {
+    let mut doc = Document::default();
+    let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());
+    let owner = doc.add_geometry(point(0.)).unwrap();
+    let peer = doc.add_geometry(point(1.)).unwrap();
+    doc.clear_history().unwrap();
+    assert!(matches!(
+        doc.remember_command_result_selection_on_replay([owner]),
+        Err(DocumentError::NoActiveTransaction)
+    ));
+    doc.select_object(owner, SelectionMode::Replace).unwrap();
+    doc.begin_transaction("Merged result").unwrap();
+    let before = format!("{doc:?}");
+    assert!(
+        doc.remember_command_result_selection_on_replay([owner, ObjectId::new()])
+            .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    doc.release_command_selection_on_history_replay([owner])
+        .unwrap();
+    doc.clear_selection();
+    doc.replace_object_geometries([(owner, point(2.))]).unwrap();
+    doc.remember_command_result_selection_on_replay([owner, owner])
+        .unwrap();
+    doc.commit_transaction().unwrap();
+    let entry = doc.undo_entry_id();
+    for _ in 0..3 {
+        doc.begin_transaction("No output").unwrap();
+        doc.release_command_selection_on_history_replay([owner])
+            .unwrap();
+        assert!(!doc.commit_transaction().unwrap());
+        assert_eq!(doc.undo_entry_id(), entry);
+    }
+    // Repeated no-op cleanup coalesces even with a final result marker.
+    assert_eq!(doc.history.undo.last().unwrap().edits.len(), 4);
+    doc.select_objects_direct([peer, owner], SelectionMode::Replace)
+        .unwrap();
+    for _ in 0..2 {
+        assert_eq!(doc.undo().unwrap().as_deref(), Some("Merged result"));
+        assert_eq!(doc.object(owner).unwrap().geometry(), &point(0.));
+        assert!(!doc.is_selected(owner));
+        assert!(doc.is_selected(peer));
+        assert_eq!(doc.redo().unwrap().as_deref(), Some("Merged result"));
+        assert_eq!(doc.object(owner).unwrap().geometry(), &point(2.));
+        assert!(doc.is_selected(owner));
+        assert!(doc.is_selected(peer));
+    }
+    doc.clear_selection();
+    doc.undo().unwrap();
+    doc.redo().unwrap();
+    assert_eq!(doc.selected_object_count(), 0);
+    doc.begin_transaction("Rejected result").unwrap();
+    doc.remember_command_result_selection_on_replay([owner])
+        .unwrap();
+    doc.select_object(owner, SelectionMode::Replace).unwrap();
+    doc.rollback_transaction().unwrap();
+    assert_eq!(doc.undo_entry_id(), entry);
+    assert_eq!(doc.selected_object_count(), 0);
+}

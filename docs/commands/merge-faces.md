@@ -13,9 +13,11 @@ Whole-object selection opens the component getter. It does not select every face
 Multiple mesh and SubD owners can participate. A successful edit preserves owner
 IDs, attributes, layers and groups and creates one Undo entry. Unchanged regions
 clear their component picks without adding an Undo entry. Undo clears processed
-picks; Redo restores result faces when Results is Selected. Surviving SubD input
-edge/vertex picks can remain immediately after the edit but are not restored by
-Redo.
+picks. With Results=Selected, Redo restores only original result faces whose
+automatic selection was never cleared. Clearing and explicitly reselecting the
+same face does not restore that replay status. Whole-object picks made on the
+output before Undo return on Redo. Surviving SubD input edge/vertex picks can
+remain immediately after the edit but are not restored by Redo.
 
 ## Scripts
 
@@ -48,8 +50,10 @@ meshes varies with Results=NotSelected. Only that replacement run is compared by
 identity; Viboceros uses deterministic document order. Selected result order,
 other owner order and Undo order remain strict.
 
-Future SubD component allocation, nonmanifold regions and custom face textures
-remain outside the qualified corpus. An earlier 14-case capture is retained as a
+[Sequential SubD edits](../geometry/subd-edit-history.md) additionally qualify
+allocation through global/local SubDivide and public SDK/archive copies. Other
+allocating operations, nonmanifold regions and custom face textures remain
+outside the qualified corpus. An earlier 14-case capture is retained as a
 diagnostic: four postselection records contain invalid source archive fields.
 The corrected capture supplies the admitted archive seeds.
 

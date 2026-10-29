@@ -236,6 +236,10 @@ impl MergeSelection {
                 .map(|s| (s.id, s.candidate.as_ref().unwrap().clone())),
         )?;
         document.move_objects_to_end_in_order(changed_objects.iter().copied())?;
+        if !changed_objects.is_empty() {
+            document
+                .remember_command_result_selection_on_replay(released_objects.iter().copied())?;
+        }
         let selected_components = self
             .sources
             .iter()

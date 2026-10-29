@@ -108,6 +108,12 @@ pub(super) enum Edit {
         grips: Vec<super::ControlPointId>,
         grip_displays: Vec<ObjectId>,
     },
+    /// Appended after replacements: remember live output whole-object picks
+    /// before Undo, then restore them after Redo. Input cleanup remains separate.
+    ResultSelectionOnReplay {
+        ids: Vec<ObjectId>,
+        selected: Vec<ObjectId>,
+    },
     /// A replacement clears its replay selection unless the user selects it
     /// again after Undo. Explicit picking may repeat an already selected set.
     TransformSelectionReleasedOnReplay {
@@ -236,6 +242,13 @@ impl Edit {
                 for id in grip_displays {
                     document.control_points.remove(id);
                 }
+            }
+            Self::ResultSelectionOnReplay { ids, selected } => {
+                *selected = ids
+                    .iter()
+                    .copied()
+                    .filter(|id| document.selection.contains(id))
+                    .collect();
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
                 *reselected = None;
@@ -388,6 +401,13 @@ impl Edit {
                 release_grips(document, grips);
                 for id in grip_displays {
                     document.control_points.remove(id);
+                }
+            }
+            Self::ResultSelectionOnReplay { selected, .. } => {
+                for id in selected.iter().copied() {
+                    if document.selection.insert(id) {
+                        document.selection_order.push(id);
+                    }
                 }
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
