@@ -199,6 +199,10 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    command_execution = ['crates/viboceros-command/src/lib.rs',
+                         'crates/viboceros-command/src/execution.rs']
+    if any(p in paths for p in command_execution):
+        paths = [*paths, *command_execution]
     mesh_faces = 'crates/viboceros-command/src/mesh_edit/faces.rs'
     if any(p == mesh_faces or p.startswith(mesh_faces[:-3]+'/') for p in paths):
         paths = [*paths, mesh_faces, *[f'crates/viboceros-command/src/mesh_edit/faces/{name}.rs'

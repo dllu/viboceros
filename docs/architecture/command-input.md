@@ -5,8 +5,11 @@
 Implementation notes for this subsystem. Command pages and qualification records
 describe the supported behavior and measured limits.
 
-The command crate keeps shared `CommandError` variants in `src/error.rs`, outside
-the dispatcher. ExtractPt separates option parsing, component resolution and
+The command crate's `execution` module owns invocation stages, dispatch and
+transaction boundaries. It distinguishes commands whose object getter already
+started, so finishing selection does not repeat command-start history effects.
+The root defines the public command contract and registry; `error` owns shared
+`CommandError` variants. ExtractPt separates option parsing, component resolution and
 atomic output admission; its application controller supplies witnessed component
 picks to the same typed command path.
 
