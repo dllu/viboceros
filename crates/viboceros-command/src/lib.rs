@@ -461,6 +461,7 @@ pub mod geometry_check;
 pub mod merge_coplanar_face;
 mod merge_edge;
 mod merge_edges;
+mod object_details;
 mod offset_curve;
 mod split_edge;
 use cap::CapCommand;
@@ -1699,6 +1700,11 @@ impl CommandRegistry {
         registry
             .register(geometry_check::CheckCommand)
             .expect("unique built-in command");
+        for technical in [false, true] {
+            registry
+                .register(object_details::DetailsCommand { technical })
+                .expect("unique built-in command");
+        }
         registry
             .register(geometry_check::SelBadObjectsCommand)
             .expect("unique built-in command");

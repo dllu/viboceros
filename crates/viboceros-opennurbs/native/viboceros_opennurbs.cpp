@@ -2053,7 +2053,9 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
 
 }  // namespace
 
+#include "geometry_diagnostics.h"
 #include "geometry_check.h"
+#include "geometry_dump.h"
 #include "curve_queries.h"
 #include "curve_discontinuities.h"
 #include "curve_tangents.h"

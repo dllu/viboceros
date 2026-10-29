@@ -41,6 +41,8 @@ fn main() {
     println!("cargo:rerun-if-changed=native/mesh_modeling.h");
     println!("cargo:rerun-if-changed=native/mesh_cleanup.h");
     println!("cargo:rerun-if-changed=native/geometry_check.h");
+    println!("cargo:rerun-if-changed=native/geometry_diagnostics.h");
+    println!("cargo:rerun-if-changed=native/geometry_dump.h");
     println!("cargo:rerun-if-changed=native/curve_queries.h");
     println!("cargo:rerun-if-changed=native/curve_discontinuities.h");
     println!("cargo:rerun-if-changed=native/curve_tangents.h");

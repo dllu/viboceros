@@ -21,6 +21,9 @@ pub use blocks::{
     read_3dm_file_with_blocks_model_tolerance,
 };
 mod check;
+mod diagnostics;
+mod dump;
+pub use dump::{GeometryDump, dump_3dm_geometry, dump_3dm_instance_reference};
 mod mesh_ngon;
 pub use check::{
     GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_instance_reference,
@@ -2263,6 +2266,13 @@ mod ffi {
     }
 
     unsafe extern "C" {
+        pub fn vibo_geometry_dump(
+            source: *const ViboWriteObject,
+            instance_definition_uuid: *const c_char,
+            truncated: *mut c_int,
+            report: *mut c_char,
+            capacity: usize,
+        ) -> c_int;
         pub fn vibo_geometry_check(
             source: *const ViboWriteObject,
             instance_definition_uuid: *const c_char,

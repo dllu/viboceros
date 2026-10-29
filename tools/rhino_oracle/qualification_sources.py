@@ -199,6 +199,23 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    details = [
+        'crates/viboceros-command/src/object_details.rs',
+        'crates/viboceros-command/src/object_details/summary.rs',
+        'crates/viboceros-command/src/object_details/text.rs',
+        'crates/viboceros-command/src/object_details/tests.rs',
+        'src/app/tests/object_details.rs',
+    ]
+    if 'crates/viboceros-command/src/lib.rs' in paths or any(p in paths for p in details):
+        paths = [*paths, *details, 'crates/viboceros-io/src/three_dm/dump.rs',
+                 'crates/viboceros-io/src/three_dm/dump/tests.rs']
+    if any(p in paths for p in ['crates/viboceros-io/src/three_dm/check.rs',
+                                'crates/viboceros-io/src/three_dm/dump.rs',
+                                'crates/viboceros-opennurbs/native/geometry_check.h',
+                                'crates/viboceros-opennurbs/native/geometry_dump.h']):
+        paths = [*paths, 'crates/viboceros-io/src/three_dm/diagnostics.rs',
+                 'crates/viboceros-opennurbs/native/geometry_diagnostics.h',
+                 'crates/viboceros-opennurbs/native/geometry_dump.h']
     if any(path in paths for path in [
             'crates/viboceros-oracle/src/curve_tangents.rs',
             'crates/viboceros-oracle/tests/curve_tangents_native.rs']):

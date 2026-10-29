@@ -52,49 +52,11 @@ pub fn check_3dm_instance_reference(
 }
 
 fn check(geometry: &ThreeDmGeometry, definition_uuid: Option<&CStr>) -> GeometryCheck {
-    let payload = match ObjectPayload::from_geometry(geometry) {
+    let payload = match diagnostics::DiagnosticPayload::new(geometry) {
         Ok(payload) => payload,
         Err(error) => return GeometryCheck::not_checked(error.to_string()),
     };
-    // Bound native transfer work without mistaking a resource limit for bad data.
-    let total = payload
-        .coordinates
-        .len()
-        .checked_add(payload.knots_u.len())
-        .and_then(|n| n.checked_add(payload.knots_v.len()))
-        .and_then(|n| n.checked_mul(8))
-        .and_then(|n| {
-            payload
-                .indices
-                .len()
-                .checked_mul(4)
-                .and_then(|m| n.checked_add(m))
-        })
-        .and_then(|n| n.checked_add(payload.geometry_data.len()));
-    if total.is_none_or(|n| n > 256 * 1024 * 1024) {
-        return GeometryCheck::not_checked("Native geometry check payload exceeds 256 MiB");
-    }
-    let view = ffi::ViboWriteObject {
-        object_type: payload.object_type,
-        rational_curve: u8::from(
-            matches!(geometry, ThreeDmGeometry::NurbsCurve(c) if c.has_rational_representation()),
-        ),
-        degree_u: payload.degree_u,
-        degree_v: payload.degree_v,
-        control_point_count_u: payload.control_point_count_u,
-        control_point_count_v: payload.control_point_count_v,
-        coordinates: pointer_or_null(&payload.coordinates),
-        coordinate_count: payload.coordinates.len(),
-        knots_u: pointer_or_null(&payload.knots_u),
-        knot_u_count: payload.knots_u.len(),
-        knots_v: pointer_or_null(&payload.knots_v),
-        knot_v_count: payload.knots_v.len(),
-        indices: pointer_or_null(&payload.indices),
-        index_count: payload.indices.len(),
-        geometry_data: pointer_or_null(&payload.geometry_data),
-        geometry_data_count: payload.geometry_data.len(),
-        ..Default::default()
-    };
+    let view = payload.view();
     let mut valid = -1;
     let mut details = vec![0u8; 16384];
     // The payload and UUID own every referenced array through this call. The

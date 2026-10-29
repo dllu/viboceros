@@ -160,6 +160,8 @@ typedef struct ViboWriteObject {
 int32_t vibo_geometry_check(const ViboWriteObject* source,
     const char* instance_definition_uuid, int32_t* valid,
     char* diagnostics, size_t capacity);
+int32_t vibo_geometry_dump(const ViboWriteObject* source,
+    const char* definition_uuid, int32_t* truncated, char* report, size_t capacity);
 
 // Euclidean [x,y,z,weight] controls and a standard full knot vector.
 // Return 1 when IsPlanar ran; planar is then 0 or 1. Inputs remain owned by caller.
