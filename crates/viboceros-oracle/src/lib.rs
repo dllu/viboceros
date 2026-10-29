@@ -266,6 +266,7 @@ mod extension_backend;
 mod knot_reduction;
 mod non_manifold_selection;
 mod planar_surface;
+mod typed_selection;
 mod volume_selection;
 pub use curve_approximation::{CubicApproximationFixture, CurveCorrespondenceFixture};
 pub use curve_frames::CurveFramesFixture;
@@ -983,6 +984,11 @@ pub enum Operation {
         id: String,
         as_brep: bool,
         preselect: bool,
+    },
+    TypedSelection {
+        id: String,
+        #[serde(flatten)]
+        fixture: typed_selection::Fixture,
     },
     VolumeSelection {
         id: String,
@@ -2866,6 +2872,7 @@ impl Operation {
             | Self::CurveFilletPairGeometry { id, .. }
             | Self::CurveFilletPairParts { id, .. }
             | Self::NonManifoldSelection { id, .. }
+            | Self::TypedSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::CurveExtrudeDirectionCommand { id, .. }
@@ -3790,6 +3797,9 @@ fn execute(
         Operation::NonManifoldSelection {
             as_brep, preselect, ..
         } => non_manifold_selection::run(*as_brep, *preselect, tolerance)?,
+        Operation::TypedSelection { fixture, .. } => {
+            typed_selection::run(fixture, iterations, tolerance)?
+        }
         Operation::VolumeSelection {
             sources,
             center,

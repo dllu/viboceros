@@ -12,6 +12,7 @@
 - [Create shared blocks and insert instances](blocks.md)
 - [Explode instances one level or recursively](explode-blocks.md)
 - [Selection, attributes, layers, and groups](document.md)
+- [Select extrusions, block instances and mirrored placements](typed-selection.md)
 - [Volume selection](volume-selection.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)

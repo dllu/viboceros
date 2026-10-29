@@ -1,0 +1,169 @@
+{
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "SelExtrusion-no-matches",
+      "value": {
+        "redo_preserved": true,
+        "selected": [],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "SelExtrusion-no-matches-preselected",
+      "value": {
+        "redo_preserved": true,
+        "selected": [
+          4
+        ],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "SelBlockInstance-no-matches",
+      "value": {
+        "redo_preserved": true,
+        "selected": [],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "SelBlockInstance-no-matches-preselected",
+      "value": {
+        "redo_preserved": true,
+        "selected": [
+          4
+        ],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "SelMirroredBlocks-no-matches",
+      "value": {
+        "redo_preserved": true,
+        "selected": [],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "SelMirroredBlocks-no-matches-preselected",
+      "value": {
+        "redo_preserved": true,
+        "selected": [],
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "unchanged": true
+      }
+    }
+  ],
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "f8939dbdf793ca9799e6a27eb6c657be1e5e492f811d51065f838f9298047d48",
+    "sources": {
+      "generate_typed_selection_empty.py": "4ce2eb14f9a2420f71dca61acab165edcfd080d3bb4f3cea0464bf20b4fece1a",
+      "typed_selection_probe.py": "6bdfb6885e623a4a9243bbf50927165c5b06c4e231c861b92b13c5e7ad6ff360",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "aa9ae6ae29f269704b75b2613aa3c210ddbc685c39ad7a5f7422073845abe9fb",
+      "client.py": "92675037b0b12636ac597e46ad06167936fdf2492f05aa07ef7079a3c885b94a",
+      "structural_sdk.py": "05fd310d19bf1ff17b8cf23e1fd042bb0d2ee60419b36eb0906aaa44beab3720",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

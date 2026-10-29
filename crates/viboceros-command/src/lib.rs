@@ -1503,6 +1503,17 @@ impl CommandRegistry {
             ),
             ("SelLine", &[][..], GeometrySelectionFilter::Line),
             ("SelPolyline", &[][..], GeometrySelectionFilter::Polyline),
+            ("SelExtrusion", &[][..], GeometrySelectionFilter::Extrusion),
+            (
+                "SelBlockInstance",
+                &[][..],
+                GeometrySelectionFilter::BlockInstance,
+            ),
+            (
+                "SelMirroredBlocks",
+                &[][..],
+                GeometrySelectionFilter::MirroredBlock,
+            ),
             ("SelPtCloud", &[][..], GeometrySelectionFilter::PointCloud),
             ("SelSrf", &[][..], GeometrySelectionFilter::Surface),
             ("SelOpenSrf", &[][..], GeometrySelectionFilter::OpenSurface),

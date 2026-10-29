@@ -199,6 +199,23 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    selection = ['crates/viboceros-command/src/geometry_selection.rs',
+                 'crates/viboceros-command/src/geometry_selection/filter.rs',
+                 'crates/viboceros-command/src/geometry_selection/tests.rs']
+    if any(p in paths for p in selection):
+        paths = [*paths, *selection]
+    if 'crates/viboceros-oracle/src/typed_selection.rs' in paths:
+        paths = [*paths, *selection,
+                 'crates/viboceros-oracle/src/typed_selection/scene.rs',
+                 'crates/viboceros-oracle/src/typed_selection/tests.rs',
+                 'tools/rhino_oracle/typed_selection_probe.py',
+                 'tools/rhino_oracle/generate_typed_selection.py',
+                 'tools/rhino_oracle/generate_typed_selection_empty.py',
+                 'tools/rhino_oracle/test_typed_selection.py',
+                 'tools/rhino_oracle/fixtures/typed_selection.json',
+                 'tools/rhino_oracle/observations/typed_selection.json',
+                 'tools/rhino_oracle/fixtures/typed_selection_empty.json',
+                 'tools/rhino_oracle/observations/typed_selection_empty.json']
     details = [
         'crates/viboceros-command/src/object_details.rs',
         'crates/viboceros-command/src/object_details/summary.rs',

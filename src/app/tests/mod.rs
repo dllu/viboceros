@@ -150,6 +150,7 @@ mod selection_sidebar;
 mod surface_apex_support;
 mod transform_input;
 mod trim_split_input;
+mod typed_selection;
 
 mod project;
 mod radius;

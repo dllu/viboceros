@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-base",
+      "command": "SelExtrusion",
+      "scenario": "base"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-preselected",
+      "command": "SelExtrusion",
+      "scenario": "preselected"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-grouped",
+      "command": "SelExtrusion",
+      "scenario": "grouped"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-hidden",
+      "command": "SelExtrusion",
+      "scenario": "hidden"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-locked",
+      "command": "SelExtrusion",
+      "scenario": "locked"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-hidden-layer",
+      "command": "SelExtrusion",
+      "scenario": "hidden-layer"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelExtrusion-locked-layer",
+      "command": "SelExtrusion",
+      "scenario": "locked-layer"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-base",
+      "command": "SelBlockInstance",
+      "scenario": "base"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-preselected",
+      "command": "SelBlockInstance",
+      "scenario": "preselected"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-grouped",
+      "command": "SelBlockInstance",
+      "scenario": "grouped"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-hidden",
+      "command": "SelBlockInstance",
+      "scenario": "hidden"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-locked",
+      "command": "SelBlockInstance",
+      "scenario": "locked"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-hidden-layer",
+      "command": "SelBlockInstance",
+      "scenario": "hidden-layer"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelBlockInstance-locked-layer",
+      "command": "SelBlockInstance",
+      "scenario": "locked-layer"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-base",
+      "command": "SelMirroredBlocks",
+      "scenario": "base"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-preselected",
+      "command": "SelMirroredBlocks",
+      "scenario": "preselected"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-grouped",
+      "command": "SelMirroredBlocks",
+      "scenario": "grouped"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-hidden",
+      "command": "SelMirroredBlocks",
+      "scenario": "hidden"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-locked",
+      "command": "SelMirroredBlocks",
+      "scenario": "locked"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-hidden-layer",
+      "command": "SelMirroredBlocks",
+      "scenario": "hidden-layer"
+    },
+    {
+      "op": "typed_selection",
+      "id": "SelMirroredBlocks-locked-layer",
+      "command": "SelMirroredBlocks",
+      "scenario": "locked-layer"
+    }
+  ]
+}

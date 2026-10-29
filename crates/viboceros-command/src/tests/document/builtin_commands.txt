@@ -284,6 +284,7 @@ ScalePositions
 Section
 SelAll
 SelBadObjects
+SelBlockInstance
 SelBox
 SelClosedCrv
 SelClosedMesh
@@ -294,6 +295,7 @@ SelColor
 SelCrv
 SelDup
 SelDupAll
+SelExtrusion
 SelGroup
 SelID
 SelKey
@@ -303,6 +305,7 @@ SelLayer
 SelLayerNumber
 SelLine
 SelMesh
+SelMirroredBlocks
 SelName
 SelNone
 SelNonManifold

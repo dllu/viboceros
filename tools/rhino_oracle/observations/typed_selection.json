@@ -1,0 +1,619 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "selected": [
+          0
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-base",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          0,
+          4
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-preselected",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          0
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-grouped",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-hidden",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-locked",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-hidden-layer",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelExtrusion-locked-layer",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-base",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-preselected",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-grouped",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-hidden",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-locked",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-hidden-layer",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelBlockInstance-locked-layer",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          6,
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-base",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          6,
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-preselected",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          6,
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-grouped",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-hidden",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-locked",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-hidden-layer",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "selected": [
+          8,
+          10,
+          11
+        ],
+        "unchanged": true,
+        "types": [
+          "Extrusion",
+          "Brep",
+          "Brep",
+          "LineCurve",
+          "Point",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry",
+          "InstanceReferenceGeometry"
+        ],
+        "redo_preserved": true
+      },
+      "id": "SelMirroredBlocks-locked-layer",
+      "elapsed_ns": 0
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "be487c61712d64a81b19b268ab808945a7c2d78a92e88e20ae4f26321c52bb9e",
+    "sources": {
+      "generate_typed_selection.py": "3f9e2fd18de21373babb931cc27f349e0b48ddcf24c963192f84ed6902c9206f",
+      "typed_selection_probe.py": "97a6a3a6ae1cea0bf9514c5ad2aadf48d18a99c0b0400431070d819cf20bf3b1",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "aa9ae6ae29f269704b75b2613aa3c210ddbc685c39ad7a5f7422073845abe9fb",
+      "client.py": "92675037b0b12636ac597e46ad06167936fdf2492f05aa07ef7079a3c885b94a",
+      "structural_sdk.py": "05fd310d19bf1ff17b8cf23e1fd042bb0d2ee60419b36eb0906aaa44beab3720",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

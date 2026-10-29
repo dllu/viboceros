@@ -1094,6 +1094,12 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('CreateUVCrv requires a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'typed_selection' for op in request.get('operations', [])):
+            operations = request['operations']
+            if (self.settings_scheme is None or request.get('iterations', 1) != 1
+                    or not 1 <= len(operations) <= 64
+                    or any(op.get('op') != 'typed_selection' for op in operations)):
+                raise OracleProtocolError('Typed selection commands require a private dedicated one-iteration capture')
         if any(op.get('op') in ('reparameterize_face_command','reparameterize_block_command') for op in request.get('operations', [])):
             if self.settings_scheme is None or request.get('iterations', 1) != 1:
                 raise OracleProtocolError('Face reparameterization commands require a private Rhino settings scheme and one iteration')
