@@ -1311,5 +1311,9 @@
     "tools/rhino_oracle/test_sweep1_refit_representations.py": "0927d962f3583f067b8c36b3ce4daa329c00c43aeddd3f96340c9c5a929215ba",
     "tools/rhino_oracle/test_sweep1_refit_sections.py": "f9d1798dde2b41c52d6de268a1307ca870f6fe1570e03aa52be31c119a22154c",
     "tools/rhino_oracle/test_sweep1_regions.py": "258cb631bc1d1a615ea970b903c8a031a92da7db7c5c88a56ce9308cfdaa4b39"
-  }
+  },
+  "measurement_revision": "988bf3374ddef0544fc79e269e5b9830e4445174",
+  "measurement_record": "docs/sweep1/refit-large-tolerances-validation.json",
+  "measurement_record_sha256": "1c0ef566493dbbc4a8a2e7bf4170960bf162c1965fa80c6f6efcdd40ec870698",
+  "measurement_scope": "Historical large-tolerance and independent fitting validation at the measured implementation revision. All original measurements, active failures and source bindings are retained; later runtime changes need separate validation."
 }
