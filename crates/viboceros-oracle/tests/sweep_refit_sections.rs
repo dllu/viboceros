@@ -76,3 +76,64 @@ fn invalid_section_station_metadata_stops_before_curve_construction() {
         "{error}"
     );
 }
+
+#[test]
+fn single_profile_certificate_retries_preserve_rpc_inputs_and_stations() {
+    let query = read("fixtures");
+    let mut operations = Vec::new();
+    let mut quadratic = query["operations"][0].clone();
+    quadratic["sections"][0]["control_points"][1]["point"] = json!([1.2, 2.4, 0.]);
+    quadratic["sections"][0]["control_points"][2]["point"] = json!([3.8, 0.3, 0.]);
+    for tolerance in [8e-7, 1.2e-6] {
+        let mut operation = quadratic.clone();
+        operation["id"] = json!(format!("asymmetric-single-{tolerance}"));
+        operation["refit_tolerance"] = json!(tolerance);
+        operations.push(operation);
+    }
+    let mut circle = query["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|op| op["id"] == "nurbs-circle-1e-06-original-count-1")
+        .unwrap()
+        .clone();
+    for control in circle["sections"][0]["control_points"]
+        .as_array_mut()
+        .unwrap()
+    {
+        let p = &control["point"];
+        control["point"] = json!([
+            1.3 + 1.35 * p[0].as_f64().unwrap(),
+            -0.7 + 1.35 * p[1].as_f64().unwrap(),
+            0.4
+        ]);
+    }
+    circle["id"] = json!("translated-circle-single");
+    circle["refit_tolerance"] = json!(8e-7);
+    operations.push(circle);
+    for mut operation in operations {
+        operation["parameters"] = json!([-7.]);
+        let mut single = query.clone();
+        single["operations"] = json!([operation]);
+        let request: ProbeRequest = serde_json::from_value(single).unwrap();
+        let before = request.clone();
+        let response = run_request(&request).unwrap();
+        assert_eq!(request, before);
+        let actual = &response.results[0].value;
+        assert_eq!(actual["parameters"], operation["parameters"]);
+        assert_eq!(actual["before"], actual["after"]);
+        assert_eq!(actual["curves"].as_array().unwrap().len(), 1);
+        assert_eq!(actual["curves"][0]["degree"], 3);
+        // Construction is independently certified per pass. The required
+        // native image-comparison gate remains separate and keeps its epsilon.
+        if let Some(directory) = std::env::var_os("VIBOCEROS_SINGLE_REFIT_RPC_RECORDS") {
+            let directory = std::path::PathBuf::from(directory);
+            std::fs::create_dir_all(&directory).unwrap();
+            std::fs::write(
+                directory.join(format!("{}.json", operation["id"].as_str().unwrap())),
+                serde_json::to_vec(actual).unwrap(),
+            )
+            .unwrap();
+        }
+    }
+}

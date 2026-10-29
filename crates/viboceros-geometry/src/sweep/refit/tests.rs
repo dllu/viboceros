@@ -77,3 +77,85 @@ fn disabled_fits_align_regions_without_changing_weights_or_stations() {
         assert_eq!(sections, before);
     }
 }
+
+fn check_single_profile(source: NurbsCurve, tolerance: Real) {
+    let domain = source.domain();
+    let endpoints = [
+        source.evaluate(*domain.start()).unwrap(),
+        source.evaluate(*domain.end()).unwrap(),
+    ];
+    let sections = vec![SweepSection {
+        parameter: -7.,
+        curve: source,
+    }];
+    let before = sections.clone();
+    let prepared = Sweep1::refit_sections(&sections, tolerance)
+        .expect("retimed single profiles need fresh target-knot and tangent proposals");
+    assert_eq!(prepared.len(), 1);
+    assert_eq!(prepared[0].parameter, -7.);
+    let output = &prepared[0].curve;
+    assert_eq!(output.degree(), 3);
+    let domain = output.domain();
+    for (parameter, expected) in [*domain.start(), *domain.end()].into_iter().zip(endpoints) {
+        assert!(
+            output
+                .evaluate(parameter)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 1e-12
+        );
+    }
+    assert_eq!(sections, before);
+}
+
+#[test]
+fn asymmetric_single_profiles_finish_both_independently_certified_passes() {
+    let source = NurbsCurve::try_new(
+        2,
+        [[0., 0., 0.], [1.2, 2.4, 0.], [3.8, 0.3, 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    for tolerance in [8e-7, 1.2e-6] {
+        check_single_profile(source.clone(), tolerance);
+    }
+}
+
+#[test]
+fn translated_rational_single_profiles_finish_both_certified_passes() {
+    let controls = [
+        [2., 0.],
+        [2., 2.],
+        [0., 2.],
+        [-2., 2.],
+        [-2., 0.],
+        [-2., -2.],
+        [0., -2.],
+        [2., -2.],
+        [2., 0.],
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(i, [x, y])| {
+        WeightedPoint3::try_new(
+            Point3::try_new(1.3 + 1.35 * x, -0.7 + 1.35 * y, 0.4).unwrap(),
+            if i % 2 == 0 {
+                1.
+            } else {
+                std::f64::consts::FRAC_1_SQRT_2
+            },
+        )
+        .unwrap()
+    })
+    .collect();
+    let source = NurbsCurve::try_new_rational(
+        2,
+        controls,
+        vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 4.],
+    )
+    .unwrap();
+    check_single_profile(source, 8e-7);
+}

@@ -232,6 +232,15 @@ pub(super) fn certified_joined_refit_with_scope(
     } else {
         crate::curve_fit::g1::deviation_bound(source, &joined, tolerance)?
     };
+    let bound = if bound.is_none() && policy.single {
+        // Retiming changes the target clock. If the original fitting-span
+        // stations cannot certify the assembly, propose fresh target-knot
+        // witnesses and tangent frames before declining it. The unchanged
+        // complete image bound still decides at the requested tolerance.
+        crate::curve_fit::g1::reconstruction_deviation_bound(source, &joined, tolerance)?
+    } else {
+        bound
+    };
     Ok(bound.map(|maximum_deviation_bound| CertifiedJoinedRefit {
         curve: joined,
         maximum_deviation_bound,

@@ -37,9 +37,12 @@ at tolerance `1e-6`, disproving a universal half-tolerance source reserve.
 
 Complete image certificates gate all fitting proposals. Target-knot witnesses
 and tangent frames help qualify reconstruction across independent parameter
-clocks. Correspondence proposals refine to at most 1024 intervals; arithmetic
-and distance limits remain fixed. Whole-surface proofs include U-degree elevation
-rounding and every profile row. Matching only end rows cannot prove agreement.
+clocks. Single-profile assemblies retry these proposals when their original
+fitting stations cannot prove the retimed curve, keeping the same complete
+source bound and tolerance. Correspondence proposals refine to at most 1024
+intervals; arithmetic and distance limits remain fixed. Whole-surface proofs
+include U-degree elevation rounding and every profile row. Matching only end
+rows cannot prove agreement.
 The fitting tests may use observed cuts to isolate piece construction; production
 never reads native cuts or control nets.
 
