@@ -3859,6 +3859,7 @@ dependencies = [
  "viboceros-drafting",
  "viboceros-geometry",
  "viboceros-io",
+ "viboceros-opennurbs",
  "viboceros-smlib",
 ]
 

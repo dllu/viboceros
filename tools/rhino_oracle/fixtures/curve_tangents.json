@@ -1,0 +1,851 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-10,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-opposed-cosine--0.9999001",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4878089322730066,
+              0.858871532966766,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-opposed-cosine--0.9999",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.48780285747613,
+              0.8588679102111001,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-opposed-cosine--0.9998999",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.487796785741339,
+              0.8588642892233304,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-translated",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              7.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              -2.1339745962155616,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.48780285747613,
+              -2.1411320897888997,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              11.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-rotated",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.8660254037844386,
+              0.0,
+              -0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.8588679102111001,
+              0.0,
+              3.48780285747613
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-scaled",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -1.0,
+              1.7320508075688772,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.97560571495226,
+              1.7177358204222002,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-endpoint-precision-gauged",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -7.0,
+          -7.0,
+          -7.0,
+          -7.0,
+          13.0,
+          13.0,
+          13.0,
+          13.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": -7.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": -7.0
+          },
+          {
+            "point": [
+              3.48780285747613,
+              0.8588679102111001,
+              0.0
+            ],
+            "weight": -7.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": -7.0
+          }
+        ]
+      },
+      "parameters": [
+        13.0,
+        -7.0,
+        3.0,
+        13.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-quarter",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-quadratic",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-polynomial_cubic",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-smooth_cubic",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.3,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              2.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -1.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-quintic",
+      "curve": {
+        "degree": 5,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -13.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              13.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        1.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-circle",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0.25,
+          0.25,
+          0.5,
+          0.5,
+          0.75,
+          0.75,
+          1,
+          1,
+          1
+        ]
+      },
+      "parameters": [
+        1,
+        0,
+        0.5,
+        1
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-polyline",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "parameters": [
+        2.0,
+        0.0,
+        1.0,
+        2.0
+      ]
+    }
+  ]
+}

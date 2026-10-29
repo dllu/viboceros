@@ -1,0 +1,133 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-10,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-domain-shifted",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4878089322730066,
+              0.858871532966766,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "domain": [
+          -3.0,
+          17.0
+        ]
+      },
+      "parameters": [
+        17.0,
+        -3.0,
+        7.0,
+        17.0
+      ]
+    },
+    {
+      "op": "nurbs_curve_tangents",
+      "id": "tangents-domain-narrow",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -0.5,
+              0.8660254037844386,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.4878089322730066,
+              0.858871532966766,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "domain": [
+          7.0,
+          7.001
+        ]
+      },
+      "parameters": [
+        7.001,
+        7.0,
+        7.000500000000001,
+        7.001
+      ]
+    }
+  ]
+}

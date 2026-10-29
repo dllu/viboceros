@@ -254,6 +254,8 @@ mod sweep;
 pub use sweep::SweepFixture;
 mod sweep_refit_sections;
 pub use sweep_refit_sections::SweepRefitSectionsFixture;
+mod curve_tangents;
+pub use curve_tangents::CurveTangentsFixture;
 mod curve_approximation;
 mod curve_area;
 mod curve_join_close;
@@ -750,6 +752,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: SweepRefitSectionsFixture,
+    },
+    NurbsCurveTangents {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveTangentsFixture,
     },
     CurveFrames {
         id: String,
@@ -2834,6 +2841,7 @@ impl Operation {
             | Self::CurveFrames { id, .. }
             | Self::Sweep1 { id, .. }
             | Self::SweepRefitSections { id, .. }
+            | Self::NurbsCurveTangents { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::TwistPoints { id, .. }
             | Self::BendPoints { id, .. }
@@ -3571,6 +3579,7 @@ fn execute(
         Operation::SweepRefitSections { fixture, .. } => {
             sweep_refit_sections::run(fixture, iterations)?
         }
+        Operation::NurbsCurveTangents { fixture, .. } => curve_tangents::run(fixture, iterations)?,
         Operation::SurfaceCurvature { fixture, .. } => {
             surface_jets::run_curvature(fixture, iterations)?
         }

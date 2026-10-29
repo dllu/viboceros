@@ -200,6 +200,15 @@ def with_shared_sources(paths):
 
 def _expand_sources_once(paths):
     if any(path in paths for path in [
+            'crates/viboceros-oracle/src/curve_tangents.rs',
+            'crates/viboceros-oracle/tests/curve_tangents_native.rs']):
+        paths = [*paths, 'crates/viboceros-oracle/src/curve_tangents.rs',
+                 'crates/viboceros-oracle/tests/curve_tangents_native.rs',
+                 'crates/viboceros-opennurbs/src/curve/tangents.rs',
+                 'crates/viboceros-opennurbs/native/curve_tangents.h',
+                 'tools/rhino_oracle/curve_tangents_probe.py',
+                 'tools/rhino_oracle/test_curve_tangents.py']
+    if any(path in paths for path in [
             'crates/viboceros-oracle/tests/sweep_refit.rs',
             'crates/viboceros-oracle/tests/sweep_refit_common_handles.rs',
             'crates/viboceros-oracle/tests/sweep_refit_reentry.rs']):

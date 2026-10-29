@@ -1,0 +1,296 @@
+{
+  "iterations": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "value": {
+        "parameters": [
+          17.0,
+          -3.0,
+          7.0,
+          17.0
+        ],
+        "before": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            17.0,
+            17.0,
+            17.0,
+            17.0
+          ],
+          "degree": 3,
+          "domain": [
+            -3.0,
+            17.0
+          ]
+        },
+        "tangents": [
+          [
+            0.5121910677269934,
+            -0.8588715329667659,
+            0.0
+          ],
+          [
+            -0.5000000000000001,
+            0.8660254037844388,
+            0.0
+          ],
+          [
+            0.9999995989517793,
+            -0.0008955982809906748,
+            0.0
+          ],
+          [
+            0.5121910677269934,
+            -0.8588715329667659,
+            0.0
+          ]
+        ],
+        "after": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            17.0,
+            17.0,
+            17.0,
+            17.0
+          ],
+          "degree": 3,
+          "domain": [
+            -3.0,
+            17.0
+          ]
+        }
+      },
+      "elapsed_ns": 5798340,
+      "id": "tangents-domain-shifted"
+    },
+    {
+      "value": {
+        "parameters": [
+          7.001,
+          7.0,
+          7.000500000000001,
+          7.001
+        ],
+        "before": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.001,
+            7.001,
+            7.001,
+            7.001
+          ],
+          "degree": 3,
+          "domain": [
+            7.0,
+            7.001
+          ]
+        },
+        "tangents": [
+          [
+            0.5121910677269933,
+            -0.8588715329667659,
+            0.0
+          ],
+          [
+            -0.5,
+            0.8660254037844386,
+            0.0
+          ],
+          [
+            0.9999995989517788,
+            -0.0008955982813741014,
+            0.0
+          ],
+          [
+            0.5121910677269933,
+            -0.8588715329667659,
+            0.0
+          ]
+        ],
+        "after": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.001,
+            7.001,
+            7.001,
+            7.001
+          ],
+          "degree": 3,
+          "domain": [
+            7.0,
+            7.001
+          ]
+        }
+      },
+      "elapsed_ns": 930786,
+      "id": "tangents-domain-narrow"
+    }
+  ],
+  "protocol_version": 1,
+  "provenance": {
+    "request_sha256": "08149874ff131fd67cc4ed459a1c6d2bad037fb5efbdbd8f15be4c25cfdcc143",
+    "sources": {
+      "generate_curve_tangents_domains.py": "eeba9fbec802132e90188e969127ddc697ee5d41f8b1f42b007b5e4364ab85d9",
+      "generate_curve_tangents.py": "f3689c8a436ff92f4190c5a78f245962f91e90221b1214684c2a4454f660ed56",
+      "generate_loft_refit_endpoint_precision.py": "bd44b239dce5e21e699254751491d1516302a53ec45541e5170146529935521e",
+      "fixtures/loft_refit_coarse.json": "d5b9658676cb92181c28dc3d6f1e382b6c7dfc0313f9b7623c7b229c47d72fc3",
+      "fixtures/sweep1_refit_opposed_cosines.json": "38b083943d3c2a7ba43e6d99ef739dfda96857cc084c6aa28596dd9e3e9a341e",
+      "curve_tangents_probe.py": "9f2441b620c3bea71f91581d24ca9b9fa2cf89a9b574ffa8d48f75b3ae599656",
+      "geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+      "rhino_worker.py": "d384f11b507c8d067712e9609fd3a05acc4eeaf8338e1961502cdf10c694636e",
+      "client.py": "b6022446cf55a5b575d01424961c66386e7df52cffc20727a35c2d34d4b7c901",
+      "structural_sdk.py": "2081cfe2746605861e4e82e6d439749a7f3f70c07e84d76acc3ba26bfbdb180d",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

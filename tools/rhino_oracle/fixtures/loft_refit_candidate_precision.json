@@ -1,0 +1,1523 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-10,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9999001-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9999001-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.4878089322730066,
+                0.858871532966766,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9999-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9999-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9998999-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.487796785741339,
+                0.8588642892233304,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.487796785741339,
+                0.8588642892233304,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-opposed-cosine--0.9998999-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.487796785741339,
+                0.8588642892233304,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.487796785741339,
+                0.8588642892233304,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-translated-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                7.0,
+                -3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.5,
+                -2.1339745962155616,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.48780285747613,
+                -2.1411320897888997,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                11.0,
+                -3.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                7.0,
+                -3.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.5,
+                -2.1339745962155616,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.48780285747613,
+                -2.1411320897888997,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                11.0,
+                -3.0,
+                7.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-translated-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                7.0,
+                -3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.5,
+                -2.1339745962155616,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.48780285747613,
+                -2.1411320897888997,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                11.0,
+                -3.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                7.0,
+                -3.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.5,
+                -2.1339745962155616,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.48780285747613,
+                -2.1411320897888997,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                11.0,
+                -3.0,
+                7.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-rotated-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8660254037844386,
+                0.0,
+                -0.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8588679102111001,
+                0.0,
+                3.48780285747613
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8660254037844386,
+                0.0,
+                4.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8588679102111001,
+                0.0,
+                8.48780285747613
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                9.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-rotated-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8660254037844386,
+                0.0,
+                -0.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8588679102111001,
+                0.0,
+                3.48780285747613
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8660254037844386,
+                0.0,
+                4.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8588679102111001,
+                0.0,
+                8.48780285747613
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                9.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-scaled-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.7320508075688772,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.97560571495226,
+                1.7177358204222002,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.7320508075688772,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.97560571495226,
+                1.7177358204222002,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-scaled-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.7320508075688772,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.97560571495226,
+                1.7177358204222002,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.7320508075688772,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.97560571495226,
+                1.7177358204222002,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-gauged-unit-weights",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            -7.0,
+            -7.0,
+            -7.0,
+            -7.0,
+            13.0,
+            13.0,
+            13.0,
+            13.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": -7.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            -7.0,
+            -7.0,
+            -7.0,
+            -7.0,
+            13.0,
+            13.0,
+            13.0,
+            13.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": -7.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": false
+    },
+    {
+      "op": "loft",
+      "id": "candidate-precision-gauged-polynomial",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            -7.0,
+            -7.0,
+            -7.0,
+            -7.0,
+            13.0,
+            13.0,
+            13.0,
+            13.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                0.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": -7.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            -7.0,
+            -7.0,
+            -7.0,
+            -7.0,
+            13.0,
+            13.0,
+            13.0,
+            13.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                -0.5,
+                0.8660254037844386,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                3.48780285747613,
+                0.8588679102111001,
+                5.0
+              ],
+              "weight": -7.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": -7.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 100.0,
+      "inspect_inputs": true,
+      "inspect_refit_adjustment": true,
+      "sample_geometry": false,
+      "allow_empty": true,
+      "refit_adjustment_nonrational": true
+    }
+  ]
+}

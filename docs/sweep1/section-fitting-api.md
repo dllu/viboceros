@@ -38,3 +38,6 @@ Rhino. Complete curve bounds and exact separation witnesses are checked by
 disabled fitting, input preservation, station metadata and invalid requests.
 The extended fixtures also cover [large tolerances and endpoint frames](refit-large-tolerances.md),
 with the same complete-image gates through portable and usd-brep RPC paths.
+
+[Ordered tangent queries](../oracle/curve-tangents.md) expose native directions
+and availability when comparing fitting frames and stationary inputs.

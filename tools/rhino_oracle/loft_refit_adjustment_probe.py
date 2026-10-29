@@ -14,7 +14,7 @@ def inspect(curve, host, fractional_tolerance=1e-4, nonrational=False, local_see
     offsets = []
     for tangent in tangents:
         cosine = tangent.X * chord.X + tangent.Y * chord.Y + tangent.Z * chord.Z
-        cosine = max(-1., min(1., cosine))
+        cosine = max(0., min(1., cosine))
         offsets.append(tangent * (length * (2. - cosine * cosine) / 3.))
     definition = dict(degree=3, knots=[0.] * 4 + [1.] * 4,
         control_points=[dict(point=xyz(p), weight=1.) for p in
@@ -41,7 +41,13 @@ def inspect(curve, host, fractional_tolerance=1e-4, nonrational=False, local_see
         denominator = influence.SquareLength
         scale = (1. + (influence.X * residual.X + influence.Y * residual.Y + influence.Z * residual.Z) / denominator) if denominator > 0. else None
         if scale is not None and (math.isnan(scale) or math.isinf(scale)): scale = None
-        return dict(initial=definition, candidate_is_rational=bool(candidate.IsRational), parameters=list(parameters), points=[xyz(p) for p in points],
+        return dict(initial=definition, candidate_is_rational=bool(candidate.IsRational),
+            endpoint_tangents=[xyz(t) for t in tangents], chord_direction=xyz(chord),
+            endpoint_tangent_dot=sum(a*b for a,b in zip(xyz(tangents[0]),xyz(tangents[1]))),
+            candidate_endpoint_tangents=[xyz(candidate.TangentAtStart),xyz(candidate.TangentAtEnd)],
+            candidate_endpoint_tangent_dot=sum(a*b for a,b in zip(
+                xyz(candidate.TangentAtStart),xyz(candidate.TangentAtEnd))),
+            parameters=list(parameters), points=[xyz(p) for p in points],
             midpoint_closest_parameter=float(parameter), midpoint_closest_point=xyz(point),
             midpoint_distance=float(points[4].DistanceTo(point)), scale=scale)
     finally:
