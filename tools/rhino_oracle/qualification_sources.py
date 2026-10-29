@@ -234,6 +234,9 @@ SUBD_FACE_PROPERTY_MODULES = [
 
 MESH_POLYGON_MODULES = [
     'crates/viboceros-geometry/src/mesh.rs',
+    'crates/viboceros-geometry/tests/mesh_caps.rs',
+    'crates/viboceros-geometry/tests/support/holed_mesh.rs',
+    'crates/viboceros-command/tests/cap_close_holes.rs',
     *['crates/viboceros-geometry/src/mesh/'+name+'.rs' for name in [
         'polygon', 'polygon/tests', 'hole_fill', 'hole_fill/tests',
         'hole_fill/cap_tests', 'test_support', 'patch', 'projection',

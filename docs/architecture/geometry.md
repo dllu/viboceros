@@ -113,7 +113,11 @@ modules; [mesh joining](../commands/join.md) documents their explicit precision
 policy and the command's selection-order and group behavior.
 `mesh/polygon` shares normalized boundary projection, constrained Delaunay
 triangulation and winding predicates across insertion, hole filling and planar
-caps. `mesh/hole_fill` owns boundary traversal, cap admission and channel
+caps. A traversal of the triangulation toggles inside/outside across each
+constrained edge, preserving narrow strips between holes without scanning every
+boundary for every triangle. Triangle counts and area still enforce one outer
+loop with disjoint, unnested holes. `mesh/hole_fill` owns boundary traversal,
+cap admission and channel
 transfer. Insertion retains its own cell pairing and quad origin policy;
 the shared polygon geometry does not resolve the remaining
 [warped insertion layouts](../geometry/mesh-insert-sources.md).

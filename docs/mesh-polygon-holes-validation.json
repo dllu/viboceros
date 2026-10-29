@@ -1,0 +1,671 @@
+{
+  "scope": "Constrained mesh regions with close or numerous inner boundaries",
+  "base_revision": "a1dbb170ab0ea48fd0bc4b478ad6b01d1affcdb8",
+  "algorithm": "Traverse the complete triangulation dual graph once; crossing a constraint toggles inside/outside. Conflicting labels reject the region. Existing source-count, triangle-count, nonzero-orientation and area audits remain unchanged.",
+  "classification_complexity": "O(triangulation faces + triangulation edges), with no per-face adjacency allocations. CDT construction still has its existing cost.",
+  "new_regressions": {
+    "nearby_boundaries": {
+      "gap_normalized": 1.1368683772161603e-13,
+      "triangles": 14,
+      "strip_triangles": 2,
+      "winding_and_cyclic_origin_variants": 32
+    },
+    "large_regions": {
+      "holes": [
+        64,
+        256,
+        1024
+      ],
+      "expected_area": 0.84,
+      "checks": [
+        "Every requested boundary edge occurs exactly once",
+        "Other edges occur twice in opposite directions",
+        "All triangle areas are positive",
+        "Triangle count and analytic area agree"
+      ]
+    },
+    "cap_geometry": {
+      "workflows": 16,
+      "checks": [
+        "Two scales",
+        "Reversed winding",
+        "Crease on/off",
+        "Triangles on/off",
+        "Closed oriented topology",
+        "Analytic volume",
+        "Vertex color and UV provenance",
+        "No-op recapping"
+      ]
+    },
+    "cap_command": {
+      "workflows_per_configuration": 4,
+      "checks": [
+        "Copy/replace",
+        "Crease on/off",
+        "Attributes and groups",
+        "One Undo/Redo record"
+      ],
+      "coordinate_scale": 100000000.0,
+      "document_tolerance": {
+        "absolute": 1e-09,
+        "relative": 1e-12,
+        "angular": 1e-15
+      }
+    },
+    "invalid_regions": "Nested, crossing, touching and misplaced inner boundaries remain rejected."
+  },
+  "before_fix_failures": {
+    "private_region_log_sha256": "eaa30d7b76e83ae71efe13297b133cf80e63105ee25d234d5be77126259824ad",
+    "public_cap_log_sha256": "8652744c97048ba7caa6ceda7fabe30dfb39b952f0cbf460057654ffc5467970",
+    "public_cap_loops_closed_before": 0,
+    "public_cap_loops_closed_after": 6
+  },
+  "checks": {
+    "geometry": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "mesh::"
+      ],
+      "exit_code": 0,
+      "seconds": 54.77,
+      "log_sha256": "7f28e92edcf64eec15c8cb9c379bf24e51bec58e45e0d4164a2f8cfd39a6e690",
+      "passed_tests": 326
+    },
+    "geometry-integration": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "mesh_caps",
+        "--test",
+        "mesh_insert_sources",
+        "--test",
+        "subd_edge_insert",
+        "--test",
+        "mesh_channels",
+        "--test",
+        "mesh_face_merge"
+      ],
+      "exit_code": 0,
+      "seconds": 18.37,
+      "log_sha256": "0ff06a0d340b36d42294b8b3802db3591d305887a560725c5854235e868c0d20",
+      "passed_tests": 13
+    },
+    "cap-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "cap::tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 49.41,
+      "log_sha256": "1064f879309e2ccb01f96afb07bdda6a4421f72b99c09dc1f0952bb535a06ece",
+      "passed_tests": 14
+    },
+    "command-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 18.8,
+      "log_sha256": "1083edb41490426bc9c849fc92175b566e0e1b52c5a1031e3f82e734e96f1207",
+      "passed_tests": 34
+    },
+    "app-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 66.69,
+      "log_sha256": "759970d4419032d1716d222a3d0f364b526b8f39fdf68f50bf4307081f76e259",
+      "passed_tests": 12
+    },
+    "cap-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "cap::tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 84.44,
+      "log_sha256": "05189a7fbd1bdbe2643b18709b0fa5bd043bc1a35c948df888d9a279a91bfe27",
+      "passed_tests": 14
+    },
+    "command-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 29.03,
+      "log_sha256": "5c4fbb01fee2c1b262821c66f00e4aac3cf8566bcf035fd6703f7a7886508067",
+      "passed_tests": 34
+    },
+    "app-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 56.18,
+      "log_sha256": "e43fcbd05b0a9194f8eece92f9230368b9aee4f38b25b9d471b394fcce5d96f4",
+      "passed_tests": 12
+    },
+    "polygon-fixture-final": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "mesh::polygon::tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 34.48,
+      "log_sha256": "430131d8757097de510468490f1796eb44d03bed51ac716e2fea5fb6374e216b",
+      "passed_tests": 8
+    },
+    "clippy-geometry": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 18.55,
+      "log_sha256": "ac7abdbca20c6240004dba1688b168b9be71cf48b67997f2a2553be6c6ee0816"
+    },
+    "clippy-command": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 15.13,
+      "log_sha256": "376a6f1330a28ba3fd41d19ed4abb49662cee6ba26ab561f6c42d56c0b45cd26"
+    },
+    "clippy-app": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 41.31,
+      "log_sha256": "54044bb69b92c6f171b09fd5a4f29d0de20bba2d86bd1aa787eee2498ff7a42c"
+    },
+    "python_full": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "exit_code": 0,
+      "passed_tests": 2241,
+      "log_sha256": "eab9ec326970a686f36988634f3418ca038866f60b73a7d179fa73f682671b8c"
+    }
+  },
+  "retained_replays": {
+    "MESH_INSERT_PATH_default": {
+      "rows": 48,
+      "baseline_matches_exactly": true,
+      "sha256": "d0ca6620be5648d92343e1f297d93a8e064316a440b860579122514d43013aba"
+    },
+    "MESH_INSERT_SOURCE_default": {
+      "rows": 10,
+      "baseline_matches_exactly": true,
+      "sha256": "b6b16e81874a76c5fdec96aa94de868f84a05b6a0b595a5bf436bab69480b386"
+    },
+    "application_default": {
+      "rows": 86,
+      "baseline_matches_exactly": true,
+      "sha256": "4e23f8bdce8b960f2ad3c23de1b5d2f4793cab9e10ad8aa0283042ae5590e327"
+    },
+    "MESH_INSERT_PATH_native": {
+      "rows": 48,
+      "baseline_matches_exactly": true,
+      "sha256": "d0ca6620be5648d92343e1f297d93a8e064316a440b860579122514d43013aba"
+    },
+    "MESH_INSERT_SOURCE_native": {
+      "rows": 10,
+      "baseline_matches_exactly": true,
+      "sha256": "b6b16e81874a76c5fdec96aa94de868f84a05b6a0b595a5bf436bab69480b386"
+    },
+    "application_native": {
+      "rows": 86,
+      "baseline_matches_exactly": true,
+      "sha256": "4e23f8bdce8b960f2ad3c23de1b5d2f4793cab9e10ad8aa0283042ae5590e327"
+    }
+  },
+  "benchmark": {
+    "scope": "Five warm local debug-build runs per case, same authored grid and timed triangulation call; not a Rhino comparison or a whole-application benchmark. Timing is not a test gate.",
+    "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "summary": [
+      {
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "before_median_microseconds": 5060,
+        "after_median_microseconds": 5677,
+        "speedup": 0.8913158358287828
+      },
+      {
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "before_median_microseconds": 41389,
+        "after_median_microseconds": 20531,
+        "speedup": 2.015927134576981
+      },
+      {
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "before_median_microseconds": 524660,
+        "after_median_microseconds": 50960,
+        "speedup": 10.29552590266876
+      }
+    ],
+    "before_samples": [
+      {
+        "sample": 0,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 4997
+      },
+      {
+        "sample": 0,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 41375
+      },
+      {
+        "sample": 0,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 524337
+      },
+      {
+        "sample": 1,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 8794
+      },
+      {
+        "sample": 1,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 48954
+      },
+      {
+        "sample": 1,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 524660
+      },
+      {
+        "sample": 2,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 5035
+      },
+      {
+        "sample": 2,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 41389
+      },
+      {
+        "sample": 2,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 524746
+      },
+      {
+        "sample": 3,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 5060
+      },
+      {
+        "sample": 3,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 41387
+      },
+      {
+        "sample": 3,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 526566
+      },
+      {
+        "sample": 4,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 8986
+      },
+      {
+        "sample": 4,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 48723
+      },
+      {
+        "sample": 4,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 524534
+      }
+    ],
+    "after_samples": [
+      {
+        "sample": 0,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 6937
+      },
+      {
+        "sample": 0,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 22167
+      },
+      {
+        "sample": 0,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 50960
+      },
+      {
+        "sample": 1,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 5707
+      },
+      {
+        "sample": 1,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 20531
+      },
+      {
+        "sample": 1,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 51057
+      },
+      {
+        "sample": 2,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 5677
+      },
+      {
+        "sample": 2,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 22038
+      },
+      {
+        "sample": 2,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 51038
+      },
+      {
+        "sample": 3,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 3208
+      },
+      {
+        "sample": 3,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 12029
+      },
+      {
+        "sample": 3,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 50880
+      },
+      {
+        "sample": 4,
+        "size": 8,
+        "holes": 64,
+        "vertices": 260,
+        "triangles": 386,
+        "microseconds": 3211
+      },
+      {
+        "sample": 4,
+        "size": 16,
+        "holes": 256,
+        "vertices": 1028,
+        "triangles": 1538,
+        "microseconds": 12044
+      },
+      {
+        "sample": 4,
+        "size": 32,
+        "holes": 1024,
+        "vertices": 4100,
+        "triangles": 6146,
+        "microseconds": 50922
+      }
+    ]
+  },
+  "new_native_captures": 0,
+  "full_rhino_parity": false,
+  "comparative_native_performance_qualified": false,
+  "source_hashes": {
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "Cargo.lock": "82555f82c22af05390eb8e29005fcb63c1e2f552ed6edbec3ff3f0cdbf6c1e23",
+    "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "crates/viboceros-command/tests/cap_close_holes.rs": "c42779145af24a671c9b48e108b4dc96111b3fabc35c948d79ef759432d86857",
+    "crates/viboceros-command/tests/mesh_insert_paths.rs": "6f5cf45b4b074f07bc038d3608b1b2e28add567d4d056208fa98789ee40ebfb6",
+    "crates/viboceros-geometry/src/mesh.rs": "51812f37d7f01970e77d021156b0ab565cf6d552d083a2c32f8f316b67450f5c",
+    "crates/viboceros-geometry/src/mesh/hole_fill.rs": "62eb4fc950eaca141cde3d5fe0fef4ddfe5c2f26372efdbc015245ff41703fcc",
+    "crates/viboceros-geometry/src/mesh/hole_fill/cap_tests.rs": "a51341adab0789c60d0d643c8ae15dd94b2f38df9597d8694d08d0f75dda1b6d",
+    "crates/viboceros-geometry/src/mesh/hole_fill/tests.rs": "395c8529a69172f8a08eb72917f7c5ef66dec671465ffe2a9c00e5f2f7e5a321",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "20327069168f5affa522fc43e7cef60655fb7383a825f833d0d95fbeae742a70",
+    "crates/viboceros-geometry/src/mesh/polygon.rs": "6b03adf973990f0c67a5e101d925ce14e735b2928aca87d979b0f26a146171dc",
+    "crates/viboceros-geometry/src/mesh/polygon/tests.rs": "bf3c2e9ec10c4baff6bb31e20e0bec213276ba5cfc352354f6412f84e4d71f65",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "234d9137880cc66470471f9d442f35e15320ca96a535ccb27e15b43ab6054b86",
+    "crates/viboceros-geometry/src/mesh/test_support.rs": "633e3103e9abd053613fce1ec943013145066129d00afaa998d21d5aebe75aae",
+    "crates/viboceros-geometry/tests/mesh_caps.rs": "9605ba29713a2878e009295ede508af2409c0d137e12800016a8e52776ceeaeb",
+    "crates/viboceros-geometry/tests/support/holed_mesh.rs": "4445f82b40b995749e90ddf4abe0724e83bc30be303cbe765c8cb318eb938662",
+    "docs/architecture/geometry.md": "4da1e0b32b612e12abfab2c1a0cda499c0858db0c38e74af8132f6998fba6dbf",
+    "docs/commands/cap.md": "6d429acd8e7db0a343b2daa4f3d1bc6d97d9e61ec981e9a93fd1689727ed57d4",
+    "src/app/crease/tests/insert_point.rs": "8a4a097f7c4c060692786134d75530b52de1b0d9d199c84f754831f2ba800a65",
+    "tools/rhino_oracle/fixtures/mesh_insert_retained_gaps.json": "c099e94fb6742a7c894202fc4760a82613563740f92456674a7f6e735971acf2",
+    "tools/rhino_oracle/qualification_sources.py": "c72203e4cad047d7ebd6956390498b44a0267180da1eeebc07dd9b54860e4bd1"
+  },
+  "remaining": [
+    "Warped and repeated-edge InsertPoint cell/facet/surface gaps remain unchanged.",
+    "Fresh Rhino qualification of the close-hole cases needs a probe that explicitly preserves double-precision input vertices.",
+    "Default document validation may still reject facets whose angles or dimensions fall below its tolerances.",
+    "Arbitrary nonmanifold and perspective insertion, full Rhino command/API/UI coverage, and comparative performance remain incomplete."
+  ]
+}

@@ -16,6 +16,9 @@ NURBS surfaces in place. Caps with inner boundaries remain triangulated in both
 triangle modes. SubD capping is unavailable. For nonplanar mesh holes, see
 [meshes](meshes.md).
 
+Closely spaced inner boundaries retain the strips between their openings.
+Generated mesh facets still use the supplied document tolerance for validation.
+
 Caps retain the spatial boundary geometry. The command subdivides newly capped
 edges at C0 knot joins with tangent breaks of at least 1°, independently of
 document angular tolerance. Segments retain degree, rational weights, and native parameter

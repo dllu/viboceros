@@ -112,49 +112,47 @@ pub(super) fn triangulate_projected_mesh_region(
         .map_err(|_| GeometryError::TooManyMeshFaces)?;
     let mut actual_area = 0.0;
     let mut area_correction = 0.0;
-    // A single constrained boundary separates the disk from the exterior.
-    // Flood once instead of testing every triangle against every boundary
-    // segment, which makes large closed-polyline triangulation quadratic.
-    let exterior = if loops.len() == 1 {
-        let mut neighbors = vec![Vec::new(); triangulation.num_all_faces()];
-        for edge in triangulation.directed_edges() {
-            if !edge.is_constraint_edge() {
-                neighbors[edge.face().index()].push(edge.rev().face().index());
+    // Classify the dual graph once. Crossing a boundary toggles membership;
+    // winding does not matter. This preserves narrow strips that centroid
+    // tests with a polygon-wide epsilon can mistake for hole boundaries.
+    // Count and area audits below still require one outer loop with disjoint,
+    // unnested holes, rejecting islands and misplaced inner loops.
+    let mut inside = vec![None; triangulation.num_all_faces()];
+    let outer = triangulation.outer_face();
+    inside[outer.index()] = Some(false);
+    let mut queue = VecDeque::from([outer]);
+    while let Some(face) = queue.pop_front() {
+        let current_inside = inside[face.index()].unwrap();
+        let Some(first) = face.adjacent_edge() else {
+            return Ok(None);
+        };
+        let mut edge = first;
+        loop {
+            let neighbor = edge.rev().face();
+            let expected = current_inside ^ edge.is_constraint_edge();
+            match inside[neighbor.index()] {
+                Some(actual) if actual != expected => return Ok(None),
+                Some(_) => {}
+                None => {
+                    inside[neighbor.index()] = Some(expected);
+                    queue.push_back(neighbor);
+                }
+            }
+            edge = edge.next();
+            if edge.fix() == first.fix() {
+                break;
             }
         }
-        let mut visited = vec![false; neighbors.len()];
-        let mut queue = VecDeque::from([triangulation.outer_face().index()]);
-        while let Some(face) = queue.pop_front() {
-            if !visited[face] {
-                visited[face] = true;
-                queue.extend(neighbors[face].iter().copied());
-            }
-        }
-        Some(visited)
-    } else {
-        None
-    };
+    }
     for face in triangulation.inner_faces() {
+        if inside[face.index()] != Some(true) {
+            continue;
+        }
         let face_vertices = face.vertices();
         let face_points = face_vertices.map(|vertex| {
             let point = vertex.data().position;
             [point.x, point.y]
         });
-        let centroid = [
-            (face_points[0][0] + face_points[1][0] + face_points[2][0]) / 3.0,
-            (face_points[0][1] + face_points[1][1] + face_points[2][1]) / 3.0,
-        ];
-        let outside = if let Some(exterior) = &exterior {
-            exterior[face.index()]
-        } else {
-            !point_in_mesh_hole_polygon(centroid, loop_points[0], epsilon)
-                || loop_points[1..]
-                    .iter()
-                    .any(|hole| point_in_mesh_hole_polygon(centroid, hole, epsilon))
-        };
-        if outside {
-            continue;
-        }
         let triangle_area = mesh_hole_cross(face_points[0], face_points[1], face_points[2]);
         // Face orientation is local: the polygon-wide area tolerance grows
         // with vertex count and would discard valid ears of dense boundaries.
