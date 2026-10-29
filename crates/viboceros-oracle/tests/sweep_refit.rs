@@ -2,6 +2,8 @@ use serde_json::Value;
 use viboceros_oracle::{ProbeRequest, run_request};
 #[path = "../../viboceros-geometry/tests/support/nurbs_surface.rs"]
 mod nurbs_surface;
+#[path = "support/parallel_pairs.rs"]
+mod parallel_pairs;
 #[path = "../../viboceros-geometry/tests/support/profile_rows.rs"]
 mod profile_rows;
 #[path = "../../viboceros-geometry/tests/support/sweep_atlas.rs"]
@@ -31,23 +33,18 @@ fn section_refits_match_complete_captured_images() {
             input["operations"].as_array().unwrap().len(),
             observed["results"].as_array().unwrap().len()
         );
-        for (op, row) in input["operations"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .zip(observed["results"].as_array().unwrap())
-        {
+        let operations = input["operations"].as_array().unwrap();
+        checked += operations.len();
+        gaps.extend(parallel_pairs::compare(operations, observed["results"].as_array().unwrap(), |op, row| {
             assert_eq!(op["id"], row["id"]);
             let mut single = input.clone();
             single["operations"] = serde_json::json!([op]);
             let request: ProbeRequest = serde_json::from_value(single).unwrap();
-            checked += 1;
             let response = match run_request(&request) {
                 Ok(r) => r,
                 Err(e) => {
-                    gaps.push(format!("{family} {}: {e}", op["id"]));
                     eprintln!("REFIT_CONSTRUCTION_GAP {}: {e}", op["id"]);
-                    continue;
+                    return Some(format!("{family} {}: {e}", op["id"]));
                 }
             };
             if let Some(directory) = std::env::var_os("VIBOCEROS_REFIT_RECORDS") {
@@ -89,10 +86,8 @@ fn section_refits_match_complete_captured_images() {
                     "complete_image_separation_lower_bound":separation,"epsilon":1e-7,
                     "actual_controls":a.control_point_count_v(),"native_controls":b.control_point_count_v()})
             );
-            if bound.is_none() {
-                gaps.push(format!("{family} {} whole image", op["id"]));
-            }
-        }
+            bound.is_none().then(|| format!("{family} {} whole image", op["id"]))
+        }));
     }
     assert_eq!(checked, 70);
     assert!(gaps.is_empty(), "Refit gaps: {gaps:#?}");

@@ -42,7 +42,8 @@ struct Section {
 /// during adaptive shared-basis preparation require a fresh certificate.
 ///
 /// Adaptive fitting requires at least two profiles, source degree at most 16,
-/// unresolved tangent breaks only, and tolerance below every endpoint chord.
+/// and unresolved tangent breaks only. Tolerances may exceed endpoint chords;
+/// failed whole-span proposals retain bounded subdivision and source proofs.
 /// Fully closed smooth sources, mixed open/closed sets and unproved or exhausted
 /// fits are rejected. Existing certified closed polygon fits remain available.
 /// Matching can change parameter correspondence. Sources are never mutated;

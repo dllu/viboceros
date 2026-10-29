@@ -36,3 +36,5 @@ The fixture retains fine-profile cases whose output curves still differ from
 Rhino. Complete curve bounds and exact separation witnesses are checked by
 `sweep_refit_make_compatible`; RPC regressions separately cover coarse and
 disabled fitting, input preservation, station metadata and invalid requests.
+The extended fixtures also cover [large tolerances and endpoint frames](refit-large-tolerances.md),
+with the same complete-image gates through portable and usd-brep RPC paths.

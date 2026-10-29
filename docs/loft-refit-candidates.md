@@ -5,12 +5,12 @@
 Refit admits an endpoint-tangent cubic for sets of at least two
 clamped profiles without resolved tangent breaks. For chord length `d` and the cosine `c` between
 the chord and an endpoint tangent, the initial handle length is
-`d * (2 - c²) / 3`. The shared constructor preserves endpoint positions and
+`d * (2 - max(0, c)²) / 3`. The shared constructor preserves endpoint positions and
 limiting tangent directions before rounding. Its output uses polynomial cubics.
 When the initial proposal fails, a
 [common handle correction](loft-refit-adjustment.md) can improve the fit.
 That correction remains qualified for single-Bezier sources. Multispan profiles
-use the initial proposal; if it fails, their adaptive fitting remains unfinished.
+use the initial proposal and bounded adaptive subdivision when it fails.
 
 Acceptance requires a continuous Bernstein bound on the rounded candidate,
 compared with its complete source. An affine parameter correspondence is tried
@@ -35,22 +35,23 @@ transition holdouts; six still need subdivision. Native fitting clocks agree
 with the existing incremental batch, so no sampling or tolerance rule changed.
 These observations do not establish the general native adaptive fitting policy.
 
-The tolerance must be smaller than every endpoint chord. The existing 256-profile
-limit applies; certificate degree, arithmetic and work limits remain unchanged.
+Tolerances may exceed endpoint chords. Whole-profile common-handle correction
+remains restricted to smaller tolerances; larger failed proposals subdivide.
+The existing 256-profile limit applies; certificate degree, arithmetic and work
+limits remain unchanged.
 The piecewise affine fallback retains natural source knots and bisects the largest remaining
 parameter gaps over at most six attempts. Natural boundaries share the existing
 256-interval budget, with at most 255 cached closest-point queries per profile;
 each attempt uses the bounded certificate.
 If all knots cannot fit in that budget or fractional chart, the former uniform
 proposal remains available.
-Coincident endpoints, closed profiles, unresolved certificates,
-and fits needing subdivision retain explicit errors. Straight and
-polygon fitting keep their established paths. A single smooth input uses a
-different native fitting branch and remains unsupported.
+Closed smooth Loft profiles and unresolved certificates retain explicit errors.
+Straight and polygon fitting keep their established paths. A single smooth
+Loft input remains unsupported; Sweep has its own staged fitting policy.
 
 [Adaptive piece proposals](loft-refit-adaptive.md) have a separate certified
-kernel API, including construction from original source charts. General
-adaptive preparation is not yet qualified for the Loft command.
+kernel API, including construction from original source charts. Adaptive
+command preparation retains its separate native comparisons.
 
 [Multispan validation](loft-refit-multispan-validation.json) covers shallow bends,
 rational region clocks, curvature changes, domain/frame transformations and

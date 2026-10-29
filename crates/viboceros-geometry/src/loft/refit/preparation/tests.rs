@@ -108,12 +108,33 @@ fn export_legacy_preparation_baseline() {
     .unwrap();
 }
 #[test]
-fn existing_preparation_admission_retains_its_frozen_case_set() {
+fn initial_preparation_preserves_frozen_cases_and_adds_qualified_large_tolerances() {
     let saved: Value = serde_json::from_slice(
         &std::fs::read(root().join("fixtures/loft_refit_preparation_baseline.json")).unwrap(),
     )
     .unwrap();
-    assert_eq!(baseline(), saved);
+    let current = baseline();
+    assert_eq!(current["source_base_commit"], saved["source_base_commit"]);
+    let current = current["cases"].as_array().unwrap();
+    let saved = saved["cases"].as_array().unwrap();
+    assert_eq!(current.len(), saved.len());
+    let mut added = 0;
+    for (current, saved) in current.iter().zip(saved) {
+        let mut expected = saved.clone();
+        // The immutable baseline predates large-relative-tolerance fitting.
+        // These twelve open pairs now have separate complete native curve
+        // proofs in loft_refit_large_tolerances, at unchanged epsilon 1e-7.
+        if saved["family"] == "loft_refit_coarse"
+            && saved["id"].as_str().unwrap().ends_with("-100.0")
+            && saved["id"] != "loft-refit-coarse-circle-100.0"
+        {
+            assert_eq!(saved["initial_preparation"], false);
+            expected["initial_preparation"] = json!(true);
+            added += 1;
+        }
+        assert_eq!(current, &expected, "{}", saved["id"]);
+    }
+    assert_eq!(added, 12);
 }
 
 #[test]

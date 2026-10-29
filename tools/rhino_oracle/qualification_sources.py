@@ -200,6 +200,11 @@ def with_shared_sources(paths):
 
 def _expand_sources_once(paths):
     if any(path in paths for path in [
+            'crates/viboceros-oracle/tests/sweep_refit.rs',
+            'crates/viboceros-oracle/tests/sweep_refit_common_handles.rs',
+            'crates/viboceros-oracle/tests/sweep_refit_reentry.rs']):
+        paths = [*paths, 'crates/viboceros-oracle/tests/support/parallel_pairs.rs']
+    if any(path in paths for path in [
             'crates/viboceros-oracle/src/sweep_refit_sections.rs',
             'crates/viboceros-oracle/tests/sweep_refit_sections.rs',
             'crates/viboceros-geometry/tests/sweep_refit_make_compatible.rs']):
@@ -486,6 +491,7 @@ def _expand_sources_once(paths):
                          'crates/viboceros-geometry/src/loft/refit/adaptive/reconstruction_tests.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/source.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/pieces.rs',
+                         'crates/viboceros-geometry/src/loft/refit/adaptive/pieces/closed.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/pieces/tests.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/pieces/tests/loops.rs',
                          'crates/viboceros-geometry/src/loft/refit/adaptive/join.rs',

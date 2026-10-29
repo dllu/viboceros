@@ -3,6 +3,8 @@ use serde_json::Value;
 use viboceros_oracle::{ProbeRequest, run_request};
 #[path = "../../viboceros-geometry/tests/support/nurbs_surface.rs"]
 mod nurbs_surface;
+#[path = "support/parallel_pairs.rs"]
+mod parallel_pairs;
 #[path = "../../viboceros-geometry/tests/support/profile_rows.rs"]
 mod profile_rows;
 #[path = "../../viboceros-geometry/tests/support/sweep_atlas.rs"]
@@ -95,17 +97,16 @@ fn all_reentered_profiles_match_complete_native_images() {
     let rows = observed["results"].as_array().unwrap();
     assert_eq!(operations.len(), 12);
     assert_eq!(rows.len(), 12);
-    let mut gaps = Vec::new();
-    for (operation, row) in operations.iter().zip(rows) {
+    let gaps = parallel_pairs::compare(operations, rows, |operation, row| {
         assert_eq!(operation["id"], row["id"]);
         match compare(&input, operation, &row["value"]) {
-            Ok(Some(_)) => {}
-            Ok(None) => gaps.push(format!("{} whole image", operation["id"])),
+            Ok(Some(_)) => None,
+            Ok(None) => Some(format!("{} whole image", operation["id"])),
             Err(error) => {
                 eprintln!("REENTRY_CONSTRUCTION_GAP {}: {error}", operation["id"]);
-                gaps.push(format!("{}: {error}", operation["id"]));
+                Some(format!("{}: {error}", operation["id"]))
             }
         }
-    }
+    });
     assert!(gaps.is_empty(), "Re-entered C1 Refit gaps: {gaps:#?}");
 }

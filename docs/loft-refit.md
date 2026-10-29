@@ -34,7 +34,8 @@ operations participate in matching and propagate errors before document mutation
 Parameter correspondence can change. These bounds do not certify topology.
 
 Generic adaptive fitting requires at least two open regular profiles, degree at
-most 16, tolerance below every endpoint chord, and no resolved tangent breaks.
+most 16, and no resolved tangent breaks. Tolerances may exceed endpoint chords;
+failed whole-span proposals still subdivide under the existing fitting budgets.
 Closed smooth sources, mixed open/closed sets, exhausted budgets and unresolved
 proofs remain unsupported. Explicit [API angles](loft-refit-angles.md) control
 corner retention. Sources and shared sections have a 512-control limit; Loft

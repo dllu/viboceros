@@ -76,7 +76,7 @@ impl Prepared {
 
 fn unsupported() -> GeometryError {
     GeometryError::UnsupportedCurveApproximation {
-        context: "Loft Refit currently requires open regular profiles, tolerance below their endpoint chords, and a complete adaptive source certificate",
+        context: "Loft Refit currently requires regular tangent regions and a complete adaptive source certificate within the fitting budgets",
     }
 }
 
@@ -90,16 +90,6 @@ fn adaptive(
     let mut deviations = Vec::with_capacity(curves.len());
     let mut reconstruction_sources = Vec::with_capacity(curves.len());
     for source in curves {
-        let domain = source.domain();
-        // Large relative tolerances enter a distinct native resampling branch.
-        if !(scope.policy.closed && source.is_closed()?)
-            && tolerance
-                >= source
-                    .evaluate(*domain.start())?
-                    .distance_to(source.evaluate(*domain.end())?)?
-        {
-            return Err(unsupported());
-        }
         let Some(proposal) = adaptive::certified_joined_refit_with_scope(
             source,
             tolerance,

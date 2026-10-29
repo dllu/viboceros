@@ -1,5 +1,6 @@
 //! Adaptive endpoint-frame proposals; complete image certificates admit them.
 use super::*;
+mod closed;
 
 #[derive(Clone, Copy)]
 struct Interval {
@@ -66,6 +67,7 @@ pub(super) struct Candidate {
     pub curve: NurbsCurve,
     pub breaks: Vec<Real>,
     pub source_parameters: Vec<Real>,
+    pub preserve_closed_spans: bool,
 }
 
 pub(super) fn propose(
@@ -135,6 +137,8 @@ pub(super) fn construct_with_scope(
         Vec::new()
     };
     let domain = source.domain();
+    let preserve_closed_spans =
+        closed && lookup.is_some() && closed::control_hull_within(source, tolerance);
     let mut pending = vec![Interval {
         start: *domain.start(),
         end: *domain.end(),
@@ -142,6 +146,9 @@ pub(super) fn construct_with_scope(
         to: 1.,
         depth: 0,
     }];
+    if preserve_closed_spans {
+        pending = closed::span_intervals(source, lookup.as_ref().unwrap())?;
+    }
     let mut pieces = Vec::new();
     let mut attempts = 0;
     while let Some(interval) = pending.pop() {
@@ -175,7 +182,25 @@ pub(super) fn construct_with_scope(
         // An open source can contain a complete loop. A zero chord cannot
         // construct its endpoint-frame cubic or justify dropping the interval.
         // Subdivide under the same budgets and certify its children normally.
-        if first == last || (policy.single && closed && interval.depth < 2) {
+        if first == last
+            || (policy.single && closed && !preserve_closed_spans && interval.depth < 2)
+        {
+            let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
+                return Ok(None);
+            };
+            pending.extend(children);
+            continue;
+        }
+        let first_tangent = source.tangent_at_on_side(start, ParameterSide::Right)?;
+        let last_tangent = source.tangent_at_on_side(
+            end,
+            if end == *domain.end() {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            },
+        )?;
+        if crate::curve_fit::g1::opposed_endpoint_tangents(first_tangent, last_tangent) {
             let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
                 return Ok(None);
             };
@@ -185,15 +210,8 @@ pub(super) fn construct_with_scope(
         let mut piece = crate::curve_fit::g1::initial_cubic_from_frames(
             first,
             last,
-            source.tangent_at_on_side(start, ParameterSide::Right)?,
-            source.tangent_at_on_side(
-                end,
-                if end == *domain.end() {
-                    ParameterSide::Left
-                } else {
-                    ParameterSide::Right
-                },
-            )?,
+            first_tangent,
+            last_tangent,
         )?;
         // Samples propose a piece; a complete interval bound decides whether
         // it can be kept. A feature between stations must trigger refinement
@@ -215,6 +233,7 @@ pub(super) fn construct_with_scope(
             && crate::curve_fit::g1::within_deviation(&trimmed, &piece, local_bound)?;
         if !fits
             && lookup.is_some()
+            && !(interval.depth == 0 && tolerance >= first.distance_to(last)?)
             && correction_breaks
                 .get(correction_breaks.partition_point(|t| *t <= start))
                 .is_none_or(|t| *t > end)
@@ -263,6 +282,7 @@ pub(super) fn construct_with_scope(
         curve,
         breaks,
         source_parameters,
+        preserve_closed_spans,
     }))
 }
 

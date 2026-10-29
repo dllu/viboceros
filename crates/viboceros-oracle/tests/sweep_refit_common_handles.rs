@@ -2,6 +2,8 @@ use serde_json::Value;
 use viboceros_oracle::{ProbeRequest, run_request};
 #[path = "../../viboceros-geometry/tests/support/nurbs_surface.rs"]
 mod nurbs_surface;
+#[path = "support/parallel_pairs.rs"]
+mod parallel_pairs;
 #[path = "../../viboceros-geometry/tests/support/profile_rows.rs"]
 mod profile_rows;
 #[path = "../../viboceros-geometry/tests/support/sweep_atlas.rs"]
@@ -10,25 +12,23 @@ mod sweep_atlas;
 #[test]
 fn common_handle_profiles_match_complete_native_images() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
-    let mut count = 0;
-    let mut gaps = Vec::new();
-    for family in ["sweep1_refit_common_handles"] {
-        let input: Value = serde_json::from_slice(
-            &std::fs::read(root.join(format!("fixtures/{family}.json"))).unwrap(),
-        )
-        .unwrap();
-        let observed: Value = serde_json::from_slice(
-            &std::fs::read(root.join(format!("observations/{family}.json"))).unwrap(),
-        )
-        .unwrap();
-        assert_eq!(input["operations"].as_array().unwrap().len(), 16);
-        assert_eq!(observed["results"].as_array().unwrap().len(), 16);
-        for (op, native) in input["operations"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .zip(observed["results"].as_array().unwrap())
-        {
+    let family = "sweep1_refit_common_handles";
+    let input: Value = serde_json::from_slice(
+        &std::fs::read(root.join(format!("fixtures/{family}.json"))).unwrap(),
+    )
+    .unwrap();
+    let observed: Value = serde_json::from_slice(
+        &std::fs::read(root.join(format!("observations/{family}.json"))).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(input["operations"].as_array().unwrap().len(), 16);
+    assert_eq!(observed["results"].as_array().unwrap().len(), 16);
+    let operations = input["operations"].as_array().unwrap();
+    let count = operations.len();
+    let gaps = parallel_pairs::compare(
+        operations,
+        observed["results"].as_array().unwrap(),
+        |op, native| {
             assert_eq!(op["id"], native["id"]);
             let mut single = input.clone();
             single["operations"] = serde_json::json!([op]);
@@ -60,12 +60,9 @@ fn common_handle_profiles_match_complete_native_images() {
                 serde_json::json!({"id":actual.id,"family":family,"complete_image_bound":bound,
                     "complete_image_separation_lower_bound":separation,"comparison_epsilon":1e-7})
             );
-            if bound.is_none() {
-                gaps.push(actual.id.clone());
-            }
-            count += 1;
-        }
-    }
+            bound.is_none().then(|| actual.id.clone())
+        },
+    );
     assert_eq!(count, 16);
     assert!(
         gaps.is_empty(),

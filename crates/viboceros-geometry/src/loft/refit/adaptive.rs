@@ -180,7 +180,7 @@ pub(super) fn certified_joined_refit_with_scope(
     else {
         return Ok(None);
     };
-    let (joined, reconstruction_source) = if policy.single {
+    let (joined, reconstruction_source) = if policy.single || candidate.preserve_closed_spans {
         (join::construct_smooth(&candidate.curve)?, None)
     } else {
         let Some(refined) = join::construct_refined_with_policy(

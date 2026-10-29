@@ -49,11 +49,6 @@ pub(super) fn prepare_with_policy(
         let chord = candidate.control_points()[0]
             .point()
             .distance_to(candidate.control_points()[3].point())?;
-        // Relative errors >=1 enter a separate native resampling branch. Its
-        // basis/domain policy has not been established by this initial fit.
-        if tolerance >= chord {
-            return Err(unsupported());
-        }
         let candidate = if crate::curve_fit::g1::within_deviation(source, &candidate, limit)?
             || (!single_span
                 && quarter_stations_fit(source, &candidate, limit)?
@@ -64,7 +59,10 @@ pub(super) fn prepare_with_policy(
             // Native multispan references enter adaptive fitting here.
             // A common handle correction is qualified only for a single
             // Bezier source, even if it could satisfy a positional bound.
-            if !single_span {
+            // Larger-than-chord tolerances still admit the unadjusted cubic.
+            // If it fails, retain adaptive subdivision in that relative-error
+            // range; whole-profile correction keeps its smaller-tolerance path.
+            if !single_span || tolerance >= chord {
                 return Err(unsupported());
             }
             // The complete initial proposal has already failed. A fitting

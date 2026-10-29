@@ -26,6 +26,11 @@ exposes this preparation without rail frames or surface construction. RPC checks
 cover coarse and disabled fitting, authored parameters and input preservation on
 both backends; the fine cases retain their separate required comparison gate.
 
+[Large-tolerance fitting](refit-large-tolerances.md) admits certified proposals
+at and above endpoint-chord lengths and retains closed loops. Its independent
+profiles and endpoint-opposition controls add required complete-image gates;
+their remaining differences are recorded separately from the historical replay.
+
 Rust currently uses two independently certified passes for a single smooth
 profile. Paired fitting reconstructs independently fitted curves at shared
 stations and requires a fresh complete original-source bound. Straight and

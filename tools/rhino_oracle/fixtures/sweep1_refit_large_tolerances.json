@@ -1,0 +1,4301 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-below-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 2.8001428534987283
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-below-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 2.8001428534987283
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-equal-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 2.8284271247461903
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-equal-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 2.8284271247461903
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-above-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 2.8567113959936523
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-above-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 2.8567113959936523
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-wide-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quarter-wide-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-below-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 3.0109674524976184
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-below-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 3.0109674524976184
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-equal-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 3.0413812651491097
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-equal-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 3.0413812651491097
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-above-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 3.071795077800601
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-above-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 3.071795077800601
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-wide-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-cubic-wide-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-below-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 3.96
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-below-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 3.96
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-equal-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-equal-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-above-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.04
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-above-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.04
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-wide-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quadratic-wide-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-below-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.081874569361484
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-below-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.081874569361484
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-equal-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.123105625617661
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-equal-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.123105625617661
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-above-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.164336681873837
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-above-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.164336681873837
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-wide-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-polynomial_cubic-wide-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-below-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 3.96
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-below-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 3.96
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-equal-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-equal-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-above-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.04
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-above-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.04
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-wide-count-1",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-smooth_cubic-wide-count-2",
+      "sections": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-below-count-1",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 4.95
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-below-count-2",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 4.95
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-equal-count-1",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 5.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-equal-count-2",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 5.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-above-count-1",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 5.05
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-above-count-2",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 5.05
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-wide-count-1",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-quintic-wide-count-2",
+      "sections": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-circle-wide-count-1",
+      "sections": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0
+      ],
+      "refit_tolerance": 100.0
+    },
+    {
+      "op": "sweep_refit_sections",
+      "id": "large-refit-circle-wide-count-2",
+      "sections": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                5.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                5.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "parameters": [
+        -7.0,
+        13.0
+      ],
+      "refit_tolerance": 100.0
+    }
+  ]
+}
