@@ -12,7 +12,7 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Re-entered C1 profiles | 12/12 | 8/12 |
 | Combined | 98/98 | 91/98 |
 
-The [current replay](refit-separation-validation.json) covers all 98 cases on both
+The [latest full replay](refit-separation-validation.json) covers all 98 cases on both
 backends, retaining seven failing image assertions: three base fine profiles
 and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
 pass. The [earlier base record](refit-development-validation.json) retains its
@@ -68,5 +68,12 @@ the tested images. The [clock correction](refit-clock-validation.json) resolves
 all 16 fresh multi-span batches and adds 450 precision queries. Numerical NURBS
 batches share request normalization; fitting retains its measured public request
 of `0.01`, giving an effective tolerance of `1e-4`.
+[Public fitting diagnostics](refit-cubic-validation.json) reproduce 480 native
+continuity queries and certify 96 full or trimmed input curves within `1.2e-14`.
+Public `MakeCompatible` results exactly reproduce 32 complete Sweep boundary
+definitions; its zero and one-degree angle controls retain 48 complete curve
+definitions. These cases isolate the remaining fitting differences from Sweep
+construction. Public cubic-Bezier partitions are recorded separately and do not
+establish the private subdivision rule. Production fitting is unchanged.
 The other historical qualification inventories still describe `main` before
 this branch and must be refreshed before merging.

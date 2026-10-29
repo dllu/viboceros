@@ -2437,5 +2437,7 @@
     "docs/sweep1/refit-clock-validation.json": "2007bad21bdcdb5b96ef950adaa7f309a83eabf141d00bfa6576a08c57b9e129",
     "crates/viboceros-geometry/tests/projected_surface_separation.rs": "8b3092cac27257f500abdcf1f66a696a740d43c9f5847c12365b47fb12836b5a",
     "crates/viboceros-geometry/tests/support/profile_rows/separation.rs": "9d9bf87ffc8b9fafc651934885a188475f1c9ba671fcedf077c6ededfbbb362c"
-  }
+  },
+  "measurement_revision": "5264ecfdca3440af6494b887460e85de8808c3f5",
+  "measurement_scope": "Historical full 98-case replay and seven exact geometric counterexamples. Source bindings are retained at measurement_revision. Production fitting is unchanged in the subsequent public cubic and MakeCompatible diagnostic record, refit-cubic-validation.json."
 }

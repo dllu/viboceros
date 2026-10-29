@@ -199,6 +199,22 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-geometry/tests/sweep_refit_compatibility_native.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/loft_parameters.rs',
+                 'tools/rhino_oracle/generate_sweep1_refit_compatibility_stages.py',
+                 'tools/rhino_oracle/fixtures/sweep1_refit_compatibility_stages.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_compatibility_stages.json',
+                 'tools/rhino_oracle/loft_refit_source_probe.py',
+                 'tools/rhino_oracle/loft_refit_probe.py']
+    if 'crates/viboceros-geometry/tests/sweep_refit_cubic_structure_native.rs' in paths:
+        paths = [*paths, 'crates/viboceros-geometry/tests/support/loft_parameters.rs',
+                 'tools/rhino_oracle/curve_cubic_structure_probe.py',
+                 'tools/rhino_oracle/generate_sweep1_refit_cubic_structure.py',
+                 'tools/rhino_oracle/test_sweep1_refit_cubic_structure.py',
+                 'tools/rhino_oracle/geometry_validity_probe.py']
+        for family in ['sweep1_refit_cubic_structure', 'sweep1_refit_cubic_structure_default_angle']:
+            paths.extend('tools/rhino_oracle/' + folder + '/' + family + '.json'
+                         for folder in ['fixtures', 'observations'])
     if 'crates/viboceros-geometry/src/curve_fit/g1.rs' in paths:
         paths = [*paths, 'crates/viboceros-geometry/src/curve_fit/g1/sweep_partitions.rs',
                  'tools/rhino_oracle/capture_sources/sweep1_refit_native_partitions.json',

@@ -156,6 +156,7 @@ PROBES = {
     'surface_flow': ('surface_flow_probe', ('geometry_validity_probe','join_probe','merge_edges_probe','snap_environment','viewport_capture')),
     'flow_roadlike': ('flow_roadlike_probe', ('flow_line_probe','flow_probe','geometry_validity_probe','merge_edges_probe','join_probe')),
     'arc_length_batch': ('arc_length_batch_probe', ('geometry_validity_probe',)),
+    'curve_cubic_structure': ('curve_cubic_structure_probe', ('geometry_validity_probe',)),
     'flow_line': ('flow_line_probe', ('flow_probe','geometry_validity_probe','merge_edges_probe','join_probe')),
     'flow_grips': ('flow_grips_probe', ('geometry_validity_probe','flow_probe','merge_edges_probe','join_probe')),
     'flow': ('flow_probe', ('geometry_validity_probe',)),
