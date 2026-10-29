@@ -1,0 +1,334 @@
+{
+  "scope": "Behavior-preserving extraction of shared mesh polygon geometry and hole-fill policy",
+  "base_revision": "d995c3665f31ef6ec61b474a8e877ae5824de500",
+  "base_mesh_sha256": "607bc489138f0f16a471a6fc60b2b20aa4b451c944e9bc799e8bf63065e603e9",
+  "main_mesh_lines_before": 9071,
+  "main_mesh_lines_after": 7542,
+  "moved_existing_tests": 17,
+  "moved_function_bodies": {
+    "fill_topology_hole": "7af35fbf7faac1150676cad4706e185a351b2c92989a7019b73f884d089fb4c5",
+    "fill_topology_hole_with_data": "ca19424d8b2e54777c57a39430f6e8b6f276a635c1e735b8ffb950b634bb3a11",
+    "fill_holes": "72066212ddb881a12031a240d49ea1710050cd6bd5fc69a924ad5bf01830a36f",
+    "cap_planar_holes": "7c58cc6453e6979826e31f8e672579ac4a7ac4a765aadd1b93d5024e76bfc862",
+    "cap_planar_holes_with_crease": "3c18bf32763062e1458b1664c6fa2675105c4c1c206ad67ae6aefb1193430659",
+    "cap_planar_holes_with_options": "7e02b5d601602d0ca0888ad981740b332a24d6b6ac5fa475ba30594b5f70842f",
+    "coplanar_mesh_boundary_overlaps": "036452b292af77be325f3e3c054f487e249f21131f6ee0e1d1125a2c01787a8c",
+    "position": "a95a476c5aa73f19293c17efd1ce91190a8b4838d5d7d40697139aa40f694ad1",
+    "triangulate_projected_mesh_hole": "c1fda3ab34ee3700aecbf5dd3dadb616d91774358cac1450eac2ab5a0fdb8194",
+    "triangulate_projected_mesh_region": "9990691134b79cc485fb6549b63be53774e86421794b4af210324803da5dc8ea",
+    "project_mesh_hole_boundary": "8f32945fa1182829f6774b174c340149062bce5f1ad615a7fa21ec48ab7d100b",
+    "projected_polygon_doubled_area": "5c7042cd741acb0db42ac0c5683ffa00e55fe87126ce0650f16d50a8735cfa91",
+    "mesh_hole_cross": "ab0b6a37d90367fbf6ea6b5aeb549bd90b33faffc0773afd9ba2a3b0354d10c5",
+    "point_in_mesh_hole_polygon": "ed826a0685efa86b7877bbc3ff609141e11e5eb720d7aa3c916adffc1b3aeea8",
+    "compensated_mesh_hole_sum": "23317692a78f1f80dd4e4c0f784525d3547325258d512d4402a3e8b367bfdb5c",
+    "point": "54078b6cc4f2cc278f8e2c13267f026ce5e21b12be64c85f5402a7374ec912e4",
+    "topology_edge_index_between": "f9b83c9c9b5ecae83ce5c690cca354a60164c51c77ebca5e3c06aff2f029ccde",
+    "fills_a_naked_mesh_hole_with_an_oriented_delaunay_patch": "6b27fef6bef615a3ed2c9f3971fa21cb6c2cd552335c4361dc3ff6e39464aa54",
+    "fills_concave_and_nonplanar_mesh_holes_deterministically": "49a7f9cd4726cbcacc073146d2736231bc545cbbbc6cc69187c03a3aedfa1f9e",
+    "mesh_hole_fill_rejects_non_naked_open_and_branched_boundaries": "7dacfbf1014ee563b5efe9635dd094052f9470206ffa6ebf996cf9d7539d347e",
+    "fills_all_simple_mesh_holes_without_unused_closing_vertices": "579cf3fb73e3be4c090fbde125cbc3da34a560ebde3d52e142cd9dafa4ad8bc5",
+    "fill_all_holes_leaves_ambiguous_branched_boundaries_unchanged": "fc4a0740d520a689ba2afdcb971a4e8329b8a1ecbf22fc013cad1c6ec68d0cfb",
+    "planar_cap_leaves_nonplanar_boundary_open": "6be439940bc99c143e10bd9beee1732327458024ae8ca7e8700bd5d523e48e1e",
+    "planar_cap_crease_controls_raw_boundary_welding": "fa9bf4c3272138d351d4d3dfbb955424ada5edfccc7a887690dd51452c813df8",
+    "planar_cap_groups_simple_triangles_into_one_ngon": "ad9f1e89ea6616b7040e397da0d0ee2dfe022903a9a626a0f78d8dfa3e107a97",
+    "welded_cap_reuses_seamed_boundary_vertices_without_welding_remote_seams": "a27f2d5264c1bd780f4b9d3e5f1a3ad6e44c36139a44d05c48703eda9ae5402e",
+    "planar_cap_does_not_fill_nested_ring_boundaries_as_overlapping_disks": "3fb133d41aa39fd97f71c56b5872d79e378080d7ed5608e50554e5561a772799",
+    "planar_cap_closes_both_annular_ends_of_a_square_tube": "33eaa3dbce3199bb6b4b6afab21b11248a72266515d3dee638edee67265fb913",
+    "planar_cap_supports_two_inner_boundaries_per_end": "8261081da8e0b7fff1649b7033b7ecddd18e88c2235c26ea7251db94500616c2",
+    "constrained_mesh_region_triangulates_an_annulus_without_covering_its_hole": "37fe42d8eac61d0084c8751a6031718023cc00152d8da4754897b71615b4bde5",
+    "constrained_mesh_region_handles_disjoint_holes_with_overlapping_bounds": "0ae4996730c6b0179cf010707e536f9408a687f2913ba004bcd161a26997daca",
+    "constrained_mesh_region_rejects_nested_inner_holes": "f693710bec37281600829993b6bbad25506248ed3ce293786c53a78432529a17",
+    "constrained_mesh_region_rejects_crossing_inner_holes": "ecfbbecfb4742b72d42c900f4643e54dbb85beb59e685a01e1b8c3056825c27f",
+    "constrained_mesh_region_rejects_a_hole_touching_the_outer_boundary": "f080f04cd43f0330796ba363b0bdc2e15c5bd2661d4acc999eb22d870c1dda72"
+  },
+  "function_body_comparison": "Identical after whitespace removal; only module locations, imports and internal visibility changed.",
+  "new_native_captures": 0,
+  "tessellation_rule_changed": false,
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "baseline_qualification": "geometry/mesh-insert-sources-validation.json",
+  "checks": {
+    "geometry": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "mesh::"
+      ],
+      "exit_code": 0,
+      "log_sha256": "ba5f3dcf489d6a8fcef3a60267be361a86b553dcbcfb93752f230de6a0539131",
+      "passed_tests": 323
+    },
+    "geometry-integration": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "mesh_insert_sources",
+        "--test",
+        "subd_edge_insert",
+        "--test",
+        "mesh_channels",
+        "--test",
+        "mesh_face_merge"
+      ],
+      "exit_code": 0,
+      "seconds": 18.85,
+      "log_sha256": "cd3ad79654765df38a1e84b0cc2489f247c0e2f48b44a4e02ac99270763a5548",
+      "passed_tests": 12
+    },
+    "command-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 39.6,
+      "log_sha256": "a3079cc8798307c072f80352f8a03706038450713aecf93ab5ab631401a87b07",
+      "passed_tests": 33
+    },
+    "app-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 64.18,
+      "log_sha256": "4d0b9ad5130567689e5d1e788bea31c122156dedb840575f105dc4de9ba4d61c",
+      "passed_tests": 12
+    },
+    "command-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 65.25,
+      "log_sha256": "51f052c3e43a3db09c7221145ddb8911dee980ebd5367b4b0ba41768d0449c6e",
+      "passed_tests": 33
+    },
+    "app-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 57.12,
+      "log_sha256": "05bf6aeb6e35f970e28af85f2ffd7e674bf859f6836b99b6847b9fe8d38d7c98",
+      "passed_tests": 12
+    },
+    "clippy-geometry": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 34.81,
+      "log_sha256": "ab984944db0312e83c0a58e767b40f9c5689d833bc8004b53d714da37bf19076"
+    },
+    "clippy-command": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 15.15,
+      "log_sha256": "18211d98ac14d90bb5f76ab705084ba2f609981d088d657d402db8c8b463dd53"
+    },
+    "clippy-app": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 41.46,
+      "log_sha256": "8e9d1617950e31882c744565b0c5528d8c8e1d97bded831452b71ec2b6c55686"
+    },
+    "python_full": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "exit_code": 0,
+      "passed_tests": 2241,
+      "log_sha256": "7ae9d08f5dbf7e56af8fb4473f034de445c962cdede19e71742d5510a172a6b5"
+    }
+  },
+  "replays_unchanged_from_base": {
+    "MESH_INSERT_PATH": {
+      "rows": 48,
+      "baseline_matches_exactly": true,
+      "sha256": "d0ca6620be5648d92343e1f297d93a8e064316a440b860579122514d43013aba"
+    },
+    "MESH_INSERT_SOURCE": {
+      "rows": 10,
+      "baseline_matches_exactly": true,
+      "sha256": "b6b16e81874a76c5fdec96aa94de868f84a05b6a0b595a5bf436bab69480b386"
+    },
+    "application_default": {
+      "rows": 86,
+      "baseline_matches_exactly": true,
+      "sha256": "4e23f8bdce8b960f2ad3c23de1b5d2f4793cab9e10ad8aa0283042ae5590e327"
+    },
+    "application_native": {
+      "rows": 86,
+      "baseline_matches_exactly": true,
+      "sha256": "4e23f8bdce8b960f2ad3c23de1b5d2f4793cab9e10ad8aa0283042ae5590e327"
+    },
+    "MESH_INSERT_PATH_default": {
+      "rows": 48,
+      "baseline_matches_exactly": true,
+      "sha256": "d0ca6620be5648d92343e1f297d93a8e064316a440b860579122514d43013aba"
+    },
+    "MESH_INSERT_SOURCE_default": {
+      "rows": 10,
+      "baseline_matches_exactly": true,
+      "sha256": "b6b16e81874a76c5fdec96aa94de868f84a05b6a0b595a5bf436bab69480b386"
+    },
+    "MESH_INSERT_PATH_native": {
+      "rows": 48,
+      "baseline_matches_exactly": true,
+      "sha256": "d0ca6620be5648d92343e1f297d93a8e064316a440b860579122514d43013aba"
+    },
+    "MESH_INSERT_SOURCE_native": {
+      "rows": 10,
+      "baseline_matches_exactly": true,
+      "sha256": "b6b16e81874a76c5fdec96aa94de868f84a05b6a0b595a5bf436bab69480b386"
+    }
+  },
+  "source_hashes": {
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "crates/viboceros-command/tests/mesh_insert_paths.rs": "6f5cf45b4b074f07bc038d3608b1b2e28add567d4d056208fa98789ee40ebfb6",
+    "crates/viboceros-geometry/src/mesh.rs": "51812f37d7f01970e77d021156b0ab565cf6d552d083a2c32f8f316b67450f5c",
+    "crates/viboceros-geometry/src/mesh/hole_fill.rs": "62eb4fc950eaca141cde3d5fe0fef4ddfe5c2f26372efdbc015245ff41703fcc",
+    "crates/viboceros-geometry/src/mesh/hole_fill/cap_tests.rs": "a51341adab0789c60d0d643c8ae15dd94b2f38df9597d8694d08d0f75dda1b6d",
+    "crates/viboceros-geometry/src/mesh/hole_fill/tests.rs": "395c8529a69172f8a08eb72917f7c5ef66dec671465ffe2a9c00e5f2f7e5a321",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "20327069168f5affa522fc43e7cef60655fb7383a825f833d0d95fbeae742a70",
+    "crates/viboceros-geometry/src/mesh/polygon.rs": "710fc8e12d0ef2c316145eb03b7e003abec81dd01cb9b918b82b311889e56f75",
+    "crates/viboceros-geometry/src/mesh/polygon/tests.rs": "6b644efdb386a11f50778c16eb18b961dffcdbef91af0c92a5f52e9617f9035a",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "234d9137880cc66470471f9d442f35e15320ca96a535ccb27e15b43ab6054b86",
+    "crates/viboceros-geometry/src/mesh/test_support.rs": "633e3103e9abd053613fce1ec943013145066129d00afaa998d21d5aebe75aae",
+    "docs/architecture/geometry.md": "95aa3d4791c07b1f66d3938b1fefac355216309bceaf6736fb0b181636ee5688",
+    "src/app/crease/tests/insert_point.rs": "8a4a097f7c4c060692786134d75530b52de1b0d9d199c84f754831f2ba800a65",
+    "tools/rhino_oracle/fixtures/mesh_insert_retained_gaps.json": "c099e94fb6742a7c894202fc4760a82613563740f92456674a7f6e735971acf2",
+    "tools/rhino_oracle/qualification_sources.py": "4e96ddc20f75a7a0843f900df9967387358e3ae11e22158e62e81c68240af252"
+  },
+  "initial_python_failure": {
+    "cause": "One live command qualification manifest retained the old mesh.rs hash.",
+    "corrected_file": "docs/commands/merge-faces-validation.json",
+    "focused_recheck_passed": true,
+    "full_suite_rerun_passed": true
+  },
+  "remaining": [
+    "Original and independent warped insertion tessellation gaps remain unchanged.",
+    "Broader Rhino command/API/UI coverage and comparative performance remain in progress."
+  ]
+}

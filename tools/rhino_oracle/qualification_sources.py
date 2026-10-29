@@ -232,7 +232,16 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+MESH_POLYGON_MODULES = [
+    'crates/viboceros-geometry/src/mesh.rs',
+    *['crates/viboceros-geometry/src/mesh/'+name+'.rs' for name in [
+        'polygon', 'polygon/tests', 'hole_fill', 'hole_fill/tests',
+        'hole_fill/cap_tests', 'test_support', 'patch', 'projection',
+    ]],
+]
+
 MESH_INSERT_SOURCE_MODULES = [
+    *MESH_POLYGON_MODULES,
     'crates/viboceros-geometry/src/mesh/insert.rs',
     'crates/viboceros-geometry/src/mesh/insert/source.rs',
     'crates/viboceros-geometry/src/mesh/face_records.rs',
@@ -389,6 +398,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in MESH_POLYGON_MODULES):
+        paths = [*paths, *MESH_POLYGON_MODULES]
     if 'tools/rhino_oracle/capture_family.py' in paths or any(p in paths for p in ORACLE_CLIENT_MODULES):
         paths = [*paths, *ORACLE_CLIENT_MODULES]
     if any(p in paths for p in MESH_INSERT_SOURCE_MODULES):

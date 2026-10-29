@@ -2,7 +2,11 @@
 use super::*;
 use crate::exact_scalar::{Rational, rational};
 use num_traits::Zero;
+use spade::{
+    ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
+};
 use std::cmp::Ordering;
+use std::ops::Range;
 mod constraints;
 #[cfg(test)]
 mod tests;

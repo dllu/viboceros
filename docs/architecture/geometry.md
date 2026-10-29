@@ -111,6 +111,12 @@ Mesh concatenation, matching,
 and component orientation live in the kernel's `mesh/append` and `mesh/join`
 modules; [mesh joining](../commands/join.md) documents their explicit precision
 policy and the command's selection-order and group behavior.
+`mesh/polygon` shares normalized boundary projection, constrained Delaunay
+triangulation and winding predicates across insertion, hole filling and planar
+caps. `mesh/hole_fill` owns boundary traversal, cap admission and channel
+transfer. Insertion retains its own cell pairing and quad origin policy;
+the shared polygon geometry does not resolve the remaining
+[warped insertion layouts](../geometry/mesh-insert-sources.md).
 The separate `brep/join_edges` module provides
 [certified explicit boundary assembly](../brep-edge-joining.md), with exact-binary
 curve predicates separated from vertex unions, edge remapping, and face

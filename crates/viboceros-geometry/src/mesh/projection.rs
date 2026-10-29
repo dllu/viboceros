@@ -5,6 +5,7 @@ use crate::interval::I;
 use crate::{NurbsCurve, Vector3};
 use num_traits::Zero;
 use std::borrow::Cow;
+use std::ops::Range;
 
 mod polyline_path;
 mod pull;
