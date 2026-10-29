@@ -87,5 +87,9 @@
     "462b129706e7be81ccde492c16db1ff7c243e4d5:tools/rhino_oracle/test_worker.py": "864d079e63f944debe3052e94b7cef2dfa84aa0575e52bd5abddf6e3e167141a",
     "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-command/src/project.rs": "6f0bd2510631e6e08ab813098ad794cdb939b539c350f31bb308596f228361b5"
   },
-  "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
+  "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation.",
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/projection-loose-qualification.json",
+  "measurement_record_sha256": "cd92829fe8ee2202c39df1ed4b4f4990d768669cd166b4db12c1be84e66e70c8",
+  "measurement_scope": "Historical Loose projection qualification. The original measurements and source bindings are retained; later shared certificate changes require separate validation."
 }

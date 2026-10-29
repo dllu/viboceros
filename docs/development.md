@@ -14,8 +14,10 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 
 Development and test builds use limited debug symbols and disable incremental
 compilation to reduce disk use. Generated artifacts still accumulate in `target/`;
-run `cargo clean` while builds are idle when you need to reclaim that space.
-The next build will regenerate Rust artifacts and native libraries.
+run `cargo clean --workspace --frozen` while builds and tests are idle to remove
+project outputs and retain reusable external dependencies. Run it from each
+worktree sharing that target directory. Use `cargo clean` for a complete reset;
+the next build will also regenerate dependencies and native libraries.
 
 For focused unit tests, use `cargo test -p CRATE --lib FILTER`; for integration
 tests, use `--test TARGET`. A name filter alone still builds every test binary
