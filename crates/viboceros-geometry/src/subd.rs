@@ -25,6 +25,7 @@ mod sphere;
 mod spin;
 mod subdivision;
 mod surface_conversion;
+mod texture_points;
 mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
@@ -38,6 +39,7 @@ pub use mesh_conversion::SubDFromMeshOptions;
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
+pub use texture_points::SubDTextureCoordinateType;
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.

@@ -1,0 +1,201 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_face_custom",
+      "id": "material-first",
+      "case": "material-first"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-first",
+      "case": "material-reverse-first"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-second",
+      "case": "material-second"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-second",
+      "case": "material-reverse-second"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-different",
+      "case": "material-different"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-different",
+      "case": "material-reverse-different"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-same",
+      "case": "material-same"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-same",
+      "case": "material-reverse-same"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-max",
+      "case": "material-max"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-max",
+      "case": "material-reverse-max"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-unset",
+      "case": "material-unset"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-reverse-unset",
+      "case": "material-reverse-unset"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-neighbor",
+      "case": "material-neighbor"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-first-neighbor",
+      "case": "material-first-neighbor"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-sequential",
+      "case": "material-sequential"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-edge",
+      "case": "material-edge"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-vertex",
+      "case": "material-vertex"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "material-noop",
+      "case": "material-noop"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-strip",
+      "case": "texture-strip"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-strip",
+      "case": "combined-strip"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-neighbor",
+      "case": "texture-neighbor"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-neighbor",
+      "case": "combined-neighbor"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-grid-L",
+      "case": "texture-grid-L"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-grid-L",
+      "case": "combined-grid-L"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-ring-noop",
+      "case": "texture-ring-noop"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-ring-noop",
+      "case": "combined-ring-noop"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-ring-partial",
+      "case": "texture-ring-partial"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-ring-partial",
+      "case": "combined-ring-partial"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-disjoint",
+      "case": "texture-disjoint"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-disjoint",
+      "case": "combined-disjoint"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-twisted",
+      "case": "texture-twisted"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-twisted",
+      "case": "combined-twisted"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-sequential",
+      "case": "texture-sequential"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-continuous",
+      "case": "texture-continuous"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-edge",
+      "case": "combined-edge"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "combined-vertex",
+      "case": "combined-vertex"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-missing-0",
+      "case": "texture-missing-0"
+    },
+    {
+      "op": "subd_face_custom",
+      "id": "texture-missing-1",
+      "case": "texture-missing-1"
+    }
+  ]
+}

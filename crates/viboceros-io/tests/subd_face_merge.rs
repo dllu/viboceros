@@ -1,5 +1,7 @@
 #[path = "support/subd_allocation.rs"]
 mod allocation;
+#[path = "support/subd_face_custom.rs"]
+mod custom;
 #[path = "support/subd_face_properties.rs"]
 mod properties;
 #[path = "support/subd_face_merge.rs"]
@@ -49,4 +51,10 @@ fn native_face_colors_and_sequential_merges_preserve_geometry_and_properties() {
 fn allocating_subdivision_after_native_merges_preserves_component_ids_and_geometry() {
     initialize_optional_kernel();
     allocation::audit();
+}
+
+#[test]
+fn native_material_channels_and_custom_texture_points_survive_edits_and_readback() {
+    initialize_optional_kernel();
+    custom::audit();
 }

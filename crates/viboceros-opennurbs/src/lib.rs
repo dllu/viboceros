@@ -23,13 +23,13 @@ pub use surface::{
 mod subd;
 pub use subd::{
     SubDControlNetPriority, SubDData, SubDError, SubDFaceProperties, SubDMergeComponent,
-    subd_append, subd_box, subd_chain_sharpness, subd_control_mesh,
+    SubDTextureCoordinateType, subd_append, subd_box, subd_chain_sharpness, subd_control_mesh,
     subd_control_mesh_with_priority, subd_crease_components, subd_cylinder, subd_edge_chains,
     subd_edge_samples, subd_edit_points, subd_from_archive, subd_from_mesh, subd_from_polygons,
     subd_insert_face_edge, subd_insert_path, subd_insert_vertex, subd_merge_faces,
-    subd_remap_vertices, subd_set_face_properties, subd_set_tags, subd_sharpness_from_percent,
-    subd_soft_crease, subd_spin_edge, subd_stored_sharpness, subd_subdivide, subd_tessellate,
-    subd_tessellate_with_normals, subd_transform,
+    subd_remap_vertices, subd_set_face_properties, subd_set_face_texture_points, subd_set_tags,
+    subd_sharpness_from_percent, subd_soft_crease, subd_spin_edge, subd_stored_sharpness,
+    subd_subdivide, subd_tessellate, subd_tessellate_with_normals, subd_transform,
 };
 
 mod subd_interpolation;

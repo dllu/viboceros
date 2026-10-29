@@ -12,6 +12,7 @@ mod remap;
 mod sharpness;
 mod soft_crease;
 mod spin;
+mod texture_points;
 pub use chains::subd_edge_chains;
 pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
@@ -24,6 +25,7 @@ pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
 pub use soft_crease::subd_soft_crease;
 pub use soft_crease::subd_stored_sharpness;
 pub use spin::subd_spin_edge;
+pub use texture_points::{SubDTextureCoordinateType, subd_set_face_texture_points};
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]
@@ -37,6 +39,8 @@ pub struct SubDData {
     pub edge_ids: Vec<u32>,
     pub face_ids: Vec<u32>,
     pub face_properties: Vec<SubDFaceProperties>,
+    pub texture_coordinate_type: SubDTextureCoordinateType,
+    pub face_texture_points: Vec<Option<Vec<Option<[f64; 3]>>>>,
     /// New or rewritten control-face ordinals reported by an editing operation.
     pub selected_faces: Vec<u32>,
     pub boundary_edge_count: usize,
@@ -106,6 +110,10 @@ struct View {
     face_ids: *const u32,
     face_colors: *const u32,
     face_materials: *const u32,
+    texture_coordinate_type: u32,
+    texture_point_count: usize,
+    face_texture_sizes: *const u32,
+    face_texture_points: *const f64,
 }
 #[repr(C)]
 struct NativeResult {
@@ -295,7 +303,7 @@ fn call(
     let sizes = unsafe { copy(v.face_sizes, v.face_count) };
     let corners = unsafe { copy(v.face_vertices, v.corner_count) };
     let mut offset = 0;
-    let faces = sizes
+    let faces: Vec<Vec<u32>> = sizes
         .into_iter()
         .map(|n| {
             let end = offset + n as usize;
@@ -319,11 +327,42 @@ fn call(
             })
         })
         .collect::<Result<Vec<_>, SubDError>>()?;
+    let texture_sizes = unsafe { copy(v.face_texture_sizes, v.face_id_count) };
+    let texture_points: Vec<[f64; 3]> =
+        unsafe { copy(v.face_texture_points.cast(), v.texture_point_count) };
+    let mut offset = 0usize;
+    let face_texture_points = texture_sizes
+        .into_iter()
+        .enumerate()
+        .map(|(i, n)| {
+            if n == 0 {
+                return Ok(None);
+            }
+            let end = offset
+                .checked_add(n as usize)
+                .ok_or_else(|| SubDError("Texture span overflow".into()))?;
+            if n as usize != faces[i].len() || end > texture_points.len() {
+                return Err(SubDError("Invalid texture corner span".into()));
+            }
+            let points = texture_points[offset..end]
+                .iter()
+                .copied()
+                .map(texture_points::coordinate)
+                .collect();
+            offset = end;
+            Ok(Some(points))
+        })
+        .collect::<Result<Vec<_>, SubDError>>()?;
+    if offset != texture_points.len() {
+        return Err(SubDError("Trailing texture coordinates".into()));
+    }
     Ok(SubDData {
         vertex_ids: unsafe { copy(v.vertex_ids, v.vertex_id_count) },
         edge_ids: unsafe { copy(v.edge_ids, v.edge_id_count) },
         face_ids: unsafe { copy(v.face_ids, v.face_id_count) },
         face_properties,
+        texture_coordinate_type: v.texture_coordinate_type.try_into()?,
+        face_texture_points,
         selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
         boundary_edge_count: v.boundary_edge_count,
         face_sources: unsafe { copy(v.face_sources, v.face_source_count) },

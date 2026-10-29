@@ -63,3 +63,6 @@ python3 -m unittest tools.rhino_oracle.test_subd_edit_history
 The older [SubDivide measurement](../subdivide-qualification.json) remains a
 historical geometry/getter record. Its callback children are checked as mapped
 output metadata; this newer receipt establishes completed-command selection.
+
+[Custom face data](subd-face-custom.md) covers material channels, custom UVWs,
+spatial transforms, sequential merging and Undo/Redo.

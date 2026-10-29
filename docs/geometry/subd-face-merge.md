@@ -66,10 +66,13 @@ Unchanged commands clear component selections and add no Undo entry; changed
 commands preserve attributes and undo/redo exactly. `input_timer_fired` records
 timer activity and does not establish getter opening.
 
-Other allocating edits, nonmanifold regions, material merging and custom face
-textures remain outside the qualified corpus. Multiple owners, Results and application
+Other allocating edits and nonmanifold regions remain outside this topology
+corpus; material/UVW behavior has a separate qualification below. Multiple owners, Results and application
 selection/history are covered by the separate command receipt.
 
 [Per-face colors](subd-face-properties.md) have a separate native corpus:
 merged faces clear their colors while untouched and unchanged faces retain them,
 including sequential merges and Undo/Redo.
+
+[Custom face data](subd-face-custom.md) covers material channels, custom UVWs,
+spatial transforms, sequential merging and Undo/Redo.

@@ -9,6 +9,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'subd_face_custom_holdout': ('subd_face_custom_holdout_probe', ('subd_face_custom_holdout_cases','subd_face_custom_probe','subd_face_custom_cases','subd_merge_allocation_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),
+    'subd_face_custom': ('subd_face_custom_probe', ('subd_face_custom_cases','subd_merge_allocation_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),
     'subd_result_history': ('subd_result_history_probe', ('subd_merge_allocation_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),
     'subd_merge_allocation': ('subd_merge_allocation_probe', ('subd_merge_allocation_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),
     'subd_merge_properties': ('subd_merge_properties_probe', ('subd_merge_properties_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),
@@ -252,6 +254,14 @@ def stage_helpers(request, source_directory, destination):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'subd_face_custom_holdout_probe' in modules:
+        asset = Path('fixtures/subd_face_custom_holdout_assets.json')
+        (destination/asset.parent).mkdir(exist_ok=True)
+        shutil.copyfile(source_directory/asset, destination/asset)
+    if 'subd_face_custom_probe' in modules:
+        asset = Path('fixtures/subd_face_custom_assets.json')
+        (destination/asset.parent).mkdir(exist_ok=True)
+        shutil.copyfile(source_directory/asset, destination/asset)
     if 'soft_crease_probe' in modules:
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)

@@ -228,6 +228,31 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+SUBD_FACE_CUSTOM_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_texture_points.h',
+    'crates/viboceros-opennurbs/native/subd.h',
+    'crates/viboceros-opennurbs/native/subd.cpp',
+    'crates/viboceros-opennurbs/src/subd.rs',
+    'crates/viboceros-opennurbs/src/subd/texture_points.rs',
+    'crates/viboceros-opennurbs/src/lib.rs',
+    'crates/viboceros-opennurbs/build.rs',
+    'crates/viboceros-geometry/src/subd.rs',
+    'crates/viboceros-geometry/src/subd/texture_points.rs',
+    'crates/viboceros-geometry/src/lib.rs',
+    'crates/viboceros-io/examples/subd_face_custom_seeds.rs',
+    'crates/viboceros-io/tests/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_face_custom.rs',
+    'src/app/merge_faces.rs',
+    'src/app/merge_faces/custom_tests.rs',
+    'tools/rhino_oracle/subd_face_custom_cases.py',
+    'tools/rhino_oracle/subd_face_custom_probe.py',
+    'tools/rhino_oracle/generate_subd_face_custom.py',
+    'tools/rhino_oracle/subd_face_custom_holdout_cases.py',
+    'tools/rhino_oracle/subd_face_custom_holdout_probe.py',
+    'tools/rhino_oracle/generate_subd_face_custom_holdouts.py',
+    'tools/rhino_oracle/test_subd_face_custom.py',
+]
+
 SUBD_EDIT_HISTORY_MODULES = [
     'crates/viboceros-document/src/lib.rs',
     'crates/viboceros-document/src/history.rs',
@@ -309,6 +334,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in SUBD_FACE_CUSTOM_MODULES):
+        paths = [*paths, *SUBD_FACE_CUSTOM_MODULES]
     if any(p in paths for p in SUBD_EDIT_HISTORY_MODULES):
         paths = [*paths, *SUBD_EDIT_HISTORY_MODULES]
     if any(p in paths for p in SUBD_FACE_PROPERTY_MODULES):

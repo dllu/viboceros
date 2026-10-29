@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 typedef struct ViboSubDResult ViboSubDResult;
+typedef struct { uint32_t face,count;const double* points; } ViboSubDFaceTexturePoints;
 int vibo_subd_from_mesh(const ViboMeshView*, int, int, ViboSubDResult**, char*, size_t);
 int vibo_subd_box(const double*, const uint32_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_cylinder(const double*, double, double, const uint32_t*, uint32_t, ViboSubDResult**, char*, size_t);
@@ -44,6 +45,10 @@ typedef struct {
   size_t vertex_id_count, edge_id_count, face_id_count;
   const uint32_t *vertex_ids, *edge_ids, *face_ids;
   const uint32_t *face_colors, *face_materials;
+  uint32_t texture_coordinate_type;
+  size_t texture_point_count;
+  const uint32_t* face_texture_sizes;
+  const double* face_texture_points;
 } ViboSubDView;
 int vibo_subd_create(const double*, size_t, const uint32_t*, size_t,
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);

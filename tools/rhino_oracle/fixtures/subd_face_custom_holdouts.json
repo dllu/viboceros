@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "coherent-strip",
+      "case": "coherent-strip"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "coherent-grid-L",
+      "case": "coherent-grid-L"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "coherent-neighbor",
+      "case": "coherent-neighbor"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "coherent-ring-partial",
+      "case": "coherent-ring-partial"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "coherent-disjoint",
+      "case": "coherent-disjoint"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "constant-uvw",
+      "case": "constant-uvw"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "equal-face-arrays",
+      "case": "equal-face-arrays"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "rotated",
+      "case": "rotated"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "reversed",
+      "case": "reversed"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "pentagon-and-quad",
+      "case": "pentagon-and-quad"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "translated",
+      "case": "translated"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "mirrored",
+      "case": "mirrored"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "scaled",
+      "case": "scaled"
+    },
+    {
+      "op": "subd_face_custom_holdout",
+      "id": "sheared",
+      "case": "sheared"
+    }
+  ]
+}

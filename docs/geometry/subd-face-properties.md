@@ -32,6 +32,6 @@ Sequential edits and application Undo/Redo match these records. The native
 [PerFaceColor API](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.subdface/perfacecolor?version=8.x)
 provides the independent color observations.
 
-Material-channel merging, custom face texture coordinates and future component
-ID allocation remain outside this native corpus. Material-channel storage is
-covered by exact setter, archive and transform tests, including channel 65535.
+The [custom face-data qualification](subd-face-custom.md) extends native
+comparison to material channels, custom UVWs, spatial transforms and sequential
+history. Other allocating operations still need separate comparison.

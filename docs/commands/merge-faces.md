@@ -52,10 +52,13 @@ other owner order and Undo order remain strict.
 
 [Sequential SubD edits](../geometry/subd-edit-history.md) additionally qualify
 allocation through global/local SubDivide and public SDK/archive copies. Other
-allocating operations, nonmanifold regions and custom face textures remain
-outside the qualified corpus. An earlier 14-case capture is retained as a
+allocating operations and nonmanifold regions remain outside the qualified
+corpus. Custom face data has separate qualification below. An earlier 14-case capture is retained as a
 diagnostic: four postselection records contain invalid source archive fields.
 The corrected capture supplies the admitted archive seeds.
 
 [SubD face-color validation](../geometry/subd-face-properties.md) additionally
 covers color clearing, retained neighbors, sequential merges and Undo/Redo.
+
+[Custom face data](../geometry/subd-face-custom.md) covers material channels, custom UVWs,
+spatial transforms, sequential merging and Undo/Redo.

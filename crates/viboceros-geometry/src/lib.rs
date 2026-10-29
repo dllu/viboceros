@@ -12,7 +12,7 @@ pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
     SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDFaceMergeResult, SubDFaceProperties,
     SubDFromMeshOptions, SubDFromSurfaceMethod, SubDMergeComponent, SubDSphereStyle,
-    SubDVertexInsertion,
+    SubDTextureCoordinateType, SubDVertexInsertion,
 };
 mod area_mass_properties;
 mod mass_integration;

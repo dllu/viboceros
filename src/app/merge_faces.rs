@@ -196,3 +196,6 @@ mod allocation_tests;
 mod face_properties_tests;
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod custom_tests;

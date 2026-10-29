@@ -1108,6 +1108,18 @@ class OracleClient:
             if any(op.get('op') == 'mesh_face_collapse_click' for op in operations):
                 from .mesh_face_collapse_picker import FaceCollapsePicker
                 interaction = FaceCollapsePicker()
+        if any(op.get('op') == 'subd_face_custom_holdout' for op in request.get('operations', [])):
+            operations=request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations',1))is not int
+                    or request.get('iterations',1)!=1 or not 1<=len(operations)<=64
+                    or any(op.get('op')!='subd_face_custom_holdout'for op in operations)):
+                raise OracleProtocolError('SubD custom-face holdouts require a private dedicated one-iteration capture')
+        if any(op.get('op') == 'subd_face_custom' for op in request.get('operations', [])):
+            operations=request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations',1))is not int
+                    or request.get('iterations',1)!=1 or not 1<=len(operations)<=64
+                    or any(op.get('op')!='subd_face_custom'for op in operations)):
+                raise OracleProtocolError('SubD custom faces require a private dedicated one-iteration capture')
         if any(op.get('op') == 'subd_result_history' for op in request.get('operations', [])):
             operations=request['operations']
             if (self.settings_scheme is None or type(request.get('iterations',1))is not int
