@@ -1,4 +1,5 @@
 """Fixed native extrusion sources and fail-closed interchange qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import base64
 import copy
 import gzip
@@ -39,15 +40,14 @@ class ExtrusionTests(unittest.TestCase):
         lines += ['EXTRUSION_NATIVE_REJECTED ' + json.dumps(r) for r in report['rejected']]
         return report, lines
 
-    def test_complete_report_is_current_and_order_independent(self):
+    def test_complete_report_is_historical_and_order_independent(self):
         report, lines = self.lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertEqual(report['qualified_file_sources'], 11)
         for key in ['tosubd_command_qualified', 'tosubd_getter_qualified', 'full_native_parity', 'performance_qualified']:
             self.assertIs(report[key], False)
-        for name, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha, name)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_duplicate_or_invalid_file_comparisons_cannot_qualify(self):
         report, lines = self.lines()

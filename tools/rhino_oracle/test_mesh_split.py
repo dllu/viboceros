@@ -1,4 +1,5 @@
 """Audit immutable split workflows and reject forged surface/topology claims."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -23,7 +24,7 @@ class MeshSplitTests(unittest.TestCase):
         log = lambda rows, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in rows)
         commands = log(data['commands'], 'MESH_SPLIT_COMMAND')
         getters = log(data['getters'], 'MESH_SPLIT_GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         self.assertEqual((data['command_matched'], data['getter_matched']), (46, 53))
         for field in ['coordinate', 'selection', 'ownership', 'status', 'ngon_boundary',
                       'ngon_coverage', 'ngon_declaration']:

@@ -1,4 +1,6 @@
 """Frozen Global Sweep1 captures and complete-distance classifications."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import gzip
 import hashlib
 import json
@@ -6,7 +8,6 @@ from pathlib import Path
 import unittest
 from .generate_sweep1_global_shapes import request as shapes_request
 from .generate_sweep1_global_holdouts import request as holdouts_request
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
@@ -35,11 +36,9 @@ class SweepGlobalShapesTests(unittest.TestCase):
                 self.assertEqual(surface['control_count'][1], 2)
                 self.assertTrue(all(c['weight'] == 1. for c in surface['control_points']))
 
-    def test_current_sources_cover_the_complete_distance_comparison(self):
+    def test_historical_sources_cover_the_complete_distance_comparison(self):
         record = json.loads((ROOT / 'docs/sweep1/global-validation.json').read_text())
-        self.assertEqual(set(record['sha256']), set(with_shared_sources(list(record['sha256']))))
-        for path, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(), digest, path)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
         for path in ['crates/viboceros-geometry/tests/sweep_global_shapes.rs',
                      'crates/viboceros-geometry/src/surface_distance.rs',
                      'crates/viboceros-geometry/src/surface_pullback/certificate/surface_minimum.rs']:

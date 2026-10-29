@@ -1,4 +1,5 @@
 """Empty storage comparisons must check both topology and object persistence."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -24,7 +25,7 @@ class EmptyMeshTests(unittest.TestCase):
         log = lambda rows, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in rows)
         commands = log(data['commands'], 'MESH_BOOLEAN_EMPTY_COMMAND')
         getters = log(data['getters'], 'MESH_BOOLEAN_EMPTY_GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         for field in ['vertices', 'name', 'removed']:
             changed = deepcopy(data['commands'])
             objects = changed[0]['after']['objects']

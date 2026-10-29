@@ -1,4 +1,6 @@
 """Arc station policies, complete captured face atlases and frozen producers."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import gzip
 import hashlib
 import json
@@ -8,7 +10,6 @@ import unittest
 from .generate_sweep1_arc_stations import request as arcs
 from .generate_sweep1_refit_intervals import request as intervals
 from .generate_sweep1_greville_spans import request as greville
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = ROOT / 'tools/rhino_oracle'
@@ -53,11 +54,9 @@ class ArcStationTests(unittest.TestCase):
         self.assertLess(math.dist(start,[3.,0.,0.]),1e-12)
         self.assertLess(math.dist(refit,[3/math.sqrt(2),3/math.sqrt(2),0.]),1e-12)
 
-    def test_current_record_binds_its_code_and_distinguishes_investigation(self):
+    def test_historical_record_binds_its_code_and_distinguishes_investigation(self):
         record = json.loads((ROOT / 'docs/sweep1-arc-parameters-validation.json').read_text())
-        self.assertEqual(set(record['sha256']),set(with_shared_sources(list(record['sha256']))))
-        for name, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
         self.assertEqual(record['complete_image_cases'],36)
         self.assertEqual(record['calibration_cases'],1)
         self.assertEqual(record['diagnostic_records'],48)

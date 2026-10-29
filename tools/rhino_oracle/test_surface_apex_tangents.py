@@ -1,3 +1,4 @@
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import math
@@ -74,7 +75,7 @@ class SurfaceApexTangentsTests(unittest.TestCase):
         app = log(record['app'],'SURFACE_APEX_TANGENTS_APP')
         kernel = record['kernel_continuity']['observations']
         api=record['api']
-        self.assertEqual(summarize(command,app,kernel,api),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, command,app,kernel,api),record)
         with self.assertRaises(ValueError):
             summarize(command,log(record['app'][:-1],'SURFACE_APEX_TANGENTS_APP'),kernel,api)
         with self.assertRaises(ValueError):

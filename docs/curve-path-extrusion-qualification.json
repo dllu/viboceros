@@ -58284,5 +58284,9 @@
     "crates/viboceros-geometry/src/curve_rebuild.rs": "7ca19621b1cc00aade428278d1504b24b38795e2ebdae34a159b90525e78da1a",
     "crates/viboceros-geometry/src/curve_rebuild/tests.rs": "4b91abc1cb5aab0d4e4435b11e01f1c252b46c9430de72ab87d615dae28cde95",
     "tools/rhino_oracle/sweep1_probe.py": "832d7cc3c2f4601dd9a0be10fdff99cac43c85a9e9994b1f656a77099ddef6da"
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/curve-path-extrusion-qualification.json",
+  "measurement_record_sha256": "d00b2b1ea72218b99e0e02ad26ec3acdb9cf3208f5478edddd332b4a6ad957f2",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

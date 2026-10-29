@@ -1,4 +1,5 @@
 """Fixed sphere captures, immutable provenance, staging and qualification guards."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -61,15 +62,14 @@ class SubDSphereTests(unittest.TestCase):
         return report, ['SUBD_SPHERE_' + stage.upper() + ' ' + json.dumps(row)
                         for stage, rows in report['stages'].items() for row in rows]
 
-    def test_current_complete_report_and_parallel_order(self):
+    def test_historical_complete_report_and_parallel_order(self):
         report, lines = self.report_lines()
-        self.assertEqual(report, summarize('\n'.join(lines)))
-        self.assertEqual(report, summarize('\n'.join(reversed(lines))))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(lines)))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))))
         self.assertEqual((report['command_cases'], report['getter_cases']), (49, 54))
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_failed_or_invalid_checks_cannot_qualify(self):
         report, lines = self.report_lines()

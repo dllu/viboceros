@@ -1,4 +1,5 @@
 """Native channel observations, owned capture boundaries and strict reporting."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import gzip
 import hashlib
@@ -68,7 +69,7 @@ class MeshComponentWeld(unittest.TestCase):
         geometry=lines('MESH_COMPONENT_WELD_NATIVE',report['cases'])
         recipes=lines('MESH_COMPONENT_WELD_RECIPE',report['generated_normals'])
         commands=lines('MESH_COMPONENT_WELD_COMMAND',report['commands'])
-        self.assertEqual(summarize(geometry+'\n'+recipes,commands),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, geometry+'\n'+recipes,commands),report)
         self.assertEqual((report['compared_cases'],report['geometry_and_raw_sharing_qualified_cases'],report['channels_and_raw_order_qualified_cases']),(56,56,52))
         self.assertEqual((report['generated_normal_cases'],report['command_cases'],report['qualified_command_cases']),(6,66,61))
         self.assertEqual(len(report['invalid_source_diagnostics']),4)

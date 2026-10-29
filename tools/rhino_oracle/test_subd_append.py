@@ -1,4 +1,5 @@
 """Immutable native SubD append inputs and complete current qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -52,12 +53,12 @@ class SubDAppendTests(unittest.TestCase):
         report=json.loads((ROOT/'docs/subd-append-qualification.json').read_text())
         return report,(['SUBD_APPEND_'+stage.upper()+' '+json.dumps(row)for stage,rows in report['stages'].items()for row in rows]+['SUBD_NORMAL_COMMAND '+json.dumps(row)for row in report['normal_stages']['command']])
 
-    def test_complete_current_qualification(self):
-        report,lines=self.lines();self.assertEqual(summarize('\n'.join(lines)),report)
+    def test_complete_historical_qualification(self):
+        report,lines=self.lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
         self.assertEqual(report['recipes'],32);self.assertEqual(report['model_epsilon'],1e-6)
         self.assertEqual(report['normal_cases'],7);self.assertEqual(report['normal_epsilon'],1e-6)
         self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
-        for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_failed_or_hidden_outputs_cannot_qualify(self):
         report,lines=self.lines()

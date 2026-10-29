@@ -1,4 +1,5 @@
 """Immutable independent input, calibration-only outputs and strict replay reports."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 from copy import deepcopy
 import gzip
@@ -162,7 +163,7 @@ class InsertPointCommandTests(unittest.TestCase):
 
     def test_report_reconstructs_all_stages_with_explicit_native_gaps(self):
         report, lines = self.evidence()
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertTrue(report['command_implemented'])
         self.assertEqual((report['command_cases'], report['getter_cases']), (84, 84))
         self.assertEqual(report['additional_geometry_cases'], 12)

@@ -327,5 +327,9 @@
     "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
     "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
     "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263"
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/mesh-channels-qualification.json",
+  "measurement_record_sha256": "9a36c0cd4326dd74ae9e8ec4b52eecad2b0a40feb13879a5b0f45e71a7fc8126",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

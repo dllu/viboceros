@@ -31925,5 +31925,9 @@
     "src/app/sweep/input.rs": "4b7d2c2e7ee52e886b1fd8e2936b2fab632985d2b2fd3c3d190b79ca0809d8d8",
     "src/app/sweep/selection.rs": "900577d94de311809f936d7efcad12c5d64f9f49242486b65b51ccc176c628f3",
     "src/app/sweep/tests.rs": "0e318d2d65f14b3638986594f400efa2452a4e72851f68e3a5547860928344f5"
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/surface-apex-tangents-qualification.json",
+  "measurement_record_sha256": "34ae842eaebb3604c15b852cfc0650c48d58e28fd9a7d7305fc90aeb7bdaaa86",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

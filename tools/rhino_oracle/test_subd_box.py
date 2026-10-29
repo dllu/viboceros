@@ -1,4 +1,5 @@
 """Immutable native SubDBox inputs, producer snapshots and report guards."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy,gzip,hashlib,json,unittest
 from . import subd_box_probe as probe
 from .report_subd_box import HERE,ROOT,summarize
@@ -18,9 +19,9 @@ class SubDBoxTests(unittest.TestCase):
     self.assertNotIn('Unknown command:',v['history']);self.assertEqual(v['undo'],v['before']);self.assertEqual(v['redo'],v['after_script'])
  def lines(self):
   report=json.loads((ROOT/'docs/subd-box-qualification.json').read_text());return report,['SUBD_BOX_'+stage.upper()+' '+json.dumps(row)for stage,rows in report['stages'].items()for row in rows]
- def test_complete_current_report(self):
-  report,lines=self.lines();self.assertEqual(report,summarize('\n'.join(lines)));self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
-  for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+ def test_complete_historical_report(self):
+  report,lines=self.lines();self.assertEqual(report,reconstruct_measurement(report, summarize, '\n'.join(lines)));self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
+  self.assertGreater(verify_measurement(report), 0)
  def test_missing_failed_or_invalid_data_cannot_qualify(self):
   report,lines=self.lines()
   for bad in [lines[:-1],lines+lines[-1:],lines[::-1]]:

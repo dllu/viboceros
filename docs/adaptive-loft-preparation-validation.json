@@ -1657,5 +1657,9 @@
       }
     ],
     "source_and_shared_basis_test": "An identical control net with knots shifted by about 2e-16 previously lost its known source correspondence. The complete prior-to-final pointwise bound is at most 2.6714743528704507e-16."
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/adaptive-loft-preparation-validation.json",
+  "measurement_record_sha256": "b3ad558e256c4ceab49c46886da2187211aac8f2a6af6748a10d6c6f33b31df8",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

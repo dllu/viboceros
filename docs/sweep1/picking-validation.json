@@ -501,5 +501,9 @@
     "5f293869f95216c8cfe6872c37cd764a18d28403:crates/viboceros-geometry/src/sweep/point_ends.rs": "47e5e4e1add87b2510fadb27c9bf3bc7bf0d632ce6ffb3bbbd7b513e07dad35a",
     "5f293869f95216c8cfe6872c37cd764a18d28403:tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
-  "inventory_update_only": true
+  "inventory_update_only": true,
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/sweep1/picking-validation.json",
+  "measurement_record_sha256": "be6b6f79127a09d0ece048b6a6fc1084261aeecee3f93e3a6f9672d3053313b4",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

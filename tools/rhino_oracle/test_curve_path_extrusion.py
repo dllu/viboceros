@@ -1,4 +1,5 @@
 """Native source provenance, strict comparisons, and near-threshold coverage."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import json
 import unittest
@@ -86,7 +87,7 @@ class CurvePathExtrusionTests(unittest.TestCase):
         command=log(record['command'],'CURVE_PATH_COMMAND')
         app=log(record['app'],'CURVE_PATH_APP')
         portable=log(record['portable'],'CURVE_PATH_COMMAND') if record.get('portable') else None
-        self.assertEqual(summarize(command,app,record.get('python_api'),portable),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, command,app,record.get('python_api'),portable),record)
         for change in ['missing','duplicate','bounds','undo','failure']:
             changed=copy.deepcopy(record['app'])
             if change=='missing':changed['successful'].pop()

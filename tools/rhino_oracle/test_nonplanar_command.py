@@ -1,4 +1,5 @@
 """Independent command inputs, retained discovery failures and strict admission."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -78,7 +79,7 @@ class NonplanarCommandTests(unittest.TestCase):
         return data,['NONPLANAR_'+stage.upper()+' '+json.dumps(row)for stage in ['command','getter']for row in data[stage]]
 
     def test_report_reconstructs_with_explicit_exclusions_and_limits(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['captured_workflows'],data['native_workflows'],data['command_cases'],data['getter_cases']),(35,30,26,30))
         self.assertEqual(data['excluded'],EXCLUDED);self.assertFalse(data['full_native_parity']);self.assertFalse(data['performance_qualified'])
 

@@ -1,3 +1,4 @@
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -24,7 +25,7 @@ class InterfaceSubDTests(unittest.TestCase):
         record=json.loads((ROOT/'docs/interface-subd-qualification.json').read_text())
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps(r) for r in rows)
         oracle=log(record['oracle'],'INTERFACE_SUBD_ORACLE');app=log(record['app'],'INTERFACE_SUBD_APP')
-        self.assertEqual(summarize(oracle,app),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, oracle,app),record)
         with self.assertRaises(ValueError):summarize(oracle,log(record['app'][:-1],'INTERFACE_SUBD_APP'))
         with self.assertRaises(ValueError):summarize(oracle+'\n'+oracle,app)
         for field in ['subd_control_net','grid_snap','display_modes','active_viewport','state_count','type']:

@@ -1,4 +1,5 @@
 """Static mesh rebuilding, staged options and strict evidence boundaries."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -55,7 +56,7 @@ class RebuildMeshTests(unittest.TestCase):
         return data,['REBUILD_MESH_'+stage.upper()+' '+json.dumps(row)for stage in ['sdk','command','getter']for row in data[stage]]
 
     def test_report_reconstructs_and_keeps_local_script_extension_explicit(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['sdk_cases'],data['native_command_workflows'],data['registered_command_cases'],data['getter_cases'],data['excluded_discovery_workflows']),(15,32,28,32,1));self.assertFalse(data['full_native_parity']);self.assertFalse(data['performance_qualified'])
 
     def test_missing_duplicate_and_forged_evidence_fail(self):

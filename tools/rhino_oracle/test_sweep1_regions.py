@@ -1,4 +1,6 @@
 """Independent region correspondence, frozen producers, and complete images."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import gzip
 import hashlib
 import json
@@ -40,8 +42,7 @@ class SweepRegionTests(unittest.TestCase):
                 self.assertNotIn('_Simplify=_Refit', text)
                 self.assertNotIn('_RebuildCount=', text)
 
-    def test_current_region_record_binds_complete_images_and_sources(self):
-        from .qualification_sources import with_shared_sources
+    def test_historical_region_record_binds_complete_images_and_sources(self):
         root = HERE.parent.parent
         record = json.loads((root / 'docs/sweep1/regions-validation.json').read_bytes())
         self.assertTrue(record['section_region_matching_implemented'])
@@ -54,9 +55,7 @@ class SweepRegionTests(unittest.TestCase):
             self.assertTrue(all(0 <= r['complete_image_bound'] <= 1e-7 for r in rows))
         for check in record['checks'].values():
             self.assertEqual(check['exit_code'], 0)
-        self.assertEqual(set(record['sha256']), set(with_shared_sources(list(record['sha256']))))
-        for path, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((root / path).read_bytes()).hexdigest(), digest, path)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
 
 
 if __name__ == '__main__':

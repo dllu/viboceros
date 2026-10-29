@@ -1,4 +1,5 @@
 """Immutable native grip inputs and independent measured-state comparisons."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import gzip
 import hashlib
@@ -61,7 +62,7 @@ class ExtractPointsTests(unittest.TestCase):
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps(r) for r in rows)
         command=log(record['commands'],'EXTRACT_POINTS_GRIPS_COMMAND')
         getter=log(record['getters'],'EXTRACT_POINTS_GRIPS_GETTER')
-        self.assertEqual(summarize(command,getter),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, command,getter),record)
         for field in ['source_storage_unchanged','success']:
             rows=deepcopy(record['commands']);rows[0][field]=False
             with self.assertRaises(ValueError):summarize(log(rows,'EXTRACT_POINTS_GRIPS_COMMAND'),getter)

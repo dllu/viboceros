@@ -704,5 +704,9 @@
     "8b0df132823c34b4a5f223530af3c09e5e634245:tools/rhino_oracle/generate_sweep1_automatic_stations.py": "ff208d9792aaf18d071df1217edf562fdd64e5a35be5bfda3242602fd0462c42",
     "8b0df132823c34b4a5f223530af3c09e5e634245:tools/rhino_oracle/test_sweep1_automatic.py": "ce06553e5f732f8620c3116def224f4376c416dd7897bdbdcc89dba97f32bc01",
     "8b0df132823c34b4a5f223530af3c09e5e634245:tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562"
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/sweep1-automatic-validation.json",
+  "measurement_record_sha256": "dfd3402100fde65720f00d3658c82fb701d2a82ced599dc458be40876c1cbe14",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

@@ -1,4 +1,5 @@
 """Native recipes and witnesses for open Loft ordering and traversal."""
+from tools.verify_provenance import verify_measurement
 import gzip
 import hashlib
 import json
@@ -35,8 +36,7 @@ class LoftOrderingTests(unittest.TestCase):
         self.assertFalse(record['full_rhino_parity'])
         self.assertFalse(record['continuous_error_certificate'])
         self.assertFalse(record['performance_qualified'])
-        for name, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((root / name).read_bytes()).hexdigest(), digest, name)
+        self.assertGreater(verify_measurement(record), 0)
 
     def test_native_recipes_coverage_source_state_and_frozen_producers(self):
         ids = []

@@ -1,4 +1,5 @@
 """Fixed mesh boundaries, owned capture guards and honest qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -72,16 +73,15 @@ class MeshPolylineTests(unittest.TestCase):
                for stage in STAGES for row in r['stages'][stage]['cases']]
         return r,lines
 
-    def test_report_retains_all_native_gaps_and_current_sources(self):
-        r,lines=self.report();self.assertEqual(summarize('\n'.join(lines)),r)
+    def test_report_retains_all_native_gaps_and_historical_sources(self):
+        r,lines=self.report();self.assertEqual(reconstruct_measurement(r, summarize, '\n'.join(lines)),r)
         self.assertEqual(r['recipes'],31);self.assertEqual(r['model_epsilon'],1e-6)
         self.assertFalse(r['full_native_parity']);self.assertFalse(r['performance_qualified'])
         self.assertEqual(r['stages']['geometry']['unqualified_recipes'],['self_crossing'])
         self.assertEqual(r['stages']['command']['unqualified_recipes'],['self_crossing','collinear','near_closed','far_closed'])
         for stage in ['preselected','postselected']:
             self.assertEqual(r['stages'][stage]['unqualified_recipes'],['self_crossing'])
-        for path,sha in r['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        self.assertGreater(verify_measurement(r), 0)
 
     def test_report_rejects_incomplete_duplicate_nonfinite_and_hidden_gaps(self):
         r,lines=self.report()

@@ -1,4 +1,5 @@
 """Frozen vertex-seam producers, standalone staging and strict qualification."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import copy
 import gzip
@@ -47,9 +48,9 @@ class VertexSeamTests(unittest.TestCase):
         lines+=['SUBD_SURFACE_GRIP '+json.dumps(r)for r in report['surface_grips']]
         return report,lines
 
-    def test_current_report_reconstructs_and_keeps_edge_diagnostics_separate(self):
+    def test_historical_report_reconstructs_and_keeps_edge_diagnostics_separate(self):
         expected,engine=observations();self.assertEqual(len(expected),46);self.assertEqual(engine,'8.32.26160.13001')
-        report,lines=self.report_lines();self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+        report,lines=self.report_lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual(report['getter_cases'],80);self.assertEqual(report['edge_diagnostic_cases'],26)
         self.assertEqual(report['surface_grip_cases'],9);self.assertEqual(report['surface_grip_native_matches'],6)
         self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])

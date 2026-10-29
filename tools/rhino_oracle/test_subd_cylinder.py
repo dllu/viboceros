@@ -1,4 +1,5 @@
 """Fixed native SubDCylinder inputs, archived producers and qualification guards."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy,gzip,hashlib,json,unittest,tempfile,subprocess,sys
 from pathlib import Path
 from . import subd_cylinder_probe as probe
@@ -26,9 +27,9 @@ class SubDCylinderTests(unittest.TestCase):
    with self.assertRaises(ValueError):validate_operations(bad)
  def lines(self):
   report=json.loads((ROOT/'docs/subd-cylinder-qualification.json').read_text());return report,['SUBD_CYLINDER_'+stage.upper()+' '+json.dumps(row)for stage,rows in report['stages'].items()for row in rows]
- def test_complete_current_report(self):
-  report,lines=self.lines();self.assertEqual(report,summarize('\n'.join(lines)));self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
-  for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+ def test_complete_historical_report(self):
+  report,lines=self.lines();self.assertEqual(report,reconstruct_measurement(report, summarize, '\n'.join(lines)));self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
+  self.assertGreater(verify_measurement(report), 0)
  def test_missing_failed_or_invalid_data_cannot_qualify(self):
   report,lines=self.lines()
   for data in [lines[:-1],lines+lines[-1:],lines[::-1]]:

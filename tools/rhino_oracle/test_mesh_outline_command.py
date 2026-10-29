@@ -1,4 +1,5 @@
 """Immutable outline scenes, getter-time cameras and independently derived results."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import math
@@ -59,7 +60,7 @@ class MeshOutlineCommandTests(unittest.TestCase):
         return record,lines
 
     def test_report_recomputes_boundaries_and_keeps_curved_mesh_gap(self):
-        record,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),record)
+        record,lines=self.evidence();self.assertEqual(reconstruct_measurement(record, summarize, '\n'.join(reversed(lines))),record)
         self.assertEqual((record['replayed_commands'],record['replayed_getters']),(36,39))
         self.assertEqual((record['fully_matched_commands'],record['fully_matched_getters']),(33,36))
         self.assertEqual(record['surface_render_mesh_gaps'],['outline_lifecycle_sphere'])

@@ -1,9 +1,10 @@
 """Current sources and measured interactive Sweep1 workflow checks."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import hashlib
 import json
 from pathlib import Path
 import unittest
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -22,9 +23,7 @@ class SweepPickingTests(unittest.TestCase):
             self.assertTrue(all(0 <= r['complete_image_bound'] <= 1e-7 for r in rows))
         for check in report['checks'].values():
             self.assertEqual(check['exit_code'], 0)
-        self.assertEqual(set(report['sha256']), set(with_shared_sources(list(report['sha256']))))
-        for path, digest in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(), digest, path)
+        self.assertGreater(verify_measurement(report, expand_sources=with_shared_sources), 0)
         self.assertIn('src/app/curve_selection.rs', report['sha256'])
         self.assertIn('crates/viboceros-document/src/selection.rs', report['sha256'])
 

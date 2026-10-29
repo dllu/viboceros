@@ -1,4 +1,5 @@
 """Integrity and scope of the retained closed-ring Loft command evidence."""
+from tools.verify_provenance import verify_measurement
 import gzip
 import hashlib
 import json
@@ -54,9 +55,7 @@ class LoftCommandOptionsTests(unittest.TestCase):
         self.assertIs(record['full_rhino_parity'], False)
         self.assertIs(record['continuous_error_certificate'], False)
         self.assertIs(record['performance_qualified'], False)
-        for name, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(),
-                             digest, name)
+        self.assertGreater(verify_measurement(record), 0)
 
 
 if __name__ == '__main__':

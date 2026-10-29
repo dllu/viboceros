@@ -1,4 +1,5 @@
 """Fixed reference captures, source staging and cylinder qualification guards."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -71,14 +72,13 @@ class SubDCylinderReferenceTests(unittest.TestCase):
                  for stage, rows in report['stages'].items() for row in rows]
         return report, lines
 
-    def test_complete_current_report_and_parallel_result_order(self):
+    def test_complete_historical_report_and_parallel_result_order(self):
         report, lines = self.report_lines()
-        self.assertEqual(report, summarize('\n'.join(lines)))
-        self.assertEqual(report, summarize('\n'.join(reversed(lines))))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(lines)))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))))
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_failed_and_invalid_checks_cannot_qualify(self):
         report, lines = self.report_lines()

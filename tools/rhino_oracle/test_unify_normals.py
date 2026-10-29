@@ -1,4 +1,5 @@
 """Fixed native winding references, immutable captures and honest seed limits."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -96,7 +97,7 @@ class UnifyNormalsTests(unittest.TestCase):
 
     def test_report_reconstructs_resolves_renumbering_and_keeps_component_gaps(self):
         data, lines = self.evidence()
-        self.assertEqual(summarize('\n'.join(reversed(lines))), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))), data)
         self.assertEqual((data['qualified_sdk_cases'], data['sdk_orientation_gaps'],
                           data['registered_command_cases'], data['getter_cases']), (1169, 11, 63, 65))
         self.assertEqual(data['native_repeat_edit_cases'], 8)

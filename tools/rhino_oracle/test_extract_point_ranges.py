@@ -1,4 +1,5 @@
 """Native temporary references and strict measured-state coverage."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -43,7 +44,7 @@ class ExtractPointRangeTests(unittest.TestCase):
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps({k:v for k,v in row.items() if k!='maximum_deviation'}) for row in rows)
         commands=log(record['commands'],'EXTRACT_POINTS_RANGE_COMMAND')
         getters=log(record['getters'],'EXTRACT_POINTS_RANGE_GETTER')
-        self.assertEqual(summarize(commands,getters),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, commands,getters),record)
         with self.assertRaises(ValueError):summarize(commands,log(record['getters'][:-1],'EXTRACT_POINTS_RANGE_GETTER'))
         with self.assertRaises(ValueError):summarize(commands+'\n'+commands,getters)
         for field in ['geometry','attributes','selection','storage']:

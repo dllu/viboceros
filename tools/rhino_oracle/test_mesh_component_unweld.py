@@ -1,4 +1,5 @@
 """Frozen component-selection experiments and honest command qualification."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import gzip
 import hashlib
@@ -83,7 +84,7 @@ class MeshComponentUnweld(unittest.TestCase):
             r=dict(row);strict=r['id'].startswith('verified_')
             if strict:r.pop('raw_order_qualified')
             command_lines.append(('MESH_SEAM_COMMAND 'if strict else 'MESH_SEAM_COMPARISON ')+json.dumps(r))
-        self.assertEqual(summarize('\n'.join(geometry+sdk_lines),'\n'.join(command_lines)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(geometry+sdk_lines),'\n'.join(command_lines)),report)
         self.assertEqual((report['compared_cases'],report['geometry_channels_and_sharing_qualified_cases'],report['raw_order_qualified_cases']),(72,72,64))
         self.assertEqual((report['command_cases'],report['sdk_compared_cases'],report['sdk_raw_order_qualified_cases']),(106,48,28))
         self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])

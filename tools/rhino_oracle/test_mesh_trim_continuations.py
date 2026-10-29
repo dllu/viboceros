@@ -1,4 +1,5 @@
 """Original cutter lifetime evidence and rejection of changed continuation claims."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -32,7 +33,7 @@ class MeshTrimContinuationTests(unittest.TestCase):
             return '\n'.join(lines)
         commands = log(data['commands'], 'COMMAND')
         getters = log(data['getters'], 'GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         self.assertEqual((data['command_matched'], data['getter_matched']), (7, 8))
         for field in ['surface', 'selection', 'ownership', 'status', 'channels']:
             rows = deepcopy(data['commands'])

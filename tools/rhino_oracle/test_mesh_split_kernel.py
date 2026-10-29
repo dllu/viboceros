@@ -1,4 +1,5 @@
 """Frozen mesh partitions, public SDK controls and independently checked claims."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -34,7 +35,7 @@ class MeshSplitKernelTests(unittest.TestCase):
     def test_report_rebuild_and_rejection_of_forged_geometry_or_status(self):
         data=json.loads((ROOT/'docs/mesh-split-kernel-qualification.json').read_text())
         log=lambda rows:'\n'.join('MESH_SPLIT_KERNEL '+json.dumps(row)for row in rows)
-        self.assertEqual(summarize(log(data['measurements'])),data)
+        self.assertEqual(reconstruct_measurement(data, summarize, log(data['measurements'])),data)
         self.assertEqual((data['matched'],data['replayed']),(28,30))
         for field in ['coordinate','area','volume','orientation','status','ownership','declaration']:
             rows=deepcopy(data['measurements']);row=next(r for r in rows if r['id']=='mesh_split_box_plane_post')

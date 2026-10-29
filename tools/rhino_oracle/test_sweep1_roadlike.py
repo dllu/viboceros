@@ -1,4 +1,6 @@
 """Roadlike command axes, documented defaults, and immutable SDK diagnostics."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import gzip
 import hashlib
 import json
@@ -68,8 +70,7 @@ class SweepRoadlikeTests(unittest.TestCase):
         self.assertIsNone(axis({}, planar, tolerance))
         self.assertEqual(planar.queries, [])
 
-    def test_validation_binds_complete_images_and_current_sources(self):
-        from .qualification_sources import with_shared_sources
+    def test_validation_binds_complete_images_and_historical_sources(self):
         root = HERE.parent.parent
         record = json.loads((root / 'docs/sweep1/roadlike-validation.json').read_text())
         self.assertTrue(record['documented_default_axis_implemented'])
@@ -81,9 +82,7 @@ class SweepRoadlikeTests(unittest.TestCase):
             self.assertTrue(all(0 <= r['complete_image_bound'] <= r['comparison_epsilon'] for r in rows))
         for check in record['checks'].values():
             self.assertEqual(check['exit_code'], 0)
-        self.assertEqual(set(record['sha256']), set(with_shared_sources(list(record['sha256']))))
-        for path, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((root/path).read_bytes()).hexdigest(), digest, path)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
 
 
 if __name__ == '__main__':

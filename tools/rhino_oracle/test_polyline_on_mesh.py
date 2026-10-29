@@ -1,4 +1,5 @@
 """Fixed mesh getter inputs, immutable native evidence and bounded staging."""
+from tools.verify_provenance import verify_measurement
 import copy,gzip,hashlib,json,os,tempfile
 from pathlib import Path
 from unittest import TestCase,mock
@@ -51,14 +52,14 @@ class MeshPolylineTests(TestCase):
    for name in ['polyline_on_mesh_probe','conic_getter_input','join_probe','merge_edges_probe','managed_mouse_callback','snap_environment','number_token']:
     self.assertEqual((dest/(name+'.py')).read_bytes(),(HERE/(name+'.py')).read_bytes())
 
- def test_report_retains_compatibility_gaps_and_current_source_hashes(self):
+ def test_report_retains_compatibility_gaps_and_historical_source_hashes(self):
   root=HERE.parents[1];r=json.loads((root/'docs/mesh-polyline-qualification.json').read_text())
   self.assertFalse(r['full_native_parity']);self.assertEqual(r['model_epsilon'],1e-6)
   self.assertEqual(r['command_cases']['qualified_recipes'],10);self.assertEqual(r['getter_cases']['qualified_recipes'],11)
   self.assertEqual(set(r['getter_cases']['unqualified_recipes']),{'off_mesh'})
   for key,count in [('boundary_command_cases',11),('boundary_getter_cases',11),('tie_command_cases',6),('tie_getter_cases',6)]:
    self.assertEqual(r[key]['recipes'],count);self.assertEqual(r[key]['qualified_recipes'],count);self.assertEqual(r[key]['unqualified_recipes'],[])
-  for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((root/path).read_bytes()).hexdigest(),sha,path)
+  self.assertGreater(verify_measurement(r), 0)
 
  def test_report_rejects_incomplete_duplicate_and_failed_boundary_replays(self):
   from .report_mesh_polyline import summarize

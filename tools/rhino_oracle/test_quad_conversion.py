@@ -1,4 +1,5 @@
 """Independent SDK inputs, frozen capture producers and strict lifecycle reports."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import gzip
 import hashlib
@@ -80,7 +81,7 @@ class QuadConversionTests(unittest.TestCase):
 
     def test_report_reconstructs_without_claiming_native_prompt_parity(self):
         report,lines=self.evidence()
-        self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual(report['sdk_geometry_cases'],14)
         self.assertEqual(report['local_command_cases'],14)
         self.assertFalse(report['native_command_prompt_qualified'])

@@ -1,4 +1,5 @@
 """Immutable insertion producers and narrowly scoped SubD kernel evidence."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 from copy import deepcopy
 import gzip
@@ -58,7 +59,7 @@ class InsertPointTests(unittest.TestCase):
 
     def test_report_reconstructs_without_command_or_mesh_parity_claims(self):
         report, lines = self.evidence()
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertEqual(report['subd_kernel_cases'], 10)
         self.assertEqual(report['captured_workflows'], 45)
         self.assertTrue(report['command_implemented'])

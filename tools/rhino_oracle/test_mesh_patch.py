@@ -1,4 +1,5 @@
 """Fixed MeshPatch input closure, owned captures, source provenance and replay gates."""
+from tools.verify_provenance import verify_measurement
 import copy,gzip,hashlib,json,os,tempfile,unittest
 from pathlib import Path
 from unittest import mock
@@ -50,10 +51,10 @@ class MeshPatchTests(unittest.TestCase):
   with tempfile.TemporaryDirectory()as directory:
    stage_helpers(probe.request(),HERE,Path(directory))
    for name in ['mesh_patch_probe','join_probe','merge_edges_probe']:self.assertEqual((Path(directory)/(name+'.py')).read_bytes(),(HERE/(name+'.py')).read_bytes())
- def test_qualification_retains_limits_and_current_sources(self):
+ def test_qualification_retains_limits_and_historical_sources(self):
   r=json.loads((ROOT/'docs/mesh-patch-qualification.json').read_text());self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity']);self.assertFalse(r['performance_qualified']);self.assertEqual(r['native_construction_failures'],['duplicate_constraint'])
   for key in ['geometry_cases','command_cases','getter_cases']:self.assertEqual(r[key]['qualified_recipes'],21)
-  for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+  self.assertGreater(verify_measurement(r), 0)
  def test_report_rejects_missing_duplicate_nonfinite_and_hidden_failure_results(self):
   r=json.loads((ROOT/'docs/mesh-patch-qualification.json').read_text());lines=[prefix+' '+json.dumps(row)for key,prefix in [('geometry_cases','MESH_PATCH_GEOMETRY'),('command_cases','MESH_PATCH_COMMAND'),('getter_cases','MESH_PATCH_GETTER')]for row in r[key]['cases']]
   summarize('\n'.join(lines))

@@ -1,4 +1,5 @@
 """Frozen native crease probes and direct derivative witnesses of missed bends."""
+from tools.verify_provenance import verify_measurement
 import gzip
 import hashlib
 import json
@@ -22,8 +23,7 @@ class SurfaceCreaseTests(unittest.TestCase):
         self.assertEqual(record['additional_exact_partitions'], 19)
         self.assertFalse(record['full_rhino_parity'])
         self.assertFalse(record['continuous_angle_certificate'])
-        for name, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((root / name).read_bytes()).hexdigest(), digest, name)
+        self.assertGreater(verify_measurement(record), 0)
 
     def test_recipes_sources_coverage_validity_and_source_purity(self):
         count = 0

@@ -1,4 +1,5 @@
 """Physical trim evidence and independent rejection of forged parity claims."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -29,7 +30,7 @@ class MeshTrimTests(unittest.TestCase):
         log = lambda rows, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in rows)
         commands = log(data['commands'], 'MESH_TRIM_COMMAND')
         getters = log(data['getters'], 'MESH_TRIM_GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         self.assertEqual((data['command_matched'], data['getter_matched']), (12, 13))
         for field in ['coordinate', 'uv', 'normal', 'color', 'selection', 'ownership', 'status', 'declaration']:
             rows = deepcopy(data['commands'])

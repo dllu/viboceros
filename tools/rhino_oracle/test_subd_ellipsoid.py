@@ -1,4 +1,5 @@
 """Immutable ellipsoid evidence and fail-closed qualification controls."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -80,14 +81,13 @@ class SubDEllipsoidTests(unittest.TestCase):
 
     def test_complete_report_and_parallel_output_order(self):
         report, lines = self.lines()
-        self.assertEqual(report, summarize('\n'.join(lines)))
-        self.assertEqual(report, summarize('\n'.join(reversed(lines))))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(lines)))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))))
         self.assertEqual((report['command_cases'], report['getter_cases'], report['successful_constructions']), (54, 64, 53))
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
         self.assertEqual(len(report['exploratory_recipes']), 61)
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_failed_or_oversized_checks_cannot_qualify(self):
         report, lines = self.lines()

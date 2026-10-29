@@ -1,4 +1,5 @@
 """Native vertex-channel parity, coherent seams, and forged-claim rejection."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -37,7 +38,7 @@ class MeshSplitChannelTests(unittest.TestCase):
         log = lambda rows, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in rows)
         commands = log(data['commands'], 'MESH_SPLIT_CHANNEL_COMMAND')
         getters = log(data['getters'], 'MESH_SPLIT_CHANNEL_GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         self.assertEqual((data['command_channels_matched'], data['getter_channels_matched']), (21, 21))
         self.assertEqual((data['command_matched'], data['getter_matched']), (18, 18))
         for field in ['uv', 'vertex_normals', 'colors', 'presence', 'count', 'ownership', 'declaration']:

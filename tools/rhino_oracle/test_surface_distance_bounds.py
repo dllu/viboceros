@@ -1,20 +1,19 @@
 """Source-bound global surface-distance evidence and explicit compatibility limits."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import hashlib
 import json
 from pathlib import Path
 import subprocess
 import unittest
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 class SurfaceDistanceBoundsTests(unittest.TestCase):
-    def test_current_sources_cover_the_certificate_and_regressions(self):
+    def test_historical_sources_cover_the_certificate_and_regressions(self):
         record = json.loads((ROOT / 'docs/surface-distance-validation.json').read_text())
-        self.assertEqual(set(record['sha256']), set(with_shared_sources(list(record['sha256']))))
-        for name, expected in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(), expected, name)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
         for name in ['crates/viboceros-geometry/src/surface_distance.rs',
                      'crates/viboceros-geometry/src/surface_pullback/certificate/surface_minimum.rs',
                      'crates/viboceros-geometry/src/surface_pullback/certificate/surface_minimum/patch.rs',

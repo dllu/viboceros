@@ -1,4 +1,5 @@
 """Independent command sources, immutable captures and strict qualification."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -61,7 +62,7 @@ class QuadCommandTests(unittest.TestCase):
         return data,['QUAD_'+stage.upper()+' '+json.dumps(r)for stage in ['command','getter']for r in data[stage]]
 
     def test_report_reconstructs_all_cases_with_explicit_limits(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['command_cases'],data['getter_cases']),(18,20))
         self.assertFalse(data['full_native_parity']);self.assertFalse(data['performance_qualified'])
 

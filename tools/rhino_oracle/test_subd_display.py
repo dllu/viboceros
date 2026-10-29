@@ -1,3 +1,4 @@
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -20,7 +21,7 @@ class SubDDisplayTests(unittest.TestCase):
         record=json.loads((ROOT/'docs/subd-display-qualification.json').read_text())
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps({k:v for k,v in r.items() if k!='maximum_deviation'}) for r in rows)
         commands=log(record['commands'],'SUBD_DISPLAY_COMMAND');getters=log(record['getters'],'SUBD_DISPLAY_GETTER')
-        self.assertEqual(summarize(commands,getters),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, commands,getters),record)
         with self.assertRaises(ValueError):summarize(commands,log(record['getters'][:-1],'SUBD_DISPLAY_GETTER'))
         with self.assertRaises(ValueError):summarize(commands+'\n'+commands,getters)
         for field in ['point','mode','preserved']:

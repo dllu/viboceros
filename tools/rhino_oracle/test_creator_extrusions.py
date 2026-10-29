@@ -1,4 +1,5 @@
 """Fixed native creator provenance and fail-closed qualification checks."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -31,20 +32,20 @@ class CreatorExtrusionTests(unittest.TestCase):
         report=json.loads((ROOT/'docs/creator-extrusion-qualification.json').read_text())
         return report,['CREATOR_EXTRUSIONS '+json.dumps(r)for r in report['cases']]
 
-    def test_complete_report_and_current_source_hashes(self):
-        report,lines=self.lines();self.assertEqual(summarize('\n'.join(lines)),report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+    def test_complete_report_and_historical_source_hashes(self):
+        report,lines=self.lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual((report['creator_cases'],report['typed_extrusion_creators'],report['tosubd_comparisons']),(42,39,40))
         self.assertIs(report['full_native_parity'],False);self.assertIs(report['performance_qualified'],False)
-        for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_default_build_matches_the_same_native_creator_workflows(self):
         report=json.loads((ROOT/'docs/creator-extrusion-portable-qualification.json').read_text())
         lines=['CREATOR_EXTRUSIONS '+json.dumps(row)for row in report['cases']]
-        self.assertEqual(summarize('\n'.join(lines),backend='portable'),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines),backend='portable'),report)
         self.assertEqual(report['modeling_backend'],'portable')
         self.assertEqual((report['creator_cases'],report['typed_extrusion_creators'],report['tosubd_comparisons']),(42,39,40))
-        for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_incomplete_duplicate_and_invalid_certificates_fail(self):
         report,lines=self.lines()

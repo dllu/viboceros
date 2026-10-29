@@ -1,4 +1,5 @@
 """Retain soft-crease discovery inputs, native lifecycle and producer bytes."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import copy
 import gzip
@@ -18,12 +19,12 @@ FAMILY = 'soft_crease_discovery'
 
 
 class SoftCreaseDiscoveryTests(unittest.TestCase):
-    def test_chain_qualification_is_complete_current_and_rejects_bad_certificates(self):
+    def test_chain_qualification_is_complete_historical_and_rejects_bad_certificates(self):
         from .report_subd_chains import summarize
         report=json.loads((HERE.parents[1]/'docs/subd-chains-qualification.json').read_text())
         lines=['SUBD_CHAINS_NATIVE '+json.dumps(row)for row in report['cases']]
-        self.assertEqual(summarize('\n'.join(lines)),report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual((report['workflows'],report['component_sources']),(48,50))
         for invalid in [lines[:-1],lines+lines[:1]]:
             with self.assertRaises(ValueError):summarize('\n'.join(invalid))
@@ -175,11 +176,11 @@ class SoftCreaseDiscoveryTests(unittest.TestCase):
         lines += ['SOFT_IO ' + json.dumps(row) for row in report['stages']['archive']]
         return report, lines
 
-    def test_geometry_and_archive_reports_are_complete_and_current(self):
+    def test_geometry_and_archive_reports_are_complete_and_historical(self):
         from .report_subd_soft_crease import summarize
         report, lines = self.report_lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertEqual(report['compared_workflows'], 133)
         self.assertEqual(report['component_sources'], 138)
         self.assertEqual(len(report['stages']['archive']), 18)

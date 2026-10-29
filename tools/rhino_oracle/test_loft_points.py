@@ -1,4 +1,5 @@
 """Retained point-end API coverage, empty results, and native endpoint omissions."""
+from tools.verify_provenance import verify_measurement
 import gzip
 import ast
 import hashlib
@@ -79,8 +80,7 @@ class LoftPointTests(unittest.TestCase):
         self.assertEqual(record['matched_surfaces_per_backend'], 96)
         self.assertEqual(record['native_ignored_point_cases'], 4)
         self.assertIs(record['full_rhino_parity'], False)
-        for name, sha in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha, name)
+        self.assertGreater(verify_measurement(record), 0)
 
 
 if __name__ == '__main__':

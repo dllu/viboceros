@@ -1,4 +1,5 @@
 """Audit frozen self-intersection inputs, state, geometry and report claims."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -34,7 +35,7 @@ class MeshSelfIntersectTests(unittest.TestCase):
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps(r)for r in rows)
         commands=log(data['commands'],'MESH_SELF_INTERSECT_COMMAND')
         getters=log(data['getters'],'MESH_SELF_INTERSECT_GETTER')
-        self.assertEqual(summarize(commands,getters),data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands,getters),data)
         self.assertEqual((data['command_matched'],data['getter_matched']),(34,37))
         for field in ['coordinate','length','selection','ownership','status']:
             rows=deepcopy(data['commands']);row=next(r for r in rows if r['id']=='mesh_self_intersect_crossing_post')

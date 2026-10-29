@@ -171,5 +171,9 @@
     "a308fd29dcfadad35d9d67e1ca36c2e8b0c676fb:tools/rhino_oracle/generate_sweep1_section_placement.py": "58af82f0638c88a3c1400b54dbc776a58a005307fa205a7dba01f707b962eca0",
     "a308fd29dcfadad35d9d67e1ca36c2e8b0c676fb:tools/rhino_oracle/test_sweep1_section_placement.py": "d8e26800680093410bee829ee38d37d6767661d644ac04fa827188980befb2c1",
     "8b0df132823c34b4a5f223530af3c09e5e634245:tools/rhino_oracle/qualification_sources.py": "337bd72b22d80eee2a3f18c8b45a8768d34ca6cde7846f9a857706503f7cc1d1"
-  }
+  },
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/sweep1-placement-validation.json",
+  "measurement_record_sha256": "4ab3a4d532159ac30558181aaee8d3331b997332c24b2714d0181dce2d9b2270",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

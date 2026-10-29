@@ -1,4 +1,5 @@
 """Immutable edge observations and strict replay qualification."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import copy
 import gzip
@@ -49,7 +50,7 @@ class EdgeSeamTests(unittest.TestCase):
 
     def test_report_reconstructs_and_retains_explicit_numbering_limits(self):
         scenes,engine=observations();self.assertEqual(len(scenes),86);self.assertEqual(engine,'8.32.26160.13001')
-        report,lines=self.report_lines();self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+        report,lines=self.report_lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual(report['geometry_source_cases'],94);self.assertEqual(report['getter_cases'],132)
         self.assertLess(report['raw_control_ordinal_matches'],94)
         self.assertIn(DIAGNOSTIC,report['excluded_diagnostics']);self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])

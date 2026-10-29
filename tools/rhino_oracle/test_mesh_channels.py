@@ -1,4 +1,5 @@
 """Fixed mesh assets, capture admission, and complete channel qualification."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import copy
 import gzip
@@ -70,7 +71,7 @@ class MeshChannelsTests(unittest.TestCase):
         from .report_mesh_channels import summarize
         report = json.loads((ROOT/'docs/mesh-channels-qualification.json').read_text())
         lines = ['MESH_CHANNEL_NATIVE '+json.dumps(r) for r in report['cases']]
-        self.assertEqual(summarize('\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
         self.assertEqual((report['compared_cases'], report['qualified_cases']), (28, 28))
         self.assertTrue(report['captured_cases_qualified'])
         self.assertFalse(report['full_native_parity'])

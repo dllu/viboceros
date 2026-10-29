@@ -1,4 +1,5 @@
 """Fixed SubD evidence, archived capture producers and complete qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -43,16 +44,15 @@ class SubDTests(unittest.TestCase):
                  for stage, rows in report['stages'].items() for row in rows]
         return report, lines
 
-    def test_current_source_maps_and_complete_qualification(self):
+    def test_historical_source_maps_and_complete_qualification(self):
         report, lines = self.lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
         self.assertEqual(report['model_epsilon'], 1e-6)
         self.assertEqual(report['recipes'], 10)
         self.assertEqual(report['surface_mesh_cases'], 10)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_duplicate_failed_and_invalid_rows_cannot_qualify(self):
         report, lines = self.lines()

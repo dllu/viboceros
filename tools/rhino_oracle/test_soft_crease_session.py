@@ -1,3 +1,4 @@
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import json
 import unittest
@@ -12,9 +13,9 @@ class SoftCreaseSessionReportTests(unittest.TestCase):
     def lines(report):
         return [prefix + ' ' + json.dumps(row) for prefix, rows in report['stages'].items() for row in rows]
 
-    def test_complete_current_report(self):
+    def test_complete_historical_report(self):
         report = self.report()
-        self.assertEqual(report, summarize('\n'.join(self.lines(report))))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(self.lines(report))))
         self.assertEqual((report['profile_objects'], report['application_workflows']), (50, 96))
 
     def test_incomplete_duplicate_and_failed_replays_cannot_qualify(self):

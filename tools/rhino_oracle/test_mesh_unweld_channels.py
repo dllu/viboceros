@@ -1,4 +1,5 @@
 """Frozen public evidence and complete qualification of the normal-policy option."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import gzip
 import hashlib
@@ -54,7 +55,7 @@ class MeshUnweldChannels(unittest.TestCase):
         report=json.loads((ROOT/'docs/mesh-unweld-channels-qualification.json').read_text())
         geometry=['MESH_UNWELD_CHANNEL_NATIVE '+json.dumps(r) for r in report['cases']]
         commands=['MESH_SEAM_COMMAND '+json.dumps(r) for r in report['commands']]
-        self.assertEqual(summarize('\n'.join(geometry),'\n'.join(commands)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(geometry),'\n'.join(commands)),report)
         self.assertEqual((report['compared_cases'],report['qualified_cases'],report['command_cases']),(18,18,27))
         self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
         for rows,cmds in [(geometry[:-1],commands),(geometry+geometry[:1],commands),(geometry,commands[:-1]),(geometry,commands+commands[:1])]:

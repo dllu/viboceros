@@ -1,4 +1,5 @@
 """Independent MeshIntersect geometry, options, immutable inputs and report audits."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -46,7 +47,7 @@ class MeshIntersectTests(unittest.TestCase):
         log=lambda rows,prefix:'\n'.join(prefix+' '+json.dumps(r)for r in rows)
         commands=log(data['commands'],'MESH_INTERSECT_COMMAND')
         getters=log(data['getters'],'MESH_INTERSECT_GETTER')
-        self.assertEqual(summarize(commands,getters),data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands,getters),data)
         self.assertEqual((data['command_matched'],data['getter_matched']),(64,67))
         for field in ['coordinate','selection','length','ownership','status']:
             rows=deepcopy(data['commands']);row=next(r for r in rows if r['id']=='mesh_intersect_overlap_post')

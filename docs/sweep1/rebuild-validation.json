@@ -790,5 +790,9 @@
     "5f293869f95216c8cfe6872c37cd764a18d28403:docs/sweep1.md": "17718b16ff77b5f1ce1e01bfed65651e13ad7144d01c6a60a3543585a998269a",
     "5f293869f95216c8cfe6872c37cd764a18d28403:tools/rhino_oracle/qualification_sources.py": "14811ee8550557f9ce3eb2e96bb2006ac5aafb198e7ea48f1bb950e3348e1af3"
   },
-  "inventory_update_only": true
+  "inventory_update_only": true,
+  "measurement_revision": "9d9a2a824611bcd26c0a858c2a0ce6fb2639007c",
+  "measurement_record": "docs/sweep1/rebuild-validation.json",
+  "measurement_record_sha256": "30882f3d9af5fa11fe510d57e3ad0a9bfdb9424ac4c2e42178e085eb1d365b95",
+  "measurement_scope": "Historical recorded results and source bindings. Current implementation qualification requires a new replay."
 }

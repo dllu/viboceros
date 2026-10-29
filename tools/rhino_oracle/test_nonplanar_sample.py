@@ -1,4 +1,5 @@
 """Independent physical picks, threshold precision and retained incomplete attempts."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -89,7 +90,7 @@ class NonplanarSampleTests(unittest.TestCase):
         data=json.loads((ROOT/'docs/nonplanar-sample-qualification.json').read_text());return data,['FACE_SAMPLER '+json.dumps(r)for r in data['cases']]
 
     def test_report_reconstructs_with_explicit_limits(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['native_workflows'],data['face_samples'],data['accepted_commands']),(25,20,24))
         self.assertFalse(data['full_native_parity']);self.assertFalse(data['performance_qualified']);self.assertEqual(data['failed_batch_qualified_workflows'],0)
 

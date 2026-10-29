@@ -1,4 +1,5 @@
 """Independent native thresholds, immutable inputs and strict replay evidence."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import gzip
 import hashlib
@@ -73,7 +74,7 @@ class NonplanarQuadTests(unittest.TestCase):
         return data,['NONPLANAR_QUAD '+json.dumps(r)for r in data['cases']]
 
     def test_report_reconstructs_without_claiming_native_command_parity(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['sdk_geometry_cases'],data['local_command_cases']),(42,42))
         self.assertFalse(data['full_native_parity']);self.assertFalse(data['native_command_workflow_qualified']);self.assertFalse(data['performance_qualified'])
 

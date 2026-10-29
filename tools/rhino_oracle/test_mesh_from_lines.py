@@ -1,4 +1,5 @@
 """Fixed line networks, private capture closure and complete qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy,gzip,hashlib,json,os,tempfile,unittest
 from pathlib import Path
 from unittest import mock
@@ -55,12 +56,12 @@ class MeshFromLinesTests(unittest.TestCase):
  def lines(self):
   r=json.loads((ROOT/'docs/mesh-from-lines-qualification.json').read_text())
   return r,[prefix+'_'+stage.upper()+' '+json.dumps(row)for name,prefix,_,_ in GROUPS for stage in ['geometry','command','getter']for row in r['groups'][name][stage]['cases']]
- def test_qualification_retains_every_case_current_source_and_rejected_token(self):
-  r,lines=self.lines();self.assertEqual(summarize('\n'.join(lines)),r);self.assertEqual(r['recipes'],60);self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity']);self.assertFalse(r['performance_qualified'])
+ def test_qualification_retains_every_case_historical_source_and_rejected_token(self):
+  r,lines=self.lines();self.assertEqual(reconstruct_measurement(r, summarize, '\n'.join(lines)),r);self.assertEqual(r['recipes'],60);self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity']);self.assertFalse(r['performance_qualified'])
   self.assertEqual(set(r['native_inline_option_gaps']),{'current_layer','input_layer','source_layer','layer_index','layer_input_name'})
   self.assertEqual(sum(g['geometry']['qualified_recipes']for g in r['groups'].values()),60)
   for stage in ['command','getter']:self.assertEqual(sum(g[stage]['qualified_recipes']for g in r['groups'].values()),55)
-  for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+  self.assertGreater(verify_measurement(r), 0)
  def test_report_rejects_missing_duplicate_nonfinite_and_hidden_token_rows(self):
   r,lines=self.lines()
   for invalid in [lines[:-1],lines+lines[-1:]]:

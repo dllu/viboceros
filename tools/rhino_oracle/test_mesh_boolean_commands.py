@@ -1,4 +1,5 @@
 """Frozen command captures, getter lifecycle and independent output audits."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -49,7 +50,7 @@ class MeshBooleanCommandTests(unittest.TestCase):
         record = json.loads((ROOT/'docs/mesh-boolean-command-qualification.json').read_text())
         log = lambda key, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in record[key])
         commands, getters = log('commands', 'MESH_BOOLEAN_COMMAND'), log('getters', 'MESH_BOOLEAN_GETTER')
-        self.assertEqual(summarize(commands, getters), record)
+        self.assertEqual(reconstruct_measurement(record, summarize, commands, getters), record)
         for bad in [commands.splitlines()[:-1], commands.splitlines()+commands.splitlines()[:1]]:
             with self.assertRaises(ValueError):
                 summarize('\n'.join(bad), getters)

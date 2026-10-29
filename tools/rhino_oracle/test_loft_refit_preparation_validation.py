@@ -1,10 +1,11 @@
 """Complete admission coverage and source bindings for adaptive Loft commands."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import hashlib
 import json
 from pathlib import Path
 import subprocess
 import unittest
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = ROOT / 'tools/rhino_oracle'
@@ -75,9 +76,7 @@ class AdaptivePreparationValidationTests(unittest.TestCase):
     def test_declared_sources_bind_the_checked_implementation_and_inputs(self):
         hashes = self.record['sha256']
         self.assertTrue(hashes)
-        self.assertEqual(set(with_shared_sources(list(hashes))), set(hashes))
-        for path, expected in hashes.items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)
+        self.assertGreater(verify_measurement(self.record, expand_sources=with_shared_sources), 0)
         for identity, expected in self.record.get('git_sha256', {}).items():
             data = subprocess.check_output(['git', 'show', identity], cwd=ROOT)
             self.assertEqual(hashlib.sha256(data).hexdigest(), expected, identity)

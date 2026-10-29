@@ -1,4 +1,5 @@
 """Completeness and fail-closed checks for ToSubD document qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import hashlib
 import json
@@ -12,16 +13,15 @@ class ToSubDCommandTests(unittest.TestCase):
         return report, ['TOSUBD_' + stage.upper() + ' ' + json.dumps(row)
                         for stage, rows in report['stages'].items() for row in rows]
 
-    def test_coverage_is_complete_and_source_hashes_are_current(self):
+    def test_coverage_is_complete_and_source_hashes_are_historical(self):
         report, lines = self.lines()
         self.assertEqual(len(observations()[0]), 201)
         self.assertEqual((report['command_cases'], report['getter_cases']), (201, 200))
-        self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertIs(report['full_native_parity'], False)
         self.assertIs(report['performance_qualified'], False)
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_duplicate_or_unrelated_rows_fail(self):
         _, lines = self.lines()

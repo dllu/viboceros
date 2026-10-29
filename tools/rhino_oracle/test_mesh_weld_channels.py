@@ -1,4 +1,5 @@
 """Fixed producer admission and complete, explicit mesh welding comparisons."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import gzip
 import hashlib
@@ -62,7 +63,7 @@ class MeshWeldChannels(unittest.TestCase):
         from .report_mesh_weld_channels import ROOT,summarize
         report=json.loads((ROOT/'docs/mesh-weld-channels-qualification.json').read_text())
         lines=['MESH_WELD_CHANNEL_NATIVE '+json.dumps(r) for r in report['cases']]
-        self.assertEqual(summarize('\n'.join(lines)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
         self.assertEqual((report['compared_cases'],report['qualified_cases'],len(report['diagnostic_cases'])),(96,71,17))
         self.assertEqual(len(report['precompaction_diagnostics']),8)
         self.assertTrue(all(r['fields_exact'] for r in report['precompaction_diagnostics']))

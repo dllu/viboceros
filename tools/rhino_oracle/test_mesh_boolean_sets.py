@@ -1,4 +1,5 @@
 """Multi-set ownership, immutable producers, measured geometry and partition conservation."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -42,7 +43,7 @@ class MeshBooleanSetTests(unittest.TestCase):
         log=lambda key,prefix:'\n'.join(prefix+' '+json.dumps(r)for r in data[key])
         commands=log('commands','MESH_BOOLEAN_SETS_COMMAND')
         getters=log('getters','MESH_BOOLEAN_SETS_GETTER')
-        self.assertEqual(summarize(commands,getters),data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands,getters),data)
         self.assertEqual((data['command_matched'],data['getter_matched']),(52,55))
         for bad in ['\n'.join(commands.splitlines()[:-1]),commands+'\n'+commands.splitlines()[0]]:
             with self.assertRaises(ValueError):summarize(bad,getters)

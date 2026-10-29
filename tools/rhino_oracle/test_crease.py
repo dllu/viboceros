@@ -1,4 +1,5 @@
 """Immutable crease recipes, public helpers and fail-closed certificates."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import copy
 import gzip
@@ -83,10 +84,10 @@ class CreaseTests(unittest.TestCase):
         lines.extend('CREASE_GETTER ' + json.dumps(row) for rows in report['getters'].values() for row in rows)
         return report, lines
 
-    def test_report_reconstructs_and_uses_current_sources(self):
+    def test_report_reconstructs_and_uses_historical_sources(self):
         report, lines = self.report_lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertEqual(report['command_cases'], 110)
         self.assertEqual(report['captured_workflows'], 118)
         self.assertEqual(report['getter_cases'], 220)

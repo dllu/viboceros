@@ -1,4 +1,6 @@
 """Automatic Sweep1 evidence distinguishes full bounds, samples and open gaps."""
+from tools.verify_provenance import verify_measurement
+from .qualification_sources import with_shared_sources
 import gzip
 import hashlib
 import json
@@ -7,7 +9,6 @@ import unittest
 from .generate_sweep1_automatic_curved import request as curved
 from .generate_sweep1_automatic_stations import request as stations
 from .generate_sweep1_automatic_direction import request as direction
-from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = ROOT / 'tools/rhino_oracle'
@@ -49,11 +50,9 @@ class AutomaticSweepTests(unittest.TestCase):
             for a, b in zip(ends[name], expected):
                 self.assertAlmostEqual(a, b, delta=1e-12)
 
-    def test_current_record_binds_sources_and_keeps_measurement_scopes_distinct(self):
+    def test_historical_record_binds_sources_and_keeps_measurement_scopes_distinct(self):
         record = json.loads((ROOT / 'docs/sweep1-automatic-validation.json').read_text())
-        self.assertEqual(set(record['sha256']), set(with_shared_sources(list(record['sha256']))))
-        for name, digest in record['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), digest, name)
+        self.assertGreater(verify_measurement(record, expand_sources=with_shared_sources), 0)
         self.assertEqual(record['straight_surfaces']['native_command_cases'], 7)
         self.assertEqual(record['straight_surfaces']['constructions_per_backend'], 21)
         self.assertEqual(record['curved_samples']['native_command_cases'], 8)

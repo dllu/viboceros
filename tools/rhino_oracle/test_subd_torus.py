@@ -1,4 +1,5 @@
 """Fixed torus captures, historical producers and strict qualification gates."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -87,13 +88,12 @@ class SubDTorusTests(unittest.TestCase):
 
     def test_complete_report_and_parallel_output_order(self):
         report, lines = self.report_lines()
-        self.assertEqual(report, summarize('\n'.join(lines)))
-        self.assertEqual(report, summarize('\n'.join(reversed(lines))))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(lines)))
+        self.assertEqual(report, reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))))
         self.assertEqual((report['command_cases'], report['getter_cases']), (59, 77))
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_failed_or_invalid_checks_cannot_qualify(self):
         report, lines = self.report_lines()

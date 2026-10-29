@@ -1,4 +1,5 @@
 """Immutable edge-spin producers and strict command/getter qualification."""
+from tools.verify_provenance import reconstruct_measurement
 import base64
 import gzip
 import hashlib
@@ -57,7 +58,7 @@ class SubDSpinEdgeTests(unittest.TestCase):
                        +['SUBD_SPIN_UNDO_GAP '+json.dumps(r)for r in report['cross_object_undo']])
 
     def test_report_reconstructs_with_invalid_native_results_kept_separate(self):
-        report,lines=self.report_lines();self.assertEqual(summarize('\n'.join(reversed(lines))),report)
+        report,lines=self.report_lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))),report)
         self.assertEqual(report['geometry_cases'],17);self.assertEqual(report['native_invalid_output_cases'],4)
         self.assertEqual(report['staged_command_cases'],report['getter_cases']);self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
         expected,core,excluded,_=observations();self.assertTrue(excluded);self.assertEqual(len(core),17);self.assertEqual(len(expected),report['getter_cases'])

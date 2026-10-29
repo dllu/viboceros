@@ -1,4 +1,5 @@
 """Frozen producer isolation and independently measured polygon Boolean checks."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -49,7 +50,7 @@ class MeshBooleanTests(unittest.TestCase):
     def test_report_recomputes_geometry_and_rejects_stale_or_forged_measurements(self):
         record = json.loads((ROOT/'docs/mesh-boolean-qualification.json').read_text())
         lines = ['MESH_BOOLEAN_SDK '+json.dumps(r) for r in record['geometry']]
-        self.assertEqual(summarize('\n'.join(reversed(lines))), record)
+        self.assertEqual(reconstruct_measurement(record, summarize, '\n'.join(reversed(lines))), record)
         self.assertEqual((record['replayed'], record['matched']), (48, 26))
         for bad in [lines[:-1], lines+lines[:1]]:
             with self.assertRaises(ValueError):

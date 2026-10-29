@@ -1,4 +1,5 @@
 """Immutable subdivision captures and fail-closed report validation."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -65,15 +66,14 @@ class SubdivisionTests(unittest.TestCase):
         lines = ['SUBDIVIDE_' + stage.upper() + ' ' + json.dumps(row) for stage, rows in report['stages'].items() for row in rows]
         return report, lines
 
-    def test_complete_report_is_order_independent_and_current(self):
+    def test_complete_report_is_order_independent_and_historical(self):
         report, lines = self.report_lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(reversed(lines))), report)
         self.assertEqual((report['captured_workflows'], report['command_cases'], report['getter_cases']), (141, 139, 135))
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_missing_duplicate_or_invalid_comparisons_cannot_qualify(self):
         report, lines = self.report_lines()

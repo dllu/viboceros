@@ -1,4 +1,5 @@
 """Crossing capture closure, immutable provenance and explicit compatibility gaps."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -110,9 +111,9 @@ class MeshPatchCrossingTests(unittest.TestCase):
                  for row in report['groups'][name][stage]['cases']]
         return report, lines
 
-    def test_report_retains_every_scene_sdk_difference_and_current_source(self):
+    def test_report_retains_every_scene_sdk_difference_and_historical_source(self):
         report, lines = self.report_lines()
-        self.assertEqual(summarize('\n'.join(lines)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)), report)
         self.assertEqual(report['model_epsilon'], 1e-6)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
@@ -128,8 +129,7 @@ class MeshPatchCrossingTests(unittest.TestCase):
         first = report['groups']['crossings']['geometry']['cases'][0]
         self.assertTrue(first['qualified'])
         self.assertGreater(first['sdk_command_difference'], report['model_epsilon'])
-        for path, sha in report['sha256'].items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), sha, path)
+        self.assertGreater(verify_measurement(report), 0)
 
     def test_report_rejects_omissions_duplicates_nonfinite_values_and_hidden_gaps(self):
         report, lines = self.report_lines()

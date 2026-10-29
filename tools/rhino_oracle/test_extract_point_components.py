@@ -1,4 +1,5 @@
 """Reject missing native evidence and forged component measurements."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -49,7 +50,7 @@ class ExtractPointComponentTests(unittest.TestCase):
         commands=log(record['commands'],'EXTRACT_POINTS_COMPONENT_COMMAND')
         getters=log(record['getters'],'EXTRACT_POINTS_COMPONENT_GETTER')
         edges=log(record['edge_forms'],'EXTRACT_POINTS_EDGE_FORM')
-        self.assertEqual(summarize(commands,getters,edges),record)
+        self.assertEqual(reconstruct_measurement(record, summarize, commands,getters,edges),record)
         with self.assertRaises(ValueError):summarize(commands,getters,log(record['edge_forms'][:-1],'EXTRACT_POINTS_EDGE_FORM'))
         with self.assertRaises(ValueError):summarize(commands,getters+'\n'+getters,edges)
         forged=deepcopy(record['getters']);forged[0]['after'][0]['components']=[]

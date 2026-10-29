@@ -1,4 +1,5 @@
 """Fixed input, original producer and native command admission checks."""
+from tools.verify_provenance import reconstruct_measurement
 import copy
 import gzip
 import hashlib
@@ -19,7 +20,7 @@ class ControlPolygonTests(unittest.TestCase):
         report = json.loads((ROOT/'docs/control-polygon-qualification.json').read_text())
         command = ['CONTROL_POLYGON_NATIVE '+json.dumps(r) for r in report['comparisons']['command']]
         ui = ['CONTROL_POLYGON_UI '+json.dumps(r) for r in report['comparisons']['ui']]
-        self.assertEqual(summarize('\n'.join(command), '\n'.join(ui)), report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(command), '\n'.join(ui)), report)
         self.assertEqual((report['compared_workflows'], report['successful_workflows'],
                           report['rejected_workflows'], len(report['diagnostic_workflows'])),
                          (42, 32, 10, 19))
@@ -47,7 +48,7 @@ class ControlPolygonTests(unittest.TestCase):
         from .report_subd_control_net import ROOT,summarize
         report = json.loads((ROOT/'docs/subd-control-net-qualification.json').read_text())
         lines = ['CONTROL_NET_NATIVE '+json.dumps(row) for row in report['cases']]
-        self.assertEqual(summarize('\n'.join(lines)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
         self.assertEqual((report['compared_workflows'],report['component_sources']),(20,21))
         for bad in [lines[:-1],lines+lines[:1]]:
             with self.assertRaises(ValueError):
@@ -129,7 +130,7 @@ class ControlPolygonTests(unittest.TestCase):
         command = ['CONTROL_POLYGON_RANGE_NATIVE '+json.dumps(r) for r in report['comparisons']['command']]
         ui = ['CONTROL_POLYGON_RANGE_UI '+json.dumps(r) for r in report['comparisons']['ui']]
         ui += ['CONTROL_POLYGON_COMPONENT_UI '+json.dumps(r) for r in report['comparisons']['components']]
-        self.assertEqual(summarize('\n'.join(command),'\n'.join(ui)),report)
+        self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(command),'\n'.join(ui)),report)
         self.assertEqual((report['temporary_ranges'],report['interactive_range_paths'],report['component_workflows']),(5,10,10))
         for a,b in [(command[:-1],ui),(command,ui[:-1]),(command+command[:1],ui),(command,ui+ui[:1])]:
             with self.assertRaises(ValueError): summarize('\n'.join(a),'\n'.join(b))

@@ -1,3 +1,4 @@
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -71,7 +72,7 @@ class SurfaceApexNativeTests(unittest.TestCase):
         log = lambda rows, prefix: '\n'.join(prefix+' '+json.dumps(r) for r in rows)
         oracle = log(record['sdk'], 'SURFACE_APEX_SDK')+'\n'+log(record['command'], 'SURFACE_APEX_COMMAND')
         app = log(record['app'], 'SURFACE_APEX_APP')
-        self.assertEqual(summarize(oracle, app), record)
+        self.assertEqual(reconstruct_measurement(record, summarize, oracle, app), record)
         with self.assertRaises(ValueError):
             summarize(oracle, log(record['app'][:-1], 'SURFACE_APEX_APP'))
         with self.assertRaises(ValueError):

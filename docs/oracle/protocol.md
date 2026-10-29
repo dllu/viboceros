@@ -33,6 +33,14 @@ context-only command adapters receive `(operation, host)`. The client copies the
 registry beside each worker. Runtime dispatch remains compatible with IronPython;
 host-only dependencies are loaded inside host functions.
 
+Historical reports identify their original commit, committed JSON and its digest
+with `measurement_revision`, `measurement_record` and `measurement_record_sha256`.
+Run `python3 -m tools.verify_provenance REPORT.json` to check the complete original
+payload, source inventory and source bytes, including recorded submodule versions.
+Reconstruction still validates every outcome and requires identical data and
+limits. These records do not requalify today's implementation. Reports without a
+measurement revision continue to check current files.
+
 For experiments that change application preferences or remembered command
 defaults, use a private settings scheme:
 

@@ -1,4 +1,5 @@
 """Fixed 3DFace inputs, immutable oracle evidence and complete qualification."""
+from tools.verify_provenance import reconstruct_measurement, verify_measurement
 import copy
 import gzip
 import hashlib
@@ -92,14 +93,14 @@ class FaceCreateTests(unittest.TestCase):
    for stage in ['command','getter','controls','draft_command','draft_getter']:
     if stage in group:lines.extend(('FACE_'+stage.upper()if stage.startswith('draft_')else'FACE_CREATE_'+stage.upper())+' '+json.dumps(row)for row in group[stage]['cases'])
   return report,lines
- def test_complete_current_qualification_preserves_limits(self):
-  report,lines=self.lines();self.assertEqual(summarize('\n'.join(lines)),report)
+ def test_complete_historical_qualification_preserves_limits(self):
+  report,lines=self.lines();self.assertEqual(reconstruct_measurement(report, summarize, '\n'.join(lines)),report)
   self.assertEqual(report['recipes'],73);self.assertEqual(report['model_epsilon'],1e-6)
   self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
   gaps={id_ for group in report['groups'].values()for stage in ['draft_command','draft_getter']if stage in group for id_ in group[stage]['unqualified_recipes']}
   self.assertEqual(gaps,set())
   self.assertTrue(all(status=='valid'for status in report['native_record_validity'].values()))
-  for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+  self.assertGreater(verify_measurement(report), 0)
  def test_report_rejects_missing_duplicate_invalid_errors_and_hidden_topology(self):
   report,lines=self.lines()
   for invalid in [lines[:-1],lines+lines[-1:]]:

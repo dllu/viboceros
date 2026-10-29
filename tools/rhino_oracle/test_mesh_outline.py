@@ -1,4 +1,5 @@
 """Outline producer isolation, projection evidence and measured boundary checks."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import math
@@ -91,7 +92,7 @@ class MeshOutlineTests(unittest.TestCase):
 
     def test_report_recomputes_measured_contours_and_source_bindings(self):
         record, lines = self.evidence()
-        self.assertEqual(summarize('\n'.join(reversed(lines))), record)
+        self.assertEqual(reconstruct_measurement(record, summarize, '\n'.join(reversed(lines))), record)
         self.assertEqual(record['replayed_geometry_workflows'], 196)
         self.assertEqual(record['qualified_geometry_workflows'], 176)
         self.assertEqual(record['projection_gaps'], sorted(PROJECTION_GAPS))

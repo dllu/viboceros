@@ -1,4 +1,5 @@
 """Independent native getter evidence and owned callback cleanup checks."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import json
 import unittest
@@ -63,7 +64,7 @@ class MeshTrimGetterTests(unittest.TestCase):
                 lines.append('MESH_TRIM_'+family.upper()+'_'+suffix+' '+json.dumps(row))
             return '\n'.join(lines)
         commands, getters = log(data['commands'], 'COMMAND'), log(data['getters'], 'GETTER')
-        self.assertEqual(summarize(commands, getters), data)
+        self.assertEqual(reconstruct_measurement(data, summarize, commands, getters), data)
         self.assertEqual((data['command_matched'], data['getter_matched']), (6, 6))
         for field in ['geometry', 'selection', 'storage', 'status']:
             rows = deepcopy(data['commands'])

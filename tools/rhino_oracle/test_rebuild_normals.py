@@ -1,4 +1,5 @@
 """Normal rebuilding captures, native compaction and strict report admission."""
+from tools.verify_provenance import reconstruct_measurement
 from copy import deepcopy
 import base64
 import gzip
@@ -59,7 +60,7 @@ class RebuildNormalsTests(unittest.TestCase):
         return data,['REBUILD_NORMALS_'+stage.upper()+' '+json.dumps(row)for stage in ['sdk','command','getter']for row in data[stage]]
 
     def test_report_reconstructs_with_explicit_normal_query_limits(self):
-        data,lines=self.evidence();self.assertEqual(summarize('\n'.join(reversed(lines))),data)
+        data,lines=self.evidence();self.assertEqual(reconstruct_measurement(data, summarize, '\n'.join(reversed(lines))),data)
         self.assertEqual((data['sdk_cases'],data['native_command_workflows'],data['registered_command_cases'],data['getter_cases']),(19,22,20,22))
         self.assertFalse(data['full_native_parity']);self.assertFalse(data['performance_qualified']);self.assertEqual(sum(r['collapsed_face_queries']for r in data['sdk']),1)
 
