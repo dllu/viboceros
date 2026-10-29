@@ -40,6 +40,8 @@ fn main() {
     println!("cargo:rerun-if-changed=../../third_party/patches/opennurbs-merge-face-holes.cmake");
     println!("cargo:rerun-if-changed=native/mesh_modeling.h");
     println!("cargo:rerun-if-changed=native/mesh_cleanup.h");
+    println!("cargo:rerun-if-changed=native/mesh_merge.h");
+    println!("cargo:rerun-if-changed=native/mesh_merge_selection.h");
     println!("cargo:rerun-if-changed=native/geometry_check.h");
     println!("cargo:rerun-if-changed=native/geometry_diagnostics.h");
     println!("cargo:rerun-if-changed=native/geometry_dump.h");

@@ -1,5 +1,7 @@
 # Use OpenNURBS' hole-aware boundary finder after its native face-set welding.
 # The original checkout stays immutable; only the static kernel uses this copy.
+# Existing coplanar callers permit holes. MergeFaces explicitly requests the
+# original upstream single-boundary rule through a scoped thread-local policy.
 set(mesh_source "${OPENNURBS_ROOT}/opennurbs_mesh.cpp")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${mesh_source}" "${CMAKE_CURRENT_LIST_FILE}")
 file(READ "${mesh_source}" mesh_text)
@@ -12,15 +14,28 @@ math(EXPR matched_length "${original_length}-${stripped_length}")
 if(NOT matched_length EQUAL needle_length)
   message(FATAL_ERROR "OpenNURBS face-set hole adapter needs review for this upstream source")
 endif()
-set(replacement [=[ON_SimpleArray<unsigned int> boundary, loop_counts;
+set(replacement [=[if (vibo_mesh_face_set_holes_allowed) {
+  ON_SimpleArray<unsigned int> boundary, loop_counts;
   const unsigned int count = ON_MeshNgon::FindNgonBoundaries(
     ON_3dPointListRef(&mesh), ON_MeshFaceList(&mesh), nullptr,
     ngon_fi.UnsignedCount(), ngon_fi.Array(), boundary, loop_counts);
   if (count >= 3 && loop_counts.Count() > 0 && loop_counts[0] >= 3
       && loop_counts[0] <= boundary.UnsignedCount())
     mesh.AddNgon(loop_counts[0], boundary.Array(),
-                 ngon_fi.UnsignedCount(), ngon_fi.Array());]=])
+                 ngon_fi.UnsignedCount(), ngon_fi.Array());
+} else {
+  mesh.AddNgon(ngon_fi.UnsignedCount(), ngon_fi.Array());
+}]=])
 string(REPLACE "${needle}" "${replacement}" mesh_patched "${mesh_text}")
+set(policy [=[// Private adapter policy; each thread restores its previous value on scope exit.
+static thread_local bool vibo_mesh_face_set_holes_allowed = true;
+extern "C" bool vibo_mesh_set_face_set_holes_allowed(bool allowed) {
+  const bool previous = vibo_mesh_face_set_holes_allowed;
+  vibo_mesh_face_set_holes_allowed = allowed;
+  return previous;
+}
+]=])
+string(PREPEND mesh_patched "${policy}\n")
 set(mesh_output "${CMAKE_CURRENT_BINARY_DIR}/opennurbs-patched/opennurbs_mesh.cpp")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/opennurbs-patched")
 set(existing "")

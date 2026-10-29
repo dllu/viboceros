@@ -17,6 +17,9 @@ typedef struct {
   const double *texture_coordinates, *vertex_normals;
 } ViboMeshView;
 typedef struct ViboMeshResult ViboMeshResult;
+// kind: 0 raw vertex, 1 edge identified by raw endpoints, 2 stored face.
+typedef struct { uint32_t kind, first, second; } ViboMeshComponent;
+int vibo_mesh_merge_components(const ViboMeshView*, const ViboMeshComponent*, size_t, ViboMeshResult**, char*, size_t);
 int vibo_mesh_edit(const ViboMeshView*,uint32_t,double,double,ViboMeshResult**,char*,size_t);
 int vibo_mesh_merge_selected(const ViboMeshView*, const size_t*, size_t, int, double, double, ViboMeshResult**, char*, size_t);
 int vibo_mesh_dissolve_vertices(const ViboMeshView*, const size_t*, size_t, ViboMeshResult**, char*, size_t);

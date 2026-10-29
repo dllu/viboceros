@@ -168,7 +168,7 @@ SUBD_MODULES = [
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
-                 'rebuild', 'rebuild_mesh', 'normals', 'orientation', 'outline', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
+                 'rebuild', 'rebuild_mesh', 'merge_faces', 'merge_faces/tests', 'normals', 'orientation', 'outline', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'triangulate', 'nonplanar_quads', 'quad_planarity', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
 ] + [
@@ -182,6 +182,11 @@ MESH_MODULES = [
     'crates/viboceros-geometry/tests/support/mesh_channels.rs',
     'crates/viboceros-geometry/tests/support/mesh_equivalence.rs',
     'crates/viboceros-opennurbs/src/mesh.rs',
+    'crates/viboceros-opennurbs/src/mesh/merge.rs',
+    'crates/viboceros-opennurbs/native/mesh_merge.h',
+    'crates/viboceros-opennurbs/native/mesh_merge_selection.h',
+    'crates/viboceros-opennurbs/native/mesh_modeling.h',
+    'third_party/patches/opennurbs-merge-face-holes.cmake',
     'crates/viboceros-opennurbs/native/mesh_modeling.h',
     'crates/viboceros-opennurbs/native/mesh_modeling.cpp',
     'crates/viboceros-opennurbs/native/mesh_codec.h',
@@ -199,6 +204,24 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    mesh_merge = ['crates/viboceros-geometry/tests/support/mesh_face_merge.rs',
+                  'crates/viboceros-geometry/tests/mesh_face_merge.rs',
+                  'crates/viboceros-oracle/tests/mesh_face_merge.rs',
+                  'crates/viboceros-opennurbs/src/mesh.rs',
+                  'crates/viboceros-opennurbs/native/mesh_modeling.cpp',
+                  'crates/viboceros-opennurbs/native/mesh_modeling.h',
+                  'crates/viboceros-geometry/src/mesh/merge_faces.rs',
+                  'crates/viboceros-geometry/src/mesh/merge_faces/tests.rs',
+                  'crates/viboceros-opennurbs/src/mesh/merge.rs',
+                  'crates/viboceros-opennurbs/native/mesh_merge.h',
+                  'crates/viboceros-opennurbs/native/mesh_merge_selection.h',
+                  'third_party/patches/opennurbs-merge-face-holes.cmake']
+    if any(p in paths for p in mesh_merge):
+        paths = [*paths, *mesh_merge, 'crates/viboceros-opennurbs/src/mesh.rs',
+                 'crates/viboceros-opennurbs/native/mesh_modeling.cpp',
+                 'crates/viboceros-opennurbs/native/mesh_modeling.h',
+                 'crates/viboceros-opennurbs/native/mesh_codec.h',
+                 'crates/viboceros-opennurbs/build.rs']
     command_execution = ['crates/viboceros-command/src/lib.rs',
                          'crates/viboceros-command/src/execution.rs']
     if any(p in paths for p in command_execution):

@@ -239,3 +239,5 @@ extern "C" int vibo_quad_planarity(const double *points,double *distance,double 
   }catch(const std::exception &e){if(error && capacity){std::strncpy(error,e.what(),capacity-1);error[capacity-1]=0;}return 0;}
   catch(...){if(error && capacity){std::strncpy(error,"Unknown quad planarity error",capacity-1);error[capacity-1]=0;}return 0;}
 }
+
+#include "mesh_merge.h"
