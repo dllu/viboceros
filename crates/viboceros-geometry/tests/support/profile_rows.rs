@@ -4,6 +4,14 @@ use num_traits::{Signed, ToPrimitive, Zero};
 use viboceros_geometry::{GeometryError, NurbsCurve, NurbsSurface};
 #[path = "profile_rows/degree.rs"]
 mod degree;
+#[path = "profile_rows/separation.rs"]
+mod separation;
+
+/// A point on one complete surface is farther than `limit` from the other.
+/// Unsupported projections and unresolved minima return no separation claim.
+pub fn complete_image_separation(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
+    separation::lower_bound(a, b, limit)
+}
 
 fn rat(x: f64) -> Rational {
     Rational::from_float(x).unwrap()
@@ -94,16 +102,40 @@ fn upper(x: &Rational) -> Option<f64> {
     None
 }
 
+#[allow(
+    dead_code,
+    reason = "Shared tests use either the bound-only or diagnostic entry point."
+)]
 pub fn complete_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
-    complete_oriented_bound(a, b, limit).or_else(|| {
+    complete_comparison(a, b, limit).0
+}
+
+/// Returns a complete-image deviation upper bound or a separation lower bound.
+/// Both absent means inconclusive. The expensive separation proof is attempted
+/// once per comparison, shared by degree elevation, rail reversal and reporting.
+pub fn complete_comparison(
+    a: &NurbsSurface,
+    b: &NurbsSurface,
+    limit: f64,
+) -> (Option<f64>, Option<f64>) {
+    let separation = std::cell::OnceCell::new();
+    let separated = || *separation.get_or_init(|| complete_image_separation(a, b, limit));
+    let bound = complete_oriented_bound(a, b, limit, &separated).or_else(|| {
         // Negation and reordering of stored knots/controls preserve the exact
         // surface image. Rhino may choose the opposite rail direction.
         let reversed = b.try_reversed_u().ok()?;
-        complete_oriented_bound(a, &reversed, limit)
-    })
+        complete_oriented_bound(a, &reversed, limit, &separated)
+    });
+    let lower = bound.is_none().then(separated).flatten();
+    (bound, lower)
 }
 
-fn complete_oriented_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Option<f64> {
+fn complete_oriented_bound(
+    a: &NurbsSurface,
+    b: &NurbsSurface,
+    limit: f64,
+    separated: &impl Fn() -> Option<f64>,
+) -> Option<f64> {
     if !limit.is_finite() || limit <= 0. {
         return None;
     }
@@ -123,9 +155,9 @@ fn complete_oriented_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Op
         }
         let remaining = (limit - error).next_down();
         let bound = if reverse {
-            complete_oriented_bound(a, &elevated, remaining)?
+            complete_oriented_bound(a, &elevated, remaining, separated)?
         } else {
-            complete_oriented_bound(&elevated, b, remaining)?
+            complete_oriented_bound(&elevated, b, remaining, separated)?
         };
         let bound = (error + bound).next_up();
         return (bound <= limit).then_some(bound);
@@ -188,6 +220,9 @@ fn complete_oriented_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Op
         .max_by(|a, b| extent(a.0).total_cmp(&extent(b.0)))
         .unwrap();
     for segments in [1, 32, 64, 128, 256, 512, 1024] {
+        if segments == 32 && separated().is_some() {
+            return None;
+        }
         let Some(pairs) = correspondence(anchor.0, anchor.1, segments) else {
             continue;
         };

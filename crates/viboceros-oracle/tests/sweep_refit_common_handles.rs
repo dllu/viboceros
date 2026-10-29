@@ -54,10 +54,11 @@ fn common_handle_profiles_match_complete_native_images() {
             };
             let a = join(&actual.value);
             let b = join(&native["value"]);
-            let bound = profile_rows::complete_bound(&a, &b, 1e-7);
+            let (bound, separation) = profile_rows::complete_comparison(&a, &b, 1e-7);
             println!(
                 "SWEEP_COMMON_REFIT_RESULT {}",
-                serde_json::json!({"id":actual.id,"family":family,"complete_image_bound":bound,"comparison_epsilon":1e-7})
+                serde_json::json!({"id":actual.id,"family":family,"complete_image_bound":bound,
+                    "complete_image_separation_lower_bound":separation,"comparison_epsilon":1e-7})
             );
             if bound.is_none() {
                 gaps.push(actual.id.clone());

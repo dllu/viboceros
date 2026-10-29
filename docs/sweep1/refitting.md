@@ -12,11 +12,16 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Re-entered C1 profiles | 12/12 | 8/12 |
 | Combined | 98/98 | 91/98 |
 
-The [current replay](refit-clock-validation.json) covers all 98 cases on both
+The [current replay](refit-separation-validation.json) covers all 98 cases on both
 backends, retaining seven failing image assertions: three base fine profiles
 and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
 pass. The [earlier base record](refit-development-validation.json) retains its
 measured source bindings for commit `46371ad4e`.
+
+Exact projected distance bounds now establish a point on each failing surface
+farther than `1e-7` from the complete native surface. These are geometric gaps.
+The proof charges stored-coordinate and weight rounding; numerical closest
+points only propose witnesses. A proved gap skips further correspondence trials.
 
 UI regressions cover a circular section on a line: both tolerance getters,
 `Simplify`, explicit and automatic stations, cancellation, and local and model

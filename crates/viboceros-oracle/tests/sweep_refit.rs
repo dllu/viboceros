@@ -82,10 +82,12 @@ fn section_refits_match_complete_captured_images() {
                     .map(|v| nurbs_surface::from_definition(&v["definition"]))
                     .collect(),
             );
-            let bound = profile_rows::complete_bound(&a, &b, 1e-7);
+            let (bound, separation) = profile_rows::complete_comparison(&a, &b, 1e-7);
             println!(
                 "SWEEP_REFIT_RESULT {}",
-                serde_json::json!({"family":family,"id":op["id"],"complete_image_bound":bound,"epsilon":1e-7,"actual_controls":a.control_point_count_v(),"native_controls":b.control_point_count_v()})
+                serde_json::json!({"family":family,"id":op["id"],"complete_image_bound":bound,
+                    "complete_image_separation_lower_bound":separation,"epsilon":1e-7,
+                    "actual_controls":a.control_point_count_v(),"native_controls":b.control_point_count_v()})
             );
             if bound.is_none() {
                 gaps.push(format!("{family} {} whole image", op["id"]));

@@ -2,7 +2,7 @@
   "status": "development; represented-profile length batches corrected, seven Sweep1 complete-image comparisons remain unqualified",
   "complete_rhino_compatibility": false,
   "base_revision": "c378d2a1ce183ae4e660bd618419fbda5677e06f",
-  "source_state": "Base revision plus current sha256 bindings. Numerical NURBS batch requests now apply the shared tolerance policy to variable-speed curves. Fitting callers use the measured public request of 0.01 to preserve their effective 1e-4 clock. All 98 implementation cases were replayed on both backends without changing their comparison results or captured geometry records.",
+  "source_state": "Historical measurement at measurement_revision with the retained sha256 bindings below. Numerical NURBS batch requests apply the shared tolerance policy to variable-speed curves. Fitting callers use the measured public request of 0.01 to preserve their effective 1e-4 clock. All 98 implementation cases were replayed on both backends without changing their comparison results or captured geometry records.",
   "batch_request_policy": {
     "threshold": 1e-05,
     "below_threshold": "requested tolerance",
@@ -2479,5 +2479,7 @@
     "tools/rhino_oracle/observations/sweep1_refit_clock_holdouts.json": "7984e2287081e8f9c47e3d06d3225c7da668f1911b18ba36a58a4de80b14dec0",
     "tools/rhino_oracle/observations/source_snapshots/4ee98ce318c1c15b1f6096dc10857a8b208030df90ed7845901b26f789da2944.gz": "e5f024f1b59e9789b5af7943855a5b66b9ca0292137817f8b8320bb5fb993077",
     "tools/rhino_oracle/observations/source_snapshots/1ee9b704ecd8d9aa1fb94cd6c2457d15df6183651b724e03e7b199b8afd9fd0b.gz": "1942cc3a4d5dc00f03bd21d390a093619bf19e7045567c2f7523cd6e1e7aa70e"
-  }
+  },
+  "measurement_revision": "088266b5578826dd6ae14ea8295b9090f7697276",
+  "measurement_scope": "Historical batch-clock validation and full 98-case replay. Source bindings are retained at measurement_revision. The current exact projected separation diagnostics and replay are recorded in refit-separation-validation.json."
 }

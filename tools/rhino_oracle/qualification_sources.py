@@ -246,7 +246,9 @@ def _expand_sources_once(paths):
                  'tools/rhino_oracle/observations/sweep1_refit_sdk.json']
     if 'crates/viboceros-geometry/tests/support/profile_rows.rs' in paths:
         paths = [*paths, 'crates/viboceros-geometry/tests/support/profile_rows/degree.rs',
-                 'crates/viboceros-geometry/tests/profile_row_degrees.rs']
+                 'crates/viboceros-geometry/tests/profile_row_degrees.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows/separation.rs',
+                 'crates/viboceros-geometry/tests/projected_surface_separation.rs']
     if any(p in paths for p in ['crates/viboceros-geometry/src/lib.rs',
                                'crates/viboceros-geometry/src/loft/rebuild.rs']):
         paths = [*paths, 'crates/viboceros-geometry/src/section_rebuild.rs']

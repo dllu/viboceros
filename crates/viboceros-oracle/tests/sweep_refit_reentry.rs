@@ -49,11 +49,12 @@ fn compare(input: &Value, operation: &Value, native: &Value) -> Result<Option<f6
         )
     };
     let (a, b) = (surface(actual), surface(native));
-    let bound = profile_rows::complete_bound(&a, &b, 1e-7);
+    let (bound, separation) = profile_rows::complete_comparison(&a, &b, 1e-7);
     println!(
         "SWEEP_REENTRY_REFIT_RESULT {}",
         serde_json::json!({"family":"sweep1_refit_stage_reentry","id":operation["id"],
-            "complete_image_bound":bound,"epsilon":1e-7,
+            "complete_image_bound":bound,"complete_image_separation_lower_bound":separation,
+            "epsilon":1e-7,
             "actual_controls":a.control_point_count_v(),"native_controls":b.control_point_count_v()})
     );
     Ok(bound)
