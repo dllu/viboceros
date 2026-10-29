@@ -785,5 +785,9 @@
     "tools/rhino_oracle/test_sweep1_refit_representations.py": "0927d962f3583f067b8c36b3ce4daa329c00c43aeddd3f96340c9c5a929215ba",
     "tools/rhino_oracle/test_sweep1_refit_sections.py": "f9d1798dde2b41c52d6de268a1307ca870f6fe1570e03aa52be31c119a22154c",
     "tools/rhino_oracle/test_sweep1_regions.py": "258cb631bc1d1a615ea970b903c8a031a92da7db7c5c88a56ce9308cfdaa4b39"
-  }
+  },
+  "measurement_revision": "13100280561ce07ebd5868c9c3c267fd8701a3d3",
+  "measurement_record": "docs/oracle/curve-tangents-validation.json",
+  "measurement_record_sha256": "3d9494d6e9b396c49ec01721e79a0e26f42bfff55253cdf600905bf2f94f6074",
+  "measurement_scope": "Historical ordered tangent batch and endpoint diagnostic validation at the measured implementation revision. Original outcomes, limits and complete source bindings remain fixed; this does not qualify later runtime changes or resolve general Refit gaps."
 }
