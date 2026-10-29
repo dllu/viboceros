@@ -190,7 +190,9 @@ fn closest_point_boundary_candidates_use_the_original_surface_image() {
             })
             .collect(),
         vec![0., 0., 0., 1., 1., 1.],
-        vec![0., 0., 1., 1.],
+        // An unclamped linear boundary exercises column normalization.
+        // Clamped endpoints copy the original controls exactly.
+        vec![-1., 0., 1., 2.],
     )
     .unwrap();
     let target = p(x + 2., 0., 0.);
