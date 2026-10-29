@@ -19,10 +19,10 @@ retain natural spans and their global length lookup. Joining those spans avoids
 collapsing a closed loop during subsequent Hermite reconstruction. Fine closed
 fitting retains its existing subdivision policy.
 
-Seven immutable public Rhino captures contain 140 contexts: six smooth source
+Nine immutable public Rhino captures contain 196 contexts: six smooth source
 families, circles, asymmetric closed curves, spatial and tall profiles, mixed
 companions, affine domains, weight gauges, and endpoint-frame boundaries. Inputs
-and authored stations are preserved. Tests compare complete XYZ curve images;
+and authored stations are preserved within each engine. Tests compare complete XYZ curve images;
 exact projected minimum-distance bounds certify disagreements in either direction.
 Separate complete-curve comparisons cover the twelve newly admitted open Loft
 pairs without changing their historical baseline fixture.
@@ -32,6 +32,15 @@ pairs without changing their historical baseline fixture.
 | Large tolerances and holdouts | 66/66 | 66/66 |
 | Endpoint frames and boundaries | 58/58 | 57/58 |
 | Independent fine and coarse profiles | 16/16 | 4/16 |
+| Public-frame candidate re-entry | 42/42 | 23/42 |
+| No-fit preparation controls | 14/14 | 14/14 |
+
+The [re-entry checkpoint](refit-proposal-reentry-validation.json) compares original
+profiles and independently authored cubics using public endpoint frames. These
+are independent inputs, not established native fitting intermediates. The 42
+re-entry cases retain 18 certified gaps and one inconclusive comparison; their
+no-fit controls retain the authored parameter domains. Both backends agree on
+all 56 complete output definitions. Production fitting is unchanged by this checkpoint.
 
 Geometry agreement does not establish control-net or parameter-domain parity.
 Some large paired native fits have 18 controls while an equivalent whole cubic
@@ -40,7 +49,8 @@ active. General Rhino fitting compatibility is unfinished.
 
 ```sh
 cargo test --frozen -p viboceros-geometry --test loft_refit_large_tolerances \
-  --test sweep_refit_large_tolerances --test sweep_refit_independent_profiles --no-fail-fast
+  --test sweep_refit_large_tolerances --test sweep_refit_independent_profiles \
+  --test sweep_refit_proposal_reentry --no-fail-fast
 cargo test --frozen -p viboceros-oracle --features native-smlib \
   --test sweep_refit_extended_sections
 python3 -m unittest tools.rhino_oracle.test_sweep1_refit_extended_captures

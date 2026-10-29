@@ -10,6 +10,9 @@ mod profile_rows;
 const EPSILON: f64 = 1e-7;
 
 fn tensor(curve: &NurbsCurve, axis: Option<usize>) -> NurbsSurface {
+    // A common homogeneous sign change preserves the curve exactly and gives
+    // the tensor image certificate the positive weights it requires.
+    let sign = curve.control_points()[0].weight().signum();
     let controls = curve
         .control_points()
         .iter()
@@ -19,7 +22,8 @@ fn tensor(curve: &NurbsCurve, axis: Option<usize>) -> NurbsSurface {
                 if let Some(axis) = axis {
                     point[axis] = f64::from(u);
                 }
-                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), control.weight()).unwrap()
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), control.weight() * sign)
+                    .unwrap()
             })
         })
         .collect();
@@ -42,6 +46,14 @@ fn definition(curve: &NurbsCurve) -> Value {
 }
 
 pub fn compare(a: &NurbsCurve, b: &NurbsCurve) -> Value {
+    // Prove close, equally parameterized curves before searching for a
+    // counterexample. In particular, a one-ULP homogeneous round trip should
+    // not spend the geometric separation budget on an equivalent curve.
+    if let Ok(Some(bound)) = a.parameter_curve_deviation_bound(b, EPSILON) {
+        return json!({"actual_controls":a.control_points().len(),
+            "native_controls":b.control_points().len(),"complete_image_bound":bound,
+            "complete_image_separation_lower_bound":null});
+    }
     // Orthogonal projection is 1-Lipschitz. Try all coordinate planes for
     // counterexamples, including spatial inputs whose XY image hides a gap.
     let separation = [2, 1, 0].into_iter().find_map(|axis| {

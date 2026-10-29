@@ -11,6 +11,8 @@ from .generate_sweep1_refit_endpoint_frames import request as frames
 from .generate_sweep1_refit_opposed_frames import request as opposed
 from .generate_sweep1_refit_opposed_boundary import request as boundary
 from .generate_sweep1_refit_opposed_cosines import request as cosines
+from .generate_sweep1_refit_proposal_reentry import request as reentry
+from .generate_sweep1_refit_opposed_preparation import request as preparation
 from .sweep_refit_sections_probe import validate
 
 FAMILIES = [
@@ -21,6 +23,8 @@ FAMILIES = [
     ('sweep1_refit_opposed_frames', opposed, 18),
     ('sweep1_refit_opposed_boundary', boundary, 6),
     ('sweep1_refit_opposed_cosines', cosines, 10),
+    ('sweep1_refit_proposal_reentry', reentry, 42),
+    ('sweep1_refit_opposed_preparation', preparation, 14),
 ]
 
 
@@ -54,8 +58,14 @@ class ExtendedRefitCaptureTests(unittest.TestCase):
                     self.assertEqual(value['parameters'], operation['parameters'])
                     self.assertEqual(len(value['curves']), len(operation['sections']))
                     for original, recorded in zip(operation['sections'], value['before']):
-                        self.assertEqual({k: recorded[k] for k in ['degree','knots','control_points']},
-                                         {k: original[k] for k in ['degree','knots','control_points']})
+                        # Rhino stores homogeneous coordinates. Reconstructing
+                        # Euclidean controls can round a non-unit weight by one
+                        # ULP; before/after equality above still detects mutation.
+                        expected = dict(degree=original['degree'], knots=original['knots'],
+                                        control_points=[dict(weight=c['weight'], point=[
+                                            x*c['weight']*(1./c['weight']) for x in c['point']])
+                                            for c in original['control_points']])
+                        self.assertEqual({k: recorded[k] for k in expected}, expected)
 
     def test_boundary_and_frame_controls_cover_both_contexts(self):
         for build in [independent, large, holdouts, frames, opposed, boundary, cosines]:

@@ -61,6 +61,16 @@ fn opposition_cosine_boundary_matches_complete_native_curves() {
     replay("sweep1_refit_opposed_cosines", 10);
 }
 
+#[test]
+fn proposal_reentry_matches_complete_native_curves() {
+    replay("sweep1_refit_proposal_reentry", 42);
+}
+
+#[test]
+fn proposal_reentry_no_fit_preparation_matches_complete_native_curves() {
+    replay("sweep1_refit_opposed_preparation", 14);
+}
+
 macro_rules! independent_cases {
     ($($name:ident = $index:literal;)*) => {
         const _: () = {
