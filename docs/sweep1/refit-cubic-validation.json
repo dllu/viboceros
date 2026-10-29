@@ -1623,5 +1623,7 @@
     "tools/rhino_oracle/observations/source_snapshots/ab933a3d4937d2b7b3f6baaa9ee4b750af8c3288bf15310e8c22198aeb65a361.gz": "ef73d929329ab367e058e1f1f31f55f9fac8bd0acc5bdc5589dc84ac484cbe22",
     "tools/rhino_oracle/observations/source_snapshots/0da758af1b17526e85f94b8a94e830af02b49c6c2a491f6a0845ac3ce969ddc4.gz": "d4f440f8998835b875f0a0213d2900097bf5c85e6170177ba25424a57089b754",
     "tools/rhino_oracle/observations/source_snapshots/31fdf4db7d3eedd0d54eaf99dcdb499f92ccb575ee5a7dc7d4fa6bbd9489c4e0.gz": "f45e71f24a07d3daebe2f72ae7e19274d85c2d746fb46d2789e1153e27ed4216"
-  }
+  },
+  "measurement_revision": "917065f40c9a9d9ca71fe35b6b83e8a32dbd30b6",
+  "measurement_scope": "Historical public cubic and MakeCompatible diagnostics at measurement_revision. These source bindings are retained. Direct section-only RPC and 16-context implementation comparisons are recorded in refit-section-api-validation.json."
 }

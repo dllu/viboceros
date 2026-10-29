@@ -12,68 +12,51 @@ Compatibility remains incomplete at comparison epsilon `1e-7`:
 | Re-entered C1 profiles | 12/12 | 8/12 |
 | Combined | 98/98 | 91/98 |
 
-The [latest full replay](refit-separation-validation.json) covers all 98 cases on both
-backends, retaining seven failing image assertions: three base fine profiles
-and four fine C1 single profiles and pairs. Coarse profiles and disabled fitting
-pass. The [earlier base record](refit-development-validation.json) retains its
-measured source bindings for commit `46371ad4e`.
+The [latest full replay](refit-separation-validation.json) retains seven failing
+surface assertions on both backends. Exact projected distance bounds certify
+these geometric gaps, charging stored-coordinate and weight rounding. A proved
+separation skips further correspondence attempts; numerical witnesses alone
+cannot establish either agreement or disagreement.
 
-Exact projected distance bounds now establish a point on each failing surface
-farther than `1e-7` from the complete native surface. These are geometric gaps.
-The proof charges stored-coordinate and weight rounding; numerical closest
-points only propose witnesses. A proved gap skips further correspondence trials.
+The [direct fitting replay](refit-section-api-validation.json) constructs all
+16 original/C1 and single/paired contexts. Eight match complete native curves;
+eight have certified geometric gaps, including two additional original paired
+profiles. All assertions remain active. The [section-only oracle API](section-fitting-api.md)
+exposes this preparation without rail frames or surface construction. RPC checks
+cover coarse and disabled fitting, authored parameters and input preservation on
+both backends; the fine cases retain their separate required comparison gate.
 
-UI regressions cover a circular section on a line: both tolerance getters,
-`Simplify`, explicit and automatic stations, cancellation, and local and model
-undo/redo. Broader UI qualification remains outstanding. Exact squared-distance
-Bernstein bounds resolve the former concentric-circle placement failure.
-Whole-surface comparisons charge rounding from U-degree elevation; matching
-end rows alone cannot establish agreement.
+Rust currently uses two independently certified passes for a single smooth
+profile. Paired fitting reconstructs independently fitted curves at shared
+stations and requires a fresh complete original-source bound. Straight and
+polygon profiles keep their own path. Nominal tolerance is not a final
+source-distance guarantee across successive passes: a native 0.001 single fit
+can lie more than 0.0015 from a source point.
+A paired native fit also contains a point more than `6.26e-7` from its source
+at tolerance `1e-6`, disproving a universal half-tolerance source reserve.
 
-Single smooth profiles use two independently certified fitting passes.
-Straight and polygon profiles keep their separate path. The same profile can
-produce different boundaries when supplied alone or in a pair. Batch fitting
-checks original profiles and intermediate curves, reconstructs at shared
-interpolation stations, and requires a fresh complete original-source bound.
-Inserting knots after independent reconstruction gives different geometry.
-Target-knot witnesses and tangent frames now propose correspondences for the
-final reconstruction certificate, removing two false construction failures.
-The complete image proof still gates acceptance; fitting and subdivision are
-unchanged. Regression tests cover independent parameter clocks, displaced
-curves and retraced source visits.
+Complete image certificates gate all fitting proposals. Target-knot witnesses
+and tangent frames help qualify reconstruction across independent parameter
+clocks. Correspondence proposals refine to at most 1024 intervals; arithmetic
+and distance limits remain fixed. Whole-surface proofs include U-degree elevation
+rounding and every profile row. Matching only end rows cannot prove agreement.
+The fitting tests may use observed cuts to isolate piece construction; production
+never reads native cuts or control nets.
 
-Known span correspondences receive progressively refined proposal budgets,
-scaled to their active spline spans and capped at 1024 intervals. Distance and
-arithmetic-work limits remain unchanged. A nominal Refit tolerance is not a
-final source-distance guarantee: two passes accumulate error, and the
-[exact regression](../../tools/rhino_oracle/test_sweep1_refit.py) retains a native
-0.001 fit more than 0.0015 from a source point.
-
-The new boundary-construction test uses Rhino-observed subdivisions only in
-test inputs. Independently constructed G1 pieces match all four complete native
-boundary curves, including the fine quadratic and circle, within `1e-7`.
-Production fitting never reads those cuts or native control nets. The remaining
-fine single-profile problem is subdivision selection.
-
-Public API diagnostics retain controlled handles, `Curve.Fit`, legacy Sweep,
-SDK sweep tolerance, closest points and equivalent rational storage forms.
-The legacy and modern Sweep APIs agree on their tested inputs; varying SDK
-sweep tolerance leaves the five tested profile definitions unchanged.
-All 140 public closest-point queries match Viboceros within `1e-7`. C1 re-entry
-uses independently constructed input curves, not purported Rhino intermediates.
-[Representation diagnostics](refit-representation-validation.json) certify 12
-equivalent inputs at `1e-12`, then compare 16 native sweep images. Knot insertion
-changes two images beyond `1e-7`; degree elevation and affine domains retain
-the tested images. The [clock correction](refit-clock-validation.json) resolves
-all 16 fresh multi-span batches and adds 450 precision queries. Numerical NURBS
-batches share request normalization; fitting retains its measured public request
-of `0.01`, giving an effective tolerance of `1e-4`.
 [Public fitting diagnostics](refit-cubic-validation.json) reproduce 480 native
-continuity queries and certify 96 full or trimmed input curves within `1.2e-14`.
-Public `MakeCompatible` results exactly reproduce 32 complete Sweep boundary
-definitions; its zero and one-degree angle controls retain 48 complete curve
-definitions. These cases isolate the remaining fitting differences from Sweep
-construction. Public cubic-Bezier partitions are recorded separately and do not
-establish the private subdivision rule. Production fitting is unchanged.
-The other historical qualification inventories still describe `main` before
-this branch and must be refreshed before merging.
+continuity queries and certify 96 full or trimmed inputs within `1.2e-14`.
+Public `MakeCompatible` outputs exactly reproduce 32 complete Sweep boundary
+definitions. Reconstructed C1 inputs are independent test curves, not claimed
+native intermediates. Public cubic-Bezier fitting is a separate diagnostic API.
+
+[Representation diagnostics](refit-representation-validation.json) prove 12
+equivalent inputs at `1e-12`; inserting knots nevertheless changes two native
+sweep images beyond `1e-7`. Public closest-point queries agree within `1e-7`.
+The [clock correction](refit-clock-validation.json) resolves 16 multi-span
+batches and adds 450 precision queries. Numerical NURBS batches share request
+normalization; fitting uses public request `0.01`, effective tolerance `1e-4`.
+
+UI regressions cover circular sections, both tolerance getters, `Simplify`,
+explicit and automatic stations, cancellation, and local/model undo and redo.
+Broader command/UI qualification remains outstanding. Historical inventories
+still describe `main` before this branch and must be refreshed before merging.

@@ -252,6 +252,8 @@ mod projected_object_snap;
 pub use projected_object_snap::ProjectedObjectSnapFixture;
 mod sweep;
 pub use sweep::SweepFixture;
+mod sweep_refit_sections;
+pub use sweep_refit_sections::SweepRefitSectionsFixture;
 mod curve_approximation;
 mod curve_area;
 mod curve_join_close;
@@ -743,6 +745,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: SweepFixture,
+    },
+    SweepRefitSections {
+        id: String,
+        #[serde(flatten)]
+        fixture: SweepRefitSectionsFixture,
     },
     CurveFrames {
         id: String,
@@ -2826,6 +2833,7 @@ impl Operation {
             | Self::CurvatureCommand { id, .. }
             | Self::CurveFrames { id, .. }
             | Self::Sweep1 { id, .. }
+            | Self::SweepRefitSections { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::TwistPoints { id, .. }
             | Self::BendPoints { id, .. }
@@ -3560,6 +3568,9 @@ fn execute(
             curve_frames::run(fixture, iterations, tolerance)?
         }
         Operation::Sweep1 { fixture, .. } => sweep::run(fixture, iterations, tolerance)?,
+        Operation::SweepRefitSections { fixture, .. } => {
+            sweep_refit_sections::run(fixture, iterations)?
+        }
         Operation::SurfaceCurvature { fixture, .. } => {
             surface_jets::run_curvature(fixture, iterations)?
         }

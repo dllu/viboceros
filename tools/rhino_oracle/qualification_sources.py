@@ -199,6 +199,21 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(path in paths for path in [
+            'crates/viboceros-oracle/src/sweep_refit_sections.rs',
+            'crates/viboceros-oracle/tests/sweep_refit_sections.rs',
+            'crates/viboceros-geometry/tests/sweep_refit_make_compatible.rs']):
+        paths = [*paths, 'crates/viboceros-oracle/src/sweep_refit_sections.rs',
+                 'crates/viboceros-oracle/tests/sweep_refit_sections.rs',
+                 'crates/viboceros-geometry/tests/sweep_refit_make_compatible.rs',
+                 'crates/viboceros-geometry/tests/support/loft_parameters.rs',
+                 'crates/viboceros-geometry/tests/support/profile_rows.rs',
+                 'tools/rhino_oracle/sweep_refit_sections_probe.py',
+                 'tools/rhino_oracle/generate_sweep1_refit_sections.py',
+                 'tools/rhino_oracle/test_sweep1_refit_sections.py',
+                 'tools/rhino_oracle/fixtures/sweep1_refit_sections.json',
+                 'tools/rhino_oracle/observations/sweep1_refit_sections.json',
+                 'docs/sweep1/section-fitting-api.md']
     if 'crates/viboceros-geometry/tests/sweep_refit_compatibility_native.rs' in paths:
         paths = [*paths, 'crates/viboceros-geometry/tests/support/loft_parameters.rs',
                  'tools/rhino_oracle/generate_sweep1_refit_compatibility_stages.py',

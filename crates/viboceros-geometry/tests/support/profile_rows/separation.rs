@@ -66,9 +66,19 @@ pub(super) fn lower_bound(a: &NurbsSurface, b: &NurbsSurface, limit: f64) -> Opt
     let target = projected(reference, axis)?;
     let numerical = Tolerance::try_new((limit * 1e-4).max(f64::from_bits(1)), 1e-12, 1e-10).ok()?;
     let mut proposal = None;
-    for index in 1..64 {
-        let fraction = f64::from(index) / 64.;
-        let parameter = source.parameter_at(fraction).ok()?;
+    let mut stations = (1..64)
+        .map(|index| source.parameter_at(f64::from(index) / 64.))
+        .collect::<Result<Vec<_>, _>>()
+        .ok()?;
+    // Uniform samples can coincide with every interpolation node while missing
+    // a real gap between them. Span midpoints add independent witness proposals;
+    // the unchanged complete global distance bracket still proves every claim.
+    stations.extend(source.spans().map(|(start, end)| start.midpoint(end)));
+    stations.sort_by(f64::total_cmp);
+    stations.dedup();
+    for parameter in stations {
+        let domain = source.domain();
+        let fraction = (parameter - domain.start()) / (domain.end() - domain.start());
         let point = source.evaluate(parameter).ok()?;
         // These related profiles usually have similar clocks. A cheap local
         // refinement only proposes a witness; the global bracket below is

@@ -13653,6 +13653,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'curve_cubic_structure':
         from curve_cubic_structure_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'sweep_refit_sections':
+        from sweep_refit_sections_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'arc_length_batch':
         from arc_length_batch_probe import run
         return run(operation, globals(), iterations, tolerance)
