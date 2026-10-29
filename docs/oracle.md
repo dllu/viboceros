@@ -69,4 +69,11 @@ reports also require the [timing interpretation](oracle/timing.md).
 <a id="timing-interpretation"></a>
 <a id="edge-analysis-topology"></a>
 
+Host-side request checks and picker preparation live in ordered
+`capture_preflight_*` modules. Desktop ownership, process launch and response
+validation stay in the client. Future capture provenance includes all host helper
+bodies. The [preflight refactor receipt](oracle-preflight-validation.json) records
+the historical source-equivalence audit; ongoing request-policy tests remain in
+`test_capture_preflight.py`.
+
 Detailed sections are now in the [comparison evidence index](oracle/README.md).

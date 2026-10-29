@@ -1,4 +1,8 @@
 """Shared source inventory for extracted application and geometry modules."""
+from .capture_preflight import CLIENT_SOURCE_FILES
+
+ORACLE_CLIENT_MODULES = ['tools/rhino_oracle/'+p for p in CLIENT_SOURCE_FILES]
+
 
 BOOLEAN_PROMPT_MODULES = [
     'src/app/boolean_solids/mesh_trim.rs',
@@ -334,6 +338,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'tools/rhino_oracle/capture_family.py' in paths or any(p in paths for p in ORACLE_CLIENT_MODULES):
+        paths = [*paths, *ORACLE_CLIENT_MODULES]
     if any(p in paths for p in SUBD_FACE_CUSTOM_MODULES):
         paths = [*paths, *SUBD_FACE_CUSTOM_MODULES]
     if any(p in paths for p in SUBD_EDIT_HISTORY_MODULES):

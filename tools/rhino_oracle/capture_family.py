@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 from .client import OracleClient
+from .capture_preflight import CLIENT_SOURCE_FILES
 
 HERE = Path(__file__).resolve().parent
 
@@ -17,6 +18,8 @@ def capture(family, query, sources, scheme, timeout=1200):
     if fixture.exists() and fixture.read_bytes() != encoded:
         raise ValueError('existing fixture differs: ' + family)
     fixture.write_bytes(encoded)
+    if any(name in CLIENT_SOURCE_FILES for name in sources):
+        sources = [*sources, *CLIENT_SOURCE_FILES]
     sources = list(dict.fromkeys([*sources, 'capture_family.py']))
     frozen = {name: (HERE / name).read_bytes() for name in sources}
     digest = lambda data: hashlib.sha256(data).hexdigest()

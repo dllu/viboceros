@@ -48,7 +48,7 @@
     "crates/viboceros-geometry/src/subd.rs": "cbf17c4134e94c2044a932f345402395eedf2746c4d3de9bb7184d8d443a1231",
     "crates/viboceros-io/tests/subd_face_merge.rs": "5be280be87e9195276d67bf5cee8f1bfc8fb6a94cd7c88bc7936ecd945454179",
     "crates/viboceros-io/tests/support/subd_face_merge.rs": "d20353b9e31874d58bf28a67a13340e7c1a4a2b83636910d1f33bfcc2c9e9029",
-    "tools/rhino_oracle/qualification_sources.py": "48219f8d66f0c2b4a7e6075346a193543671366d57ffcabdc6c0c329cbc6d942",
+    "tools/rhino_oracle/qualification_sources.py": "270e5bf02d8d73721e1e8407b9803470f2abaad0489c8457904d52f5a3a56334",
     "tools/rhino_oracle/test_subd_merge_kernel.py": "bf4d99d8abe41ced72fbf4bc18f92321edf034d3a6b95b2be0bf1f3001e2a5bb",
     "crates/viboceros-geometry/src/lib.rs": "589bf8d60b3c75e5bf4038a9e9779d9f7c8d06d6c7d06758ea653a2f804a3aae",
     "crates/viboceros-opennurbs/src/lib.rs": "059c8e6110d781a37a92ea3d0e2df51b6e6530b5d6929be23b14b45b30df9404",
@@ -66,5 +66,6 @@
   },
   "additional_edit_history_receipt": "subd-edit-history-validation.json",
   "checks_scope": "Original qualification; current follow-up results are in additional_edit_history_receipt.",
-  "additional_custom_face_receipt": "subd-face-custom-validation.json"
+  "additional_custom_face_receipt": "subd-face-custom-validation.json",
+  "host_preflight_refactor_receipt": "../oracle-preflight-validation.json"
 }

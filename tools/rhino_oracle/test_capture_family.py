@@ -94,5 +94,33 @@ class CaptureFamilyTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
 
+    def test_host_client_sources_are_frozen_transitively(self):
+        names = capture_family.CLIENT_SOURCE_FILES
+        for name in names:
+            (self.root / name).write_text('owned helper '+name+'\n')
+        capture_family.capture('example', self.query,
+                               ['producer.py', 'capture_preflight_components.py'],
+                               'private-test-scheme', 42)
+        result = json.loads(self.output.read_text())
+        self.assertEqual(set(result['provenance']['sources']),
+                         {'producer.py', 'capture_family.py', *names})
+        for name, digest in result['provenance']['sources'].items():
+            archive = self.root / ('observations/source_snapshots/' + digest + '.gz')
+            self.assertEqual(gzip.decompress(archive.read_bytes()),
+                             (self.root / name).read_bytes())
+
+    def test_host_helper_mutation_cannot_publish_a_capture(self):
+        for name in capture_family.CLIENT_SOURCE_FILES:
+            (self.root / name).write_text('owned helper '+name+'\n')
+        def run(*args, **kwargs):
+            (self.root / 'capture_preflight_components.py').write_text('changed\n')
+            return self.response
+        self.run.side_effect = run
+        with self.assertRaisesRegex(ValueError, 'producer changed'):
+            capture_family.capture('example', self.query, ['client.py'],
+                                   'private-test-scheme', 42)
+        self.assertFalse(self.output.exists())
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -84,11 +84,11 @@
     "tools/rhino_oracle/generate_subd_result_history.py": "aafa9340164ab129023753fdbd081d5564a947e2e68ca374074e19ddbf338261",
     "tools/rhino_oracle/generate_subd_result_history_reselect.py": "dfa5d80ef451dea653440a7eddbf9d21f11acb355fa7f68721d64e3b6b20292d",
     "tools/rhino_oracle/fixtures/subd_merge_allocation_recipes.json": "581e57f186688b816aa58787244a566adecc29f3eaaf75aa7f8719bdc23cb460",
-    "tools/rhino_oracle/qualification_sources.py": "48219f8d66f0c2b4a7e6075346a193543671366d57ffcabdc6c0c329cbc6d942",
+    "tools/rhino_oracle/qualification_sources.py": "270e5bf02d8d73721e1e8407b9803470f2abaad0489c8457904d52f5a3a56334",
     "docs/geometry/subd-edit-history.md": "e2ea96ccd84ce1fa36a78a39bafd2efe3be1b15d1ba773857cff977ed6748f33",
     "docs/commands/subdivide.md": "a7e64bf1c28126b7581e7242a11f2c3bc9ac012e163135c0cfa43e8dab7cbf45",
     "docs/commands/merge-faces.md": "8d8195937eeaeb41ca9e5c075099a378f09006892292eacfe00b86da573a8049",
-    "tools/rhino_oracle/client.py": "edbfdcafca6e7723010c7b0fa1b9c02cc0f948a32711ba077d1a26428d38f337",
+    "tools/rhino_oracle/client.py": "0ccc32c8a431f38e52930fe5453e9624dbf2aa1cdfd5dfd6c8b6f93786df0069",
     "tools/rhino_oracle/structural_sdk.py": "1d8a60f78bac28221bfce8a5cc57fb83cb203c116036fc9e5831bb8bd4ff9018",
     "tools/rhino_oracle/rhino_worker.py": "237df89b673bd7d73bfe9045b14cb95adbb985c0492fd2d80106dd8fc9447d6d",
     "crates/viboceros-opennurbs/native/subd_face_properties.h": "da0ca5676efbc5a01e41858be7307fcb528cec6151586126b6a24b1bbd2b151e",
@@ -223,7 +223,17 @@
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-geometry/tests/support/mesh_face_merge.rs": "a94cb210c8625d9dd6ffe4aa053f33fe37625eb9af93c8ef0953e34921dd8b94",
     "crates/viboceros-geometry/tests/mesh_face_merge.rs": "f68e99ece4471a2e95c569667645893cb60b19cc1025e57e4766d3f831666ac3",
-    "crates/viboceros-oracle/tests/mesh_face_merge.rs": "01f3a4632ec8e7643f0756f097930f0bbac0fdb3a6bb2949228449bdc754e14b"
+    "crates/viboceros-oracle/tests/mesh_face_merge.rs": "01f3a4632ec8e7643f0756f097930f0bbac0fdb3a6bb2949228449bdc754e14b",
+    "tools/rhino_oracle/oracle_errors.py": "dba935b91b74e1d300e54049c06468df4aa83846a0dd7ed89df0187739abde1a",
+    "tools/rhino_oracle/capture_preflight.py": "96c61ac732c40be972f0d15282eb782243e4f521b5f80ec6f8349be32814c7a5",
+    "tools/rhino_oracle/capture_preflight_geometry.py": "ce4872f392946d60e81def365c2aa717ac742e540fea23691a802baa9103ddbc",
+    "tools/rhino_oracle/capture_preflight_construction.py": "c4faf12bbbd4eb6efa6485859bbc3d10121dd6c3b475379fa09b45cf45c4b351",
+    "tools/rhino_oracle/capture_preflight_surfaces.py": "f18119b51c37d31b8fb6a07d63eabc36aa0498f17111cf641e8db54380566040",
+    "tools/rhino_oracle/capture_preflight_components.py": "92b73acd797cdbb7bd1fcb9a854a635561a83b5b6960d33c94d5655794339f4a",
+    "tools/rhino_oracle/capture_preflight_curves.py": "197cb7c5bf715f96e2f66cc541637564e1ada98b0225a7e9aa731121a5f73ae6",
+    "tools/rhino_oracle/capture_preflight_modeling.py": "12e6eed2bf8173e302b668d9e07d20d0f16ad4f6f3f91b79b31bcb27aad68ab9",
+    "tools/rhino_oracle/capture_preflight_picking.py": "0a7a71d2fcf407fc84d1ecb7e7c4838e13c2fa0045f8c6447a05f4d860cc22fe",
+    "tools/rhino_oracle/capture_preflight_common.py": "f9e8bad940a9f33f541fcb5a2f27fefd1d4de2993c5e95e03439f49577142ee3"
   },
   "checks": {
     "default_document": {
@@ -308,5 +318,6 @@
     "Comparative speed"
   ],
   "allocation_audit_sha256": "084fcc0abf8a4c3963db7464eab4f2f0fe7bbc359bb21b161983cf9e99020c41",
-  "additional_custom_face_receipt": "subd-face-custom-validation.json"
+  "additional_custom_face_receipt": "subd-face-custom-validation.json",
+  "host_preflight_refactor_receipt": "../oracle-preflight-validation.json"
 }

@@ -158,7 +158,7 @@
     "src/app/interactive_cancel.rs": "3a7a0cc82badd804e2797d37a4d81fa14353a37ce9319237c134ffcf8641d74b",
     "src/viewport/polygon_edges.rs": "f047ed1c7daed68a3f10ed0ba5168c8a3ee62dabae90c7e825c624c3ea273840",
     "src/viewport/polygon_components.rs": "94e91d34bf977ad06f4a14ed9b805f2855a4b9cef8aa5d0451c7040c97d91d59",
-    "tools/rhino_oracle/qualification_sources.py": "48219f8d66f0c2b4a7e6075346a193543671366d57ffcabdc6c0c329cbc6d942",
+    "tools/rhino_oracle/qualification_sources.py": "270e5bf02d8d73721e1e8407b9803470f2abaad0489c8457904d52f5a3a56334",
     "tools/rhino_oracle/test_merge_faces_command.py": "c8c86ad94d6026350840c0aee2cb95faab1c600d34cb010a45ba7d13624ac990",
     "tools/rhino_oracle/test_mesh_merge_faces.py": "ca6ef393adc1acda6c0f975dd5abef8a249c1b086a4fe87d6d906c0e2422a1c8",
     "docs/commands/merge-faces.md": "8d8195937eeaeb41ca9e5c075099a378f09006892292eacfe00b86da573a8049",
@@ -172,9 +172,9 @@
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/rhino_worker.py": "237df89b673bd7d73bfe9045b14cb95adbb985c0492fd2d80106dd8fc9447d6d",
-    "tools/rhino_oracle/client.py": "edbfdcafca6e7723010c7b0fa1b9c02cc0f948a32711ba077d1a26428d38f337",
+    "tools/rhino_oracle/client.py": "0ccc32c8a431f38e52930fe5453e9624dbf2aa1cdfd5dfd6c8b6f93786df0069",
     "tools/rhino_oracle/structural_sdk.py": "1d8a60f78bac28221bfce8a5cc57fb83cb203c116036fc9e5831bb8bd4ff9018",
-    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "tools/rhino_oracle/capture_family.py": "9a64c5c67362c1a5e21990674921ebabfffde45007c0cdab9d0517abe1a4dfbe",
     "tools/rhino_oracle/generate_merge_faces_command_more_v2.py": "b5646c1a097e6a5896993566ace9682ac0815a1c8cd17a217478a99a769b4031",
     "tools/rhino_oracle/generate_merge_faces_command_more.py": "804480ffb3a14f4e1edaa2c43f07b85e1edc37b0ed816dd1e59982975546937a",
     "tools/rhino_oracle/managed_component_input.py": "5757bf1c4a599715e9c5c597aaaa89d5bd098e294e1c6943c97212db82db7b54",
@@ -192,7 +192,17 @@
     "src/viewport/display_cache.rs": "572c3b1b1782f5bdbd3168c8487a1e4a40cbbe46061cb6fe6ed0eba9c1b0f3b0",
     "src/viewport/display_cache/subd.rs": "4c2fdff979da63e3fa1dff99b8f7e4d4d9d146973e8d89addbb6285d58114b97",
     "src/viewport/scene.rs": "f892736da3f7a0973c7034b36632ece99c4379df6cc8aeb115930a0e1c9656c8",
-    "src/viewport/scene/subd_face_colors.rs": "709014da00503e7a8a573814a6538b7742d04870e65b8d3591a7315dd85a1015"
+    "src/viewport/scene/subd_face_colors.rs": "709014da00503e7a8a573814a6538b7742d04870e65b8d3591a7315dd85a1015",
+    "tools/rhino_oracle/oracle_errors.py": "dba935b91b74e1d300e54049c06468df4aa83846a0dd7ed89df0187739abde1a",
+    "tools/rhino_oracle/capture_preflight.py": "96c61ac732c40be972f0d15282eb782243e4f521b5f80ec6f8349be32814c7a5",
+    "tools/rhino_oracle/capture_preflight_geometry.py": "ce4872f392946d60e81def365c2aa717ac742e540fea23691a802baa9103ddbc",
+    "tools/rhino_oracle/capture_preflight_construction.py": "c4faf12bbbd4eb6efa6485859bbc3d10121dd6c3b475379fa09b45cf45c4b351",
+    "tools/rhino_oracle/capture_preflight_surfaces.py": "f18119b51c37d31b8fb6a07d63eabc36aa0498f17111cf641e8db54380566040",
+    "tools/rhino_oracle/capture_preflight_components.py": "92b73acd797cdbb7bd1fcb9a854a635561a83b5b6960d33c94d5655794339f4a",
+    "tools/rhino_oracle/capture_preflight_curves.py": "197cb7c5bf715f96e2f66cc541637564e1ada98b0225a7e9aa731121a5f73ae6",
+    "tools/rhino_oracle/capture_preflight_modeling.py": "12e6eed2bf8173e302b668d9e07d20d0f16ad4f6f3f91b79b31bcb27aad68ab9",
+    "tools/rhino_oracle/capture_preflight_picking.py": "0a7a71d2fcf407fc84d1ecb7e7c4838e13c2fa0045f8c6447a05f4d860cc22fe",
+    "tools/rhino_oracle/capture_preflight_common.py": "f9e8bad940a9f33f541fcb5a2f27fefd1d4de2993c5e95e03439f49577142ee3"
   },
   "remaining": [
     "Other allocating SubD operations beyond qualified global/local SubDivide paths",
@@ -201,5 +211,6 @@
   "additional_face_property_receipt": "../geometry/subd-face-properties-validation.json",
   "additional_edit_history_receipt": "../geometry/subd-edit-history-validation.json",
   "checks_scope": "Original qualification; current follow-up results are in additional_edit_history_receipt.",
-  "additional_custom_face_receipt": "../geometry/subd-face-custom-validation.json"
+  "additional_custom_face_receipt": "../geometry/subd-face-custom-validation.json",
+  "host_preflight_refactor_receipt": "../oracle-preflight-validation.json"
 }

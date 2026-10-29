@@ -70,5 +70,6 @@
   "color_alpha_conversion": "RhinoCommon opacity = 255 - stored ON_Color transparency",
   "additional_edit_history_receipt": "subd-edit-history-validation.json",
   "checks_scope": "Original qualification; current follow-up results are in additional_edit_history_receipt.",
-  "additional_custom_face_receipt": "subd-face-custom-validation.json"
+  "additional_custom_face_receipt": "subd-face-custom-validation.json",
+  "host_preflight_refactor_receipt": "../oracle-preflight-validation.json"
 }

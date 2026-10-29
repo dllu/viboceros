@@ -1,0 +1,63 @@
+{
+  "scope": "Historical source and behavior equivalence for the extraction of host capture preflight",
+  "base_revision": "7e3d4b5a53ae6f6f3758d2e7158853713410e242",
+  "legacy_client_sha256": "edbfdcafca6e7723010c7b0fa1b9c02cc0f948a32711ba077d1a26428d38f337",
+  "legacy_snapshot": "tools/rhino_oracle/observations/source_snapshots/edbfdcafca6e7723010c7b0fa1b9c02cc0f948a32711ba077d1a26428d38f337.gz",
+  "original_client_lines": 2839,
+  "refactored_client_lines": 1490,
+  "largest_preflight_module_lines": 289,
+  "equivalence": {
+    "legacy_client_sha256": "edbfdcafca6e7723010c7b0fa1b9c02cc0f948a32711ba077d1a26428d38f337",
+    "original_preflight_statements": 202,
+    "private_guards_factored": 9,
+    "preflight_order_and_bodies_identical": true,
+    "launch_response_desktop_and_helper_bodies_identical": true
+  },
+  "private_guard_boundary_cases": 1440,
+  "private_guard_lookup_order_cases": 54,
+  "checks": {
+    "python_full": {
+      "passed_tests": 2226,
+      "log_sha256": "75058d259a94aaa880fee76b6ac34584fda928494710b8f3f9a82d26ddec5959"
+    },
+    "focused_protocol_and_provenance": {
+      "passed_tests": 74,
+      "log_sha256": "5690c6aa72f9464261991850ccbf4de9f89f54fc056b0d1c8d64d119bdf0d0b6"
+    },
+    "source_equivalence": {
+      "passed": true,
+      "report_sha256": "a6152b133c8585b455e8a9da0609d9b393bf9f0deaab8f89093efc8b16f123f5"
+    },
+    "cli_help": {
+      "passed": true,
+      "log_sha256": "23522327fa7501815182fc12f6200605b26ff2a1a43907481d05ab2c17f3620d"
+    },
+    "specialized_worker_return_paths": true,
+    "angle_picker_callback_actions_and_timing": true,
+    "nested_picker_globals_resolved": true,
+    "host_dependency_inventory_matches_import_graph": true
+  },
+  "sources": {
+    "tools/rhino_oracle/client.py": "0ccc32c8a431f38e52930fe5453e9624dbf2aa1cdfd5dfd6c8b6f93786df0069",
+    "tools/rhino_oracle/oracle_errors.py": "dba935b91b74e1d300e54049c06468df4aa83846a0dd7ed89df0187739abde1a",
+    "tools/rhino_oracle/capture_preflight.py": "96c61ac732c40be972f0d15282eb782243e4f521b5f80ec6f8349be32814c7a5",
+    "tools/rhino_oracle/capture_preflight_geometry.py": "ce4872f392946d60e81def365c2aa717ac742e540fea23691a802baa9103ddbc",
+    "tools/rhino_oracle/capture_preflight_construction.py": "c4faf12bbbd4eb6efa6485859bbc3d10121dd6c3b475379fa09b45cf45c4b351",
+    "tools/rhino_oracle/capture_preflight_surfaces.py": "f18119b51c37d31b8fb6a07d63eabc36aa0498f17111cf641e8db54380566040",
+    "tools/rhino_oracle/capture_preflight_components.py": "92b73acd797cdbb7bd1fcb9a854a635561a83b5b6960d33c94d5655794339f4a",
+    "tools/rhino_oracle/capture_preflight_curves.py": "197cb7c5bf715f96e2f66cc541637564e1ada98b0225a7e9aa731121a5f73ae6",
+    "tools/rhino_oracle/capture_preflight_modeling.py": "12e6eed2bf8173e302b668d9e07d20d0f16ad4f6f3f91b79b31bcb27aad68ab9",
+    "tools/rhino_oracle/capture_preflight_picking.py": "0a7a71d2fcf407fc84d1ecb7e7c4838e13c2fa0045f8c6447a05f4d860cc22fe",
+    "tools/rhino_oracle/capture_preflight_common.py": "f9e8bad940a9f33f541fcb5a2f27fefd1d4de2993c5e95e03439f49577142ee3",
+    "tools/rhino_oracle/capture_family.py": "9a64c5c67362c1a5e21990674921ebabfffde45007c0cdab9d0517abe1a4dfbe",
+    "tools/rhino_oracle/test_capture_preflight.py": "74106b769194e5144d0709c2bb3a84e133b872ca1f201f59c0e5b71f9a5ee08d",
+    "tools/rhino_oracle/test_capture_family.py": "06e184b72eaccbd33dd2f6d5406de0635f9dac94f65747579457bbb3b54ce65b",
+    "tools/rhino_oracle/qualify_capture_preflight.py": "ce916cb26e537ab76b0a33a8ce0cae9be03c3970e2544d35b277ad0b6570b004",
+    "tools/rhino_oracle/qualification_sources.py": "270e5bf02d8d73721e1e8407b9803470f2abaad0489c8457904d52f5a3a56334",
+    "docs/oracle.md": "05ad29f394ec766659c168607e08b90a920852f2804c6f8ee10dc49114d338c1"
+  },
+  "verification_command": "python3 -m tools.rhino_oracle.qualify_capture_preflight",
+  "verification_scope": "Run the source audit against these bound source bytes. Later intentional driver changes require their own qualification; this is not a permanent implementation freeze.",
+  "geometry_implementation_changed": false,
+  "live_rhino_capture_required": false
+}
