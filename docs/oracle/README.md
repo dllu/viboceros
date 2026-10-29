@@ -18,6 +18,7 @@ For current command support, use the [command reference](../commands/README.md).
 - [Extrusion interchange](../extrusions.md): native type retention and canonical B-rep checks.
 - [ToSubD](../tosubd-kernel.md): conversion kernels, document workflows and application prompts.
 - [Editing comparisons](editing-evidence.md): curves, meshes, B-reps and selection.
+- [Mesh face collapse investigation](mesh-face-collapse.md): input modes, no-ops and native diagnostics.
 - [Curve input](curve-input.md): interpolation and getter behavior.
 - [Geometry representation](geometry-evidence.md): mass properties, morphs and intersections.
 - [Surface editing](surface-editing.md): trim removal, edge separation and shrinking.

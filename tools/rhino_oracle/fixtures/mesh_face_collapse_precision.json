@@ -1,0 +1,917 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "fan-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          3,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ],
+        [
+          1,
+          5,
+          2
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "fan-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          3,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ],
+        [
+          1,
+          5,
+          2
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "quad-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "quad-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "tetra-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "tetra-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "seams-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          6,
+          2,
+          3
+        ],
+        [
+          6,
+          3,
+          4
+        ],
+        [
+          6,
+          4,
+          7
+        ],
+        [
+          7,
+          5,
+          2
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "seams-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          6,
+          2,
+          3
+        ],
+        [
+          6,
+          3,
+          4
+        ],
+        [
+          6,
+          4,
+          7
+        ],
+        [
+          7,
+          5,
+          2
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "disjoint-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          10,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          3,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ],
+        [
+          1,
+          5,
+          2
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "disjoint-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          10,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          3,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ],
+        [
+          1,
+          5,
+          2
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "single-triangle-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "single-triangle-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "single-quad-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "single-quad-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "precision": "double"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "nonplanar-none-single",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          -2
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ],
+      "precision": "single"
+    },
+    {
+      "op": "mesh_face_collapse_precision",
+      "id": "nonplanar-none-double",
+      "face": 0,
+      "channels": "none",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          -2
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ],
+      "precision": "double"
+    }
+  ]
+}

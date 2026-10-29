@@ -1,0 +1,1082 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "id": "fan-none",
+      "value": {
+        "undo": true,
+        "history": "\nCommand: _CollapseMeshFace\nSelect mesh face to collapse: _Pause\nSelect mesh face to collapse\nOutput mesh is invalid.\nSelect mesh face to collapse. Press Enter when done ( Undo ): _Enter\nSelect mesh face to collapse. Press Enter when done ( Undo )\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "redo": true,
+        "after": {
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "uv": [],
+          "ngons": [],
+          "colors": [],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "attributes_preserved": true,
+        "command_result": "Success",
+        "input_trace": {
+          "snap_settings": {
+            "modes": 0,
+            "enabled": true,
+            "project_to_cplane": false,
+            "capture_radius": 12
+          },
+          "errors": [],
+          "motion": [],
+          "clicks": [
+            {
+              "motion_acknowledged": true,
+              "pixel": [
+                393,
+                156
+              ],
+              "marker": "@catenary-click:fan-none-0",
+              "click_acknowledged": true,
+              "action": 0,
+              "aim": [
+                0.6666666666666666,
+                0.6666666666666666,
+                0.0
+              ]
+            }
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "completed": 2,
+          "prompts": [
+            "Select mesh face to collapse",
+            "Select mesh face to collapse. Press Enter when done ( Undo )"
+          ],
+          "expected": 2,
+          "sent": [
+            {
+              "token": "_Enter",
+              "prompt": "Select mesh face to collapse. Press Enter when done ( Undo )",
+              "action": 1
+            }
+          ],
+          "edge_picks": []
+        },
+        "before": {
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "uv": [],
+          "ngons": [],
+          "colors": [],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "fan-all",
+      "value": {
+        "undo": true,
+        "history": "\nCommand: _CollapseMeshFace\nSelect mesh face to collapse: _Pause\nSelect mesh face to collapse\nOutput mesh is invalid.\nSelect mesh face to collapse. Press Enter when done ( Undo ): _Enter\nSelect mesh face to collapse. Press Enter when done ( Undo )\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "redo": true,
+        "after": {
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "ngons": [],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "attributes_preserved": true,
+        "command_result": "Success",
+        "input_trace": {
+          "snap_settings": {
+            "modes": 0,
+            "enabled": true,
+            "project_to_cplane": false,
+            "capture_radius": 12
+          },
+          "errors": [],
+          "motion": [],
+          "clicks": [
+            {
+              "motion_acknowledged": true,
+              "pixel": [
+                393,
+                156
+              ],
+              "marker": "@catenary-click:fan-all-0",
+              "click_acknowledged": true,
+              "action": 0,
+              "aim": [
+                0.6666666666666666,
+                0.6666666666666666,
+                0.0
+              ]
+            }
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "completed": 2,
+          "prompts": [
+            "Select mesh face to collapse",
+            "Select mesh face to collapse. Press Enter when done ( Undo )"
+          ],
+          "expected": 2,
+          "sent": [
+            {
+              "token": "_Enter",
+              "prompt": "Select mesh face to collapse. Press Enter when done ( Undo )",
+              "action": 1
+            }
+          ],
+          "edge_picks": []
+        },
+        "before": {
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "ngons": [],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-none",
+      "value": {
+        "undo": true,
+        "history": "\nCommand: _CollapseMeshFace\nSelect mesh face to collapse: _Pause\nSelect mesh face to collapse\nOutput mesh is invalid.\nSelect mesh face to collapse. Press Enter when done ( Undo ): _Enter\nSelect mesh face to collapse. Press Enter when done ( Undo )\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "redo": true,
+        "after": {
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "uv": [],
+          "ngons": [],
+          "colors": [],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "attributes_preserved": true,
+        "command_result": "Success",
+        "input_trace": {
+          "snap_settings": {
+            "modes": 0,
+            "enabled": true,
+            "project_to_cplane": false,
+            "capture_radius": 12
+          },
+          "errors": [],
+          "motion": [],
+          "clicks": [
+            {
+              "motion_acknowledged": true,
+              "pixel": [
+                265,
+                195
+              ],
+              "marker": "@catenary-click:quad-none-0",
+              "click_acknowledged": true,
+              "action": 0,
+              "aim": [
+                1.0,
+                1.0,
+                0.0
+              ]
+            }
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "completed": 2,
+          "prompts": [
+            "Select mesh face to collapse",
+            "Select mesh face to collapse. Press Enter when done ( Undo )"
+          ],
+          "expected": 2,
+          "sent": [
+            {
+              "token": "_Enter",
+              "prompt": "Select mesh face to collapse. Press Enter when done ( Undo )",
+              "action": 1
+            }
+          ],
+          "edge_picks": []
+        },
+        "before": {
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "uv": [],
+          "ngons": [],
+          "colors": [],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-all",
+      "value": {
+        "undo": true,
+        "history": "\nCommand: _CollapseMeshFace\nSelect mesh face to collapse: _Pause\nSelect mesh face to collapse\nOutput mesh is invalid.\nSelect mesh face to collapse. Press Enter when done ( Undo ): _Enter\nSelect mesh face to collapse. Press Enter when done ( Undo )\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "redo": true,
+        "after": {
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "uv": [
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "ngons": [],
+          "colors": [
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "attributes_preserved": true,
+        "command_result": "Success",
+        "input_trace": {
+          "snap_settings": {
+            "modes": 0,
+            "enabled": true,
+            "project_to_cplane": false,
+            "capture_radius": 12
+          },
+          "errors": [],
+          "motion": [],
+          "clicks": [
+            {
+              "motion_acknowledged": true,
+              "pixel": [
+                265,
+                195
+              ],
+              "marker": "@catenary-click:quad-all-0",
+              "click_acknowledged": true,
+              "action": 0,
+              "aim": [
+                1.0,
+                1.0,
+                0.0
+              ]
+            }
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "completed": 2,
+          "prompts": [
+            "Select mesh face to collapse",
+            "Select mesh face to collapse. Press Enter when done ( Undo )"
+          ],
+          "expected": 2,
+          "sent": [
+            {
+              "token": "_Enter",
+              "prompt": "Select mesh face to collapse. Press Enter when done ( Undo )",
+              "action": 1
+            }
+          ],
+          "edge_picks": []
+        },
+        "before": {
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "ngons": [],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "provenance": {
+    "request_sha256": "139fec50b50e889ee2f52e82774c3d5aec2322f5b8d18b016250c910424964a4",
+    "sources": {
+      "generate_mesh_face_collapse_shaded.py": "3625bbdd51d6d642e3224821afd3f00e3840a7ee88cb83b18e81881082da92e5",
+      "generate_mesh_face_collapse.py": "5b2ad7236afb476cd599c116642488f5b0f2432b84dca9457df5ac56b2cd1cef",
+      "mesh_face_collapse_probe.py": "0755b62a9f29f0e4c76e8319e7168ea6a9d95c7f4863bad36c4c4f00d746f442",
+      "conic_getter_input.py": "6b9366b21113ebb08207477d39b6a082b7ef0a70a42cbf1fc473fa20e6897522",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "ef90c53d70626d1ad7c9d85004aa8870651f4563efb14c7d9af0eeed4340cd18",
+      "client.py": "6862ee3fce7bfc636bf21a872396e00e843e80668a7e9701c38459072347828c",
+      "structural_sdk.py": "f8dac5c61e7a05552c05dae8864daeeff23aac443928d2ab525d00f92fac6fc2",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}
