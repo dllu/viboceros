@@ -25,6 +25,14 @@ the dedicated `run_headless.sh` Xvfb display. Direct Python API calls to
 `OracleClient.run_rhino` on Linux require an Xvfb session established by this
 wrapper. Replay and native-only modes do not launch Rhino.
 
+Structural SDK adapters use the registry in
+[`structural_sdk.py`](../../tools/rhino_oracle/structural_sdk.py) for validation,
+helper staging and worker dispatch. Register a new adapter there with its helper
+dependencies. Most adapters receive `(operation, host, iterations, tolerance)`;
+context-only command adapters receive `(operation, host)`. The client copies the
+registry beside each worker. Runtime dispatch remains compatible with IronPython;
+host-only dependencies are loaded inside host functions.
+
 For experiments that change application preferences or remembered command
 defaults, use a private settings scheme:
 

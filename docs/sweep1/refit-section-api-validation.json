@@ -951,5 +951,7 @@
     "tools/rhino_oracle/observations/source_snapshots/4d0024c7822b1eea19442a7f8f43d0587c88554dd9b81d41893c0823f0b86bd3.gz": "4140df9a7e23d89671a5f5e6fa040708f6d897262eea13aefcd44a1fa03f4f70",
     "tools/rhino_oracle/observations/source_snapshots/13dcc0187e5b0e7dba18082a67eaee33bd2b33da16f07682384601b3b8b72794.gz": "7b97d121dac4a37a6c35bd31865f7002c67d8134deea8a7b34d53c9de0cfec37",
     "tools/rhino_oracle/observations/source_snapshots/f738c2bc37a785e8e46f6360e962b6b3bd77ae1afd3588c5c67041cad2680d9a.gz": "6314b537629812183ffe54ddb93e52d05f2f43f1beed3d031e08504f710f7a73"
-  }
+  },
+  "measurement_revision": "0a97318aeffeb7ce186cd51ba8731a933f92cb64",
+  "measurement_scope": "Historical section-only RPC and fitting comparison at measurement_revision. Its original source bindings are retained. The later shared oracle dispatcher refactor is qualified separately; production fitting is unchanged."
 }

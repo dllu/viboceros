@@ -1,6 +1,9 @@
-"""Host-side validation and worker companions for owned structural SDK probes."""
+"""Shared registry for host validation, job staging and Rhino worker dispatch.
+
+Keep module imports and worker functions compatible with IronPython 2.7.
+Host-only dependencies are imported inside the functions that need them.
+"""
 from importlib import import_module
-from pathlib import Path
 import shutil
 
 # The validator module is also the worker entry. Dependencies stay beside it in
@@ -187,6 +190,28 @@ PROBES = {
     'selected_coplanar_faces': ('selected_coplanar_faces_probe', ('coplanar_faces_probe', 'coplanar_mesh_probe')),
 }
 
+# These command probes own their timing and need only the worker context.
+CONTEXT_ONLY_PROBES = frozenset([
+    'select_uv_rows', 'grip_delete_sequence', 'grip_weight',
+    'grip_weight_lifecycle', 'grip_weight_nurbs', 'delete_grips',
+    'grip_visibility', 'grip_navigation', 'remap_cplane',
+])
+
+
+def can_dispatch(kind):
+    # Sweep1 retains its established adapter in the worker.
+    return kind in PROBES and kind != 'sweep1'
+
+
+def dispatch(operation, host, iterations, tolerance):
+    kind = operation['op']
+    if not can_dispatch(kind):
+        raise ValueError('operation does not use structural dispatch')
+    module = __import__(PROBES[kind][0])
+    if kind in CONTEXT_ONLY_PROBES:
+        return module.run(operation, host)
+    return module.run(operation, host, iterations, tolerance)
+
 
 def validate_operations(request):
     for operation in request.get('operations', []):
@@ -198,7 +223,8 @@ def validate_operations(request):
             raise ValueError('selected mesh native getter capture remains pending')
 
 
-def stage_helpers(request, source_directory: Path, destination: Path):
+def stage_helpers(request, source_directory, destination):
+    from pathlib import Path
     modules = set()
     for operation in request.get('operations', []):
         specification = PROBES.get(operation.get('op'))

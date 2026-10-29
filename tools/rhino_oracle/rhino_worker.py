@@ -6315,87 +6315,12 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
-    if operation.get('op') == 'orient_curve_edge':
-        import orient_curve_edge_probe
-        return orient_curve_edge_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'curve_array':
-        import curve_array_probe
-        return curve_array_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'array_surface':
-        import array_surface_probe
-        return array_surface_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'array_curve_surface':
-        import array_curve_surface_probe
-        return array_curve_surface_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_tangent':
-        import splop_tangent_probe
-        return splop_tangent_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_finish':
-        import splop_finish_probe
-        return splop_finish_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_guided':
-        import splop_guided_probe
-        return splop_guided_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_reference':
-        import splop_reference_probe
-        return splop_reference_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_grips':
-        import splop_grips_probe
-        return splop_grips_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'splop_command':
-        import splop_probe
-        return splop_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'morph_fit_readback':
-        import morph_fit_readback_probe
-        return morph_fit_readback_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'morph_fit_benchmark':
-        import morph_fit_benchmark_probe
-        return morph_fit_benchmark_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'stretch_details':
-        import stretch_details_probe
-        return stretch_details_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'stretch_fit_sdk':
-        import stretch_fit_probe
-        return stretch_fit_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'stretch_grips':
-        import stretch_grips_probe
-        return stretch_grips_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'stretch_geometry_command':
-        import stretch_geometry_probe
-        return stretch_geometry_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') in ('stretch_sdk', 'stretch_command'):
-        import stretch_probe
-        return stretch_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_closed_sequence':
-        import soft_edit_surface_closed_sequence_probe
-        return soft_edit_surface_closed_sequence_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_seams':
-        import soft_edit_surface_seams_probe
-        return soft_edit_surface_seams_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_repeat_sdk':
-        import soft_edit_surface_repeat_sdk_probe
-        return soft_edit_surface_repeat_sdk_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_sdk':
-        import soft_edit_surface_sdk_probe
-        return soft_edit_surface_sdk_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_sequence':
-        import soft_edit_surface_sequence_probe
-        return soft_edit_surface_sequence_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_shapes':
-        import soft_edit_surface_shapes_probe
-        return soft_edit_surface_shapes_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_surface_command':
-        import soft_edit_surface_probe
-        return soft_edit_surface_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_curve_sequence':
-        import soft_edit_sequence_probe
-        return soft_edit_sequence_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_curve_lengths':
-        import soft_edit_lengths_probe
-        return soft_edit_lengths_probe.run(operation, globals(), iterations, tolerance)
-    if operation.get('op') == 'soft_edit_curve_command':
-        import soft_edit_curve_probe
-        return soft_edit_curve_probe.run(operation, globals(), iterations, tolerance)
+    try:
+        from structural_sdk import can_dispatch, dispatch
+    except ImportError:
+        from tools.rhino_oracle.structural_sdk import can_dispatch, dispatch
+    if can_dispatch(operation.get('op')):
+        return dispatch(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'fillet_edge_reference':
         import fillet_edge_probe
         return fillet_edge_probe.run(operation, globals())
@@ -7081,192 +7006,6 @@ def _execute(operation, iterations, tolerance):
     if kind == 'subcurve_edge':
         from subcurve_edge_probe import run
         return run(operation, globals())
-    if kind == 'surface_curve_offset':
-        from surface_curve_offset_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'short_path_command':
-        from short_path_command_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'polyline_on_mesh':
-        from polyline_on_mesh_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'mesh_patch_command':
-        from mesh_patch_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_torus_references':
-        from subd_torus_references_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'curve_path_extrusion':
-        from curve_path_extrusion_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'surface_apex_command':
-        from surface_apex_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'creator_extrusions':
-        from creator_extrusions_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'creator_types':
-        from creator_types_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'tosubd_command':
-        from tosubd_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind in ('mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes'):
-        from mesh_weld_channels_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_boolean_sdk':
-        from mesh_boolean_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'extract_points_command':
-        import extract_points_probe
-        return extract_points_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_trim_command':
-        import mesh_trim_probe
-        return mesh_trim_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_split_command':
-        from mesh_split_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_self_intersect_command':
-        from mesh_self_intersect_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_intersect_command':
-        from mesh_intersect_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_boolean_command':
-        from mesh_boolean_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_outline_command':
-        from mesh_outline_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_outline_sdk':
-        from mesh_outline_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('unify_normals_sdk','unify_normals_command'):
-        from unify_normals_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('rebuild_mesh_sdk','rebuild_mesh_command'):
-        from rebuild_mesh_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('rebuild_mesh_normals_sdk','rebuild_mesh_normals_command'):
-        from rebuild_normals_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('triangulate_mesh_sdk','triangulate_mesh_command'):
-        from triangulate_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'nonplanar_quad_sample':
-        from nonplanar_sample_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'nonplanar_quad_command':
-        from nonplanar_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'nonplanar_quad_conversion':
-        from nonplanar_quad_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'quadrangulate_mesh_command':
-        from quad_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_quad_conversion':
-        from quad_conversion_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_point_mesh_sdk':
-        from insert_point_mesh_sdk_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_point_command':
-        from insert_point_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'subd_spin_edge':
-        from subd_spin_edge_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'component_seams_subd':
-        from component_seams_subd_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('mesh_component_weld_commands','mesh_component_weld_followup','mesh_component_weld_holdout'):
-        from mesh_component_weld_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_component_unweld_commands':
-        from mesh_component_unweld_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_component_unweld_channels':
-        from mesh_component_unweld_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_unweld_channels':
-        from mesh_unweld_channels_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'mesh_channels_sdk':
-        from mesh_channels_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'control_polygon_command':
-        from control_polygon_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'soft_crease_command':
-        from soft_crease_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'crease_command':
-        from crease_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subdivide_command':
-        from subdivide_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_ellipsoid_command':
-        from subd_ellipsoid_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_torus_command':
-        from subd_torus_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_sphere_references':
-        from subd_sphere_references_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_cone_references':
-        from subd_cone_references_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_truncated_cone_references':
-        from subd_truncated_cone_references_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_truncated_cone_command':
-        from subd_truncated_cone_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_cone_command':
-        from subd_cone_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_sphere_command':
-        from subd_sphere_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_cylinder_references':
-        from subd_cylinder_references_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_cylinder_command':
-        from subd_cylinder_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_plane_command':
-        from subd_plane_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'subd_box_command':
-        from subd_box_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'face_create_command':
-        from face_create_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'planar_mesh_command':
-        from planar_mesh_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'mesh_polyline_command':
-        from mesh_polyline_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'mesh_from_lines_command':
-        from mesh_from_lines_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'surface_interpolate_command':
-        from surface_interpolate_command_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'surface_interpolate':
-        from surface_interpolate_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind == 'surface_short_path':
-        from surface_short_path_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind in ('surface_offset_command','surface_offset_through_point'):
-        from surface_offset_command_probe import run
-        return run(operation,globals(),iterations,tolerance)
     if kind == 'surface_pullback_endpoints':
         from surface_pullback_endpoints_probe import run
         return run(operation, globals())
@@ -7279,30 +7018,6 @@ def _execute(operation, iterations, tolerance):
     if kind == 'polyhedral_boolean_command':
         from polyhedral_command_probe import run
         return run(operation,globals())
-    if kind == 'select_uv_rows':
-        from sel_uv_probe import run
-        return run(operation, globals())
-    if kind == 'grip_delete_sequence':
-        from grip_delete_sequence_probe import run
-        return run(operation, globals())
-    if kind == 'grip_weight':
-        from grip_weight_probe import run
-        return run(operation, globals())
-    if kind == 'grip_weight_lifecycle':
-        from weight_lifecycle_probe import run
-        return run(operation, globals())
-    if kind == 'grip_weight_nurbs':
-        from weight_nurbs_probe import run
-        return run(operation, globals())
-    if kind == 'delete_grips':
-        from delete_grips_probe import run
-        return run(operation, globals())
-    if kind == 'grip_visibility':
-        from grip_visibility_probe import run
-        return run(operation, globals())
-    if kind == 'grip_navigation':
-        from grip_navigation_probe import run
-        return run(operation, globals())
     if kind == 'grip_alias':
         from grip_alias_probe import run
         return run(operation,globals())
@@ -7378,9 +7093,6 @@ def _execute(operation, iterations, tolerance):
         return _volume_selection(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
-    if kind == 'curve_frame_boundary':
-        from curve_frame_boundary_probe import run
-        return run(operation, globals(), iterations, tolerance)
     if kind == "curve_frames":
         return _curve_frames(operation, iterations)
     if kind == "brep_mesh_boundaries":
@@ -13638,209 +13350,14 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
-    if kind == 'divide_along_creases':
-        from divide_creases_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'two_rail_sweep':
-        from two_rail_sweep_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'curve_deviation':
-        from curve_deviation_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'curvature_graph':
-        from curvature_graph_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'curve_cubic_structure':
-        from curve_cubic_structure_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'sweep_refit_sections':
-        from sweep_refit_sections_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'arc_length_batch':
-        from arc_length_batch_probe import run
-        return run(operation, globals(), iterations, tolerance)
     if kind == 'curve_length_parameters':
         from loft_scalar_clock_probe import run
         return run(operation, globals(), iterations, tolerance)
-    if kind == 'spiral_layout':
-        from spiral_layout_probe import run
-        return run(operation, globals(), iterations, tolerance)
 
-    if kind == 'ellipse_command':
-        from ellipse_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind=='arc_extension':
-        from arc_extension_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind=='arc_tangent':
-        from arc_tangent_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind=='arc_command':
-        from arc_command_probe import run
-        return run(operation,globals(),iterations,tolerance)
-    if kind in ('circle_around','circle_deform','circle_tangent'):
-        from circle_around_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'catenary_command':
-        from catenary_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind in ('helix_command', 'spiral_command'):
-        from spiral_command_probe import run
-        return run(operation, globals(), iterations, tolerance)
 
-    if kind == 'hyperbola_command':
-        from hyperbola_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'parabola_command':
-        from parabola_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'conic_command':
-        from conic_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'rectangle':
-        from rectangle_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'surface_flow':
-        from surface_flow_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'flow_roadlike':
-        from flow_roadlike_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'flow_line':
-        from flow_line_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'flow_grips':
-        from flow_grips_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'flow':
-        from flow_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'orient_surface_options':
-        from orient_surface_options_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'orient_surface_grips':
-        from orient_surface_grips_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'orient_surface':
-        from orient_surface_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'remap_cplane':
-        from remap_cplane_probe import run
-        return run(operation, globals())
-    if kind == 'orient_points':
-        from orient_points_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'orient_on_curve':
-        from orient_on_curve_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'curvature_sampling':
-        from curvature_sampling_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'extract_curvature_graph':
-        from extract_curvature_graph_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'point_deviation':
-        from point_deviation_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'sphere_fit_points':
-        from sphere_fit_points_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'line_through_points':
-        from line_through_points_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'plane_through_points':
-        from plane_through_points_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'network_surface':
-        from network_surface_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'surface_fillet':
-        from surface_fillet_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_kink_subcurve':
-        import insert_kink_subcurve_probe
-        return insert_kink_subcurve_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'empty_undo_selection':
-        import empty_undo_selection_probe
-        return empty_undo_selection_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_edit_point_history':
-        import insert_edit_point_history_probe
-        return insert_edit_point_history_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_edit_point_limits':
-        import insert_edit_point_limits_probe
-        return insert_edit_point_limits_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_edit_point_command':
-        import insert_edit_point_probe
-        return insert_edit_point_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_control_point_command':
-        import insert_control_point_probe
-        return insert_control_point_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'remove_control_point_composite_parameters':
-        import remove_control_point_composite_parameters_probe
-        return remove_control_point_composite_parameters_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'remove_control_point_parameters':
-        import remove_control_point_parameters_probe
-        return remove_control_point_parameters_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'remove_control_point_command':
-        import remove_control_point_probe
-        return remove_control_point_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'remove_knot_smooth_periodic':
-        import remove_knot_smooth_periodic_probe
-        return remove_knot_smooth_periodic_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'remove_knot_command':
-        import remove_knot_command_probe
-        return remove_knot_command_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_knot_command':
-        import insert_knot_command_probe
-        return insert_knot_command_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'insert_kink_command':
-        import insert_kink_probe
-        return insert_kink_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'polyline_closure':
-        import polyline_closure_probe
-        return polyline_closure_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'mark_foci_command':
-        import mark_foci_probe
-        return mark_foci_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'reduce_polyline_command':
-        import reduce_polyline_probe
-        return reduce_polyline_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'nested_rational_transfer':
-        import nested_rational_probe
-        return nested_rational_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'delete_subcurve_command':
-        import delete_subcurve_probe
-        return delete_subcurve_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'modify_radius_command':
-        import modify_radius_probe
-        return modify_radius_probe.run(operation, globals(), iterations, tolerance)
-    if kind == 'simplify_curve_command':
-        import simplify_curve_probe
-        return simplify_curve_probe.run(operation, globals(), iterations, tolerance)
 
-    if kind == 'reparameterize_face_command':
-        from reparameterize_face_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'reparameterize_block_command':
-        from reparameterize_block_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'rail_revolve':
-        from rail_revolve_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'cull_degenerate_mesh_faces':
-        from cull_degenerate_probe import run
-        return run(operation, globals(), iterations, tolerance)
-    if kind == 'geometry_validity':
-        from geometry_validity_probe import run
-        return run(operation, globals(), iterations, tolerance)
 
-    if kind == 'selected_coplanar_faces':
-        from selected_coplanar_faces_probe import run
-        return run(operation, globals(), iterations, tolerance)
 
-    if kind == 'merge_coplanar_faces':
-        from coplanar_faces_probe import run
-        return run(operation, globals(), iterations, tolerance)
     if kind == 'blend_edge':
         from blend_edge_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -16195,9 +15712,6 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
-    if kind in ("curve_insert_control_point_geometry", "surface_insert_control_point_geometry"):
-        import insert_control_point_geometry_probe
-        return insert_control_point_geometry_probe.run(operation, globals(), iterations, tolerance)
 
     if kind == "curve_remove_control_point_geometry":
         document = Rhino.RhinoDoc.ActiveDoc

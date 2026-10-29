@@ -66,7 +66,10 @@ class OracleClientTests(unittest.TestCase):
     def test_started_worker_prevents_startup_macro_from_being_resent(self):
         client = OracleClient(launcher="/bin/true")
         def launch(*args):
-            (args[3].parent / "worker-progress.log").write_text("worker: started\n")
+            job = args[3].parent
+            self.assertEqual((job / 'structural_sdk.py').read_bytes(),
+                             Path(__file__).with_name('structural_sdk.py').read_bytes())
+            (job / "worker-progress.log").write_text("worker: started\n")
             return subprocess.CompletedProcess(["true"], 0, stdout="", stderr="")
         ticks = iter(range(100))
         with (
