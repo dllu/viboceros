@@ -1,0 +1,4270 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "id": "fan-none-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "fan-none-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "fan-all-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "fan-all-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              3,
+              4
+            ],
+            [
+              0,
+              4,
+              1
+            ],
+            [
+              1,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              0
+            ],
+            [
+              0,
+              4,
+              1
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-none-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-none-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-all-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "colors": [
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "quad-all-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "uv": [
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "colors": [
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "tetra-none-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5773502588272095,
+              -0.5773502588272095,
+              -0.5773502588272095
+            ],
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "tetra-none-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5773502588272095,
+              -0.5773502588272095,
+              -0.5773502588272095
+            ],
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "tetra-all-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5773502588272095,
+              -0.5773502588272095,
+              -0.5773502588272095
+            ],
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "tetra-all-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5773502588272095,
+              -0.5773502588272095,
+              -0.5773502588272095
+            ],
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "normals": [
+            [
+              0.6865178346633911,
+              -0.3868335783481598,
+              -0.6156728267669678
+            ],
+            [
+              -0.3868335783481598,
+              0.6865178346633911,
+              -0.6156728267669678
+            ],
+            [
+              -0.5423403382301331,
+              -0.5423403382301331,
+              0.641664981842041
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "nonplanar-none-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              3,
+              1
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "nonplanar-none-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [],
+          "faces": [
+            [
+              0,
+              2,
+              3,
+              1
+            ]
+          ],
+          "colors": [],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "nonplanar-all-single",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": false,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": false
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              3,
+              1
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "nonplanar-all-double",
+      "value": {
+        "undo": true,
+        "redo": true,
+        "attributes_preserved": true,
+        "input_trace": null,
+        "display_mode_id": "1311adcb-d89e-4051-a3f0-f64441fb8ec6",
+        "authored_double_precision": true,
+        "native_invalid_mesh_warning": true,
+        "before": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.5144957304000854,
+              0.5144957304000854,
+              0.6859943270683289
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              3.0,
+              9.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              4,
+              5,
+              2
+            ]
+          ],
+          "colors": [
+            [
+              0,
+              0,
+              0,
+              255
+            ],
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              51,
+              93,
+              141,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              -2.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        },
+        "command_result": "Success",
+        "history": "\nCommand: _CollapseMeshFace\nOutput mesh is invalid.\nCommand: _Enter\nUndoing CollapseMeshFace\nRedoing CollapseMeshFace\n",
+        "after": {
+          "ngons": [],
+          "valid": true,
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "normals": [
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              -0.15362156927585602,
+              0.4133762717247009,
+              0.897507905960083
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ],
+            [
+              0.2357022613286972,
+              0.2357022613286972,
+              0.9428090453147888
+            ]
+          ],
+          "uv": [
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              4.0
+            ],
+            [
+              4.0,
+              16.0
+            ],
+            [
+              5.0,
+              25.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              3,
+              1
+            ]
+          ],
+          "colors": [
+            [
+              17,
+              31,
+              47,
+              255
+            ],
+            [
+              34,
+              62,
+              94,
+              255
+            ],
+            [
+              68,
+              124,
+              188,
+              255
+            ],
+            [
+              85,
+              155,
+              235,
+              255
+            ]
+          ],
+          "source_unchanged_by_read": true,
+          "raw_float_vertices": [
+            [
+              2.0,
+              0.0,
+              1.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "double_precision": true
+        }
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "provenance": {
+    "request_sha256": "9e64410a4d83a99e8bb2986782ab9cf44576b0524845f4845d45249be8dc04b0",
+    "sources": {
+      "generate_mesh_face_collapse_buffers.py": "b95a00bad6b016ae9247ae65d77ed6f8ddfd990ec0a9883ec95717488d50daec",
+      "generate_mesh_face_collapse.py": "5b2ad7236afb476cd599c116642488f5b0f2432b84dca9457df5ac56b2cd1cef",
+      "mesh_face_collapse_probe.py": "8d2f85ac8f06840efb80cce9cef8b80d53b0ea6c577527474305d067a6629f6c",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "5ffd34fe65dcb7755e520daed791f0d7951e8380e9301dca9208b1be2ce96c6d",
+      "client.py": "149cbeffe8216a41a06b554d12bc0d24c2b4f17f10e882da19fd0e76c707a65f",
+      "structural_sdk.py": "983a60f5275045a44bd2cf2320d364c321450433d85dc4958b2836f2b89de32a",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

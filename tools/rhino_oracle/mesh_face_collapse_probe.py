@@ -5,11 +5,11 @@ import re
 
 def validate(op):
     fields = {'op', 'id', 'vertices', 'faces', 'face', 'channels'}
-    if op.get('op') == 'mesh_face_collapse_precision':
+    if op.get('op') in ['mesh_face_collapse_precision','mesh_face_collapse_buffers']:
         fields.add('precision')
     if op.get('op') == 'mesh_face_collapse_mode':
         fields.add('display_mode')
-    if set(op) != fields or op['op'] not in ['mesh_face_collapse', 'mesh_face_collapse_point', 'mesh_face_collapse_click', 'mesh_face_collapse_precision', 'mesh_face_collapse_getter', 'mesh_face_collapse_shaded', 'mesh_face_collapse_mode']:
+    if set(op) != fields or op['op'] not in ['mesh_face_collapse', 'mesh_face_collapse_point', 'mesh_face_collapse_click', 'mesh_face_collapse_precision', 'mesh_face_collapse_getter', 'mesh_face_collapse_shaded', 'mesh_face_collapse_mode', 'mesh_face_collapse_buffers']:
         raise ValueError('bounded face collapse recipe required')
     if 'display_mode' in op and op['display_mode'] not in ['Wireframe','Shaded']:
         raise ValueError('known owned display mode required')
@@ -52,6 +52,23 @@ def run(op, host, iterations, tolerance):
             result.update(float_vertices=[[float(p.X),float(p.Y),float(p.Z)] for p in geometry.Vertices],
                           double_precision=bool(geometry.Vertices.UseDoublePrecisionVertices),
                           valid=bool(geometry.IsValid))
+        if op['op'] == 'mesh_face_collapse_buffers':
+            crc = int(geometry.DataCRC(0))
+            was_double = bool(geometry.Vertices.UseDoublePrecisionVertices)
+            copy = geometry.DuplicateMesh()
+            try:
+                copy.Vertices.UseDoublePrecisionVertices = False
+                if copy.Vertices.UseDoublePrecisionVertices:
+                    raise ValueError('float-only snapshot still has double vertices')
+                result['raw_float_vertices'] = [[float(p.X),float(p.Y),float(p.Z)] for p in copy.Vertices]
+            finally:
+                copy.Dispose()
+            result['double_precision'] = was_double
+            result['source_unchanged_by_read'] = (int(geometry.DataCRC(0)) == crc and
+                bool(geometry.Vertices.UseDoublePrecisionVertices) == was_double)
+            if not result['source_unchanged_by_read']:
+                raise ValueError('position buffer snapshot mutated its source')
+            result['valid'] = bool(geometry.IsValid)
         return result
     try:
         mesh.Vertices.UseDoublePrecisionVertices = op.get('precision','double') == 'double'
@@ -64,6 +81,9 @@ def run(op, host, iterations, tolerance):
                 mesh.TextureCoordinates.Add(float(i), float(i*i))
                 mesh.VertexColors.Add(S.Drawing.Color.FromArgb(255, 17*i % 256, 31*i % 256, 47*i % 256))
             mesh.Normals.ComputeNormals()
+        if op['op'] == 'mesh_face_collapse_buffers':
+            mesh.Vertices.UseDoublePrecisionVertices = op['precision'] == 'double'
+        authored_double = bool(mesh.Vertices.UseDoublePrecisionVertices)
         if not mesh.IsValid:
             raise ValueError('invalid authored mesh')
         attr = R.DocObjects.ObjectAttributes()
@@ -80,7 +100,7 @@ def run(op, host, iterations, tolerance):
         obj = doc.Objects.FindId(key)
         before = value(obj.Geometry)
         component = G.ComponentIndex(G.ComponentIndexType.MeshFace, op['face'])
-        if op['op'] in ['mesh_face_collapse','mesh_face_collapse_precision'] and not obj.SelectSubObject(component, True, True, False):
+        if op['op'] in ['mesh_face_collapse','mesh_face_collapse_precision','mesh_face_collapse_buffers'] and not obj.SelectSubObject(component, True, True, False):
             raise ValueError('owned face selection failed')
         events = []
         def ended(sender, event):
@@ -147,6 +167,7 @@ def run(op, host, iterations, tolerance):
                     undo=undo, redo=redo, command_result=events[0],
                     history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1],
                     input_trace=input_trace, display_mode_id=str(vp.DisplayMode.Id),
+                    authored_double_precision=authored_double,
                     native_invalid_mesh_warning='Output mesh is invalid' in R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1]), 0
     finally:
         doc.Objects.UnselectAll()

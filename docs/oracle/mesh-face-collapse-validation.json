@@ -1466,6 +1466,225 @@
           "acknowledged_clicks": 1
         }
       ]
+    },
+    "mesh_face_collapse_buffers": {
+      "cases": 16,
+      "history_isolated": true,
+      "geometry_changes": 16,
+      "successful_noops": 0,
+      "native_warning_cases": 16,
+      "native_diagnostics_missing": 0,
+      "usable_references": 0,
+      "rows": [
+        {
+          "id": "fan-none-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "fan-none-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "fan-all-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "fan-all-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "quad-none-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "quad-none-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "quad-all-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "quad-all-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "tetra-none-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "tetra-none-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "tetra-all-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "tetra-all-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "nonplanar-none-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "nonplanar-none-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "nonplanar-all-single",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        },
+        {
+          "id": "nonplanar-all-double",
+          "geometry_changed": true,
+          "channels_changed": true,
+          "native_invalid_mesh_warning": true,
+          "usable_reference": false,
+          "command_success": true,
+          "source_equals_after_undo": true,
+          "redo_repeats_result": true,
+          "history_isolated": true,
+          "undo_verified": true,
+          "acknowledged_clicks": 0
+        }
+      ]
     }
   },
   "observations_sha256": {
@@ -1478,18 +1697,37 @@
     "mesh_face_collapse_shaded": "b6a4019e6b14f4427d1ab46596d56f6e32d847d78c6bbbaa082bc5ca8501ae77",
     "mesh_face_collapse_modes": "79c89d0b7c26bbeb43db243658e0c731d8a1d446d26226b3afc4e1b6571c79a2",
     "mesh_face_collapse_holdouts": "deabddf70b5dd79dbdb56e546cd3d9c8a7ed8ae597f343bc34f9d868130f215e",
-    "mesh_face_collapse_history": "59fa9143285e4984bb9ed69492baccefc389084e79a47e0b7038634c6c939fc1"
+    "mesh_face_collapse_history": "59fa9143285e4984bb9ed69492baccefc389084e79a47e0b7038634c6c939fc1",
+    "mesh_face_collapse_buffers": "9da4a48992b80670d6327b663246323ed174b823d4d3ff10cc8b0600f0964856"
   },
   "analysis_sources_sha256": {
     "tools/rhino_oracle/mesh_face_collapse_evidence.py": "0fc39b09a5253d233d5e5618bbf111eeebafebee758078d7598c48e886b4b178",
-    "tools/rhino_oracle/test_mesh_face_collapse.py": "6dda324c63d3f2f9b68db93dd800b09a054205767efeec4389a96947a27478e8"
+    "tools/rhino_oracle/test_mesh_face_collapse.py": "1948ce9af7f13140c6e969b3772e404008f5277e49fc0ac0bd0f1c5b732233d7",
+    "crates/viboceros-geometry/examples/mesh_face_collapse_audit.rs": "7baf4a0e2fc52fd34836cbecaf0152f25ec7434a82cb1ed01675c855d0a554c5"
   },
   "totals": {
-    "cases": 104,
-    "geometry_changes": 66,
+    "cases": 120,
+    "geometry_changes": 82,
     "successful_noops": 38,
-    "native_warning_cases": 18,
+    "native_warning_cases": 34,
     "native_diagnostics_missing": 80,
     "usable_references": 0
+  },
+  "analysis_version": 2,
+  "previous_analysis_revision": "7bc4f835f835cea61b4a9cc0f652e3b4b1253d47",
+  "rust_facet_audit": {
+    "engine": "Rust and public OpenNURBS",
+    "kernel_base_revision": "7bc4f835f835cea61b4a9cc0f652e3b4b1253d47",
+    "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "before_accepted": 120,
+    "after_accepted": 107,
+    "after_rejected": 13,
+    "edited_cases": 82,
+    "first_corner_dissolve_edited_storage_matches": 0,
+    "all_corners_dissolve_edited_storage_matches": 0,
+    "artifact": "docs/oracle/mesh-face-collapse-kernel-audit.json.gz",
+    "artifact_sha256": "34d675c08a4266bce2f4a2c954e1b75282629e42eaa7a69819ed4cd6cebef484",
+    "uncompressed_sha256": "89cf0d139562c968b5fc08c32927e64a694bde0a109556b8c55a8299160f547f",
+    "image_parity_claimed": false
   }
 }

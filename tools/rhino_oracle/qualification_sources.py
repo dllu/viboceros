@@ -199,6 +199,10 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    mesh_faces = 'crates/viboceros-command/src/mesh_edit/faces.rs'
+    if any(p == mesh_faces or p.startswith(mesh_faces[:-3]+'/') for p in paths):
+        paths = [*paths, mesh_faces, *[f'crates/viboceros-command/src/mesh_edit/faces/{name}.rs'
+                           for name in ('selection', 'extract', 'delete')]]
     selection = ['crates/viboceros-command/src/geometry_selection.rs',
                  'crates/viboceros-command/src/geometry_selection/filter.rs',
                  'crates/viboceros-command/src/geometry_selection/tests.rs']

@@ -162,6 +162,7 @@ PROBES = {
     'curve_cubic_structure': ('curve_cubic_structure_probe', ('geometry_validity_probe',)),
     'sweep_refit_sections': ('sweep_refit_sections_probe', ('geometry_validity_probe',)),
     'nurbs_curve_tangents': ('curve_tangents_probe', ('geometry_validity_probe',)),
+    'mesh_face_collapse_buffers': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe')),
     'mesh_face_collapse_point': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe')),
     'mesh_face_collapse_click': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe')),
     'mesh_face_collapse_precision': ('mesh_face_collapse_probe', ('join_probe','merge_edges_probe')),

@@ -20,6 +20,7 @@ from .generate_mesh_face_collapse_shaded import request as shaded_request
 from .generate_mesh_face_collapse_modes import request as modes_request
 from .generate_mesh_face_collapse_holdouts import request as holdout_request
 from .generate_mesh_face_collapse_history import request as history_request
+from .generate_mesh_face_collapse_buffers import request as buffer_request
 from .mesh_face_collapse_probe import validate
 from .structural_sdk import stage_helpers, validate_operations
 from .mesh_face_collapse_evidence import classify
@@ -33,7 +34,8 @@ FAMILIES = [('mesh_face_collapse', request), ('mesh_face_collapse_point', point_
             ('mesh_face_collapse_shaded', shaded_request),
             ('mesh_face_collapse_modes', modes_request),
             ('mesh_face_collapse_holdouts', holdout_request),
-            ('mesh_face_collapse_history', history_request)]
+            ('mesh_face_collapse_history', history_request),
+            ('mesh_face_collapse_buffers', buffer_request)]
 
 
 class MeshFaceCollapseTests(unittest.TestCase):
@@ -66,7 +68,7 @@ class MeshFaceCollapseTests(unittest.TestCase):
             self.assertTrue(result['native_invalid_mesh_warning'])
             self.assertFalse(result['usable_reference'])
 
-    def test_precision_capture_reports_actual_document_storage_and_both_buffers(self):
+    def test_legacy_precision_capture_records_iterator_casts_not_independent_buffers(self):
         native = json.loads((HERE/'observations/mesh_face_collapse_precision.json').read_text())
         for row in native['results']:
             after = row['value']['after']
@@ -126,6 +128,31 @@ class MeshFaceCollapseTests(unittest.TestCase):
             self.assertEqual(result['geometry_changed'], i % 2 == 0)
             self.assertEqual(result['undo_verified'], i % 2 == 0)
             self.assertFalse(result['usable_reference'])
+
+    def test_real_float_only_sources_and_copy_reads_preserve_source_state(self):
+        native = json.loads((HERE/'observations/mesh_face_collapse_buffers.json').read_text())
+        operations = buffer_request()['operations']
+        self.assertEqual(len(native['results']), 16)
+        for op, row in zip(operations, native['results']):
+            value = row['value']
+            requested = op['precision'] == 'double'
+            self.assertEqual(value['authored_double_precision'], requested)
+            self.assertEqual(value['before']['double_precision'], requested)
+            self.assertTrue(value['after']['double_precision'])
+            self.assertTrue(value['native_invalid_mesh_warning'])
+            self.assertTrue(value['undo'])
+            self.assertTrue(value['redo'])
+            for snapshot in [value['before'], value['after']]:
+                self.assertTrue(snapshot['source_unchanged_by_read'])
+                self.assertEqual(snapshot['raw_float_vertices'], snapshot['vertices'])
+
+    def test_split_face_modules_remain_in_current_source_qualification(self):
+        from .qualification_sources import with_shared_sources
+        files = ['crates/viboceros-command/src/mesh_edit/faces.rs'] + [
+            'crates/viboceros-command/src/mesh_edit/faces/'+name+'.rs'
+            for name in ['selection','extract','delete']]
+        for source in files:
+            self.assertTrue(set(files) <= set(with_shared_sources([source])))
 
     def test_bounded_recipes_and_idle_helpers(self):
         for family, make in FAMILIES:

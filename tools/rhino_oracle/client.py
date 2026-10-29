@@ -1094,13 +1094,13 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('CreateUVCrv requires a private Rhino settings scheme')
             validate_request(request)
-        if any(op.get('op') in ('mesh_face_collapse','mesh_face_collapse_point','mesh_face_collapse_click','mesh_face_collapse_precision','mesh_face_collapse_getter','mesh_face_collapse_shaded','mesh_face_collapse_mode') for op in request.get('operations', [])):
+        if any(op.get('op') in ('mesh_face_collapse_buffers','mesh_face_collapse','mesh_face_collapse_point','mesh_face_collapse_click','mesh_face_collapse_precision','mesh_face_collapse_getter','mesh_face_collapse_shaded','mesh_face_collapse_mode') for op in request.get('operations', [])):
             operations = request['operations']
             if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
                     or request.get('iterations', 1) != 1
                     or not 1 <= len(operations) <= 64
                     or len({op['op'] for op in operations}) != 1
-                    or any(op.get('op') not in ('mesh_face_collapse','mesh_face_collapse_point','mesh_face_collapse_click','mesh_face_collapse_precision','mesh_face_collapse_getter','mesh_face_collapse_shaded','mesh_face_collapse_mode') for op in operations)):
+                    or any(op.get('op') not in ('mesh_face_collapse_buffers','mesh_face_collapse','mesh_face_collapse_point','mesh_face_collapse_click','mesh_face_collapse_precision','mesh_face_collapse_getter','mesh_face_collapse_shaded','mesh_face_collapse_mode') for op in operations)):
                 raise OracleProtocolError('Face collapse requires a private dedicated one-iteration capture')
             if any(op.get('op') in ('mesh_face_collapse_getter','mesh_face_collapse_shaded','mesh_face_collapse_mode') for op in operations):
                 from .catenary_point_picker import CatenaryPointPicker
