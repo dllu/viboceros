@@ -75,7 +75,7 @@
   "remaining": [
     "Native material-channel merge policy",
     "Custom per-face texture coordinates",
-    "Future SubD ID allocation after archive normalization",
+    "Other allocating SubD operations beyond qualified global/local SubDivide paths",
     "Pixel-for-pixel Rhino viewport equivalence"
   ],
   "additional_edit_history_receipt": "subd-edit-history-validation.json",

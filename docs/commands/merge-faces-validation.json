@@ -195,7 +195,7 @@
     "src/viewport/scene/subd_face_colors.rs": "709014da00503e7a8a573814a6538b7742d04870e65b8d3591a7315dd85a1015"
   },
   "remaining": [
-    "Future SubD component allocation after archive normalization",
+    "Other allocating SubD operations beyond qualified global/local SubDivide paths",
     "Nonmanifold regions and per-face custom properties outside the qualified corpus"
   ],
   "additional_face_property_receipt": "../geometry/subd-face-properties-validation.json",
