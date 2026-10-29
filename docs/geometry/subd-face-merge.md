@@ -1,43 +1,69 @@
-# SubD face merge observations
+# Component-selected SubD face merging
 
-The SubD part of `MergeFaces` is being implemented. The mesh kernel is described
-in [mesh face merging](mesh-face-merge.md); the application command remains
-unregistered. This page records native behavior that the SubD kernel must match.
+`SubD::merge_face_components` merges connected face regions using public
+OpenNURBS topology tools on an owned archive copy. `SubDMergeComponent` accepts
+original vertex/face ordinals or two control-point ordinals identifying an edge.
+The result includes the number of removed faces and rewritten result-face
+ordinals. The full application `MergeFaces` command remains unregistered.
 
-`subd_merge_faces` contains 41 actual Rhino command invocations: 33 geometry
-changes, seven successful unchanged results, and one empty-selection cancellation.
-The capture records control points, tags, oriented edges, face loops, component
-IDs, limit points and a sampled limit mesh. Before/after 3DM archives retain
-properties such as stored edge sharpness for subsequent public OpenNURBS readback.
+Native vertex, edge and face IDs are available alongside the control tables,
+which are sorted by ID. These identities survive editing and archive readback;
+ordinals can change after components disappear. Archive serialization can
+normalize inactive ID-allocation counters; future allocation parity is not yet
+qualified. Existing component ID tables are compared exactly.
 
-## Observed behavior
+## Region and cleanup behavior
 
-- Merging also removes some vertices that become valence two. Two quads in a
-  strip become a four-vertex face; two triangles in the square fixture become a
-  three-vertex face. Nonplanar control nets exhibit the same topology cleanup.
-- In these fixtures, merged faces reuse the smallest contributing face ID.
-  Untouched faces retain IDs; the reused face can move to the end of native
-  iteration order. Edge IDs survive endpoint rewiring during cleanup.
-- Hard creases are not unconditional merge barriers. Selecting the shared hard
-  edge of two quads leaves a six-vertex face and retains corner tags. Selecting
-  both faces or a shared endpoint removes the two intermediate vertices instead.
-  The captured soft-crease edge follows the ordinary four-vertex cleanup.
-- Disconnected regions merge independently. Regions with a hole, or an entire
-  closed shell with no boundary, remain unchanged. Partial rings can merge.
-- Changed results retain attributes and select result faces. A surviving input
-  vertex remains selected. Unchanged results clear component selections and add
-  no Undo entry: Undo reaches an earlier, independently authored point witness.
-  Changed results undo and redo exactly, including component IDs and limit data.
+Overlapping explicit face requests take precedence over edges, then accepted
+edges take precedence over vertices. An edge ignored because it touches a picked
+face does not consume an independent vertex request. Singleton face requests do
+not recruit neighboring faces. Disconnected regions merge independently; a new
+region needs one simple oriented boundary. Holes and closed regions without a
+boundary remain unchanged.
 
-## Verification and remaining work
+Merging removes interior components and simplifies eligible valence-two vertices.
+Boundary junctions of original valence four or greater remain, including
+collinear junctions. Interior vertices can be removed at higher original valence.
+Every incident face must keep at least three edges. Face and vertex requests can
+remove an affected corner; an edge request retains corners. Corners that survive
+keep their tags. Accepted explicit vertex requests can also simplify a separate
+single-face region when another region actually merges.
+
+Merged regions reuse their smallest face ID. Surviving edge IDs remain stable
+when endpoints change; stored sharpness follows the retained edge. Unselected
+faces keep their records, though shared boundary cleanup can alter their loops.
+Empty input returns the original value. Invalid indices and native failures leave
+the source unchanged. Component release is local to each region, with one final
+update of tags and evaluation caches, avoiding repeated whole-model scans.
+
+## Qualification
+
+The [validation receipt](subd-face-merge-validation.json) binds the current Rust
+and C++ bodies and four immutable native reference families, totaling 94 actual
+Rhino command invocations. They cover face, edge and vertex requests, mixed
+priority, corners, hard and soft creases, twisted control nets, winding changes,
+holes, partial rings, disconnected regions and cleanup at different valences.
+
+All 188 before/after native 3DM archives are checked against captured control nets,
+IDs, tags, face loops and limit points. Kernel replays compare the full definition,
+stored sharpness, rewritten face IDs and sampled limit-surface facets. Continuous
+coordinates use `1e-7`; discrete properties and stored sharpness are exact. The
+same audit runs in a binary that explicitly initializes SMLib. Regression tests
+also cover invalid selections, rejected regions beside valid ones and 300
+independent regions.
 
 ```sh
-python3 -m unittest tools.rhino_oracle.test_subd_merge_faces
+cargo test -p viboceros-geometry --lib subd::
+cargo test -p viboceros-io --test subd_face_merge
+cargo test -p viboceros-io --test subd_face_merge --features native-smlib
+python3 -m unittest tools.rhino_oracle.test_subd_merge_faces tools.rhino_oracle.test_subd_merge_kernel
 ```
 
-The tests check bounded recipes, private capture isolation, content-addressed
-producer provenance, component tables, attributes, history and the observations
-above. These are native reference tests, not kernel parity results. Stored
-sharpness readback, public topology implementation, broader region qualification,
-`Results`, getters and application selection/history remain to be completed.
-`input_timer_fired` records timer activity and does not establish getter opening.
+Native selection/history observations remain references for application work.
+Unchanged commands clear component selections and add no Undo entry; changed
+commands preserve attributes and undo/redo exactly. `input_timer_fired` records
+timer activity and does not establish getter opening.
+
+Sequential editing, future ID allocation, nonmanifold regions, per-face custom
+properties, multiple owners, `Results`, getters and application selection/history
+still require qualification before admitting the complete command.

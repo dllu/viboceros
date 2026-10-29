@@ -1,0 +1,1047 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_merge_faces",
+      "id": "grid-L-faces",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0.0
+        ],
+        [
+          1,
+          0,
+          0.0
+        ],
+        [
+          2,
+          0,
+          0.0
+        ],
+        [
+          0,
+          1,
+          0.0
+        ],
+        [
+          1,
+          1,
+          0.2
+        ],
+        [
+          2,
+          1,
+          0.4
+        ],
+        [
+          0,
+          2,
+          0.0
+        ],
+        [
+          1,
+          2,
+          0.4
+        ],
+        [
+          2,
+          2,
+          0.8
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          4,
+          3
+        ],
+        [
+          1,
+          2,
+          5,
+          4
+        ],
+        [
+          3,
+          4,
+          7,
+          6
+        ],
+        [
+          4,
+          5,
+          8,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "grid-L-edges",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            4
+          ]
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            3,
+            4
+          ]
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0.0
+        ],
+        [
+          1,
+          0,
+          0.0
+        ],
+        [
+          2,
+          0,
+          0.0
+        ],
+        [
+          0,
+          1,
+          0.0
+        ],
+        [
+          1,
+          1,
+          0.2
+        ],
+        [
+          2,
+          1,
+          0.4
+        ],
+        [
+          0,
+          2,
+          0.0
+        ],
+        [
+          1,
+          2,
+          0.4
+        ],
+        [
+          2,
+          2,
+          0.8
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          4,
+          3
+        ],
+        [
+          1,
+          2,
+          5,
+          4
+        ],
+        [
+          3,
+          4,
+          7,
+          6
+        ],
+        [
+          4,
+          5,
+          8,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "grid-L-other-corner",
+      "components": [
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        },
+        {
+          "kind": "face",
+          "index": 3
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0.0
+        ],
+        [
+          1,
+          0,
+          0.0
+        ],
+        [
+          2,
+          0,
+          0.0
+        ],
+        [
+          0,
+          1,
+          0.0
+        ],
+        [
+          1,
+          1,
+          0.2
+        ],
+        [
+          2,
+          1,
+          0.4
+        ],
+        [
+          0,
+          2,
+          0.0
+        ],
+        [
+          1,
+          2,
+          0.4
+        ],
+        [
+          2,
+          2,
+          0.8
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          4,
+          3
+        ],
+        [
+          1,
+          2,
+          5,
+          4
+        ],
+        [
+          3,
+          4,
+          7,
+          6
+        ],
+        [
+          4,
+          5,
+          8,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "grid-L-reversed",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0.0
+        ],
+        [
+          1,
+          0,
+          0.0
+        ],
+        [
+          2,
+          0,
+          0.0
+        ],
+        [
+          0,
+          1,
+          0.0
+        ],
+        [
+          1,
+          1,
+          0.2
+        ],
+        [
+          2,
+          1,
+          0.4
+        ],
+        [
+          0,
+          2,
+          0.0
+        ],
+        [
+          1,
+          2,
+          0.4
+        ],
+        [
+          2,
+          2,
+          0.8
+        ]
+      ],
+      "faces": [
+        [
+          3,
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          5,
+          2,
+          1
+        ],
+        [
+          6,
+          7,
+          4,
+          3
+        ],
+        [
+          7,
+          8,
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "tri-reordered-faces",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "tri-rotated-start",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          1,
+          2,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "tri-corner-edge",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            2
+          ]
+        }
+      ],
+      "corners": [
+        0,
+        2
+      ],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "tri-corner-vertex",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "corners": [
+        0,
+        2
+      ],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "strip-corner-edge",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        }
+      ],
+      "corners": [
+        1,
+        2
+      ],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "strip-corner-vertex",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 1
+        }
+      ],
+      "corners": [
+        1,
+        2
+      ],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "ignored-edge-with-vertex",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 4
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "overlapping-vertices",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 1
+        },
+        {
+          "kind": "vertex",
+          "index": 4
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "face-opposite-vertex",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "vertex",
+          "index": 5
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "subd_merge_faces",
+      "id": "edge-opposite-vertex",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 7
+        }
+      ],
+      "corners": [],
+      "creases": [],
+      "soft": null,
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    }
+  ]
+}

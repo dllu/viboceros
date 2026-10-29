@@ -6,6 +6,7 @@ mod control_net;
 mod crease;
 mod edges;
 mod insert;
+mod merge;
 mod remap;
 mod sharpness;
 mod soft_crease;
@@ -15,6 +16,7 @@ pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
 pub use insert::{subd_insert_face_edge, subd_insert_path, subd_insert_vertex};
+pub use merge::{SubDMergeComponent, subd_merge_faces};
 pub use remap::subd_remap_vertices;
 pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
 pub use soft_crease::subd_soft_crease;
@@ -28,7 +30,11 @@ pub struct SubDError(pub String);
 /// Immutable control net. The archive retains all native SubD properties.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubDData {
-    /// Newly refined face ordinals for a local subdivision result only.
+    /// Native identities aligned with the control tables (empty for mesh conversions).
+    pub vertex_ids: Vec<u32>,
+    pub edge_ids: Vec<u32>,
+    pub face_ids: Vec<u32>,
+    /// New or rewritten control-face ordinals reported by an editing operation.
     pub selected_faces: Vec<u32>,
     pub boundary_edge_count: usize,
     /// Display quad to active control face ordinal, present for tessellations.
@@ -89,6 +95,12 @@ struct View {
     mesh_ngon_faces: *const u32,
     mesh_texture_coordinates: *const f64,
     mesh_vertex_normals: *const f64,
+    vertex_id_count: usize,
+    edge_id_count: usize,
+    face_id_count: usize,
+    vertex_ids: *const u32,
+    edge_ids: *const u32,
+    face_ids: *const u32,
 }
 #[repr(C)]
 struct NativeResult {
@@ -289,6 +301,9 @@ fn call(
         .collect();
     let mesh_ngons = unsafe { control_net::ngons(&v)? };
     Ok(SubDData {
+        vertex_ids: unsafe { copy(v.vertex_ids, v.vertex_id_count) },
+        edge_ids: unsafe { copy(v.edge_ids, v.edge_id_count) },
+        face_ids: unsafe { copy(v.face_ids, v.face_id_count) },
         selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
         boundary_edge_count: v.boundary_edge_count,
         face_sources: unsafe { copy(v.face_sources, v.face_source_count) },

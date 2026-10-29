@@ -21,6 +21,7 @@ viboceros-geometry.workspace = true
 viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
 
 [dev-dependencies]
+base64 = "0.22.1"
 serde_json.workspace = true
 
 [[example]]

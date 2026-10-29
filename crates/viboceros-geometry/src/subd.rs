@@ -15,6 +15,7 @@ mod ellipsoid;
 mod extrusion_conversion;
 mod insert;
 mod interpolation;
+mod merge;
 mod mesh_conversion;
 mod primitives;
 mod seams;
@@ -30,6 +31,7 @@ pub use chains::{SubDDirectedEdge, SubDEdgeChain};
 pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
 pub use insert::SubDVertexInsertion;
+pub use merge::{SubDFaceMergeResult, SubDMergeComponent};
 pub use mesh_conversion::SubDFromMeshOptions;
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
@@ -69,11 +71,14 @@ impl SubD {
         Self::from_native(viboceros_opennurbs::subd_from_archive(bytes)?)
     }
     fn from_native(mut data: viboceros_opennurbs::SubDData) -> Result<Self, GeometryError> {
-        if data.edge_sharpness.len() != data.edges.len()
+        if data.vertex_ids.len() != data.points.len()
+            || data.edge_ids.len() != data.edges.len()
+            || data.face_ids.len() != data.faces.len()
+            || data.edge_sharpness.len() != data.edges.len()
             || data.edge_face_counts.len() != data.edges.len()
         {
             return Err(viboceros_opennurbs::SubDError(
-                "Incomplete control edge properties".into(),
+                "Incomplete control component properties".into(),
             )
             .into());
         }
@@ -97,6 +102,17 @@ impl SubD {
             surface_points: surface_points.into(),
             bounds,
         })
+    }
+    /// Native component identities in control-table order. These belong to this
+    /// SubD, survive ordinary archive round trips, and are distinct from ordinals.
+    pub fn vertex_ids(&self) -> &[u32] {
+        &self.data.vertex_ids
+    }
+    pub fn edge_ids(&self) -> &[u32] {
+        &self.data.edge_ids
+    }
+    pub fn face_ids(&self) -> &[u32] {
+        &self.data.face_ids
     }
     pub fn control_points(&self) -> &[Point3] {
         &self.points

@@ -1,0 +1,58 @@
+{
+  "kernel": "SubD::merge_face_components / subd_merge_faces",
+  "command_registered": false,
+  "native_cases": 94,
+  "native_archive_models": 188,
+  "coordinate_epsilon": 1e-07,
+  "checked_properties": [
+    "control coordinates",
+    "component IDs",
+    "vertex and edge tags",
+    "oriented edges and face loops",
+    "limit points",
+    "stored endpoint sharpness",
+    "rewritten result-face IDs",
+    "oriented sampled limit-surface facets"
+  ],
+  "comparison": "Coordinates within epsilon; identities, discrete properties and stored sharpness exact; facet ordering ignored, winding retained",
+  "families": {
+    "subd_merge_faces": {
+      "fixtures": "82fbcb43fd45749950db9563de6123fc5abf81dbe950c6ca9c3c728fe7850d2b",
+      "observations": "702b6bac0eca34c555f904a2d903941d2f5c42ab97a956731c30252b1f6818d1"
+    },
+    "subd_merge_faces_holdouts": {
+      "fixtures": "57783c7e9d24dbf81c433fae1d2c856b994386763c512e793e7325389a40ff64",
+      "observations": "6ee36cc53ae00f3b50745509ac29eded022ac0f4d1fa1e2bd4d5f536fdcada47"
+    },
+    "subd_merge_faces_cleanup": {
+      "fixtures": "3368b436945df33761a814698ba85bcf0738d889e335970fbcf2162083b273dc",
+      "observations": "7a8070b99d478cedb0c04e2035bacd2ca65c5c305736d40f1f19fefcdb0eb3de"
+    },
+    "subd_merge_faces_valence": {
+      "fixtures": "aa22152ace395571fb0b53402cca83f2839259d2f64ed6eb486109d147434a38",
+      "observations": "d7badb414538a02e358739318a354181719c7d812287f0893f51a94b5494cdd4"
+    }
+  },
+  "sources": {
+    "crates/viboceros-opennurbs/native/subd_merge.h": "1f83ca1ab73a923d4f49b5a257e89bfa9f04cbc5a090cf45fafee4e740c6645b",
+    "crates/viboceros-opennurbs/native/subd_merge_selection.h": "9666b283485680b97ec072765c4f6dac2b6ffbcd476270a155e47b4db6e5a3c9",
+    "crates/viboceros-opennurbs/native/subd.cpp": "4980c271a254bf6dd8c7e0dd26896bbcb1ff6558457e15c802dd21bbd9109140",
+    "crates/viboceros-opennurbs/native/subd.h": "36e71ae1e9d552b30d36cc64f6632d8393d0ce4971d0e7f59e4a55fa4697dcfc",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
+    "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
+    "crates/viboceros-opennurbs/src/subd/merge.rs": "6a2467c099daf9e304414ca82dda29432beb27343b7eb8d80e4fe212b093b664",
+    "crates/viboceros-opennurbs/src/subd.rs": "76a156529bd5a1a727a773116339ca5192c48eaec3193e590cbc247f4eb6d092",
+    "crates/viboceros-opennurbs/build.rs": "cfd80889a5523b4567ea4b5a5b8a1158dc6d1be28338aa26b7fd853f4a46e3cd",
+    "crates/viboceros-geometry/src/subd/merge.rs": "025a92626708e3e6b4267eac1bd2852aa672dfc0347f939383485aaaf883f730",
+    "crates/viboceros-geometry/src/subd/merge/tests.rs": "8c5e4104d8dc2ae5e7a64b2069b2f709ff51eedcbcaf1de3e8ee7d923d932909",
+    "crates/viboceros-geometry/src/subd.rs": "4210f79fe35a2585616ee963b4046794d9c8e4e11d2a714998ac5f949dd9a733",
+    "crates/viboceros-io/tests/subd_face_merge.rs": "f157cb17a42fd6e705c92b2521a1cc9e315b0b2d5fc1da453010c8c3a4720685",
+    "crates/viboceros-io/tests/support/subd_face_merge.rs": "c4d807219cfafd300dce351f5e4daf543025d9abfabdf9acaa944f9527c507e3",
+    "tools/rhino_oracle/qualification_sources.py": "520d5cc46d419f047402b5c6d9f9bdc9101a9aed077e96a8469d257f455e088c",
+    "tools/rhino_oracle/test_subd_merge_kernel.py": "da829a6c58b4099d578afb6d571b9c52a5a52c8b4cb13fa0ce59178b40604027",
+    "crates/viboceros-geometry/src/lib.rs": "9960396f69681722ab124a201bdbe8ff1025006fb59240f7b41d35d99a62149d",
+    "crates/viboceros-opennurbs/src/lib.rs": "e0c287a5b12dd78c70d6c37b1ded3040877808b38ef216600980675b669a9e5a",
+    "crates/viboceros-io/Cargo.toml": "16c981552809d2b4006731e37d2c57b8d5168582fa979a58a4b3021d15cd2026",
+    "Cargo.lock": "78f824122c090fcac8d5ddf8c0ddfb9a46ac89f886a9f70362dbb7933ec808ff"
+  }
+}

@@ -11,7 +11,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [InsertPoint geometry, staging and compatibility limits](insert-point.md)
 - [Mesh vertex channels and 3DM preservation](mesh-channels.md)
 - [Component-selected mesh face merging kernel](mesh-face-merge.md)
-- [SubD face merge observations and pending kernel work](subd-face-merge.md)
+- [Component-selected SubD face merging](subd-face-merge.md)
 - [Mesh Boolean commands, getters and history](../mesh-boolean-commands.md)
 - [Polygon Boolean backend and native comparison limits](../mesh-boolean-geometry.md)
 - [Stretch fitting performance and native 3dm readback](../stretch-performance.md)

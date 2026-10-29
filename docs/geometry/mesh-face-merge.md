@@ -45,6 +45,6 @@ cargo test -p viboceros-oracle --test mesh_face_merge --features native-smlib
 python3 -m unittest tools.rhino_oracle.test_mesh_merge_faces
 ```
 
-SubD merging, mixed-component/disconnected-fan qualification, the `Results`
-option, command selection/history policy and application picking remain to be
-implemented before admitting the full command.
+The [SubD kernel](subd-face-merge.md) is implemented separately. Mesh mixed
+components and disconnected fans, the `Results` option, command selection/history
+policy and application picking still need qualification before full admission.

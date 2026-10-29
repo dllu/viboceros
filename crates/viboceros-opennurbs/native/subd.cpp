@@ -20,6 +20,7 @@ struct ViboSubDResult {
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
   std::vector<double> points, surface_points, corner_normals, edge_sharpness;
   std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces, edge_face_counts;
+  std::vector<uint32_t> vertex_ids, edge_ids, face_ids;
   size_t boundary_edge_count=0;
 };
 namespace {
@@ -37,6 +38,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   for(auto* v=vit.FirstVertex();v;v=vit.NextVertex()) vertices.push_back(v);
   if(!evaluated) std::sort(vertices.begin(),vertices.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
   for (auto* v:vertices) {
+    out->vertex_ids.push_back(v->m_id);
     indices.emplace(v,static_cast<uint32_t>(indices.size()));
     const auto surface=v->SurfacePoint();
     point(out->points,evaluated ? surface : v->ControlNetPoint());
@@ -48,6 +50,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   for(auto* e=eit.FirstEdge();e;e=eit.NextEdge()) edges.push_back(e);
   if(!evaluated) std::sort(edges.begin(),edges.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
   for (auto* e:edges) {
+    out->edge_ids.push_back(e->m_id);
     out->edges.push_back(indices.at(e->m_vertex[0]));
     out->edges.push_back(indices.at(e->m_vertex[1]));
     out->edge_tags.push_back(static_cast<uint8_t>(e->m_edge_tag));
@@ -65,6 +68,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   for(auto* f=fit.FirstFace();f;f=fit.NextFace()) faces.push_back(f);
   if(!evaluated) std::sort(faces.begin(),faces.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
   for (auto* f:faces) {
+    out->face_ids.push_back(f->m_id);
     if(retained_faces && retained_faces->count(f->m_id)==0) out->selected_faces.push_back(static_cast<uint32_t>(out->face_sizes.size()));
     out->face_sizes.push_back(f->EdgeCount());
     if(sources) out->face_sources.push_back(sources->at(f->m_level_zero_face_id));
@@ -279,7 +283,9 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
     r->mesh_ngons.size(),r->mesh_ngon_vertices.size(),r->mesh_ngon_faces.size(),
     r->mesh_texture_coordinates.size()/2,r->mesh_vertex_normals.size()/3,
     r->mesh_ngons.data(),r->mesh_ngon_vertices.data(),r->mesh_ngon_faces.data(),
-    r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data()};return 1;
+    r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data(),
+    r->vertex_ids.size(),r->edge_ids.size(),r->face_ids.size(),
+    r->vertex_ids.data(),r->edge_ids.data(),r->face_ids.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
@@ -370,3 +376,5 @@ extern "C" int vibo_subd_from_mesh(const ViboMeshView* input,int corners,int cre
     return extract(*subd);
   });
 }
+
+#include "subd_merge.h"

@@ -41,6 +41,8 @@ typedef struct {
   const ViboNgonSpan* mesh_ngons;
   const uint32_t *mesh_ngon_vertices, *mesh_ngon_faces;
   const double *mesh_texture_coordinates, *mesh_vertex_normals;
+  size_t vertex_id_count, edge_id_count, face_id_count;
+  const uint32_t *vertex_ids, *edge_ids, *face_ids;
 } ViboSubDView;
 int vibo_subd_create(const double*, size_t, const uint32_t*, size_t,
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);
@@ -55,6 +57,9 @@ int vibo_subd_remap(const uint8_t*, size_t, const size_t*, size_t, const size_t*
 int vibo_subd_insert_vertex(const uint8_t*, size_t, size_t, const double*, size_t*, size_t*, int*, ViboSubDResult**, char*, size_t);
 int vibo_subd_insert_path(const uint8_t*, size_t, const size_t*, const double*, const double*, size_t, const uint32_t*, size_t, ViboSubDResult**, char*, size_t);
 int vibo_subd_insert_face_edge(const uint8_t*, size_t, size_t, size_t, size_t, size_t*, int*, ViboSubDResult**, char*, size_t);
+typedef struct { uint32_t kind, first, second; } ViboSubDMergeComponent;
+int vibo_subd_merge_faces(const uint8_t*, size_t, const ViboSubDMergeComponent*, size_t,
+  size_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_spin_edge(const uint8_t*, size_t, size_t, int, int*, ViboSubDResult**, char*, size_t);
 int vibo_subd_soft_crease(const uint8_t*, size_t, const size_t*, const double*, size_t,
   size_t*, ViboSubDResult**, char*, size_t);

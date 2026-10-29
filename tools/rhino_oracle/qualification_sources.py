@@ -165,6 +165,24 @@ SUBD_MODULES = [
     'crates/viboceros-opennurbs/native/subd_spin.h',
 ]
 
+
+SUBD_MERGE_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_merge.h',
+    'crates/viboceros-opennurbs/native/subd_merge_selection.h',
+    'crates/viboceros-opennurbs/native/subd.cpp',
+    'crates/viboceros-opennurbs/native/subd.h',
+    'crates/viboceros-opennurbs/native/subd_codec.h',
+    'crates/viboceros-opennurbs/native/subd_archive_sharpness.h',
+    'crates/viboceros-opennurbs/src/subd/merge.rs',
+    'crates/viboceros-opennurbs/src/subd.rs',
+    'crates/viboceros-opennurbs/build.rs',
+    'crates/viboceros-geometry/src/subd/merge.rs',
+    'crates/viboceros-geometry/src/subd/merge/tests.rs',
+    'crates/viboceros-geometry/src/subd.rs',
+    'crates/viboceros-io/tests/subd_face_merge.rs',
+    'crates/viboceros-io/tests/support/subd_face_merge.rs',
+]
+
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
@@ -204,6 +222,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in SUBD_MERGE_MODULES):
+        paths = [*paths, *SUBD_MERGE_MODULES]
     mesh_merge = ['crates/viboceros-geometry/tests/support/mesh_face_merge.rs',
                   'crates/viboceros-geometry/tests/mesh_face_merge.rs',
                   'crates/viboceros-oracle/tests/mesh_face_merge.rs',

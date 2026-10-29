@@ -20,6 +20,8 @@ fn main() {
         "subd_crease.h",
         "subd_remap.h",
         "subd_spin.h",
+        "subd_merge.h",
+        "subd_merge_selection.h",
         "subd_insert.h",
         "subd_soft_crease.h",
         "subd_chains.h",
