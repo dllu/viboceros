@@ -1,6 +1,9 @@
 //! Exact polar-form restrictions, independent of curve knot domains.
 use super::*;
 
+#[cfg(test)]
+mod tests;
+
 pub(super) struct Spline<const D: usize> {
     degree: usize,
     knots: Vec<Rational>,
@@ -138,10 +141,12 @@ pub(super) fn extract<const D: usize>(
     right: &Rational,
     budget: &mut Budget,
 ) -> Result<Vec<[Rational; D]>, GeometryError> {
-    if knots[span - degree..=span].iter().all(|k| k == left)
-        && knots[span + 1..=span + degree + 1]
-            .iter()
-            .all(|k| k == right)
+    // Multiplicity equal to the degree already isolates a Bezier segment.
+    // The neighboring knot outside either boundary does not affect its net.
+    // This also retains shared endpoint controls at C0 joins, without doing
+    // the full polar-form recurrence again for every correspondence segment.
+    if knots[span + 1 - degree..=span].iter().all(|k| k == left)
+        && knots[span + 1..=span + degree].iter().all(|k| k == right)
     {
         budget.charge(D * controls.len())?;
         return Ok(controls.to_vec());
