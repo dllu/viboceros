@@ -653,6 +653,13 @@ impl eframe::App for VibocerosApp {
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
         let component_pick = component_pick.or_else(|| {
+            (self.picking_merge_faces()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::MeshAndSubDComponents)
+        });
+        let component_pick = component_pick.or_else(|| {
             (((self.crease_prompt.is_some() && self.insert_prompt().is_none())
                 || self.picking_soft_crease_edges())
                 && model_input_active

@@ -28,6 +28,7 @@ pub mod edge_analysis;
 pub mod face_create;
 pub mod flow;
 mod iplane;
+pub mod merge_faces;
 mod mesh_boolean;
 mod mesh_component_unweld;
 mod mesh_component_weld;
@@ -931,6 +932,7 @@ pub trait Command: Send + Sync {
 
 #[derive(Default)]
 pub struct CommandRegistry {
+    merge_faces_preferences: std::sync::Arc<remembered::Remembered<merge_faces::Results>>,
     crease_splitting: crease_splitting::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -1243,6 +1245,11 @@ impl CommandRegistry {
         registry
             .register(soft_crease::SubDCreaseCommand)
             .expect("unique built-in SubDCrease");
+        registry
+            .register(merge_faces::MergeFacesCommand(
+                registry.merge_faces_preferences.clone(),
+            ))
+            .expect("unique built-in command");
         registry
             .register(subd_spin_edge::SubDSpinEdgeCommand)
             .expect("unique built-in SubDSpinEdge");

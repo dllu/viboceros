@@ -1,6 +1,6 @@
 {
   "kernel": "SubD::merge_face_components / subd_merge_faces",
-  "command_registered": false,
+  "command_registered": true,
   "native_cases": 94,
   "native_archive_models": 188,
   "coordinate_epsilon": 1e-07,
@@ -48,11 +48,11 @@
     "crates/viboceros-geometry/src/subd.rs": "4210f79fe35a2585616ee963b4046794d9c8e4e11d2a714998ac5f949dd9a733",
     "crates/viboceros-io/tests/subd_face_merge.rs": "f157cb17a42fd6e705c92b2521a1cc9e315b0b2d5fc1da453010c8c3a4720685",
     "crates/viboceros-io/tests/support/subd_face_merge.rs": "c4d807219cfafd300dce351f5e4daf543025d9abfabdf9acaa944f9527c507e3",
-    "tools/rhino_oracle/qualification_sources.py": "520d5cc46d419f047402b5c6d9f9bdc9101a9aed077e96a8469d257f455e088c",
-    "tools/rhino_oracle/test_subd_merge_kernel.py": "da829a6c58b4099d578afb6d571b9c52a5a52c8b4cb13fa0ce59178b40604027",
-    "crates/viboceros-geometry/src/lib.rs": "9960396f69681722ab124a201bdbe8ff1025006fb59240f7b41d35d99a62149d",
+    "tools/rhino_oracle/qualification_sources.py": "090433b11dc7ebc84b289423afaf22dc1f1b72976f5ee0bdfa0b9c61707e82a8",
+    "tools/rhino_oracle/test_subd_merge_kernel.py": "bf4d99d8abe41ced72fbf4bc18f92321edf034d3a6b95b2be0bf1f3001e2a5bb",
+    "crates/viboceros-geometry/src/lib.rs": "3f05b75092fc05ef3700fdbac375860c41be8869098888529ad80f7433c22c86",
     "crates/viboceros-opennurbs/src/lib.rs": "e0c287a5b12dd78c70d6c37b1ded3040877808b38ef216600980675b669a9e5a",
     "crates/viboceros-io/Cargo.toml": "16c981552809d2b4006731e37d2c57b8d5168582fa979a58a4b3021d15cd2026",
-    "Cargo.lock": "78f824122c090fcac8d5ddf8c0ddfb9a46ac89f886a9f70362dbb7933ec808ff"
+    "Cargo.lock": "82555f82c22af05390eb8e29005fcb63c1e2f552ed6edbec3ff3f0cdbf6c1e23"
   }
 }

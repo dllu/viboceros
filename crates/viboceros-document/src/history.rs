@@ -43,6 +43,26 @@ pub(super) struct History {
     pub active: Option<PendingTransaction>,
 }
 
+pub type HistoryEntryId = Uuid;
+
+impl Document {
+    /// Stable identity of the next history entry, independent of its label.
+    pub fn undo_entry_id(&self) -> Option<HistoryEntryId> {
+        self.history.undo.last().map(|entry| entry.id)
+    }
+    pub fn redo_entry_id(&self) -> Option<HistoryEntryId> {
+        self.history.redo.last().map(|entry| entry.id)
+    }
+    /// Transient frontend replay metadata can discard entries pruned by history.
+    pub fn has_history_entry(&self, id: HistoryEntryId) -> bool {
+        self.history
+            .undo
+            .iter()
+            .chain(&self.history.redo)
+            .any(|entry| entry.id == id)
+    }
+}
+
 impl Default for History {
     fn default() -> Self {
         Self {

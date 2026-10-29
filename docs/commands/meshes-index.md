@@ -13,6 +13,7 @@
 - [WeldEdge and UnweldEdge: SubD cuts and coincident boundary joins](subd-edge-seams.md)
 - [SubDSpinEdge: edge rotation, repeats and local Undo](subd-spin-edge.md)
 - [InsertPoint: edge paths, staged previews and local Undo](insert-point.md)
+- [MergeFaces: mesh/SubD components, result selection and Undo/Redo](merge-faces.md)
 - [SubDCrease: soft weights, vertex profiles and chain editing](subd-crease.md)
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)

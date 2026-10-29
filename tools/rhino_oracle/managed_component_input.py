@@ -3,7 +3,9 @@ import json
 import os
 
 
-def drive(host, script, identifier, views, select_grips=False):
+def drive(host, script, identifier, views, select_grips=False, command='ExtractPt'):
+    if command not in ('ExtractPt','MergeFaces') or command=='MergeFaces' and select_grips:
+        raise ValueError('fixed owned component command required')
     import clr
     clr.AddReference('System.Core')
     from System.Linq.Expressions import Expression as E, ParameterExpression
@@ -23,7 +25,7 @@ def drive(host, script, identifier, views, select_grips=False):
     elapsed=lambda stamp:E.Property(call(now,method(S.DateTime,'Subtract',[S.DateTime]),[stamp]),'TotalSeconds')
     active=E.Equal(item(state,1),integer(1));stage=item(state,0)
     prompt=E.Property(None,clr.GetClrType(R.RhinoApp).GetProperty('CommandPrompt'))
-    gate=call(prompt,method(S.String,'StartsWith',[S.String]),[E.Constant('Select objects for point extraction')])
+    gate=call(prompt,method(S.String,'StartsWith',[S.String]),[E.Constant('Select objects for point extraction' if command=='ExtractPt' else 'Select mesh and SubD')])
     def log(message):return call(None,method(S.IO.File,'AppendAllText',[S.String,S.String]),[E.Constant(progress),E.Constant(message)])
     append=method(S.IO.File,'AppendAllText',[S.String,S.String]);read=method(S.IO.File,'ReadAllText',[S.String]);exists=method(S.IO.File,'Exists',[S.String])
     getter=call(None,method(R.Input.Custom.GetObject,'ActiveGetObject',[R.RhinoDoc]),[E.Constant(doc,clr.GetClrType(R.RhinoDoc))])
@@ -84,9 +86,9 @@ def drive(host, script, identifier, views, select_grips=False):
     event=clr.GetClrType(R.Commands.Command).GetEvent('EndCommand')
     parameters=event.EventHandlerType.GetMethod('Invoke').GetParameters()
     sender=E.Parameter(parameters[0].ParameterType,'sender');ended=E.Parameter(parameters[1].ParameterType,'event')
-    command=E.Equal(E.Property(ended,'CommandEnglishName'),E.Constant('ExtractPt'))
+    is_command=E.Equal(E.Property(ended,'CommandEnglishName'),E.Constant(command))
     succeeded=E.Equal(E.Property(ended,'CommandResult'),E.Constant(R.Commands.Result.Success,clr.GetClrType(R.Commands.Result)))
-    body=E.IfThen(command,block([E.Assign(item(state,4),E.Add(item(state,4),integer(1))),E.Assign(item(state,5),E.Condition(succeeded,integer(1),integer(2))),log('ExtractPt managed EndCommand\n')]))
+    body=E.IfThen(is_command,block([E.Assign(item(state,4),E.Add(item(state,4),integer(1))),E.Assign(item(state,5),E.Condition(succeeded,integer(1),integer(2))),log(command+' managed EndCommand\n')]))
     handler=E.Lambda(event.EventHandlerType,body,S.Array[ParameterExpression]([sender,ended])).Compile()
     event.AddEventHandler(None,handler)
     timer=S.Threading.Timer(callback(action),None,100,100);timeout=S.Threading.Timer(callback(cancel),None,500,500)

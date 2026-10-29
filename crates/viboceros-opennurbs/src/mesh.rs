@@ -1,5 +1,7 @@
 mod merge;
-pub use merge::{MeshMergeComponent, merge_mesh_components};
+pub use merge::{
+    MeshFaceMerge, MeshMergeComponent, merge_mesh_components, merge_mesh_components_with_faces,
+};
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
 /// Native mesh data without a dependency on the Rust geometry kernel.

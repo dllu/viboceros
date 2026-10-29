@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-faces-Selected",
+      "case": "mesh-faces-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-edge-Selected",
+      "case": "mesh-edge-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-vertex-Selected",
+      "case": "mesh-vertex-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-single-Selected",
+      "case": "mesh-single-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-hole-Selected",
+      "case": "mesh-hole-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-faces-NotSelected",
+      "case": "mesh-faces-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-edge-NotSelected",
+      "case": "mesh-edge-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-vertex-NotSelected",
+      "case": "mesh-vertex-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-single-NotSelected",
+      "case": "mesh-single-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-hole-NotSelected",
+      "case": "mesh-hole-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-faces-Selected",
+      "case": "subd-faces-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-edge-Selected",
+      "case": "subd-edge-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-vertex-Selected",
+      "case": "subd-vertex-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-single-Selected",
+      "case": "subd-single-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-hole-Selected",
+      "case": "subd-hole-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-faces-NotSelected",
+      "case": "subd-faces-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-edge-NotSelected",
+      "case": "subd-edge-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-vertex-NotSelected",
+      "case": "subd-vertex-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-single-NotSelected",
+      "case": "subd-single-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-hole-NotSelected",
+      "case": "subd-hole-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mixed-owners-Selected",
+      "case": "mixed-owners-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "one-unchanged-owner-Selected",
+      "case": "one-unchanged-owner-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-ignored-edge-Selected",
+      "case": "mesh-ignored-edge-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-ignored-edge-Selected",
+      "case": "subd-ignored-edge-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mixed-owners-NotSelected",
+      "case": "mixed-owners-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "one-unchanged-owner-NotSelected",
+      "case": "one-unchanged-owner-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-ignored-edge-NotSelected",
+      "case": "mesh-ignored-edge-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-ignored-edge-NotSelected",
+      "case": "subd-ignored-edge-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-whole-owner",
+      "case": "mesh-whole-owner"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-whole-owner",
+      "case": "subd-whole-owner"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "empty",
+      "case": "empty"
+    }
+  ]
+}

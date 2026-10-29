@@ -10,13 +10,22 @@ mod mode;
 use mode::{Mode, Outcome};
 
 pub(super) enum Prompt {
-    Components { mode: Mode, tolerance: Tolerance },
+    Merge {
+        results: viboceros_command::merge_faces::Results,
+        tolerance: Tolerance,
+        results_pending: bool,
+    },
+    Components {
+        mode: Mode,
+        tolerance: Tolerance,
+    },
     Spin(Box<super::subd_spin_edge::Prompt>),
     Insert(Box<super::insert_point::Prompt>),
 }
 impl Prompt {
     pub(super) fn command(&self) -> &'static str {
         match self {
+            Self::Merge { .. } => "MergeFaces",
             Self::Components { mode, .. } => mode.command(),
             Self::Spin(_) => "SubDSpinEdge",
             Self::Insert(_) => "InsertPoint",
@@ -24,6 +33,9 @@ impl Prompt {
     }
     pub(super) fn hint(&self) -> &'static str {
         match self {
+            Self::Merge { .. } => {
+                "Select mesh or SubD faces, edges and vertices (Results); Enter applies, Esc cancels"
+            }
             Self::Components {
                 mode: Mode::Crease(_),
                 ..
@@ -50,6 +62,7 @@ impl Prompt {
     }
     pub(super) fn eligible(&self, kind: ComponentSelectionKind) -> bool {
         match self {
+            Self::Merge { .. } => viboceros_command::merge_faces::Target::eligible(kind),
             Self::Components { mode, .. } => mode.eligible(kind),
             Self::Spin(_) => kind == ComponentSelectionKind::SubDEdge,
             Self::Insert(_) => false,
@@ -111,6 +124,9 @@ impl VibocerosApp {
         Ok(targets)
     }
     pub(super) fn try_start_crease(&mut self, input: &str) -> bool {
+        if self.try_start_merge_faces(input) {
+            return true;
+        }
         if self.try_start_insert_point(input) {
             return true;
         }
@@ -166,6 +182,9 @@ impl VibocerosApp {
         true
     }
     pub(super) fn try_continue_crease(&mut self, input: &str) -> bool {
+        if self.picking_merge_faces() {
+            return self.continue_merge_faces(input);
+        }
         if self.insert_prompt().is_some() {
             return self.continue_insert_point(input);
         }

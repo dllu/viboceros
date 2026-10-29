@@ -2,6 +2,9 @@
 use super::*;
 use viboceros_command::ComponentSelectionKind;
 
+#[cfg(test)]
+mod merge_tests;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ComponentPick {
     pub object: ObjectId,
@@ -12,6 +15,7 @@ pub struct ComponentPick {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ComponentPickFilter {
     Any,
+    MeshAndSubDComponents,
     Edges,
     Faces,
     MeshAndSubDFaces,
@@ -67,7 +71,9 @@ impl Viewport {
         }
         if matches!(
             filter,
-            ComponentPickFilter::Any | ComponentPickFilter::Crease
+            ComponentPickFilter::Any
+                | ComponentPickFilter::Crease
+                | ComponentPickFilter::MeshAndSubDComponents
         ) {
             let mut vertices = self.pick_polygon_vertices(pointer, rect, document);
             if filter == ComponentPickFilter::Crease {
@@ -164,15 +170,20 @@ impl Viewport {
         }
         let allowed = matches!(
             filter,
-            ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::RawMeshFaces
+            ComponentPickFilter::MeshAndSubDFaces
+                | ComponentPickFilter::RawMeshFaces
+                | ComponentPickFilter::MeshAndSubDComponents
         )
         .then(|| {
             document
                 .selectable_objects()
                 .filter(|o| {
                     matches!(o.geometry(), Geometry::Mesh(_))
-                        || filter == ComponentPickFilter::MeshAndSubDFaces
-                            && matches!(o.geometry(), Geometry::SubD(_))
+                        || matches!(
+                            filter,
+                            ComponentPickFilter::MeshAndSubDFaces
+                                | ComponentPickFilter::MeshAndSubDComponents
+                        ) && matches!(o.geometry(), Geometry::SubD(_))
                 })
                 .map(|o| o.id())
                 .collect::<std::collections::BTreeSet<_>>()
@@ -239,7 +250,9 @@ impl Viewport {
             if matches!(object.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)) {
                 if matches!(
                     filter,
-                    ComponentPickFilter::Any | ComponentPickFilter::Crease
+                    ComponentPickFilter::Any
+                        | ComponentPickFilter::Crease
+                        | ComponentPickFilter::MeshAndSubDComponents
                 ) {
                     result.extend(
                         self.polygon_edges_in_rectangle(
@@ -247,14 +260,16 @@ impl Viewport {
                         )
                         .into_iter()
                         .filter(|p| {
-                            filter == ComponentPickFilter::Any
+                            filter != ComponentPickFilter::Crease
                                 || p.kind != ComponentSelectionKind::MeshVertex
                         }),
                     );
                 }
                 if matches!(
                     filter,
-                    ComponentPickFilter::Any | ComponentPickFilter::MeshAndSubDFaces
+                    ComponentPickFilter::Any
+                        | ComponentPickFilter::MeshAndSubDFaces
+                        | ComponentPickFilter::MeshAndSubDComponents
                 ) {
                     result.extend(self.polygon_components_in_rectangle(
                         viewport, selection, document, object, crossing, inverted,
@@ -264,7 +279,9 @@ impl Viewport {
             }
             if matches!(
                 filter,
-                ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::Crease
+                ComponentPickFilter::MeshAndSubDFaces
+                    | ComponentPickFilter::Crease
+                    | ComponentPickFilter::MeshAndSubDComponents
             ) {
                 continue;
             }

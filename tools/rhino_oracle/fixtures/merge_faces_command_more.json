@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "merge_faces_command",
+      "id": "reverse-kinds-01-Selected",
+      "case": "reverse-kinds-01-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "reverse-kinds-10-Selected",
+      "case": "reverse-kinds-10-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-reverse-selection-Selected",
+      "case": "mesh-reverse-selection-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-postselected-Selected",
+      "case": "mesh-postselected-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-reverse-selection-Selected",
+      "case": "subd-reverse-selection-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-postselected-Selected",
+      "case": "subd-postselected-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "wrong-owner-peer-Selected",
+      "case": "wrong-owner-peer-Selected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "reverse-kinds-01-NotSelected",
+      "case": "reverse-kinds-01-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "reverse-kinds-10-NotSelected",
+      "case": "reverse-kinds-10-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-reverse-selection-NotSelected",
+      "case": "mesh-reverse-selection-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-postselected-NotSelected",
+      "case": "mesh-postselected-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-reverse-selection-NotSelected",
+      "case": "subd-reverse-selection-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-postselected-NotSelected",
+      "case": "subd-postselected-NotSelected"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "wrong-owner-peer-NotSelected",
+      "case": "wrong-owner-peer-NotSelected"
+    }
+  ]
+}

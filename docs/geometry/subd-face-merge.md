@@ -4,7 +4,7 @@
 OpenNURBS topology tools on an owned archive copy. `SubDMergeComponent` accepts
 original vertex/face ordinals or two control-point ordinals identifying an edge.
 The result includes the number of removed faces and rewritten result-face
-ordinals. The full application `MergeFaces` command remains unregistered.
+ordinals. The [MergeFaces command](../commands/merge-faces.md) uses this kernel.
 
 Native vertex, edge and face IDs are available alongside the control tables,
 which are sorted by ID. These identities survive editing and archive readback;
@@ -59,11 +59,11 @@ cargo test -p viboceros-io --test subd_face_merge --features native-smlib
 python3 -m unittest tools.rhino_oracle.test_subd_merge_faces tools.rhino_oracle.test_subd_merge_kernel
 ```
 
-Native selection/history observations remain references for application work.
+Native selection/history observations also guide the application command.
 Unchanged commands clear component selections and add no Undo entry; changed
 commands preserve attributes and undo/redo exactly. `input_timer_fired` records
 timer activity and does not establish getter opening.
 
-Sequential editing, future ID allocation, nonmanifold regions, per-face custom
-properties, multiple owners, `Results`, getters and application selection/history
-still require qualification before admitting the complete command.
+Future ID allocation, nonmanifold regions and per-face custom properties remain
+outside the qualified corpus. Multiple owners, Results and application
+selection/history are covered by the separate command receipt.

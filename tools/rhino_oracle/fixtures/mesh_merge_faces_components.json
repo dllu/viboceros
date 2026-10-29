@@ -1,0 +1,2113 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-vertex-none",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-vertex-all",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-faces-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        },
+        {
+          "kind": "face",
+          "index": 3
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-faces-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        },
+        {
+          "kind": "face",
+          "index": 3
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-edge-vertex-none",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-edge-vertex-all",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-face-vertex-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-face-vertex-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-pair-vertex-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-pair-vertex-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-edges-none",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            5
+          ]
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "fan-edges-all",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            2
+          ]
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            0,
+            5
+          ]
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "seam-vertex-none",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          7,
+          4,
+          5
+        ],
+        [
+          7,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "seam-vertex-all",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 0
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          7,
+          4,
+          5
+        ],
+        [
+          7,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "seam-faces-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        },
+        {
+          "kind": "face",
+          "index": 3
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          7,
+          4,
+          5
+        ],
+        [
+          7,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "seam-faces-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "face",
+          "index": 2
+        },
+        {
+          "kind": "face",
+          "index": 3
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          -2,
+          -2,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ],
+        [
+          7,
+          4,
+          5
+        ],
+        [
+          7,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "single-face-far-edge-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "single-face-far-edge-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "face-between-edges-none",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "face-between-edges-all",
+      "components": [
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "faces-overlap-edge-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "faces-overlap-edge-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "face",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "vertex-overlap-edge-none",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "vertex-overlap-edge-all",
+      "components": [
+        {
+          "kind": "vertex",
+          "index": 1
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            4,
+            5
+          ]
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "ignored-edge-vertex-none",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 4
+        }
+      ],
+      "channels": "none",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "mesh_merge_faces",
+      "id": "ignored-edge-vertex-all",
+      "components": [
+        {
+          "kind": "face",
+          "index": 0
+        },
+        {
+          "kind": "edge",
+          "vertices": [
+            1,
+            2
+          ]
+        },
+        {
+          "kind": "vertex",
+          "index": 4
+        }
+      ],
+      "channels": "all",
+      "ngons": [],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          4,
+          5,
+          2
+        ],
+        [
+          4,
+          6,
+          7,
+          5
+        ]
+      ]
+    }
+  ]
+}

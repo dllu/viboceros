@@ -1,4 +1,5 @@
 mod merge_faces;
+pub use merge_faces::MeshFaceMergeResult;
 pub use viboceros_opennurbs::MeshMergeComponent;
 mod alignment;
 mod append;

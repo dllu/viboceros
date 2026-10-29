@@ -43,6 +43,10 @@ APPLICATION_MODULES = [
     'src/app/object_selection/mesh_conversion/face_sample.rs',
     'src/app/object_selection/mesh_conversion/face_sample_tests.rs',
     'src/app/component_selection.rs',
+    'src/app/component_selection/dispatch.rs',
+    'src/app/component_selection/history.rs',
+    'src/app/merge_faces.rs',
+    'src/app/merge_faces/tests.rs',
     'src/viewport/component_picking.rs',
     'src/viewport/polygon_components/tests.rs',
     'crates/viboceros-command/tests/support/nonplanar_sample.rs',
@@ -183,6 +187,24 @@ SUBD_MERGE_MODULES = [
     'crates/viboceros-io/tests/support/subd_face_merge.rs',
 ]
 
+MERGE_COMMAND_MODULES = [
+    'crates/viboceros-command/src/merge_faces.rs',
+    'crates/viboceros-command/src/merge_faces/arguments.rs',
+    'crates/viboceros-command/src/merge_faces/targets.rs',
+    'crates/viboceros-command/tests/merge_faces.rs',
+    'crates/viboceros-command/tests/support/merge_faces.rs',
+    'crates/viboceros-document/src/history.rs',
+    'src/app/merge_faces.rs',
+    'src/app/merge_faces/tests.rs',
+    'src/app/component_selection.rs',
+    'src/app/component_selection/dispatch.rs',
+    'src/app/component_selection/history.rs',
+    'src/app/crease.rs',
+    'src/app/ui.rs',
+    'src/viewport/component_picking.rs',
+    'src/viewport/component_picking/merge_tests.rs',
+]
+
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
@@ -222,6 +244,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in MERGE_COMMAND_MODULES):
+        paths = [*paths, *MERGE_COMMAND_MODULES]
     if any(p in paths for p in SUBD_MERGE_MODULES):
         paths = [*paths, *SUBD_MERGE_MODULES]
     mesh_merge = ['crates/viboceros-geometry/tests/support/mesh_face_merge.rs',

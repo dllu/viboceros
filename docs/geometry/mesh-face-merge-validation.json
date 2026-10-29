@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "base_revision": "57cbd497f5d8caf60500cd999ca70a3b8ddc673f",
-  "scope": "Mesh kernel foundation for MergeFaces; full command remains in progress",
-  "registered_commands": 425,
-  "merge_faces_registered": false,
+  "base_revision": "d9d9f998b395f2a470828c1922784844d94036d8",
+  "scope": "Mesh kernel and mapped result facets for the registered MergeFaces command",
+  "registered_commands": 426,
+  "merge_faces_registered": true,
   "native_families": {
     "mesh_merge_faces": {
       "cases": 36,
@@ -14,60 +14,58 @@
       "cases": 12,
       "request_sha256": "a4a32178e716b3351b572a680764b516c5d25ce07fdb9d7d6fc3dd4939b882ca",
       "observation_sha256": "a330522ac071d59860668c84502b8520606412e7f11a51222c74af2097a80292"
+    },
+    "mesh_merge_faces_components": {
+      "cases": 26,
+      "request_sha256": "ef1472ffb605b59e18f760801507542b76079a8296494191e476019eaf8d714b",
+      "observation_sha256": "607fa4fe46427243a0f67005a713c1480c540bb8bb8456700bf8a8234946d4ac"
     }
   },
-  "native_storage_changes": 36,
-  "native_unchanged_results": 12,
-  "matched_complete_storage_cases": 48,
+  "native_storage_changes": 52,
+  "native_unchanged_results": 22,
+  "matched_complete_storage_cases": 74,
   "continuous_epsilon": 1e-07,
-  "maximum_measured_vertex_distance": 0.0,
-  "maximum_measured_uv_distance": 0.0,
-  "maximum_measured_normal_distance": 0.0,
   "exact_fields": [
     "vertex/face/channel counts",
     "ordered face indices",
     "vertex colors",
     "n-gon boundaries and member facets",
-    "native validity"
+    "native validity",
+    "new merged facet selection indices"
   ],
   "checks": {
     "default_geometry_full_corpus": true,
     "native_smlib_initialized_binary_full_corpus": true,
-    "coplanar_hole_policy_restoration_on_both_backends": true,
-    "existing_coplanar_regressions": 8,
-    "existing_opennurbs_mesh_regressions": 13,
-    "python_tests": 2175,
-    "python_full_passed": true,
-    "clippy_native_feature_libs_warnings_denied": true,
-    "atomic_index_rejection_geometry_admission_and_thread_policy_tests": 3
+    "changed_outputs_require_fixed_triangle_validation": true,
+    "atomic_index_and_thread_policy_tests": 3,
+    "python_full_tests": 2195,
+    "clippy_warnings_denied": true
   },
   "getter_opening_qualified": false,
   "legacy_timer_field": "getter_opened records whether bounded timer input was sent; false does not exclude a transient getter",
   "remaining": [
-    "SubD component merging",
-    "Mixed-component and disconnected vertex-fan native qualification",
-    "Results option, command selection/history and Undo/Redo policy",
-    "Application component picking and actual getter qualification"
+    "Nonmanifold regions and arbitrary per-face custom data outside the qualified corpus"
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "7a0bb0b55450621485abd1c67bb5d8e58da731be8a12de2c5bb5bc747b8e2239",
-    "crates/viboceros-geometry/src/mesh.rs": "75f95adc052d26ee281271ce8f2fd38772a5997fa1676f29622fb4c4c7e522c7",
-    "crates/viboceros-geometry/src/mesh/merge_faces.rs": "3da299df7bf025ba538689234303075609c459deecb3ea0ad556a55032a3c274",
+    "crates/viboceros-geometry/src/lib.rs": "3f05b75092fc05ef3700fdbac375860c41be8869098888529ad80f7433c22c86",
+    "crates/viboceros-geometry/src/mesh.rs": "607bc489138f0f16a471a6fc60b2b20aa4b451c944e9bc799e8bf63065e603e9",
+    "crates/viboceros-geometry/src/mesh/merge_faces.rs": "7985db89062f3931c797c35ccfc363ad87d850e062a5c01bca0828584743d485",
     "crates/viboceros-geometry/src/mesh/merge_faces/tests.rs": "d94fb72db0bccb7da8fb3807ec47ea7895be23684a3b0de5049ecd396f124178",
-    "crates/viboceros-geometry/tests/mesh_face_merge.rs": "00fd3c903051d351374e2bab866900899934038958aebb227e5663e1c01138c0",
-    "crates/viboceros-geometry/tests/support/mesh_face_merge.rs": "3f4ffedf465869269fd599d68ee981160a16700e1efd8781d61682e8eb9e90ee",
-    "crates/viboceros-opennurbs/build.rs": "366bca9f6efaaf2d03f313f5ff6040b5f947031161c96cd286a8de4c78a78ab4",
-    "crates/viboceros-opennurbs/native/mesh_merge.h": "c955a25ad7cc5077c8903c84242ddc5d044f9a509f318a395dfa3b484147b561",
+    "crates/viboceros-geometry/tests/mesh_face_merge.rs": "f68e99ece4471a2e95c569667645893cb60b19cc1025e57e4766d3f831666ac3",
+    "crates/viboceros-geometry/tests/support/mesh_face_merge.rs": "a94cb210c8625d9dd6ffe4aa053f33fe37625eb9af93c8ef0953e34921dd8b94",
+    "crates/viboceros-opennurbs/build.rs": "cfd80889a5523b4567ea4b5a5b8a1158dc6d1be28338aa26b7fd853f4a46e3cd",
+    "crates/viboceros-opennurbs/native/mesh_merge.h": "790043304e3a3af0f633a5507826be1389f04943aac7fac64e86595da09f7b18",
     "crates/viboceros-opennurbs/native/mesh_merge_selection.h": "e01094945f55a2eddb45fcab320f461623f72cf5de5d9b836fe1ad2c04a40086",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "7cf3e69f83247bd6bc9dd99e9ef85cc9bc7513c7c48ace2b40d0a9a109963de2",
-    "crates/viboceros-opennurbs/native/mesh_modeling.h": "ca6b078369968b2e75bbf41f0939c1fafa51d4a6c3219895d9d2077a9b37a21a",
-    "crates/viboceros-opennurbs/src/mesh.rs": "cad4de1d036e9a1e16bd00895034daf344150b70d2b7b8366e4e3aaa9abd12f9",
-    "crates/viboceros-opennurbs/src/mesh/merge.rs": "29d2a3fec690e41d8b6522a35772858717cc727f786463a03ac122845faafc72",
-    "crates/viboceros-oracle/tests/mesh_face_merge.rs": "9f8fd96924eca20fd47a3f472b3ca0564728b7811b8260025b6fae9d90f0c58c",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "4216c785c61d4cc679a243ec516f08e223f94e2e6c2848de0c21f0f7ca61f50b",
+    "crates/viboceros-opennurbs/src/mesh.rs": "95a58f6f354889631fafc6330501949ea2b2e8814741149088717e5eca226179",
+    "crates/viboceros-opennurbs/src/mesh/merge.rs": "b97c159ad33fd1e72b749d1fb8fc6258a84230e084ee61924a7ba6d879838f8c",
+    "crates/viboceros-oracle/tests/mesh_face_merge.rs": "01f3a4632ec8e7643f0756f097930f0bbac0fdb3a6bb2949228449bdc754e14b",
     "third_party/patches/opennurbs-merge-face-holes.cmake": "6823ddba86f8a93b2dfd757198a2b9f115931e08b7d1e2e06d99c3ee2349a379"
   },
-  "fixed_triangle_valid_outputs": 48,
+  "fixed_triangle_valid_outputs": 74,
   "changed_outputs_require_fixed_triangle_validation": true,
   "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
-  "upstream_mesh_source_sha256": "3b10dffc566abe18e0dbf971aedd8f2bf11939c6f9559d21a8dd1e02404ade7a"
+  "upstream_mesh_source_sha256": "3b10dffc566abe18e0dbf971aedd8f2bf11939c6f9559d21a8dd1e02404ade7a",
+  "color_alpha_conversion": "RhinoCommon opacity = 255 - stored ON_Color transparency"
 }

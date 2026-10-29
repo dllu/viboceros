@@ -4,6 +4,12 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("select editable mesh or SubD faces, edges, or vertices")]
+    MergeFacesUnavailable,
+    #[error("MergeFaces source, tolerance or editability changed; select again")]
+    MergeFacesStale,
+    #[error("MergeFaces exceeds the component or geometry resource budget")]
+    MergeFacesResourceLimit,
     #[error("select one editable mesh or SubD for point insertion")]
     InsertPointUnavailable,
     #[error("insertion source, editability or tolerance changed; select again")]

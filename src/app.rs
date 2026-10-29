@@ -134,6 +134,7 @@ mod copy_options;
 mod crease;
 mod curve_extraction_subcurve;
 mod extract_points;
+mod merge_faces;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
 mod extract_surface;
@@ -1090,6 +1091,9 @@ impl VibocerosApp {
         self.push_log(format!("> {command_input}"));
         let release_control_polygon_components = self.replaying_control_polygon_selection(input)
             || self.replaying_extracted_point_components(input);
+        let component_replay = self
+            .component_selection
+            .history_action(&self.document, input);
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
             let context = viboceros_command::CommandContext { construction_plane };
@@ -1108,6 +1112,13 @@ impl VibocerosApp {
         });
         match result {
             Ok(message) => {
+                if let Some(action) = component_replay
+                    && let Err(error) = self
+                        .component_selection
+                        .replay_history(&self.document, action)
+                {
+                    self.push_log(format!("Error: {error}"));
+                }
                 self.push_log(message);
                 self.start_edge_zoom_options(input);
                 if release_control_polygon_components {

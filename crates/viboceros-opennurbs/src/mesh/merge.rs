@@ -21,6 +21,7 @@ unsafe extern "C" {
         input: *const MeshView,
         selected: *const Component,
         count: usize,
+        first_ngon: *mut usize,
         out: *mut *mut NativeResult,
         error: *mut c_char,
         capacity: usize,
@@ -38,11 +39,31 @@ pub fn merge_mesh_components(
     data: &MeshData,
     selection: &[MeshMergeComponent],
 ) -> Result<(MeshData, usize), MeshError> {
+    let result = merge_mesh_components_with_faces(data, selection)?;
+    Ok((result.mesh, result.removed_faces))
+}
+
+#[derive(Clone, Debug)]
+pub struct MeshFaceMerge {
+    pub mesh: MeshData,
+    pub removed_faces: usize,
+    /// Stored facets belonging to newly created n-gons, in output table order.
+    pub merged_faces: Vec<usize>,
+}
+
+pub fn merge_mesh_components_with_faces(
+    data: &MeshData,
+    selection: &[MeshMergeComponent],
+) -> Result<MeshFaceMerge, MeshError> {
     if selection.len() > 4_000_000 {
         return Err(MeshError("Excessive merge component count".into()));
     }
     if selection.is_empty() {
-        return Ok((data.clone(), 0));
+        return Ok(MeshFaceMerge {
+            mesh: data.clone(),
+            removed_faces: 0,
+            merged_faces: Vec::new(),
+        });
     }
     let index = |i: usize, limit: usize| -> Result<u32, MeshError> {
         if i >= limit {
@@ -75,11 +96,13 @@ pub fn merge_mesh_components(
     with_mesh_view(data, |view| {
         let mut raw = std::ptr::null_mut();
         let mut error = [0; 512];
+        let mut first_ngon = u32::MAX as usize;
         let status = unsafe {
             vibo_mesh_merge_components(
                 view,
                 selected.as_ptr(),
                 selected.len(),
+                &mut first_ngon,
                 &mut raw,
                 error.as_mut_ptr().cast(),
                 error.len(),
@@ -87,6 +110,25 @@ pub fn merge_mesh_components(
         };
         // This callback transfers one fresh uniquely owned bridge result.
         let result = unsafe { read_mesh_result(raw, status, &error, 16) }?;
-        Ok((result.mesh, result.changed))
+        let mut merged_faces = Vec::new();
+        if first_ngon != u32::MAX as usize {
+            let ngons = result
+                .mesh
+                .ngons
+                .get(first_ngon..)
+                .ok_or_else(|| MeshError("Invalid merged face range".into()))?;
+            merged_faces.extend(
+                ngons
+                    .iter()
+                    .flat_map(|g| g.faces.iter().map(|&f| f as usize)),
+            );
+            merged_faces.sort_unstable();
+            merged_faces.dedup();
+        }
+        Ok(MeshFaceMerge {
+            mesh: result.mesh,
+            removed_faces: result.changed,
+            merged_faces,
+        })
     })?
 }

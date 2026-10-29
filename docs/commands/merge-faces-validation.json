@@ -1,0 +1,191 @@
+{
+  "scope": "MergeFaces mesh/SubD command, scripts, getter, selection and history",
+  "base_revision": "d9d9f998b395f2a470828c1922784844d94036d8",
+  "registered_commands": 426,
+  "native_command_cases": 77,
+  "physical_postselection_cases": 4,
+  "mesh_kernel_cases": 74,
+  "subd_kernel_cases": 94,
+  "coordinate_epsilon": 1e-07,
+  "full_rhino_parity": false,
+  "exact_properties": [
+    "persistent object UUIDs",
+    "geometry storage and SubD IDs",
+    "attributes/layers/groups",
+    "whole and component selections",
+    "Undo/Redo and unchanged-command history"
+  ],
+  "ordering": "Only the contiguous Results=NotSelected changed-mesh run is compared by identity: fixed-UUID Native repeats emitted both orders. Selected order, other owner order and Undo order remain strict. Implementation uses document order within each class.",
+  "diagnostic_capture": {
+    "family": "merge_faces_command_more",
+    "cases": 14,
+    "invalid_seed_archive_fields": 4,
+    "excluded_from_archive_seed_replays": true,
+    "sha256": "32b6cef846143286689d8b29972c6e48f3c3a67b6a844e86eeeb2114da18a072"
+  },
+  "checks": {
+    "default_command": {
+      "passed_tests": 6,
+      "log_sha256": "dd15262086822f483a2bb47b0db914577f2f0d1ee55845cf79116bb79786b702"
+    },
+    "native_smlib_command": {
+      "passed_tests": 6,
+      "log_sha256": "772f7aa48816587a540b14923f58ee7eced5bab07c2610d89146e9fae2bed08d"
+    },
+    "default_application": {
+      "passed_tests": 5,
+      "log_sha256": "dbb5fba5efc2391a814b63bd62af3037d9230c71c4f1570d116f6884073c4c7e"
+    },
+    "native_smlib_application": {
+      "passed_tests": 5,
+      "log_sha256": "32d49084750460806d851ed1182462749e0bad102d5f2cafca7c06a3ac7e936d"
+    },
+    "default_component_picking": {
+      "passed_tests": 6,
+      "log_sha256": "d50ce6c599228922eb2828a5919edd9bd9ac27fc5d91ddd1c55757c2e2e92514"
+    },
+    "native_smlib_component_picking": {
+      "passed_tests": 6,
+      "log_sha256": "4e2671db48dde8f0386c9d389f9b8c138e2af5a36afd7c33425e95acc60d023a"
+    },
+    "crease_seam_insert_regressions": {
+      "passed_tests": 26,
+      "log_sha256": "455a12db1826d555c680271a25c31cd1e7f7b3dace1fd5b8cd41ff9522868ea1"
+    },
+    "extract_points_regressions": {
+      "passed_tests": 13,
+      "log_sha256": "3fba32f260b4d6837c928c0356b381ab60d1499cb0c269c71dce9be6bc13d139"
+    },
+    "document_history_regressions": {
+      "passed_tests": 2,
+      "log_sha256": "8c2f7fa55d663bb830acb617b039eeae74e2a86d8b98f57595e503569fc2b498"
+    },
+    "default_mesh_corpus": {
+      "passed_tests": 1,
+      "log_sha256": "bc2b047eae48981e27bc377df27cd0b446a2177b30b31128e4bc9282cd487717"
+    },
+    "native_smlib_mesh_corpus": {
+      "passed_tests": 1,
+      "log_sha256": "b0a8974dead586d9081ed43e6b4693d56f0e0badfff67e2f8a5f88bd96d531f8"
+    },
+    "native_smlib_subd_corpus": {
+      "passed_tests": 2,
+      "log_sha256": "85cd11c10897e37a49f438a25e781ae9ece26f29e11f9311f0b129afa68ba0a8"
+    },
+    "mesh_atomicity_and_boundary_policy": {
+      "passed_tests": 3,
+      "log_sha256": "3e9fdde5c475a9c1e77450d9c75f84ab3ed1408a56edecc497ea8a79d14fddc5"
+    },
+    "clippy_application": {
+      "warnings_denied": true,
+      "log_sha256": "a257d5241c7e901083179760cc139fb180d2cb5c0b083145a3aa26f8b3ed2f90"
+    },
+    "clippy_command_integration": {
+      "warnings_denied": true,
+      "log_sha256": "6b8f7ff06955edb445818e1e335fa35b8530c3d7556bf9c1d64402adde19d88f"
+    },
+    "python_full": {
+      "passed_tests": 2195,
+      "log_sha256": "7cb891df7d815d0c06313d79e6cf2e3229e60f3a416bea171848208263b907f1"
+    }
+  },
+  "families": {
+    "merge_faces_command": {
+      "fixtures": "9ab8418a3358bed993ee06c2272e672e91f50900142ea3286ab7a98f47457a51",
+      "observations": "f80e75f2b0a38be643b02cb0cfc37bddcf6a212a8b2696c5c18f0ead5ae83462"
+    },
+    "merge_faces_command_more_v2": {
+      "fixtures": "5958609e05130b7172154dc122b8039a76d7f4d839780cca143f15ea739410f9",
+      "observations": "a39dcf15f6194f58f6252fc2ea9342b00f115bee767bf3fb74bba0a22724f953"
+    },
+    "merge_faces_command_order": {
+      "fixtures": "4ed76835085a3694176e3eb1fab2bc41a144ac6da7e76c333434c9d3cf7346a6",
+      "observations": "baf23c5718467a259420826312e8b8c77c2dd0a769b6178813ab91e72688740f"
+    }
+  },
+  "sources": {
+    "crates/viboceros-command/src/merge_faces.rs": "f5effdec3f75449233df7caad55bec38c54d2fd3b395384fbaa7ddd74cce38a4",
+    "crates/viboceros-command/src/merge_faces/arguments.rs": "0d4bd520500db79e8a03f57e67a188d29009697008f9e3b5b4cc2a373ddcea2c",
+    "crates/viboceros-command/src/merge_faces/targets.rs": "cc6eb7f659ff52d3d981a8d5b48894b4f1919daf8461e552b1ff32be82bc5c6e",
+    "crates/viboceros-command/tests/merge_faces.rs": "c70083d647709542492832af9ce46f7974f35583d72965d5e6b8750b102f2365",
+    "crates/viboceros-command/tests/support/merge_faces.rs": "24363a30f662749e140305416495b9c639708a331736cd1171553e1068d9a63c",
+    "crates/viboceros-document/src/history.rs": "ea1b2426c7f6cff16d8eb572ba7313f778ea92e4ef83f3a54d1ae3d8957ed438",
+    "src/app/merge_faces.rs": "bffba9f4f0c6c20628843bf3450fe23ba8c6ffd24629ab8da03825cbdc50086e",
+    "src/app/merge_faces/tests.rs": "1077fb008372536a6e09a42e9857122a43e9b5e18b3a97e795625f199e0e5869",
+    "src/app/component_selection.rs": "eec269112d38d4c865bcc1beeea018fd39ae8e92fec2be60cc722c73c1e271f6",
+    "src/app/component_selection/dispatch.rs": "c63d34558afde471960f3f70e8591e9a11144d0eaa257a35e02d25d24f2d3adc",
+    "src/app/component_selection/history.rs": "b6bf1e0f477edc858e39e5cdde3929a8b2f02dfb783c050616465403c4feab5d",
+    "src/app/crease.rs": "f7dd285ca3ebf32e7a6791b12a2ff30147bb8ad9d1a6b2f9d8da3a4f3becc88c",
+    "src/app/ui.rs": "bc6c1513bb49a5e8db98e0a77bea054acc6c9add8ddac33f744018bda62656ca",
+    "src/viewport/component_picking.rs": "e857270db6c4eb2920b5ca09cd864f1a7fa452735d5e4ea5d8c639ca3cbb68ff",
+    "src/viewport/component_picking/merge_tests.rs": "bbf3e9975797435f04a9c744eaf8befac1738324e2609dde52a0698bf3f8f4a8",
+    "crates/viboceros-opennurbs/native/subd_merge.h": "1f83ca1ab73a923d4f49b5a257e89bfa9f04cbc5a090cf45fafee4e740c6645b",
+    "crates/viboceros-opennurbs/native/subd_merge_selection.h": "9666b283485680b97ec072765c4f6dac2b6ffbcd476270a155e47b4db6e5a3c9",
+    "crates/viboceros-opennurbs/native/subd.cpp": "4980c271a254bf6dd8c7e0dd26896bbcb1ff6558457e15c802dd21bbd9109140",
+    "crates/viboceros-opennurbs/native/subd.h": "36e71ae1e9d552b30d36cc64f6632d8393d0ce4971d0e7f59e4a55fa4697dcfc",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
+    "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
+    "crates/viboceros-opennurbs/src/subd/merge.rs": "6a2467c099daf9e304414ca82dda29432beb27343b7eb8d80e4fe212b093b664",
+    "crates/viboceros-opennurbs/src/subd.rs": "76a156529bd5a1a727a773116339ca5192c48eaec3193e590cbc247f4eb6d092",
+    "crates/viboceros-opennurbs/build.rs": "cfd80889a5523b4567ea4b5a5b8a1158dc6d1be28338aa26b7fd853f4a46e3cd",
+    "crates/viboceros-geometry/src/subd/merge.rs": "025a92626708e3e6b4267eac1bd2852aa672dfc0347f939383485aaaf883f730",
+    "crates/viboceros-geometry/src/subd/merge/tests.rs": "8c5e4104d8dc2ae5e7a64b2069b2f709ff51eedcbcaf1de3e8ee7d923d932909",
+    "crates/viboceros-geometry/src/subd.rs": "4210f79fe35a2585616ee963b4046794d9c8e4e11d2a714998ac5f949dd9a733",
+    "crates/viboceros-io/tests/subd_face_merge.rs": "f157cb17a42fd6e705c92b2521a1cc9e315b0b2d5fc1da453010c8c3a4720685",
+    "crates/viboceros-io/tests/support/subd_face_merge.rs": "c4d807219cfafd300dce351f5e4daf543025d9abfabdf9acaa944f9527c507e3",
+    "crates/viboceros-geometry/src/lib.rs": "3f05b75092fc05ef3700fdbac375860c41be8869098888529ad80f7433c22c86",
+    "crates/viboceros-geometry/src/mesh.rs": "607bc489138f0f16a471a6fc60b2b20aa4b451c944e9bc799e8bf63065e603e9",
+    "crates/viboceros-geometry/src/mesh/merge_faces.rs": "7985db89062f3931c797c35ccfc363ad87d850e062a5c01bca0828584743d485",
+    "crates/viboceros-geometry/src/mesh/merge_faces/tests.rs": "d94fb72db0bccb7da8fb3807ec47ea7895be23684a3b0de5049ecd396f124178",
+    "crates/viboceros-geometry/tests/mesh_face_merge.rs": "f68e99ece4471a2e95c569667645893cb60b19cc1025e57e4766d3f831666ac3",
+    "crates/viboceros-geometry/tests/support/mesh_face_merge.rs": "a94cb210c8625d9dd6ffe4aa053f33fe37625eb9af93c8ef0953e34921dd8b94",
+    "crates/viboceros-opennurbs/native/mesh_merge.h": "790043304e3a3af0f633a5507826be1389f04943aac7fac64e86595da09f7b18",
+    "crates/viboceros-opennurbs/native/mesh_merge_selection.h": "e01094945f55a2eddb45fcab320f461623f72cf5de5d9b836fe1ad2c04a40086",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "7cf3e69f83247bd6bc9dd99e9ef85cc9bc7513c7c48ace2b40d0a9a109963de2",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "4216c785c61d4cc679a243ec516f08e223f94e2e6c2848de0c21f0f7ca61f50b",
+    "crates/viboceros-opennurbs/src/mesh.rs": "95a58f6f354889631fafc6330501949ea2b2e8814741149088717e5eca226179",
+    "crates/viboceros-opennurbs/src/mesh/merge.rs": "b97c159ad33fd1e72b749d1fb8fc6258a84230e084ee61924a7ba6d879838f8c",
+    "crates/viboceros-oracle/tests/mesh_face_merge.rs": "01f3a4632ec8e7643f0756f097930f0bbac0fdb3a6bb2949228449bdc754e14b",
+    "third_party/patches/opennurbs-merge-face-holes.cmake": "6823ddba86f8a93b2dfd757198a2b9f115931e08b7d1e2e06d99c3ee2349a379",
+    "Cargo.toml": "fba0de63e857cdf505d3c624335df03ed95d0b126c2789fd023dbcdfa79b56d6",
+    "Cargo.lock": "82555f82c22af05390eb8e29005fcb63c1e2f552ed6edbec3ff3f0cdbf6c1e23",
+    "crates/viboceros-command/Cargo.toml": "2fa96442be20493f961729841ed0920356472b1f1ef3179747e48d0fb877505a",
+    "crates/viboceros-command/src/lib.rs": "5bf64efe7fa50184807b091916690d3891ad894633b8c175b5d37dbe061c9fbc",
+    "crates/viboceros-command/src/error.rs": "3a2990ea8c71bbdf0edcad619069276f790e3181c7859e04ee3507315a3b7a24",
+    "crates/viboceros-command/src/execution.rs": "4473127478cf0ca2a24166677048ca31a38b77dfc2fecbd886731e64917698e1",
+    "crates/viboceros-document/src/lib.rs": "754a4f984fbb76ab1ab7434dc468f9ff2bbad872b6aeddc780b74872975f782b",
+    "src/app.rs": "0642ed7245c96159e4dbcf887e16975ec3275f6d927004c29a90c17bec9a47ed",
+    "src/app/interactive_cancel.rs": "3a7a0cc82badd804e2797d37a4d81fa14353a37ce9319237c134ffcf8641d74b",
+    "src/viewport/polygon_edges.rs": "f047ed1c7daed68a3f10ed0ba5168c8a3ee62dabae90c7e825c624c3ea273840",
+    "src/viewport/polygon_components.rs": "94e91d34bf977ad06f4a14ed9b805f2855a4b9cef8aa5d0451c7040c97d91d59",
+    "tools/rhino_oracle/qualification_sources.py": "090433b11dc7ebc84b289423afaf22dc1f1b72976f5ee0bdfa0b9c61707e82a8",
+    "tools/rhino_oracle/test_merge_faces_command.py": "c8c86ad94d6026350840c0aee2cb95faab1c600d34cb010a45ba7d13624ac990",
+    "tools/rhino_oracle/test_mesh_merge_faces.py": "ca6ef393adc1acda6c0f975dd5abef8a249c1b086a4fe87d6d906c0e2422a1c8",
+    "docs/commands/merge-faces.md": "dfb8d39450b0f9129e2f2820b15b1df5f28569102e6e64cb612dd335fcaa4ce9",
+    "tools/rhino_oracle/generate_merge_faces_command.py": "ddcc1127eb82f7b9b83adbf062016d827dbf939bfc7f9df3b71ea28bb999333f",
+    "tools/rhino_oracle/merge_faces_command_cases.py": "532144507a22c2c3a0d473b5d802612136a2d32e68a0b5e5d5f6863356d04f55",
+    "tools/rhino_oracle/merge_faces_command_probe.py": "b5167e24e89ca1c46580f1d686ae582be9899f15ccce04b429c45db52f544c05",
+    "tools/rhino_oracle/merge_faces_command_input.py": "43968419d3317f201f01a59435b7db5f9c91b15173b09fab83b6d943d36ba431",
+    "tools/rhino_oracle/subd_edit_scene.py": "d461327ba3dc736e8b7727d1ff29a39b87022d056da6ba684e6381e6792a5cc7",
+    "tools/rhino_oracle/subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/rhino_worker.py": "d59de3dd41b8cec51a26af2872c03c88a0cd2af0fe884e8df898159e19bb149a",
+    "tools/rhino_oracle/client.py": "efa52a01fff337808677a2becd00caa06347d2d7dd5361f84f4eddfde5a14d4a",
+    "tools/rhino_oracle/structural_sdk.py": "cc3f83faadbd2e89d537cb5359aa6dadb65ade90738b1721ca9fd65b0f721ad5",
+    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "tools/rhino_oracle/generate_merge_faces_command_more_v2.py": "b5646c1a097e6a5896993566ace9682ac0815a1c8cd17a217478a99a769b4031",
+    "tools/rhino_oracle/generate_merge_faces_command_more.py": "804480ffb3a14f4e1edaa2c43f07b85e1edc37b0ed816dd1e59982975546937a",
+    "tools/rhino_oracle/managed_component_input.py": "5757bf1c4a599715e9c5c597aaaa89d5bd098e294e1c6943c97212db82db7b54",
+    "tools/rhino_oracle/component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
+    "tools/rhino_oracle/hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+    "tools/rhino_oracle/generate_merge_faces_command_order.py": "003fdbbb8fcadf49131581ade2e2bc7ac147f5b55ca327f92d2d6f7c04929be4",
+    "tools/rhino_oracle/fixtures/merge_faces_command_recipes.json": "83b531e38896b5e63fe413cf7b91ab52fa9b6859a46f24e862f819e856d800b2",
+    "docs/command-options.md": "302fcedb5b7c904472c0016371c4ae71776a188bd1429b8796e762db41b60de4"
+  },
+  "remaining": [
+    "Future SubD component allocation after archive normalization",
+    "Nonmanifold regions and per-face custom properties outside the qualified corpus"
+  ]
+}

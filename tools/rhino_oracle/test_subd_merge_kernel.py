@@ -86,7 +86,7 @@ class SubDMergeKernelTests(unittest.TestCase):
     def test_validation_receipt_binds_current_code_and_all_native_families(self):
         root = HERE.parent.parent
         receipt = json.loads((root / 'docs/geometry/subd-face-merge-validation.json').read_text())
-        self.assertFalse(receipt['command_registered'])
+        self.assertTrue(receipt['command_registered'])
         self.assertEqual(receipt['native_cases'], 94)
         for name, digest in receipt['sources'].items():
             self.assertEqual(hashlib.sha256((root / name).read_bytes()).hexdigest(), digest, name)

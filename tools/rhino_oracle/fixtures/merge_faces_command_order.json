@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-0",
+      "case": "mesh-fixed-ids-NotSelected-0"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-1",
+      "case": "mesh-fixed-ids-NotSelected-1"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-2",
+      "case": "mesh-fixed-ids-NotSelected-2"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-3",
+      "case": "mesh-fixed-ids-NotSelected-3"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-4",
+      "case": "mesh-fixed-ids-NotSelected-4"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-5",
+      "case": "mesh-fixed-ids-NotSelected-5"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-6",
+      "case": "mesh-fixed-ids-NotSelected-6"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-NotSelected-7",
+      "case": "mesh-fixed-ids-NotSelected-7"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-0",
+      "case": "mesh-fixed-ids-Selected-0"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-1",
+      "case": "mesh-fixed-ids-Selected-1"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-2",
+      "case": "mesh-fixed-ids-Selected-2"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-3",
+      "case": "mesh-fixed-ids-Selected-3"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-4",
+      "case": "mesh-fixed-ids-Selected-4"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-5",
+      "case": "mesh-fixed-ids-Selected-5"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-6",
+      "case": "mesh-fixed-ids-Selected-6"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "mesh-fixed-ids-Selected-7",
+      "case": "mesh-fixed-ids-Selected-7"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-0",
+      "case": "subd-fixed-ids-NotSelected-0"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-1",
+      "case": "subd-fixed-ids-NotSelected-1"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-2",
+      "case": "subd-fixed-ids-NotSelected-2"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-3",
+      "case": "subd-fixed-ids-NotSelected-3"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-4",
+      "case": "subd-fixed-ids-NotSelected-4"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-5",
+      "case": "subd-fixed-ids-NotSelected-5"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-6",
+      "case": "subd-fixed-ids-NotSelected-6"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-NotSelected-7",
+      "case": "subd-fixed-ids-NotSelected-7"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-0",
+      "case": "subd-fixed-ids-Selected-0"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-1",
+      "case": "subd-fixed-ids-Selected-1"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-2",
+      "case": "subd-fixed-ids-Selected-2"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-3",
+      "case": "subd-fixed-ids-Selected-3"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-4",
+      "case": "subd-fixed-ids-Selected-4"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-5",
+      "case": "subd-fixed-ids-Selected-5"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-6",
+      "case": "subd-fixed-ids-Selected-6"
+    },
+    {
+      "op": "merge_faces_command",
+      "id": "subd-fixed-ids-Selected-7",
+      "case": "subd-fixed-ids-Selected-7"
+    }
+  ]
+}

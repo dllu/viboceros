@@ -15,12 +15,13 @@ public:
 };
 }
 extern "C" int vibo_mesh_merge_components(
-    const ViboMeshView* input, const ViboMeshComponent* selected, size_t count,
+    const ViboMeshView* input, const ViboMeshComponent* selected, size_t count, size_t* first_ngon,
     ViboMeshResult** out, char* error, size_t capacity) {
   if(out) *out=nullptr;
+  if(first_ngon) *first_ngon=ON_UNSET_UINT_INDEX;
   if(error && capacity) error[0]=0;
   try {
-    require(input && out && selected && count && count<=vibo_mesh::vertex_limit,
+    require(input && out && first_ngon && selected && count && count<=vibo_mesh::vertex_limit,
             "Missing or excessive merge components");
     vibo_begin_open_nurbs();
     ON_Mesh mesh;
@@ -57,7 +58,7 @@ extern "C" int vibo_mesh_merge_components(
       // Reuse the upstream AddNgon single-boundary path for MergeFaces, while
       // leaving the existing hole-aware coplanar adapter unchanged.
       const ScopedMeshSingleBoundary single_boundary;
-      mesh.MergeFaceSets(components);
+      *first_ngon=mesh.MergeFaceSets(components);
     }
     ON_wString details;
     ON_TextLog log(details);

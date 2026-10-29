@@ -65,6 +65,7 @@ pub use viboceros_geometry::{
 
 use duplicate::DuplicateGeometryFamily;
 pub use geometry::Geometry;
+pub use history::HistoryEntryId;
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
 
 macro_rules! id_type {

@@ -1,7 +1,7 @@
 #[path = "../../viboceros-geometry/tests/support/mesh_face_merge.rs"]
 mod support;
 #[test]
-fn merge_face_components_match_all_48_native_mesh_storage_with_the_active_backend() {
+fn merge_face_components_match_all_74_native_mesh_storage_with_the_active_backend() {
     #[cfg(feature = "native-smlib")]
     {
         // Load the optional kernel in this binary too: the private face-set

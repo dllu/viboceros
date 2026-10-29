@@ -7,7 +7,7 @@ uses its last accepted choice. Updating only one option leaves the other alone.
 `TrimTriangularFaces` after real conversions.
 [`MeshToNURB`](commands/mesh-to-nurb.md) independently remembers
 `TrimTriangularFaces` and `UseNgons`. Its native bootstrap choices are Yes/Yes;
-the current mesh model has no n-gon regions, so `UseNgons` has no geometric effect.
+`UseNgons` controls conversion of logical mesh n-gon regions.
 
 [`TweenSurfaces`](commands/tween-surfaces.md) has separate save rules: count,
 matching method and sample count save on successful acceptance, including a
@@ -23,6 +23,10 @@ option-change object discrepancies; see [provenance](tween-options-provenance.js
 Rectangularity only after acceptance, including successful conversions that merge
 no faces. Cancel discards staged values. Its observed fresh defaults are 5 and 2.
 
+[`MergeFaces`](commands/merge-faces.md) remembers valid Results edits immediately,
+including cancellation and later geometry failures. Undo/Redo leaves this choice
+unchanged. Separate application registries retain independent choices.
+
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
 across documents retains choices; separate registries are independent. The GUI
@@ -30,7 +34,7 @@ keeps its registry for the application session. The small `remembered` module
 provides synchronized copy-in/copy-out storage without holding a lock during
 geometry work or document mutation; the command API remains `Send + Sync`.
 
-Direct preselected registry invocations accept choices only after successful execution. Invalid options,
+Direct preselected registry invocations of the conversion commands accept choices only after successful execution. Invalid options,
 ineligible selections, and geometry/document failures leave previous choices
 unchanged. An eligible single-span no-op accepts choices without changing
 document history or clearing redo. A `ToNURBS` no-op leaves choices unchanged.

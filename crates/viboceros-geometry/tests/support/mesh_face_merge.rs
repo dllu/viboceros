@@ -5,7 +5,14 @@ use viboceros_geometry::{
 use viboceros_opennurbs::{MeshData, Ngon};
 
 fn data(v: &Value) -> MeshData {
-    let colors: Vec<[u8; 4]> = serde_json::from_value(v["colors"].clone()).unwrap();
+    let colors: Vec<[u8; 4]> = serde_json::from_value::<Vec<[u8; 4]>>(v["colors"].clone())
+        .unwrap()
+        .into_iter()
+        .map(|mut color| {
+            color[3] = 255 - color[3];
+            color
+        })
+        .collect();
     let uv: Vec<[f64; 2]> = serde_json::from_value(v["uv"].clone()).unwrap();
     let normals: Vec<[f64; 3]> = serde_json::from_value(v["normals"].clone()).unwrap();
     MeshData {
@@ -98,7 +105,7 @@ fn value(m: &TriangleMesh) -> Value {
             .collect(),
     };
     json!({"vertices":d.vertices,"faces":d.faces.iter().map(|f|if f[2]==f[3] {f[..3].to_vec()}else{f.to_vec()}).collect::<Vec<_>>(),
-        "colors":d.colors.unwrap_or_default(),"uv":d.texture_coordinates.unwrap_or_default(),"normals":d.vertex_normals.unwrap_or_default(),
+        "colors":d.colors.unwrap_or_default().into_iter().map(|mut color|{color[3]=255-color[3];color}).collect::<Vec<_>>(),"uv":d.texture_coordinates.unwrap_or_default(),"normals":d.vertex_normals.unwrap_or_default(),
         "ngons":d.ngons.iter().map(|g|json!({"vertices":g.vertices,"faces":g.faces})).collect::<Vec<_>>(),"valid":true})
 }
 fn compare(a: &Value, b: &Value, path: &str, diffs: &mut Vec<String>) {
@@ -132,6 +139,7 @@ pub fn audit_all_native_mesh_storage_and_channels() {
     for (family, count) in [
         ("mesh_merge_faces", 36),
         ("mesh_merge_faces_boundaries", 12),
+        ("mesh_merge_faces_components", 26),
     ] {
         let q: Value = serde_json::from_str(
             &std::fs::read_to_string(root.join(format!("fixtures/{family}.json"))).unwrap(),
@@ -168,12 +176,27 @@ pub fn audit_all_native_mesh_storage_and_channels() {
                     _ => unreachable!(),
                 })
                 .collect::<Vec<_>>();
-            let result = mesh.merge_face_components(&selected);
+            let result = mesh.merge_face_components_mapped(&selected);
             assert_eq!(mesh, before, "source changed: {name}");
             let mut diffs = Vec::new();
             compare(&value(&mesh), &native["before"], "before", &mut diffs);
             let actual = match result {
-                Ok((merged, removed)) => {
+                Ok(result) => {
+                    let merged = result.mesh;
+                    let removed = result.removed_faces;
+                    let expected_faces = native["selected_after"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .filter(|c| c["kind"] == "MeshFace")
+                        .map(|c| c["index"].as_u64().unwrap() as usize)
+                        .collect::<Vec<_>>();
+                    if result.merged_faces != expected_faces {
+                        diffs.push(format!(
+                            "selected: {:?} != {expected_faces:?}",
+                            result.merged_faces
+                        ));
+                    }
                     let actual = value(&merged);
                     compare(&actual, &native["after"], "after", &mut diffs);
                     let facets = match merged.validate_face_geometry(Tolerance::MESH_VALIDATION) {
@@ -199,7 +222,7 @@ pub fn audit_all_native_mesh_storage_and_channels() {
             report.push(json!({"id":name,"actual":actual,"differences":diffs}));
         }
     }
-    assert_eq!(report.len(), 48);
+    assert_eq!(report.len(), 74);
     if let Ok(path) = std::env::var("VIBOCEROS_MESH_MERGE_AUDIT_OUTPUT") {
         std::fs::write(path, serde_json::to_string_pretty(&report).unwrap()).unwrap();
     }

@@ -69,6 +69,8 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [dev-dependencies]
+tempfile = "3.27.0"
+base64 = "0.22.1"
 num-rational.workspace = true
 num-traits.workspace = true
 pollster = "1.0.1"

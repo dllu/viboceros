@@ -12,12 +12,14 @@ from unittest import mock
 from .client import OracleClient, OracleProtocolError, _compare_value
 from .generate_mesh_merge_faces import request
 from .generate_mesh_merge_faces_boundaries import request as boundaries
+from .generate_mesh_merge_faces_components import request as components
 from .mesh_merge_faces_probe import validate
 from .qualification_sources import with_shared_sources
 from .structural_sdk import stage_helpers, validate_operations
 
 HERE=Path(__file__).resolve().parent
-FAMILIES=[('mesh_merge_faces',request,36),('mesh_merge_faces_boundaries',boundaries,12)]
+FAMILIES=[('mesh_merge_faces',request,36),('mesh_merge_faces_boundaries',boundaries,12),
+          ('mesh_merge_faces_components',components,26)]
 def rows(family):
     return {r['id']:r['value']for r in json.loads((HERE/'observations'/(family+'.json')).read_text())['results']}
 
@@ -40,7 +42,7 @@ class MeshMergeFacesTests(unittest.TestCase):
                 v=row['value'];outcomes[v['command_result']]+=1;edits+=v['before']!=v['after']
                 self.assertTrue(v['attributes_preserved']);self.assertTrue(v['before']['valid']);self.assertTrue(v['after']['valid'])
                 self.assertEqual(v['undone'],v['before']);self.assertEqual(v['redone'],v['after'])
-        self.assertEqual(outcomes,dict(Success=46,Cancel=2));self.assertEqual(edits,36)
+        self.assertEqual(outcomes,dict(Success=72,Cancel=2));self.assertEqual(edits,52)
     def test_holes_and_existing_logical_faces_are_distinct(self):
         base=rows('mesh_merge_faces');holdout=rows('mesh_merge_faces_boundaries')
         for channels in ['none','all']:
