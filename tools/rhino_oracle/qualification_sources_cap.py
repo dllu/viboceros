@@ -99,3 +99,19 @@ SUBD_CAP_MODULES = [
     'tools/rhino_oracle/test_subd_cap.py',
     'tools/rhino_oracle/capture_evidence.py',
 ]
+
+SUBD_CAP_MODULES.extend([
+    'crates/viboceros-geometry/src/subd/cap/metric.rs',
+    'crates/viboceros-geometry/src/subd/cap/metric/predicates.rs',
+    'crates/viboceros-geometry/src/subd/cap/metric/tests.rs',
+    'tools/rhino_oracle/subd_cap_annuli_cases.py',
+    'tools/rhino_oracle/subd_cap_annuli_probe.py',
+    'tools/rhino_oracle/generate_subd_cap_annuli.py',
+    'tools/rhino_oracle/subd_cap_metric_cases.py',
+    'tools/rhino_oracle/subd_cap_metric_probe.py',
+    'tools/rhino_oracle/generate_subd_cap_metric.py',
+    'tools/rhino_oracle/test_subd_cap_world.py',
+    'tools/rhino_oracle/fixtures/subd_cap_world_retained_gaps.json',
+    'docs/geometry/subd-cap-world-metric.md',
+    'docs/geometry/subd-cap-native-validation.json',
+])

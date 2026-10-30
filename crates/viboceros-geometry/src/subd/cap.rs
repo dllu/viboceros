@@ -1,6 +1,7 @@
 //! Planar control-boundary caps appended to the original native record.
 use super::*;
 use crate::Tolerance;
+mod metric;
 mod regions;
 #[cfg(test)]
 mod tests;

@@ -1,0 +1,68 @@
+{
+  "faces": [
+    "centered-crease",
+    "centered-smooth",
+    "skew-crease",
+    "skew-smooth",
+    "triangle-crease",
+    "triangle-smooth",
+    "reversed-crease",
+    "tilted-crease",
+    "outer-cycle-crease",
+    "inner-cycle-crease",
+    "reversed-smooth",
+    "tilted-smooth",
+    "outer-cycle-smooth",
+    "inner-cycle-smooth"
+  ],
+  "edge_tags": [
+    "centered-crease",
+    "centered-smooth",
+    "skew-crease",
+    "skew-smooth",
+    "triangle-crease",
+    "triangle-smooth",
+    "reversed-crease",
+    "tilted-crease",
+    "outer-cycle-crease",
+    "inner-cycle-crease",
+    "reversed-smooth",
+    "tilted-smooth",
+    "outer-cycle-smooth",
+    "inner-cycle-smooth"
+  ],
+  "uncompared_properties": [
+    "centered-crease",
+    "centered-smooth",
+    "skew-crease",
+    "skew-smooth",
+    "triangle-crease",
+    "triangle-smooth",
+    "reversed-crease",
+    "tilted-crease",
+    "outer-cycle-crease",
+    "inner-cycle-crease",
+    "reversed-smooth",
+    "tilted-smooth",
+    "outer-cycle-smooth",
+    "inner-cycle-smooth"
+  ],
+  "limit_points": [
+    "centered-smooth",
+    "skew-smooth",
+    "triangle-smooth",
+    "reversed-smooth",
+    "tilted-smooth",
+    "outer-cycle-smooth",
+    "inner-cycle-smooth"
+  ],
+  "sample_surface": [
+    "centered-smooth",
+    "skew-smooth",
+    "triangle-smooth",
+    "reversed-smooth",
+    "tilted-smooth",
+    "outer-cycle-smooth",
+    "inner-cycle-smooth"
+  ]
+}

@@ -10,6 +10,10 @@ pub(crate) struct PolygonProjection {
 }
 
 impl PolygonProjection {
+    pub(crate) fn axes(&self) -> [usize; 2] {
+        self.axes
+    }
+
     pub(crate) fn new(points: &[Point3]) -> Result<Option<Self>, GeometryError> {
         let origin = points[0].to_array();
         let global_scale = points

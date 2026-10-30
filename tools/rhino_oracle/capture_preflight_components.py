@@ -4,6 +4,16 @@ from .capture_preflight_common import require_dedicated_capture
 
 
 def prepare(client, request, interaction=None):
+    if any(op.get('op') == 'subd_cap_metric' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'subd_cap_metric',
+            'Metric SubD caps require a private dedicated one-iteration capture')
+        from .subd_cap_metric_cases import validate
+        for op in operations:validate(op)
+    if any(op.get('op') == 'subd_cap_annuli' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'subd_cap_annuli',
+            'Annular SubD caps require a private dedicated one-iteration capture')
+        from .subd_cap_annuli_cases import validate
+        for op in operations:validate(op)
     if any(op.get('op') == 'subd_cap_regions' for op in request.get('operations', [])):
         operations = require_dedicated_capture(client, request, 'subd_cap_regions',
             'SubD cap regions require a private dedicated one-iteration capture')

@@ -16,6 +16,6 @@ def frozen(record, name):
     return data
 
 
-def measurement_digest(record):
-    payload = {k: v for k, v in record.items() if k not in ANNOTATIONS}
+def measurement_digest(record, annotations=ANNOTATIONS):
+    payload = {k: v for k, v in record.items() if k not in annotations}
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode()).hexdigest()

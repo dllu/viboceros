@@ -37,7 +37,8 @@ Manual timings measure unoptimized direct triangle calls, including accuracy;
 they are not a comparison with Rhino or a release-performance qualification.
 The [validation record](mesh-closest-precision-validation.json) retains baseline
 errors, timing costs and measured sources at revision `d148c894f`.
-The [SubD Cap follow-up](subd-cap-native-validation.json) binds the current
-shared implementation and rerun mesh regressions.
+The [SubD Cap follow-up](subd-cap-native-validation.json) preserves the rerun
+mesh regressions at revision `893723463`. The [world-metric record](subd-cap-world-metric-validation.json)
+binds the current shared implementation.
 The earlier [Cap record](cap-mesh-native-validation.json) keeps its measured
 source hashes and failures at revision `729d86cd9`.

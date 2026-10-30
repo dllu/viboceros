@@ -13,7 +13,7 @@ use rstar::{AABB, RTree, RTreeObject};
 use std::collections::BTreeSet;
 
 const WORK_LIMIT: usize = 4_000_000;
-fn charge(work: &mut usize, count: usize) -> Result<(), GeometryError> {
+pub(super) fn charge(work: &mut usize, count: usize) -> Result<(), GeometryError> {
     *work = work
         .checked_sub(count)
         .ok_or(GeometryError::SubDCapResourceLimit {
@@ -276,7 +276,7 @@ pub(super) fn prepare_with_budget(
             );
             ranges.push(start..indices.len());
         }
-        let Some(cdt) = triangulate_projected_mesh_region(&projected, &ranges)? else {
+        let Some(mut cdt) = triangulate_projected_mesh_region(&projected, &ranges)? else {
             continue;
         };
         let sign = projected_polygon_doubled_area(&outer.projected).signum();
@@ -312,6 +312,11 @@ pub(super) fn prepare_with_budget(
                 }
             }
         } else {
+            let world_points = indices
+                .iter()
+                .map(|&v| source.control_points()[v as usize])
+                .collect::<Vec<_>>();
+            super::metric::legalize(&world_points, outer.frame.axes(), &mut cdt, &mut work)?;
             draft.faces.extend(
                 cdt.into_iter()
                     .map(|t| t.map(|j| indices[j as usize]).to_vec()),

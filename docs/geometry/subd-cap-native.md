@@ -10,6 +10,11 @@ and [subd_cap_holdouts](../../tools/rhino_oracle/fixtures/subd_cap_holdouts.json
 Their raw observations and frozen producer sources are retained alongside them.
 No observed output is used to construct a replay input.
 
+The [world-metric follow-up](subd-cap-world-metric.md) adds 32 independently
+authored holdouts, fixes oblique-plane distance distortion, and records the
+remaining symmetric smooth-cap surface differences. This page and its original
+validation record retain the scope and measurements of the first 26 cases.
+
 Convex caps use a single face, or a triangle fan around the world bounding-box
 center of each control loop. Triangular boundaries retain one triangle. Concave
 and annular regions use the shared constrained triangulator. `Crease=No` smooths

@@ -7,6 +7,10 @@ except (ImportError,ValueError):
 
 def run(op,host,iterations,tolerance):
     validate(op)
+    return run_case(CASES[op['case']],host,iterations,tolerance)
+
+
+def run_case(case,host,iterations,tolerance):
     import subd_box_probe
     from crease_probe import run_scene
     original=subd_box_probe.subd_value
@@ -32,5 +36,5 @@ def run(op,host,iterations,tolerance):
         finally:model.Dispose()
         return value
     subd_box_probe.subd_value=observe
-    try:return run_scene(CASES[op['case']],host,iterations,tolerance)
+    try:return run_scene(case,host,iterations,tolerance)
     finally:subd_box_probe.subd_value=original

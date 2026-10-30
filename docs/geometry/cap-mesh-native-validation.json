@@ -666,6 +666,6 @@
   ],
   "checks_scope": "Broad runtime checks and the full Python suite passed before shared test-fixture consolidation. Focused default/native Cap and MeshPolyline replays, current-source receipts, formatting and strict Clippy passed afterward. Production fix code was unchanged between these checks.",
   "qualified_revision": "729d86cd9967344c61e369e9ba195bbbc93d2d8e",
-  "current_source_receipt": "subd-cap-native-validation.json",
+  "current_source_receipt": "subd-cap-world-metric-validation.json",
   "source_hashes_scope": "Historical measurement hashes at qualified_revision. Current source bindings and closest-point measurements are in current_source_receipt."
 }

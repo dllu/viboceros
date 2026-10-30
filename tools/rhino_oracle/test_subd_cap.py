@@ -120,8 +120,9 @@ class SubDCapTests(unittest.TestCase):
     def test_current_receipt_and_historical_measurements_remain_bound(self):
         from .qualification_sources import SUBD_CAP_MODULES, with_shared_sources
         root = HERE.parent.parent
-        receipt = json.loads((root/'docs/geometry/subd-cap-native-validation.json').read_text())
-        self.assertEqual(receipt['native_command_workflows'], 26)
+        historical = json.loads((root/'docs/geometry/subd-cap-native-validation.json').read_text())
+        receipt = json.loads((root/'docs/geometry'/historical['current_source_receipt']).read_text())
+        self.assertEqual(receipt['subd_regression']['native_command_workflows'], 26)
         self.assertEqual(receipt['coordinate_epsilon'], 1e-6)
         for path in SUBD_CAP_MODULES:
             self.assertTrue(set(SUBD_CAP_MODULES) <= set(with_shared_sources([path])))
@@ -129,10 +130,10 @@ class SubDCapTests(unittest.TestCase):
         for path, digest in receipt['source_hashes'].items():
             self.assertEqual(hashlib.sha256((root/path).read_bytes()).hexdigest(), digest, path)
         old = json.loads((root/'docs/geometry/mesh-closest-precision-validation.json').read_text())
-        self.assertEqual(old['qualified_revision'], receipt['base_revision'])
+        self.assertEqual(old['qualified_revision'], receipt['historical_closest_qualified_revision'])
         self.assertEqual(measurement_digest(old), '253e29ad8f9f45b88a5239dae2d6e7b06f1a626d356bdac51faa42d465ca3286')
         self.assertEqual(measurement_digest(old), receipt['historical_closest_measurements_sha256'])
         for family, record in captures().items():
             for directory in ['fixtures', 'observations']:
                 self.assertEqual(hashlib.sha256((HERE/directory/(family+'.json')).read_bytes()).hexdigest(), receipt['families'][family][directory])
-        self.assertEqual(receipt['retained_gaps'], json.loads((HERE/'fixtures/subd_cap_retained_gaps.json').read_text()))
+        self.assertEqual(receipt['subd_regression']['retained_gaps'], json.loads((HERE/'fixtures/subd_cap_retained_gaps.json').read_text()))

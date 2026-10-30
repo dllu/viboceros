@@ -1122,5 +1122,7 @@
     "scope": "Cap provenance, historical measurement preservation and all current shared source inventories after final metadata and documentation formatting",
     "log_sha256": "7c663006ea5548adf485bf3ab8390b573f26881aff51d3a54f7778ca45db6ce5"
   },
-  "checks_scope": "Rust checks use the final production implementation. The complete Python suite preceded final report metadata; focused capture and receipt checks rechecked final source bindings."
+  "checks_scope": "Rust checks use the final production implementation. The complete Python suite preceded final report metadata; focused capture and receipt checks rechecked final source bindings.",
+  "qualified_revision": "8937234632fc023c0b64a3929ea11400ad41e54a",
+  "current_source_receipt": "subd-cap-world-metric-validation.json"
 }

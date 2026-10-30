@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_cap_annuli",
+      "id": "centered-crease",
+      "case": "centered-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "centered-smooth",
+      "case": "centered-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "offset-crease",
+      "case": "offset-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "offset-smooth",
+      "case": "offset-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "skew-crease",
+      "case": "skew-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "skew-smooth",
+      "case": "skew-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "triangle-crease",
+      "case": "triangle-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "triangle-smooth",
+      "case": "triangle-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "pentagon-crease",
+      "case": "pentagon-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "pentagon-smooth",
+      "case": "pentagon-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "two-holes-crease",
+      "case": "two-holes-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "two-holes-smooth",
+      "case": "two-holes-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "reversed-crease",
+      "case": "reversed-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "tilted-crease",
+      "case": "tilted-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "outer-cycle-crease",
+      "case": "outer-cycle-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "inner-cycle-crease",
+      "case": "inner-cycle-crease"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "reversed-smooth",
+      "case": "reversed-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "tilted-smooth",
+      "case": "tilted-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "outer-cycle-smooth",
+      "case": "outer-cycle-smooth"
+    },
+    {
+      "op": "subd_cap_annuli",
+      "id": "inner-cycle-smooth",
+      "case": "inner-cycle-smooth"
+    }
+  ]
+}

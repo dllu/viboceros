@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_cap_metric",
+      "id": "offset-tilted-crease",
+      "case": "offset-tilted-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "offset-tilted-smooth",
+      "case": "offset-tilted-smooth"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "offset-oblique-crease",
+      "case": "offset-oblique-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "offset-oblique-smooth",
+      "case": "offset-oblique-smooth"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "skew-tilted-crease",
+      "case": "skew-tilted-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "skew-tilted-smooth",
+      "case": "skew-tilted-smooth"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "skew-oblique-crease",
+      "case": "skew-oblique-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "skew-oblique-smooth",
+      "case": "skew-oblique-smooth"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "pentagon-tilted-crease",
+      "case": "pentagon-tilted-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "pentagon-tilted-smooth",
+      "case": "pentagon-tilted-smooth"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "pentagon-oblique-crease",
+      "case": "pentagon-oblique-crease"
+    },
+    {
+      "op": "subd_cap_metric",
+      "id": "pentagon-oblique-smooth",
+      "case": "pentagon-oblique-smooth"
+    }
+  ]
+}

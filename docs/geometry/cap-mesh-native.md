@@ -51,7 +51,8 @@ unqualified.
 
 The [historical validation record](cap-mesh-native-validation.json) binds these
 captures and measured sources at revision `729d86cd9`; its current-source link
-points to the [latest follow-up](subd-cap-native-validation.json), which reruns
-the same mesh regressions and preserves every retained gap. Rhino's public
+points to the [latest source record](subd-cap-world-metric-validation.json).
+The [SubD Cap follow-up](subd-cap-native-validation.json) preserves the mesh
+regression measurements at revision `893723463` and every retained gap. Rhino's public
 [Cap reference](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/cap.htm)
 describes the copy, crease and triangle options used by the captures.

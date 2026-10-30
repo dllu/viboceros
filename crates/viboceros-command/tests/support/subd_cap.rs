@@ -7,20 +7,25 @@ use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{SubD, Tolerance};
 
 pub fn rows() -> Vec<(&'static str, Value)> {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .ancestors()
+        .find(|p| p.join("tools/rhino_oracle/observations").is_dir())
+        .unwrap();
     let mut rows = Vec::new();
-    for (family, source, count) in [
-        (
-            "subd_cap_regions",
-            include_str!("../../../../tools/rhino_oracle/observations/subd_cap_regions.json"),
-            18,
-        ),
-        (
-            "subd_cap_holdouts",
-            include_str!("../../../../tools/rhino_oracle/observations/subd_cap_holdouts.json"),
-            8,
-        ),
+    for (family, count) in [
+        ("subd_cap_regions", 18),
+        ("subd_cap_holdouts", 8),
+        ("subd_cap_annuli", 20),
+        ("subd_cap_metric", 12),
     ] {
-        let capture: Value = serde_json::from_str(source).unwrap();
+        let capture: Value = serde_json::from_str(
+            &std::fs::read_to_string(
+                root.join("tools/rhino_oracle/observations")
+                    .join(format!("{family}.json")),
+            )
+            .unwrap(),
+        )
+        .unwrap();
         assert_eq!(capture["results"].as_array().unwrap().len(), count);
         for row in capture["results"].as_array().unwrap() {
             assert_eq!(row["value"]["success"], true);
@@ -28,6 +33,27 @@ pub fn rows() -> Vec<(&'static str, Value)> {
         }
     }
     rows
+}
+
+type SampleCache = std::collections::BTreeMap<(Vec<u8>, Vec<u8>), f64>;
+thread_local! { static SAMPLE_ERRORS: std::cell::RefCell<SampleCache> = const { std::cell::RefCell::new(std::collections::BTreeMap::new()) }; }
+
+fn sampled_error(actual: &SubD, native: &Value) -> f64 {
+    // History restores identical immutable archives. Cache only identical input
+    // bytes and full target mesh values; geometry, tags and attributes are still
+    // checked independently at every lifecycle stage.
+    let key = (
+        actual.archive().to_vec(),
+        serde_json::to_vec(&native["surface_mesh"]).unwrap(),
+    );
+    if let Some(value) = SAMPLE_ERRORS.with(|c| c.borrow().get(&key).copied()) {
+        return value;
+    }
+    let mesh = actual.tessellate(2).unwrap();
+    let target = mesh_native::mesh(&native["surface_mesh"]);
+    let error = subd_native::directed(&mesh, &target).max(subd_native::directed(&target, &mesh));
+    SAMPLE_ERRORS.with(|c| c.borrow_mut().insert(key, error));
+    error
 }
 
 pub fn setup(row: &Value, family: &str) -> (Document, Vec<ObjectId>) {
@@ -183,10 +209,7 @@ pub fn geometry(actual: &SubD, native: &Value) -> Value {
             .iter()
             .enumerate()
             .all(|(i, &j)| actual.vertex_tags()[i] == expected.vertex_tags()[j]);
-    let mesh = actual.tessellate(2).unwrap();
-    let target = mesh_native::mesh(&native["surface_mesh"]);
-    let sample_error =
-        subd_native::directed(&mesh, &target).max(subd_native::directed(&target, &mesh));
+    let sample_error = sampled_error(actual, native);
     let property_rows = |subd: &SubD, permutation: &[usize]| {
         let mut rows = subd
             .faces()
@@ -250,13 +273,33 @@ pub fn compare(doc: &Document, ids: &[ObjectId], rows: &Value) -> Value {
 }
 
 pub fn assert_diagnostics(diagnostics: &[Value]) {
-    assert_eq!(diagnostics.len(), 26);
-    let gaps: Value = serde_json::from_str(include_str!(
+    assert_eq!(diagnostics.len(), 58);
+    let legacy: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/subd_cap_retained_gaps.json"
     ))
     .unwrap();
+    let extra: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/subd_cap_world_retained_gaps.json"
+    ))
+    .unwrap();
     for phase in ["after", "after_script", "redo"] {
-        for field in ["faces", "edge_tags", "uncompared_properties"] {
+        for field in [
+            "counts",
+            "controls",
+            "limit_points",
+            "faces",
+            "edge_tags",
+            "vertex_tags",
+            "properties",
+            "sample_surface",
+            "uncompared_properties",
+        ] {
+            let mut expected = Vec::new();
+            for source in [&legacy, &extra] {
+                if let Some(rows) = source[field].as_array() {
+                    expected.extend(rows.iter().cloned());
+                }
+            }
             let actual = diagnostics
                 .iter()
                 .filter(|r| {
@@ -272,7 +315,7 @@ pub fn assert_diagnostics(diagnostics: &[Value]) {
                 .collect::<Vec<_>>();
             assert_eq!(
                 json!(actual),
-                gaps[field],
+                json!(expected),
                 "unexplained SubD Cap change {phase}/{field}"
             );
         }
@@ -290,19 +333,19 @@ pub fn assert_diagnostics(diagnostics: &[Value]) {
                     "properties",
                     "sample_surface",
                 ] {
-                    if ["after", "after_script", "redo"].contains(&phase)
-                        && ["annulus-face", "annulus-triangles"]
-                            .iter()
-                            .any(|&id| row["id"] == id)
-                        && ["faces", "edge_tags", "properties"].contains(&field)
-                    {
-                        continue;
+                    if ["before", "undo"].contains(&phase) {
+                        assert_eq!(
+                            object[field], true,
+                            "{}/{phase}/{field}: {object}",
+                            row["id"]
+                        );
+                    } else {
+                        assert!(
+                            object[field].is_boolean()
+                                || (field == "properties" && object[field].is_null()),
+                            "invalid comparison result"
+                        );
                     }
-                    assert_eq!(
-                        object[field], true,
-                        "{}/{phase}/{field}: {object}",
-                        row["id"]
-                    );
                 }
             }
         }
