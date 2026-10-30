@@ -1,7 +1,5 @@
 use super::*;
-use crate::app::tests::test_app;
-#[path = "../../../crates/viboceros-command/tests/support/closed_polyline.rs"]
-mod native;
+use crate::app::{closed_polyline_native_tests as native, tests::test_app};
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

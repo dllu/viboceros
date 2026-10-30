@@ -9,9 +9,9 @@ use viboceros_geometry::Tolerance;
 fn close_openings_cap_atomically_with_copy_options_metadata_and_history() {
     for delete in [false, true] {
         for crease in [false, true] {
-            // The gap is ~1e-5 model units on a 1e8-wide wall. The narrow cap
-            // facets need a correspondingly small angular validation tolerance.
-            let mut doc = Document::new(Tolerance::try_new(1e-9, 1e-12, 1e-15).unwrap());
+            // Existing boundary positions remain distinct even when generated
+            // cap facets are thinner than the document's angular tolerance.
+            let mut doc = Document::new(Tolerance::DEFAULT);
             let attrs = ObjectAttributes::on_layer(doc.current_layer_id())
                 .with_name("Narrow openings")
                 .with_object_color(ColorRgb::new(12, 34, 56));
@@ -45,7 +45,11 @@ fn close_openings_cap_atomically_with_copy_options_metadata_and_history() {
             assert_eq!(mesh.face_count(), 40);
             assert_eq!(mesh.vertices().len(), if crease { 48 } else { 24 });
             assert_eq!(output.attributes(), &attrs);
-            assert_eq!(output.group_ids(), &[group]);
+            if delete {
+                assert_eq!(output.group_ids(), &[group]);
+            } else {
+                assert!(output.group_ids().is_empty());
+            }
             let volume = source::expected_volume(1e8);
             assert!((mesh.signed_volume().unwrap() - volume).abs() < 1e-12 * volume);
             let after = doc.objects().cloned().collect::<Vec<_>>();

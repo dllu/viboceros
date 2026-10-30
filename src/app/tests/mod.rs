@@ -25,6 +25,7 @@ mod boolean_split_plane;
 mod boolean_split_topology;
 mod boolean_two;
 mod boolean_union;
+mod cap_native;
 mod catenary;
 mod chamfer_edge;
 mod circle_around;

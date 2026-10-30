@@ -24,7 +24,7 @@ impl TriangleMesh {
     fn fill_topology_hole_with_data(
         &self,
         edge_index: usize,
-        tolerance: Tolerance,
+        _tolerance: Tolerance,
         data: &MeshTopologyData,
     ) -> Result<Option<MeshHoleFill>, GeometryError> {
         let edge_count = data.edges.len();
@@ -145,8 +145,12 @@ impl TriangleMesh {
                 .map(|&raw| colors[raw])
                 .collect::<Vec<_>>()
         });
-        let mut patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?
-            .try_with_vertex_colors(boundary_colors.clone())?;
+        let mut patch = Self::try_new_faces(
+            boundary_points.clone(),
+            patch_faces,
+            Tolerance::MESH_VALIDATION,
+        )?
+        .try_with_vertex_colors(boundary_colors.clone())?;
         patch.vertex_channels = self.vertex_channels.remapped(boundary_raw.iter().copied());
         patch.recompute_stored_normals()?;
 
@@ -182,7 +186,7 @@ impl TriangleMesh {
             });
             faces.push(MeshFace::Triangle(mapped));
         }
-        let mut filled = Self::try_new_faces(vertices, faces, tolerance)?;
+        let mut filled = Self::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?;
         if let Some(boundary_colors) = boundary_colors {
             let mut colors = self.vertex_colors.as_ref().unwrap().clone();
             colors.extend_from_slice(&boundary_colors);

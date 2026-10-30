@@ -190,7 +190,7 @@ pub fn compare(actual: Option<&TriangleMesh>, target: &Value) -> Value {
            "counts_match":counts,"actual_vertices":actual.vertices().len(),"native_vertices":expected.vertices().len(),
            "actual_faces":actual.faces().len(),"native_faces":expected.faces().len()})
 }
-fn directed(a: &TriangleMesh, b: &TriangleMesh) -> Real {
+pub fn directed(a: &TriangleMesh, b: &TriangleMesh) -> Real {
     let index = MeshProjectionIndex::new(b).unwrap();
     let mut maximum: Real = 0.;
     for face in a.triangles() {

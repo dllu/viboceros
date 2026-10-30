@@ -1,0 +1,668 @@
+{
+  "status": "verified_with_retained_differences",
+  "native_command_workflows": 22,
+  "coordinate_epsilon": 1e-06,
+  "full_rhino_parity": false,
+  "families": {
+    "mesh_cap_regions": {
+      "fixtures": "c9ec288a3c08581b68ea347c2b4927f6766135b69c239324457d6c48379a68fc",
+      "observations": "e81dc7e5086d3977ff289c18c80c1913aa74d8ebabadb852965873c8c3392125"
+    },
+    "mesh_cap_regions_groups": {
+      "fixtures": "e1b5b7e19289033793eab09de669c909b184b737576bdbfd3201ade15c6e7d73",
+      "observations": "14032ff7fa5fc6f40a0ad17c795552a6b64e10b3db0b54f27c9fac9fce65e90b"
+    },
+    "mesh_cap_regions_noop": {
+      "fixtures": "3e8a3af66d33fce8b72928e42d2cb3190b0c12b0ae724d17c8958b2d2904f618",
+      "observations": "7211ad979d2ecccc67e92062db5eea27b8a99745d2059c274e7f52c310a2de6b"
+    }
+  },
+  "source_hashes": {
+    "crates/viboceros-command/src/cap.rs": "ab4425921ea39055f57f240bf543881302598c71f2d2c50667d78926d5ffb1a4",
+    "crates/viboceros-command/src/cap/tests.rs": "9a555b6a2ed43e9882fd6c3eb4a09c0ee1be177f71cb65271aff56304685090f",
+    "crates/viboceros-command/tests/cap_close_holes.rs": "38ad1ba7a485638ad5a9b3757248bbc53b4a888df55d0c6de59d4f9079f5ed95",
+    "crates/viboceros-command/tests/cap_regions_native.rs": "8fa8d2079c07bd7217841893e4105d9aad70f30d9e0c1be943601231cfc283b5",
+    "crates/viboceros-command/tests/support/cap_regions.rs": "f8236ed6017f26027c8946a66ef911a47f1ffe24675e772ca1b90410299e5747",
+    "crates/viboceros-command/tests/support/cap_regions_surface.rs": "93f7654a6360065b3127aabfe9b9368d0be37af75f117cccfb723ca02cf51613",
+    "crates/viboceros-command/tests/support/closed_polyline.rs": "9b834dc4b5dc8380d334205ae66db5998a1ca726dabddf68602d145e56919e6b",
+    "crates/viboceros-command/tests/support/crease.rs": "a9ffd3be5a203c93650ff81b000bb3511609e0fe14628922cddb9c2b1531e597",
+    "crates/viboceros-document/src/object_copy.rs": "ce5a586e0b6a77ce98e249892294f416fa7560b110bd575e92cb13c54a6fe037",
+    "crates/viboceros-document/src/object_copy/tests.rs": "c7e2f4617ea0a842ba6354597527c04542265ea77f13b76eee8a01eabb15f3ff",
+    "crates/viboceros-geometry/src/mesh.rs": "51812f37d7f01970e77d021156b0ab565cf6d552d083a2c32f8f316b67450f5c",
+    "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
+    "crates/viboceros-geometry/src/mesh/hole_fill.rs": "f9f6a132c500f0f6fd0f73e16f6f618c989dadf480b5d0913d8c115d70512141",
+    "crates/viboceros-geometry/src/mesh/planar_cap.rs": "5c209f8fbbf5c38751ddc9b9201e730e4e695e73b5326e17b50905b386465f0c",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "234d9137880cc66470471f9d442f35e15320ca96a535ccb27e15b43ab6054b86",
+    "crates/viboceros-geometry/tests/mesh_caps.rs": "9abd43b96e6b4e5dc734eefbb58565cae6e7cb074b3ca13deb3728f6a97049ec",
+    "crates/viboceros-geometry/tests/support/holed_mesh.rs": "4445f82b40b995749e90ddf4abe0724e83bc30be303cbe765c8cb318eb938662",
+    "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
+    "docs/commands/cap.md": "ca55f1d0f67308cfb934e9613bd11aadf8741d308089d6dce1318e8fb3bf8bf7",
+    "docs/geometry/cap-mesh-native.md": "eb6c6aad456bb0427550e04e2be51a861e287cf8e4c0e3a4d6b6bbc565a53057",
+    "src/app.rs": "e2f4dcbbcebbe1cf269b41823f949614eaa5a57b0e9660929b9c1cf8745e2e34",
+    "src/app/crease_native_tests.rs": "72d0efa01990de306b4aa81c5397894ca1c7c23721e271979b3605b5265b900e",
+    "src/app/object_selection/mesh_polyline_tests.rs": "26f8082e99f557297c973a34d34258659f311718d566104872a5150ce32c76cd",
+    "src/app/tests/cap_native.rs": "93137e5d2401357b57e37a01a8fafca8a5f57a6f1ad53db06a3ee79f2a7e1640",
+    "src/app/tests/mod.rs": "7e635019542977fc22f7f7ccd64d292e9879857424be74c42b48199afd94cdd1",
+    "tools/rhino_oracle/cap_regions_evidence.py": "3cf16eae9834a01a5abf52b7d78699290db0b726cbde0a1f95d3e3e9f3e1d3e4",
+    "tools/rhino_oracle/capture_preflight_components.py": "fabbdbbe1c771f11463eee349bea84188086f17f170c5c9d7a928b65a958b30c",
+    "tools/rhino_oracle/fixtures/mesh_cap_regions_retained_gaps.json": "fbb9960b6425d1a602a41622b5f3a4efeac2898ebf52be36fcc3ce78f37d9481",
+    "tools/rhino_oracle/generate_mesh_cap_regions.py": "793dcdc210805ef72a3bdda869ded879fd72b7de07be27f867382b07275745ff",
+    "tools/rhino_oracle/generate_mesh_cap_regions_groups.py": "b60833353d135435d362ba97895ed25c07ff1145c759e0643d71f98acdd1a93a",
+    "tools/rhino_oracle/generate_mesh_cap_regions_noop.py": "7fb23f2ec936cf3639cfa22ffc8cba8343b10fbb376901b16df3c587ab2ed44b",
+    "tools/rhino_oracle/mesh_cap_regions_cases.py": "863b0c5dad4a454a61ea423e5cb271da8e8259dea4054ae849addc558bde35a4",
+    "tools/rhino_oracle/mesh_cap_regions_probe.py": "f1dd03c18f245978747d5b0e6653f560390c442a79be38c1cbc0fec8bef8d6a8",
+    "tools/rhino_oracle/qualification_sources.py": "5a9aead2e0d3159bc79cb0a6c58d51c3283156a6221456cace9a8fefba954e17",
+    "tools/rhino_oracle/rhino_worker.py": "26d95636a705e1655a851f313931bb21f736bcbf838fac01f723bab82e0e6e3b",
+    "tools/rhino_oracle/structural_sdk.py": "48d8e9c655fc9e802b336b39fa195b9ae3cd7ed634e400dc6aeeabf74b13a31c",
+    "tools/rhino_oracle/test_cap_regions.py": "782c6408b21327fe0bac7ecfa4c30d044df20fd4c7571c82607be402e4217f11"
+  },
+  "audit": {
+    "cases": 22,
+    "input_coordinates_exact": true,
+    "native_non_solid_outputs": [
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy"
+    ],
+    "copied_meshes": 12
+  },
+  "scope": "Mesh Cap facet validation, ungrouped replacement copies, exact source replay and document/application lifecycle",
+  "base_revision": "4b0d43f07e014e6d6aab4bc5250515378a0b5bc4",
+  "native_application_workflows": 22,
+  "registered_commands": 426,
+  "native_engine": {
+    "engine": "rhino",
+    "version": "8.32.26160.13001",
+    "batches": 3,
+    "case_counts": {
+      "mesh_cap_regions": 14,
+      "mesh_cap_regions_groups": 6,
+      "mesh_cap_regions_noop": 2
+    }
+  },
+  "input_storage": {
+    "coordinate_arrays_exact": true,
+    "face_arrays_exact": true,
+    "source_archives": 22,
+    "maximum_coordinate_error": 0.0,
+    "double_precision": true,
+    "all_native_sources_valid": true,
+    "undo_restores_shared_source_geometry": true
+  },
+  "native_tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-15
+  },
+  "analytic_tolerance": "Tolerance::DEFAULT (absolute 1e-9, relative 1e-12, angular 1e-10)",
+  "facet_policy": {
+    "defined_facets": "Tolerance::MESH_VALIDATION",
+    "planarity": "document tolerance",
+    "zero_edges_and_zero_area_rejected": true,
+    "polygon_area_count_orientation_audits_unchanged": true
+  },
+  "copy_policy": {
+    "attributes": "source attributes",
+    "groups": "empty on copies; original memberships unchanged",
+    "selection": "sources retained, copies unselected",
+    "geometry_user_text": "cleared on changed copies",
+    "staging": "all sources and geometry validated before mutation; prior redo preserved on failure",
+    "existing_grouped_copy_apis_unchanged": true
+  },
+  "replay_summary": {
+    "cases_per_command_or_application_configuration": 22,
+    "configurations": [
+      "command-default",
+      "command-native",
+      "app-cap-default",
+      "app-cap-native"
+    ],
+    "identical_diagnostics_across_configurations": true,
+    "phases": [
+      "before",
+      "after",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "all_scene_metadata_and_ngon_boundaries_match": true,
+    "after_exact_oriented_axis_aligned_boundary_matches": 16,
+    "after_bidirectional_sample_matches": 17,
+    "maximum_sample_error_in_matching_scenes": 4.2632708705650584e-14,
+    "after_stored_count_matches": 13,
+    "after_vertex_normal_bijection_matches": 10,
+    "surface_comparison_limit": "Oriented edge certificates cover only convex faces in axis-aligned planes and decline uncertain arithmetic. Bidirectional samples are not a general continuous-surface bound."
+  },
+  "retained_gaps": {
+    "boundary_certificate": [
+      "separated-large",
+      "narrow-large",
+      "narrow-reversed",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy"
+    ],
+    "counts": [
+      "single",
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy",
+      "single-ngon",
+      "copy-closed-peer",
+      "copy-ngon-pair"
+    ],
+    "topology": [
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy"
+    ],
+    "sample_surface": [
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy"
+    ],
+    "normals": [
+      "narrow-reversed",
+      "separated-welded",
+      "copy-welded-pair"
+    ],
+    "uncompared_normals": [
+      "single",
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy",
+      "single-ngon",
+      "copy-closed-peer",
+      "copy-ngon-pair"
+    ]
+  },
+  "source_query_precision": {
+    "cases": [
+      "separated-large",
+      "narrow-large",
+      "separated-large-reversed",
+      "narrow-welded",
+      "narrow-copy"
+    ],
+    "maximum_self_query_error": 1.4999999999999998,
+    "before_and_undo_source_arrays_are_exact": true,
+    "classification": "closest-point sampling loses accuracy on identical large thin mesh faces; separate from Native input storage and Cap differences"
+  },
+  "performance_qualified": false,
+  "checks": {
+    "document": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-document",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "seconds": 52.09,
+      "log_sha256": "8cb4182369523dc32dfb020045d2a2f5f98eabbb11eb68052eabe8b521d8a0b9",
+      "passed_tests": 290
+    },
+    "geometry": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "mesh::"
+      ],
+      "exit_code": 0,
+      "seconds": 57.92,
+      "log_sha256": "760ae5a36065608abbcd6c24e5c9f1bcd7b8c07f3230c624cf95f7cda2d21b05",
+      "passed_tests": 326
+    },
+    "geometry-integration": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "mesh_caps",
+        "--test",
+        "mesh_insert_sources",
+        "--test",
+        "subd_edge_insert",
+        "--test",
+        "mesh_channels",
+        "--test",
+        "mesh_face_merge"
+      ],
+      "exit_code": 0,
+      "seconds": 2.79,
+      "log_sha256": "9739e2a090d8b62b7ad2d4d6a188a7c4f1de763cf2103efc089a6502189dda60",
+      "passed_tests": 13
+    },
+    "cap-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "cap::tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 66.39,
+      "log_sha256": "5c8a0ee10e225ba27627676a5f7cec6e87a88cf132cba21fc903bdd24bcc2957",
+      "passed_tests": 14
+    },
+    "command-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "cap_regions_native",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 45.02,
+      "log_sha256": "57e4a9b14408b4a65de5cb44cab4052f1f20134acfd6992f6c4c9a6e93d20399",
+      "passed_tests": 38
+    },
+    "app-cap-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::tests::cap_native::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 92.55,
+      "log_sha256": "ab5a9303357bdabf2dc0475ae69346253bd92c85701ad6b298328744f9e0fd6f",
+      "passed_tests": 4
+    },
+    "app-insert-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 2.08,
+      "log_sha256": "6677ec0e3a0ba0e4503213901ad7f3a5cfca2ccaa55d30b9be35532f2ece13c5",
+      "passed_tests": 12
+    },
+    "cap-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "cap::tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 84.22,
+      "log_sha256": "b948abc34a67c398a71fdd9568a9ca49fb87bcdde38387c97d7dcd4ca78d204e",
+      "passed_tests": 14
+    },
+    "command-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "cap_regions_native",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 56.99,
+      "log_sha256": "d2e5470da2cf01d82325cecf87bce53b9ef135196cf3c05f3679cc429e89c150",
+      "passed_tests": 38
+    },
+    "app-cap-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::tests::cap_native::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 82.09,
+      "log_sha256": "4d52e9dbc35d3df65f693742ca11b0e1a14e7356510adf432899228b46017a4a",
+      "passed_tests": 4
+    },
+    "app-insert-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::crease::tests::insert_point::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 2.08,
+      "log_sha256": "f0245bbc35d3205845320935e8b3e0fef956e518199cbe198779a8af8d377d8d",
+      "passed_tests": 12
+    },
+    "clippy-document": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-document",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 28.13,
+      "log_sha256": "246ecf51ebc1eb53b523452c8f41fcc13a2189cac586209a4a141054dac10d5f"
+    },
+    "clippy-geometry": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 17.36,
+      "log_sha256": "552385a12e39cde595c38f9745f57eac7ff86fa3ef8064f2fcd12df72c936fd2"
+    },
+    "clippy-app": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 17.41,
+      "log_sha256": "f4f8cfe061313aa40408a881d274b7360d4b07d89582893b612475187e6d47a7"
+    },
+    "clippy-command": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "--test",
+        "cap_close_holes",
+        "--test",
+        "cap_regions_native",
+        "--test",
+        "mesh_insert_paths",
+        "--test",
+        "insert_point_command",
+        "--test",
+        "insert_point_ngons",
+        "--test",
+        "insert_point_staging",
+        "--test",
+        "insert_point_native",
+        "--test",
+        "mesh_from_lines_native",
+        "--test",
+        "mesh_polyline_native",
+        "--test",
+        "mesh_patch_native",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 0.52,
+      "log_sha256": "99ba0fe18bf0e367875f80a058e227a3ff70fd7124f023c38fe503357256108d"
+    },
+    "cap-regions-final-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "cap_regions_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 33.45,
+      "log_sha256": "f6f1e175ad23a1552e11c1bb6219f4603017d2f80b0b8e79d448043b5049eb9f",
+      "passed_tests": 4
+    },
+    "app-cap-final-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::tests::cap_native::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 63.05,
+      "log_sha256": "ee9520881aefffd9f4ea8a78e510a994e3bdafec3f1b059972531029b398b586",
+      "passed_tests": 4
+    },
+    "cap-regions-final-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "cap_regions_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 34.78,
+      "log_sha256": "843fb16de92d4ea08bb72ca9b667e43b53320c0c0d459bb02f378bfdd8470a3c",
+      "passed_tests": 4
+    },
+    "app-cap-final-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::tests::cap_native::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "seconds": 64.14,
+      "log_sha256": "d394f290b5f7c92bceeabe87cbf46082196e373972d981ac93afaf3aed49fa75",
+      "passed_tests": 4
+    },
+    "app-mesh-polyline-final-default": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--bin",
+        "viboceros",
+        "app::object_selection::mesh_polyline_tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 0.39,
+      "log_sha256": "4a809041d0ea32ea22807768bd0d3d6e315ae483099d48e1afd15ea19e480b8b",
+      "passed_tests": 2
+    },
+    "app-mesh-polyline-final-native": {
+      "command": [
+        "cargo",
+        "test",
+        "--frozen",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "app::object_selection::mesh_polyline_tests::"
+      ],
+      "exit_code": 0,
+      "seconds": 0.37,
+      "log_sha256": "b22447af585e12b7b94dfee8dbe32fd95776c1c1d7bf01a7820a897643810dbc",
+      "passed_tests": 2
+    },
+    "python_full": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/rhino_oracle",
+        "-t",
+        "."
+      ],
+      "exit_code": 0,
+      "passed_tests": 2250,
+      "log_sha256": "909f705af32ee9fda8c8485a0fa008e1c975189e94862aef5d62b5dc25a1c299"
+    },
+    "python_final_receipts": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "tools.rhino_oracle.test_subd_face_properties.SubDFacePropertiesTests.test_current_qualification_binds_every_property_implementation_entry",
+        "tools.rhino_oracle.test_subd_face_custom.SubDFaceCustomTests.test_current_receipt_binds_both_native_families_and_shared_source_closure",
+        "tools.rhino_oracle.test_subd_edit_history.SubDEditHistoryTests.test_current_receipt_binds_shared_implementation_and_native_inputs",
+        "tools.rhino_oracle.test_subd_merge_kernel.SubDMergeKernelTests.test_validation_receipt_binds_current_code_and_all_native_families",
+        "tools.rhino_oracle.test_merge_faces_command.MergeFacesCommandTests.test_shared_implementation_inventory_and_current_receipt",
+        "tools.rhino_oracle.test_mesh_insert_sources.MeshInsertSourceTests.test_current_receipt_binds_sources_and_retained_families",
+        "tools.rhino_oracle.test_subd_insert_custom.SubDInsertCustomTests.test_current_receipt_binds_implementation_and_both_repeat_outputs",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_all_native_outputs_remain_including_non_solid_successes",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_current_receipt_binds_the_sources_and_all_native_families",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_invalid_recipes_and_requests_cannot_launch_the_host",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_narrow_inputs_do_not_collapse_to_float_positions",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_native_copies_omit_groups_and_leave_source_memberships_intact",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_native_narrow_cap_retains_edges_below_the_model_tolerance",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_native_noop_undo_consumes_only_the_preceding_witness",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_requests_archived_producers_and_exact_sources_are_bound",
+        "tools.rhino_oracle.test_cap_regions.CapRegionTests.test_shared_staging_contains_every_scene_dependency"
+      ],
+      "exit_code": 0,
+      "passed_tests": 16,
+      "log_sha256": "0e3ce28b1d53bf0d356f944815318f13e0a091618f206ba1c71aecae7c1673ac",
+      "scope": "Nine Cap provenance tests and seven current shared-source receipt tests after final fixture consolidation"
+    }
+  },
+  "rust_test_executions": 785,
+  "remaining": [
+    "Native simple caps add interior center vertices; stored topology differs in nine scenes.",
+    "Native large-scale captures produce independent caps with non-solid topology in five cases. These valid inputs and results remain in the comparison.",
+    "Native reverses the narrow reversed scene to outward winding; the kernel preserves source winding. Require independent compound/orientation holdouts before changing this policy.",
+    "Stored normals differ in three scenes; nine scenes with different counts have no normal-array bijection comparison.",
+    "Fix long thin triangle closest-point precision with dedicated independent kernel tests; source self-query errors cannot be treated as input drift.",
+    "Arbitrary frames, SubD Cap and comparative Rhino performance remain unqualified.",
+    "Earlier mesh InsertPoint diagnostic gaps remain explicit in mesh-insert-sources-validation.json; historical polygon reports retain their measured source hashes."
+  ],
+  "checks_scope": "Broad runtime checks and the full Python suite passed before shared test-fixture consolidation. Focused default/native Cap and MeshPolyline replays, current-source receipts, formatting and strict Clippy passed afterward. Production fix code was unchanged between these checks."
+}

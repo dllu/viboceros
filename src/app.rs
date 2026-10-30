@@ -218,6 +218,10 @@ use interactive_state::{
     InteractiveIsocurveDirection, InteractiveMeshSphereTopology, InteractiveScaleKind,
 };
 #[cfg(test)]
+#[path = "../crates/viboceros-command/tests/support/closed_polyline.rs"]
+#[allow(dead_code)]
+mod closed_polyline_native_tests;
+#[cfg(test)]
 mod crease_native_tests;
 mod intersect_two_sets;
 mod iplane;

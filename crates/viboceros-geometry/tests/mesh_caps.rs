@@ -16,11 +16,7 @@ fn closely_separated_openings_close_with_winding_colors_uv_and_cap_options_intac
             for crease in [false, true] {
                 for triangles in [false, true] {
                     let (capped, count) = original
-                        .cap_planar_holes_with_options(
-                            Tolerance::MESH_VALIDATION,
-                            crease,
-                            triangles,
-                        )
+                        .cap_planar_holes_with_options(Tolerance::DEFAULT, crease, triangles)
                         .unwrap();
                     assert_eq!(count, 6);
                     assert_eq!(capped.face_count(), 40);
@@ -43,13 +39,7 @@ fn closely_separated_openings_close_with_winding_colors_uv_and_cap_options_intac
                             original.texture_coordinates().unwrap()[source]
                         );
                     }
-                    assert_eq!(
-                        capped
-                            .cap_planar_holes(Tolerance::MESH_VALIDATION)
-                            .unwrap()
-                            .1,
-                        0
-                    );
+                    assert_eq!(capped.cap_planar_holes(Tolerance::DEFAULT).unwrap().1, 0);
                 }
             }
         }

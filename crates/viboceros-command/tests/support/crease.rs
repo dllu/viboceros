@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 use std::path::Path;
 use viboceros_command::crease::{CreaseMode, CreaseTarget};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectId, SelectionMode};
-use viboceros_geometry::Point3;
+use viboceros_geometry::{Point3, Tolerance};
 
 pub fn rows() -> Vec<Value> {
     let mut result = Vec::new();
@@ -69,6 +69,13 @@ pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
     setup_from_family(row, family)
 }
 pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>) {
+    setup_from_family_with_tolerance(row, family, None)
+}
+pub fn setup_from_family_with_tolerance(
+    row: &Value,
+    family: &str,
+    tolerance: Option<Tolerance>,
+) -> (Document, Vec<ObjectId>) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
         .find(|p| p.join("tools/rhino_oracle/fixtures").is_dir())
@@ -79,6 +86,9 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
         .join(format!("{}.3dm", row["id"].as_str().unwrap()));
     let (mut doc, _, _, _) =
         viboceros_command::open_3dm_with_views(path.to_str().unwrap()).unwrap();
+    if let Some(tolerance) = tolerance {
+        doc.set_tolerance(tolerance);
+    }
     let native = &row["value"];
     let layer = doc
         .add_layer(

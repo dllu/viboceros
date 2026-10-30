@@ -10,14 +10,19 @@ vertices remain separate (`Crease=Yes`, the default) or are welded to the source
 (`Crease=No`). `Triangles=No` (the default) groups each simple cap's underlying
 triangles into one n-gon; `Triangles=Yes` leaves them as separate faces. All three
 options are remembered. A copy
-inherits the source's attributes and groups, while geometry-attached user text
+inherits the source's attributes and has no group memberships; source groups
+remain unchanged. Geometry-attached user text
 is cleared because its geometry changed. Mixed selections still cap B-reps and
 NURBS surfaces in place. Caps with inner boundaries remain triangulated in both
 triangle modes. SubD capping is unavailable. For nonplanar mesh holes, see
 [meshes](meshes.md).
 
 Closely spaced inner boundaries retain the strips between their openings.
-Generated mesh facets still use the supplied document tolerance for validation.
+The document tolerance decides whether a boundary is planar. Facet validation
+requires nonzero edges and area, preserving fine features in the defined mesh.
+
+[Native mesh comparisons](../geometry/cap-mesh-native.md) cover exact source
+archives, copies, groups and Undo/Redo, including the remaining scale and layout gaps.
 
 Caps retain the spatial boundary geometry. The command subdivides newly capped
 edges at C0 knot joins with tangent breaks of at least 1°, independently of

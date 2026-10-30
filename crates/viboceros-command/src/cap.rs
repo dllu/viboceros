@@ -198,7 +198,7 @@ impl Command for CapCommand {
         }
         let replaced = document.replace_object_geometries(replacements)?;
         let copied = document
-            .copy_object_geometries_into_source_groups(mesh_copies)?
+            .copy_object_geometries_ungrouped(mesh_copies)?
             .len();
         let count = replaced + copied;
         self.options.set(options);

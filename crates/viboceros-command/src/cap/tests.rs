@@ -187,7 +187,7 @@ fn cap_mesh_fills_only_planar_openings_and_preserves_object_history() {
 }
 
 #[test]
-fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
+fn cap_mesh_delete_input_no_copies_attributes_without_changing_source_groups() {
     let mut doc = Document::default();
     let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
     let mesh = TriangleMesh::try_new(
@@ -226,6 +226,7 @@ fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
         .unwrap()
         .clone();
     assert_eq!(copied.attributes(), &attrs);
+    assert!(copied.group_ids().is_empty());
     assert!(copied.geometry_user_text().is_empty());
     assert!(
         matches!(copied.geometry(), Geometry::Mesh(mesh) if mesh.topology().is_solid() && mesh.vertices().len() == 4)
@@ -234,7 +235,7 @@ fn cap_mesh_delete_input_no_retains_source_and_copies_attributes_and_groups() {
     assert!(!doc.is_selected(copied.id()));
     assert_eq!(
         doc.group(group).unwrap().members().collect::<BTreeSet<_>>(),
-        BTreeSet::from([id, copied.id()])
+        BTreeSet::from([id])
     );
     assert!(
         !registry

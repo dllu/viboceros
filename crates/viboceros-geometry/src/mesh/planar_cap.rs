@@ -7,7 +7,7 @@ use super::*;
 pub(super) fn weld_cap_boundary(
     source: &TriangleMesh,
     capped: TriangleMesh,
-    tolerance: Tolerance,
+    _tolerance: Tolerance,
 ) -> Result<TriangleMesh, GeometryError> {
     let source_len = source.vertices.len();
     debug_assert_eq!(&capped.vertices[..source_len], source.vertices.as_slice());
@@ -60,7 +60,7 @@ pub(super) fn weld_cap_boundary(
         .collect();
     let mut vertices = capped.vertices;
     vertices.truncate(source_len);
-    let mut mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?
+    let mut mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?
         .try_with_vertex_colors(source.vertex_colors.clone())?;
     mesh.vertex_channels = source.vertex_channels.clone();
     mesh.recompute_stored_normals()?;
@@ -208,7 +208,10 @@ pub(super) fn try_cap_annular(
                 .into_iter()
                 .map(|triangle| MeshFace::Triangle(triangle.map(|index| offset + index))),
         );
-        let mut capped = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        // Boundary positions are already defined. Planarity uses the model
+        // tolerance; cap facets need nonzero edges and area, not a minimum
+        // modelling feature size or angle.
+        let mut capped = TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?;
         if let Some(source_colors) = &mesh.vertex_colors {
             let mut boundary_color_by_point = BTreeMap::new();
             for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {

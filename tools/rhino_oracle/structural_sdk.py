@@ -9,6 +9,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'mesh_cap_regions': ('mesh_cap_regions_probe', ('mesh_cap_regions_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_insert_order': ('subd_insert_order_probe', ('subd_insert_order_cases','subd_insert_custom_probe','subd_insert_custom_cases','subd_state','subd_edit_scene','subd_box_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token','join_probe','merge_edges_probe','merge_faces_command_input','merge_faces_command_cases')),
     'subd_insert_custom': ('subd_insert_custom_probe', ('subd_insert_custom_cases','subd_state','subd_edit_scene','subd_box_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token','join_probe','merge_edges_probe','merge_faces_command_input','merge_faces_command_cases')),
     'subd_face_custom_holdout': ('subd_face_custom_holdout_probe', ('subd_face_custom_holdout_cases','subd_face_custom_probe','subd_face_custom_cases','subd_merge_allocation_cases','subd_state','merge_faces_command_cases','merge_faces_command_input','subd_edit_scene','subd_box_probe','number_token','join_probe','merge_edges_probe')),

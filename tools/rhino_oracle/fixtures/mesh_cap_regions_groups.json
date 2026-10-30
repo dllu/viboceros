@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-15
+  },
+  "operations": [
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-pair",
+      "case": "copy-pair"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-partial-group",
+      "case": "copy-partial-group"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-mixed-regions",
+      "case": "copy-mixed-regions"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-closed-peer",
+      "case": "copy-closed-peer"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-welded-pair",
+      "case": "copy-welded-pair"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "copy-ngon-pair",
+      "case": "copy-ngon-pair"
+    }
+  ]
+}

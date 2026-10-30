@@ -152,7 +152,17 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        self.copy_object_geometries_with_order(copies, false, false)
+        self.copy_object_geometries_with_order(copies, false, false, true)
+    }
+
+    /// Copies replacement geometry with source attributes, omitting group
+    /// memberships and geometry user text. Source selection is retained;
+    /// copies remain unselected. Original groups are never edited.
+    pub fn copy_object_geometries_ungrouped(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_object_geometries_with_order(copies, false, false, false)
     }
 
     /// Copies in caller-specified order, retaining source attributes and group
@@ -161,7 +171,7 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        self.copy_object_geometries_with_order(copies, true, false)
+        self.copy_object_geometries_with_order(copies, true, false, true)
     }
 
     /// Copy transformed source geometry into its existing groups, preserving
@@ -170,7 +180,7 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        self.copy_object_geometries_with_order(copies, true, true)
+        self.copy_object_geometries_with_order(copies, true, true, true)
     }
 
     /// Copies every supplied piece in input order, including repeated source
@@ -219,7 +229,7 @@ impl Document {
                 ))
             })
             .collect::<Result<Vec<_>, DocumentError>>()?;
-        self.commit_source_group_copies(staged.into_iter(), false)
+        self.commit_geometry_copies(staged.into_iter(), false, true)
     }
 
     fn copy_object_geometries_with_order(
@@ -227,6 +237,7 @@ impl Document {
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
         input_order: bool,
         preserve_geometry_user_text: bool,
+        join_source_groups: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         let mut copies = copies
             .into_iter()
@@ -237,7 +248,9 @@ impl Document {
         for &index in &indices {
             self.ensure_object_editable(&self.objects[index])?;
         }
-        self.validate_memberships_at_indices(&indices)?;
+        if join_source_groups {
+            self.validate_memberships_at_indices(&indices)?;
+        }
 
         let mut staged = Vec::with_capacity(copies.len());
         for index in indices {
@@ -252,20 +265,23 @@ impl Document {
             staged.sort_unstable_by_key(|(_, rank, _)| *rank);
         }
 
-        self.commit_source_group_copies(
+        self.commit_geometry_copies(
             staged
                 .into_iter()
                 .map(|(index, _, geometry)| (index, geometry, None)),
             preserve_geometry_user_text,
+            join_source_groups,
         )
     }
 
-    // Source indices, editability, and memberships must have been validated;
-    // only appends may change the object table before memberships are assigned.
-    fn commit_source_group_copies(
+    // Source indices and editability must be validated, along with memberships
+    // when they are inherited. Only appends may change the object table before
+    // memberships are assigned.
+    fn commit_geometry_copies(
         &mut self,
         staged: impl ExactSizeIterator<Item = (usize, Geometry, Option<BTreeMap<String, String>>)>,
         preserve_geometry_user_text: bool,
+        join_source_groups: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         let staged = staged
             .map(|(index, geometry, text)| {
@@ -315,10 +331,12 @@ impl Document {
             copied.push((source_index, index, copy_id));
         }
 
-        for &(source_index, copy_index, _) in &copied {
-            let memberships = self.objects[source_index].group_ids.clone();
-            if !memberships.is_empty() {
-                self.set_object_group_memberships_at(copy_index, memberships)?;
+        if join_source_groups {
+            for &(source_index, copy_index, _) in &copied {
+                let memberships = self.objects[source_index].group_ids.clone();
+                if !memberships.is_empty() {
+                    self.set_object_group_memberships_at(copy_index, memberships)?;
+                }
             }
         }
 

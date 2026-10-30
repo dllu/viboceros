@@ -228,3 +228,61 @@ fn replacement_pieces_validate_all_metadata_before_insertion_and_replay_source_g
     assert_eq!(doc.objects, after);
     assert_eq!(doc.groups, after_groups);
 }
+
+#[test]
+fn ungrouped_geometry_copies_preserve_source_groups_selection_and_attributes() {
+    let mut doc = Document::default();
+    let source = doc.add_geometry(point(0.)).unwrap();
+    let peer = doc.add_geometry(point(1.)).unwrap();
+    let group = doc
+        .add_group(Some("source".into()), [source, peer])
+        .unwrap();
+    doc.set_objects_locked([peer], true).unwrap();
+    doc.set_object_geometry_user_text([source], "geometry", Some("source"))
+        .unwrap();
+    doc.select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.objects.clone();
+    let groups = doc.groups.clone();
+    let copies = doc
+        .copy_object_geometries_ungrouped([(source, point(2.))])
+        .unwrap();
+    assert_eq!(copies.len(), 1);
+    let copy = doc.object(copies[0]).unwrap();
+    assert_eq!(copy.attributes(), doc.object(source).unwrap().attributes());
+    assert!(copy.group_ids().is_empty());
+    assert!(copy.geometry_user_text().is_empty());
+    assert!(doc.is_selected(source));
+    assert!(!doc.is_selected(copies[0]));
+    assert_eq!(doc.object(source).unwrap().group_ids(), [group]);
+    assert_eq!(doc.groups, groups);
+    let after = doc.objects.clone();
+    doc.undo().unwrap();
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, groups);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects, after);
+    assert_eq!(doc.groups, groups);
+}
+
+#[test]
+fn an_invalid_later_ungrouped_copy_preserves_sources_groups_and_redo() {
+    let mut doc = Document::default();
+    let source = doc.add_geometry(point(0.)).unwrap();
+    let locked = doc.add_geometry(point(1.)).unwrap();
+    doc.add_group(None, [source, locked]).unwrap();
+    doc.set_objects_locked([locked], true).unwrap();
+    doc.clear_history().unwrap();
+    doc.add_geometry(point(2.)).unwrap();
+    doc.undo().unwrap();
+    let before = doc.objects.clone();
+    let groups = doc.groups.clone();
+    assert!(
+        doc.copy_object_geometries_ungrouped([(source, point(4.)), (locked, point(5.))])
+            .is_err()
+    );
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, groups);
+    assert!(doc.can_redo());
+}

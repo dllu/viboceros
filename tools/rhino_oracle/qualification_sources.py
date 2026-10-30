@@ -232,6 +232,39 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+CAP_MESH_NATIVE_MODULES = [
+    'src/app.rs',
+    'src/app/crease_native_tests.rs',
+    'src/app/object_selection/mesh_polyline_tests.rs',
+    'crates/viboceros-geometry/tests/support/subdivision_native.rs',
+    'src/app/tests/mod.rs',
+    'src/app/tests/cap_native.rs',
+    'crates/viboceros-command/tests/support/cap_regions.rs',
+    'crates/viboceros-command/src/cap.rs',
+    'crates/viboceros-command/src/cap/tests.rs',
+    'crates/viboceros-command/tests/cap_close_holes.rs',
+    'crates/viboceros-command/tests/cap_regions_native.rs',
+    'crates/viboceros-command/tests/support/cap_regions_surface.rs',
+    'crates/viboceros-command/tests/support/crease.rs',
+    'crates/viboceros-command/tests/support/closed_polyline.rs',
+    'crates/viboceros-document/src/object_copy.rs',
+    'crates/viboceros-document/src/object_copy/tests.rs',
+    'crates/viboceros-geometry/src/mesh/hole_fill.rs',
+    'crates/viboceros-geometry/src/mesh/planar_cap.rs',
+    'crates/viboceros-geometry/tests/mesh_caps.rs',
+    'crates/viboceros-geometry/tests/support/holed_mesh.rs',
+    'docs/commands/cap.md',
+    'docs/geometry/cap-mesh-native.md',
+    'tools/rhino_oracle/mesh_cap_regions_cases.py',
+    'tools/rhino_oracle/mesh_cap_regions_probe.py',
+    'tools/rhino_oracle/generate_mesh_cap_regions.py',
+    'tools/rhino_oracle/generate_mesh_cap_regions_groups.py',
+    'tools/rhino_oracle/generate_mesh_cap_regions_noop.py',
+    'tools/rhino_oracle/cap_regions_evidence.py',
+    'tools/rhino_oracle/test_cap_regions.py',
+    'tools/rhino_oracle/fixtures/mesh_cap_regions_retained_gaps.json',
+]
+
 MESH_POLYGON_MODULES = [
     'crates/viboceros-geometry/src/mesh.rs',
     'crates/viboceros-geometry/tests/mesh_caps.rs',
@@ -401,6 +434,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in CAP_MESH_NATIVE_MODULES):
+        paths = [*paths, *CAP_MESH_NATIVE_MODULES]
     if any(p in paths for p in MESH_POLYGON_MODULES):
         paths = [*paths, *MESH_POLYGON_MODULES]
     if 'tools/rhino_oracle/capture_family.py' in paths or any(p in paths for p in ORACLE_CLIENT_MODULES):

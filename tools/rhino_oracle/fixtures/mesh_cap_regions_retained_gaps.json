@@ -1,0 +1,51 @@
+{
+  "boundary_certificate": [
+    "separated-large",
+    "narrow-large",
+    "narrow-reversed",
+    "separated-large-reversed",
+    "narrow-welded",
+    "narrow-copy"
+  ],
+  "counts": [
+    "single",
+    "separated-large",
+    "narrow-large",
+    "separated-large-reversed",
+    "narrow-welded",
+    "narrow-copy",
+    "single-ngon",
+    "copy-closed-peer",
+    "copy-ngon-pair"
+  ],
+  "topology": [
+    "separated-large",
+    "narrow-large",
+    "separated-large-reversed",
+    "narrow-welded",
+    "narrow-copy"
+  ],
+  "sample_surface": [
+    "separated-large",
+    "narrow-large",
+    "separated-large-reversed",
+    "narrow-welded",
+    "narrow-copy"
+  ],
+  "normals": [
+    "narrow-reversed",
+    "separated-welded",
+    "copy-welded-pair"
+  ],
+  "uncompared_normals": [
+    "single",
+    "separated-large",
+    "narrow-large",
+    "separated-large-reversed",
+    "narrow-welded",
+    "narrow-copy",
+    "single-ngon",
+    "copy-closed-peer",
+    "copy-ngon-pair"
+  ]
+}

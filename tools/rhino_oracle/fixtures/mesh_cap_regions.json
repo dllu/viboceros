@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-15
+  },
+  "operations": [
+    {
+      "op": "mesh_cap_regions",
+      "id": "single",
+      "case": "single"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "annulus",
+      "case": "annulus"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "separated",
+      "case": "separated"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "narrow",
+      "case": "narrow"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "separated-large",
+      "case": "separated-large"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "narrow-large",
+      "case": "narrow-large"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "narrow-reversed",
+      "case": "narrow-reversed"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "separated-large-reversed",
+      "case": "separated-large-reversed"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "separated-welded",
+      "case": "separated-welded"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "separated-copy",
+      "case": "separated-copy"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "narrow-welded",
+      "case": "narrow-welded"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "narrow-copy",
+      "case": "narrow-copy"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "single-ngon",
+      "case": "single-ngon"
+    },
+    {
+      "op": "mesh_cap_regions",
+      "id": "annulus-ngon",
+      "case": "annulus-ngon"
+    }
+  ]
+}
