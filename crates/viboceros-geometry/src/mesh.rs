@@ -26,6 +26,7 @@ mod containment;
 mod section;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod closest;
+use closest::triangle as closest_point_on_triangle;
 mod projection;
 pub use projection::{MeshClosestLocation, MeshProjectionIndex};
 mod edge_collapse;
@@ -3193,120 +3194,6 @@ fn validate_mesh_edge_filter(filter: MeshEdgeFilter) -> Result<(), GeometryError
     } else {
         Err(GeometryError::InvalidMeshFaceAngleInterval)
     }
-}
-
-fn closest_point_on_triangle(
-    target: Point3,
-    a: Point3,
-    b: Point3,
-    c: Point3,
-) -> Result<Point3, GeometryError> {
-    let (Ok(ab), Ok(ac)) = (a.vector_to(b), a.vector_to(c)) else {
-        return closest::exact_triangle(target, a, b, c);
-    };
-    let scale = ab
-        .to_array()
-        .into_iter()
-        .chain(ac.to_array())
-        .fold(0.0_f64, |s, x| s.max(x.abs()));
-    if scale == 0.0 {
-        return closest::exact_triangle(target, a, b, c);
-    }
-    let first = ab.to_array().map(|x| x / scale);
-    let second = ac.to_array().map(|x| x / scale);
-    let cross_scale = (0..3)
-        .map(|i| {
-            let (j, k) = ((i + 1) % 3, (i + 2) % 3);
-            first[j].mul_add(second[k], -first[k] * second[j]).abs()
-        })
-        .fold(0.0_f64, Real::max);
-    if cross_scale <= 32.0 * Real::EPSILON {
-        return closest::exact_triangle(target, a, b, c);
-    }
-    closest_point_on_regular_triangle(target, a, b, c, ab, ac)
-        .or_else(|_| closest::exact_triangle(target, a, b, c))
-}
-
-fn closest_point_on_regular_triangle(
-    target: Point3,
-    a: Point3,
-    b: Point3,
-    c: Point3,
-    ab_vector: crate::Vector3,
-    ac_vector: crate::Vector3,
-) -> Result<Point3, GeometryError> {
-    let ap_vector = a.vector_to(target)?;
-    let bp_vector = b.vector_to(target)?;
-    let cp_vector = c.vector_to(target)?;
-    let mut products = [
-        ab_vector.dot(ap_vector)?,
-        ac_vector.dot(ap_vector)?,
-        ab_vector.dot(bp_vector)?,
-        ac_vector.dot(bp_vector)?,
-        ab_vector.dot(cp_vector)?,
-        ac_vector.dot(cp_vector)?,
-    ];
-    let product_scale = products
-        .iter()
-        .fold(0.0_f64, |current, value| current.max(value.abs()));
-    if product_scale == 0.0 {
-        return closest::exact_triangle(target, a, b, c);
-    }
-    for product in &mut products {
-        *product /= product_scale;
-    }
-    let [d1, d2, d3, d4, d5, d6] = products;
-    let ab = ab_vector.to_array();
-    let ac = ac_vector.to_array();
-    if d1 <= 0.0 && d2 <= 0.0 {
-        return Ok(a);
-    }
-
-    if d3 >= 0.0 && d4 <= d3 {
-        return Ok(b);
-    }
-
-    let vc = d1.mul_add(d4, -d3 * d2);
-    if vc <= 0.0 && d1 >= 0.0 && d3 <= 0.0 {
-        return triangle_barycentric_point(a, ab, ac, d1 / (d1 - d3), 0.0);
-    }
-
-    if d6 >= 0.0 && d5 <= d6 {
-        return Ok(c);
-    }
-
-    let vb = d5.mul_add(d2, -d1 * d6);
-    if vb <= 0.0 && d2 >= 0.0 && d6 <= 0.0 {
-        return triangle_barycentric_point(a, ab, ac, 0.0, d2 / (d2 - d6));
-    }
-
-    let va = d3.mul_add(d6, -d5 * d4);
-    let d43 = d4 - d3;
-    let d56 = d5 - d6;
-    if va <= 0.0 && d43 >= 0.0 && d56 >= 0.0 {
-        let edge_parameter = d43 / (d43 + d56);
-        return triangle_barycentric_point(a, ab, ac, 1.0 - edge_parameter, edge_parameter);
-    }
-
-    if va + vb + vc <= 0.0 {
-        return closest::exact_triangle(target, a, b, c);
-    }
-    let inverse_sum = 1.0 / (va + vb + vc);
-    triangle_barycentric_point(a, ab, ac, vb * inverse_sum, vc * inverse_sum)
-}
-
-fn triangle_barycentric_point(
-    origin: Point3,
-    first: [Real; 3],
-    second: [Real; 3],
-    first_weight: Real,
-    second_weight: Real,
-) -> Result<Point3, GeometryError> {
-    Point3::try_new(
-        second[0].mul_add(second_weight, first[0].mul_add(first_weight, origin.x())),
-        second[1].mul_add(second_weight, first[1].mul_add(first_weight, origin.y())),
-        second[2].mul_add(second_weight, first[2].mul_add(first_weight, origin.z())),
-    )
 }
 
 fn validate_mesh_break_angle(break_angle_radians: Real) -> Result<(), GeometryError> {

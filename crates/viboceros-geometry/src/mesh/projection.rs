@@ -16,7 +16,14 @@ const MAX_TRIANGLES: usize = 1_000_000;
 struct Node {
     bounds: BoundingBox3,
     range: Range<usize>,
+    first_triangle: usize,
     children: Option<[usize; 2]>,
+}
+
+fn box_foot(bounds: BoundingBox3, target: Point3) -> Result<Point3, GeometryError> {
+    Point3::try_from(std::array::from_fn::<_, 3, _>(|i| {
+        target.to_array()[i].clamp(bounds.min().to_array()[i], bounds.max().to_array()[i])
+    }))
 }
 /// Reusable bounding-volume index using the existing shorter-diagonal quad splitter.
 /// Queries are bidirectional. Candidate rejection uses conservative interval
@@ -105,23 +112,19 @@ impl<'a> MeshProjectionIndex<'a> {
         };
         while let Some(key) = pending.pop() {
             let node = &self.nodes[key];
-            let lower_point = Point3::try_from(std::array::from_fn::<_, 3, _>(|i| {
-                target.to_array()[i].clamp(
-                    node.bounds.min().to_array()[i],
-                    node.bounds.max().to_array()[i],
-                )
-            }))?;
+            if best
+                .is_some_and(|(previous, d)| d.point() == target && node.first_triangle >= previous)
+            {
+                continue;
+            }
+            let lower_point = box_foot(node.bounds, target)?;
             let lower = PointDistance::new(target, lower_point);
             if best.is_some_and(|(_, b)| lower.compare(&b, target).is_gt()) {
                 continue;
             }
             if let Some(children) = node.children {
                 let lower = |key: usize| -> Result<PointDistance, GeometryError> {
-                    let bounds = self.nodes[key].bounds;
-                    let q = Point3::try_from(std::array::from_fn::<_, 3, _>(|i| {
-                        target.to_array()[i]
-                            .clamp(bounds.min().to_array()[i], bounds.max().to_array()[i])
-                    }))?;
+                    let q = box_foot(self.nodes[key].bounds, target)?;
                     Ok(PointDistance::new(target, q))
                 };
                 let [a, b] = children;
@@ -132,6 +135,18 @@ impl<'a> MeshProjectionIndex<'a> {
                 }
             } else {
                 for &index in &self.order[node.range.clone()] {
+                    if let Some((previous, best)) = best {
+                        // Zero distance cannot improve; lower triangle indices
+                        // must still be visited to retain deterministic ties.
+                        if best.point() == target && index >= previous {
+                            continue;
+                        }
+                        let lower =
+                            PointDistance::new(target, box_foot(self.bounds[index], target)?);
+                        if lower.compare(&best, target).is_gt() {
+                            continue;
+                        }
+                    }
                     let [a, b, c] = self.triangle_points(index).unwrap();
                     let point = super::closest_point_on_triangle(target, a, b, c)?;
                     let distance = PointDistance::new(target, point);
@@ -165,9 +180,11 @@ impl<'a> MeshProjectionIndex<'a> {
                 b.union(self.bounds[i])
             })?;
         let key = self.nodes.len();
+        let first_triangle = self.order[range.clone()].iter().copied().min().unwrap();
         self.nodes.push(Node {
             bounds,
             range: range.clone(),
+            first_triangle,
             children: None,
         });
         if range.len() > 8 {

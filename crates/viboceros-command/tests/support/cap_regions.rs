@@ -288,7 +288,13 @@ pub fn assert_diagnostics(diagnostics: &[Value]) {
             assert_eq!(r[phase]["ngon_boundaries"], true, "{}/{}", r["id"], phase);
         }
         for phase in ["before", "undo"] {
-            for field in ["boundary_certificate", "counts", "topology", "normals"] {
+            for field in [
+                "boundary_certificate",
+                "counts",
+                "topology",
+                "normals",
+                "sample_surface",
+            ] {
                 assert_eq!(r[phase][field], true);
             }
         }

@@ -232,6 +232,23 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
+MESH_CLOSEST_MODULES = [
+    'crates/viboceros-geometry/src/mesh.rs',
+    'crates/viboceros-geometry/src/mesh/closest.rs',
+    'crates/viboceros-geometry/src/mesh/closest/filtered.rs',
+    'crates/viboceros-geometry/src/mesh/closest/filtered/tests.rs',
+    'crates/viboceros-geometry/src/mesh/closest/reference_tests.rs',
+    'crates/viboceros-geometry/src/mesh/closest/tests.rs',
+    'crates/viboceros-geometry/src/interval.rs',
+    'crates/viboceros-geometry/src/exact_scalar.rs',
+    'crates/viboceros-geometry/src/mesh/projection.rs',
+    'crates/viboceros-geometry/src/mesh/projection/tests.rs',
+    'crates/viboceros-command/tests/support/cap_regions.rs',
+    'tools/rhino_oracle/test_cap_regions.py',
+    'docs/geometry/cap-mesh-native-validation.json',
+    'docs/geometry/mesh-closest-precision.md',
+]
+
 CAP_MESH_NATIVE_MODULES = [
     'src/app.rs',
     'src/app/crease_native_tests.rs',
@@ -434,6 +451,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in MESH_CLOSEST_MODULES):
+        paths = [*paths, *MESH_CLOSEST_MODULES]
     if any(p in paths for p in CAP_MESH_NATIVE_MODULES):
         paths = [*paths, *CAP_MESH_NATIVE_MODULES]
     if any(p in paths for p in MESH_POLYGON_MODULES):

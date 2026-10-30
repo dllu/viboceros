@@ -41,10 +41,12 @@ faces. It provides exact coordinate-boundary agreement in sixteen scenes.
 Seventeen scenes agree under bidirectional sampling at the unchanged `1e-6`
 bound. These are separate measurements, not a general continuous-surface bound.
 
-Source arrays are identical at large scale, but the current closest-point sampler
-can report nonzero error on the long thin source faces. That query-precision gap
-is retained separately and needs a kernel fix. Arbitrary frames, SubD Cap and
-comparative Rhino performance remain unqualified.
+The original closest-point sampler reported errors up to 1.5 units on identical
+large thin source meshes. The [query precision fix](mesh-closest-precision.md)
+adds independent analytic and exact-reference tests, and requires every source
+replay to satisfy the original sampling bound. The historical failure record is
+preserved. Arbitrary-frame Cap, SubD Cap and comparative Rhino performance remain
+unqualified.
 
 The [validation record](cap-mesh-native-validation.json) binds these captures,
 current sources, checks and every retained gap. Rhino's public

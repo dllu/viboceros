@@ -102,7 +102,8 @@ class CapRegionTests(unittest.TestCase):
     def test_current_receipt_binds_the_sources_and_all_native_families(self):
         from .qualification_sources import CAP_MESH_NATIVE_MODULES,with_shared_sources
         root=HERE.parent.parent
-        receipt=json.loads((root/'docs/geometry/cap-mesh-native-validation.json').read_text())
+        historical=json.loads((root/'docs/geometry/cap-mesh-native-validation.json').read_text())
+        receipt=json.loads((root/'docs/geometry'/historical['current_source_receipt']).read_text())
         self.assertEqual(receipt['native_command_workflows'],22)
         self.assertEqual(receipt['coordinate_epsilon'],1e-6)
         for name in CAP_MESH_NATIVE_MODULES:
@@ -110,8 +111,26 @@ class CapRegionTests(unittest.TestCase):
         for name,digest in receipt['source_hashes'].items():
             self.assertEqual(hashlib.sha256((root/name).read_bytes()).hexdigest(),digest,name)
         for family in FAMILIES:
+            self.assertEqual(receipt['families'][family],historical['families'][family])
             for folder,digest in receipt['families'][family].items():
                 self.assertEqual(hashlib.sha256((HERE/folder/(family+'.json')).read_bytes()).hexdigest(),digest)
+
+    def test_closest_followup_preserves_historical_evidence_and_geometry_gaps(self):
+        from .qualification_sources import MESH_CLOSEST_MODULES,with_shared_sources
+        root=HERE.parent.parent
+        historical=json.loads((root/'docs/geometry/cap-mesh-native-validation.json').read_text())
+        receipt=json.loads((root/'docs/geometry'/historical['current_source_receipt']).read_text())
+        annotations={'qualified_revision','current_source_receipt','source_hashes_scope'}
+        payload={k:v for k,v in historical.items()if k not in annotations}
+        digest=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        self.assertEqual(digest,receipt['historical_cap_measurements_sha256'])
+        self.assertEqual(historical['qualified_revision'],receipt['base_revision'])
+        self.assertEqual(receipt['source_query_precision']['cases'],22)
+        self.assertLessEqual(receipt['source_query_precision']['maximum_self_query_error'],receipt['coordinate_epsilon'])
+        self.assertEqual(receipt['retained_gaps'],json.loads((HERE/'fixtures/mesh_cap_regions_retained_gaps.json').read_text()))
+        for name in MESH_CLOSEST_MODULES:
+            self.assertTrue(set(MESH_CLOSEST_MODULES)<=set(with_shared_sources([name])))
+            self.assertIn(name,receipt['source_hashes'])
 
     def test_native_narrow_cap_retains_edges_below_the_model_tolerance(self):
         import math

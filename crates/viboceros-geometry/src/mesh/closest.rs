@@ -1,8 +1,28 @@
-//! Exact fallback for collapsed, extremely thin or overflowing triangles.
+//! Certified floating-point nearest points with an exact rational fallback.
 
 use crate::exact_scalar::{Rational, rational, scalar};
 use crate::{GeometryError, Point3};
 use num_traits::{One, Zero};
+
+mod filtered;
+#[cfg(test)]
+mod reference_tests;
+#[cfg(test)]
+mod tests;
+
+pub(super) fn triangle(
+    target: Point3,
+    a: Point3,
+    b: Point3,
+    c: Point3,
+) -> Result<Point3, GeometryError> {
+    if [a, b, c].contains(&target) {
+        return Ok(target);
+    }
+    filtered::triangle(target, a, b, c)
+        .map(Ok)
+        .unwrap_or_else(|| exact_triangle(target, a, b, c))
+}
 
 type ExactPoint = [Rational; 3];
 

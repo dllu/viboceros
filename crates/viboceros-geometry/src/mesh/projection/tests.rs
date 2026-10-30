@@ -393,6 +393,34 @@ fn closest_location_retains_triangle_identity_and_deterministic_ties() {
 }
 
 #[test]
+fn zero_distance_pruning_retains_lower_index_ties_across_bvh_levels() {
+    let mut vertices = Vec::new();
+    let mut faces = Vec::new();
+    for i in 0..32 {
+        let corner = -(i as f64) * 4.;
+        let base = vertices.len() as u32;
+        vertices.extend([
+            p(corner, corner, 0.),
+            p(1000., corner, 0.),
+            p(corner, 1000., 0.),
+        ]);
+        faces.push(MeshFace::Triangle([base, base + 1, base + 2]));
+    }
+    let mesh = TriangleMesh::try_from_face_records(vertices, faces).unwrap();
+    let index = MeshProjectionIndex::new(&mesh).unwrap();
+    // Spatial ordering starts with later source triangles. All triangles
+    // contain the foot, so an early zero-distance exit would pick the wrong ID.
+    for height in [0., 1., -1.] {
+        let location = index
+            .closest_location(p(0.25, 0.25, height))
+            .unwrap()
+            .unwrap();
+        assert_eq!(location.triangle_index, 0);
+        assert_eq!(location.point, p(0.25, 0.25, 0.));
+    }
+}
+
+#[test]
 fn owned_mesh_indexes_outlive_the_source_and_retain_projection_and_pull_queries() {
     let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
     let index = {
