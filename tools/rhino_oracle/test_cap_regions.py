@@ -12,11 +12,7 @@ from .structural_sdk import stage_helpers,validate_operations
 BUILDERS=dict(zip(FAMILIES,[regions,groups,noop]))
 
 
-def frozen(record,name):
-    digest=record['provenance']['sources'][name]
-    data=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
-    if hashlib.sha256(data).hexdigest()!=digest:raise ValueError('corrupt frozen producer')
-    return data
+from .capture_evidence import frozen
 
 
 class CapRegionTests(unittest.TestCase):
@@ -104,7 +100,7 @@ class CapRegionTests(unittest.TestCase):
         root=HERE.parent.parent
         historical=json.loads((root/'docs/geometry/cap-mesh-native-validation.json').read_text())
         receipt=json.loads((root/'docs/geometry'/historical['current_source_receipt']).read_text())
-        self.assertEqual(receipt['native_command_workflows'],22)
+        self.assertEqual(receipt['mesh_regression']['native_command_workflows'],22)
         self.assertEqual(receipt['coordinate_epsilon'],1e-6)
         for name in CAP_MESH_NATIVE_MODULES:
             self.assertTrue(set(CAP_MESH_NATIVE_MODULES)<=set(with_shared_sources([name])))
@@ -124,10 +120,10 @@ class CapRegionTests(unittest.TestCase):
         payload={k:v for k,v in historical.items()if k not in annotations}
         digest=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         self.assertEqual(digest,receipt['historical_cap_measurements_sha256'])
-        self.assertEqual(historical['qualified_revision'],receipt['base_revision'])
-        self.assertEqual(receipt['source_query_precision']['cases'],22)
-        self.assertLessEqual(receipt['source_query_precision']['maximum_self_query_error'],receipt['coordinate_epsilon'])
-        self.assertEqual(receipt['retained_gaps'],json.loads((HERE/'fixtures/mesh_cap_regions_retained_gaps.json').read_text()))
+        self.assertEqual(historical['qualified_revision'],receipt['historical_cap_qualified_revision'])
+        self.assertEqual(receipt['mesh_regression']['source_query_precision']['cases'],22)
+        self.assertLessEqual(receipt['mesh_regression']['source_query_precision']['maximum_self_query_error'],receipt['coordinate_epsilon'])
+        self.assertEqual(receipt['mesh_regression']['retained_gaps'],json.loads((HERE/'fixtures/mesh_cap_regions_retained_gaps.json').read_text()))
         for name in MESH_CLOSEST_MODULES:
             self.assertTrue(set(MESH_CLOSEST_MODULES)<=set(with_shared_sources([name])))
             self.assertIn(name,receipt['source_hashes'])

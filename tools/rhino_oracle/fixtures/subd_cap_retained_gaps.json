@@ -1,0 +1,5 @@
+{
+  "faces": ["annulus-face", "annulus-triangles"],
+  "edge_tags": ["annulus-face", "annulus-triangles"],
+  "uncompared_properties": ["annulus-face", "annulus-triangles"]
+}

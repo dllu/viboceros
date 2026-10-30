@@ -5,7 +5,7 @@ use super::{mesh_native, subd_native};
 use serde_json::{Value, json};
 use std::path::Path;
 use viboceros_command::crease::{CreaseMode, CreaseTarget};
-use viboceros_document::{ColorRgb, Document, Geometry, ObjectId, SelectionMode};
+use viboceros_document::{ColorRgb, Document, Geometry, Object, ObjectId, SelectionMode};
 use viboceros_geometry::{Point3, Tolerance};
 
 pub fn rows() -> Vec<Value> {
@@ -53,6 +53,45 @@ pub fn point(v: &Value) -> Point3 {
         v[2].as_f64().unwrap(),
     )
     .unwrap()
+}
+
+/// Match preserved sources, the history witness, or an ungrouped command copy.
+pub fn object_for_row<'a>(doc: &'a Document, ids: &[ObjectId], row: &Value) -> &'a Object {
+    if let Some(i) = row["source"].as_u64() {
+        return doc.object(ids[i as usize]).unwrap();
+    }
+    let matches = doc
+        .objects()
+        .filter(|o| {
+            !ids.contains(&o.id())
+                && o.attributes().name() == row["name"].as_str()
+                && match o.geometry() {
+                    Geometry::Point(_) => row.get("point").is_some(),
+                    Geometry::Mesh(_) => row.get("mesh").is_some(),
+                    Geometry::SubD(_) => row.get("subd").is_some(),
+                    _ => false,
+                }
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(matches.len(), 1, "unique scene object {}", row["name"]);
+    matches[0]
+}
+
+pub fn metadata_matches(doc: &Document, object: &Object, row: &Value, selection: bool) -> bool {
+    let attrs = object.attributes();
+    let color = attrs.object_color();
+    json!([color.red, color.green, color.blue]) == row["color"]
+        && attrs.color_source() as u8 == row["color_source"].as_u64().unwrap() as u8
+        && attrs.name() == row["name"].as_str()
+        && doc.layer(attrs.layer_id()).unwrap().name() == row["layer"].as_str().unwrap()
+        && json!(
+            object
+                .group_ids()
+                .iter()
+                .map(|&g| doc.group(g).unwrap().name().unwrap())
+                .collect::<Vec<_>>()
+        ) == row["groups"]
+        && (!selection || doc.is_selected(object.id()) == row["selected"].as_bool().unwrap())
 }
 pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
     let family = if row["id"].as_str().unwrap().starts_with("mixed_") {

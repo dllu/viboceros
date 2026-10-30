@@ -1,20 +1,20 @@
-//! Planar surface, B-rep, and mesh hole capping.
+//! Planar surface, B-rep, mesh and SubD hole capping.
 use super::*;
 use viboceros_geometry::BrepSolidOrientation;
 
 #[cfg(test)]
 mod tests;
 
-const MESH_CAP_USAGE: &str = "Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]";
+const CAP_USAGE: &str = "Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshCapOptions {
+struct CapOptions {
     delete_input: bool,
     crease: bool,
     triangles: bool,
 }
 
-impl Default for MeshCapOptions {
+impl Default for CapOptions {
     fn default() -> Self {
         Self {
             delete_input: true,
@@ -25,19 +25,19 @@ impl Default for MeshCapOptions {
 }
 
 pub(super) struct CapCommand {
-    options: remembered::Remembered<MeshCapOptions>,
+    options: remembered::Remembered<CapOptions>,
 }
 
 impl Default for CapCommand {
     fn default() -> Self {
         Self {
-            options: remembered::Remembered::new(MeshCapOptions::default()),
+            options: remembered::Remembered::new(CapOptions::default()),
         }
     }
 }
 
 impl CapCommand {
-    fn parse(&self, arguments: &[&str]) -> Result<MeshCapOptions, CommandError> {
+    fn parse(&self, arguments: &[&str]) -> Result<CapOptions, CommandError> {
         let mut options = self.options.get();
         let (mut delete_seen, mut crease_seen, mut triangles_seen, mut index) =
             (false, false, false, 0);
@@ -48,8 +48,8 @@ impl CapCommand {
                 options.delete_input = value;
                 break;
             }
-            let (name, value, consumed) = orient_option(arguments, index, MESH_CAP_USAGE)?;
-            let value = parse_yes_no(value).ok_or(CommandError::Usage(MESH_CAP_USAGE))?;
+            let (name, value, consumed) = orient_option(arguments, index, CAP_USAGE)?;
+            let value = parse_yes_no(value).ok_or(CommandError::Usage(CAP_USAGE))?;
             if option_name_eq(name, "DeleteInput") && !delete_seen {
                 options.delete_input = value;
                 delete_seen = true;
@@ -60,7 +60,7 @@ impl CapCommand {
                 options.triangles = value;
                 triangles_seen = true;
             } else {
-                return Err(CommandError::Usage(MESH_CAP_USAGE));
+                return Err(CommandError::Usage(CAP_USAGE));
             }
             index += consumed;
         }
@@ -115,11 +115,29 @@ impl Command for CapCommand {
             return Err(CommandError::NoObjectsSelected);
         }
         let mut replacements = Vec::new();
-        let mut mesh_copies = Vec::new();
+        let mut copies = Vec::new();
         let mut face_count = 0;
         let mut unresolved_compounds = 0;
         let mut selected_mesh = false;
+        let mut selected_subd = false;
         for object in document.selected_objects() {
+            if let Geometry::SubD(subd) = object.geometry() {
+                selected_subd = true;
+                let (capped, count) = subd.cap_planar_holes_with_options(
+                    document.tolerance(),
+                    options.crease,
+                    options.triangles,
+                )?;
+                if count > 0 {
+                    face_count += capped.faces().len() - subd.faces().len();
+                    if options.delete_input {
+                        replacements.push((object.id(), Geometry::SubD(capped)));
+                    } else {
+                        copies.push((object.id(), Geometry::SubD(capped)));
+                    }
+                }
+                continue;
+            }
             if let Geometry::Mesh(mesh) = object.geometry() {
                 selected_mesh = true;
                 let (capped, count) = mesh.cap_planar_holes_with_options(
@@ -132,7 +150,7 @@ impl Command for CapCommand {
                     if options.delete_input {
                         replacements.push((object.id(), Geometry::Mesh(capped)));
                     } else {
-                        mesh_copies.push((object.id(), Geometry::Mesh(capped)));
+                        copies.push((object.id(), Geometry::Mesh(capped)));
                     }
                 }
                 continue;
@@ -193,18 +211,26 @@ impl Command for CapCommand {
                 replacements.push((object.id(), Geometry::Brep(capped)));
             }
         }
-        if !selected_mesh && !arguments.is_empty() {
+        if !selected_mesh && !selected_subd && !arguments.is_empty() {
             return Err(CommandError::Usage("Cap"));
         }
         let replaced = document.replace_object_geometries(replacements)?;
-        let copied = document
-            .copy_object_geometries_ungrouped(mesh_copies)?
-            .len();
+        let copied = document.copy_object_geometries_ungrouped(copies)?.len();
         let count = replaced + copied;
         self.options.set(options);
-        let mut message = format!("Capped {count} object(s) with {face_count} planar face(s)");
+        let faces = if selected_subd {
+            "cap face(s)"
+        } else {
+            "planar face(s)"
+        };
+        let mut message = format!("Capped {count} object(s) with {face_count} {faces}");
         if copied > 0 {
-            message.push_str(&format!("; retained {copied} source mesh(es)"));
+            let sources = if selected_subd {
+                "object(s)"
+            } else {
+                "mesh(es)"
+            };
+            message.push_str(&format!("; retained {copied} source {sources}"));
         }
         if unresolved_compounds > 0 {
             message.push_str(&format!(

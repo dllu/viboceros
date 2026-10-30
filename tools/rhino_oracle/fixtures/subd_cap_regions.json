@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_cap_regions",
+      "id": "square-crease-face",
+      "case": "square-crease-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "square-crease-triangles",
+      "case": "square-crease-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "square-smooth-face",
+      "case": "square-smooth-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "square-smooth-triangles",
+      "case": "square-smooth-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "triangle-face",
+      "case": "triangle-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "triangle-triangles",
+      "case": "triangle-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "pentagon-face",
+      "case": "pentagon-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "pentagon-triangles",
+      "case": "pentagon-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "concave-face",
+      "case": "concave-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "concave-triangles",
+      "case": "concave-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "annulus-face",
+      "case": "annulus-face"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "annulus-triangles",
+      "case": "annulus-triangles"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "reversed-crease",
+      "case": "reversed-crease"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "reversed-smooth",
+      "case": "reversed-smooth"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "nonplanar",
+      "case": "nonplanar"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "copy",
+      "case": "copy"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "closed-noop",
+      "case": "closed-noop"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "sheet",
+      "case": "sheet"
+    }
+  ]
+}

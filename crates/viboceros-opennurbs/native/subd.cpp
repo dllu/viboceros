@@ -166,6 +166,8 @@ extern "C" int vibo_subd_append(const uint8_t* bytes,size_t count,const double* 
     return extract(*subd);
   });
 }
+#include "subd_cap.h"
+
 extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
     const size_t* indices,const uint8_t* tags,size_t tag_count,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{

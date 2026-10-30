@@ -188,7 +188,10 @@ impl ObjectSelectionFilter {
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
             Self::Cap => matches!(
                 geometry,
-                Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                Geometry::Mesh(_)
+                    | Geometry::SubD(_)
+                    | Geometry::NurbsSurface(_)
+                    | Geometry::Brep(_)
             ),
             Self::Parametric => {
                 geometry.curve_ref().is_some()

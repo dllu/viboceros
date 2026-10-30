@@ -17,6 +17,7 @@ fn main() {
         "subd_codec.h",
         "subd_archive_sharpness.h",
         "subd_append.h",
+        "subd_cap.h",
         "subd_crease.h",
         "subd_remap.h",
         "subd_spin.h",

@@ -1,5 +1,6 @@
 """Shared source inventory for extracted application and geometry modules."""
 from .capture_preflight import CLIENT_SOURCE_FILES
+from .qualification_sources_cap import MESH_CLOSEST_MODULES, CAP_MESH_NATIVE_MODULES, MESH_POLYGON_MODULES, SUBD_CAP_MODULES
 
 ORACLE_CLIENT_MODULES = ['tools/rhino_oracle/'+p for p in CLIENT_SOURCE_FILES]
 
@@ -232,67 +233,6 @@ SUBD_FACE_PROPERTY_MODULES = [
     'src/viewport/scene/subd_face_colors.rs',
 ]
 
-MESH_CLOSEST_MODULES = [
-    'crates/viboceros-geometry/src/mesh.rs',
-    'crates/viboceros-geometry/src/mesh/closest.rs',
-    'crates/viboceros-geometry/src/mesh/closest/filtered.rs',
-    'crates/viboceros-geometry/src/mesh/closest/filtered/tests.rs',
-    'crates/viboceros-geometry/src/mesh/closest/reference_tests.rs',
-    'crates/viboceros-geometry/src/mesh/closest/tests.rs',
-    'crates/viboceros-geometry/src/interval.rs',
-    'crates/viboceros-geometry/src/exact_scalar.rs',
-    'crates/viboceros-geometry/src/mesh/projection.rs',
-    'crates/viboceros-geometry/src/mesh/projection/tests.rs',
-    'crates/viboceros-command/tests/support/cap_regions.rs',
-    'tools/rhino_oracle/test_cap_regions.py',
-    'docs/geometry/cap-mesh-native-validation.json',
-    'docs/geometry/mesh-closest-precision.md',
-]
-
-CAP_MESH_NATIVE_MODULES = [
-    'src/app.rs',
-    'src/app/crease_native_tests.rs',
-    'src/app/object_selection/mesh_polyline_tests.rs',
-    'crates/viboceros-geometry/tests/support/subdivision_native.rs',
-    'src/app/tests/mod.rs',
-    'src/app/tests/cap_native.rs',
-    'crates/viboceros-command/tests/support/cap_regions.rs',
-    'crates/viboceros-command/src/cap.rs',
-    'crates/viboceros-command/src/cap/tests.rs',
-    'crates/viboceros-command/tests/cap_close_holes.rs',
-    'crates/viboceros-command/tests/cap_regions_native.rs',
-    'crates/viboceros-command/tests/support/cap_regions_surface.rs',
-    'crates/viboceros-command/tests/support/crease.rs',
-    'crates/viboceros-command/tests/support/closed_polyline.rs',
-    'crates/viboceros-document/src/object_copy.rs',
-    'crates/viboceros-document/src/object_copy/tests.rs',
-    'crates/viboceros-geometry/src/mesh/hole_fill.rs',
-    'crates/viboceros-geometry/src/mesh/planar_cap.rs',
-    'crates/viboceros-geometry/tests/mesh_caps.rs',
-    'crates/viboceros-geometry/tests/support/holed_mesh.rs',
-    'docs/commands/cap.md',
-    'docs/geometry/cap-mesh-native.md',
-    'tools/rhino_oracle/mesh_cap_regions_cases.py',
-    'tools/rhino_oracle/mesh_cap_regions_probe.py',
-    'tools/rhino_oracle/generate_mesh_cap_regions.py',
-    'tools/rhino_oracle/generate_mesh_cap_regions_groups.py',
-    'tools/rhino_oracle/generate_mesh_cap_regions_noop.py',
-    'tools/rhino_oracle/cap_regions_evidence.py',
-    'tools/rhino_oracle/test_cap_regions.py',
-    'tools/rhino_oracle/fixtures/mesh_cap_regions_retained_gaps.json',
-]
-
-MESH_POLYGON_MODULES = [
-    'crates/viboceros-geometry/src/mesh.rs',
-    'crates/viboceros-geometry/tests/mesh_caps.rs',
-    'crates/viboceros-geometry/tests/support/holed_mesh.rs',
-    'crates/viboceros-command/tests/cap_close_holes.rs',
-    *['crates/viboceros-geometry/src/mesh/'+name+'.rs' for name in [
-        'polygon', 'polygon/tests', 'hole_fill', 'hole_fill/tests',
-        'hole_fill/cap_tests', 'test_support', 'patch', 'projection',
-    ]],
-]
-
 MESH_INSERT_SOURCE_MODULES = [
     *MESH_POLYGON_MODULES,
     'crates/viboceros-geometry/src/mesh/insert.rs',
@@ -451,6 +391,8 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if any(p in paths for p in SUBD_CAP_MODULES):
+        paths = [*paths, *SUBD_CAP_MODULES]
     if any(p in paths for p in MESH_CLOSEST_MODULES):
         paths = [*paths, *MESH_CLOSEST_MODULES]
     if any(p in paths for p in CAP_MESH_NATIVE_MODULES):

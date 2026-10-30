@@ -5,6 +5,7 @@ use crate::{
 };
 use std::sync::Arc;
 mod append;
+mod cap;
 mod chains;
 mod cone;
 mod control_net;

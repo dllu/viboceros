@@ -1,6 +1,7 @@
 //! Owned SubD records and bounded calls to the public OpenNURBS subdivision API.
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
+mod cap;
 mod chains;
 mod control_net;
 mod crease;
@@ -13,6 +14,7 @@ mod sharpness;
 mod soft_crease;
 mod spin;
 mod texture_points;
+pub use cap::subd_append_caps;
 pub use chains::subd_edge_chains;
 pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
@@ -489,20 +491,7 @@ pub fn subd_append(
     points: &[[f64; 3]],
     faces: &[Vec<u32>],
 ) -> Result<SubDData, SubDError> {
-    check_archive(bytes)?;
-    if points.len() > 100_000
-        || faces.is_empty()
-        || faces.len() > 100_000
-        || points.as_flattened().iter().any(|p| !p.is_finite())
-        || faces.iter().any(|f| {
-            !(3..=0xfff0).contains(&f.len()) || f.iter().any(|&i| i as usize >= points.len())
-        })
-        || faces.iter().map(Vec::len).sum::<usize>() > 400_000
-    {
-        return Err(SubDError("Invalid or excessive append control net".into()));
-    }
-    let sizes = faces.iter().map(|f| f.len() as u32).collect::<Vec<_>>();
-    let corners = faces.iter().flatten().copied().collect::<Vec<_>>();
+    let (sizes, corners) = append_arrays(bytes, points, faces)?;
     call(|out, error, n| unsafe {
         vibo_subd_append(
             bytes.as_ptr(),
@@ -518,6 +507,27 @@ pub fn subd_append(
             n,
         )
     })
+}
+fn append_arrays(
+    bytes: &[u8],
+    points: &[[f64; 3]],
+    faces: &[Vec<u32>],
+) -> Result<(Vec<u32>, Vec<u32>), SubDError> {
+    check_archive(bytes)?;
+    if points.len() > 100_000
+        || faces.is_empty()
+        || faces.len() > 100_000
+        || points.as_flattened().iter().any(|p| !p.is_finite())
+        || faces.iter().any(|f| {
+            !(3..=0xfff0).contains(&f.len()) || f.iter().any(|&i| i as usize >= points.len())
+        })
+        || faces.iter().map(Vec::len).sum::<usize>() > 400_000
+    {
+        return Err(SubDError("Invalid or excessive append control net".into()));
+    }
+    let sizes = faces.iter().map(|f| f.len() as u32).collect::<Vec<_>>();
+    let corners = faces.iter().flatten().copied().collect::<Vec<_>>();
+    Ok((sizes, corners))
 }
 /// Tags are applied through the public native setters, including their neighbor
 /// updates. Vertex tags are 1..4; edge setters accept smooth (1) or crease (2).

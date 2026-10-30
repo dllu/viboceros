@@ -1144,5 +1144,8 @@
     "Release and Rhino closest-query performance need separate measurement; unoptimized diagnostics show the cost of certification.",
     "Earlier InsertPoint, SubD allocation/material/UVW, fitting and mesh-collapse limitations remain open.",
     "All 1,000+ command/API/UI coverage and complete cross-platform Rhino parity remain unfinished."
-  ]
+  ],
+  "qualified_revision": "d148c894f0317caaefe1e651da88b1a119afd2a5",
+  "current_source_receipt": "subd-cap-native-validation.json",
+  "source_hashes_scope": "Historical sources and measurements at qualified_revision; current source inventory and rerun checks are in current_source_receipt."
 }

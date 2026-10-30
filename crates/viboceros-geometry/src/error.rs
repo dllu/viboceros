@@ -13,6 +13,8 @@ pub enum GeometryError {
     InvalidSubDInterpolationTargets,
     #[error("SubD interpolation could not solve or meet the requested absolute tolerance")]
     SubDInterpolationFailed,
+    #[error("SubD cap planning exceeded its {maximum} point-comparison work budget")]
+    SubDCapResourceLimit { maximum: usize },
     #[error("{operation} is not implemented for SubD geometry")]
     UnsupportedSubDOperation { operation: &'static str },
     #[error(transparent)]

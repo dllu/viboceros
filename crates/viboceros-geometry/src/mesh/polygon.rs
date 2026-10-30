@@ -1,6 +1,8 @@
 //! Shared normalized projection, constrained triangulation and polygon predicates.
 //! Mesh edits own their face layout, winding and channel policies.
 use crate::{GeometryError, Point3, Real, require_finite};
+mod frame;
+pub(crate) use frame::PolygonProjection;
 use spade::{
     ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
 };
@@ -29,7 +31,7 @@ pub(super) fn triangulate_projected_mesh_hole(
 
 /// The first loop is the outer boundary; later loops are disjoint inner holes.
 /// All coordinates share one normalized planar frame.
-pub(super) fn triangulate_projected_mesh_region(
+pub(crate) fn triangulate_projected_mesh_region(
     projected: &[[Real; 2]],
     loops: &[Range<usize>],
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
@@ -308,7 +310,7 @@ pub(super) fn project_mesh_hole_boundary(
     Ok(Some(projected))
 }
 
-pub(super) fn projected_polygon_doubled_area(points: &[[Real; 2]]) -> Real {
+pub(crate) fn projected_polygon_doubled_area(points: &[[Real; 2]]) -> Real {
     let mut sum = 0.0;
     let mut correction = 0.0;
     for index in 0..points.len() {
@@ -323,7 +325,7 @@ pub(super) fn projected_polygon_doubled_area(points: &[[Real; 2]]) -> Real {
     sum + correction
 }
 
-pub(super) fn mesh_hole_cross(first: [Real; 2], second: [Real; 2], third: [Real; 2]) -> Real {
+pub(crate) fn mesh_hole_cross(first: [Real; 2], second: [Real; 2], third: [Real; 2]) -> Real {
     let first_edge = [second[0] - first[0], second[1] - first[1]];
     let second_edge = [third[0] - first[0], third[1] - first[1]];
     first_edge[0].mul_add(second_edge[1], -first_edge[1] * second_edge[0])

@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "subd_cap_regions",
+      "id": "skew-quad",
+      "case": "skew-quad"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "skew-pentagon",
+      "case": "skew-pentagon"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "diagonal-quad",
+      "case": "diagonal-quad"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "tilted-skew",
+      "case": "tilted-skew"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "corner-crease",
+      "case": "corner-crease"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "spine-crease",
+      "case": "spine-crease"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "corner-smooth",
+      "case": "corner-smooth"
+    },
+    {
+      "op": "subd_cap_regions",
+      "id": "spine-smooth",
+      "case": "spine-smooth"
+    }
+  ]
+}

@@ -62,11 +62,11 @@ pub use offset::MeshOffsetDirection;
 mod closed_polyline;
 mod hole_fill;
 mod polygon;
-pub(crate) use polygon::point_in_mesh_hole_polygon;
-use polygon::{
-    mesh_hole_cross, project_mesh_hole_boundary, projected_polygon_doubled_area,
-    triangulate_projected_mesh_hole, triangulate_projected_mesh_region,
+pub(crate) use polygon::{
+    PolygonProjection, mesh_hole_cross, point_in_mesh_hole_polygon, projected_polygon_doubled_area,
+    triangulate_projected_mesh_region,
 };
+use polygon::{project_mesh_hole_boundary, triangulate_projected_mesh_hole};
 mod face_boundary;
 mod face_create;
 #[cfg(test)]

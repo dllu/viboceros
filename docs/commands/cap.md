@@ -2,188 +2,43 @@
 
 [Command reference](README.md) · [Surfaces and solids](surfaces.md)
 
-`Cap` fills planar naked-edge loops on selected NURBS surfaces, B-reps, and meshes.
-Enter it before selecting objects, or select objects first. For meshes,
-`Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]` controls whether the capped result
-replaces the source (the default) or is added as a copy, and whether cap boundary
-vertices remain separate (`Crease=Yes`, the default) or are welded to the source
-(`Crease=No`). `Triangles=No` (the default) groups each simple cap's underlying
-triangles into one n-gon; `Triangles=Yes` leaves them as separate faces. All three
-options are remembered. A copy
-inherits the source's attributes and has no group memberships; source groups
-remain unchanged. Geometry-attached user text
-is cleared because its geometry changed. Mixed selections still cap B-reps and
-NURBS surfaces in place. Caps with inner boundaries remain triangulated in both
-triangle modes. SubD capping is unavailable. For nonplanar mesh holes, see
-[meshes](meshes.md).
+`Cap` fills planar openings on selected NURBS surfaces, B-reps, meshes, and
+SubDs. Select objects first, or enter the command and select them at the prompt.
+Nonplanar openings remain open. Already closed objects and single planar sheets
+are unchanged.
 
-Closely spaced inner boundaries retain the strips between their openings.
-The document tolerance decides whether a boundary is planar. Facet validation
-requires nonzero edges and area, preserving fine features in the defined mesh.
-
-[Native mesh comparisons](../geometry/cap-mesh-native.md) cover exact source
-archives, copies, groups and Undo/Redo, including the remaining scale and layout gaps.
-
-Caps retain the spatial boundary geometry. The command subdivides newly capped
-edges at C0 knot joins with tangent breaks of at least 1°, independently of
-document angular tolerance. Segments retain degree, rational weights, and native parameter
-intervals; collinear joins remain inside a single edge. Every incident trim is
-updated, including both uses of a seam. Nested loops form annular faces rather
-than overlapping disks.
-Planar openings can be capped while other nonplanar openings remain open.
-For meshes, each unbranched boundary is tested against a best-fit plane using
-the document's absolute tolerance. Existing mesh winding is preserved around
-the generated triangles. Nonplanar and ambiguous boundaries remain open.
-Disjoint nested loops on the same plane form a triangulated cap with one or more
-inner openings. A coplanar source face in the cap bounds prevents a duplicate
-sheet. Intersecting, touching, and otherwise ambiguous coplanar loops remain
-open.
-N-gons retain their triangle face table for mass properties and export. The 3DM
-path preserves their boundary and member-face indices; STL and faceted STEP
-exports use the underlying triangles.
-`Crease=No` reuses source raw vertices at the new cap boundaries and welds
-coincident source boundary vertices there. Raw seams away from capped boundaries
-are preserved. Exact-location topology closes in either crease mode.
-
-In-place results retain their IDs, names, layers, colors, and group memberships.
-`DeleteInput=No` retains each source mesh and creates a new object for each
-mesh with a planar opening; a no-op mesh creates no copy.
-Preselection is retained; command-first selection is cleared on success,
-including no-ops. Replacements are staged into one undo step. Invalid arguments,
-unsupported direct inputs, numerical validation failures, and resource-limit
-errors leave every object unchanged. A no-op adds no geometry history.
-
-The geometry API `Brep::try_cap_planar_holes` preserves shell orientation and
-edge-table order. The command turns newly closed inward solids outward. Without
-boundary subdivision, a single periodic face's seam edges are placed first.
-With subdivision, each edge's first segment retains its table slot; new vertices
-and segments are appended in source-edge order, highest cut first. These rules
-match the measured ordinary-domain Rhino cases. Already closed inputs are no-ops.
-
-An entirely planar B-rep is unchanged. This test applies to the whole B-rep,
-not each disconnected piece: Rhino can cap two separated planar sheets into
-zero-volume double sheets. This unusual case is preserved and tested; the
-topological `is_solid` predicate does not establish a positive enclosed volume.
-
-## Validation and limits
-
-The implementation follows unambiguous oriented cycles in shared topology;
-it does not join nearby endpoints or repair inconsistent edge incidence.
-Planarity is conservatively checked on all boundary control points using the
-document's absolute tolerance. Mixed-sign rational weights are rejected.
-Projected loops are validated with constrained triangulation of sampled trim
-regions. Linear spans use exact endpoints; curved spans currently use four
-samples per span. This is not certified continuous intersection testing, and
-general self-intersecting, touching, nearly coincident, or badly conditioned
-boundaries are not a supported repair workflow.
-Singular-tangent kinks inside smooth knot spans are not currently located;
-degenerate tangents at candidate full-multiplicity knots trigger subdivision.
-
-Containment ordering uses physical sampled area in logarithmic form, retaining
-scale without overflowing products. Normalized per-loop area alone cannot order
-similar nested loops. Each object permits at most 1,024 boundary cycles and one
-million charged control/sample work units, including containment trials.
-Shared-edge subdivision additionally permits 100,000 cuts and four million
-charged control/sample work units. Complete-knot cuts slice retained controls
-directly instead of repeatedly copying the shrinking source curve. Independently
-parameterized trims use bounded geometric correspondence; unresolved or
-nonmonotone matches fail atomically. Lossless local UV and knot-origin frames
-avoid large-parameter quantization during subdivision and boundary validation;
-stored surface domains and curve domains are not normalized.
-Every result passes the ordinary B-rep incidence and trim/edge correspondence
-validation. Tolerance is never silently widened; tolerances below the precision
-of translated coordinates can cause an atomic failure.
-
-Generated cap UV frames, surface domains, loop start positions, and cap-face
-insertion order are not Rhino parameterization parity claims.
-
-Newly closed results use the conservative [spatial orientation query](../solid-orientation.md).
-An inward result is reversed as a whole; components are not independently flipped,
-which preserves cavity and mixed-shell senses. An outward compound may have
-negative or zero signed volume. If the exact query is unresolved, a single
-edge-connected shell retains a numerical signed-volume fallback; this is not a
-certified orientation or a self-intersection test. Unresolved compound solids
-retain their face senses and report `orientation unresolved` in the command
-message. See the [compound audit](../cap-compound-orientation.md).
-
-## Oracle evidence
-
-[109 fixtures](../../tools/rhino_oracle/fixtures/cap.json) and their
-[raw Rhino 8.32.26160.13001 observations](../../tools/rhino_oracle/observations/cap.json)
-cover every nonempty subset of box faces, pre/postselection, inward shells,
-edge permutations, nested/thin annuli, oblique circular and elliptical
-extrusions, partially nonplanar holes, and curved domes.
-All 109 recorded comparisons pass with absolute epsilon `1e-9` and relative
-epsilon `1e-10`. They compare raw spatial edge definitions/domains/samples,
-vertices, oriented loop-to-edge incidence, face areas, signed volume, solid and
-manifold flags, identity retention, attributes, group count, and selection.
-Face/loop records are sorted by edge incidence, explicitly ignoring generated
-UV frames, loop starts, and face insertion order.
-
-Both engines read the same native-generated 3DM input. Export checks its native
-round trip, and the Rhino probe disables automatic kinky-surface splitting and
-verifies insertion did not change the recorded input. An inward *already closed*
-source is excluded: Rhino document insertion itself flips it before Cap can run.
-Snapshots use Cap's public EndCommand event. Every Rhino run uses an owned
-private Xvfb display; probes restore selection, layers, and groups and delete
-only their owned objects. These are untimed correctness probes, not benchmarks.
-
-The largest baseline numeric difference is `1.983e-9` in the area of an oblique ellipse
-wall. Tighter Rhino integration arguments do not remove it. Independent 70-digit
-quadrature of `|ellipse'(t) × extrusion_vector|` gives
-`67.1308669524302689324146…`, agreeing with the native result; Rhino reports
-`67.130866954412937`. Both raw values are retained, and a separate native test
-checks the independent integral within `1e-12`.
-
-[Four formerly discrepant polygon cases](../../tools/rhino_oracle/fixtures/cap_kink_boundaries.json)
-now match their [complete Rhino topology records](../../tools/rhino_oracle/observations/cap_kink_boundaries.json).
-[12 angle/weight/degree cases](../../tools/rhino_oracle/fixtures/cap_edge_splits.json)
-and [15 angular-tolerance/order/curvature cases](../../tools/rhino_oracle/fixtures/cap_edge_splits_angular.json)
-also match, for **140 passing command records** overall. These include degree-two
-and degree-three segments, rational/nonuniform knot data, inward shells, and
-angles immediately below/at/above 1°. Raw observations are retained under the
-same basenames in `tools/rhino_oracle/observations`. The two new matrices keep
-their actual differing document angular tolerances. Their largest numeric
-difference is `6.342e-9` in a curved cubic face area, within the same relative
-comparison epsilon.
-
-Two new discrepancies remain explicit, with complete input/output observations:
-
-- [All-negative rational weights](../../tools/rhino_oracle/fixtures/cap_negative_weights.json):
-  Rhino reports success but leaves the wall uncapped; native Cap produces a
-  valid three-face solid. No weight-sign normalization hides this distinction.
-- [A `1e9` knot origin](../../tools/rhino_oracle/fixtures/cap_parameter_origin.json):
-  Rhino splits only the second of two triangle-profile kinks (five edges/four
-  vertices), while native Cap retains both (seven edges/six vertices). The
-  wall's analytic area, `4√29 + √746 + 3√26 = 64.1507183368116966…`, agrees with
-  native within `1e-12`; Rhino reports `64.150718708800468`. Native volume is
-  within `1e-12` of the analytic `30` after the
-  [trim-domain integration correction](../mass-properties.md#trim-domain-regression-audit),
-  while Rhino differs by about `1.33e-7`.
-  These are topology and integration discrepancies, not a claim that the
-  retained curve loci differ by the per-edge sample-record differences.
-
-The [100-case compound follow-up](../cap-compound-orientation.md) adds 96 matching
-records and four retained coincident-shell topology differences. It resolves
-28 orientation errors in the former total-volume rule without changing the
-140 passing ordinary-source comparisons above.
-
-Native tests additionally cover seam splitting, independent rational trim
-parameter speeds, full-order knots, nonclamped curves, and rejected ambiguous
-correspondence. Full-order interior knot multiplicity cannot enter the shared
-3DM matrix: OpenNURBS rejects that single-curve representation at export.
-
-```sh
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap.json --timeout 600 --absolute-epsilon 1e-9 --relative-epsilon 1e-10
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_kink_boundaries.json --timeout 600 --absolute-epsilon 1e-9 --relative-epsilon 1e-10
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_edge_splits.json --timeout 600 --absolute-epsilon 1e-9 --relative-epsilon 1e-10
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/cap_edge_splits_angular.json --timeout 600 --absolute-epsilon 1e-9 --relative-epsilon 1e-10
-# cap_negative_weights.json and cap_parameter_origin.json deliberately report differences.
+```text
+Cap [DeleteInput=Yes|No] [Crease=Yes|No] [Triangles=Yes|No]
 ```
 
-McNeel's [Cap reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/cap.htm)
-documents the mesh and SubD options.
-The [mesh Cap probe](../../tools/rhino_oracle/fixtures/mesh_cap_command.json)
-is prepared for command-level comparison, including an open square tube. Local
-runs have not executed because Rhino exits during .NET startup with an access
-violation.
+These remembered options apply to meshes and SubDs:
+
+| Option | Default | Behavior |
+| --- | --- | --- |
+| `DeleteInput` | `Yes` | Replace the source; `No` creates an unselected, ungrouped copy with the source attributes. |
+| `Crease` | `Yes` | Retain a hard cap boundary. `No` welds mesh boundaries or smooths SubD boundaries. |
+| `Triangles` | `No` | Group a simple mesh cap into an n-gon, or create one convex SubD face. `Yes` creates separate triangles. |
+
+Concave SubD caps and caps with inner openings use triangles in either mode.
+Convex SubD triangle fans use the control-loop bounding-box center. Original
+SubD component IDs and face data are retained; closing an inward SubD reverses
+its orientation outward. Tag reclassification can relax a former corner.
+
+The document absolute tolerance decides boundary planarity. Narrow mesh facets
+retain nonzero edges and area. SubD capping works on control boundaries; it does
+not rebuild the object through a mesh. Ambiguous coplanar regions remain open.
+
+In-place edits retain object IDs, names, layers, colors, and groups. Copies leave
+source groups and selection unchanged. Geometry-attached user text is cleared
+on changed geometry. Mixed selections cap B-reps and NURBS surfaces in place.
+Preselection is retained; command-first selection clears on success. All changes
+form one undo step; a no-op adds no geometry history. Invalid input and exhausted
+resource limits reject the complete command.
+
+Implementation and retained differences are documented separately:
+
+- [B-rep construction, validation, and oracle evidence](../geometry/cap-brep.md)
+- [Mesh comparisons and remaining layout/scale differences](../geometry/cap-mesh-native.md)
+- [SubD comparisons, triangle layouts, and limits](../geometry/subd-cap-native.md)
+
+For nonplanar mesh repair, see [meshes](meshes.md).

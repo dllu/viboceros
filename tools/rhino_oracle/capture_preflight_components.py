@@ -4,6 +4,11 @@ from .capture_preflight_common import require_dedicated_capture
 
 
 def prepare(client, request, interaction=None):
+    if any(op.get('op') == 'subd_cap_regions' for op in request.get('operations', [])):
+        operations = require_dedicated_capture(client, request, 'subd_cap_regions',
+            'SubD cap regions require a private dedicated one-iteration capture')
+        from .subd_cap_regions_cases import validate
+        for op in operations:validate(op)
     if any(op.get('op') == 'mesh_cap_regions' for op in request.get('operations', [])):
         operations = require_dedicated_capture(client, request, 'mesh_cap_regions',
             'Mesh cap regions require a private dedicated one-iteration capture')

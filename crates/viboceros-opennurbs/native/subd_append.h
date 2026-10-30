@@ -12,10 +12,14 @@ inline void append_polygons(ON_SubD& subd,const double* points,size_t point_coun
   std::vector<ON_SubDVertex*> vertices;
   std::unordered_map<const ON_SubDVertex*,uint32_t> indices;
   auto vit=subd.VertexIterator();
-  for(auto* v=vit.FirstVertex();v;v=vit.NextVertex()) {
-    const auto p=v->ControlNetPoint();const size_t i=vertices.size();
+  for(auto* v=vit.FirstVertex();v;v=vit.NextVertex()) vertices.push_back(const_cast<ON_SubDVertex*>(v));
+  // Rust's public component tables use ID order, including archives whose
+  // linked-list order changed during earlier component edits.
+  std::sort(vertices.begin(),vertices.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
+  for(size_t i=0;i<vertices.size();++i) {
+    auto* v=vertices[i];const auto p=v->ControlNetPoint();
     require(p==ON_3dPoint(points+3*i),"SubD append cannot edit existing controls");
-    indices.emplace(v,static_cast<uint32_t>(i));vertices.push_back(const_cast<ON_SubDVertex*>(v));
+    indices.emplace(v,static_cast<uint32_t>(i));
   }
   struct Edge {
     ON_SubDEdge* edge=nullptr;

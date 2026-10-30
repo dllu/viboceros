@@ -17,41 +17,8 @@ pub fn compare(doc: &Document, ids: &[ObjectId], rows: &Value, selection: bool) 
     let mut normals = Some(true);
     assert_eq!(doc.objects().len(), rows.as_array().unwrap().len());
     for row in rows.as_array().unwrap() {
-        let object = if let Some(i) = row["source"].as_u64() {
-            doc.object(ids[i as usize]).unwrap()
-        } else if row.get("point").is_some() {
-            doc.objects()
-                .find(|o| {
-                    o.attributes().name() == row["name"].as_str()
-                        && matches!(o.geometry(), Geometry::Point(_))
-                })
-                .unwrap()
-        } else {
-            let outputs = doc
-                .objects()
-                .filter(|o| {
-                    !ids.contains(&o.id())
-                        && matches!(o.geometry(), Geometry::Mesh(_))
-                        && o.attributes().name() == row["name"].as_str()
-                })
-                .collect::<Vec<_>>();
-            assert_eq!(outputs.len(), 1);
-            outputs[0]
-        };
-        let attrs = object.attributes();
-        let color = attrs.object_color();
-        metadata &= json!([color.red, color.green, color.blue]) == row["color"]
-            && attrs.color_source() as u8 == row["color_source"].as_u64().unwrap() as u8
-            && attrs.name() == row["name"].as_str()
-            && doc.layer(attrs.layer_id()).unwrap().name() == row["layer"].as_str().unwrap()
-            && json!(
-                object
-                    .group_ids()
-                    .iter()
-                    .map(|&g| doc.group(g).unwrap().name().unwrap())
-                    .collect::<Vec<_>>()
-            ) == row["groups"]
-            && (!selection || doc.is_selected(object.id()) == row["selected"].as_bool().unwrap());
+        let object = scene::object_for_row(doc, ids, row);
+        metadata &= scene::metadata_matches(doc, object, row, selection);
         if let Geometry::Mesh(actual) = object.geometry() {
             let expected = mesh_native::mesh(&row["mesh"]);
             let boundaries = |mesh: &viboceros_geometry::TriangleMesh| {

@@ -147,6 +147,7 @@ mod primitive_input;
 mod pt_off_selected;
 mod round_primitive_input;
 mod selection_sidebar;
+mod subd_cap_native;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;

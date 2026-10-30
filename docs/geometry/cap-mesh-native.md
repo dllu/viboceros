@@ -45,10 +45,13 @@ The original closest-point sampler reported errors up to 1.5 units on identical
 large thin source meshes. The [query precision fix](mesh-closest-precision.md)
 adds independent analytic and exact-reference tests, and requires every source
 replay to satisfy the original sampling bound. The historical failure record is
-preserved. Arbitrary-frame Cap, SubD Cap and comparative Rhino performance remain
+preserved. [SubD Cap](subd-cap-native.md) has a separate 26-case comparison.
+General arbitrary-frame mesh Cap and comparative Rhino performance remain
 unqualified.
 
-The [validation record](cap-mesh-native-validation.json) binds these captures,
-current sources, checks and every retained gap. Rhino's public
+The [historical validation record](cap-mesh-native-validation.json) binds these
+captures and measured sources at revision `729d86cd9`; its current-source link
+points to the [latest follow-up](subd-cap-native-validation.json), which reruns
+the same mesh regressions and preserves every retained gap. Rhino's public
 [Cap reference](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/cap.htm)
 describes the copy, crease and triangle options used by the captures.
