@@ -16,6 +16,14 @@ Local coordinates and common weight scales avoid unnecessary world-offset and
 projective-gauge cancellation. Bounds composition and circle recognition now
 share the same coefficient-product utility.
 
+Directional cosines inside the normalization roundoff guard use a filtered
+exact rational comparison. It compares signed dot products before squaring,
+resolving both acute and obtuse thresholds without a square root. This avoids
+an undecidable band at the crease limit, which previously exhausted subdivision
+for valid Loft profiles at 0.1 degrees. The exact fallback applies to the supplied
+floating derivative coefficients; extraction and subdivision still use floating
+arithmetic. Normalized coefficient directions are cached within each cone check.
+
 G2 and Gsmooth requests also receive this G1 check; their higher-order tests
 retain the existing query. Faces keep exact source restrictions, native charts
 and sewn shared edges. Source tensors remain unchanged. The shared 16-million

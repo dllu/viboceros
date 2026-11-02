@@ -1529,6 +1529,10 @@ class OracleClient:
                    for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('surface_crease_probe.py'),
                                 job_path / 'surface_crease_probe.py')
+            if any(op.get('op') == 'loft' and op.get('inspect_compatible', False)
+                   for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('loft_compatibility_probe.py'),
+                                job_path / 'loft_compatibility_probe.py')
             if any(op.get('op') == 'fillet_edge_reference' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('fillet_edge_probe.py'), job_path / 'fillet_edge_probe.py')
             if any(op.get('op') in ('step_poles', 'step_regions') for op in request['operations']):
@@ -2307,6 +2311,10 @@ def compare_responses(
             native_value = canonical(operation, native_value, native=True)
         if operation is not None and operation.get('op') == 'curve_path_extrusion':
             from .curve_path_comparison import canonical
+            local_value = canonical(operation, local_value, native=False)
+            native_value = canonical(operation, native_value, native=True)
+        if operation is not None and operation.get('op') == 'loft_splitting':
+            from .loft_splitting_comparison import canonical
             local_value = canonical(operation, local_value, native=False)
             native_value = canonical(operation, native_value, native=True)
         if isinstance(local_value,dict) and local_value.get('comparison_policy')=='block_context_member_permutation':

@@ -20,11 +20,27 @@ Normal and Straight styles, and both traversal directions. The portable B-rep
 regression checks topology counts, face sense, bounds within `1e-6`, stored
 coefficients and knots, and 25 surface points per face within `1e-9`.
 
+The 32 near-threshold commands cover profile bends of 0.099, 0.1, 0.101 and
+0.25 degrees, Normal/Straight styles and both splitting preferences. Portable
+and usd-brep command replays check topology, UV charts, 25 points per face,
+source retention and Undo/Redo at absolute `1e-6`. The application replay also
+exercises preselection and ordinary postselection clicks without creating a
+window. The filtered angular predicate fixes four previously rejected commands
+at the 0.1-degree threshold. Six unsplit Normal records retain a native upper-Y
+box difference of 0.00214–0.00541 model units; the regression checks that range,
+the other five bounds and enclosure of the sampled points. The full raw
+comparison remains an explicit ignored diagnostic.
+A [fresh headless Rhino 8.32 recheck](../tools/rhino_oracle/observations/loft_splitting_angles_recheck_20261102.json.gz)
+on 2026-11-02 reproduces all 32 stored model states within `1e-12`.
+
 ```sh
 cargo test -p viboceros-command --lib loft::tests
 cargo test -p viboceros-geometry --lib brep::loft
 cargo test -p viboceros-geometry --test loft_orientation_native
 cargo test -p viboceros --features native-smlib app::tests::loft_options
+cargo test -p viboceros-oracle --test loft_splitting_native
+cargo test -p viboceros-oracle --features native-smlib --test loft_splitting_native
+cargo test -p viboceros --features native-smlib app::tests::loft_splitting_native
 ```
 
 The wider 276-case exploratory command replay remains incomplete: 185 full

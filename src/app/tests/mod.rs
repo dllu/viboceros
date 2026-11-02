@@ -103,6 +103,11 @@ mod line_through_points;
 mod loft_input;
 mod loft_options;
 mod loft_rebuild;
+#[cfg(feature = "native-smlib")]
+mod loft_splitting_native;
+#[cfg(feature = "native-smlib")]
+#[path = "../../../crates/viboceros-oracle/tests/support/loft_splitting.rs"]
+mod loft_splitting_support;
 mod maelstrom;
 mod mark_foci;
 mod merge_edge;

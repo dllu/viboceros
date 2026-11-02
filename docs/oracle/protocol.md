@@ -25,6 +25,13 @@ the dedicated `run_headless.sh` Xvfb display. Direct Python API calls to
 `OracleClient.run_rhino` on Linux require an Xvfb session established by this
 wrapper. Replay and native-only modes do not launch Rhino.
 
+`loft_splitting` replays explicit Loft style, closure, seam and splitting options,
+retaining source identities and output tensors through Undo/Redo. The native
+probe also records preselection/postselection and command traces. The model
+comparison retains every geometry field while omitting native-only selection
+helpers and traces; [threshold qualification and remaining differences](../loft-validation.md)
+define its tested scope.
+
 For experiments that change application preferences or remembered command
 defaults, use a private settings scheme:
 

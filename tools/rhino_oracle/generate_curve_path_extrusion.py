@@ -5,7 +5,7 @@ from .client import OracleClient
 from .curve_path_extrusion_cases import request,continuity_request
 
 HERE=Path(__file__).resolve().parent
-SOURCES=['generate_curve_path_extrusion.py','curve_path_extrusion_cases.py','curve_path_extrusion_probe.py',
+SOURCES=['generate_curve_path_extrusion.py','curve_path_extrusion_cases.py','curve_path_extrusion_probe.py','curve_definition_validation.py',
          'surface_apex_tangent_cases.py','client.py','rhino_worker.py','structural_sdk.py','join_probe.py','merge_edges_probe.py']
 
 

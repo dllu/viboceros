@@ -1,5 +1,6 @@
 //! Adaptive G1 witnesses between the public query's transverse samples.
 use super::*;
+mod angle;
 mod cone;
 mod exact_ray;
 mod extract;

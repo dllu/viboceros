@@ -218,6 +218,7 @@ pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
 pub use surface_tapered_extrusion::Fixture as SurfaceTaperedExtrusionFixture;
 pub mod curve_path_extrusion;
+pub mod loft_splitting;
 pub mod surface_apex_extrusion;
 pub use surface_apex_extrusion::CommandFixture as SurfaceApexCommandFixture;
 pub use surface_apex_extrusion::Fixture as SurfaceApexExtrusionFixture;
@@ -1774,6 +1775,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfaceApexCommandFixture,
     },
+    LoftSplitting {
+        id: String,
+        #[serde(flatten)]
+        fixture: loft_splitting::Fixture,
+    },
     CurvePathExtrusion {
         id: String,
         #[serde(flatten)]
@@ -2982,6 +2988,7 @@ impl Operation {
             | Self::SurfaceApexExtrusion { id, .. }
             | Self::SurfaceApexCommand { id, .. }
             | Self::CurvePathExtrusion { id, .. }
+            | Self::LoftSplitting { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
@@ -6253,6 +6260,9 @@ fn execute(
         }
         Operation::SurfaceApexCommand { fixture, .. } => {
             surface_apex_extrusion::run_command(fixture, iterations, tolerance)?
+        }
+        Operation::LoftSplitting { fixture, .. } => {
+            loft_splitting::run(fixture, iterations, tolerance)?
         }
         Operation::CurvePathExtrusion { fixture, .. } => {
             curve_path_extrusion::run(fixture, iterations, tolerance)?

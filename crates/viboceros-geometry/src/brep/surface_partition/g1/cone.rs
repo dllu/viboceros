@@ -33,8 +33,8 @@ pub(super) fn has_break(
         let [bl, br] = subdivide(b, &mut |n| charge(budget, n))?;
         let [wl, wr] = subdivide(&seam.weights, &mut |n| charge(budget, n))?;
         if wl.last().unwrap()[0] != 0.
-            && let Some(dot) = directional_dot(*al.last().unwrap(), *bl.last().unwrap())?
-            && dot < cosine - ROUND_GUARD
+            && super::angle::compare(*al.last().unwrap(), *bl.last().unwrap(), cosine, budget)?
+                .is_some_and(|order| order.is_lt())
         {
             return Ok(true);
         }
@@ -53,18 +53,6 @@ pub(super) fn has_break(
     Ok(false)
 }
 
-fn directional_dot(a: [Real; 3], b: [Real; 3]) -> Result<Option<Real>, GeometryError> {
-    let (a, b) = (Vector3::try_from(a)?, Vector3::try_from(b)?);
-    if a.length()? == 0. || b.length()? == 0. {
-        return Ok(None);
-    }
-    Ok(Some(
-        a.normalized_nonzero()?
-            .as_vector()
-            .dot(b.normalized_nonzero()?.as_vector())?,
-    ))
-}
-
 fn within_cone(
     a: &[[Real; 3]],
     b: &[[Real; 3]],
@@ -72,22 +60,27 @@ fn within_cone(
     budget: &mut usize,
 ) -> Result<bool, GeometryError> {
     charge(budget, a.len().saturating_mul(b.len()).saturating_mul(12))?;
-    let threshold = cosine.max(0.) + ROUND_GUARD;
-    let normalize = |values: &[[Real; 3]]| -> Result<Vec<Vector3>, GeometryError> {
+    let threshold = cosine.max(0.);
+    let normalize = |values: &[[Real; 3]]| -> Result<Vec<([Real; 3], Vector3)>, GeometryError> {
         let mut directions = Vec::with_capacity(values.len());
         for &value in values {
             let vector = Vector3::try_from(value)?;
             if vector.length()? > 0. {
-                directions.push(vector.normalized_nonzero()?.as_vector());
+                directions.push((value, vector.normalized_nonzero()?.as_vector()));
             }
         }
         Ok(directions)
     };
     let (a, b) = (normalize(a)?, normalize(b)?);
     let mut acute = !a.is_empty() && !b.is_empty();
-    'pairs: for &a in &a {
-        for &b in &b {
-            if a.dot(b)? < threshold {
+    'pairs: for &(raw_a, a) in &a {
+        for &(raw_b, b) in &b {
+            let order = super::angle::compare_with_dot(raw_a, raw_b, threshold, a.dot(b)?, budget)?;
+            if !(if threshold > 0. {
+                order.is_ge()
+            } else {
+                order.is_gt()
+            }) {
                 acute = false;
                 break 'pairs;
             }
@@ -101,10 +94,10 @@ fn within_cone(
     }
     // Each individual cone remains acute; their centers may have an obtuse
     // separation. The spherical triangle inequality bounds their sum.
-    let radius = |values: &[Vector3]| -> Result<Option<Real>, GeometryError> {
-        let center = values[0];
+    let radius = |values: &[([Real; 3], Vector3)]| -> Result<Option<Real>, GeometryError> {
+        let center = values[0].1;
         let mut minimum = 1_f64;
-        for &v in values {
+        for &(_, v) in values {
             minimum = minimum.min(center.dot(v)?);
         }
         if minimum <= ROUND_GUARD {
@@ -115,6 +108,26 @@ fn within_cone(
     let (Some(ra), Some(rb)) = (radius(&a)?, radius(&b)?) else {
         return Ok(false);
     };
-    let separation = (a[0].dot(b[0])? - ROUND_GUARD).clamp(-1., 1.).acos();
+    let separation = (a[0].1.dot(b[0].1)? - ROUND_GUARD).clamp(-1., 1.).acos();
     Ok(separation + ra + rb < cosine.acos())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn constant_angle_inside_the_roundoff_guard_resolves_on_either_side() {
+        for (cosine, expected) in [(0.6_f64.next_down(), false), (0.6_f64.next_up(), true)] {
+            let seam = Seam {
+                directions: [
+                    vec![[1., 0., 0.], [2., 0., 0.]],
+                    vec![[3., 4., 0.], [6., 8., 0.]],
+                ],
+                weights: vec![[1.], [1.]],
+                depth: 0,
+            };
+            assert_eq!(has_break(seam, cosine, &mut 16_384).unwrap(), expected);
+        }
+    }
 }

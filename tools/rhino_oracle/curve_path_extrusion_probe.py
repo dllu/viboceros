@@ -1,27 +1,16 @@
 """Owned ExtrudeCrvAlongCrv document edits with explicit global crease policy."""
-import math
 
 
 def validate(op):
     if (not isinstance(op,dict) or set(op) != {'op','id','profile','path','crease_splitting','split_at_tangents','solid','delete_input','preselect'}
             or op['op'] != 'curve_path_extrusion' or any(type(op[k]) is not bool for k in ['crease_splitting','split_at_tangents','solid','delete_input','preselect'])):
         raise ValueError('invalid curve path extrusion options')
+    try:
+        from .curve_definition_validation import validate_curve_definition
+    except (ImportError,ValueError,SystemError):
+        from curve_definition_validation import validate_curve_definition
     for key in ['profile','path']:
-        curve=op[key]
-        if (not isinstance(curve,dict) or set(curve) != {'degree','knots','control_points'}
-                or type(curve['degree']) is not int or not 1 <= curve['degree'] <= 64
-                or not isinstance(curve['control_points'],list) or not curve['degree'] < len(curve['control_points']) <= 10000
-                or not isinstance(curve['knots'],list) or len(curve['knots']) != len(curve['control_points'])+curve['degree']+1):
-            raise ValueError('invalid curve path extrusion curve dimensions')
-        for cp in curve['control_points']:
-            if (not isinstance(cp,dict) or set(cp) != {'point','weight'} or not isinstance(cp['point'],list) or len(cp['point']) != 3):
-                raise ValueError('invalid curve path extrusion control')
-            values=cp['point']+[cp['weight']]
-            if any(type(x) not in (int,float) or math.isnan(x) or math.isinf(x) for x in values) or cp['weight'] == 0:
-                raise ValueError('invalid curve path extrusion coordinates or weight')
-        if (any(type(x) not in (int,float) or math.isnan(x) or math.isinf(x) for x in curve['knots'])
-                or any(a>b for a,b in zip(curve['knots'],curve['knots'][1:]))):
-            raise ValueError('invalid curve path extrusion knots')
+        validate_curve_definition(op[key])
 
 
 def run(op,host,iterations,tolerance):
