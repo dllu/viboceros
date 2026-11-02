@@ -3751,6 +3751,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "eframe",
+ "flate2",
  "nalgebra",
  "pollster",
  "serde_json",
@@ -3847,6 +3848,7 @@ dependencies = [
 name = "viboceros-oracle"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "num-rational",
  "num-traits",
  "serde",

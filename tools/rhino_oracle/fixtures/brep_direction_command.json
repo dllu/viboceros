@@ -1,0 +1,375 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-u_reverse-0",
+      "source": "holed",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-u_reverse-1",
+      "source": "holed",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-v_reverse-0",
+      "source": "holed",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-v_reverse-1",
+      "source": "holed",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-swap_uv-0",
+      "source": "holed",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-swap_uv-1",
+      "source": "holed",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-flip-0",
+      "source": "holed",
+      "edit": "flip",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed-flip-1",
+      "source": "holed",
+      "edit": "flip",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-u_reverse-0",
+      "source": "holed_reversed",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-u_reverse-1",
+      "source": "holed_reversed",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-v_reverse-0",
+      "source": "holed_reversed",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-v_reverse-1",
+      "source": "holed_reversed",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-swap_uv-0",
+      "source": "holed_reversed",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-swap_uv-1",
+      "source": "holed_reversed",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-flip-0",
+      "source": "holed_reversed",
+      "edit": "flip",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-holed_reversed-flip-1",
+      "source": "holed_reversed",
+      "edit": "flip",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-u_reverse-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-u_reverse-1",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-v_reverse-0",
+      "source": "warped",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-v_reverse-1",
+      "source": "warped",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-swap_uv-0",
+      "source": "warped",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-swap_uv-1",
+      "source": "warped",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-flip-0",
+      "source": "warped",
+      "edit": "flip",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-warped-flip-1",
+      "source": "warped",
+      "edit": "flip",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-u_reverse-0",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-u_reverse-1",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-v_reverse-0",
+      "source": "cylinder",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-v_reverse-1",
+      "source": "cylinder",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-swap_uv-0",
+      "source": "cylinder",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-swap_uv-1",
+      "source": "cylinder",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-flip-0",
+      "source": "cylinder",
+      "edit": "flip",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cylinder-flip-1",
+      "source": "cylinder",
+      "edit": "flip",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-u_reverse-0",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-u_reverse-1",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-v_reverse-0",
+      "source": "sphere",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-v_reverse-1",
+      "source": "sphere",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-swap_uv-0",
+      "source": "sphere",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sphere-swap_uv-1",
+      "source": "sphere",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-u_reverse-0",
+      "source": "cone",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-u_reverse-1",
+      "source": "cone",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-v_reverse-0",
+      "source": "cone",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-v_reverse-1",
+      "source": "cone",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-swap_uv-0",
+      "source": "cone",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-swap_uv-1",
+      "source": "cone",
+      "edit": "swap_uv",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-flip-0",
+      "source": "cone",
+      "edit": "flip",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-cone-flip-1",
+      "source": "cone",
+      "edit": "flip",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-u_reverse-0",
+      "source": "torus",
+      "edit": "u_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-u_reverse-1",
+      "source": "torus",
+      "edit": "u_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-v_reverse-0",
+      "source": "torus",
+      "edit": "v_reverse",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-v_reverse-1",
+      "source": "torus",
+      "edit": "v_reverse",
+      "preselect": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-swap_uv-0",
+      "source": "torus",
+      "edit": "swap_uv",
+      "preselect": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-torus-swap_uv-1",
+      "source": "torus",
+      "edit": "swap_uv",
+      "preselect": true
+    }
+  ]
+}

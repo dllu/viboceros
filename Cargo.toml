@@ -25,6 +25,7 @@ license = "MIT"
 rust-version = "1.95"
 
 [workspace.dependencies]
+flate2 = "1.1.10"
 bytemuck = { version = "1.25.2", features = ["derive"] }
 faer = { version = "0.24.4", default-features = false, features = ["linalg", "sparse-linalg", "std"] }
 i_overlay = "9.1.0"
@@ -69,6 +70,7 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [dev-dependencies]
+flate2.workspace = true
 pollster = "1.0.1"
 viboceros-oracle = { path = "crates/viboceros-oracle" }
 

@@ -26,10 +26,11 @@ the original representation. Existing B-reps only toggle their face-sense flags.
 All replacements are staged before mutation, preserve identity and metadata, and
 form one undo step. An all-skipped selection leaves undo and redo intact.
 
-`Dir Flip` currently supports curves and meshes only. `Dir UReverse`, `VReverse`,
-and `SwapUV` are distinct edits to untrimmed surface parameterization; this work
-does not claim parity with Rhino's interactive `Dir` surface menu, SubD, clipping
-planes, lights, or subobject picking.
+[`Dir`](direction.md) shares the normal-flip policy and also edits surface/B-rep
+U/V directions while preserving oriented normals and trims. It supports explicit
+polysurface face batches, command-first picking and native selection replay.
+Its live direction inspector, SubD, clipping planes, lights and subobject picking
+remain unimplemented.
 
 ## Evidence and limits
 

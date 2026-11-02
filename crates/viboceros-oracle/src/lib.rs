@@ -217,6 +217,7 @@ mod shell;
 pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
 pub use surface_tapered_extrusion::Fixture as SurfaceTaperedExtrusionFixture;
+pub mod brep_direction;
 pub mod curve_path_extrusion;
 pub mod loft_splitting;
 pub mod surface_apex_extrusion;
@@ -1780,6 +1781,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: loft_splitting::Fixture,
     },
+    BrepDirectionCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: brep_direction::Fixture,
+    },
     CurvePathExtrusion {
         id: String,
         #[serde(flatten)]
@@ -2989,6 +2995,7 @@ impl Operation {
             | Self::SurfaceApexCommand { id, .. }
             | Self::CurvePathExtrusion { id, .. }
             | Self::LoftSplitting { id, .. }
+            | Self::BrepDirectionCommand { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
@@ -6263,6 +6270,9 @@ fn execute(
         }
         Operation::LoftSplitting { fixture, .. } => {
             loft_splitting::run(fixture, iterations, tolerance)?
+        }
+        Operation::BrepDirectionCommand { fixture, .. } => {
+            brep_direction::run(fixture, iterations, tolerance)?
         }
         Operation::CurvePathExtrusion { fixture, .. } => {
             curve_path_extrusion::run(fixture, iterations, tolerance)?

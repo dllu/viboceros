@@ -128,9 +128,11 @@ fn edits_surface_directions_exactly_without_changing_identity_attributes_or_grou
             .members()
             .any(|member| member == id)
     );
-    let Geometry::NurbsSurface(swapped) = object.geometry() else {
-        panic!("expected a direction-edited NURBS surface")
+    let Geometry::Brep(brep) = object.geometry() else {
+        panic!("surface face sense requires a B-rep")
     };
+    assert!(brep.faces()[0].is_reversed());
+    let swapped = brep.faces()[0].surface();
     assert_eq!(swapped, &expected_swapped);
     assert_eq!(
         (swapped.degree_u(), swapped.degree_v()),
@@ -156,10 +158,11 @@ fn edits_surface_directions_exactly_without_changing_identity_attributes_or_grou
         &Geometry::NurbsSurface(source.clone())
     );
     registry.execute(&mut document, "Redo").unwrap();
-    assert_eq!(
-        document.object(id).unwrap().geometry(),
-        &Geometry::NurbsSurface(expected_swapped)
-    );
+    let Geometry::Brep(redone) = document.object(id).unwrap().geometry() else {
+        panic!("B-rep")
+    };
+    assert_eq!(redone.faces()[0].surface(), &expected_swapped);
+    assert!(redone.faces()[0].is_reversed());
 }
 
 #[test]
@@ -181,30 +184,27 @@ fn edits_multiple_surface_axes_and_exchanges_periodicity() {
         "Edited 2 object direction(s) with UReverse"
     );
     assert_eq!(
-        document.object(rational_id).unwrap().geometry(),
-        &Geometry::NurbsSurface(rational.try_reversed_u().unwrap())
+        direction_surface(document.object(rational_id).unwrap().geometry()),
+        &rational.try_reversed_u().unwrap()
     );
-    let Geometry::NurbsSurface(reversed_periodic) =
-        document.object(periodic_id).unwrap().geometry()
-    else {
-        panic!("expected reversed periodic surface")
-    };
+    let reversed_periodic = direction_surface(document.object(periodic_id).unwrap().geometry());
     assert_eq!(reversed_periodic, &periodic.try_reversed_u().unwrap());
     assert!(reversed_periodic.is_periodic_u());
     assert!(!reversed_periodic.is_periodic_v());
 
     registry.execute(&mut document, "Undo").unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
     assert_eq!(
         registry.execute(&mut document, "Dir Mode=FlipV").unwrap(),
         "Edited 2 object direction(s) with VReverse"
     );
     assert_eq!(
-        document.object(rational_id).unwrap().geometry(),
-        &Geometry::NurbsSurface(rational.try_reversed_v().unwrap())
+        direction_surface(document.object(rational_id).unwrap().geometry()),
+        &rational.try_reversed_v().unwrap()
     );
     assert_eq!(
-        document.object(periodic_id).unwrap().geometry(),
-        &Geometry::NurbsSurface(periodic.try_reversed_v().unwrap())
+        direction_surface(document.object(periodic_id).unwrap().geometry()),
+        &periodic.try_reversed_v().unwrap()
     );
 
     registry.execute(&mut document, "Undo").unwrap();
@@ -213,10 +213,7 @@ fn edits_multiple_surface_axes_and_exchanges_periodicity() {
         .select_object(periodic_id, SelectionMode::Replace)
         .unwrap();
     registry.execute(&mut document, "Dir SwapUV").unwrap();
-    let Geometry::NurbsSurface(swapped_periodic) = document.object(periodic_id).unwrap().geometry()
-    else {
-        panic!("expected transposed periodic surface")
-    };
+    let swapped_periodic = direction_surface(document.object(periodic_id).unwrap().geometry());
     assert_eq!(swapped_periodic, &periodic.try_swapped_uv().unwrap());
     assert!(!swapped_periodic.is_periodic_u());
     assert!(swapped_periodic.is_periodic_v());
@@ -287,14 +284,148 @@ fn direction_flip_reuses_curve_reversal_and_rejects_invalid_edits_atomically() {
     mixed
         .select_object(surface_id, SelectionMode::Replace)
         .unwrap();
-    assert!(matches!(
-        registry.execute(&mut mixed, "Dir Flip"),
-        Err(CommandError::UnsupportedDirectionEditGeometry)
-    ));
+    registry.execute(&mut mixed, "Dir Flip").unwrap();
+    let Geometry::Brep(flipped) = mixed.object(surface_id).unwrap().geometry() else {
+        panic!("surface face sense requires a B-rep")
+    };
+    assert_eq!(flipped.faces()[0].surface(), &surface);
+    assert!(flipped.faces()[0].is_reversed());
+    registry.execute(&mut mixed, "Undo").unwrap();
     assert_eq!(
         mixed.object(surface_id).unwrap().geometry(),
         &Geometry::NurbsSurface(surface)
     );
     assert!(mixed.object(curve_id).is_some());
     assert_eq!(mixed.undo_label(), history.as_deref());
+}
+
+fn direction_surface(geometry: &Geometry) -> &NurbsSurface {
+    let Geometry::Brep(brep) = geometry else {
+        panic!("direction-edited face")
+    };
+    assert_eq!(brep.faces().len(), 1);
+    assert!(brep.faces()[0].is_reversed());
+    brep.faces()[0].surface()
+}
+
+fn box_brep() -> Brep {
+    Brep::try_box(
+        CommandContext::default().construction_plane,
+        [[-2., 3.], [-1., 4.], [0., 5.]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+}
+
+#[test]
+fn brep_chart_edits_retain_shared_edges_identity_metadata_and_atomic_history() {
+    for command in [
+        "Dir UReverse Faces=All",
+        "Dir VReverse Faces=All",
+        "Dir SwapUV Faces=All",
+    ] {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let source = box_brep();
+        let id = doc
+            .add_geometry_with_attributes(
+                Geometry::Brep(source.clone()),
+                ObjectAttributes::on_layer(doc.current_layer_id()).with_name("solid"),
+            )
+            .unwrap();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut doc, "Group Solid").unwrap();
+        doc.clear_history().unwrap();
+        let before = doc.object(id).unwrap().clone();
+        registry.execute(&mut doc, command).unwrap();
+        let after = doc.object(id).unwrap().clone();
+        assert_eq!(before.attributes(), after.attributes());
+        assert!(
+            doc.group_by_name("Solid")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert!(doc.is_selected(id));
+        let Geometry::Brep(result) = after.geometry() else {
+            panic!("B-rep")
+        };
+        Brep::try_new(
+            result.vertices().to_vec(),
+            result.edges().to_vec(),
+            result.faces().to_vec(),
+            doc.tolerance(),
+        )
+        .unwrap();
+        assert!(result.is_solid());
+        assert_eq!(result.vertices(), source.vertices());
+        assert_eq!(result.edges(), source.edges());
+        assert_ne!(result.faces(), source.faces());
+        assert_eq!(doc.undo_label(), Some("Dir"));
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.object(id), Some(&before));
+        assert_eq!(doc.undo_label(), None);
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.object(id), Some(&after));
+    }
+}
+
+#[test]
+fn normal_flip_skips_solids_and_all_skipped_selection_preserves_redo() {
+    let mut doc = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let solid = box_brep();
+    let open = solid.duplicate_faces(&[0], doc.tolerance()).unwrap();
+    let solid_id = doc.add_geometry(Geometry::Brep(solid.clone())).unwrap();
+    let open_id = doc.add_geometry(Geometry::Brep(open)).unwrap();
+    doc.select_objects_direct([solid_id, open_id], SelectionMode::Replace)
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.object(open_id).unwrap().clone();
+    registry.execute(&mut doc, "Dir Flip").unwrap();
+    assert_eq!(
+        doc.object(solid_id).unwrap().geometry(),
+        &Geometry::Brep(solid)
+    );
+    let Geometry::Brep(a) = before.geometry() else {
+        panic!("B-rep")
+    };
+    let Geometry::Brep(b) = doc.object(open_id).unwrap().geometry() else {
+        panic!("B-rep")
+    };
+    assert_eq!(a.reversed(), *b);
+    registry.execute(&mut doc, "Undo").unwrap();
+    doc.select_objects_direct([solid_id], SelectionMode::Replace)
+        .unwrap();
+    let redo = doc.redo_label().map(str::to_owned);
+    registry.execute(&mut doc, "Dir FlipAll").unwrap();
+    assert_eq!(doc.undo_label(), None);
+    assert_eq!(doc.redo_label(), redo.as_deref());
+}
+
+#[test]
+fn invalid_face_batches_leave_geometry_selection_groups_and_redo_untouched() {
+    let mut doc = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let id = doc.add_geometry(Geometry::Brep(box_brep())).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    registry.execute(&mut doc, "Group Source").unwrap();
+    registry.execute(&mut doc, "Dir SwapUV Faces=0").unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    for command in [
+        "Dir UReverse",
+        "Dir UReverse Faces=6",
+        "Dir VReverse Faces=0,6",
+        "Dir SwapUV Faces=1,1",
+        "Dir Flip Faces=0",
+        "Dir UReverse Faces=All Faces=0",
+    ] {
+        let before = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, command).is_err(), "{command}");
+        assert_eq!(format!("{doc:?}"), before, "{command}");
+    }
 }

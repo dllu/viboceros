@@ -975,7 +975,7 @@ impl VibocerosApp {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
-            let selection_before = (description.command == "Sweep1")
+            let selection_before = matches!(description.command, "Sweep1" | "Dir")
                 .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
             let rail_revolve_partial = matches!(description.command, "RailRevolve" | "Sweep1")
                 .then(|| {
@@ -985,7 +985,7 @@ impl VibocerosApp {
                         .map(|o| o.id())
                         .collect::<Vec<_>>()
                 });
-            if description.command == "Sweep1" {
+            if matches!(description.command, "Sweep1" | "Dir") {
                 let _ = self
                     .document
                     .set_transient_selection(rail_revolve_partial.unwrap_or_default());
@@ -1000,6 +1000,7 @@ impl VibocerosApp {
             let command_override = (matches!(
                 description.command,
                 "ModifyRadius"
+                    | "Dir"
                     | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Rebuild"
@@ -1869,7 +1870,7 @@ impl VibocerosApp {
                 self.component_selection.clear();
             }
             if let Some(selection_before) = pending.selection_before {
-                if pending.description.command == "Sweep1" {
+                if matches!(pending.description.command, "Sweep1" | "Dir") {
                     self.restore_curve_selection(selection_before);
                 } else if let Err(error) = self
                     .document
@@ -1987,7 +1988,44 @@ impl VibocerosApp {
         } else {
             mode
         };
-        let result = if self.object_prompt.as_ref().is_some_and(|prompt| {
+        let result = if self
+            .object_prompt
+            .as_ref()
+            .is_some_and(|prompt| prompt.description.command == "Dir")
+        {
+            // Dir picks are provisional: Escape must preserve SelPrev and Redo
+            // as well as the prior selection. Retain click order without group
+            // expansion or quadratic per-object searches.
+            let previous = self.document.selected_object_ids().collect::<Vec<_>>();
+            let previous_set = previous.iter().copied().collect::<BTreeSet<_>>();
+            let mut next = previous_set.clone();
+            for &id in &ids {
+                match mode {
+                    SelectionMode::Add | SelectionMode::Replace => {
+                        next.insert(id);
+                    }
+                    SelectionMode::Remove => {
+                        next.remove(&id);
+                    }
+                    SelectionMode::Toggle => {
+                        if !next.remove(&id) {
+                            next.insert(id);
+                        }
+                    }
+                }
+            }
+            let ordered = previous
+                .into_iter()
+                .filter(|id| next.contains(id))
+                .chain(
+                    ids.into_iter()
+                        .filter(|id| next.contains(id) && !previous_set.contains(id)),
+                )
+                .collect::<Vec<_>>();
+            self.document
+                .set_transient_selection(ordered)
+                .map(|_| self.document.selected_object_count())
+        } else if self.object_prompt.as_ref().is_some_and(|prompt| {
             prompt.description.workflow == ObjectSelectionWorkflow::PointInputAfterSelection
         }) {
             self.document.select_objects(ids, mode)

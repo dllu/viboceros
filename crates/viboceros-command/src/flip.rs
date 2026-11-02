@@ -73,7 +73,7 @@ fn run(
     Ok(format!("Flipped {count} object(s)"))
 }
 
-fn flipped_geometry(
+pub(super) fn flipped_geometry(
     geometry: &Geometry,
     tolerance: Tolerance,
 ) -> Result<Option<Geometry>, GeometryError> {
@@ -94,8 +94,7 @@ fn flipped_geometry(
     Ok((!brep.is_solid()).then(|| Geometry::Brep(brep.reversed())))
 }
 
-/// Shared with Dir's existing curve/mesh mode; Dir's surface menu has a separate
-/// workflow and has not been audited by the standalone Flip command probes.
+/// Primitive curve/mesh reversal shared by Flip and Dir's normal mode.
 pub(super) fn flipped_curve_or_mesh(
     geometry: &Geometry,
     tolerance: Tolerance,

@@ -138,5 +138,6 @@ Reparameterize Face=2 -2,8,10,30
 Reparameterize Surface=object-id Face=2 Automatic
 Dir SwapUV
 Dir Mode=FlipU
+Dir Mode=FlipU Faces=All
 Flip
 ```

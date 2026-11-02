@@ -1,0 +1,362 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed-u_reverse-0",
+      "source": "holed",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed-v_reverse-0",
+      "source": "holed",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed-swap_uv-0",
+      "source": "holed",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed_reversed-u_reverse-0",
+      "source": "holed_reversed",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed_reversed-v_reverse-0",
+      "source": "holed_reversed",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-holed_reversed-swap_uv-0",
+      "source": "holed_reversed",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-warped-u_reverse-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-warped-v_reverse-0",
+      "source": "warped",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-warped-swap_uv-0",
+      "source": "warped",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cylinder-u_reverse-0",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cylinder-v_reverse-0",
+      "source": "cylinder",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cylinder-swap_uv-0",
+      "source": "cylinder",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-sphere-u_reverse-0",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-sphere-v_reverse-0",
+      "source": "sphere",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-sphere-swap_uv-0",
+      "source": "sphere",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cone-u_reverse-0",
+      "source": "cone",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cone-v_reverse-0",
+      "source": "cone",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-cone-swap_uv-0",
+      "source": "cone",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-torus-u_reverse-0",
+      "source": "torus",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-torus-v_reverse-0",
+      "source": "torus",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-torus-swap_uv-0",
+      "source": "torus",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-u_reverse-0",
+      "source": "box",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-u_reverse-135",
+      "source": "box",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-u_reverse-012345",
+      "source": "box",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-v_reverse-0",
+      "source": "box",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-v_reverse-135",
+      "source": "box",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-v_reverse-012345",
+      "source": "box",
+      "edit": "v_reverse",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-swap_uv-0",
+      "source": "box",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-swap_uv-135",
+      "source": "box",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-sdk-box-swap_uv-012345",
+      "source": "box",
+      "edit": "swap_uv",
+      "preselect": true,
+      "sdk": true,
+      "faces": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

@@ -52,9 +52,11 @@ mod curve_path_support;
 mod curve_rebuild_preview;
 mod delete_grips;
 mod delete_subcurve;
-#[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/compare.rs"]
 mod diagnostic_comparison;
+mod direction;
+#[path = "../../../crates/viboceros-oracle/tests/support/brep_direction.rs"]
+mod direction_support;
 mod distance;
 mod distribute;
 mod divide_creases;

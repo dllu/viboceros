@@ -428,6 +428,10 @@ mod fillet_corners;
 mod fillet_edge;
 use fillet_edge::FilletEdgeCommand;
 pub use fillet_edge::{EdgeBlendSelection, FilletEdgeSelection};
+mod direction;
+use direction::DirectionCommand;
+#[cfg(test)]
+use direction::USAGE as DIRECTION_USAGE;
 mod flip;
 mod shrink_trimmed;
 pub use curve_domain::reparameterize::{
@@ -12029,112 +12033,6 @@ fn model_points_near(left: Point3, right: Point3, tolerance: Tolerance) -> bool 
                 .max(tolerance.relative() * coordinate_scale)
                 * 2.0
     })
-}
-
-const DIRECTION_USAGE: &str =
-    "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum DirectionEdit {
-    Flip,
-    ReverseU,
-    ReverseV,
-    SwapUv,
-}
-
-impl DirectionEdit {
-    const fn label(self) -> &'static str {
-        match self {
-            Self::Flip => "Flip",
-            Self::ReverseU => "UReverse",
-            Self::ReverseV => "VReverse",
-            Self::SwapUv => "SwapUV",
-        }
-    }
-}
-
-struct DirectionCommand;
-
-impl Command for DirectionCommand {
-    fn name(&self) -> &'static str {
-        "Dir"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Direction"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let edit = parse_direction_edit(arguments)?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.id(), object.geometry()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let mut replacements = Vec::new();
-        for (id, geometry) in selected {
-            let geometry = match (edit, geometry) {
-                (DirectionEdit::ReverseU, Geometry::NurbsSurface(surface)) => {
-                    Geometry::NurbsSurface(surface.try_reversed_u()?)
-                }
-                (DirectionEdit::ReverseV, Geometry::NurbsSurface(surface)) => {
-                    Geometry::NurbsSurface(surface.try_reversed_v()?)
-                }
-                (DirectionEdit::SwapUv, Geometry::NurbsSurface(surface)) => {
-                    Geometry::NurbsSurface(surface.try_swapped_uv()?)
-                }
-                (DirectionEdit::Flip, geometry) => {
-                    flip::flipped_curve_or_mesh(geometry, document.tolerance())?
-                        .ok_or(CommandError::UnsupportedDirectionEditGeometry)?
-                }
-                _ => return Err(CommandError::UnsupportedDirectionEditGeometry),
-            };
-            replacements.push((id, geometry));
-        }
-        let count = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Edited {count} object direction(s) with {}",
-            edit.label()
-        ))
-    }
-}
-
-fn parse_direction_edit(arguments: &[&str]) -> Result<DirectionEdit, CommandError> {
-    let value = match arguments {
-        [] => return Err(CommandError::Usage(DIRECTION_USAGE)),
-        [value] if !value.contains('=') => *value,
-        _ => {
-            let (name, value, consumed) = orient_option(arguments, 0, DIRECTION_USAGE)?;
-            if !option_name_eq(name, "Mode") || consumed != arguments.len() {
-                return Err(CommandError::Usage(DIRECTION_USAGE));
-            }
-            value
-        }
-    }
-    .trim_start_matches(['_', '-']);
-    if value.eq_ignore_ascii_case("Flip")
-        || value.eq_ignore_ascii_case("FlipAll")
-        || value.eq_ignore_ascii_case("FlipNormal")
-    {
-        Ok(DirectionEdit::Flip)
-    } else if value.eq_ignore_ascii_case("UReverse")
-        || value.eq_ignore_ascii_case("ReverseU")
-        || value.eq_ignore_ascii_case("FlipU")
-    {
-        Ok(DirectionEdit::ReverseU)
-    } else if value.eq_ignore_ascii_case("VReverse")
-        || value.eq_ignore_ascii_case("ReverseV")
-        || value.eq_ignore_ascii_case("FlipV")
-    {
-        Ok(DirectionEdit::ReverseV)
-    } else if value.eq_ignore_ascii_case("SwapUV") {
-        Ok(DirectionEdit::SwapUv)
-    } else {
-        Err(CommandError::Usage(DIRECTION_USAGE))
-    }
 }
 
 struct MeshTopologySource<'a> {

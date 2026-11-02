@@ -1,4 +1,4 @@
-//! Restore ordered curve picks without touching model history.
+//! Restore ordered command picks without touching SelPrev or model history.
 use super::*;
 impl VibocerosApp {
     pub(in crate::app) fn restore_curve_selection(&mut self, ids: Vec<ObjectId>) {

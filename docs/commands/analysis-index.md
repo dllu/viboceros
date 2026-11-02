@@ -3,6 +3,7 @@
 [All commands](README.md) · [Command input](../command-line.md)
 
 - [Check and SelBadObjects](check.md)
+- [Dir surface charts and normal directions](direction.md)
 - [ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](show-edges.md)
 - [Fit a line through points, clouds, meshes and grips](line-through-points.md)
 - [PointDeviation distance analysis](point-deviation.md)
