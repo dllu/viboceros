@@ -55,6 +55,7 @@ mod delete_subcurve;
 #[path = "../../../crates/viboceros-oracle/tests/support/compare.rs"]
 mod diagnostic_comparison;
 mod direction;
+mod direction_analysis;
 #[path = "../../../crates/viboceros-oracle/tests/support/brep_direction.rs"]
 mod direction_support;
 mod distance;

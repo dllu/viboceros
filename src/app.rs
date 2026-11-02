@@ -182,6 +182,7 @@ mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
 mod direction;
+mod direction_analysis;
 mod distance;
 mod domain;
 mod drafting_input;

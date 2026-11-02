@@ -914,6 +914,7 @@ pub struct CommandRegistry {
     crease_splitting: crease_splitting::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
+    direction_analysis: std::sync::Arc<direction::analysis::Session>,
     edge_analysis: std::sync::Arc<edge_analysis::Session>,
     edge_zoom: std::sync::Arc<edge_analysis::Session>,
     point_deviation: std::sync::Arc<point_deviation::Session>,
@@ -955,6 +956,12 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         for off in [false, true] {
+            registry
+                .register(direction::analysis::AnalysisCommand {
+                    session: registry.direction_analysis.clone(),
+                    off,
+                })
+                .expect("unique built-in command");
             registry
                 .register(curvature_graph::GraphCommand {
                     session: registry.curvature_graph.clone(),
@@ -2792,6 +2799,12 @@ impl CommandRegistry {
     }
     pub fn curvature_graph_curve_sources(&self, doc: &Document) -> BTreeSet<ObjectId> {
         self.curvature_graph.curve_sources(doc)
+    }
+    pub fn direction_analysis_view(&self, doc: &Document) -> Option<direction::analysis::View> {
+        self.direction_analysis.view(doc)
+    }
+    pub fn object_has_direction_analysis(&self, id: ObjectId) -> bool {
+        self.direction_analysis.contains(id)
     }
     pub fn curve_deviation_view(&self, doc: &Document) -> Option<curve_deviation::View> {
         self.curve_deviation.view(doc)

@@ -74,7 +74,7 @@ impl VibocerosApp {
                 } else {
                     self.direction_mode
                 };
-                let markers = collect_markers(&edits, self.document.tolerance());
+                let markers = collect_markers(edits.geometries(), self.document.tolerance());
                 self.direction_session = Some(Session {
                     edits,
                     ids,
@@ -154,7 +154,8 @@ impl VibocerosApp {
         let session = self.direction_session.as_mut().unwrap();
         match session.edits.apply(&self.document, edit, target) {
             Ok(count) => {
-                session.markers = collect_markers(&session.edits, self.document.tolerance());
+                session.markers =
+                    collect_markers(session.edits.geometries(), self.document.tolerance());
                 self.push_log(format!(
                     "Previewed {count} direction edit(s); Enter accepts, Esc discards"
                 ));

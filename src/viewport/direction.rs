@@ -1,137 +1,16 @@
 //! Direction arrows use staged geometry while picks retain document identities.
 use super::*;
 use std::collections::BTreeSet;
-use viboceros_command::direction::DirectionSession;
-use viboceros_geometry::{BrepFace, NurbsSurface};
+use viboceros_command::direction::{DirectionSession, marker_at};
+pub(crate) use viboceros_command::direction::{Marker, collect_markers};
 #[cfg(test)]
 mod tests;
-
-#[derive(Clone, Debug)]
-pub(crate) struct Marker {
-    pub object: ObjectId,
-    pub point: Point3,
-    // Curve tangent or surface U, V, oriented normal.
-    pub axes: [Option<Vector3>; 3],
-    pub surface: bool,
-}
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct Overlay<'a> {
     pub edits: &'a DirectionSession,
     pub ids: &'a BTreeSet<ObjectId>,
     pub markers: &'a [Marker],
-}
-
-pub(crate) fn collect_markers(edits: &DirectionSession, tolerance: Tolerance) -> Vec<Marker> {
-    let mut markers = Vec::new();
-    for (id, geometry) in edits.geometries() {
-        if let Some(curve) = geometry.curve_ref() {
-            let domain = curve.domain();
-            for fraction in [0.15, 0.5, 0.85] {
-                let t = *domain.start() * (1. - fraction) + *domain.end() * fraction;
-                if let Ok(sample) = curve.evaluate_with_tangent(t) {
-                    markers.push(Marker {
-                        object: id,
-                        point: sample.point(),
-                        axes: [Some(sample.tangent().as_vector()), None, None],
-                        surface: false,
-                    });
-                }
-            }
-        } else {
-            match geometry {
-                Geometry::NurbsSurface(surface) => {
-                    if let Some(marker) = surface_marker(id, surface, None, None, tolerance) {
-                        markers.push(marker);
-                    }
-                }
-                Geometry::Brep(brep) => {
-                    for face in brep.faces() {
-                        if let Some(marker) =
-                            surface_marker(id, face.surface(), Some(face), None, tolerance)
-                        {
-                            markers.push(marker);
-                        }
-                    }
-                }
-                Geometry::Mesh(mesh) => {
-                    // Bound annotation density independently of triangle count.
-                    for face in (0..mesh.triangles().len())
-                        .step_by(mesh.triangles().len().div_ceil(256).max(1))
-                    {
-                        if let Some(marker) = mesh_marker(id, mesh, face) {
-                            markers.push(marker);
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    markers
-}
-
-fn surface_marker(
-    id: ObjectId,
-    surface: &NurbsSurface,
-    face: Option<&BrepFace>,
-    point: Option<Point3>,
-    tolerance: Tolerance,
-) -> Option<Marker> {
-    let (u, v) = if let Some(point) = point {
-        surface.closest_parameters(point, tolerance).ok()?
-    } else {
-        let mut parameter = None;
-        'outer: for u in [0.5, 0.25, 0.75, 0.125, 0.875] {
-            for v in [0.5, 0.25, 0.75, 0.125, 0.875] {
-                let u = *surface.domain_u().start() * (1. - u) + *surface.domain_u().end() * u;
-                let v = *surface.domain_v().start() * (1. - v) + *surface.domain_v().end() * v;
-                if face.is_none_or(|f| f.contains_parameters(u, v, tolerance).unwrap_or(false)) {
-                    parameter = Some((u, v));
-                    break 'outer;
-                }
-            }
-        }
-        parameter?
-    };
-    if face.is_some_and(|f| !f.contains_parameters(u, v, tolerance).unwrap_or(false)) {
-        return None;
-    }
-    let (point, du, dv) = surface.evaluate_with_derivatives(u, v).ok()?;
-    let normal = surface.normal_at(u, v).ok()?.as_vector();
-    Some(Marker {
-        object: id,
-        point,
-        surface: true,
-        axes: [
-            du.normalized_nonzero().ok().map(|v| v.as_vector()),
-            dv.normalized_nonzero().ok().map(|v| v.as_vector()),
-            Some(if face.is_some_and(|f| f.is_reversed()) {
-                normal.scaled(-1.).ok()?
-            } else {
-                normal
-            }),
-        ],
-    })
-}
-
-fn mesh_marker(id: ObjectId, mesh: &TriangleMesh, face: usize) -> Option<Marker> {
-    let [a, b, c] = mesh
-        .triangles()
-        .get(face)?
-        .map(|i| mesh.vertices()[i as usize]);
-    let point = Point3::try_new(
-        a.x() / 3. + b.x() / 3. + c.x() / 3.,
-        a.y() / 3. + b.y() / 3. + c.y() / 3.,
-        a.z() / 3. + b.z() / 3. + c.z() / 3.,
-    )
-    .ok()?;
-    Some(Marker {
-        object: id,
-        point,
-        axes: [None, None, Some(mesh.face_normal(face).ok()?.as_vector())],
-        surface: false,
-    })
 }
 
 impl Viewport {
@@ -182,19 +61,19 @@ impl Viewport {
         let geometry = overlay.edits.geometries().find(|(key, _)| *key == id)?.1;
         let marker = match geometry {
             Geometry::Brep(brep) => {
-                let face = brep.faces().get(face_index)?;
+                brep.faces().get(face_index)?;
                 let point = self
                     .normal_surface_point(pointer, rect, document, (id, Some(face_index), false))
                     .or(point);
-                surface_marker(id, face.surface(), Some(face), point, document.tolerance())
+                marker_at(id, geometry, face_index, point, document.tolerance())
             }
-            Geometry::NurbsSurface(surface) => {
+            Geometry::NurbsSurface(_) => {
                 let point = self
                     .normal_surface_point(pointer, rect, document, (id, None, false))
                     .or(point);
-                surface_marker(id, surface, None, point, document.tolerance())
+                marker_at(id, geometry, face_index, point, document.tolerance())
             }
-            Geometry::Mesh(mesh) => mesh_marker(id, mesh, face_index),
+            Geometry::Mesh(_) => marker_at(id, geometry, face_index, point, document.tolerance()),
             _ => None,
         };
         Some((id, marker))
@@ -207,12 +86,46 @@ impl Viewport {
         overlay: Overlay<'_>,
         hover: Option<&Marker>,
     ) {
-        for marker in overlay
-            .markers
-            .iter()
-            .filter(|m| hover.is_none_or(|h| h.object != m.object))
-            .chain(hover)
-        {
+        self.paint_direction_markers(
+            painter,
+            rect,
+            overlay
+                .markers
+                .iter()
+                .filter(|m| hover.is_none_or(|h| h.object != m.object))
+                .chain(hover),
+            &viboceros_command::direction::analysis::Options::default(),
+        );
+    }
+
+    pub(super) fn paint_direction_analysis(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        view: &viboceros_command::direction::analysis::View,
+        excluded: Option<&BTreeSet<ObjectId>>,
+    ) {
+        self.paint_direction_markers(
+            painter,
+            rect,
+            view.markers
+                .iter()
+                .filter(|m| excluded.is_none_or(|ids| !ids.contains(&m.object))),
+            &view.options,
+        );
+    }
+
+    fn paint_direction_markers<'a>(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        markers: impl Iterator<Item = &'a Marker>,
+        options: &viboceros_command::direction::analysis::Options,
+    ) {
+        if !options.direction && !options.u && !options.v {
+            return;
+        }
+        for marker in markers {
             let Some(origin) = self
                 .project(marker.point, rect)
                 .filter(|p| rect.contains(*p))
@@ -221,6 +134,14 @@ impl Viewport {
             };
             let length = 36. / f64::from(self.pixels_per_model_unit_at_origin(rect)).max(1e-12);
             for (index, axis) in marker.axes.iter().enumerate() {
+                let enabled = if marker.surface {
+                    [options.u, options.v, options.direction][index]
+                } else {
+                    options.direction
+                };
+                if !enabled {
+                    continue;
+                }
                 let Some(axis) = axis else {
                     continue;
                 };
@@ -232,15 +153,12 @@ impl Viewport {
                 else {
                     continue;
                 };
-                let color = if marker.surface {
-                    [
-                        Color32::from_rgb(210, 60, 55),
-                        Color32::from_rgb(40, 145, 60),
-                        Color32::from_rgb(130, 65, 210),
-                    ][index]
+                let rgb = if marker.surface && index < 2 {
+                    [[210, 60, 55], [40, 145, 60]][index]
                 } else {
-                    Color32::from_rgb(130, 65, 210)
+                    options.color
                 };
+                let color = Color32::from_rgb(rgb[0], rgb[1], rgb[2]);
                 let delta = end - origin;
                 if delta.length() < 2. {
                     // Dot means toward the camera; cross means away.

@@ -21,8 +21,9 @@ Type `Flip`, `UReverse`, `VReverse` or `SwapUV` for repeated provisional edits.
 FlipU → FlipV → FlipNormal → SwapUV. The mode persists between commands.
 Enter accepts the final geometry in one Undo entry; Escape discards all edits.
 Inspection and edits that return to the original geometry preserve history and
-Redo. Source changes invalidate the preview. `ShowDir` and `ShowDirOff`, arrow
-appearance preferences and parameter/draft-angle status readouts are not implemented.
+Redo. Source changes invalidate the preview. [`ShowDir` and `ShowDirOff`](direction-analysis.md)
+provide persistent analysis. Native arrow appearance preferences and
+parameter/draft-angle status readouts are not implemented.
 
 With an explicit edit on the initial command line, `Dir` executes immediately
 on preselection, or after picking objects and Enter.

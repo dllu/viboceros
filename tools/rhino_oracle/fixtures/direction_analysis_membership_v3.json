@@ -1,0 +1,77 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "direction_analysis",
+      "id": "showdir-membership-warped",
+      "source": "warped",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1,
+        "4": 1,
+        "8": 0,
+        "10": 0,
+        "12": 1,
+        "14": 0
+      },
+      "steps": [
+        "ShowDir",
+        "SelectCompanion",
+        "ShowDir",
+        "SelNone",
+        "Flip",
+        "Undo",
+        "Redo",
+        "SelectPrimary",
+        "Remove",
+        "SelectPrimary",
+        "Add",
+        "SelectCompanion",
+        "Remove",
+        "SelectPrimary",
+        "Remove",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-membership-line",
+      "source": "line",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1,
+        "4": 1,
+        "8": 0,
+        "10": 0,
+        "12": 1,
+        "14": 0
+      },
+      "steps": [
+        "ShowDir",
+        "SelectCompanion",
+        "ShowDir",
+        "SelNone",
+        "Flip",
+        "Undo",
+        "Redo",
+        "SelectPrimary",
+        "Remove",
+        "SelectPrimary",
+        "Add",
+        "SelectCompanion",
+        "Remove",
+        "SelectPrimary",
+        "Remove",
+        "ShowDirOff"
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'direction_analysis': ('direction_analysis_probe', ('direction_analysis_input','join_probe', 'merge_edges_probe')),
     'brep_direction_command': ('brep_direction_probe', ('join_probe', 'merge_edges_probe')),
     'sweep1': ('sweep1_probe', ()),
     'curve_path_extrusion': ('curve_path_extrusion_probe', ('join_probe', 'merge_edges_probe', 'curve_definition_validation')),
@@ -212,9 +213,10 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
-    if 'brep_direction_probe' in modules:
+    if 'brep_direction_probe' in modules or 'direction_analysis_probe' in modules:
         for op in request['operations']:
-            if op.get('op') != 'brep_direction_command': continue
+            if op.get('op') not in ('brep_direction_command','direction_analysis'): continue
+            if op['source'] in ('line','mesh','point'):continue
             asset = Path('fixtures/brep_direction')/(op['source']+'.3dm')
             (destination/asset.parent).mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source_directory/asset, destination/asset)

@@ -22,9 +22,9 @@ fn staged_axes_follow_parameter_edits_and_face_sense() {
         .unwrap();
     let before = format!("{doc:?}");
     let mut session = DirectionSession::new(&doc, false).unwrap();
-    let initial = collect_markers(&session, doc.tolerance()).remove(0);
+    let initial = collect_markers(session.geometries(), doc.tolerance()).remove(0);
     session.apply(&doc, DirectionEdit::ReverseU, None).unwrap();
-    let reversed = collect_markers(&session, doc.tolerance()).remove(0);
+    let reversed = collect_markers(session.geometries(), doc.tolerance()).remove(0);
     for (index, sign) in [(0, -1.), (1, 1.), (2, 1.)] {
         assert!(
             (initial.axes[index]
@@ -37,7 +37,7 @@ fn staged_axes_follow_parameter_edits_and_face_sense() {
         );
     }
     session.apply(&doc, DirectionEdit::Flip, None).unwrap();
-    let flipped = collect_markers(&session, doc.tolerance()).remove(0);
+    let flipped = collect_markers(session.geometries(), doc.tolerance()).remove(0);
     assert!(
         (initial.axes[2]
             .unwrap()
@@ -70,7 +70,7 @@ fn inspection_paints_and_clicks_in_every_view_and_display_mode() {
         doc.select_objects_direct([id], SelectionMode::Replace)
             .unwrap();
         let session = DirectionSession::new(&doc, false).unwrap();
-        let markers = collect_markers(&session, doc.tolerance());
+        let markers = collect_markers(session.geometries(), doc.tolerance());
         let ids = BTreeSet::from([id]);
         let overlay = Overlay {
             edits: &session,
@@ -155,7 +155,7 @@ fn trimmed_face_markers_and_hover_avoid_holes_and_retain_face_identity() {
     doc.select_objects_direct([id], SelectionMode::Replace)
         .unwrap();
     let session = DirectionSession::new(&doc, false).unwrap();
-    let markers = collect_markers(&session, doc.tolerance());
+    let markers = collect_markers(session.geometries(), doc.tolerance());
     assert_eq!(markers.len(), 1);
     let (u, v) = source.faces()[0]
         .surface()
@@ -195,12 +195,83 @@ fn mesh_normals_reverse_without_changing_source_storage() {
     doc.select_objects_direct([id], SelectionMode::Replace)
         .unwrap();
     let mut session = DirectionSession::new(&doc, false).unwrap();
-    let initial = collect_markers(&session, doc.tolerance());
+    let initial = collect_markers(session.geometries(), doc.tolerance());
     assert!(!initial.is_empty());
     session.apply(&doc, DirectionEdit::Flip, None).unwrap();
-    let flipped = collect_markers(&session, doc.tolerance());
+    let flipped = collect_markers(session.geometries(), doc.tolerance());
     assert_eq!(initial.len(), flipped.len());
     for (a, b) in initial.iter().zip(flipped) {
         assert!((a.axes[2].unwrap().dot(b.axes[2].unwrap()).unwrap() + 1.).abs() < 1e-12);
     }
+}
+
+#[test]
+fn persistent_analysis_honors_display_flags_color_and_inspection_exclusions() {
+    let mut doc = Document::default();
+    let id = doc.add_geometry(surface()).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let commands = CommandRegistry::with_builtins();
+    commands.execute(&mut doc, "ShowDir").unwrap();
+    let before = format!("{doc:?}");
+    let context = egui::Context::default();
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Perspective,
+        ViewKind::Front,
+        ViewKind::Right,
+    ] {
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.display_mode = mode;
+            for (flags, excluded, expected) in [
+                ("Direction=Yes U=Yes V=Yes", false, true),
+                ("Direction=No U=No V=No", false, false),
+                ("Direction=Yes U=Yes V=Yes", true, false),
+            ] {
+                commands
+                    .execute(&mut doc, &format!("ShowDir {flags} Color=12,34,56"))
+                    .unwrap();
+                let analysis = commands.direction_analysis_view(&doc).unwrap();
+                let ids = BTreeSet::from([id]);
+                let output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(rect),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        view.paint_direction_analysis(
+                            ui.painter(),
+                            rect,
+                            &analysis,
+                            excluded.then_some(&ids),
+                        )
+                    },
+                );
+                assert_eq!(
+                    !output.shapes.is_empty(),
+                    expected,
+                    "{kind:?} {mode:?} {flags}"
+                );
+                if expected {
+                    let wanted = Color32::from_rgb(12, 34, 56);
+                    assert!(
+                        output.shapes.iter().any(|s| match &s.shape {
+                            egui::Shape::LineSegment { stroke, .. } => stroke.color == wanted,
+                            egui::Shape::Circle(circle) => circle.stroke.color == wanted,
+                            _ => false,
+                        }),
+                        "normal color missing in {kind:?} {mode:?}"
+                    );
+                }
+                output.drop_without_applying_deltas();
+            }
+        }
+    }
+    assert_eq!(format!("{doc:?}"), before);
 }

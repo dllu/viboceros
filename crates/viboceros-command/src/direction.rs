@@ -1,7 +1,10 @@
 //! Direction edits shared by scripted and command-first selection.
 use super::*;
+pub mod analysis;
 mod session;
 pub use session::DirectionSession;
+mod markers;
+pub use markers::{Marker, collect_markers, marker_at};
 
 pub(super) const USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV) [Faces=All|i,j]";

@@ -341,6 +341,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
@@ -464,6 +465,7 @@ fn selection_candidate(
 impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
+            direction_analysis: None,
             direction: None,
             insert_edges: None,
             insert_mesh: None,
@@ -2102,6 +2104,14 @@ impl Viewport {
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
         self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);
+        if let Some(view) = input.direction_analysis {
+            self.paint_direction_analysis(
+                &painter,
+                rect,
+                view,
+                input.direction.map(|overlay| overlay.ids),
+            );
+        }
         let direction_hit = input
             .direction
             .filter(|_| !input.zoom_window && input.zoom_target.is_none() && !drafting.active)

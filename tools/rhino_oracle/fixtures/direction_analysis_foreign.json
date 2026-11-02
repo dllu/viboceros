@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "direction_analysis",
+      "id": "showdir-foreign-warped-0",
+      "source": "warped",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1
+      },
+      "steps": [
+        "ShowDir",
+        "SelNone",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-foreign-warped-1",
+      "source": "warped",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1
+      },
+      "steps": [
+        "ShowDir",
+        "SelectCompanion",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-foreign-line-0",
+      "source": "line",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1
+      },
+      "steps": [
+        "ShowDir",
+        "SelNone",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-foreign-line-1",
+      "source": "line",
+      "preselect": true,
+      "companion": true,
+      "picks": {
+        "2": 1
+      },
+      "steps": [
+        "ShowDir",
+        "SelectCompanion",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    }
+  ]
+}

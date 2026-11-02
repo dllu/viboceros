@@ -1,0 +1,437 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-life",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-display",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-flip",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-UReverse",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "UReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-VReverse",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "VReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-SwapUV",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "SwapUV",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-life",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-display",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-flip",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-UReverse",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "UReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-VReverse",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "VReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-SwapUV",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "SwapUV",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-life",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-display",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-flip",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-UReverse",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "UReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-VReverse",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "VReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-SwapUV",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "SwapUV",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-life",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-display",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-flip",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-UReverse",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "UReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-VReverse",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "VReverse",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-SwapUV",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "SwapUV",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-line-life",
+      "source": "line",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-line-display",
+      "source": "line",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-line-flip",
+      "source": "line",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-mesh-life",
+      "source": "mesh",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-mesh-display",
+      "source": "mesh",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Direction=No",
+        "U=No",
+        "V=No",
+        "U=Yes",
+        "V=Yes",
+        "Direction=Yes",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-mesh-flip",
+      "source": "mesh",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "Flip",
+        "Undo",
+        "Redo",
+        "ShowDirOff"
+      ]
+    }
+  ]
+}

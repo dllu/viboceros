@@ -37,6 +37,7 @@ pub enum ObjectSelectionFilter {
     ToSubD,
     Beziers,
     Parametric,
+    Direction,
     Cap,
     SurfaceComponents,
     Surfaces,
@@ -177,6 +178,13 @@ impl ObjectSelectionFilter {
                 geometry,
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
             ),
+            Self::Direction => {
+                geometry.curve_ref().is_some()
+                    || matches!(
+                        geometry,
+                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    )
+            }
             Self::Parametric => {
                 geometry.curve_ref().is_some()
                     || matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))

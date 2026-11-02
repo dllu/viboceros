@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-0",
+      "source": "warped",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-warped-1",
+      "source": "warped",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-0",
+      "source": "holed",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-holed-1",
+      "source": "holed",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-0",
+      "source": "box",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-box-1",
+      "source": "box",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-0",
+      "source": "sphere",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-sphere-1",
+      "source": "sphere",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-line-0",
+      "source": "line",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-line-1",
+      "source": "line",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-mesh-0",
+      "source": "mesh",
+      "preselect": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "showdir-mesh-1",
+      "source": "mesh",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    }
+  ]
+}

@@ -1004,6 +1004,7 @@ impl VibocerosApp {
                 description.command,
                 "ModifyRadius"
                     | "Dir"
+                    | "ShowDir"
                     | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Rebuild"

@@ -14,6 +14,7 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
         self.show_curvature_graph(ui);
+        self.show_direction_analysis(ui);
         self.show_point_deviation(ui);
         self.show_curve_deviation(ui);
         self.validate_orient_guide();
@@ -577,6 +578,7 @@ impl eframe::App for VibocerosApp {
             .curvature_graph_view(&self.document)
             .ok()
             .flatten();
+        let direction_analysis_view = self.commands.direction_analysis_view(&self.document);
         let deviation_view = self
             .commands
             .point_deviation_view(&self.document)
@@ -1316,6 +1318,7 @@ impl eframe::App for VibocerosApp {
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
                             curvature_graph: curvature_graph_view.as_ref(),
+                            direction_analysis: direction_analysis_view.as_ref(),
                             edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
