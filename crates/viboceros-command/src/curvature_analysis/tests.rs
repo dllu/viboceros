@@ -69,3 +69,34 @@ fn surface_color_modes_replace_only_the_affected_objects() {
     assert!(r.object_has_curvature_analysis(a));
     assert!(r.object_has_curvature_analysis(b));
 }
+
+#[test]
+fn automatic_range_uses_live_visible_geometry_without_changing_history_or_other_styles() {
+    let (mut doc, r, id) = setup();
+    r.execute(&mut doc, "CurvatureAnalysis Range=-2,2").unwrap();
+    let source = doc.object(id).unwrap().geometry_snapshot().clone();
+    let before = r.curvature_analysis_view(&doc).unwrap();
+    r.execute(&mut doc, "CurvatureAnalysis AutoRange Style=Mean")
+        .unwrap();
+    let after = r.curvature_analysis_view(&doc).unwrap();
+    assert!(Arc::ptr_eq(&before.meshes, &after.meshes));
+    assert_eq!(after.options.ranges[0], [-2., 2.]);
+    let range = after.options.range();
+    assert!(range[0] > 0.499 && range[0] <= 0.5);
+    assert!(range[1] < 0.501 && range[1] >= 0.5);
+    assert!(source.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    r.execute(&mut doc, "Hide").unwrap();
+    r.execute(&mut doc, "CurvatureAnalysis AutoRange").unwrap();
+    assert_eq!(
+        r.curvature_analysis_view(&doc).unwrap().options.range(),
+        range
+    );
+    r.execute(&mut doc, "Undo").unwrap();
+    assert!(doc.object(id).unwrap().attributes().is_visible());
+    r.execute(&mut doc, "CurvatureAnalysis AutoRange Style=Gaussian")
+        .unwrap();
+    let range = r.curvature_analysis_view(&doc).unwrap().options.range();
+    assert!((range[0] - 0.25).abs() < 1e-7 && (range[1] - 0.25).abs() < 1e-7);
+    r.execute(&mut doc, "Redo").unwrap();
+    assert!(!doc.object(id).unwrap().attributes().is_visible());
+}

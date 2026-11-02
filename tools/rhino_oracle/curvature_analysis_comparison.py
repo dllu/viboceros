@@ -33,7 +33,7 @@ def canonical(op,value,native):
         require(isinstance(t,dict) and set(t)=={'command','success','events','settings','meshes'} and t['command']==step and t['success'] is True,'command trace')
         require(isinstance(t['events'],list) and all(isinstance(e,dict) and set(e)=={'name','result'} and all(isinstance(x,str) for x in e.values()) for e in t['events']),'events')
         events=[e for e in t['events'] if e['name']==step]
-        require((not t['events'] if step=='MaxRange' else len(events)==1 and events[0]['result']=='Success'),'completion')
+        require((not t['events'] if step in ('MaxRange','AutoRange') else len(events)==1 and events[0]['result']=='Success'),'completion')
         require(settings(t['settings']),'native settings')
         if step=='CurvatureAnalysis':enabled=True
         elif step=='CurvatureAnalysisOff':enabled=False

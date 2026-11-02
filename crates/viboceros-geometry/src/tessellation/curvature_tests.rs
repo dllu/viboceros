@@ -52,6 +52,12 @@ fn subd_regular_patch_jets_preserve_limit_points_and_flat_curvature() {
         count += 1;
     }
     assert!(count > 100);
+    let samples = mesh.principal_samples().collect::<Vec<_>>();
+    // Boundary samples without a regular patch remain unavailable.
+    assert!(samples.len() <= mesh.mesh.vertices().len());
+    assert!(samples.len() > mesh.mesh.vertices().len() / 2);
+    assert!(samples.len() < count / 2);
+    assert!(samples.iter().flatten().all(|k| k.abs() < 1e-10));
 }
 
 #[test]

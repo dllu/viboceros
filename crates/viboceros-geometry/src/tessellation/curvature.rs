@@ -3,7 +3,7 @@ use crate::{
     AffineTransform3, GeometryError, NurbsSurface, ParameterSide, Point2, Real, SurfaceJet2,
     SurfaceTessellation, TriangleMesh, UnitVector3,
 };
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 #[cfg(test)]
 #[path = "curvature_tests.rs"]
 mod tests;
@@ -19,6 +19,25 @@ pub struct CurvatureMesh {
 }
 
 impl CurvatureMesh {
+    /// Distinct vertex samples for statistics, independent of triangle valence.
+    /// A crease can contribute both one-sided values at the same vertex.
+    pub fn principal_samples(&self) -> impl Iterator<Item = [Real; 2]> + '_ {
+        let mut seen = HashSet::new();
+        self.mesh
+            .triangles()
+            .iter()
+            .zip(&self.indices)
+            .flat_map(|(vertices, indices)| {
+                vertices.iter().zip(indices).filter_map(|(vertex, index)| {
+                    index.map(|index| (*vertex, self.principal[index]))
+                })
+            })
+            .filter_map(move |(vertex, k)| {
+                seen.insert((vertex, k[0].to_bits(), k[1].to_bits()))
+                    .then_some(k)
+            })
+    }
+
     pub(crate) fn from_subd(
         mesh: TriangleMesh,
         normals: Vec<[crate::Vector3; 4]>,

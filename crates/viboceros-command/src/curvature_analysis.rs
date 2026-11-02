@@ -217,28 +217,31 @@ impl AnalysisCommand {
         }
         state.enabled = true;
         state.options = options;
-        if action == Action::MaxRange {
+        if matches!(action, Action::MaxRange | Action::AutoRange) {
             refresh(&mut state, doc);
-            let mut range = [Real::INFINITY, Real::NEG_INFINITY];
-            for mesh in state.meshes.values() {
-                for k in mesh
-                    .principal_curvatures(None)
-                    .into_iter()
-                    .flatten()
-                    .flatten()
-                    .filter_map(|k| options.style.value(k))
-                    .filter(|v| v.is_finite() && v.abs() < 1e300)
-                {
-                    range[0] = range[0].min(k);
-                    range[1] = range[1].max(k);
-                }
-            }
-            let i = state.options.index();
-            state.options.ranges[i] = if range[0] < range[1] {
-                range
+            let samples = state
+                .meshes
+                .values()
+                .flat_map(|mesh| mesh.principal_samples());
+            let range = if action == Action::AutoRange {
+                options.style.automatic_range(samples)
             } else {
-                Options::default().ranges[i]
+                Some(
+                    samples
+                        .filter_map(|k| options.style.statistics_value(k))
+                        .fold([Real::INFINITY, Real::NEG_INFINITY], |r, k| {
+                            [r[0].min(k), r[1].max(k)]
+                        }),
+                )
             };
+            let i = state.options.index();
+            if let Some(range) = range {
+                state.options.ranges[i] = if range[0] < range[1] {
+                    range
+                } else {
+                    Options::default().ranges[i]
+                };
+            }
         }
         let count = state.objects.len();
         drop(state);

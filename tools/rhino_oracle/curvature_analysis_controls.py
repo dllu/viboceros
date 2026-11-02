@@ -1,5 +1,9 @@
 """Bounded native panel actions, restricted to the current owned Rhino PID."""
 def click_max_range():
+    click_range('MaxRange')
+
+def click_range(action):
+    if action not in ('MaxRange','AutoRange'):raise ValueError('unsupported curvature panel action')
     import ctypes
     from ctypes import wintypes
     user=ctypes.windll.user32
@@ -16,7 +20,7 @@ def click_max_range():
         label=ctypes.create_unicode_buffer(512);kind=ctypes.create_unicode_buffer(128)
         user.GetWindowTextW(window,label,512);user.GetClassNameW(window,kind,128)
         labels.append(label.value)
-        if kind.value=='Button' and label.value.replace('&','').replace(' ','').lower()=='maxrange':matches.append(window)
+        if kind.value=='Button' and label.value.replace('&','').replace(' ','').lower()==action.lower():matches.append(window)
         return True
     def visit(window,unused):
         pid=wintypes.DWORD();user.GetWindowThreadProcessId(window,ctypes.byref(pid))
@@ -25,5 +29,5 @@ def click_max_range():
             user.EnumChildWindows(window,callback(child),0)
         return True
     user.EnumWindows(callback(visit),0)
-    if len(matches)!=1:raise ValueError('owned Max Range control unavailable: '+str(labels))
+    if len(matches)!=1:raise ValueError('owned '+action+' control unavailable: '+str(labels))
     user.SendMessageW(matches[0],0x00F5,0,0)

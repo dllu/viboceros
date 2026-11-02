@@ -5,7 +5,7 @@ import re
 
 SOURCES=('warped','holed','box','sphere','cylinder','cone','torus','subd_plane','subd_box')
 STYLES=('Gaussian','Mean','MinRadius','MaxRadius')
-STEPS=('CurvatureAnalysis','CurvatureAnalysisOff','DraftAngleAnalysis','DraftAngleAnalysisOff','Hide','Show','Delete','Undo','Redo','MaxRange')
+STEPS=('CurvatureAnalysis','CurvatureAnalysisOff','DraftAngleAnalysis','DraftAngleAnalysisOff','Hide','Show','Delete','Undo','Redo','MaxRange','AutoRange')
 
 def validate(op):
     if (not isinstance(op,dict) or set(op)!={'op','id','source','style','range','preselect','steps'}
@@ -78,9 +78,9 @@ def run(op,host,iterations,tolerance):
         for step in op['steps']:
             select='' if any(o.IsSelected(False) for o in doc.Objects) else ' _SelID '+str(key)+' _Enter'
             macro=('_'+step+select if step in ('CurvatureAnalysis','DraftAngleAnalysis','Hide') else ('_SelID '+str(key)+' _Delete' if step=='Delete' else '_'+step))
-            if step=='MaxRange':
-                from curvature_analysis_controls import click_max_range
-                click_max_range();success=True;events=[]
+            if step in ('MaxRange','AutoRange'):
+                from curvature_analysis_controls import click_range
+                click_range(step);success=True;events=[]
             else:success,unused,events=observe_command(R.Commands.Command,step,lambda:R.RhinoApp.RunScript(macro,False),snapshot,lambda:[],True)
             if step=='CurvatureAnalysis':configure()
             doc.Views.Redraw();R.RhinoApp.Wait()

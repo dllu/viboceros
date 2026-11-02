@@ -23,12 +23,12 @@ restore the live display, and settings stay outside document history.
 Curvature and draft-angle colors are mutually exclusive per object. Starting
 either replaces the other's membership only for its targets, leaving other
 objects and independent direction/curvature graphs alone. Display controls and
-Max Range can be used during an active point getter.
+Auto Range and Max Range can be used during an active point getter.
 
 Console extensions expose panel controls:
 
 ```text
-CurvatureAnalysis [Add|Remove|MaxRange]
+CurvatureAnalysis [Add|Remove|MaxRange|AutoRange]
 CurvatureAnalysis [Style=Gaussian|Mean|MinRadius|MaxRadius]
                   [Range=blue,red] [ShowIsoCurves=Yes|No]
 CurvatureAnalysisOff
@@ -51,20 +51,35 @@ within one 8-bit channel step; native mesh and separate SDK evaluations can fall
 on opposite sides of a rounding threshold. SubD qualification covers command
 state plus regular-patch/flat-surface checks, not general native curvature parity.
 
-12 additional native Max Range captures document sampling and flat/undefined
-range behavior. Viboceros computes bounds from its own analysis mesh, ignores
-infinite radii, and uses style defaults for constant/unavailable data. Those
-bounds and tessellations are not generally identical to Rhino's. Auto Range,
-analysis-density controls, saved analysis meshes and native pixel parity remain
-unimplemented. Ordinary meshes without surface curvature data are unsupported.
+Auto Range clips outliers using the mean absolute deviation, keeps narrow
+Gaussian intervals on their measured side of zero, symmetrizes broader ones,
+and limits positive spans when the lower bound is at least 0.001 in that
+metric's units.
+It leaves settings unchanged when every member is hidden. Both range controls
+use distinct vertex/crease-side samples, exclude values at or above `1e20`
+(Gaussian) or `1e10` (other styles), and reset singleton/undefined intervals to
+style defaults. Each style retains its own interval.
+
+536 synthetic SDK cases isolate statistics from tessellation. Ten record native
+rounding artifacts: certain constant multi-mesh inputs widen unexpectedly, as
+does one interval differing by a single floating-point step. Viboceros retains
+constant intervals and pads narrow positive intervals consistently. The frozen
+native outputs preserve these differences. Another 32 Auto Range and 12 Max
+Range panel captures document real-surface behavior. Bounds from the two
+products' analysis meshes can differ; these captures do not qualify identical
+tessellation or pixels. Analysis-density controls and saved analysis meshes
+remain unimplemented. Ordinary meshes without surface curvature data are
+unsupported.
 
 ```sh
 cargo test -p viboceros-oracle --test curvature_analysis_native
+cargo test -p viboceros-oracle --test curvature_auto_native
 cargo test -p viboceros-command --lib curvature_analysis
 cargo test -p viboceros-geometry --lib tessellation::curvature
 cargo test -p viboceros --bin viboceros curvature_analysis
 cargo test -p viboceros --bin viboceros curvature_colors_are_unlit -- --ignored
 python3 -m unittest tools.rhino_oracle.test_curvature_analysis
+python3 -m unittest tools.rhino_oracle.test_curvature_auto
 ```
 
 Reference: [Rhino CurvatureAnalysis](https://docs.mcneel.com/rhino/8/help/en-us/commands/curvature.htm).

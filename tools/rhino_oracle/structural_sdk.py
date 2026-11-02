@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'curvature_auto_sdk': ('curvature_auto_sdk_probe', ('merge_edges_probe',)),
     'surface_analysis_input': ('analysis_input_probe', ('join_probe','merge_edges_probe')),
     'curvature_analysis': ('curvature_analysis_probe', ('curvature_analysis_controls','join_probe','merge_edges_probe')),
     'draft_angle_analysis': ('draft_angle_probe', ('join_probe', 'merge_edges_probe')),
@@ -212,6 +213,13 @@ def stage_helpers(request, source_directory: Path, destination: Path):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'curvature_auto_sdk_probe' in modules:
+        for op in request['operations']:
+            if op.get('op')=='curvature_auto_sdk':
+                for name in ([op['asset']] if op['asset'] is not None else [])+op.get('companions',[]):
+                    asset=Path('fixtures/curvature_auto')/(name+'.3dm')
+                    (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+                    shutil.copyfile(source_directory/asset,destination/asset)
     if 'soft_crease_probe' in modules:
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)

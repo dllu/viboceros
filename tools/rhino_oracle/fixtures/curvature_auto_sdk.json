@@ -1,0 +1,3535 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curvature_auto_sdk",
+      "id": "flat-Gaussian",
+      "asset": "flat",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "constant-Gaussian",
+      "asset": "constant",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "two-Gaussian",
+      "asset": "two",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "signed-Gaussian",
+      "asset": "signed",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ramp-Gaussian",
+      "asset": "ramp",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "outlier-Gaussian",
+      "asset": "outlier",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "negative-Gaussian",
+      "asset": "negative",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "huge-Gaussian",
+      "asset": "huge",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike3-Gaussian",
+      "asset": "spike3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike4-Gaussian",
+      "asset": "spike4",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike5-Gaussian",
+      "asset": "spike5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike6-Gaussian",
+      "asset": "spike6",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike7-Gaussian",
+      "asset": "spike7",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike8-Gaussian",
+      "asset": "spike8",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike9-Gaussian",
+      "asset": "spike9",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike10-Gaussian",
+      "asset": "spike10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "asymmetric-Gaussian",
+      "asset": "asymmetric",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "tinyneg-Gaussian",
+      "asset": "tinyneg",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "minus_two-Gaussian",
+      "asset": "minus_two",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones100-Gaussian",
+      "asset": "ones100",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "hundred-Gaussian",
+      "asset": "hundred",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "gauss_limit-Gaussian",
+      "asset": "gauss_limit",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mean_limit-Gaussian",
+      "asset": "mean_limit",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "radius_limit-Gaussian",
+      "asset": "radius_limit",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones103-Gaussian",
+      "asset": "ones103",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones49-Gaussian",
+      "asset": "ones49",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones54-Gaussian",
+      "asset": "ones54",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "nearly-Gaussian",
+      "asset": "nearly",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "near_zero-Gaussian",
+      "asset": "near_zero",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "crossing-Gaussian",
+      "asset": "crossing",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratios-Gaussian",
+      "asset": "ratios",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_12-Gaussian",
+      "asset": "spread_small_12",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_10-Gaussian",
+      "asset": "spread_small_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_8-Gaussian",
+      "asset": "spread_small_8",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_6-Gaussian",
+      "asset": "spread_small_6",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_4-Gaussian",
+      "asset": "spread_small_4",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_3-Gaussian",
+      "asset": "spread_small_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_2-Gaussian",
+      "asset": "spread_small_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_1-Gaussian",
+      "asset": "spread_small_1",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_12-Gaussian",
+      "asset": "spread_unit_12",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_10-Gaussian",
+      "asset": "spread_unit_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_8-Gaussian",
+      "asset": "spread_unit_8",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_6-Gaussian",
+      "asset": "spread_unit_6",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_4-Gaussian",
+      "asset": "spread_unit_4",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_3-Gaussian",
+      "asset": "spread_unit_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_2-Gaussian",
+      "asset": "spread_unit_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_1-Gaussian",
+      "asset": "spread_unit_1",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_12-Gaussian",
+      "asset": "spread_large_12",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_10-Gaussian",
+      "asset": "spread_large_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_8-Gaussian",
+      "asset": "spread_large_8",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_6-Gaussian",
+      "asset": "spread_large_6",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_4-Gaussian",
+      "asset": "spread_large_4",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_3-Gaussian",
+      "asset": "spread_large_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_2-Gaussian",
+      "asset": "spread_large_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_1-Gaussian",
+      "asset": "spread_large_1",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_2-Gaussian",
+      "asset": "ratio_low_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_2-Gaussian",
+      "asset": "ratio_mid_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_2-Gaussian",
+      "asset": "ratio_high_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_2-Gaussian",
+      "asset": "ratio_negative_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_3-Gaussian",
+      "asset": "ratio_low_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_3-Gaussian",
+      "asset": "ratio_mid_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_3-Gaussian",
+      "asset": "ratio_high_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_3-Gaussian",
+      "asset": "ratio_negative_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_5-Gaussian",
+      "asset": "ratio_low_5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_5-Gaussian",
+      "asset": "ratio_mid_5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_5-Gaussian",
+      "asset": "ratio_high_5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_5-Gaussian",
+      "asset": "ratio_negative_5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10-Gaussian",
+      "asset": "ratio_low_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10-Gaussian",
+      "asset": "ratio_mid_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10-Gaussian",
+      "asset": "ratio_high_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10-Gaussian",
+      "asset": "ratio_negative_10",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_19-Gaussian",
+      "asset": "ratio_low_19",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_19-Gaussian",
+      "asset": "ratio_mid_19",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_19-Gaussian",
+      "asset": "ratio_high_19",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_19-Gaussian",
+      "asset": "ratio_negative_19",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_20-Gaussian",
+      "asset": "ratio_low_20",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_20-Gaussian",
+      "asset": "ratio_mid_20",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_20-Gaussian",
+      "asset": "ratio_high_20",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_20-Gaussian",
+      "asset": "ratio_negative_20",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_21-Gaussian",
+      "asset": "ratio_low_21",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_21-Gaussian",
+      "asset": "ratio_mid_21",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_21-Gaussian",
+      "asset": "ratio_high_21",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_21-Gaussian",
+      "asset": "ratio_negative_21",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_50-Gaussian",
+      "asset": "ratio_low_50",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_50-Gaussian",
+      "asset": "ratio_mid_50",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_50-Gaussian",
+      "asset": "ratio_high_50",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_50-Gaussian",
+      "asset": "ratio_negative_50",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100-Gaussian",
+      "asset": "ratio_low_100",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100-Gaussian",
+      "asset": "ratio_mid_100",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100-Gaussian",
+      "asset": "ratio_high_100",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100-Gaussian",
+      "asset": "ratio_negative_100",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_1000-Gaussian",
+      "asset": "ratio_low_1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_1000-Gaussian",
+      "asset": "ratio_mid_1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_1000-Gaussian",
+      "asset": "ratio_high_1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_1000-Gaussian",
+      "asset": "ratio_negative_1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10000-Gaussian",
+      "asset": "ratio_low_10000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10000-Gaussian",
+      "asset": "ratio_mid_10000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10000-Gaussian",
+      "asset": "ratio_high_10000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10000-Gaussian",
+      "asset": "ratio_negative_10000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100000-Gaussian",
+      "asset": "ratio_low_100000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100000-Gaussian",
+      "asset": "ratio_mid_100000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100000-Gaussian",
+      "asset": "ratio_high_100000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100000-Gaussian",
+      "asset": "ratio_negative_100000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_below3-Gaussian",
+      "asset": "g_below3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_above3-Gaussian",
+      "asset": "g_above3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_four-Gaussian",
+      "asset": "g_four",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_below1000-Gaussian",
+      "asset": "r_below1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_above1000-Gaussian",
+      "asset": "r_above1000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_2000-Gaussian",
+      "asset": "r_2000",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_small-Gaussian",
+      "asset": "r_scaled_small",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_large-Gaussian",
+      "asset": "r_scaled_large",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_1-Gaussian",
+      "asset": "g_ratio_3_1",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_2-Gaussian",
+      "asset": "g_ratio_3_2",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3-Gaussian",
+      "asset": "g_ratio_3_3",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3333333-Gaussian",
+      "asset": "g_ratio_3_3333333",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_4-Gaussian",
+      "asset": "g_ratio_3_4",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_5-Gaussian",
+      "asset": "g_ratio_3_5",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_6-Gaussian",
+      "asset": "g_ratio_3_6",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_75-Gaussian",
+      "asset": "g_ratio_3_75",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_9-Gaussian",
+      "asset": "g_ratio_3_9",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_99-Gaussian",
+      "asset": "g_ratio_3_99",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_999999-Gaussian",
+      "asset": "g_ratio_3_999999",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_4_000001-Gaussian",
+      "asset": "g_ratio_4_000001",
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "empty-Gaussian",
+      "asset": null,
+      "companions": [],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "pair-Gaussian",
+      "asset": "constant",
+      "companions": [
+        "hundred"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "weighted-Gaussian",
+      "asset": "ones100",
+      "companions": [
+        "hundred"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mixed-Gaussian",
+      "asset": "signed",
+      "companions": [
+        "ramp"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate-Gaussian",
+      "asset": "constant",
+      "companions": [
+        "constant",
+        "constant"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split103-Gaussian",
+      "asset": "ones49",
+      "companions": [
+        "ones54"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split106-Gaussian",
+      "asset": "ones103",
+      "companions": [
+        "constant"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate103-Gaussian",
+      "asset": "ones103",
+      "companions": [
+        "ones103"
+      ],
+      "style": "Gaussian"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-None-Gaussian",
+      "asset": null,
+      "style": "Gaussian",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-constant-Gaussian",
+      "asset": "constant",
+      "style": "Gaussian",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-outlier-Gaussian",
+      "asset": "outlier",
+      "style": "Gaussian",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "flat-Mean",
+      "asset": "flat",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "constant-Mean",
+      "asset": "constant",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "two-Mean",
+      "asset": "two",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "signed-Mean",
+      "asset": "signed",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ramp-Mean",
+      "asset": "ramp",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "outlier-Mean",
+      "asset": "outlier",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "negative-Mean",
+      "asset": "negative",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "huge-Mean",
+      "asset": "huge",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike3-Mean",
+      "asset": "spike3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike4-Mean",
+      "asset": "spike4",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike5-Mean",
+      "asset": "spike5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike6-Mean",
+      "asset": "spike6",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike7-Mean",
+      "asset": "spike7",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike8-Mean",
+      "asset": "spike8",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike9-Mean",
+      "asset": "spike9",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike10-Mean",
+      "asset": "spike10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "asymmetric-Mean",
+      "asset": "asymmetric",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "tinyneg-Mean",
+      "asset": "tinyneg",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "minus_two-Mean",
+      "asset": "minus_two",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones100-Mean",
+      "asset": "ones100",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "hundred-Mean",
+      "asset": "hundred",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "gauss_limit-Mean",
+      "asset": "gauss_limit",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mean_limit-Mean",
+      "asset": "mean_limit",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "radius_limit-Mean",
+      "asset": "radius_limit",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones103-Mean",
+      "asset": "ones103",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones49-Mean",
+      "asset": "ones49",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones54-Mean",
+      "asset": "ones54",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "nearly-Mean",
+      "asset": "nearly",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "near_zero-Mean",
+      "asset": "near_zero",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "crossing-Mean",
+      "asset": "crossing",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratios-Mean",
+      "asset": "ratios",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_12-Mean",
+      "asset": "spread_small_12",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_10-Mean",
+      "asset": "spread_small_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_8-Mean",
+      "asset": "spread_small_8",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_6-Mean",
+      "asset": "spread_small_6",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_4-Mean",
+      "asset": "spread_small_4",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_3-Mean",
+      "asset": "spread_small_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_2-Mean",
+      "asset": "spread_small_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_1-Mean",
+      "asset": "spread_small_1",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_12-Mean",
+      "asset": "spread_unit_12",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_10-Mean",
+      "asset": "spread_unit_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_8-Mean",
+      "asset": "spread_unit_8",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_6-Mean",
+      "asset": "spread_unit_6",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_4-Mean",
+      "asset": "spread_unit_4",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_3-Mean",
+      "asset": "spread_unit_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_2-Mean",
+      "asset": "spread_unit_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_1-Mean",
+      "asset": "spread_unit_1",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_12-Mean",
+      "asset": "spread_large_12",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_10-Mean",
+      "asset": "spread_large_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_8-Mean",
+      "asset": "spread_large_8",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_6-Mean",
+      "asset": "spread_large_6",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_4-Mean",
+      "asset": "spread_large_4",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_3-Mean",
+      "asset": "spread_large_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_2-Mean",
+      "asset": "spread_large_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_1-Mean",
+      "asset": "spread_large_1",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_2-Mean",
+      "asset": "ratio_low_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_2-Mean",
+      "asset": "ratio_mid_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_2-Mean",
+      "asset": "ratio_high_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_2-Mean",
+      "asset": "ratio_negative_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_3-Mean",
+      "asset": "ratio_low_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_3-Mean",
+      "asset": "ratio_mid_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_3-Mean",
+      "asset": "ratio_high_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_3-Mean",
+      "asset": "ratio_negative_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_5-Mean",
+      "asset": "ratio_low_5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_5-Mean",
+      "asset": "ratio_mid_5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_5-Mean",
+      "asset": "ratio_high_5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_5-Mean",
+      "asset": "ratio_negative_5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10-Mean",
+      "asset": "ratio_low_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10-Mean",
+      "asset": "ratio_mid_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10-Mean",
+      "asset": "ratio_high_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10-Mean",
+      "asset": "ratio_negative_10",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_19-Mean",
+      "asset": "ratio_low_19",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_19-Mean",
+      "asset": "ratio_mid_19",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_19-Mean",
+      "asset": "ratio_high_19",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_19-Mean",
+      "asset": "ratio_negative_19",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_20-Mean",
+      "asset": "ratio_low_20",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_20-Mean",
+      "asset": "ratio_mid_20",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_20-Mean",
+      "asset": "ratio_high_20",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_20-Mean",
+      "asset": "ratio_negative_20",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_21-Mean",
+      "asset": "ratio_low_21",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_21-Mean",
+      "asset": "ratio_mid_21",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_21-Mean",
+      "asset": "ratio_high_21",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_21-Mean",
+      "asset": "ratio_negative_21",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_50-Mean",
+      "asset": "ratio_low_50",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_50-Mean",
+      "asset": "ratio_mid_50",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_50-Mean",
+      "asset": "ratio_high_50",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_50-Mean",
+      "asset": "ratio_negative_50",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100-Mean",
+      "asset": "ratio_low_100",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100-Mean",
+      "asset": "ratio_mid_100",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100-Mean",
+      "asset": "ratio_high_100",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100-Mean",
+      "asset": "ratio_negative_100",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_1000-Mean",
+      "asset": "ratio_low_1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_1000-Mean",
+      "asset": "ratio_mid_1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_1000-Mean",
+      "asset": "ratio_high_1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_1000-Mean",
+      "asset": "ratio_negative_1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10000-Mean",
+      "asset": "ratio_low_10000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10000-Mean",
+      "asset": "ratio_mid_10000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10000-Mean",
+      "asset": "ratio_high_10000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10000-Mean",
+      "asset": "ratio_negative_10000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100000-Mean",
+      "asset": "ratio_low_100000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100000-Mean",
+      "asset": "ratio_mid_100000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100000-Mean",
+      "asset": "ratio_high_100000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100000-Mean",
+      "asset": "ratio_negative_100000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_below3-Mean",
+      "asset": "g_below3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_above3-Mean",
+      "asset": "g_above3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_four-Mean",
+      "asset": "g_four",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_below1000-Mean",
+      "asset": "r_below1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_above1000-Mean",
+      "asset": "r_above1000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_2000-Mean",
+      "asset": "r_2000",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_small-Mean",
+      "asset": "r_scaled_small",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_large-Mean",
+      "asset": "r_scaled_large",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_1-Mean",
+      "asset": "g_ratio_3_1",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_2-Mean",
+      "asset": "g_ratio_3_2",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3-Mean",
+      "asset": "g_ratio_3_3",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3333333-Mean",
+      "asset": "g_ratio_3_3333333",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_4-Mean",
+      "asset": "g_ratio_3_4",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_5-Mean",
+      "asset": "g_ratio_3_5",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_6-Mean",
+      "asset": "g_ratio_3_6",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_75-Mean",
+      "asset": "g_ratio_3_75",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_9-Mean",
+      "asset": "g_ratio_3_9",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_99-Mean",
+      "asset": "g_ratio_3_99",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_999999-Mean",
+      "asset": "g_ratio_3_999999",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_4_000001-Mean",
+      "asset": "g_ratio_4_000001",
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "empty-Mean",
+      "asset": null,
+      "companions": [],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "pair-Mean",
+      "asset": "constant",
+      "companions": [
+        "hundred"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "weighted-Mean",
+      "asset": "ones100",
+      "companions": [
+        "hundred"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mixed-Mean",
+      "asset": "signed",
+      "companions": [
+        "ramp"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate-Mean",
+      "asset": "constant",
+      "companions": [
+        "constant",
+        "constant"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split103-Mean",
+      "asset": "ones49",
+      "companions": [
+        "ones54"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split106-Mean",
+      "asset": "ones103",
+      "companions": [
+        "constant"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate103-Mean",
+      "asset": "ones103",
+      "companions": [
+        "ones103"
+      ],
+      "style": "Mean"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-None-Mean",
+      "asset": null,
+      "style": "Mean",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-constant-Mean",
+      "asset": "constant",
+      "style": "Mean",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-outlier-Mean",
+      "asset": "outlier",
+      "style": "Mean",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "flat-MinRadius",
+      "asset": "flat",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "constant-MinRadius",
+      "asset": "constant",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "two-MinRadius",
+      "asset": "two",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "signed-MinRadius",
+      "asset": "signed",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ramp-MinRadius",
+      "asset": "ramp",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "outlier-MinRadius",
+      "asset": "outlier",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "negative-MinRadius",
+      "asset": "negative",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "huge-MinRadius",
+      "asset": "huge",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike3-MinRadius",
+      "asset": "spike3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike4-MinRadius",
+      "asset": "spike4",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike5-MinRadius",
+      "asset": "spike5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike6-MinRadius",
+      "asset": "spike6",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike7-MinRadius",
+      "asset": "spike7",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike8-MinRadius",
+      "asset": "spike8",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike9-MinRadius",
+      "asset": "spike9",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike10-MinRadius",
+      "asset": "spike10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "asymmetric-MinRadius",
+      "asset": "asymmetric",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "tinyneg-MinRadius",
+      "asset": "tinyneg",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "minus_two-MinRadius",
+      "asset": "minus_two",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones100-MinRadius",
+      "asset": "ones100",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "hundred-MinRadius",
+      "asset": "hundred",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "gauss_limit-MinRadius",
+      "asset": "gauss_limit",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mean_limit-MinRadius",
+      "asset": "mean_limit",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "radius_limit-MinRadius",
+      "asset": "radius_limit",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones103-MinRadius",
+      "asset": "ones103",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones49-MinRadius",
+      "asset": "ones49",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones54-MinRadius",
+      "asset": "ones54",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "nearly-MinRadius",
+      "asset": "nearly",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "near_zero-MinRadius",
+      "asset": "near_zero",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "crossing-MinRadius",
+      "asset": "crossing",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratios-MinRadius",
+      "asset": "ratios",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_12-MinRadius",
+      "asset": "spread_small_12",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_10-MinRadius",
+      "asset": "spread_small_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_8-MinRadius",
+      "asset": "spread_small_8",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_6-MinRadius",
+      "asset": "spread_small_6",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_4-MinRadius",
+      "asset": "spread_small_4",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_3-MinRadius",
+      "asset": "spread_small_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_2-MinRadius",
+      "asset": "spread_small_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_1-MinRadius",
+      "asset": "spread_small_1",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_12-MinRadius",
+      "asset": "spread_unit_12",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_10-MinRadius",
+      "asset": "spread_unit_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_8-MinRadius",
+      "asset": "spread_unit_8",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_6-MinRadius",
+      "asset": "spread_unit_6",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_4-MinRadius",
+      "asset": "spread_unit_4",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_3-MinRadius",
+      "asset": "spread_unit_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_2-MinRadius",
+      "asset": "spread_unit_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_1-MinRadius",
+      "asset": "spread_unit_1",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_12-MinRadius",
+      "asset": "spread_large_12",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_10-MinRadius",
+      "asset": "spread_large_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_8-MinRadius",
+      "asset": "spread_large_8",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_6-MinRadius",
+      "asset": "spread_large_6",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_4-MinRadius",
+      "asset": "spread_large_4",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_3-MinRadius",
+      "asset": "spread_large_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_2-MinRadius",
+      "asset": "spread_large_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_1-MinRadius",
+      "asset": "spread_large_1",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_2-MinRadius",
+      "asset": "ratio_low_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_2-MinRadius",
+      "asset": "ratio_mid_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_2-MinRadius",
+      "asset": "ratio_high_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_2-MinRadius",
+      "asset": "ratio_negative_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_3-MinRadius",
+      "asset": "ratio_low_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_3-MinRadius",
+      "asset": "ratio_mid_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_3-MinRadius",
+      "asset": "ratio_high_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_3-MinRadius",
+      "asset": "ratio_negative_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_5-MinRadius",
+      "asset": "ratio_low_5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_5-MinRadius",
+      "asset": "ratio_mid_5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_5-MinRadius",
+      "asset": "ratio_high_5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_5-MinRadius",
+      "asset": "ratio_negative_5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10-MinRadius",
+      "asset": "ratio_low_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10-MinRadius",
+      "asset": "ratio_mid_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10-MinRadius",
+      "asset": "ratio_high_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10-MinRadius",
+      "asset": "ratio_negative_10",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_19-MinRadius",
+      "asset": "ratio_low_19",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_19-MinRadius",
+      "asset": "ratio_mid_19",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_19-MinRadius",
+      "asset": "ratio_high_19",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_19-MinRadius",
+      "asset": "ratio_negative_19",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_20-MinRadius",
+      "asset": "ratio_low_20",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_20-MinRadius",
+      "asset": "ratio_mid_20",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_20-MinRadius",
+      "asset": "ratio_high_20",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_20-MinRadius",
+      "asset": "ratio_negative_20",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_21-MinRadius",
+      "asset": "ratio_low_21",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_21-MinRadius",
+      "asset": "ratio_mid_21",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_21-MinRadius",
+      "asset": "ratio_high_21",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_21-MinRadius",
+      "asset": "ratio_negative_21",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_50-MinRadius",
+      "asset": "ratio_low_50",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_50-MinRadius",
+      "asset": "ratio_mid_50",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_50-MinRadius",
+      "asset": "ratio_high_50",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_50-MinRadius",
+      "asset": "ratio_negative_50",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100-MinRadius",
+      "asset": "ratio_low_100",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100-MinRadius",
+      "asset": "ratio_mid_100",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100-MinRadius",
+      "asset": "ratio_high_100",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100-MinRadius",
+      "asset": "ratio_negative_100",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_1000-MinRadius",
+      "asset": "ratio_low_1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_1000-MinRadius",
+      "asset": "ratio_mid_1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_1000-MinRadius",
+      "asset": "ratio_high_1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_1000-MinRadius",
+      "asset": "ratio_negative_1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10000-MinRadius",
+      "asset": "ratio_low_10000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10000-MinRadius",
+      "asset": "ratio_mid_10000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10000-MinRadius",
+      "asset": "ratio_high_10000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10000-MinRadius",
+      "asset": "ratio_negative_10000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100000-MinRadius",
+      "asset": "ratio_low_100000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100000-MinRadius",
+      "asset": "ratio_mid_100000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100000-MinRadius",
+      "asset": "ratio_high_100000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100000-MinRadius",
+      "asset": "ratio_negative_100000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_below3-MinRadius",
+      "asset": "g_below3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_above3-MinRadius",
+      "asset": "g_above3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_four-MinRadius",
+      "asset": "g_four",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_below1000-MinRadius",
+      "asset": "r_below1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_above1000-MinRadius",
+      "asset": "r_above1000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_2000-MinRadius",
+      "asset": "r_2000",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_small-MinRadius",
+      "asset": "r_scaled_small",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_large-MinRadius",
+      "asset": "r_scaled_large",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_1-MinRadius",
+      "asset": "g_ratio_3_1",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_2-MinRadius",
+      "asset": "g_ratio_3_2",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3-MinRadius",
+      "asset": "g_ratio_3_3",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3333333-MinRadius",
+      "asset": "g_ratio_3_3333333",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_4-MinRadius",
+      "asset": "g_ratio_3_4",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_5-MinRadius",
+      "asset": "g_ratio_3_5",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_6-MinRadius",
+      "asset": "g_ratio_3_6",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_75-MinRadius",
+      "asset": "g_ratio_3_75",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_9-MinRadius",
+      "asset": "g_ratio_3_9",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_99-MinRadius",
+      "asset": "g_ratio_3_99",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_999999-MinRadius",
+      "asset": "g_ratio_3_999999",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_4_000001-MinRadius",
+      "asset": "g_ratio_4_000001",
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "empty-MinRadius",
+      "asset": null,
+      "companions": [],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "pair-MinRadius",
+      "asset": "constant",
+      "companions": [
+        "hundred"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "weighted-MinRadius",
+      "asset": "ones100",
+      "companions": [
+        "hundred"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mixed-MinRadius",
+      "asset": "signed",
+      "companions": [
+        "ramp"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate-MinRadius",
+      "asset": "constant",
+      "companions": [
+        "constant",
+        "constant"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split103-MinRadius",
+      "asset": "ones49",
+      "companions": [
+        "ones54"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split106-MinRadius",
+      "asset": "ones103",
+      "companions": [
+        "constant"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate103-MinRadius",
+      "asset": "ones103",
+      "companions": [
+        "ones103"
+      ],
+      "style": "MinRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-None-MinRadius",
+      "asset": null,
+      "style": "MinRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-constant-MinRadius",
+      "asset": "constant",
+      "style": "MinRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-outlier-MinRadius",
+      "asset": "outlier",
+      "style": "MinRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "flat-MaxRadius",
+      "asset": "flat",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "constant-MaxRadius",
+      "asset": "constant",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "two-MaxRadius",
+      "asset": "two",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "signed-MaxRadius",
+      "asset": "signed",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ramp-MaxRadius",
+      "asset": "ramp",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "outlier-MaxRadius",
+      "asset": "outlier",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "negative-MaxRadius",
+      "asset": "negative",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "huge-MaxRadius",
+      "asset": "huge",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike3-MaxRadius",
+      "asset": "spike3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike4-MaxRadius",
+      "asset": "spike4",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike5-MaxRadius",
+      "asset": "spike5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike6-MaxRadius",
+      "asset": "spike6",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike7-MaxRadius",
+      "asset": "spike7",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike8-MaxRadius",
+      "asset": "spike8",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike9-MaxRadius",
+      "asset": "spike9",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spike10-MaxRadius",
+      "asset": "spike10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "asymmetric-MaxRadius",
+      "asset": "asymmetric",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "tinyneg-MaxRadius",
+      "asset": "tinyneg",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "minus_two-MaxRadius",
+      "asset": "minus_two",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones100-MaxRadius",
+      "asset": "ones100",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "hundred-MaxRadius",
+      "asset": "hundred",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "gauss_limit-MaxRadius",
+      "asset": "gauss_limit",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mean_limit-MaxRadius",
+      "asset": "mean_limit",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "radius_limit-MaxRadius",
+      "asset": "radius_limit",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones103-MaxRadius",
+      "asset": "ones103",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones49-MaxRadius",
+      "asset": "ones49",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ones54-MaxRadius",
+      "asset": "ones54",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "nearly-MaxRadius",
+      "asset": "nearly",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "near_zero-MaxRadius",
+      "asset": "near_zero",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "crossing-MaxRadius",
+      "asset": "crossing",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratios-MaxRadius",
+      "asset": "ratios",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_12-MaxRadius",
+      "asset": "spread_small_12",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_10-MaxRadius",
+      "asset": "spread_small_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_8-MaxRadius",
+      "asset": "spread_small_8",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_6-MaxRadius",
+      "asset": "spread_small_6",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_4-MaxRadius",
+      "asset": "spread_small_4",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_3-MaxRadius",
+      "asset": "spread_small_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_2-MaxRadius",
+      "asset": "spread_small_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_small_1-MaxRadius",
+      "asset": "spread_small_1",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_12-MaxRadius",
+      "asset": "spread_unit_12",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_10-MaxRadius",
+      "asset": "spread_unit_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_8-MaxRadius",
+      "asset": "spread_unit_8",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_6-MaxRadius",
+      "asset": "spread_unit_6",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_4-MaxRadius",
+      "asset": "spread_unit_4",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_3-MaxRadius",
+      "asset": "spread_unit_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_2-MaxRadius",
+      "asset": "spread_unit_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_unit_1-MaxRadius",
+      "asset": "spread_unit_1",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_12-MaxRadius",
+      "asset": "spread_large_12",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_10-MaxRadius",
+      "asset": "spread_large_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_8-MaxRadius",
+      "asset": "spread_large_8",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_6-MaxRadius",
+      "asset": "spread_large_6",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_4-MaxRadius",
+      "asset": "spread_large_4",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_3-MaxRadius",
+      "asset": "spread_large_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_2-MaxRadius",
+      "asset": "spread_large_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "spread_large_1-MaxRadius",
+      "asset": "spread_large_1",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_2-MaxRadius",
+      "asset": "ratio_low_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_2-MaxRadius",
+      "asset": "ratio_mid_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_2-MaxRadius",
+      "asset": "ratio_high_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_2-MaxRadius",
+      "asset": "ratio_negative_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_3-MaxRadius",
+      "asset": "ratio_low_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_3-MaxRadius",
+      "asset": "ratio_mid_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_3-MaxRadius",
+      "asset": "ratio_high_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_3-MaxRadius",
+      "asset": "ratio_negative_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_5-MaxRadius",
+      "asset": "ratio_low_5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_5-MaxRadius",
+      "asset": "ratio_mid_5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_5-MaxRadius",
+      "asset": "ratio_high_5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_5-MaxRadius",
+      "asset": "ratio_negative_5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10-MaxRadius",
+      "asset": "ratio_low_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10-MaxRadius",
+      "asset": "ratio_mid_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10-MaxRadius",
+      "asset": "ratio_high_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10-MaxRadius",
+      "asset": "ratio_negative_10",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_19-MaxRadius",
+      "asset": "ratio_low_19",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_19-MaxRadius",
+      "asset": "ratio_mid_19",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_19-MaxRadius",
+      "asset": "ratio_high_19",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_19-MaxRadius",
+      "asset": "ratio_negative_19",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_20-MaxRadius",
+      "asset": "ratio_low_20",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_20-MaxRadius",
+      "asset": "ratio_mid_20",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_20-MaxRadius",
+      "asset": "ratio_high_20",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_20-MaxRadius",
+      "asset": "ratio_negative_20",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_21-MaxRadius",
+      "asset": "ratio_low_21",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_21-MaxRadius",
+      "asset": "ratio_mid_21",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_21-MaxRadius",
+      "asset": "ratio_high_21",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_21-MaxRadius",
+      "asset": "ratio_negative_21",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_50-MaxRadius",
+      "asset": "ratio_low_50",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_50-MaxRadius",
+      "asset": "ratio_mid_50",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_50-MaxRadius",
+      "asset": "ratio_high_50",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_50-MaxRadius",
+      "asset": "ratio_negative_50",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100-MaxRadius",
+      "asset": "ratio_low_100",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100-MaxRadius",
+      "asset": "ratio_mid_100",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100-MaxRadius",
+      "asset": "ratio_high_100",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100-MaxRadius",
+      "asset": "ratio_negative_100",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_1000-MaxRadius",
+      "asset": "ratio_low_1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_1000-MaxRadius",
+      "asset": "ratio_mid_1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_1000-MaxRadius",
+      "asset": "ratio_high_1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_1000-MaxRadius",
+      "asset": "ratio_negative_1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_10000-MaxRadius",
+      "asset": "ratio_low_10000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_10000-MaxRadius",
+      "asset": "ratio_mid_10000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_10000-MaxRadius",
+      "asset": "ratio_high_10000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_10000-MaxRadius",
+      "asset": "ratio_negative_10000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_low_100000-MaxRadius",
+      "asset": "ratio_low_100000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_mid_100000-MaxRadius",
+      "asset": "ratio_mid_100000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_high_100000-MaxRadius",
+      "asset": "ratio_high_100000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "ratio_negative_100000-MaxRadius",
+      "asset": "ratio_negative_100000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_below3-MaxRadius",
+      "asset": "g_below3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_above3-MaxRadius",
+      "asset": "g_above3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_four-MaxRadius",
+      "asset": "g_four",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_below1000-MaxRadius",
+      "asset": "r_below1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_above1000-MaxRadius",
+      "asset": "r_above1000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_2000-MaxRadius",
+      "asset": "r_2000",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_small-MaxRadius",
+      "asset": "r_scaled_small",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "r_scaled_large-MaxRadius",
+      "asset": "r_scaled_large",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_1-MaxRadius",
+      "asset": "g_ratio_3_1",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_2-MaxRadius",
+      "asset": "g_ratio_3_2",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3-MaxRadius",
+      "asset": "g_ratio_3_3",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_3333333-MaxRadius",
+      "asset": "g_ratio_3_3333333",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_4-MaxRadius",
+      "asset": "g_ratio_3_4",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_5-MaxRadius",
+      "asset": "g_ratio_3_5",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_6-MaxRadius",
+      "asset": "g_ratio_3_6",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_75-MaxRadius",
+      "asset": "g_ratio_3_75",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_9-MaxRadius",
+      "asset": "g_ratio_3_9",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_99-MaxRadius",
+      "asset": "g_ratio_3_99",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_3_999999-MaxRadius",
+      "asset": "g_ratio_3_999999",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "g_ratio_4_000001-MaxRadius",
+      "asset": "g_ratio_4_000001",
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "empty-MaxRadius",
+      "asset": null,
+      "companions": [],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "pair-MaxRadius",
+      "asset": "constant",
+      "companions": [
+        "hundred"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "weighted-MaxRadius",
+      "asset": "ones100",
+      "companions": [
+        "hundred"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "mixed-MaxRadius",
+      "asset": "signed",
+      "companions": [
+        "ramp"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate-MaxRadius",
+      "asset": "constant",
+      "companions": [
+        "constant",
+        "constant"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split103-MaxRadius",
+      "asset": "ones49",
+      "companions": [
+        "ones54"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "split106-MaxRadius",
+      "asset": "ones103",
+      "companions": [
+        "constant"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "duplicate103-MaxRadius",
+      "asset": "ones103",
+      "companions": [
+        "ones103"
+      ],
+      "style": "MaxRadius"
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-None-MaxRadius",
+      "asset": null,
+      "style": "MaxRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-constant-MaxRadius",
+      "asset": "constant",
+      "style": "MaxRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    },
+    {
+      "op": "curvature_auto_sdk",
+      "id": "preserve-outlier-MaxRadius",
+      "asset": "outlier",
+      "style": "MaxRadius",
+      "initial": [
+        [
+          -7,
+          11
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          13
+        ]
+      ]
+    }
+  ]
+}

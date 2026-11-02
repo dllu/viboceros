@@ -113,6 +113,7 @@ pub(super) fn run(
                 "Undo",
                 "Redo",
                 "MaxRange",
+                "AutoRange",
             ]
             .contains(&s.as_str())
         })
@@ -150,8 +151,8 @@ pub(super) fn run(
             if execute {
                 let command = if step == "CurvatureAnalysis" {
                     f.start_command()
-                } else if step == "MaxRange" {
-                    "CurvatureAnalysis MaxRange".into()
+                } else if matches!(step.as_str(), "MaxRange" | "AutoRange") {
+                    format!("CurvatureAnalysis {step}")
                 } else {
                     step.clone()
                 };

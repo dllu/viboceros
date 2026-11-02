@@ -1,5 +1,5 @@
 use super::*;
-pub(super) const USAGE: &str = "CurvatureAnalysis [Add|Remove|MaxRange] [Style=Gaussian|Mean|MinRadius|MaxRadius] [Range=blue,red] [ShowIsoCurves=Yes|No] | CurvatureAnalysisOff";
+pub(super) const USAGE: &str = "CurvatureAnalysis [Add|Remove|MaxRange|AutoRange] [Style=Gaussian|Mean|MinRadius|MaxRadius] [Range=blue,red] [ShowIsoCurves=Yes|No] | CurvatureAnalysisOff";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
@@ -37,6 +37,7 @@ pub(super) enum Action {
     Remove,
     Configure,
     MaxRange,
+    AutoRange,
 }
 
 pub(super) fn parse(options: &mut Options, args: &[&str]) -> Result<Action, CommandError> {
@@ -80,6 +81,7 @@ pub(super) fn parse(options: &mut Options, args: &[&str]) -> Result<Action, Comm
                 "add" => Action::Add,
                 "remove" => Action::Remove,
                 "maxrange" => Action::MaxRange,
+                "autorange" => Action::AutoRange,
                 _ => return Err(CommandError::Usage(USAGE)),
             };
             if action.replace(next).is_some() {

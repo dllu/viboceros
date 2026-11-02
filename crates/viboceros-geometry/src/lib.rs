@@ -40,6 +40,7 @@ mod analysis_color;
 mod circular;
 mod curvature_color;
 mod curvature_comb;
+mod curvature_range;
 pub use curvature_color::{CurvatureColorMapping, CurvatureStyle};
 pub use tessellation::CurvatureMesh;
 mod draft_angle;

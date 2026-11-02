@@ -88,6 +88,8 @@ fn panel_controls_preserve_point_getters_and_typed_style_survives_picking() {
     assert_eq!(app.active_command, active);
     app.set_analysis_display("CurvatureAnalysis MaxRange");
     assert_eq!(app.active_command, active);
+    app.set_analysis_display("CurvatureAnalysis AutoRange");
+    assert_eq!(app.active_command, active);
     app.set_analysis_display("CurvatureAnalysisOff");
     assert_eq!(app.active_command, active);
 }

@@ -10,7 +10,7 @@ impl VibocerosApp {
         let mut options = view.options;
         let mut open = true;
         let mut action = None;
-        let mut max_range = false;
+        let mut range_action = None;
         egui::Window::new("Curvature Analysis")
             .open(&mut open)
             .show(root.ctx(), |ui| {
@@ -32,9 +32,14 @@ impl VibocerosApp {
                     ui.add(egui::DragValue::new(&mut options.ranges[i][1]).speed(0.001));
                 });
                 ui.checkbox(&mut options.show_isocurves, "Show edges and isocurves");
-                if ui.button("Max range").clicked() {
-                    max_range = true;
-                }
+                ui.horizontal(|ui| {
+                    if ui.button("Auto range").clicked() {
+                        range_action = Some("CurvatureAnalysis AutoRange");
+                    }
+                    if ui.button("Max range").clicked() {
+                        range_action = Some("CurvatureAnalysis MaxRange");
+                    }
+                });
                 ui.horizontal(|ui| {
                     if ui.button("Add objects").clicked() {
                         action = Some("CurvatureAnalysis Add");
@@ -65,8 +70,8 @@ impl VibocerosApp {
                 if options.show_isocurves { "Yes" } else { "No" }
             ));
         }
-        if max_range {
-            self.set_analysis_display("CurvatureAnalysis MaxRange");
+        if let Some(action) = range_action {
+            self.set_analysis_display(action);
         }
         if let Some(action) = action {
             self.cancel_interactive_command(false);
