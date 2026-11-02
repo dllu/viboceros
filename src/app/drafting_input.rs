@@ -147,6 +147,10 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::DraftPullPoints { start } => {
+                return self.accept_draft_pull_point(start, point);
+            }
+            InteractiveCommand::DraftPullCurve => return false,
             InteractiveCommand::ProjectPlane { .. } => {
                 return self.accept_project_plane_point(point);
             }

@@ -238,6 +238,7 @@ impl VibocerosApp {
                     || self.picking_surface_offset_curve())
                 || self.picking_array_curve()
                 || self.picking_curve_array()
+                || self.picking_draft_pull_curve()
                 || self.picking_flow_guide()
                 || self.picking_spiral_rail()
                 || self.picking_conic_curve()

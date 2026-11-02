@@ -1,0 +1,817 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-WorldZ-0",
+      "mode": "WorldZ",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-WorldZ-1",
+      "mode": "WorldZ",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-WorldZ-2",
+      "mode": "WorldZ",
+      "plane": [
+        1,
+        0,
+        0
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-CPlaneZ-0",
+      "mode": "CPlaneZ",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-CPlaneZ-1",
+      "mode": "CPlaneZ",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-CPlaneZ-2",
+      "mode": "CPlaneZ",
+      "plane": [
+        1,
+        0,
+        0
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-View-0",
+      "mode": "View",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-View-1",
+      "mode": "View",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-View-2",
+      "mode": "View",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0.3333333333333333,
+        0.6666666666666666,
+        -0.6666666666666666
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-View-3",
+      "mode": "View",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-TwoPoints-0",
+      "mode": "TwoPoints",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-TwoPoints-1",
+      "mode": "TwoPoints",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-TwoPoints-2",
+      "mode": "TwoPoints",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          3,
+          5,
+          9
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-TwoPoints-3",
+      "mode": "TwoPoints",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.002,
+          0.003,
+          0.006
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-TwoPoints-cancel",
+      "mode": "TwoPoints",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": true
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Line-0",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Line",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Line-1",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Line",
+      "edge": 0,
+      "reverse": true,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Polyline-0",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Polyline",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Polyline-1",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Polyline",
+      "edge": 0,
+      "reverse": true,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Arc-0",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Arc",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Arc-1",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Arc",
+      "edge": 0,
+      "reverse": true,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-Line-other",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          2,
+          5,
+          9
+        ],
+        [
+          8,
+          4,
+          7
+        ]
+      ],
+      "curve": "Line",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-edge-0",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "BoxEdge",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-edge-4",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "BoxEdge",
+      "edge": 4,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-edge-7",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "BoxEdge",
+      "edge": 7,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "pull-Curve-cancel",
+      "mode": "Curve",
+      "plane": [
+        2,
+        3,
+        6
+      ],
+      "view": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          3,
+          5,
+          9
+        ]
+      ],
+      "curve": "Line",
+      "edge": 0,
+      "reverse": false,
+      "cancel": true
+    }
+  ]
+}

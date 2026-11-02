@@ -1,5 +1,7 @@
 //! Nonmodal false-color analysis controls use the command registry's state.
 use super::*;
+mod direction;
+pub(super) use direction::Source;
 
 impl VibocerosApp {
     pub(super) fn show_draft_angle_analysis(&mut self, root: &mut egui::Ui) {
@@ -9,6 +11,8 @@ impl VibocerosApp {
         let mut options = view.options;
         let mut open = true;
         let mut action = None;
+        let mut source = self.draft_pull_source.clone();
+        let mut set_direction = false;
         egui::Window::new("Draft Angle Analysis")
             .open(&mut open)
             .show(root.ctx(), |ui| {
@@ -31,8 +35,26 @@ impl VibocerosApp {
                             .suffix("°"),
                     );
                 });
+                ui.label("Set direction by");
+                egui::ComboBox::from_id_salt("draft_pull_source")
+                    .selected_text(source.label())
+                    .show_ui(ui, |ui| {
+                        for choice in Source::STANDARD {
+                            ui.selectable_value(&mut source, choice.clone(), choice.label());
+                        }
+                        for name in self.named_cplanes.names() {
+                            ui.selectable_value(
+                                &mut source,
+                                Source::NamedCPlane(name.to_owned()),
+                                name,
+                            );
+                        }
+                    });
+                if ui.button("Set direction…").clicked() {
+                    set_direction = true;
+                }
                 ui.horizontal(|ui| {
-                    ui.label("Pull direction");
+                    ui.label("Pull vector");
                     for c in &mut options.up {
                         ui.add(egui::DragValue::new(c).speed(0.05));
                     }
@@ -48,6 +70,9 @@ impl VibocerosApp {
                 });
             });
         if !open {
+            if self.picking_draft_pull() {
+                self.cancel_interactive_command(false);
+            }
             self.set_analysis_display("DraftAngleAnalysisOff");
         } else if options != view.options {
             self.set_analysis_display(&format!(
@@ -59,6 +84,14 @@ impl VibocerosApp {
                 options.up[2],
                 if options.show_isocurves { "Yes" } else { "No" }
             ));
+        }
+        if open {
+            let picker = matches!(source, Source::TwoPoints | Source::Curve);
+            if set_direction || source != self.draft_pull_source && !picker {
+                self.set_draft_pull_source(source);
+            } else {
+                self.draft_pull_source = source;
+            }
         }
         if let Some(action) = action {
             self.cancel_interactive_command(false);

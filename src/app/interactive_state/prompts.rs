@@ -4,6 +4,15 @@ use super::*;
 impl InteractiveCommand {
     pub(in crate::app) const fn prompt(self) -> &'static str {
         match self {
+            Self::DraftPullPoints { start: None } => {
+                "Draft pull direction: pick the start point (Esc cancels)"
+            }
+            Self::DraftPullPoints { start: Some(_) } => {
+                "Draft pull direction: pick the end point (Esc cancels)"
+            }
+            Self::DraftPullCurve => {
+                "Draft pull direction: select a curve or surface edge (Esc cancels)"
+            }
             Self::SweepPoint => "Sweep1: pick the point end (Esc cancels)",
             Self::LoftPoint => "Loft: pick the point end (Esc cancels)",
             Self::RemapCPlane => {

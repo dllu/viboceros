@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'draft_pull_direction': ('draft_pull_probe', ('draft_pull_controls','draft_pull_input','merge_edges_probe')),
     'curvature_auto_sdk': ('curvature_auto_sdk_probe', ('merge_edges_probe',)),
     'surface_analysis_input': ('analysis_input_probe', ('join_probe','merge_edges_probe')),
     'curvature_analysis': ('curvature_analysis_probe', ('curvature_analysis_controls','join_probe','merge_edges_probe')),
@@ -213,6 +214,10 @@ def stage_helpers(request, source_directory: Path, destination: Path):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'draft_pull_probe' in modules:
+        asset=Path('fixtures/brep_direction/box.3dm')
+        (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+        shutil.copyfile(source_directory/asset,destination/asset)
     if 'curvature_auto_sdk_probe' in modules:
         for op in request['operations']:
             if op.get('op')=='curvature_auto_sdk':

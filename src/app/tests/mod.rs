@@ -67,6 +67,7 @@ mod divide_creases;
 mod domain;
 mod draft_angle;
 mod draft_angle_analysis;
+mod draft_pull;
 mod edge_analysis;
 mod edge_fillet;
 mod edit_points;
@@ -233,6 +234,7 @@ pub(super) fn test_app() -> VibocerosApp {
         document: Document::default(),
         document_path: None,
         commands: CommandRegistry::with_builtins(),
+        draft_pull_source: Default::default(),
         command_input: String::new(),
         command_log: VecDeque::new(),
         command_line: Default::default(),

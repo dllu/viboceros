@@ -187,6 +187,7 @@ mod direction_analysis;
 mod distance;
 mod domain;
 mod draft_angle_analysis;
+mod drafting_controls;
 mod drafting_input;
 mod edge_analysis;
 mod edge_commands;
@@ -341,6 +342,7 @@ pub struct VibocerosApp {
     document: Document,
     document_path: Option<std::path::PathBuf>,
     commands: CommandRegistry,
+    draft_pull_source: draft_angle_analysis::Source,
     command_input: String,
     command_log: VecDeque<String>,
     command_line: command_line::CommandLineState,
@@ -502,6 +504,7 @@ impl VibocerosApp {
             document: Document::default(),
             document_path: None,
             commands: CommandRegistry::with_builtins(),
+            draft_pull_source: Default::default(),
             command_input: String::new(),
             command_log,
             viewports: Viewport::standard_views().into(),
@@ -645,6 +648,9 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.try_draft_pull_command(&input) {
+            return;
+        }
         if self.continue_curve_deviation(&input) {
             return;
         }

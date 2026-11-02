@@ -441,6 +441,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_draft_pull_curve() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
         if self.direction_session.is_some() {
             return None;
         }

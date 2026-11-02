@@ -136,6 +136,9 @@ impl VibocerosApp {
         if self.pick_curve_array(click.object_id, None) {
             return;
         }
+        if self.pick_draft_pull_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_array_curve(click.object_id, None) {
             return;
         }

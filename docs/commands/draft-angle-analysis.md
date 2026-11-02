@@ -25,11 +25,20 @@ subsequent Undo/Redo. Panel display controls preserve active point getters.
 Draft and [curvature analysis](curvature-analysis.md) colors replace each other
 only on the targeted objects.
 
+Set the pull direction from world Z, the active CPlane Z, the view toward the
+camera, two picked points, a curve/edge start tangent, or a named CPlane Z.
+Choosing a frame/view direction updates it immediately; Set direction updates
+it again from the current viewport. Two points and Curve or edge start their
+pickers with Set direction. Escape discards an unfinished pick. Picks use the
+normal point/snapping and curve/edge selection paths and create no geometry.
+
 These console bindings expose panel actions as Viboceros extensions:
 
 ```text
 DraftAngleAnalysis [Add|Remove]
 DraftAngleAnalysis [Range=lower,upper] [Up=x,y,z] [ShowIsoCurves=Yes|No]
+DraftAngleAnalysis Direction=WorldZ|CPlaneZ|View|TwoPoints|Curve
+DraftAngleAnalysis Direction=NamedCPlane plane name
 DraftAngleAnalysisOff
 ```
 
@@ -38,6 +47,11 @@ vector for angular interpretation. Like the public OpenNURBS/RhinoCommon mapping
 nonunit vectors scale the dot products. Command entry with mesh inputs enables
 edges; a subsequent `ShowIsoCurves=No` can hide them. Closing/reopening retains
 preferences within the registry session.
+Two-point picking stores `end - start` without normalization, following the
+native panel; curve/edge picking stores its oriented unit tangent at the start.
+The console direction binding performs the Set action, beginning a picker for
+TwoPoints or Curve. World/CPlane/view/named-frame controls preserve active point
+getters; starting a direction picker begins a new input command.
 
 22 frozen Rhino 8 recipes qualify selection, membership, visibility, settings
 and history for meshes, planar panels, a rational patch, a holed face, box and
@@ -49,8 +63,12 @@ recorded but are not part of the default-settings qualification.
 Application replays cover command-first picks and preselection. Offscreen GPU
 tests cover both color-target formats and all three display modes. This does not
 establish identical tessellation, native pixels, saved-file analysis persistence,
-or general performance parity. Mesh-density controls, point-based pull-direction
-picking and draft-curve extraction remain unimplemented.
+or general performance parity. Another 26 native direction cases cover the five
+choices available in the oracle build, including acknowledged physical surface-edge
+picks and their start tangents. Named CPlanes have application frame tests.
+View captures use unit camera axes; viewport import does not retain nonunit
+camera-direction lengths.
+Mesh-density controls and draft-curve extraction remain unimplemented.
 
 ```sh
 cargo test -p viboceros-command --lib draft_angle_analysis
@@ -58,6 +76,8 @@ cargo test -p viboceros-oracle --test draft_angle_native
 cargo test -p viboceros --bin viboceros draft_angle
 cargo test -p viboceros --bin viboceros false_colors_are_unlit -- --ignored
 python3 -m unittest tools.rhino_oracle.test_draft_angle
+cargo test -p viboceros --bin viboceros draft_pull
+python3 -m unittest tools.rhino_oracle.test_draft_pull
 ```
 
 Reference: [Rhino DraftAngleAnalysis](https://docs.mcneel.com/rhino/8/help/en-us/commands/draftangleanalysis.htm).

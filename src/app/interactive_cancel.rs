@@ -130,7 +130,15 @@ impl VibocerosApp {
                 } else {
                     "Cancelled"
                 };
-            self.push_log(format!("{action} {}", command.name()));
+            let name = if matches!(
+                command,
+                InteractiveCommand::DraftPullPoints { .. } | InteractiveCommand::DraftPullCurve
+            ) {
+                "draft direction pick"
+            } else {
+                command.name()
+            };
+            self.push_log(format!("{action} {name}"));
         }
     }
 }

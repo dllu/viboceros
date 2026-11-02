@@ -1482,6 +1482,9 @@ class OracleClient:
                 accept.append(names[-1])
             interaction = IdlePicker(accept_after_click=accept,
                                      pause_after_click=pause)
+        if any(op.get('op')=='draft_pull_direction' and op.get('curve')=='BoxEdge' for op in request['operations']):
+            from .draft_pull_host import DraftPullPicker
+            interaction=DraftPullPicker(request)
         if any(operation.get("op") in ("group_picking", "mesh_split_picking", "mesh_explode_picking") for operation in request.get("operations", [])):
             from .group_picking import IdlePicker, validate_request
             validate_request(request)

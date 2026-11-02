@@ -90,6 +90,10 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum InteractiveCommand {
+    DraftPullPoints {
+        start: Option<Point3>,
+    },
+    DraftPullCurve,
     LoftPoint,
     SweepPoint,
     FaceCreate {
