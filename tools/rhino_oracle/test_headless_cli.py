@@ -14,11 +14,17 @@ from .__main__ import headless_wrapper_argv
 
 
 class HeadlessCliTests(unittest.TestCase):
-    @unittest.skipUnless(all(shutil.which(name) for name in ['xvfb-run', 'Xvfb', 'i3']),
-                         'Xvfb and i3 are required')
+    @unittest.skipUnless(all(shutil.which(name) for name in ['xvfb-run', 'Xvfb', 'i3', 'wmctrl']),
+                         'Xvfb, i3 and wmctrl are required')
     def test_wrapper_isolates_wayland_sockets_and_cleans_its_runtime(self):
         wrapper = Path(__file__).with_name('run_headless.sh')
-        script = '''import json, os, stat
+        script = '''import json, os, stat, subprocess, time
+for _ in range(100):
+    wm = subprocess.run(['wmctrl', '-m'], capture_output=True, text=True)
+    if wm.returncode == 0: break
+    time.sleep(.05)
+assert wm.returncode == 0, wm.stderr
+assert 'Name: i3' in wm.stdout, wm.stdout
 print(json.dumps(dict(display=os.environ['DISPLAY'],
     headless=os.environ['VIBOCEROS_ORACLE_HEADLESS'],
     runtime=os.environ['XDG_RUNTIME_DIR'],

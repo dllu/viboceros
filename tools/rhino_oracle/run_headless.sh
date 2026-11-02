@@ -29,7 +29,9 @@ xvfb-run -a -s '-screen 0 1920x1080x24' bash -c '
     unset WAYLAND_DISPLAY WAYLAND_SOCKET SWAYSOCK I3SOCK
     export XDG_RUNTIME_DIR="$ORACLE_RUNTIME_DIR"
     export VIBOCEROS_ORACLE_HEADLESS="$DISPLAY"
-    i3 -a -c "$ORACLE_I3_CONFIG" >"$ORACLE_I3_LOG" 2>&1 &
+    # Compositor-specific libraries can mix incompatible xkbcommon versions
+    # with the system i3 binary. Let the window manager use its own libraries.
+    env -u LD_LIBRARY_PATH -u LD_PRELOAD i3 -a -c "$ORACLE_I3_CONFIG" >"$ORACLE_I3_LOG" 2>&1 &
     if [[ $1 == exec ]]; then
         shift
         exec "$@"
