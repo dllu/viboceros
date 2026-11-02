@@ -29,6 +29,7 @@ pub fn view_at(value: &Value, stage: &str) -> ThreeDmNamedView {
         .get("views")
         .map_or(&value["view"], |views| &views[stage]);
     ThreeDmNamedView {
+        camera_axes: None,
         name: "Native outline input".into(),
         projection: if v["perspective"] == true {
             ThreeDmProjection::Perspective

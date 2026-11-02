@@ -30,12 +30,7 @@ impl Viewport {
     }
 
     pub(crate) fn pick_projection(&self) -> Option<viboceros_command::picking::Projection> {
-        // Picking uses the rendered orthonormal frame. File records retain raw
-        // vectors, which can differ from that frame with a locked two-point up.
-        let mut saved = self.named_view_snapshot();
-        saved.camera.camera_up_hint = None;
-        saved.camera.camera_direction_hint = None;
-        let view = Self::named_view_to_3dm(saved, String::new()).ok()?;
+        let view = Self::named_view_to_3dm(self.named_view_snapshot(), String::new()).ok()?;
         viboceros_command::picking::Projection::from_view(&view).ok()
     }
 
@@ -52,13 +47,19 @@ impl Viewport {
         let camera = saved.camera;
         let [width, height] = saved.port_size;
         let aspect = f64::from(width) / f64::from(height);
-        let (projection, location, direction, up, target, frustum) = if camera.kind
+        let (projection, location, direction, up, target, frustum, axes) = if camera.kind
             == ViewKind::Perspective
         {
             let mut view = Self::new(ViewKind::Perspective);
             view.restore_camera(camera);
-            let (_, up, forward) = view.perspective_basis();
+            let (right, up, forward) = view.perspective_basis();
             let location = camera.target - forward * camera.perspective_camera_distance;
+            let frame = Frame3::try_from_directions(
+                point(location)?,
+                vector(right)?,
+                vector(up)?,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?;
             let half_height = camera.frustum_near * (camera.perspective_fov_radians * 0.5).tan();
             let half_width = half_height * aspect;
             let [shift_x, shift_y] = camera.perspective_lens_shift;
@@ -80,6 +81,7 @@ impl Viewport {
                     camera.frustum_near,
                     camera.frustum_far,
                 ],
+                frame.axes(),
             )
         } else {
             let frame = if camera.kind == ViewKind::Plan {
@@ -114,9 +116,11 @@ impl Viewport {
                     camera.frustum_near,
                     camera.frustum_far,
                 ],
+                frame.axes(),
             )
         };
         Ok(ThreeDmNamedView {
+            camera_axes: Some(axes),
             name,
             projection,
             camera_location: point(location)?,
@@ -157,10 +161,11 @@ impl Viewport {
             port_extent(source.screen_port[1], source.screen_port[0]),
             port_extent(source.screen_port[2], source.screen_port[3]),
         ];
-        let forward = NaVector3::from(source.camera_direction.to_array()).normalize();
+        let frame = source.camera_frame()?;
+        let forward = -NaVector3::from(frame.z_axis().as_vector().to_array());
         let up_hint = NaVector3::from(source.camera_up.to_array());
-        let right_axis = forward.cross(&up_hint).normalize();
-        let up_axis = right_axis.cross(&forward).normalize();
+        let right_axis = NaVector3::from(frame.x_axis().as_vector().to_array());
+        let up_axis = NaVector3::from(frame.y_axis().as_vector().to_array());
         let location = NaVector3::from(source.camera_location.to_array());
         let nominal_target = source.target.map_or(location + forward * 50.0, |target| {
             NaVector3::from(target.to_array())

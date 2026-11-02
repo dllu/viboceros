@@ -46,6 +46,7 @@ fn typed_set_view_workflows_match_all_saved_rhino_option_transitions() {
             )
             .unwrap();
             source.camera_location = position(&before["camera_location"]);
+            source.camera_axes = None;
             source.camera_direction = vector(&before["camera_direction"]);
             source.camera_up = vector(&before["camera_up"]);
             source.target = Some(position(&before["camera_target"]));

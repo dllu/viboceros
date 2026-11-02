@@ -1,8 +1,6 @@
 //! Camera context for view-dependent getters and modeling commands.
 use crate::CommandError;
-use viboceros_geometry::{
-    Frame3, MeshOutlineProjection, NurbsCurve, Point3, Tolerance, WeightedPoint3,
-};
+use viboceros_geometry::{Frame3, MeshOutlineProjection, NurbsCurve, Point3, WeightedPoint3};
 use viboceros_io::{ThreeDmNamedView, ThreeDmProjection};
 
 #[derive(Clone, Copy, Debug)]
@@ -15,12 +13,7 @@ pub struct Projection {
 }
 impl Projection {
     pub fn from_view(view: &ThreeDmNamedView) -> Result<Self, CommandError> {
-        let direction = view.camera_direction.normalized_nonzero()?.as_vector();
-        let hint = view.camera_up.normalized_nonzero()?.as_vector();
-        let right = direction.cross(hint)?.normalized_nonzero()?.as_vector();
-        let up = right.cross(direction)?;
-        let frame =
-            Frame3::try_from_directions(view.camera_location, right, up, Tolerance::DEFAULT)?;
+        let frame = view.camera_frame()?;
         let [left, right, bottom, top, near, far] = view.frustum;
         let width =
             (i64::from(view.screen_port[1]) - i64::from(view.screen_port[0])).unsigned_abs() as f64;

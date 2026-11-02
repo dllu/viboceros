@@ -14,6 +14,7 @@ pub(crate) fn captured_view(camera: &serde_json::Value) -> Viewport {
     let [width, height]: [i32; 2] =
         serde_json::from_value(camera["viewport_size"].clone()).unwrap();
     let source = ThreeDmNamedView {
+        camera_axes: None,
         name: "Captured clip camera".into(),
         projection: if camera["two_point_perspective"].as_bool().unwrap() {
             ThreeDmProjection::TwoPointPerspective

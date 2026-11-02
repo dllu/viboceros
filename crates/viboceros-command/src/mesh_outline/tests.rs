@@ -25,6 +25,7 @@ fn later_unbounded_mesh_rolls_back_selection_geometry_and_redo_history() {
         .unwrap();
     let plane = CommandContext::default().construction_plane;
     let view = ThreeDmNamedView {
+        camera_axes: None,
         name: "Atomic outline".into(),
         projection: ThreeDmProjection::Perspective,
         camera_location: p(0., 0., 10.),

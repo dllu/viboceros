@@ -12,6 +12,7 @@ state into document transactions:
 | --- | --- |
 | `viewport/camera` | Projection, drafting rays, camera metadata, and GPU camera coordinates |
 | `viewport/navigation` | Mouse gestures, orbit axes, and camera-vector reset policy |
+| `viboceros-io/three_dm/camera` | Raw camera records, cached optical frames, validation and native bridge conversion |
 | `viewport/extents` | Staged, atomic visible/selected bounds fitting |
 | `viewport/screen` | Shared clipping, containment, and screen-distance predicates |
 | `viewport/selection` | Object filters, click dispatch, and window/crossing selection |

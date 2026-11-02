@@ -12,6 +12,7 @@ fn main() {
 
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     for file in [
+        "view_camera.h",
         "subd.cpp",
         "subd.h",
         "subd_codec.h",

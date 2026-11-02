@@ -77,9 +77,11 @@ typedef struct ViboNamedView {
   const char* name;
   uint8_t projection; // 1 parallel, 2 perspective, 3 two-point perspective
   uint8_t has_target;
+  uint8_t has_camera_axes;
   double camera_location[3];
   double camera_direction[3];
   double camera_up[3];
+  double camera_axes[3][3]; // orthonormal right, up, viewward
   double target[3];
   double cplane_origin[3];
   double cplane_x[3];

@@ -99,6 +99,7 @@ fn directions_match_frozen_owned_native_panel_choices_and_set_actions() {
         let vframe = frame(view);
         let location = point(10., 10., 10.);
         let camera = ThreeDmNamedView {
+            camera_axes: None,
             name: "Owned pull camera".into(),
             projection: ThreeDmProjection::Parallel,
             camera_location: location,

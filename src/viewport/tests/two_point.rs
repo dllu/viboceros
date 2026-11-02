@@ -12,6 +12,7 @@ fn position(value: &serde_json::Value) -> Point3 {
 fn before_camera(row: &serde_json::Value, operation: &serde_json::Value) -> ThreeDmNamedView {
     let [width, height]: [i32; 2] = serde_json::from_value(row["viewport_size"].clone()).unwrap();
     ThreeDmNamedView {
+        camera_axes: None,
         name: "Oracle input".into(),
         projection: if row["projection"] == "Top" {
             ThreeDmProjection::Parallel

@@ -45,6 +45,7 @@ fn camera_vectors_survive_app_files_named_views_and_draft_view_controls() {
             ThreeDmProjection::TwoPointPerspective,
         ] {
             let camera = ThreeDmNamedView {
+                camera_axes: None,
                 name: "Raw".into(),
                 projection,
                 camera_location: point(10., 20., 30.),

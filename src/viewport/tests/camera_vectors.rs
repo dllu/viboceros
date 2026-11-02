@@ -19,6 +19,7 @@ fn xyz(value: &Value) -> [f64; 3] {
 }
 fn camera(value: &Value) -> ThreeDmNamedView {
     ThreeDmNamedView {
+        camera_axes: None,
         name: "Raw camera".into(),
         projection: match value["projection"].as_str().unwrap() {
             "Parallel" => ThreeDmProjection::Parallel,

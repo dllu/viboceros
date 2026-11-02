@@ -71,7 +71,9 @@ and empty groups.
 [Collapsed mesh records](mesh-edit-records.md) from grip edits also retain face
 indices, colors and n-gons in 3DM; STL export rejects zero-area facets atomically.
 The low-level `ThreeDmModel` reader and writer also retain named model views,
-including projection, camera, target, CPlane, and frustum. Unit-converted reads
+including projection, raw camera vectors, cached orthonormal camera axes, target,
+CPlane, and frustum. The cached frame survives skew two-point camera orbits; see
+[camera qualification](oracle/camera-vectors.md). Unit-converted reads
 scale their positions and frustum distances along with model geometry. The
 named construction-plane table retains plane frames, grid and snap spacing, line
 counts, thick-line frequency, and the 3DM depth-buffer flag. It is saved with the

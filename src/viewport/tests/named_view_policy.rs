@@ -30,6 +30,7 @@ fn policy(value: &serde_json::Value) -> NamedViewPolicy {
 pub(super) fn from_row(row: &serde_json::Value) -> ThreeDmNamedView {
     let [width, height]: [i32; 2] = serde_json::from_value(row["viewport_size"].clone()).unwrap();
     ThreeDmNamedView {
+        camera_axes: None,
         name: "Rhino captured view".into(),
         projection: projection(row),
         camera_location: position(&row["camera_location"]),

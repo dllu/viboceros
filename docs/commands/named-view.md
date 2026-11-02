@@ -18,6 +18,8 @@ view history, and 3DM round trips. Off-axis saved targets are retained separatel
 from the camera axis, preserving camera location and projection. Working viewport restoration on file open
 always uses the file's saved state. See the [policy probes](../oracle/cameras.md#named-view-and-world-preset-policy-probes).
 Positive saved target depths below the navigation step limit are also retained.
+Raw camera vectors and the cached orthonormal frame survive file import and
+restore, including skew locked-up cameras after orbit; see [camera archives](../oracle/camera-vectors.md).
 
 `NamedView` or `NamedView List` lists saved names in their current order.
 `NamedView Update Front detail` replaces an existing snapshot; Save rejects a

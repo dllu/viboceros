@@ -8,13 +8,16 @@ use std::slice;
 use thiserror::Error;
 use viboceros_geometry::{
     Brep, CircularArc3, Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface,
-    Point3, PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, Vector3, WeightedPoint3,
+    Point3, PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    WeightedPoint3,
 };
 
 use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
 mod blocks;
+mod camera;
+use camera::{decode_view, encode_view, scale_view, validate_view_camera};
 mod instances;
 pub use blocks::{
     read_3dm_file_with_blocks, read_3dm_file_with_blocks_in_units,
@@ -74,6 +77,9 @@ pub struct ThreeDmNamedView {
     pub camera_location: Point3,
     pub camera_direction: Vector3,
     pub camera_up: Vector3,
+    /// Cached right, up and viewward unit axes, independent of raw camera vectors.
+    /// None derives the frame from camera_direction and camera_up.
+    pub camera_axes: Option<[UnitVector3; 3]>,
     pub target: Option<Point3>,
     pub construction_plane: Frame3,
     /// Left, right, bottom, top, near, and far, in model units.
@@ -429,25 +435,6 @@ fn read_in_units_mode(
     Ok(model)
 }
 
-fn scale_view(view: &mut ThreeDmNamedView, scale: f64) -> Result<(), ThreeDmError> {
-    if scale == 1.0 {
-        return Ok(());
-    }
-    let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
-        Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
-    };
-    view.camera_location = scaled_point(view.camera_location)?;
-    view.target = view.target.map(scaled_point).transpose()?;
-    view.construction_plane = Frame3::try_from_directions(
-        scaled_point(view.construction_plane.origin())?,
-        view.construction_plane.x_axis().as_vector(),
-        view.construction_plane.y_axis().as_vector(),
-        Tolerance::NUMERICAL_VALIDATION,
-    )?;
-    view.frustum = view.frustum.map(|coordinate| coordinate * scale);
-    Ok(())
-}
-
 fn scale_named_cplane(plane: &mut ThreeDmNamedCPlane, scale: f64) -> Result<(), ThreeDmError> {
     if scale == 1.0 {
         return Ok(());
@@ -629,20 +616,7 @@ pub fn write_3dm_file(
         .named_views
         .iter()
         .zip(&named_view_names)
-        .map(|(view, name)| ffi::ViboNamedView {
-            name: name.as_ptr(),
-            projection: view.projection as u8,
-            has_target: u8::from(view.target.is_some()),
-            camera_location: view.camera_location.to_array(),
-            camera_direction: view.camera_direction.to_array(),
-            camera_up: view.camera_up.to_array(),
-            target: view.target.map_or([0.0; 3], Point3::to_array),
-            cplane_origin: view.construction_plane.origin().to_array(),
-            cplane_x: view.construction_plane.x_axis().as_vector().to_array(),
-            cplane_y: view.construction_plane.y_axis().as_vector().to_array(),
-            frustum: view.frustum,
-            screen_port: view.screen_port,
-        })
+        .map(|(view, name)| encode_view(view, name.as_ptr()))
         .collect::<Vec<_>>();
     let named_cplane_names = model
         .named_cplanes
@@ -675,30 +649,7 @@ pub fn write_3dm_file(
         .iter()
         .zip(&current_view_names)
         .map(|(view, name)| ffi::ViboCurrentView {
-            camera: ffi::ViboNamedView {
-                name: name.as_ptr(),
-                projection: view.camera.projection as u8,
-                has_target: u8::from(view.camera.target.is_some()),
-                camera_location: view.camera.camera_location.to_array(),
-                camera_direction: view.camera.camera_direction.to_array(),
-                camera_up: view.camera.camera_up.to_array(),
-                target: view.camera.target.map_or([0.0; 3], Point3::to_array),
-                cplane_origin: view.camera.construction_plane.origin().to_array(),
-                cplane_x: view
-                    .camera
-                    .construction_plane
-                    .x_axis()
-                    .as_vector()
-                    .to_array(),
-                cplane_y: view
-                    .camera
-                    .construction_plane
-                    .y_axis()
-                    .as_vector()
-                    .to_array(),
-                frustum: view.camera.frustum,
-                screen_port: view.camera.screen_port,
-            },
+            camera: encode_view(&view.camera, name.as_ptr()),
             display_mode: view.display_mode as u8,
             maximized: u8::from(view.maximized),
             active: u8::from(view.active),
@@ -1143,33 +1094,6 @@ fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeD
     }
 
     Ok(viewports)
-}
-
-fn decode_view(raw: &ffi::ViboNamedView) -> Result<ThreeDmNamedView, ThreeDmError> {
-    let projection = match raw.projection {
-        1 => ThreeDmProjection::Parallel,
-        2 => ThreeDmProjection::Perspective,
-        3 => ThreeDmProjection::TwoPointPerspective,
-        _ => return Err(ThreeDmError::MalformedBridge("invalid view projection")),
-    };
-    Ok(ThreeDmNamedView {
-        name: c_text(raw.name)?,
-        projection,
-        camera_location: Point3::try_from(raw.camera_location)?,
-        camera_direction: Vector3::try_from(raw.camera_direction)?,
-        camera_up: Vector3::try_from(raw.camera_up)?,
-        target: (raw.has_target != 0)
-            .then(|| Point3::try_from(raw.target))
-            .transpose()?,
-        construction_plane: Frame3::try_from_directions(
-            Point3::try_from(raw.cplane_origin)?,
-            Vector3::try_from(raw.cplane_x)?,
-            Vector3::try_from(raw.cplane_y)?,
-            Tolerance::NUMERICAL_VALIDATION,
-        )?,
-        frustum: raw.frustum,
-        screen_port: raw.screen_port,
-    })
 }
 
 fn decode_object(
@@ -1719,33 +1643,6 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
     Ok(())
 }
 
-fn validate_view_camera(view: &ThreeDmNamedView, description: &str) -> Result<(), ThreeDmError> {
-    if view
-        .camera_direction
-        .cross(view.camera_up)?
-        .normalized_nonzero()
-        .is_err()
-    {
-        return Err(ThreeDmError::InvalidModel(format!(
-            "{description} has a degenerate camera orientation"
-        )));
-    }
-    let [left, right, bottom, top, near, far] = view.frustum;
-    if !view.frustum.iter().all(|value| value.is_finite())
-        || left >= right
-        || bottom >= top
-        || near <= 0.0
-        || near >= far
-        || view.screen_port[0] == view.screen_port[1]
-        || view.screen_port[2] == view.screen_port[3]
-    {
-        return Err(ThreeDmError::InvalidModel(format!(
-            "{description} has an invalid frustum"
-        )));
-    }
-    Ok(())
-}
-
 struct ObjectPayload {
     object_type: c_int,
     degree_u: u32,
@@ -2142,9 +2039,11 @@ mod ffi {
         pub name: *const c_char,
         pub projection: u8,
         pub has_target: u8,
+        pub has_camera_axes: u8,
         pub camera_location: [f64; 3],
         pub camera_direction: [f64; 3],
         pub camera_up: [f64; 3],
+        pub camera_axes: [[f64; 3]; 3],
         pub target: [f64; 3],
         pub cplane_origin: [f64; 3],
         pub cplane_x: [f64; 3],
@@ -2159,9 +2058,11 @@ mod ffi {
                 name: std::ptr::null(),
                 projection: 0,
                 has_target: 0,
+                has_camera_axes: 0,
                 camera_location: [0.0; 3],
                 camera_direction: [0.0; 3],
                 camera_up: [0.0; 3],
+                camera_axes: [[0.0; 3]; 3],
                 target: [0.0; 3],
                 cplane_origin: [0.0; 3],
                 cplane_x: [0.0; 3],
@@ -4056,7 +3957,8 @@ mod tests {
     fn two_point_camera_locks_survive_named_and_working_view_records() {
         let path = temporary_path("two-point-views.3dm");
         let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
-        let camera = ThreeDmNamedView {
+        let mut camera = ThreeDmNamedView {
+            camera_axes: None,
             name: "Two point".into(),
             projection: ThreeDmProjection::TwoPointPerspective,
             camera_location: Point3::try_new(20., -80., 30.).unwrap(),
@@ -4073,6 +3975,7 @@ mod tests {
             frustum: [-1., 1., -0.25, 1.25, 1., 1000.],
             screen_port: [0, 640, 480, 0],
         };
+        camera.camera_axes = Some(camera.camera_frame().unwrap().axes());
         model.named_views.push(camera.clone());
         let mut unlocked = camera.clone();
         unlocked.name = "Ordinary perspective with the same axes".into();
@@ -4106,6 +4009,7 @@ mod tests {
         )
         .unwrap();
         model.named_views.push(ThreeDmNamedView {
+            camera_axes: None,
             name: "Camera A".into(),
             projection: ThreeDmProjection::Perspective,
             camera_location: Point3::try_new(0.0, 0.0, 10.0).unwrap(),
@@ -4117,6 +4021,7 @@ mod tests {
             screen_port: [0, 1280, 800, 0],
         });
         model.named_views.push(ThreeDmNamedView {
+            camera_axes: None,
             name: "Ortho B".into(),
             projection: ThreeDmProjection::Parallel,
             camera_location: Point3::try_new(5.0, 0.0, 0.0).unwrap(),

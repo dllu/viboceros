@@ -34,6 +34,7 @@ fn world_parallel_presets_match_saved_rhino_framing() {
             let [width, height]: [i32; 2] =
                 serde_json::from_value(row["viewport_size"].clone()).unwrap();
             let source = ThreeDmNamedView {
+                camera_axes: None,
                 name: "Rhino input".into(),
                 projection: match row["projection"].as_str().unwrap() {
                     "Top" => ThreeDmProjection::Parallel,
