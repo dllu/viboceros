@@ -51,6 +51,14 @@ class CaptureFamilyTests(unittest.TestCase):
         self.assertEqual(self.output.read_bytes(), before)
         self.run.assert_called_once()
 
+    def test_compressed_success_is_preserved_without_launching_rhino(self):
+        path=self.output.with_suffix('.json.gz')
+        original=gzip.compress(b'frozen observation',mtime=0)
+        path.write_bytes(original)
+        with self.assertRaisesRegex(ValueError,'immutable'):self.capture()
+        self.assertEqual(path.read_bytes(),original)
+        self.run.assert_not_called()
+
     def test_different_fixture_is_preserved_without_launching_rhino(self):
         self.fixture.write_text('existing fixture\n')
         with self.assertRaisesRegex(ValueError, 'fixture differs'):

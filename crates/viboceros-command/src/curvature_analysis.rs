@@ -16,6 +16,7 @@ pub struct View {
     pub meshes: Meshes,
     pub sources: usize,
     pub unavailable: usize,
+    cache: Arc<analysis_mesh::Cache>,
 }
 impl std::fmt::Debug for View {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -40,8 +41,11 @@ struct State {
     meshes: Meshes,
 }
 #[derive(Default)]
-pub(crate) struct Session(Mutex<State>);
+pub(crate) struct Session(Mutex<State>, Arc<analysis_mesh::Cache>);
 impl Session {
+    pub(crate) fn with_meshes(cache: Arc<analysis_mesh::Cache>) -> Self {
+        Self(Mutex::default(), cache)
+    }
     pub(crate) fn remove(&self, ids: &BTreeSet<ObjectId>) {
         if ids.is_empty() {
             return;
@@ -62,8 +66,9 @@ impl Session {
         if !state.enabled {
             return None;
         }
-        refresh(&mut state, doc);
+        refresh(&mut state, doc, &self.1);
         Some(View {
+            cache: self.1.clone(),
             options: state.options,
             objects: state.objects.clone(),
             meshes: state.meshes.clone(),
@@ -76,7 +81,8 @@ impl Session {
         })
     }
 }
-fn refresh(state: &mut State, doc: &Document) {
+fn refresh(state: &mut State, doc: &Document, cache: &analysis_mesh::Cache) {
+    cache.retain(doc);
     let mut meshes = BTreeMap::new();
     for id in state.objects.iter().copied() {
         let Some(object) = doc.object(id) else {
@@ -93,13 +99,7 @@ fn refresh(state: &mut State, doc: &Document) {
             c.tolerance != doc.tolerance()
                 || !c.source.shares_storage_with(object.geometry_snapshot())
         }) {
-            let mesh = match object.geometry() {
-                Geometry::NurbsSurface(s) => s.curvature_mesh(8, doc.tolerance()).ok(),
-                Geometry::Brep(b) => b.curvature_mesh(8, doc.tolerance()).ok(),
-                Geometry::SubD(s) => s.curvature_mesh().ok(),
-                _ => None,
-            }
-            .map(Arc::new);
+            let mesh = cache.get(object, doc.tolerance()).ok().flatten();
             state.cache.insert(
                 id,
                 Cache {
@@ -218,7 +218,7 @@ impl AnalysisCommand {
         state.enabled = true;
         state.options = options;
         if matches!(action, Action::MaxRange | Action::AutoRange) {
-            refresh(&mut state, doc);
+            refresh(&mut state, doc, &self.session.1);
             let samples = state
                 .meshes
                 .values()
@@ -249,5 +249,18 @@ impl AnalysisCommand {
             self.draft.remove(&targets);
         }
         Ok(format!("Curvature analysis on {count} object(s)"))
+    }
+}
+
+impl View {
+    pub fn mesh(
+        &self,
+        object: &viboceros_document::Object,
+        tolerance: Tolerance,
+    ) -> Option<Arc<CurvatureMesh>> {
+        if !self.objects.contains(&object.id()) {
+            return None;
+        }
+        self.cache.get(object, tolerance).ok().flatten()
     }
 }

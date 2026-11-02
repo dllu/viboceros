@@ -80,6 +80,8 @@ mod selection;
 mod selection_clipping;
 use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
 #[cfg(test)]
+mod analysis_mesh_tests;
+#[cfg(test)]
 pub(crate) mod clip_tests;
 #[cfg(test)]
 mod curvature_analysis_tests;

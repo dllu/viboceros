@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 def capture(family, query, sources, scheme, timeout=1200):
     fixture = HERE / ('fixtures/' + family + '.json')
     output = HERE / ('observations/' + family + '.json')
-    if output.exists():
+    if output.exists() or output.with_suffix(".json.gz").exists():
         raise ValueError('successful native captures are immutable: ' + family)
     encoded = (json.dumps(query, indent=2, allow_nan=False) + '\n').encode()
     if fixture.exists() and fixture.read_bytes() != encoded:

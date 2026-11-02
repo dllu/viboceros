@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'extract_analysis_mesh': ('extract_analysis_mesh_probe', ('join_probe','merge_edges_probe')),
     'camera_archive': ('camera_archive_probe', ('merge_edges_probe',)),
     'camera_vectors': ('camera_vectors_probe', ('merge_edges_probe',)),
     'draft_pull_direction': ('draft_pull_probe', ('draft_pull_controls','draft_pull_input','merge_edges_probe')),
@@ -231,10 +232,11 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
-    if 'brep_direction_probe' in modules or 'direction_analysis_probe' in modules or 'draft_angle_probe' in modules or 'curvature_analysis_probe' in modules:
+    if 'extract_analysis_mesh_probe' in modules or 'brep_direction_probe' in modules or 'direction_analysis_probe' in modules or 'draft_angle_probe' in modules or 'curvature_analysis_probe' in modules:
         for op in request['operations']:
-            if op.get('op') not in ('brep_direction_command','direction_analysis','draft_angle_analysis','curvature_analysis'): continue
+            if op.get('op') not in ('extract_analysis_mesh','brep_direction_command','direction_analysis','draft_angle_analysis','curvature_analysis'): continue
             if op['source'] in ('line','mesh','point','panels') or op['source'].startswith('subd_'):continue
+            if op.get('op')=='extract_analysis_mesh' and op['source'] in ('plane','extrusion','block','block_multi'):continue
             asset = Path('fixtures/brep_direction')/(op['source']+'.3dm')
             (destination/asset.parent).mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source_directory/asset, destination/asset)

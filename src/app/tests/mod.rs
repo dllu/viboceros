@@ -77,6 +77,7 @@ mod ellipse_around;
 mod ellipse_deform;
 mod evaluate_point;
 mod evaluate_uv;
+mod extract_analysis_mesh;
 mod extract_curvature_graph;
 mod extract_points;
 mod extract_surface;

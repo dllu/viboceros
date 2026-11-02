@@ -67,8 +67,9 @@ constant intervals and pads narrow positive intervals consistently. The frozen
 native outputs preserve these differences. Another 32 Auto Range and 12 Max
 Range panel captures document real-surface behavior. Bounds from the two
 products' analysis meshes can differ; these captures do not qualify identical
-tessellation or pixels. Analysis-density controls and saved analysis meshes
-remain unimplemented. Ordinary meshes without surface curvature data are
+tessellation or pixels. [ExtractAnalysisMesh](extract-analysis-mesh.md) copies the
+current analysis representation and colors into model mesh objects. Analysis-density
+controls remain unimplemented. Ordinary meshes without surface curvature data are
 unsupported.
 
 ```sh

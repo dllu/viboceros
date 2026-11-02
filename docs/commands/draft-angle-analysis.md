@@ -13,8 +13,8 @@ interpolates normal dot products, following OpenNURBS, and supports reversed or
 equal bounds. Flipping a source changes its analysis colors.
 
 Analysis faces are opaque and unlit in Wireframe, Shaded and Ghosted, and remain
-pickable in Wireframe. Camera-independent color buffers share the existing display
-mesh and normal caches across viewports; geometry, tolerance or settings changes
+pickable in Wireframe. Camera-independent color buffers share analytic analysis
+meshes and normal caches across viewports; geometry, tolerance or settings changes
 refresh the appropriate buffers. Source geometry and mesh vertex colors stay intact.
 
 Starting analysis clears input selection. Repeating it adds selected objects;
@@ -69,7 +69,9 @@ picks and their start tangents. Named CPlanes have application frame tests.
 Another [35 camera/vector cases](../oracle/camera-vectors.md) cover raw camera
 metadata, navigation resets and nonunit View pull vectors. Import, named views and
 SaveAs/Open retain raw camera vectors independently of the rendering frame.
-Mesh-density controls and draft-curve extraction remain unimplemented.
+[ExtractAnalysisMesh](extract-analysis-mesh.md) copies this display into model
+meshes with stored normals and vertex colors. Mesh-density controls and draft-curve
+extraction remain unimplemented.
 
 ```sh
 cargo test -p viboceros-command --lib draft_angle_analysis

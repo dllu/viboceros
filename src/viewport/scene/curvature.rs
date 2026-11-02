@@ -60,3 +60,39 @@ impl Viewport {
         }
     }
 }
+
+impl Viewport {
+    pub(super) fn add_draft_faces(
+        &self,
+        scene: &mut GpuSceneBuilder,
+        object: &DisplayObject,
+        display: &DisplayGeometry,
+        source: &Arc<viboceros_geometry::CurvatureMesh>,
+        normal_transform: Option<AffineNormalTransform3>,
+    ) {
+        let Some(mapping) = object.draft.and_then(|s| s.mapping().ok()) else {
+            return;
+        };
+        self.add_gpu_mesh_faces_with_normals(
+            scene,
+            &source.mesh,
+            viboceros_command::analysis_mesh::normals(source)
+                .map(|n| n.map(|v| NaVector3::from(v.to_array()))),
+            FaceAppearance {
+                color: object.face_color,
+                member_colors: false,
+                draft: Some(mapping),
+                analysis_colors: object
+                    .transform
+                    .is_none()
+                    .then(|| display.draft_colors(Some(source), mapping)),
+            },
+            object.transform.map(|transform| AffineMeshTransform {
+                transform,
+                normals: normal_transform.unwrap(),
+                reverse_normals: object.reversing
+                    && matches!(&*display.geometry, Geometry::Brep(_)),
+            }),
+        );
+    }
+}

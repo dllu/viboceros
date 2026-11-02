@@ -79,6 +79,7 @@ struct DisplayObject {
     member_colors_enabled: bool,
     face_member_colors_enabled: bool,
     draft: Option<viboceros_command::draft_angle_analysis::Options>,
+    draft_mesh: Option<Arc<viboceros_geometry::CurvatureMesh>>,
     curvature: Option<CurvatureFaces>,
     width: f32,
     point_radius: f32,
@@ -97,6 +98,11 @@ impl PartialEq for DisplayObject {
             && self.member_colors_enabled == other.member_colors_enabled
             && self.face_member_colors_enabled == other.face_member_colors_enabled
             && self.draft == other.draft
+            && match (&self.draft_mesh, &other.draft_mesh) {
+                (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+                (None, None) => true,
+                _ => false,
+            }
             && self.curvature == other.curvature
             && self.width == other.width
             && self.point_radius == other.point_radius
@@ -460,12 +466,16 @@ impl Viewport {
                     .draft
                     .filter(|v| v.objects.contains(&object.id()))
                     .map(|v| v.options),
+                draft_mesh: analyses
+                    .draft
+                    .filter(|v| v.objects.contains(&object.id()))
+                    .and_then(|v| v.mesh(object, document.tolerance())),
                 curvature: analyses
                     .curvature
                     .filter(|v| v.objects.contains(&object.id()))
                     .map(|v| CurvatureFaces {
                         options: v.options,
-                        mesh: v.meshes.get(&object.id()).cloned(),
+                        mesh: v.mesh(object, document.tolerance()),
                     }),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
@@ -510,7 +520,7 @@ impl Viewport {
                                 c.mesh.clone()
                             },
                         }),
-                        geometry: posed,
+                        geometry: posed.clone(),
                         color: SELECTED_COLOR,
                         face_color: display.face_color,
                         draw_faces: true,
@@ -518,6 +528,11 @@ impl Viewport {
                         member_colors_enabled: false,
                         face_member_colors_enabled: display.face_member_colors_enabled,
                         draft: display.draft,
+                        draft_mesh: if partial && display.draft.is_some() {
+                            posed.curvature_mesh()
+                        } else {
+                            display.draft_mesh.clone()
+                        },
                         width: width + 1.5,
                         point_radius: 3.5,
                         transform: if partial {
@@ -554,6 +569,7 @@ impl Viewport {
                         member_colors_enabled: true,
                         face_member_colors_enabled: true,
                         draft: None,
+                        draft_mesh: None,
                         curvature: None,
                         width: match self.display_mode {
                             DisplayMode::Wireframe => 1.5,
@@ -680,6 +696,14 @@ impl Viewport {
                                 curvature,
                                 normal_transform,
                             );
+                        } else if let Some(mesh) = &object.draft_mesh {
+                            self.add_draft_faces(
+                                &mut scene,
+                                object,
+                                display,
+                                mesh,
+                                normal_transform,
+                            );
                         } else if let Some(mesh) = display.mesh() {
                             let draft = object.draft.and_then(|s| s.mapping().ok());
                             self.add_gpu_mesh_faces_with_normals(
@@ -692,7 +716,7 @@ impl Viewport {
                                     draft,
                                     analysis_colors: draft
                                         .filter(|_| object.transform.is_none())
-                                        .map(|m| display.draft_colors(m)),
+                                        .map(|m| display.draft_colors(None, m)),
                                 },
                                 object.transform.map(|transform| AffineMeshTransform {
                                     transform,

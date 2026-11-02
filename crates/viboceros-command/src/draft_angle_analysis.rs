@@ -7,11 +7,12 @@ use options::{Action, USAGE, parse};
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct View {
     pub options: Options,
     pub objects: Arc<BTreeSet<ObjectId>>,
     pub sources: usize,
+    cache: Arc<analysis_mesh::Cache>,
 }
 
 #[derive(Clone, Default)]
@@ -22,9 +23,16 @@ struct State {
 }
 
 #[derive(Default)]
-pub(crate) struct Session(Mutex<State>);
+pub(crate) struct Session(Mutex<State>, Arc<analysis_mesh::Cache>);
 
 impl Session {
+    pub(crate) fn with_meshes(cache: Arc<analysis_mesh::Cache>) -> Self {
+        Self(Mutex::default(), cache)
+    }
+    pub(crate) fn mesh_cache(&self) -> Arc<analysis_mesh::Cache> {
+        self.1.clone()
+    }
+
     pub(crate) fn remove(&self, ids: &BTreeSet<ObjectId>) {
         if ids.is_empty() {
             return;
@@ -38,7 +46,9 @@ impl Session {
 
     pub(crate) fn view(&self, doc: &Document) -> Option<View> {
         let state = self.0.lock().unwrap();
+        self.1.retain(doc);
         state.enabled.then(|| View {
+            cache: self.1.clone(),
             options: state.options,
             objects: state.objects.clone(),
             sources: state
@@ -144,5 +154,28 @@ impl Command for AnalysisCommand {
         drop(state);
         self.curvature.remove(&targets);
         Ok(format!("Draft angle analysis on {count} object(s)"))
+    }
+}
+
+impl std::fmt::Debug for View {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DraftAngleAnalysisView")
+            .field("options", &self.options)
+            .field("sources", &self.sources)
+            .finish()
+    }
+}
+
+impl View {
+    /// Resolve against current geometry even if the caller retained an older view.
+    pub fn mesh(
+        &self,
+        object: &viboceros_document::Object,
+        tolerance: Tolerance,
+    ) -> Option<Arc<viboceros_geometry::CurvatureMesh>> {
+        if !self.objects.contains(&object.id()) {
+            return None;
+        }
+        self.cache.get(object, tolerance).ok().flatten()
     }
 }

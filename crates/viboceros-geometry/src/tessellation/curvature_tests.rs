@@ -39,11 +39,11 @@ fn subd_regular_patch_jets_preserve_limit_points_and_flat_curvature() {
     let mesh = plane.curvature_mesh().unwrap();
     let values = mesh.principal_curvatures(None);
     let mut count = 0;
-    for (triangle, indices) in mesh.mesh.triangles().iter().zip(&mesh.indices) {
+    for (triangle, indices) in mesh.mesh.triangles().iter().zip(&mesh.samples.indices) {
         for (index, sample) in triangle.iter().zip(indices) {
             if let Some(sample) = sample {
                 let p = mesh.mesh.vertices()[*index as usize];
-                assert!(p.distance_to(mesh.jets[*sample].point).unwrap() < 1e-10);
+                assert!(p.distance_to(mesh.samples.jets[*sample].point).unwrap() < 1e-10);
             }
         }
     }
@@ -91,4 +91,22 @@ fn sheared_curvature_jets_match_evaluating_the_transformed_surface() {
             assert!((a - b).abs() < 1e-10);
         }
     }
+}
+
+#[test]
+fn normal_mesh_defers_and_reuses_curvature_samples() {
+    let sphere = NurbsSurface::try_sphere(frame(), 2.).unwrap();
+    let mesh = sphere.curvature_mesh(2, Tolerance::DEFAULT).unwrap();
+    assert!(std::sync::LazyLock::get(&mesh.samples).is_none());
+    let normals = mesh.normals.clone();
+    assert_eq!(normals.len(), mesh.mesh.triangles().len());
+    assert!(std::sync::LazyLock::get(&mesh.samples).is_none());
+    let first = mesh.principal_curvatures(None);
+    let samples = std::sync::LazyLock::get(&mesh.samples).unwrap();
+    assert_eq!(first, mesh.principal_curvatures(None));
+    assert!(std::ptr::eq(
+        samples,
+        std::sync::LazyLock::get(&mesh.samples).unwrap()
+    ));
+    assert_eq!(normals, mesh.normals);
 }

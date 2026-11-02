@@ -1,0 +1,650 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-None-1",
+      "source": "plane",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-Draft-0",
+      "source": "plane",
+      "mode": "Draft",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-DraftOff-1",
+      "source": "plane",
+      "mode": "DraftOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-Curvature-0",
+      "source": "plane",
+      "mode": "Curvature",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-CurvatureOff-1",
+      "source": "plane",
+      "mode": "CurvatureOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "warped-None-0",
+      "source": "warped",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "warped-Draft-1",
+      "source": "warped",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "warped-DraftOff-0",
+      "source": "warped",
+      "mode": "DraftOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "warped-Curvature-1",
+      "source": "warped",
+      "mode": "Curvature",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "warped-CurvatureOff-0",
+      "source": "warped",
+      "mode": "CurvatureOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "holed-None-1",
+      "source": "holed",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "holed-Draft-0",
+      "source": "holed",
+      "mode": "Draft",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "holed-DraftOff-1",
+      "source": "holed",
+      "mode": "DraftOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "holed-Curvature-0",
+      "source": "holed",
+      "mode": "Curvature",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "holed-CurvatureOff-1",
+      "source": "holed",
+      "mode": "CurvatureOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-None-0",
+      "source": "box",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-Draft-1",
+      "source": "box",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-DraftOff-0",
+      "source": "box",
+      "mode": "DraftOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-Curvature-1",
+      "source": "box",
+      "mode": "Curvature",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-CurvatureOff-0",
+      "source": "box",
+      "mode": "CurvatureOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "sphere-None-1",
+      "source": "sphere",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "sphere-Draft-0",
+      "source": "sphere",
+      "mode": "Draft",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "sphere-DraftOff-1",
+      "source": "sphere",
+      "mode": "DraftOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "sphere-Curvature-0",
+      "source": "sphere",
+      "mode": "Curvature",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "sphere-CurvatureOff-1",
+      "source": "sphere",
+      "mode": "CurvatureOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-None-0",
+      "source": "subd_plane",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-Draft-1",
+      "source": "subd_plane",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-DraftOff-0",
+      "source": "subd_plane",
+      "mode": "DraftOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-Curvature-1",
+      "source": "subd_plane",
+      "mode": "Curvature",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-CurvatureOff-0",
+      "source": "subd_plane",
+      "mode": "CurvatureOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_box-None-1",
+      "source": "subd_box",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_box-Draft-0",
+      "source": "subd_box",
+      "mode": "Draft",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_box-DraftOff-1",
+      "source": "subd_box",
+      "mode": "DraftOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_box-Curvature-0",
+      "source": "subd_box",
+      "mode": "Curvature",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_box-CurvatureOff-1",
+      "source": "subd_box",
+      "mode": "CurvatureOff",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "extrusion-None-0",
+      "source": "extrusion",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "extrusion-Draft-1",
+      "source": "extrusion",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "extrusion-DraftOff-0",
+      "source": "extrusion",
+      "mode": "DraftOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "extrusion-Curvature-1",
+      "source": "extrusion",
+      "mode": "Curvature",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "extrusion-CurvatureOff-0",
+      "source": "extrusion",
+      "mode": "CurvatureOff",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "mesh-None-0",
+      "source": "mesh",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "mesh-None-1",
+      "source": "mesh",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "mesh-Draft-0",
+      "source": "mesh",
+      "mode": "Draft",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "mesh-Draft-1",
+      "source": "mesh",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "line-None-0",
+      "source": "line",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "line-None-1",
+      "source": "line",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "block-None-0",
+      "source": "block",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "block-None-1",
+      "source": "block",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "block_multi-None-0",
+      "source": "block_multi",
+      "mode": "None",
+      "preselect": false,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "block_multi-None-1",
+      "source": "block_multi",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "plane-Draft-1-repeat",
+      "source": "plane",
+      "mode": "Draft",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "box-Curvature-1-repeat",
+      "source": "box",
+      "mode": "Curvature",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    },
+    {
+      "op": "extract_analysis_mesh",
+      "id": "subd_plane-None-1-repeat",
+      "source": "subd_plane",
+      "mode": "None",
+      "preselect": true,
+      "steps": [
+        "Extract",
+        "Extract",
+        "Undo",
+        "Redo"
+      ]
+    }
+  ]
+}

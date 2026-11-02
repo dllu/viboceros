@@ -4,15 +4,22 @@ use crate::{
     SurfaceTessellation, TriangleMesh, UnitVector3,
 };
 use std::collections::{HashMap, HashSet};
+use std::sync::LazyLock;
 #[cfg(test)]
 #[path = "curvature_tests.rs"]
 mod tests;
 
 /// Geometry and differential samples used for curvature analysis. It owns no
-/// model state. A vertex on a crease can retain distinct jets on either side.
+/// model state. NURBS jets and curvature metrics are evaluated on demand.
+/// A crease retains distinct samples on either side.
 pub struct CurvatureMesh {
     pub mesh: TriangleMesh,
     pub normals: Vec<[Option<UnitVector3>; 3]>,
+    samples: LazyLock<Samples, SampleBuilder>,
+}
+
+type SampleBuilder = Box<dyn FnOnce() -> Samples + Send + Sync>;
+struct Samples {
     jets: Vec<SurfaceJet2>,
     principal: Vec<[Real; 2]>,
     indices: Vec<[Option<usize>; 3]>,
@@ -22,15 +29,19 @@ impl CurvatureMesh {
     /// Distinct vertex samples for statistics, independent of triangle valence.
     /// A crease can contribute both one-sided values at the same vertex.
     pub fn principal_samples(&self) -> impl Iterator<Item = [Real; 2]> + '_ {
+        let samples = &*self.samples;
         let mut seen = HashSet::new();
         self.mesh
             .triangles()
             .iter()
-            .zip(&self.indices)
-            .flat_map(|(vertices, indices)| {
-                vertices.iter().zip(indices).filter_map(|(vertex, index)| {
-                    index.map(|index| (*vertex, self.principal[index]))
-                })
+            .zip(&samples.indices)
+            .flat_map(move |(vertices, indices)| {
+                vertices
+                    .iter()
+                    .zip(indices)
+                    .filter_map(move |(vertex, index)| {
+                        index.map(|index| (*vertex, samples.principal[index]))
+                    })
             })
             .filter_map(move |(vertex, k)| {
                 seen.insert((vertex, k[0].to_bits(), k[1].to_bits()))
@@ -52,62 +63,77 @@ impl CurvatureMesh {
                 context: "SubD differential sample channels",
             });
         }
-        let values = jets
-            .iter()
-            .map(|j| j.curvature().ok().map(|k| k.principal))
-            .collect::<Vec<_>>();
         let mut indices = Vec::new();
         let mut oriented = Vec::new();
         for (i, triangle) in mesh.triangles().iter().enumerate() {
             let face = i / 2;
             let corners = mesh.faces()[face].indices();
             let positions = triangle.map(|v| corners.iter().position(|c| *c == v).unwrap());
-            indices.push(
-                positions.map(|p| corner_indices[4 * face + p].filter(|i| values[*i].is_some())),
-            );
+            indices.push(positions.map(|p| corner_indices[4 * face + p]));
             oriented.push(positions.map(|p| normals[face][p].normalized_nonzero().ok()));
         }
         Ok(Self {
             mesh,
             normals: oriented,
-            jets,
-            principal: values.into_iter().map(|v| v.unwrap_or([0., 0.])).collect(),
-            indices,
+            samples: LazyLock::new(Box::new(move || {
+                let values = jets
+                    .iter()
+                    .map(|j| j.curvature().ok().map(|k| k.principal))
+                    .collect::<Vec<_>>();
+
+                for corner in &mut indices {
+                    for index in corner {
+                        *index = index.filter(|i| values[*i].is_some());
+                    }
+                }
+                Samples {
+                    jets,
+                    principal: values.into_iter().map(|v| v.unwrap_or([0., 0.])).collect(),
+                    indices,
+                }
+            })),
         })
     }
     pub(crate) fn from_tessellation(t: SurfaceTessellation, surfaces: &[&NurbsSurface]) -> Self {
-        let mut cache = HashMap::new();
-        let mut jets = Vec::new();
-        let mut principal = Vec::new();
-        let mut indices = Vec::with_capacity(t.corners.len());
         let normals = t.corners.iter().map(|c| c.map(|c| c.normal)).collect();
-        for (triangle, corners) in t.mesh.triangles().iter().zip(&t.corners) {
-            let uv = corners.map(|c| c.uv);
-            indices.push(std::array::from_fn(|i| {
-                let side = |axis| super::corner_side(uv, i, axis);
-                let key = (
-                    corners[i].face,
-                    triangle[i],
-                    side(0) == ParameterSide::Left,
-                    side(1) == ParameterSide::Left,
-                );
-                *cache.entry(key).or_insert_with(|| {
-                    let surface = surfaces[corners[i].face.unwrap_or(0)];
-                    let jet = sample_jet(surface, uv, i, [side(0), side(1)])?;
-                    let k = jet.curvature().ok()?.principal;
-                    let index = jets.len();
-                    jets.push(jet);
-                    principal.push(k);
-                    Some(index)
-                })
-            }));
-        }
+        let triangles = t.mesh.triangles().to_vec();
+        let corners = t.corners;
+        let surfaces = surfaces.iter().map(|s| (*s).clone()).collect::<Vec<_>>();
         Self {
             mesh: t.mesh,
             normals,
-            jets,
-            principal,
-            indices,
+            samples: LazyLock::new(Box::new(move || {
+                let mut cache = HashMap::new();
+                let mut jets = Vec::new();
+                let mut principal = Vec::new();
+                let mut indices = Vec::with_capacity(corners.len());
+                for (triangle, corners) in triangles.iter().zip(&corners) {
+                    let uv = corners.map(|c| c.uv);
+                    indices.push(std::array::from_fn(|i| {
+                        let side = |axis| super::corner_side(uv, i, axis);
+                        let key = (
+                            corners[i].face,
+                            triangle[i],
+                            side(0) == ParameterSide::Left,
+                            side(1) == ParameterSide::Left,
+                        );
+                        *cache.entry(key).or_insert_with(|| {
+                            let surface = &surfaces[corners[i].face.unwrap_or(0)];
+                            let jet = sample_jet(surface, uv, i, [side(0), side(1)])?;
+                            let k = jet.curvature().ok()?.principal;
+                            let index = jets.len();
+                            jets.push(jet);
+                            principal.push(k);
+                            Some(index)
+                        })
+                    }));
+                }
+                Samples {
+                    jets,
+                    principal,
+                    indices,
+                }
+            })),
         }
     }
 
@@ -115,8 +141,10 @@ impl CurvatureMesh {
         &self,
         transform: Option<AffineTransform3>,
     ) -> Vec<[Option<[Real; 2]>; 3]> {
+        let samples = &*self.samples;
         let transformed = transform.map(|map| {
-            self.jets
+            samples
+                .jets
                 .iter()
                 .map(|j| {
                     let vector = |v| map.transform_vector(v);
@@ -132,14 +160,15 @@ impl CurvatureMesh {
                 })
                 .collect::<Vec<_>>()
         });
-        self.indices
+        samples
+            .indices
             .iter()
             .map(|c| {
                 c.map(|i| {
                     i.and_then(|i| {
                         transformed
                             .as_ref()
-                            .map_or(Some(self.principal[i]), |k| k[i])
+                            .map_or(Some(samples.principal[i]), |k| k[i])
                     })
                 })
             })

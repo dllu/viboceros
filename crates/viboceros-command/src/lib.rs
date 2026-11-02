@@ -19,6 +19,7 @@ mod extract_points;
 mod subd_display;
 pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
+pub mod analysis_mesh;
 mod create_unique_block;
 mod create_uv_curves;
 pub mod curvature_analysis;
@@ -27,6 +28,7 @@ pub mod curve_deviation;
 pub mod divide;
 pub mod draft_angle_analysis;
 pub mod edge_analysis;
+mod extract_analysis_mesh;
 pub mod face_create;
 pub mod flow;
 mod iplane;
@@ -953,11 +955,26 @@ impl CommandRegistry {
     }
 
     pub fn with_builtins() -> Self {
-        let mut registry = Self::default();
+        let meshes = std::sync::Arc::new(analysis_mesh::Cache::default());
+        let mut registry = Self {
+            draft_angle_analysis: std::sync::Arc::new(draft_angle_analysis::Session::with_meshes(
+                meshes.clone(),
+            )),
+            curvature_analysis: std::sync::Arc::new(curvature_analysis::Session::with_meshes(
+                meshes.clone(),
+            )),
+            ..Self::default()
+        };
         registry
             .register(curvature_graph::ExtractCommand(
                 registry.curvature_graph.clone(),
             ))
+            .expect("unique built-in command");
+        registry
+            .register(extract_analysis_mesh::ExtractCommand {
+                draft: registry.draft_angle_analysis.clone(),
+                curvature: registry.curvature_analysis.clone(),
+            })
             .expect("unique built-in command");
         for off in [false, true] {
             registry
