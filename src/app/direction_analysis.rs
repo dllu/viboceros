@@ -2,7 +2,7 @@
 use super::*;
 
 impl VibocerosApp {
-    pub(super) fn set_direction_analysis_display(&mut self, input: &str) {
+    pub(super) fn set_analysis_display(&mut self, input: &str) {
         match self.commands.execute(&mut self.document, input) {
             Ok(message) => self.push_log(message),
             Err(error) => self.push_log(format!("Error: {error}")),
@@ -51,11 +51,11 @@ impl VibocerosApp {
                 });
             });
         if !open {
-            self.set_direction_analysis_display("ShowDirOff");
+            self.set_analysis_display("ShowDirOff");
             return;
         }
         if options != view.options {
-            self.set_direction_analysis_display(&format!(
+            self.set_analysis_display(&format!(
                 "ShowDir Direction={} U={} V={} Color={},{},{}",
                 if options.direction { "Yes" } else { "No" },
                 if options.u { "Yes" } else { "No" },

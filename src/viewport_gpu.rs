@@ -28,6 +28,7 @@ pub(crate) struct TriangleVertex {
     pub position: [f32; 3],
     pub normal: [f32; 3],
     pub color: [f32; 4],
+    pub shading: f32,
 }
 
 #[repr(C)]
@@ -157,7 +158,8 @@ impl ViewportRenderer {
         let triangle_attributes = wgpu::vertex_attr_array![
             0 => Float32x3,
             1 => Float32x3,
-            2 => Float32x4
+            2 => Float32x4,
+            3 => Float32
         ];
         let triangle_buffers = [Some(wgpu::VertexBufferLayout {
             array_stride: std::mem::size_of::<TriangleVertex>() as _,
@@ -345,7 +347,16 @@ impl ViewportRenderer {
         viewport.point_buffer.upload(device, queue, &scene.points);
         viewport.overlay_line_start = scene.overlay_line_start.min(scene.lines.len());
         viewport.overlay_point_start = scene.overlay_point_start.min(scene.points.len());
-        viewport.transparent = scene.transparent;
+        viewport.opaque_vertices = if scene.transparent {
+            scene
+                .triangles
+                .chunks_exact(3)
+                .take_while(|t| t.iter().all(|v| v.color[3] >= 1.))
+                .count()
+                * 3
+        } else {
+            scene.triangles.len()
+        };
     }
 
     fn paint(&self, viewport_index: usize, render_pass: &mut wgpu::RenderPass<'static>) {
@@ -354,14 +365,14 @@ impl ViewportRenderer {
         };
         render_pass.set_bind_group(0, &viewport.uniform_bind_group, &[]);
         if !viewport.triangle_buffer.chunks.is_empty() {
-            render_pass.set_pipeline(if viewport.transparent {
-                &self.transparent_pipeline
-            } else {
-                &self.opaque_pipeline
-            });
+            render_pass.set_pipeline(&self.opaque_pipeline);
             viewport
                 .triangle_buffer
-                .draw(render_pass, 0..usize::MAX, false);
+                .draw(render_pass, 0..viewport.opaque_vertices, false);
+            render_pass.set_pipeline(&self.transparent_pipeline);
+            viewport
+                .triangle_buffer
+                .draw(render_pass, viewport.opaque_vertices..usize::MAX, false);
         }
         render_pass.set_pipeline(&self.line_pipeline);
         viewport
@@ -393,7 +404,7 @@ struct PreparedViewport {
     point_buffer: ChunkedBuffer,
     overlay_line_start: usize,
     overlay_point_start: usize,
-    transparent: bool,
+    opaque_vertices: usize,
 }
 
 impl PreparedViewport {
@@ -423,7 +434,7 @@ impl PreparedViewport {
             point_buffer: ChunkedBuffer::new("viboceros point instance buffer", 1),
             overlay_line_start: 0,
             overlay_point_start: 0,
-            transparent: false,
+            opaque_vertices: 0,
         }
     }
 }
@@ -650,12 +661,14 @@ struct TriangleInput {
     @location(0) position: vec3<f32>,
     @location(1) normal: vec3<f32>,
     @location(2) color: vec4<f32>,
+    @location(3) shading: f32,
 };
 
 struct TriangleOutput {
     @builtin(position) position: vec4<f32>,
     @location(0) normal: vec3<f32>,
     @location(1) color: vec4<f32>,
+    @location(2) shading: f32,
 };
 
 @vertex
@@ -664,6 +677,7 @@ fn vs_triangle(input: TriangleInput) -> TriangleOutput {
     output.position = view.view_projection * vec4<f32>(input.position, 1.0);
     output.normal = input.normal;
     output.color = input.color;
+    output.shading = input.shading;
     return output;
 }
 
@@ -671,7 +685,7 @@ fn shaded_triangle(input: TriangleOutput) -> vec4<f32> {
     let normal = normalize(input.normal + vec3<f32>(0.0, 0.0, 1.0e-20));
     let light = normalize(vec3<f32>(-0.35, -0.45, 0.82));
     let illumination = clamp(abs(dot(normal, light)), 0.0, 1.0);
-    let whiten = 0.35 + 0.55 * illumination;
+    let whiten = input.shading * (0.35 + 0.55 * illumination);
     return vec4<f32>(mix(input.color.rgb, vec3<f32>(1.0), whiten), input.color.a);
 }
 

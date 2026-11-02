@@ -1005,6 +1005,7 @@ impl VibocerosApp {
                 "ModifyRadius"
                     | "Dir"
                     | "ShowDir"
+                    | "DraftAngleAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Rebuild"

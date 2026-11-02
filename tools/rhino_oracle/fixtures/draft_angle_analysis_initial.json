@@ -1,0 +1,535 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-mesh-0",
+      "source": "mesh",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-mesh-1",
+      "source": "mesh",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-panels-0",
+      "source": "panels",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-panels-1",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-warped-0",
+      "source": "warped",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-warped-1",
+      "source": "warped",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-holed-0",
+      "source": "holed",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-holed-1",
+      "source": "holed",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-box-0",
+      "source": "box",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-box-1",
+      "source": "box",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-sphere-0",
+      "source": "sphere",
+      "preselect": false,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-life-sphere-1",
+      "source": "sphere",
+      "preselect": true,
+      "range": [
+        0,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "DraftAngleAnalysisOff",
+        "Undo"
+      ],
+      "wires": true
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-0",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -5,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-1",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        5,
+        -5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-2",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        5,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-3",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-4",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -90,
+        90
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-5",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        0,
+        1e-07
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-6",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -5,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        2
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-7",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -5,
+        5
+      ],
+      "up": [
+        1,
+        0,
+        0
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-8",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -5,
+        5
+      ],
+      "up": [
+        0,
+        0,
+        -1
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    },
+    {
+      "op": "draft_angle_analysis",
+      "id": "draft-colors-9",
+      "source": "panels",
+      "preselect": true,
+      "range": [
+        -35,
+        45
+      ],
+      "up": [
+        1,
+        2,
+        3
+      ],
+      "steps": [
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff"
+      ],
+      "wires": false
+    }
+  ]
+}

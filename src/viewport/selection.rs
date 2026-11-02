@@ -209,6 +209,13 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
+    fn draws_object_faces(&self, id: ObjectId) -> bool {
+        self.display_mode != DisplayMode::Wireframe
+            || self
+                .analysis_objects
+                .as_ref()
+                .is_some_and(|ids| ids.contains(&id))
+    }
     pub(super) fn add_selection_point(
         &self,
         projected: &mut ProjectedPrimitives,
@@ -256,12 +263,8 @@ impl Viewport {
                         document.tolerance(),
                         document.subd_control_net(),
                     );
-                    let primitives = self.projected_object_display(
-                        &display,
-                        rect,
-                        document,
-                        object.attributes(),
-                    );
+                    let primitives =
+                        self.projected_object_display(&display, rect, document, object);
                     if primitives.points.is_empty() {
                         return None;
                     }
@@ -468,10 +471,11 @@ impl Viewport {
                             | Geometry::SubD(_)
                     );
                     if surface
-                        && self.display_mode != DisplayMode::Wireframe
+                        && self.draws_object_faces(object.id())
                         && let Some(mesh) = display.mesh()
                     {
-                        self.mesh_pick(pointer, rect, mesh, document.tolerance())
+                        self.mesh_face_pick(pointer, rect, mesh)
+                            .map_or(PickHit::screen(2, f32::INFINITY), |(hit, _)| hit)
                     } else {
                         let distance = display
                             .wires()
@@ -578,12 +582,8 @@ impl Viewport {
                     document.tolerance(),
                     document.subd_control_net(),
                 );
-                let primitives = self.projected_object_display(
-                    &display,
-                    viewport_rect,
-                    document,
-                    object.attributes(),
-                );
+                let primitives =
+                    self.projected_object_display(&display, viewport_rect, document, object);
                 let selected = match (crossing, mode.inverted()) {
                     (false, false) => primitives.is_windowed_by(selection),
                     (true, false) => primitives.is_crossed_by(selection),
@@ -616,12 +616,8 @@ impl Viewport {
                     document.tolerance(),
                     document.subd_control_net(),
                 );
-                let primitives = self.projected_object_display(
-                    &display,
-                    viewport_rect,
-                    document,
-                    object.attributes(),
-                );
+                let primitives =
+                    self.projected_object_display(&display, viewport_rect, document, object);
                 let selected = match (crossing, mode.inverted()) {
                     (false, false) => primitives.is_windowed_by_circle(circle),
                     (true, false) => primitives.is_crossed_by_circle(circle),
@@ -657,14 +653,9 @@ impl Viewport {
                     document.tolerance(),
                     document.subd_control_net(),
                 );
-                self.projected_object_display(
-                    &display,
-                    viewport_rect,
-                    document,
-                    object.attributes(),
-                )
-                .is_crossed_by_fence(fence)
-                .then_some(object.id())
+                self.projected_object_display(&display, viewport_rect, document, object)
+                    .is_crossed_by_fence(fence)
+                    .then_some(object.id())
             })
             .collect()
     }
@@ -689,7 +680,7 @@ impl Viewport {
             document.subd_control_net(),
         );
         let strokes = self
-            .projected_object_display(&display, rect, document, source.attributes())
+            .projected_object_display(&display, rect, document, source)
             .segments;
         if strokes.is_empty() {
             return None;
@@ -708,12 +699,7 @@ impl Viewport {
                         document.tolerance(),
                         document.subd_control_net(),
                     );
-                    let projected = self.projected_object_display(
-                        &display,
-                        rect,
-                        document,
-                        object.attributes(),
-                    );
+                    let projected = self.projected_object_display(&display, rect, document, object);
                     strokes
                         .iter()
                         .any(|&[start, end]| projected.is_crossed_by_segment(start, end))
@@ -743,8 +729,7 @@ impl Viewport {
             document.tolerance(),
             document.subd_control_net(),
         );
-        let projected =
-            self.projected_object_display(&display, rect, document, source.attributes());
+        let projected = self.projected_object_display(&display, rect, document, source);
         let boundary = ScreenBoundary::from_segments(&projected.segments)?;
         let crossing = mode.crossing(true);
         Some(
@@ -761,12 +746,8 @@ impl Viewport {
                         document.tolerance(),
                         document.subd_control_net(),
                     );
-                    let primitives = self.projected_object_display(
-                        &display,
-                        rect,
-                        document,
-                        object.attributes(),
-                    );
+                    let primitives =
+                        self.projected_object_display(&display, rect, document, object);
                     if primitives.points.is_empty() {
                         return None;
                     }
@@ -832,13 +813,19 @@ impl Viewport {
         display: &display_cache::DisplayGeometry,
         rect: Rect,
         document: &Document,
-        attributes: &ObjectAttributes,
+        source: &viboceros_document::Object,
     ) -> ProjectedPrimitives {
         let Geometry::BlockInstance(instance) = &*display.geometry else {
-            return self.projected_display(display, rect, document.tolerance());
+            return self.projected_display_with_faces(
+                display,
+                rect,
+                document.tolerance(),
+                self.draws_object_faces(source.id()),
+            );
         };
         let mut projected = ProjectedPrimitives::default();
-        let Ok(states) = document.block_instance_member_displays(attributes, instance) else {
+        let Ok(states) = document.block_instance_member_displays(source.attributes(), instance)
+        else {
             return projected;
         };
         for (state, geometry) in states.into_iter().zip(display.block_members()) {
@@ -859,6 +846,21 @@ impl Viewport {
         rect: Rect,
         tolerance: Tolerance,
     ) -> ProjectedPrimitives {
+        self.projected_display_with_faces(
+            display,
+            rect,
+            tolerance,
+            self.display_mode != DisplayMode::Wireframe,
+        )
+    }
+
+    fn projected_display_with_faces(
+        &self,
+        display: &display_cache::DisplayGeometry,
+        rect: Rect,
+        tolerance: Tolerance,
+        faces: bool,
+    ) -> ProjectedPrimitives {
         let mut projected = ProjectedPrimitives::default();
         match &*display.geometry {
             Geometry::Point(point) => self.add_selection_point(&mut projected, *point, rect),
@@ -872,19 +874,11 @@ impl Viewport {
             }
             Geometry::Mesh(mesh) => {
                 // Include isolated vertices, just as the original mesh picker did.
-                self.add_projected_mesh(
-                    &mut projected,
-                    rect,
-                    mesh,
-                    self.display_mode != DisplayMode::Wireframe,
-                    tolerance,
-                );
+                self.add_projected_mesh(&mut projected, rect, mesh, faces, tolerance);
                 return projected;
             }
             _ => {
-                if self.display_mode != DisplayMode::Wireframe
-                    && let Some(mesh) = display.mesh()
-                {
+                if faces && let Some(mesh) = display.mesh() {
                     self.add_projected_mesh(&mut projected, rect, mesh, true, tolerance);
                 }
                 for &[a, b] in display.wires() {

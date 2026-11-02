@@ -5,11 +5,13 @@
 //! handles. Retaining ownership prevents address reuse from masquerading as a hit.
 
 use super::*;
+mod draft;
 mod subd;
 use std::cell::{OnceCell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use viboceros_document::{GeometrySnapshot, Object};
+pub(super) type DraftColors = Rc<[[[u8; 3]; 3]]>;
 
 #[derive(Default)]
 pub(super) struct DisplayCache {
@@ -180,6 +182,7 @@ pub(super) struct DisplayGeometry {
     wires: OnceCell<Vec<[Point3; 2]>>,
     mesh: OnceCell<Option<GeneratedDisplayMesh>>,
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
+    draft_colors: RefCell<Option<draft::Drawing>>,
     edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
     block_members: OnceCell<Vec<Rc<DisplayGeometry>>>,
     pub(super) topology_vertices: OnceCell<Vec<Point3>>,
@@ -230,6 +233,7 @@ impl DisplayGeometry {
             wires: OnceCell::new(),
             mesh: OnceCell::new(),
             normals: OnceCell::new(),
+            draft_colors: RefCell::new(None),
             edges: OnceCell::new(),
             block_members: OnceCell::new(),
             component_regions: OnceCell::new(),

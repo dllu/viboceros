@@ -185,6 +185,7 @@ mod direction;
 mod direction_analysis;
 mod distance;
 mod domain;
+mod draft_angle_analysis;
 mod drafting_input;
 mod edge_analysis;
 mod edge_commands;

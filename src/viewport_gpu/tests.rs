@@ -24,6 +24,7 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
         position,
         normal: [0., 0., 1.],
         color: [1., 0., 0., 1.],
+        shading: 1.,
     };
     let scene = |triangles, lines, points, overlay_line_start, overlay_point_start| ViewportScene {
         uniform: ViewUniform {

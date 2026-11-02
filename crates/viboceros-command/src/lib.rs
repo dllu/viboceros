@@ -24,6 +24,7 @@ mod create_uv_curves;
 pub mod curvature_graph;
 pub mod curve_deviation;
 pub mod divide;
+pub mod draft_angle_analysis;
 pub mod edge_analysis;
 pub mod face_create;
 pub mod flow;
@@ -915,6 +916,7 @@ pub struct CommandRegistry {
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
+    draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
     edge_analysis: std::sync::Arc<edge_analysis::Session>,
     edge_zoom: std::sync::Arc<edge_analysis::Session>,
     point_deviation: std::sync::Arc<point_deviation::Session>,
@@ -956,6 +958,12 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         for off in [false, true] {
+            registry
+                .register(draft_angle_analysis::AnalysisCommand {
+                    session: registry.draft_angle_analysis.clone(),
+                    off,
+                })
+                .expect("unique built-in command");
             registry
                 .register(direction::analysis::AnalysisCommand {
                     session: registry.direction_analysis.clone(),
@@ -2802,6 +2810,12 @@ impl CommandRegistry {
     }
     pub fn direction_analysis_view(&self, doc: &Document) -> Option<direction::analysis::View> {
         self.direction_analysis.view(doc)
+    }
+    pub fn draft_angle_analysis_view(&self, doc: &Document) -> Option<draft_angle_analysis::View> {
+        self.draft_angle_analysis.view(doc)
+    }
+    pub fn object_has_draft_angle_analysis(&self, id: ObjectId) -> bool {
+        self.draft_angle_analysis.contains(id)
     }
     pub fn object_has_direction_analysis(&self, id: ObjectId) -> bool {
         self.direction_analysis.contains(id)

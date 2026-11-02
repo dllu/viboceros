@@ -81,6 +81,8 @@ use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, select
 #[cfg(test)]
 pub(crate) mod clip_tests;
 #[cfg(test)]
+mod draft_angle_tests;
+#[cfg(test)]
 mod imported_shading_tests;
 #[cfg(test)]
 mod raster_tests;
@@ -341,6 +343,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub(crate) draft_angle_analysis: Option<&'a viboceros_command::draft_angle_analysis::View>,
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -466,6 +469,7 @@ impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
             direction_analysis: None,
+            draft_angle_analysis: None,
             direction: None,
             insert_edges: None,
             insert_mesh: None,
@@ -643,6 +647,7 @@ pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
     grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
+    analysis_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
     cached_clipping: Option<clipping::ClipRefreshKey>,
     edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
     object_snap_cache: std::cell::RefCell<viboceros_drafting::ObjectSnapCache>,
@@ -704,6 +709,7 @@ impl Viewport {
             display_cache: Default::default(),
             grip_preview_cache: Default::default(),
             cached_scene: Default::default(),
+            analysis_objects: None,
             cached_clipping: None,
             edge_snap_cache: Default::default(),
             object_snap_cache: Default::default(),
@@ -1252,6 +1258,7 @@ impl Viewport {
         viewport_index: usize,
         active: bool,
     ) -> ViewportOutput {
+        self.analysis_objects = input.draft_angle_analysis.map(|view| view.objects.clone());
         let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
@@ -2094,13 +2101,18 @@ impl Viewport {
 
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
-        self.paint_objects(
+        crate::viewport_gpu::paint(
             &painter,
             rect,
-            document,
             viewport_index,
-            (input.selection_preview, input.selection_preview_ids),
-            object_preview,
+            self.object_scene_with_analysis(
+                rect,
+                document,
+                input.selection_preview,
+                input.selection_preview_ids,
+                object_preview,
+                input.draft_angle_analysis,
+            ),
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
         self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);

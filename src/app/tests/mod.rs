@@ -56,6 +56,8 @@ mod delete_subcurve;
 mod diagnostic_comparison;
 mod direction;
 mod direction_analysis;
+#[path = "../../../crates/viboceros-oracle/tests/support/direction_analysis.rs"]
+mod direction_analysis_support;
 #[path = "../../../crates/viboceros-oracle/tests/support/brep_direction.rs"]
 mod direction_support;
 mod distance;
@@ -63,6 +65,7 @@ mod distribute;
 mod divide_creases;
 mod domain;
 mod draft_angle;
+mod draft_angle_analysis;
 mod edge_analysis;
 mod edge_fillet;
 mod edit_points;

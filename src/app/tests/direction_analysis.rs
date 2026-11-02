@@ -1,7 +1,6 @@
+use super::direction_analysis_support as support;
 use super::*;
 use viboceros_oracle::direction_analysis::{Fixture, settings, snapshot};
-#[path = "../../../crates/viboceros-oracle/tests/support/direction_analysis.rs"]
-mod support;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
@@ -95,10 +94,10 @@ fn display_settings_and_close_leave_an_active_point_getter_untouched() {
     enter(&mut app, "10,10,10");
     let command = app.active_command;
     let before = format!("{:?}", app.document);
-    app.set_direction_analysis_display("ShowDir Direction=No U=No V=Yes Color=12,34,56");
+    app.set_analysis_display("ShowDir Direction=No U=No V=Yes Color=12,34,56");
     assert_eq!(app.active_command, command);
     assert_eq!(format!("{:?}", app.document), before);
-    app.set_direction_analysis_display("ShowDirOff");
+    app.set_analysis_display("ShowDirOff");
     assert_eq!(app.active_command, command);
     assert_eq!(format!("{:?}", app.document), before);
     enter(&mut app, "11,12,13");

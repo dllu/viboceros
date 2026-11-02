@@ -20,6 +20,14 @@ struct AffineMeshTransform {
     reverse_normals: bool,
 }
 
+#[derive(Clone)]
+struct FaceAppearance {
+    color: Color32,
+    member_colors: bool,
+    draft: Option<viboceros_geometry::DraftAngleMapping>,
+    draft_colors: Option<super::display_cache::DraftColors>,
+}
+
 fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
     [vector.x as f32, vector.y as f32, vector.z as f32]
 }
@@ -51,6 +59,7 @@ struct DisplayObject {
     highlighted: bool,
     member_colors_enabled: bool,
     face_member_colors_enabled: bool,
+    draft: Option<viboceros_command::draft_angle_analysis::Options>,
     width: f32,
     point_radius: f32,
     transform: Option<AffineTransform3>,
@@ -67,6 +76,7 @@ impl PartialEq for DisplayObject {
             && self.highlighted == other.highlighted
             && self.member_colors_enabled == other.member_colors_enabled
             && self.face_member_colors_enabled == other.face_member_colors_enabled
+            && self.draft == other.draft
             && self.width == other.width
             && self.point_radius == other.point_radius
             && self.transform == other.transform
@@ -193,8 +203,12 @@ impl GpuSceneBuilder {
         let range = self.depth_range();
         let uniform = viewport.gpu_view_uniform(rect, range);
         if transparent {
-            self.triangles
-                .sort_by(|left, right| right.depth.total_cmp(&left.depth));
+            self.triangles.sort_by(|left, right| {
+                let translucent = |t: &DepthTriangle| t.vertices.iter().any(|v| v.color[3] < 1.);
+                translucent(left)
+                    .cmp(&translucent(right))
+                    .then_with(|| right.depth.total_cmp(&left.depth))
+            });
         }
         let overlay_line_start = self.lines.len();
         let overlay_point_start = self.points.len();
@@ -250,24 +264,6 @@ impl GpuSceneBuilder {
 }
 
 impl Viewport {
-    pub(super) fn paint_objects(
-        &self,
-        painter: &egui::Painter,
-        rect: Rect,
-        document: &Document,
-        viewport_index: usize,
-        selection_preview: (Option<ObjectSelectionFilter>, &[ObjectId]),
-        transform: Option<ObjectPreview<'_>>,
-    ) {
-        let (preview, preview_ids) = selection_preview;
-        crate::viewport_gpu::paint(
-            painter,
-            rect,
-            viewport_index,
-            self.object_scene_with_object_preview(rect, document, preview, preview_ids, transform),
-        );
-    }
-
     #[cfg(test)]
     pub(super) fn object_scene(&self, rect: Rect, document: &Document) -> Arc<GpuViewportScene> {
         self.object_scene_with_preview(rect, document, None, &[])
@@ -302,6 +298,7 @@ impl Viewport {
         )
     }
 
+    #[cfg(test)]
     pub(super) fn object_scene_with_object_preview(
         &self,
         rect: Rect,
@@ -309,6 +306,25 @@ impl Viewport {
         preview: Option<ObjectSelectionFilter>,
         preview_ids: &[ObjectId],
         preview_transform: Option<ObjectPreview<'_>>,
+    ) -> Arc<GpuViewportScene> {
+        self.object_scene_with_analysis(
+            rect,
+            document,
+            preview,
+            preview_ids,
+            preview_transform,
+            None,
+        )
+    }
+
+    pub(super) fn object_scene_with_analysis(
+        &self,
+        rect: Rect,
+        document: &Document,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
+        preview_transform: Option<ObjectPreview<'_>>,
+        analysis: Option<&viboceros_command::draft_angle_analysis::View>,
     ) -> Arc<GpuViewportScene> {
         let (transform, deformed, instances) = match preview_transform {
             Some(ObjectPreview::Affine(map)) => (Some(map), None, None),
@@ -396,6 +412,9 @@ impl Viewport {
                     && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
                 face_member_colors_enabled: preview.is_some()
                     || (!attributes.is_locked() && !layer.is_locked()),
+                draft: analysis
+                    .filter(|v| v.objects.contains(&object.id()))
+                    .map(|v| v.options),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
                 transform: None,
@@ -438,6 +457,7 @@ impl Viewport {
                         highlighted: true,
                         member_colors_enabled: false,
                         face_member_colors_enabled: display.face_member_colors_enabled,
+                        draft: display.draft,
                         width: width + 1.5,
                         point_radius: 3.5,
                         transform: if partial {
@@ -473,6 +493,7 @@ impl Viewport {
                         highlighted: true,
                         member_colors_enabled: true,
                         face_member_colors_enabled: true,
+                        draft: None,
                         width: match self.display_mode {
                             DisplayMode::Wireframe => 1.5,
                             DisplayMode::Shaded => 2.25,
@@ -585,16 +606,23 @@ impl Viewport {
                     }
                 }
                 _ => {
-                    if self.display_mode != DisplayMode::Wireframe
+                    if (self.display_mode != DisplayMode::Wireframe || object.draft.is_some())
                         && object.draw_faces
                         && let Some(mesh) = display.mesh()
                     {
+                        let draft = object.draft.and_then(|s| s.mapping().ok());
                         self.add_gpu_mesh_faces_with_normals(
                             &mut scene,
                             mesh,
                             display.normals(),
-                            object.face_color,
-                            object.face_member_colors_enabled,
+                            FaceAppearance {
+                                color: object.face_color,
+                                member_colors: object.face_member_colors_enabled,
+                                draft,
+                                draft_colors: draft
+                                    .filter(|_| object.transform.is_none())
+                                    .map(|m| display.draft_colors(m)),
+                            },
                             object.transform.map(|transform| AffineMeshTransform {
                                 transform,
                                 normals: normal_transform.unwrap(),
@@ -604,6 +632,9 @@ impl Viewport {
                                     && matches!(&*display.geometry, Geometry::Brep(_)),
                             }),
                         );
+                    }
+                    if object.draft.is_some_and(|s| !s.show_isocurves) {
+                        continue;
                     }
                     for &[a, b] in display.wires() {
                         if let (Some(a), Some(b)) =
@@ -724,8 +755,12 @@ impl Viewport {
             scene,
             mesh,
             &mesh_normals::mesh_corner_normals(mesh),
-            color,
-            true,
+            FaceAppearance {
+                color,
+                member_colors: true,
+                draft: None,
+                draft_colors: None,
+            },
             None,
         );
     }
@@ -735,14 +770,13 @@ impl Viewport {
         scene: &mut GpuSceneBuilder,
         mesh: &TriangleMesh,
         corner_normals: &[[NaVector3<Real>; 3]],
-        color: Color32,
-        member_colors_enabled: bool,
+        appearance: FaceAppearance,
         transform: Option<AffineMeshTransform>,
     ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
-            color_with_alpha(color, 35)
+            color_with_alpha(appearance.color, 35)
         } else {
-            color
+            appearance.color
         };
         let gpu_color = color_to_gpu(face_color);
         for (triangle_index, normals) in corner_normals.iter().enumerate() {
@@ -784,8 +818,18 @@ impl Viewport {
             else {
                 continue;
             };
-            let normals = normals.map(vector_to_gpu);
-            let vertex_colors = if member_colors_enabled {
+            let vertex_colors = if let Some(mapping) = appearance.draft {
+                let colors = appearance
+                    .draft_colors
+                    .as_ref()
+                    .map(|c| c[triangle_index])
+                    .unwrap_or_else(|| {
+                        normals.map(|n| {
+                            Vector3::try_new(n.x, n.y, n.z).map_or([0, 0, 0], |n| mapping.color(n))
+                        })
+                    });
+                Some(colors.map(|[r, g, b]| color_to_gpu(Color32::from_rgb(r, g, b))))
+            } else if appearance.member_colors {
                 mesh.vertex_colors().map(|colors| {
                     mesh.triangles()[triangle_index].map(|index| {
                         let [red, green, blue, transparency] = colors[index as usize];
@@ -801,6 +845,8 @@ impl Viewport {
                 None
             }
             .unwrap_or([gpu_color; 3]);
+            let normals = normals.map(vector_to_gpu);
+            let shading = if appearance.draft.is_some() { 0. } else { 1. };
             let vertex_depths = points.map(|point| self.view_depth(point));
             let depth_scale = vertex_depths.iter().map(|d| d.abs()).fold(0.0, Real::max);
             let mut depth = 0.0;
@@ -825,16 +871,19 @@ impl Viewport {
                         position: first,
                         normal: normals[0],
                         color: vertex_colors[0],
+                        shading,
                     },
                     GpuTriangleVertex {
                         position: second,
                         normal: normals[1],
                         color: vertex_colors[1],
+                        shading,
                     },
                     GpuTriangleVertex {
                         position: third,
                         normal: normals[2],
                         color: vertex_colors[2],
+                        shading,
                     },
                 ],
             });

@@ -38,6 +38,8 @@ pub use circle_fit::MAX_CIRCLE_FIT_POINTS;
 pub use sphere_fit::{MAX_SPHERE_FIT_POINTS, SphereFit};
 mod circular;
 mod curvature_comb;
+mod draft_angle;
+pub use draft_angle::DraftAngleMapping;
 mod curve;
 pub use curvature_comb::{
     CurvatureComb, CurvatureHair, curvature_comb, curvature_comb_with_subdivision,
