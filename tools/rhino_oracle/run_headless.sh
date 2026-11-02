@@ -19,9 +19,17 @@ ORACLE_I3_LOG="${TMPDIR:-/tmp}/viboceros-rhino-oracle-i3-$$.log"
 export ORACLE_I3_CONFIG ORACLE_I3_LOG
 cd "$ORACLE_REPO_ROOT"
 
-exec xvfb-run -a -s '-screen 0 1920x1080x24' bash -c '
+# libwayland can connect to wayland-0 even without WAYLAND_DISPLAY. Give all
+# child clients a private runtime directory as well as their private X display.
+ORACLE_RUNTIME_DIR=$(mktemp -d "${TMPDIR:-/tmp}/viboceros-oracle-runtime.XXXXXXXX")
+export ORACLE_RUNTIME_DIR
+trap 'rm -rf -- "$ORACLE_RUNTIME_DIR"' EXIT
+
+xvfb-run -a -s '-screen 0 1920x1080x24' bash -c '
+    unset WAYLAND_DISPLAY WAYLAND_SOCKET SWAYSOCK I3SOCK
+    export XDG_RUNTIME_DIR="$ORACLE_RUNTIME_DIR"
     export VIBOCEROS_ORACLE_HEADLESS="$DISPLAY"
-    env -u I3SOCK i3 -a -c "$ORACLE_I3_CONFIG" >"$ORACLE_I3_LOG" 2>&1 &
+    i3 -a -c "$ORACLE_I3_CONFIG" >"$ORACLE_I3_LOG" 2>&1 &
     if [[ $1 == exec ]]; then
         shift
         exec "$@"

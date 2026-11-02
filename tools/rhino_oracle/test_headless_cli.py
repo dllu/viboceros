@@ -3,6 +3,9 @@
 import unittest
 import json
 import os
+import shutil
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -11,6 +14,30 @@ from .__main__ import headless_wrapper_argv
 
 
 class HeadlessCliTests(unittest.TestCase):
+    @unittest.skipUnless(all(shutil.which(name) for name in ['xvfb-run', 'Xvfb', 'i3']),
+                         'Xvfb and i3 are required')
+    def test_wrapper_isolates_wayland_sockets_and_cleans_its_runtime(self):
+        wrapper = Path(__file__).with_name('run_headless.sh')
+        script = '''import json, os, stat
+print(json.dumps(dict(display=os.environ['DISPLAY'],
+    headless=os.environ['VIBOCEROS_ORACLE_HEADLESS'],
+    runtime=os.environ['XDG_RUNTIME_DIR'],
+    mode=stat.S_IMODE(os.stat(os.environ['XDG_RUNTIME_DIR']).st_mode),
+    desktop={key: os.environ.get(key) for key in
+             ['WAYLAND_DISPLAY', 'WAYLAND_SOCKET', 'SWAYSOCK', 'I3SOCK']})))'''
+        environment = dict(os.environ, WAYLAND_DISPLAY='wayland-desktop', WAYLAND_SOCKET='9',
+                           SWAYSOCK='/desktop/sway.sock', I3SOCK='/desktop/i3.sock')
+        result = subprocess.run([str(wrapper), 'exec', sys.executable, '-c', script],
+                                env=environment, capture_output=True, text=True, timeout=20)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        observed = json.loads(result.stdout)
+        self.assertEqual(observed['display'], observed['headless'])
+        self.assertNotEqual(observed['display'], environment.get('DISPLAY'))
+        self.assertEqual(observed['desktop'], dict.fromkeys(observed['desktop']))
+        self.assertNotEqual(observed['runtime'], environment.get('XDG_RUNTIME_DIR'))
+        self.assertEqual(observed['mode'], 0o700)
+        self.assertFalse(Path(observed['runtime']).exists())
+
     def test_native_kernel_flag_reaches_the_viboceros_client(self):
         from .__main__ import main
         with tempfile.TemporaryDirectory() as temporary:

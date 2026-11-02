@@ -14,6 +14,8 @@ tools/rhino_oracle/run_headless.sh compare \
 
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
+It also uses a temporary private runtime directory and clears inherited Wayland
+and window-manager sockets, so Wayland clients cannot reach the Sway desktop.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare \
