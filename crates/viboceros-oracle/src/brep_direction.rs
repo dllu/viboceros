@@ -12,6 +12,12 @@ pub struct Fixture {
     pub faces: Option<Vec<usize>>,
     #[serde(default)]
     pub sdk: bool,
+    #[serde(default)]
+    pub sequence: Option<Vec<String>>,
+    #[serde(default)]
+    pub cancel: bool,
+    #[serde(default)]
+    pub pair: bool,
 }
 
 impl Fixture {
@@ -65,9 +71,25 @@ impl Fixture {
 }
 
 pub fn snapshot(doc: &Document, id: ObjectId) -> Result<Value, ProbeError> {
-    if doc.objects().count() != 1 {
+    snapshots(doc, &[id], false)
+}
+
+pub fn snapshots(doc: &Document, ids: &[ObjectId], pair: bool) -> Result<Value, ProbeError> {
+    if doc.objects().count() != ids.len() || ids.len() != if pair { 2 } else { 1 } {
         return Err(ProbeError::FixtureInvariant("Dir changed object count"));
     }
+    let rows = ids
+        .iter()
+        .map(|id| object_snapshot(doc, *id))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(if pair {
+        json!(rows)
+    } else {
+        rows.into_iter().next().unwrap()
+    })
+}
+
+fn object_snapshot(doc: &Document, id: ObjectId) -> Result<Value, ProbeError> {
     let obj = doc
         .object(id)
         .ok_or(ProbeError::FixtureInvariant("Dir changed object identity"))?;
@@ -92,6 +114,13 @@ pub(super) fn run(
             "Dir replay requires one iteration",
         ));
     }
+    if (f.pair || f.cancel) && f.sequence.is_none()
+        || f.sequence
+            .as_ref()
+            .is_some_and(|steps| steps.len() > 8 || f.sdk || f.faces.is_some() || f.source == "box")
+    {
+        return Err(ProbeError::FixtureInvariant("invalid Dir session recipe"));
+    }
     let source = f.source(tolerance)?;
     let command = f.command()?;
     measure_probe(iterations, || -> Result<Value, ProbeError> {
@@ -102,14 +131,63 @@ pub(super) fn run(
             viboceros_document::ObjectAttributes::on_layer(doc.current_layer_id())
                 .with_name("Direction source"),
         )?;
-        doc.select_objects_direct([id], SelectionMode::Replace)?;
+        let mut ids = vec![id];
+        if f.pair {
+            ids.push(
+                doc.add_geometry_with_attributes(
+                    Geometry::Brep(source.clone()),
+                    viboceros_document::ObjectAttributes::on_layer(doc.current_layer_id())
+                        .with_name("Direction source"),
+                )?,
+            );
+        }
+        doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)?;
         registry.execute(&mut doc, "Group DirectionSource")?;
         if !f.preselect {
             doc.clear_selection();
         }
         doc.clear_history()?;
-        let before = snapshot(&doc, id)?;
-        if f.sdk {
+        let snap = |doc: &Document| snapshots(doc, &ids, f.pair);
+        let before = snap(&doc)?;
+        if let Some(steps) = &f.sequence {
+            if f.sdk {
+                return Err(ProbeError::FixtureInvariant(
+                    "Dir session cannot use SDK replacement",
+                ));
+            }
+            if !f.preselect {
+                doc.set_transient_selection(ids.iter().copied())?;
+            }
+            let mut session =
+                viboceros_command::direction::DirectionSession::new(&doc, !f.preselect)?;
+            let mut mode = viboceros_command::direction::DirectionEdit::Flip;
+            for step in steps {
+                use viboceros_command::direction::DirectionEdit;
+                let option = step.strip_prefix("Mode=").unwrap_or(step);
+                if step == "NextMode" {
+                    mode = mode.next_mode();
+                    continue;
+                }
+                let edit = match option {
+                    "UReverse" | "FlipU" => DirectionEdit::ReverseU,
+                    "VReverse" | "FlipV" => DirectionEdit::ReverseV,
+                    "SwapUV" => DirectionEdit::SwapUv,
+                    "Flip" | "FlipNormal" => DirectionEdit::Flip,
+                    "FlipAll" => mode,
+                    _ => return Err(ProbeError::FixtureInvariant("unknown Dir session option")),
+                };
+                if step.starts_with("Mode=") {
+                    mode = edit;
+                    continue;
+                }
+                session.apply(&doc, edit, None)?;
+            }
+            if f.cancel {
+                session.cancel(&mut doc)?;
+            } else {
+                session.accept(&mut doc)?;
+            }
+        } else if f.sdk {
             let mut edited = source.clone();
             let indices = f
                 .faces
@@ -136,16 +214,16 @@ pub(super) fn run(
                 viboceros_command::CommandContext::default(),
             )?;
         }
-        let after = snapshot(&doc, id)?;
+        let after = snap(&doc)?;
         let changed = doc.undo_label().is_some();
         if changed {
             registry.execute(&mut doc, "Undo")?;
         }
-        let undo = snapshot(&doc, id)?;
+        let undo = snap(&doc)?;
         if changed {
             registry.execute(&mut doc, "Redo")?;
         }
-        let redo = snapshot(&doc, id)?;
+        let redo = snap(&doc)?;
         Ok(json!({"before":before,"after":after,"undo":undo,"redo":redo}))
     })
 }

@@ -40,6 +40,8 @@ impl VibocerosApp {
             if self.refinement_prompt.is_none() {
                 self.push_log(format!("{name} canceled"));
             }
+        } else if self.direction_session.is_some() {
+            self.finish_direction(false);
         } else if self.reparameterize_prompt.take().is_some() {
             self.push_log("Reparameterize canceled".into());
         } else if self.fillet_surface_prompt.is_some() {

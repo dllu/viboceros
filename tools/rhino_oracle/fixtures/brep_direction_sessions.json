@@ -1,0 +1,431 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-00-inspect",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-00-charts",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-00-twice",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-01-inspect",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-01-charts",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-01-twice",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-10-inspect",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-10-charts",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-10-twice",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-11-inspect",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-11-charts",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-warped-11-twice",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-00-inspect",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-00-charts",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-00-twice",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-01-inspect",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-01-charts",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-01-twice",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-10-inspect",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-10-charts",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-10-twice",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-11-inspect",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-11-charts",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-cylinder-11-twice",
+      "source": "cylinder",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-00-inspect",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-00-charts",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-00-twice",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-01-inspect",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-01-charts",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-01-twice",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-10-inspect",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-10-charts",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-10-twice",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-11-inspect",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-11-charts",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "SwapUV",
+        "VReverse",
+        "Flip"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-session-sphere-11-twice",
+      "source": "sphere",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "UReverse",
+        "UReverse"
+      ],
+      "cancel": true
+    }
+  ]
+}

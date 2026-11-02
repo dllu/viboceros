@@ -36,7 +36,8 @@ impl CommandLineState {
 
 impl VibocerosApp {
     pub(super) fn command_line_idle(&self) -> bool {
-        self.end_analysis_pick.is_none()
+        self.direction_session.is_none()
+            && self.end_analysis_pick.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && self.active_command.is_none()
@@ -301,6 +302,8 @@ impl VibocerosApp {
                             } else if let Some(p) = &self.select_uv_prompt {
                                 p.hint()
                             } else if let Some(p) = &self.refinement_prompt {
+                                p.hint()
+                            } else if let Some(p) = &self.direction_session {
                                 p.hint()
                             } else if let Some(p) = &self.reparameterize_prompt {
                                 p.hint()

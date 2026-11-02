@@ -41,6 +41,7 @@ impl eframe::App for VibocerosApp {
         self.validate_select_uv();
         self.validate_refinement();
         self.validate_reparameterize();
+        self.validate_direction();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
@@ -71,6 +72,7 @@ impl eframe::App for VibocerosApp {
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
             && self.reparameterize_prompt.is_none()
+            && self.direction_session.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -1064,6 +1066,11 @@ impl eframe::App for VibocerosApp {
                         &mut child,
                         document,
                         ViewportInput {
+                            direction: self
+                                .direction_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map(direction::Session::overlay),
                             insert_edges,
                             insert_mesh,
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),

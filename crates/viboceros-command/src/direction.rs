@@ -1,11 +1,13 @@
 //! Direction edits shared by scripted and command-first selection.
 use super::*;
+mod session;
+pub use session::DirectionSession;
 
 pub(super) const USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV) [Faces=All|i,j]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum DirectionEdit {
+pub enum DirectionEdit {
     Flip,
     ReverseU,
     ReverseV,
@@ -13,7 +15,15 @@ enum DirectionEdit {
 }
 
 impl DirectionEdit {
-    const fn label(self) -> &'static str {
+    pub const fn next_mode(self) -> Self {
+        match self {
+            Self::Flip => Self::SwapUv,
+            Self::ReverseU => Self::ReverseV,
+            Self::ReverseV => Self::Flip,
+            Self::SwapUv => Self::ReverseU,
+        }
+    }
+    pub const fn label(self) -> &'static str {
         match self {
             Self::Flip => "Flip",
             Self::ReverseU => "UReverse",
@@ -38,7 +48,14 @@ impl Command for DirectionCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let options = Options::parse(arguments)?;
+        let options = if arguments.is_empty() {
+            Options {
+                edit: DirectionEdit::Flip,
+                faces: None,
+            }
+        } else {
+            Options::parse(arguments)?
+        };
         Ok(Some(ObjectSelectionPrompt {
             command: "Dir",
             filter: if options.edit == DirectionEdit::Flip {
@@ -87,26 +104,9 @@ fn run(
     let selection_before = document.selected_object_ids().collect::<Vec<_>>();
     let mut replacements = Vec::new();
     for (id, geometry) in selected {
-        if let (Some(Some(indices)), Geometry::NurbsSurface(_)) = (&options.faces, geometry)
-            && indices.iter().any(|&i| i != 0)
-        {
-            return Err(CommandError::UnsupportedDirectionEditGeometry);
+        if let Some(edited) = edited_geometry(geometry, &options, document.tolerance())? {
+            replacements.push((id, edited));
         }
-        if edit == DirectionEdit::Flip {
-            if let Some(flipped) = flip::flipped_geometry(geometry, document.tolerance())? {
-                replacements.push((id, flipped));
-            }
-            continue;
-        }
-        let geometry = match (edit, geometry) {
-            (_, Geometry::NurbsSurface(surface)) => edit_brep(
-                Brep::try_surface_face(surface.clone(), document.tolerance())?,
-                &options,
-            )?,
-            (_, Geometry::Brep(brep)) => edit_brep(brep.clone(), &options)?,
-            _ => return Err(CommandError::UnsupportedDirectionEditGeometry),
-        };
-        replacements.push((id, geometry));
     }
     replacements.retain(|(id, geometry)| document.object(*id).unwrap().geometry() != geometry);
     if replacements.is_empty() {
@@ -133,6 +133,28 @@ fn run(
         "Edited {count} object direction(s) with {}",
         edit.label()
     ))
+}
+
+fn edited_geometry(
+    geometry: &Geometry,
+    options: &Options,
+    tolerance: Tolerance,
+) -> Result<Option<Geometry>, CommandError> {
+    if let (Some(Some(indices)), Geometry::NurbsSurface(_)) = (&options.faces, geometry)
+        && indices.iter().any(|&i| i != 0)
+    {
+        return Err(CommandError::UnsupportedDirectionEditGeometry);
+    }
+    if options.edit == DirectionEdit::Flip {
+        return Ok(flip::flipped_geometry(geometry, tolerance)?);
+    }
+    Ok(Some(match geometry {
+        Geometry::NurbsSurface(surface) => {
+            edit_brep(Brep::try_surface_face(surface.clone(), tolerance)?, options)?
+        }
+        Geometry::Brep(brep) => edit_brep(brep.clone(), options)?,
+        _ => return Err(CommandError::UnsupportedDirectionEditGeometry),
+    }))
 }
 
 fn edit_brep(mut brep: Brep, options: &Options) -> Result<Geometry, CommandError> {

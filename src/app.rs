@@ -181,6 +181,7 @@ mod curve_deviation;
 mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
+mod direction;
 mod distance;
 mod domain;
 mod drafting_input;
@@ -403,6 +404,8 @@ pub struct VibocerosApp {
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
+    direction_session: Option<direction::Session>,
+    direction_mode: viboceros_command::direction::DirectionEdit,
     refinement_prompt: Option<refinement::Prompt>,
     select_uv_prompt: Option<select_uv_rows::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
@@ -561,6 +564,8 @@ impl VibocerosApp {
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
+            direction_session: None,
+            direction_mode: viboceros_command::direction::DirectionEdit::Flip,
             refinement_prompt: None,
             select_uv_prompt: None,
             rebuild_preview: None,
@@ -775,6 +780,9 @@ impl VibocerosApp {
             return;
         }
         if !input.is_empty() && self.try_run_view_command(&input) {
+            return;
+        }
+        if self.continue_direction(&input) {
             return;
         }
         if self.end_analysis_pick.is_some() && !input.is_empty() {

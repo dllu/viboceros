@@ -3,13 +3,29 @@
 [Analysis commands](analysis-index.md) · [Flip](flip.md)
 
 ```text
+Dir
 Dir Flip|UReverse|VReverse|SwapUV [Faces=All|i,j]
 Dir Mode=FlipNormal|FlipU|FlipV|SwapUV [Faces=All|i,j]
 ```
 
-Run a specified edit on selected objects, or start it before picking objects and
-press Enter to accept. `Direction` is an alias. Bare `Dir` direction inspection,
-arrows, live mode switching and click-to-flip remain unimplemented.
+Bare `Dir` inspects selected objects, or asks for objects and Enter first.
+`Direction` is an alias. Viewports show curve tangents, surface U/V axes and
+oriented normals, and mesh face normals (up to 256 sampled triangles). Hovering
+a single object moves its arrows to the cursor. End-on arrows use a dot toward
+the camera and a cross away. Click an inspected object to preview a reversal.
+Navigation and display-mode changes remain available during inspection.
+
+Type `Flip`, `UReverse`, `VReverse` or `SwapUV` for repeated provisional edits.
+`Mode=FlipNormal|FlipU|FlipV|SwapUV` sets the multiple-object click mode;
+`FlipAll` applies that mode to all inspected objects. `NextMode` cycles
+FlipU → FlipV → FlipNormal → SwapUV. The mode persists between commands.
+Enter accepts the final geometry in one Undo entry; Escape discards all edits.
+Inspection and edits that return to the original geometry preserve history and
+Redo. Source changes invalidate the preview. `ShowDir` and `ShowDirOff`, arrow
+appearance preferences and parameter/draft-angle status readouts are not implemented.
+
+With an explicit edit on the initial command line, `Dir` executes immediately
+on preselection, or after picking objects and Enter.
 
 `UReverse`, `VReverse` and `SwapUV` edit a surface's parameter directions without
 changing its spatial geometry or oriented normal. Curves and meshes in a UV-edit
@@ -27,11 +43,13 @@ a closed surface's parameter directions remain editable even when its normal
 cannot be flipped. A standalone NURBS surface becomes a single-face B-rep to
 store its independent face sense; Undo restores the original representation.
 
-Objects retain their identities, attributes and groups. Preselection remains
-selected after execution and Redo; Undo clears changed inputs. Command-first
-picks are deselected after execution, Undo and Redo. Skipped peers retain their
-selection. Invalid edits preserve geometry, selection and history; an all-skipped
-batch adds no Undo entry and preserves Redo.
+Objects retain their identities, attributes and groups. Explicit single edits
+and single-object inspection retain preselection after execution and Redo;
+Undo clears changed inputs. Multiple-object inspection retains preselection
+through Undo too, but clears it on Escape. Command-first inspected inputs are
+deselected on acceptance or Escape and remain deselected through Undo/Redo.
+Invalid edits preserve the previous preview. Scripted all-skipped batches add
+no Undo entry and preserve Redo and skipped peers' selection.
 
 ## Geometry and validation
 
@@ -53,6 +71,12 @@ cover seven single-face operands with preselection and command-first selection.
 A separate [30 public face-API cases](../../tools/rhino_oracle/fixtures/brep_direction_sdk.json)
 include one, several and all box faces. SDK replacement retains selection through
 Undo; it is a separate execution route, not evidence of `Dir`'s selection policy.
+Another [36 single-object sessions](../../tools/rhino_oracle/fixtures/brep_direction_sessions.json)
+and [32 paired-surface mode sessions](../../tools/rhino_oracle/fixtures/brep_direction_modes_seeded.json)
+cover repeated edits, no-ops, Enter, Escape, both selection routes and mode
+cycling. Paired recipes explicitly seed the persistent mode. Both source
+identities and complete model states are checked; rendered arrow pixels and
+multiple-curve/mesh selection policies have no native differential capture yet.
 Compressed raw responses and content-addressed producer snapshots remain under
 `tools/rhino_oracle/observations/`. Current portable replays compare every model
 field at absolute `1e-9`, with exact topology and selection. This is bounded
@@ -61,8 +85,10 @@ corpus evidence, not a general performance or continuous-error certificate.
 ```sh
 cargo test -p viboceros-geometry --lib brep::parameter_orientation
 cargo test -p viboceros-command --lib tests::surfaces::direction
+cargo test -p viboceros-command --lib direction::session
 cargo test -p viboceros-oracle --test brep_direction_native
 cargo test -p viboceros --bin viboceros app::tests::direction
+cargo test -p viboceros --bin viboceros viewport::direction
 python3 -m unittest tools.rhino_oracle.test_brep_direction
 ```
 

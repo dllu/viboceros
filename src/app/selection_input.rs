@@ -3,6 +3,12 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.direction_session.is_some() {
+            if let Some(id) = click.object_id {
+                self.direction_click(id);
+            }
+            return;
+        }
         if self.selecting_insert_source() {
             if let Some(id) = click.object_id {
                 self.select_insert_source(id);
@@ -375,6 +381,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.direction_session.is_some() {
+            return;
+        }
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()

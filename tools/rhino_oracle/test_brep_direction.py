@@ -8,6 +8,7 @@ from pathlib import Path
 from .brep_direction_probe import validate
 from .brep_direction_comparison import canonical
 from .generate_brep_direction import request
+from .generate_brep_direction_sessions import request as session_request, mode_request
 from .client import OracleProtocolError, compare_responses
 
 HERE=Path(__file__).resolve().parent
@@ -17,6 +18,53 @@ def capture(sdk):
     return json.loads(gzip.decompress((HERE/'observations'/(family+'.json.gz')).read_bytes()))
 
 class BrepDirectionTests(unittest.TestCase):
+    def test_paired_mode_archive_preserves_both_objects_and_native_route_policies(self):
+        query=HERE/'fixtures/brep_direction_modes_seeded.json';q=json.loads(query.read_text())
+        data=json.loads(gzip.decompress((HERE/'observations/brep_direction_modes_seeded.json.gz').read_bytes()))
+        self.assertEqual(q,mode_request());self.assertEqual(len(data['results']),32)
+        self.assertEqual(data['provenance']['request_sha256'],hashlib.sha256(query.read_bytes()).hexdigest())
+        for name,sha in data['provenance']['sources'].items():
+            archived=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(archived).hexdigest(),sha)
+            if name.endswith('.3dm'):self.assertEqual(archived,(HERE/name).read_bytes())
+        local=copy.deepcopy(data);local['engine']='viboceros';local.pop('provenance')
+        for op,row,own in zip(q['operations'],data['results'],local['results']):
+            self.assertEqual(op['id'],row['id']);self.assertEqual(op['sequence'][0],'Mode=FlipNormal')
+            v=row['value'];own['value']=canonical(op,v,True)
+            for phase in ('before','after','undo','redo'):
+                self.assertEqual(len(v[phase]),2)
+                self.assertEqual(v[phase][0],v[phase][1])
+                selected=op['preselect'] and (not op['cancel'] or phase=='before')
+                self.assertEqual([o['selected'] for o in v[phase]],[selected]*2)
+            self.assertEqual([o['geometry'] for o in v['before']],[o['geometry'] for o in v['undo']])
+            self.assertEqual([o['geometry'] for o in v['after']],[o['geometry'] for o in v['redo']])
+        self.assertTrue(compare_responses(local,data,absolute_epsilon=1e-9,relative_epsilon=0.,request=q).passed)
+        broken=copy.deepcopy(local);broken['results'][0]['value']['after'][1]['selected']^=True
+        self.assertFalse(compare_responses(broken,data,absolute_epsilon=1e-9,relative_epsilon=0.,request=q).passed)
+
+    def test_provisional_session_archive_geometry_selection_and_endings(self):
+        query=HERE/'fixtures/brep_direction_sessions.json';q=json.loads(query.read_text())
+        data=json.loads(gzip.decompress((HERE/'observations/brep_direction_sessions.json.gz').read_bytes()))
+        self.assertEqual(q,session_request());self.assertEqual(len(data['results']),36)
+        self.assertEqual(data['provenance']['request_sha256'],hashlib.sha256(query.read_bytes()).hexdigest())
+        for name,sha in data['provenance']['sources'].items():
+            archived=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(archived).hexdigest(),sha)
+            if name.endswith('.3dm'):self.assertEqual(archived,(HERE/name).read_bytes())
+        local=copy.deepcopy(data);local['engine']='viboceros';local.pop('provenance')
+        for op,row,own in zip(q['operations'],data['results'],local['results']):
+            self.assertEqual(op['id'],row['id'])
+            v=row['value'];own['value']=canonical(op,v,True)
+            changed=v['before']['geometry']!=v['after']['geometry']
+            self.assertEqual(changed,not op['cancel'] and len(op['sequence'])==4)
+            self.assertEqual(v['before']['geometry'],v['undo']['geometry'])
+            self.assertEqual(v['after']['geometry'],v['redo']['geometry'])
+            self.assertEqual([v[p]['selected'] for p in ('before','after','undo','redo')],
+                [op['preselect'],op['preselect'],op['preselect'] and not changed,op['preselect']])
+        self.assertTrue(compare_responses(local,data,absolute_epsilon=1e-9,relative_epsilon=0.,request=q).passed)
+        for extra in ({'sequence':['_Delete']},{'sequence':['Flip']*9},{'sequence':None},{'cancel':1},{'faces':[0]},{'macro':'single'}):
+            with self.subTest(extra=extra),self.assertRaises(ValueError):validate(dict(q['operations'][0],**extra))
+
     def test_shared_operands_requests_and_archived_producers_are_complete(self):
         for sdk,count in [(False,52),(True,30)]:
             family='brep_direction_sdk' if sdk else 'brep_direction_command'

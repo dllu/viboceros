@@ -1,0 +1,479 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-1",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-2",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipV",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-3",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=SwapUV",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-4",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-5",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-6",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-00-7",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-1",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-2",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipV",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-3",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=SwapUV",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-4",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-5",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-6",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-01-7",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": false,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-1",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-2",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipV",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-3",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=SwapUV",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-4",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-5",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-6",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-10-7",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": false,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-0",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-1",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipU",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-2",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=FlipV",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-3",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "Mode=SwapUV",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-4",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-5",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-6",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    },
+    {
+      "op": "brep_direction_command",
+      "id": "dir-modes-11-7",
+      "source": "warped",
+      "edit": "u_reverse",
+      "preselect": true,
+      "sequence": [
+        "Mode=FlipNormal",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "NextMode",
+        "FlipAll"
+      ],
+      "cancel": true,
+      "pair": true
+    }
+  ]
+}

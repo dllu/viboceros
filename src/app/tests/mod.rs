@@ -295,6 +295,8 @@ pub(super) fn test_app() -> VibocerosApp {
         blend_surface_prompt: None,
         fillet_surface_prompt: None,
         reparameterize_prompt: None,
+        direction_session: None,
+        direction_mode: viboceros_command::direction::DirectionEdit::Flip,
         refinement_prompt: None,
         select_uv_prompt: None,
         rebuild_preview: None,

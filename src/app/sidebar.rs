@@ -27,6 +27,7 @@ impl VibocerosApp {
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
+            || self.direction_session.is_some()
         {
             self.cancel_interactive_command(false);
         }

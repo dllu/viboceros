@@ -441,6 +441,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.direction_session.is_some() {
+            return None;
+        }
         if self.picking_splop_fit_points() {
             return Some(ObjectSelectionFilter::Points);
         }
@@ -1386,6 +1389,11 @@ impl VibocerosApp {
             }
             if let Some(units) = pending.measurement_display_units {
                 command.push_str(&format!(" Units={units}"));
+            }
+            if pending.description.command == "Dir" && command.split_whitespace().count() == 1 {
+                self.object_prompt = None;
+                self.begin_direction(pending.postselected);
+                return true;
             }
             if pending.description.command == "RailRevolve" {
                 command = match self.rail_revolve_selection_input(&command, &pending.description) {

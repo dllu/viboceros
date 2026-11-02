@@ -14,8 +14,15 @@ fn selected_face_charts_match_public_native_face_edits() {
     replay(true);
 }
 fn replay(sdk: bool) {
+    replay_cases(support::cases(sdk));
+}
+#[test]
+fn provisional_sessions_match_native_accept_cancel_and_noop_history() {
+    replay_cases(support::session_cases());
+}
+fn replay_cases(cases: Vec<(serde_json::Value, serde_json::Value)>) {
     let mut failures = Vec::new();
-    for (op, native) in support::cases(sdk) {
+    for (op, native) in cases {
         let request: ProbeRequest =
             serde_json::from_value(json!({"protocol_version":1,"iterations":1,
             "tolerance":{"absolute":1e-8,"relative":1e-12,"angular":1e-8},"operations":[op]}))
@@ -29,10 +36,6 @@ fn replay(sdk: bool) {
         };
         let actual = &response.results[0].value;
         if std::panic::catch_unwind(|| support::compare(actual, &native)).is_err() {
-            eprintln!(
-                "DIR_DIFFERENCE {}",
-                json!({"id":op["id"],"actual":actual,"native":native})
-            );
             failures.push(op["id"].to_string());
         }
     }

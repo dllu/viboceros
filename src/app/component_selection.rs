@@ -252,7 +252,8 @@ fn stage_sources(
 
 impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
-        self.active_command.is_none()
+        self.direction_session.is_none()
+            && self.active_command.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()

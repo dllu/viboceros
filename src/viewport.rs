@@ -26,6 +26,7 @@ const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod clipping;
+pub(crate) mod direction;
 mod drafting;
 mod named_view;
 mod normal_point;
@@ -340,6 +341,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub(crate) direction: Option<direction::Overlay<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
@@ -462,6 +464,7 @@ fn selection_candidate(
 impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
+            direction: None,
             insert_edges: None,
             insert_mesh: None,
             soft_crease: None,
@@ -552,6 +555,7 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub direction_click: Option<ObjectId>,
     pub insert_point: Option<(
         viboceros_geometry::PolygonEdgePoint,
         viboceros_geometry::UnitVector3,
@@ -1430,6 +1434,7 @@ impl Viewport {
             .or(component_hover_mode
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
+            || input.direction.is_some()
             || input.parametric_pick
             || input.face_pick.is_some()
             || (input.edge_pick && !input.curve_or_edge_pick)
@@ -2097,6 +2102,28 @@ impl Viewport {
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
         self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);
+        let direction_hit = input
+            .direction
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none() && !drafting.active)
+            .and_then(|overlay| {
+                response
+                    .hover_pos()
+                    .and_then(|pointer| self.direction_hit(pointer, rect, document, overlay))
+            });
+        if let Some(overlay) = input.direction {
+            self.paint_direction(
+                &painter,
+                rect,
+                overlay,
+                (overlay.ids.len() == 1)
+                    .then_some(
+                        direction_hit
+                            .as_ref()
+                            .and_then(|(_, marker)| marker.as_ref()),
+                    )
+                    .flatten(),
+            );
+        }
         for &[a, b] in input.component_highlight_segments {
             if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
                 painter.line_segment([a, b], Stroke::new(3., Color32::from_rgb(245, 160, 20)));
@@ -2878,6 +2905,10 @@ impl Viewport {
             face_click,
             face_hit_point,
             parametric_click,
+            direction_click: response
+                .clicked_by(PointerButton::Primary)
+                .then_some(direction_hit.map(|(id, _)| id))
+                .flatten(),
             component_click,
             component_window,
             control_point_selection,
