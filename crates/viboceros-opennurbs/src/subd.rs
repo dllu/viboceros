@@ -48,6 +48,10 @@ pub struct SubDData {
     pub faces: Vec<Vec<u32>>,
     /// Exact limit normals per face corner, when explicitly requested.
     pub corner_normals: Vec<[f64; 3]>,
+    /// Regular limit jets: point, du, dv, duu, duv, dvv. Extraordinary
+    /// corners without a bicubic sector retain an unavailable index.
+    pub surface_jets: Vec<[[f64; 3]; 6]>,
+    pub corner_jet_indices: Vec<Option<usize>>,
     /// Present only for control-net mesh conversion, never a SubD property.
     pub mesh_ngons: Vec<crate::mesh::Ngon>,
     pub mesh_texture_coordinates: Vec<[f64; 2]>,
@@ -89,6 +93,10 @@ struct View {
     mesh_ngon_faces: *const u32,
     mesh_texture_coordinates: *const f64,
     mesh_vertex_normals: *const f64,
+    surface_jet_count: usize,
+    corner_jet_count: usize,
+    surface_jets: *const f64,
+    corner_jet_indices: *const u32,
 }
 #[repr(C)]
 struct NativeResult {
@@ -302,6 +310,11 @@ fn call(
         edge_face_counts: unsafe { copy(v.edge_face_counts, v.control_edge_count) },
         faces,
         corner_normals: unsafe { copy(v.corner_normals.cast(), v.normal_count) },
+        surface_jets: unsafe { copy(v.surface_jets.cast(), v.surface_jet_count) },
+        corner_jet_indices: unsafe { copy(v.corner_jet_indices, v.corner_jet_count) }
+            .into_iter()
+            .map(|i| (i != u32::MAX).then_some(i as usize))
+            .collect(),
         mesh_ngons,
         mesh_texture_coordinates: unsafe {
             copy(v.mesh_texture_coordinates.cast(), v.mesh_texture_count)
@@ -368,23 +381,18 @@ pub fn subd_edit_points(bytes: &[u8], points: &[[f64; 3]]) -> Result<SubDData, S
 /// Samples the exact limit surface at the vertices of the refined control net.
 /// The mesh between samples is an approximation, without a Hausdorff guarantee.
 pub fn subd_tessellate(bytes: &[u8], density: u32) -> Result<SubDData, SubDError> {
-    tessellate(bytes, density, false)
+    tessellate(bytes, density, 0)
 }
 pub fn subd_tessellate_with_normals(bytes: &[u8], density: u32) -> Result<SubDData, SubDError> {
-    tessellate(bytes, density, true)
+    tessellate(bytes, density, 1)
 }
-fn tessellate(bytes: &[u8], density: u32, normals: bool) -> Result<SubDData, SubDError> {
+pub fn subd_tessellate_with_jets(bytes: &[u8], density: u32) -> Result<SubDData, SubDError> {
+    tessellate(bytes, density, 2)
+}
+fn tessellate(bytes: &[u8], density: u32, normals: c_int) -> Result<SubDData, SubDError> {
     check_archive(bytes)?;
     call(|out, error, n| unsafe {
-        vibo_subd_tessellate(
-            bytes.as_ptr(),
-            bytes.len(),
-            density,
-            normals.into(),
-            out,
-            error,
-            n,
-        )
+        vibo_subd_tessellate(bytes.as_ptr(), bytes.len(), density, normals, out, error, n)
     })
 }
 

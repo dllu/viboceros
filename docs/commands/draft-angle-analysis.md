@@ -22,6 +22,8 @@ selection changes alone leave membership intact. Hidden sources/layers do not
 draw. Delete removes the live display and Undo restores it. Display settings and
 membership stay outside model history; turning analysis off stays off through
 subsequent Undo/Redo. Panel display controls preserve active point getters.
+Draft and [curvature analysis](curvature-analysis.md) colors replace each other
+only on the targeted objects.
 
 These console bindings expose panel actions as Viboceros extensions:
 

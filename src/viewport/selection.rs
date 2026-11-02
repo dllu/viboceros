@@ -212,6 +212,10 @@ impl Viewport {
     fn draws_object_faces(&self, id: ObjectId) -> bool {
         self.display_mode != DisplayMode::Wireframe
             || self
+                .curvature_objects
+                .as_ref()
+                .is_some_and(|ids| ids.contains(&id))
+            || self
                 .analysis_objects
                 .as_ref()
                 .is_some_and(|ids| ids.contains(&id))
@@ -472,7 +476,12 @@ impl Viewport {
                     );
                     if surface
                         && self.draws_object_faces(object.id())
-                        && let Some(mesh) = display.mesh()
+                        && let Some(mesh) = self
+                            .curvature_meshes
+                            .as_ref()
+                            .and_then(|m| m.get(&object.id()))
+                            .map(|m| &m.mesh)
+                            .or_else(|| display.mesh())
                     {
                         self.mesh_face_pick(pointer, rect, mesh)
                             .map_or(PickHit::screen(2, f32::INFINITY), |(hit, _)| hit)
@@ -816,6 +825,21 @@ impl Viewport {
         source: &viboceros_document::Object,
     ) -> ProjectedPrimitives {
         let Geometry::BlockInstance(instance) = &*display.geometry else {
+            if let Some(mesh) = self
+                .curvature_meshes
+                .as_ref()
+                .and_then(|m| m.get(&source.id()))
+            {
+                let mut projected = ProjectedPrimitives::default();
+                self.add_projected_mesh(
+                    &mut projected,
+                    rect,
+                    &mesh.mesh,
+                    true,
+                    document.tolerance(),
+                );
+                return projected;
+            }
             return self.projected_display_with_faces(
                 display,
                 rect,

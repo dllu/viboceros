@@ -175,6 +175,7 @@ mod catenary;
 mod conic;
 mod construction_plane;
 mod contour;
+mod curvature_analysis;
 mod curvature_graph;
 mod curve_array;
 mod curve_deviation;

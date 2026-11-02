@@ -1,5 +1,7 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
+mod curvature;
+mod faces;
 use super::display_cache::DisplayGeometry;
 use super::object_preview::ObjectPreview;
 #[cfg(test)]
@@ -13,6 +15,27 @@ use viboceros_document::ColorRgb;
 use viboceros_geometry::MeshFace;
 use viboceros_geometry::{AffineNormalTransform3, AffineTransform3};
 
+#[derive(Default)]
+pub(super) struct SurfaceAnalyses<'a> {
+    pub draft: Option<&'a viboceros_command::draft_angle_analysis::View>,
+    pub curvature: Option<&'a viboceros_command::curvature_analysis::View>,
+}
+#[derive(Clone)]
+struct CurvatureFaces {
+    options: viboceros_command::curvature_analysis::Options,
+    mesh: Option<Arc<viboceros_geometry::CurvatureMesh>>,
+}
+impl PartialEq for CurvatureFaces {
+    fn eq(&self, other: &Self) -> bool {
+        self.options == other.options
+            && match (&self.mesh, &other.mesh) {
+                (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+                (None, None) => true,
+                _ => false,
+            }
+    }
+}
+
 #[derive(Clone, Copy)]
 struct AffineMeshTransform {
     transform: AffineTransform3,
@@ -25,11 +48,7 @@ struct FaceAppearance {
     color: Color32,
     member_colors: bool,
     draft: Option<viboceros_geometry::DraftAngleMapping>,
-    draft_colors: Option<super::display_cache::DraftColors>,
-}
-
-fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
-    [vector.x as f32, vector.y as f32, vector.z as f32]
+    analysis_colors: Option<super::display_cache::DraftColors>,
 }
 
 fn color_to_gpu(color: Color32) -> [f32; 4] {
@@ -60,6 +79,7 @@ struct DisplayObject {
     member_colors_enabled: bool,
     face_member_colors_enabled: bool,
     draft: Option<viboceros_command::draft_angle_analysis::Options>,
+    curvature: Option<CurvatureFaces>,
     width: f32,
     point_radius: f32,
     transform: Option<AffineTransform3>,
@@ -77,6 +97,7 @@ impl PartialEq for DisplayObject {
             && self.member_colors_enabled == other.member_colors_enabled
             && self.face_member_colors_enabled == other.face_member_colors_enabled
             && self.draft == other.draft
+            && self.curvature == other.curvature
             && self.width == other.width
             && self.point_radius == other.point_radius
             && self.transform == other.transform
@@ -317,6 +338,7 @@ impl Viewport {
         )
     }
 
+    #[cfg(test)]
     pub(super) fn object_scene_with_analysis(
         &self,
         rect: Rect,
@@ -325,6 +347,28 @@ impl Viewport {
         preview_ids: &[ObjectId],
         preview_transform: Option<ObjectPreview<'_>>,
         analysis: Option<&viboceros_command::draft_angle_analysis::View>,
+    ) -> Arc<GpuViewportScene> {
+        self.object_scene_with_analyses(
+            rect,
+            document,
+            preview,
+            preview_ids,
+            preview_transform,
+            SurfaceAnalyses {
+                draft: analysis,
+                curvature: None,
+            },
+        )
+    }
+
+    pub(super) fn object_scene_with_analyses(
+        &self,
+        rect: Rect,
+        document: &Document,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
+        preview_transform: Option<ObjectPreview<'_>>,
+        analyses: SurfaceAnalyses<'_>,
     ) -> Arc<GpuViewportScene> {
         let (transform, deformed, instances) = match preview_transform {
             Some(ObjectPreview::Affine(map)) => (Some(map), None, None),
@@ -412,9 +456,17 @@ impl Viewport {
                     && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
                 face_member_colors_enabled: preview.is_some()
                     || (!attributes.is_locked() && !layer.is_locked()),
-                draft: analysis
+                draft: analyses
+                    .draft
                     .filter(|v| v.objects.contains(&object.id()))
                     .map(|v| v.options),
+                curvature: analyses
+                    .curvature
+                    .filter(|v| v.objects.contains(&object.id()))
+                    .map(|v| CurvatureFaces {
+                        options: v.options,
+                        mesh: v.meshes.get(&object.id()).cloned(),
+                    }),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
                 transform: None,
@@ -450,6 +502,14 @@ impl Viewport {
                 push_display_object(
                     &mut objects,
                     DisplayObject {
+                        curvature: display.curvature.as_ref().map(|c| CurvatureFaces {
+                            options: c.options,
+                            mesh: if partial {
+                                posed.curvature_mesh()
+                            } else {
+                                c.mesh.clone()
+                            },
+                        }),
                         geometry: posed,
                         color: SELECTED_COLOR,
                         face_color: display.face_color,
@@ -494,6 +554,7 @@ impl Viewport {
                         member_colors_enabled: true,
                         face_member_colors_enabled: true,
                         draft: None,
+                        curvature: None,
                         width: match self.display_mode {
                             DisplayMode::Wireframe => 1.5,
                             DisplayMode::Shaded => 2.25,
@@ -606,34 +667,52 @@ impl Viewport {
                     }
                 }
                 _ => {
-                    if (self.display_mode != DisplayMode::Wireframe || object.draft.is_some())
+                    if (self.display_mode != DisplayMode::Wireframe
+                        || object.draft.is_some()
+                        || object.curvature.is_some())
                         && object.draw_faces
-                        && let Some(mesh) = display.mesh()
                     {
-                        let draft = object.draft.and_then(|s| s.mapping().ok());
-                        self.add_gpu_mesh_faces_with_normals(
-                            &mut scene,
-                            mesh,
-                            display.normals(),
-                            FaceAppearance {
-                                color: object.face_color,
-                                member_colors: object.face_member_colors_enabled,
-                                draft,
-                                draft_colors: draft
-                                    .filter(|_| object.transform.is_none())
-                                    .map(|m| display.draft_colors(m)),
-                            },
-                            object.transform.map(|transform| AffineMeshTransform {
-                                transform,
-                                normals: normal_transform.unwrap(),
-                                // Raw meshes/surfaces keep face/parameter
-                                // order. B-reps reverse face orientation.
-                                reverse_normals: object.reversing
-                                    && matches!(&*display.geometry, Geometry::Brep(_)),
-                            }),
-                        );
+                        if let Some(curvature) = &object.curvature {
+                            self.add_curvature_faces(
+                                &mut scene,
+                                object,
+                                display,
+                                curvature,
+                                normal_transform,
+                            );
+                        } else if let Some(mesh) = display.mesh() {
+                            let draft = object.draft.and_then(|s| s.mapping().ok());
+                            self.add_gpu_mesh_faces_with_normals(
+                                &mut scene,
+                                mesh,
+                                display.normals().iter().copied(),
+                                FaceAppearance {
+                                    color: object.face_color,
+                                    member_colors: object.face_member_colors_enabled,
+                                    draft,
+                                    analysis_colors: draft
+                                        .filter(|_| object.transform.is_none())
+                                        .map(|m| display.draft_colors(m)),
+                                },
+                                object.transform.map(|transform| AffineMeshTransform {
+                                    transform,
+                                    normals: normal_transform.unwrap(),
+                                    // Raw meshes/surfaces keep face/parameter
+                                    // order. B-reps reverse face orientation.
+                                    reverse_normals: object.reversing
+                                        && matches!(&*display.geometry, Geometry::Brep(_)),
+                                }),
+                            );
+                        }
                     }
                     if object.draft.is_some_and(|s| !s.show_isocurves) {
+                        continue;
+                    }
+                    if object
+                        .curvature
+                        .as_ref()
+                        .is_some_and(|c| !c.options.show_isocurves)
+                    {
                         continue;
                     }
                     for &[a, b] in display.wires() {
@@ -739,156 +818,6 @@ impl Viewport {
             self.add_gpu_line(scene, rect, start, end, width, color);
         });
     }
-
-    #[cfg(test)]
-    pub(super) fn add_gpu_mesh_faces(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        mesh: &TriangleMesh,
-        color: Color32,
-    ) {
-        if self.display_mode == DisplayMode::Wireframe {
-            return;
-        }
-
-        self.add_gpu_mesh_faces_with_normals(
-            scene,
-            mesh,
-            &mesh_normals::mesh_corner_normals(mesh),
-            FaceAppearance {
-                color,
-                member_colors: true,
-                draft: None,
-                draft_colors: None,
-            },
-            None,
-        );
-    }
-
-    fn add_gpu_mesh_faces_with_normals(
-        &self,
-        scene: &mut GpuSceneBuilder,
-        mesh: &TriangleMesh,
-        corner_normals: &[[NaVector3<Real>; 3]],
-        appearance: FaceAppearance,
-        transform: Option<AffineMeshTransform>,
-    ) {
-        let face_color = if self.display_mode == DisplayMode::Ghosted {
-            color_with_alpha(appearance.color, 35)
-        } else {
-            appearance.color
-        };
-        let gpu_color = color_to_gpu(face_color);
-        for (triangle_index, normals) in corner_normals.iter().enumerate() {
-            let Some(mut points) = mesh.triangle_points(triangle_index) else {
-                continue;
-            };
-            let mut normals = *normals;
-            if let Some(transform) = transform {
-                let [Ok(a), Ok(b), Ok(c)] =
-                    points.map(|point| transform.transform.transform_point(point))
-                else {
-                    continue;
-                };
-                let [Ok(na), Ok(nb), Ok(nc)] = normals.map(|normal| {
-                    transform
-                        .normals
-                        .transform_normal(Vector3::try_new(normal.x, normal.y, normal.z)?)
-                }) else {
-                    continue;
-                };
-                points = [a, b, c];
-                normals = [na, nb, nc].map(|n| {
-                    let n = n.as_vector();
-                    NaVector3::new(n.x(), n.y(), n.z())
-                });
-                if transform.reverse_normals {
-                    normals = normals.map(|n| -n);
-                }
-            }
-            let clipped = self.clip_triangle(points);
-            if clipped[0].is_none() {
-                continue;
-            }
-            // Submit the original triangle so hardware clipping interpolates
-            // smooth normals correctly. Only visible geometry sets the depth
-            // range; behind-camera vertices must not move the near plane.
-            let [Some(first), Some(second), Some(third)] =
-                points.map(|point| self.gpu_position(point))
-            else {
-                continue;
-            };
-            let vertex_colors = if let Some(mapping) = appearance.draft {
-                let colors = appearance
-                    .draft_colors
-                    .as_ref()
-                    .map(|c| c[triangle_index])
-                    .unwrap_or_else(|| {
-                        normals.map(|n| {
-                            Vector3::try_new(n.x, n.y, n.z).map_or([0, 0, 0], |n| mapping.color(n))
-                        })
-                    });
-                Some(colors.map(|[r, g, b]| color_to_gpu(Color32::from_rgb(r, g, b))))
-            } else if appearance.member_colors {
-                mesh.vertex_colors().map(|colors| {
-                    mesh.triangles()[triangle_index].map(|index| {
-                        let [red, green, blue, transparency] = colors[index as usize];
-                        let alpha = if self.display_mode == DisplayMode::Ghosted {
-                            35
-                        } else {
-                            255 - transparency
-                        };
-                        color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
-                    })
-                })
-            } else {
-                None
-            }
-            .unwrap_or([gpu_color; 3]);
-            let normals = normals.map(vector_to_gpu);
-            let shading = if appearance.draft.is_some() { 0. } else { 1. };
-            let vertex_depths = points.map(|point| self.view_depth(point));
-            let depth_scale = vertex_depths.iter().map(|d| d.abs()).fold(0.0, Real::max);
-            let mut depth = 0.0;
-            let count = if clipped[1].is_some() { 4.0 } else { 3.0 };
-            for point in clipped[0]
-                .into_iter()
-                .flatten()
-                .chain(clipped[1].map(|triangle| triangle[2]))
-            {
-                let point_depth = self.view_depth(point);
-                scene.include_depth(point_depth);
-                if depth_scale > 0.0 {
-                    depth += point_depth / depth_scale;
-                }
-            }
-            let depth = (depth / count) * depth_scale;
-            scene.triangles.push(DepthTriangle {
-                depth,
-                vertex_depths,
-                vertices: [
-                    GpuTriangleVertex {
-                        position: first,
-                        normal: normals[0],
-                        color: vertex_colors[0],
-                        shading,
-                    },
-                    GpuTriangleVertex {
-                        position: second,
-                        normal: normals[1],
-                        color: vertex_colors[1],
-                        shading,
-                    },
-                    GpuTriangleVertex {
-                        position: third,
-                        normal: normals[2],
-                        color: vertex_colors[2],
-                        shading,
-                    },
-                ],
-            });
-        }
-    }
 }
 
 #[cfg(test)]
@@ -901,382 +830,7 @@ mod mirror_tests;
 mod translation_tests;
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn point(x: Real, y: Real, z: Real) -> Point3 {
-        Point3::try_new(x, y, z).unwrap()
-    }
-
-    #[test]
-    fn array_instances_share_tessellation_faces_clipping_and_leave_the_document_unchanged() {
-        let mut doc = Document::default();
-        let mesh = TriangleMesh::try_new(
-            vec![point(0., 0., 0.), point(4., 0., 0.), point(0., 4., 0.)],
-            vec![[0, 1, 2]],
-            doc.tolerance(),
-        )
-        .unwrap();
-        let source = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
-        doc.select_all();
-        doc.clear_history().unwrap();
-        let before = format!("{doc:?}");
-        let mut view = Viewport::new(ViewKind::Top);
-        view.display_mode = DisplayMode::Shaded;
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
-        let maps = [
-            AffineTransform3::identity(),
-            AffineTransform3::from_translation(Vector3::try_new(6., 0., 1000.).unwrap()),
-            AffineTransform3::try_uniform_scale(point(0., 0., 0.), -1.).unwrap(),
-        ];
-        let sources = [source];
-        let preview = ObjectPreview::Instances(super::super::object_preview::InstancePreview {
-            sources: &sources,
-            transforms: &maps,
-        });
-        view.refresh_clipping_with_preview(&doc, rect, Some(preview))
-            .unwrap();
-        let first = view.object_scene_with_object_preview(rect, &doc, None, &[], Some(preview));
-        let second = view.object_scene_with_object_preview(rect, &doc, None, &[], Some(preview));
-        assert!(Arc::ptr_eq(&first, &second));
-        let geometry = {
-            let cache = view.cached_scene.borrow();
-            let objects = &cache.as_ref().unwrap().key.objects;
-            assert_eq!(objects.len(), 4);
-            assert!(objects.iter().all(|o| o.draw_faces));
-            assert!(
-                objects
-                    .iter()
-                    .all(|o| Rc::ptr_eq(&o.geometry, &objects[0].geometry))
-            );
-            Rc::clone(&objects[0].geometry)
-        };
-        view.object_scene_with_object_preview(rect, &doc, None, &[], None);
-        let cache = view.cached_scene.borrow();
-        let objects = &cache.as_ref().unwrap().key.objects;
-        assert_eq!(objects.len(), 1);
-        assert!(Rc::ptr_eq(&objects[0].geometry, &geometry));
-        assert_eq!(format!("{doc:?}"), before);
-    }
-
-    #[test]
-    fn gpu_curve_lines_match_after_exact_knot_translation() {
-        let view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
-        let make = |origin| {
-            NurbsCurve::try_new(
-                2,
-                vec![point(0., 0., 0.), point(1., 2., 0.), point(2., 0., 0.)],
-                vec![
-                    origin,
-                    origin,
-                    origin,
-                    origin + 2.,
-                    origin + 2.,
-                    origin + 2.,
-                ],
-            )
-            .unwrap()
-        };
-        let mut expected = GpuSceneBuilder::new();
-        let mut actual = GpuSceneBuilder::new();
-        view.add_gpu_nurbs_curve(&mut expected, rect, &make(0.), 1., Color32::WHITE);
-        view.add_gpu_nurbs_curve(
-            &mut actual,
-            rect,
-            &make(2.0_f64.powi(52)),
-            1.,
-            Color32::WHITE,
-        );
-        assert_eq!(actual.lines.len(), CURVE_SAMPLES_PER_SPAN);
-        for (a, b) in actual.lines.iter().zip(&expected.lines) {
-            assert_eq!(a.instance.start_width, b.instance.start_width);
-            assert_eq!(a.instance.end_padding, b.instance.end_padding);
-            assert_eq!(a.depths, b.depths);
-        }
-    }
-
-    #[test]
-    fn collapsed_faces_do_not_change_healthy_corner_normals() {
-        let source = TriangleMesh::try_new(
-            vec![point(0., 0., 0.), point(1., 0., 0.), point(0., 1., -1.)],
-            vec![[0, 1, 2]],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let mixed = TriangleMesh::try_from_face_records(
-            vec![
-                point(0., 0., 0.),
-                point(1., 0., 0.),
-                point(0., 1., -1.),
-                point(0., 0., 0.),
-                point(1., 0., 0.),
-                point(0.5, 0., 0.),
-            ],
-            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([3, 4, 5])],
-        )
-        .unwrap();
-        let normals = mesh_normals::mesh_corner_normals(&mixed);
-        assert_eq!(normals[0], mesh_normals::mesh_corner_normals(&source)[0]);
-        assert!(
-            normals
-                .iter()
-                .flatten()
-                .all(|n| n.iter().all(|v| v.is_finite()))
-        );
-    }
-
-    #[test]
-    fn tessellation_shading_keeps_ninety_degree_edges_hard() {
-        let mesh = TriangleMesh::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(1.0, 0.0, 0.0),
-                point(0.0, 1.0, 0.0),
-                point(0.0, 0.0, 1.0),
-            ],
-            vec![[0, 1, 2], [0, 1, 3]],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let normals = mesh_normals::tessellation_corner_normals(&mesh);
-        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].z, 1.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].y, 0.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].y, -1.0));
-        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].z, 0.0));
-    }
-
-    #[test]
-    fn object_color_overrides_layer_color_only_for_object_source() {
-        let object = ColorRgb::new(12, 34, 56);
-        let layer = ColorRgb::new(78, 90, 123);
-        let document = Document::default();
-        let base =
-            ObjectAttributes::on_layer(document.current_layer_id()).with_object_color(object);
-        assert_eq!(
-            resolved_display_color(&base, layer),
-            Color32::from_rgb(12, 34, 56)
-        );
-        for source in [
-            viboceros_document::ObjectColorSource::Layer,
-            viboceros_document::ObjectColorSource::Material,
-            viboceros_document::ObjectColorSource::Parent,
-        ] {
-            assert_eq!(
-                resolved_display_color(&base.clone().with_color_source(source), layer),
-                Color32::from_rgb(78, 90, 123)
-            );
-        }
-    }
-
-    #[test]
-    fn special_preview_draws_only_candidates_and_highlights_pending_picks() {
-        let mut document = Document::default();
-        let visible = document
-            .add_geometry(Geometry::Point(point(-2., 0., 0.)))
-            .unwrap();
-        let hidden = document
-            .add_geometry(Geometry::Point(point(0., 0., 0.)))
-            .unwrap();
-        let locked = document
-            .add_geometry(Geometry::Point(point(2., 0., 0.)))
-            .unwrap();
-        document.set_objects_visibility([hidden], false).unwrap();
-        document.set_objects_locked([locked], true).unwrap();
-        let view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
-        let normal = view.object_scene(rect, &document);
-        assert_eq!(normal.points.len(), 2);
-        let shown = view.object_scene_with_preview(
-            rect,
-            &document,
-            Some(ObjectSelectionFilter::HiddenObjects),
-            &[hidden],
-        );
-        assert_eq!(shown.points.len(), 1);
-        assert_eq!(shown.points[0].color, color_to_gpu(SELECTED_COLOR));
-        let unlocked = view.object_scene_with_preview(
-            rect,
-            &document,
-            Some(ObjectSelectionFilter::LockedObjects),
-            &[],
-        );
-        assert_eq!(unlocked.points.len(), 1);
-        assert_ne!(unlocked.points[0].color, color_to_gpu(LOCKED_COLOR));
-        assert!(document.object(visible).unwrap().attributes().is_visible());
-    }
-
-    #[test]
-    fn choice_highlight_is_drawn_after_coincident_unselected_points() {
-        let mut document = Document::default();
-        let point = point(0.0, 0.0, 0.0);
-        let first = document.add_geometry(Geometry::Point(point)).unwrap();
-        let second = document.add_geometry(Geometry::Point(point)).unwrap();
-        let view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        let scene = view.object_scene_with_preview(rect, &document, None, &[first]);
-        assert_eq!(scene.points.len(), 2);
-        assert_ne!(scene.points[0].color, color_to_gpu(PICK_PREVIEW_COLOR));
-        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
-        assert_eq!(document.selected_object_count(), 0);
-        let scene = view.object_scene_with_preview(rect, &document, None, &[second]);
-        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
-        document
-            .select_objects([first, second], SelectionMode::Replace)
-            .unwrap();
-        let scene = view.object_scene_with_preview(rect, &document, None, &[first]);
-        assert_eq!(scene.points[0].color, color_to_gpu(SELECTED_COLOR));
-        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
-    }
-
-    #[test]
-    fn point_cloud_member_colors_reach_the_gpu_scene() {
-        let mut document = Document::default();
-        let cloud = PointCloud3::try_with_colors(
-            vec![point(-1.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
-            Some(vec![[200, 20, 30, 0], [40, 50, 220, 128]]),
-        )
-        .unwrap();
-        let id = document.add_geometry(Geometry::PointCloud(cloud)).unwrap();
-        let view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        let scene = view.object_scene(rect, &document);
-        assert_eq!(scene.points.len(), 2);
-        let expected = [
-            [200.0 / 255.0, 20.0 / 255.0, 30.0 / 255.0, 1.0],
-            [40.0 / 255.0, 50.0 / 255.0, 220.0 / 255.0, 127.0 / 255.0],
-        ];
-        for color in expected {
-            assert!(
-                scene.points.iter().any(|point| {
-                    point
-                        .color
-                        .iter()
-                        .zip(color)
-                        .all(|(actual, expected)| (actual - expected).abs() <= 1.1 / 255.0)
-                }),
-                "expected {color:?}, got {:?}",
-                scene
-                    .points
-                    .iter()
-                    .map(|point| point.color)
-                    .collect::<Vec<_>>()
-            );
-        }
-        document
-            .select_objects_direct([id], SelectionMode::Replace)
-            .unwrap();
-        let selected = view.object_scene(rect, &document);
-        assert!(
-            selected
-                .points
-                .iter()
-                .all(|point| point.color == color_to_gpu(SELECTED_COLOR))
-        );
-    }
-
-    #[test]
-    fn hidden_cloud_members_do_not_reach_gpu_scene() {
-        let mut document = Document::default();
-        let cloud = PointCloud3::try_new(vec![point(-1.0, 0.0, 0.0), point(1.0, 0.0, 0.0)])
-            .unwrap()
-            .with_hidden(vec![true, false])
-            .unwrap();
-        document.add_geometry(Geometry::PointCloud(cloud)).unwrap();
-        let view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        let scene = view.object_scene(rect, &document);
-        assert_eq!(scene.points.len(), 1);
-    }
-
-    #[test]
-    fn mesh_vertex_colors_reach_the_gpu_scene() {
-        let mut document = Document::default();
-        let mesh = TriangleMesh::try_new(
-            vec![
-                point(-1.0, -1.0, 0.0),
-                point(1.0, -1.0, 0.0),
-                point(0.0, 1.0, 0.0),
-            ],
-            vec![[0, 1, 2]],
-            document.tolerance(),
-        )
-        .unwrap()
-        .try_with_vertex_colors(Some(vec![
-            [200, 20, 30, 0],
-            [40, 50, 220, 128],
-            [10, 240, 80, 0],
-        ]))
-        .unwrap();
-        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
-        let mut view = Viewport::new(ViewKind::Top);
-        view.display_mode = DisplayMode::Shaded;
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        let scene = view.object_scene(rect, &document);
-        assert_eq!(scene.triangles.len(), 3);
-        let expected = [
-            [200.0 / 255.0, 20.0 / 255.0, 30.0 / 255.0, 1.0],
-            [40.0 / 255.0, 50.0 / 255.0, 220.0 / 255.0, 127.0 / 255.0],
-            [10.0 / 255.0, 240.0 / 255.0, 80.0 / 255.0, 1.0],
-        ];
-        for (actual, expected) in scene.triangles.iter().zip(expected) {
-            assert!(
-                actual
-                    .color
-                    .iter()
-                    .zip(expected)
-                    .all(|(actual, expected)| (actual - expected).abs() <= 1.1 / 255.0)
-            );
-        }
-        document
-            .select_objects_direct([id], SelectionMode::Replace)
-            .unwrap();
-        let selected = view.object_scene(rect, &document);
-        // Rhino highlights selected wires while retaining mesh vertex colors on faces.
-        for (actual, expected) in selected.triangles.iter().zip(&scene.triangles) {
-            assert_eq!(actual.color, expected.color);
-        }
-        assert!(
-            selected
-                .lines
-                .iter()
-                .all(|line| line.color == color_to_gpu(SELECTED_COLOR))
-        );
-    }
-
-    #[test]
-    fn stored_mesh_normals_reach_shaded_and_ghosted_gpu_scenes() {
-        let mut document = Document::default();
-        let mesh = TriangleMesh::try_new(
-            vec![point(-1., -1., 0.), point(1., -1., 0.), point(0., 1., 0.)],
-            vec![[0, 1, 2]],
-            document.tolerance(),
-        )
-        .unwrap()
-        .try_with_vertex_normals(Some(vec![
-            Vector3::try_new(2., 0., 0.).unwrap(),
-            Vector3::try_new(0., 0., 0.).unwrap(),
-            Vector3::try_new(0., 1e-38, 0.).unwrap(),
-        ]))
-        .unwrap();
-        document.add_geometry(Geometry::Mesh(mesh)).unwrap();
-        let mut view = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
-        for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
-            view.display_mode = mode;
-            let scene = view.object_scene(rect, &document);
-            assert_eq!(scene.triangles.len(), 3);
-            for (vertex, normal) in
-                scene
-                    .triangles
-                    .iter()
-                    .zip([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
-            {
-                assert_eq!(vertex.normal, normal);
-            }
-        }
-    }
-}
+mod tests;
 
 #[cfg(test)]
 mod affine_tests;
@@ -1288,55 +842,4 @@ mod grip_tests;
 mod block_tests;
 
 #[cfg(test)]
-mod subd_normal_tests {
-    use super::*;
-    #[test]
-    fn shallow_subd_creases_keep_distinct_native_sector_normals() {
-        let points = [
-            [0., 0., 0.],
-            [2., 0., 0.],
-            [4., 0., 0.5],
-            [0., 3., 0.],
-            [2., 3., 0.],
-            [4., 3., 0.5],
-        ]
-        .into_iter()
-        .map(|p| Point3::try_from(p).unwrap())
-        .collect();
-        let subd = viboceros_geometry::SubD::try_from_polygons(
-            points,
-            vec![vec![0, 1, 4, 3], vec![1, 2, 5, 4]],
-        )
-        .unwrap();
-        let seam = subd
-            .edges()
-            .iter()
-            .position(|e| *e == [1, 4] || *e == [4, 1])
-            .unwrap();
-        let subd = subd.try_with_edge_tags(&[(seam, 2)]).unwrap();
-        let display =
-            display_cache::DisplayGeometry::new(Geometry::SubD(subd).into(), 1, Tolerance::DEFAULT);
-        let mesh = display.mesh().unwrap();
-        let normals = display.normals();
-        let mut seam_normals = Vec::new();
-        for (triangle, normals) in mesh.triangles().iter().zip(normals) {
-            for (&index, &normal) in triangle.iter().zip(normals) {
-                let p = mesh.vertices()[index as usize];
-                if p.distance_to(Point3::try_new(2., 1.5, 0.).unwrap())
-                    .unwrap()
-                    < 1e-12
-                {
-                    seam_normals.push(normal);
-                }
-                assert!((normal.norm() - 1.).abs() < 1e-12);
-            }
-        }
-        assert!(seam_normals.len() >= 2);
-        assert!(
-            seam_normals
-                .iter()
-                .any(|a| seam_normals.iter().any(|b| a.dot(b) < 0.99)),
-            "crease normals were averaged across sectors"
-        );
-    }
-}
+mod subd_normal_tests;

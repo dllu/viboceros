@@ -218,6 +218,7 @@ pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
 pub use surface_tapered_extrusion::Fixture as SurfaceTaperedExtrusionFixture;
 pub mod brep_direction;
+pub mod curvature_analysis;
 pub mod curve_path_extrusion;
 pub mod direction_analysis;
 pub mod draft_angle_analysis;
@@ -1798,6 +1799,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: draft_angle_analysis::Fixture,
     },
+    CurvatureAnalysis {
+        id: String,
+        #[serde(flatten)]
+        fixture: curvature_analysis::Fixture,
+    },
     CurvePathExtrusion {
         id: String,
         #[serde(flatten)]
@@ -3010,6 +3016,7 @@ impl Operation {
             | Self::BrepDirectionCommand { id, .. }
             | Self::DirectionAnalysis { id, .. }
             | Self::DraftAngleAnalysis { id, .. }
+            | Self::CurvatureAnalysis { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
@@ -6293,6 +6300,9 @@ fn execute(
         }
         Operation::DraftAngleAnalysis { fixture, .. } => {
             draft_angle_analysis::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurvatureAnalysis { fixture, .. } => {
+            curvature_analysis::run(fixture, iterations, tolerance)?
         }
         Operation::CurvePathExtrusion { fixture, .. } => {
             curve_path_extrusion::run(fixture, iterations, tolerance)?

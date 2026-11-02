@@ -71,14 +71,6 @@ impl DraftAngleMapping {
         } else {
             ((dot - a) / (b - a)).clamp(0., 1.)
         };
-        let hue = (4. * std::f64::consts::PI / 3. * t) * (3. / std::f64::consts::PI);
-        let rgb = match hue.floor() as u8 {
-            0 => [1., hue, 0.],
-            1 => [2. - hue, 1., 0.],
-            2 => [0., 1., hue - 2.],
-            3 => [0., 4. - hue, 1.],
-            _ => [0., 0., 1.],
-        };
-        rgb.map(|v: Real| (255. * v).round() as u8)
+        crate::analysis_color::saturated_hue(t)
     }
 }

@@ -25,6 +25,17 @@ struct State {
 pub(crate) struct Session(Mutex<State>);
 
 impl Session {
+    pub(crate) fn remove(&self, ids: &BTreeSet<ObjectId>) {
+        if ids.is_empty() {
+            return;
+        }
+        let mut state = self.0.lock().unwrap();
+        let objects = Arc::make_mut(&mut state.objects);
+        for id in ids {
+            objects.remove(id);
+        }
+    }
+
     pub(crate) fn view(&self, doc: &Document) -> Option<View> {
         let state = self.0.lock().unwrap();
         state.enabled.then(|| View {
@@ -46,6 +57,7 @@ impl Session {
 pub(crate) struct AnalysisCommand {
     pub session: Arc<Session>,
     pub off: bool,
+    pub curvature: Arc<curvature_analysis::Session>,
 }
 
 impl Command for AnalysisCommand {
@@ -91,6 +103,7 @@ impl Command for AnalysisCommand {
             return Ok("Draft angle analysis off".into());
         }
         let mut proposed = state.clone();
+        let mut targets = BTreeSet::new();
         let action = parse(&mut proposed.options, args)?;
         if action != Action::Configure || !state.enabled {
             let selected = doc
@@ -100,6 +113,9 @@ impl Command for AnalysisCommand {
                 .collect::<BTreeSet<_>>();
             if selected.is_empty() {
                 return Err(CommandError::NoObjectsSelected);
+            }
+            if action != Action::Remove {
+                targets = selected.clone();
             }
             // Native command entry enables mesh edges even when the global
             // isocurve preference was off. Later panel changes remain allowed.
@@ -125,6 +141,8 @@ impl Command for AnalysisCommand {
             .filter(|id| doc.object(**id).is_some())
             .count();
         *state = proposed;
+        drop(state);
+        self.curvature.remove(&targets);
         Ok(format!("Draft angle analysis on {count} object(s)"))
     }
 }

@@ -26,6 +26,7 @@ fn main() {
         "subd_control_mesh.h",
         "subd_sharpness.h",
         "subd_edges.h",
+        "subd_curvature.h",
         "subd_interpolation.h",
         "subd_subdivision.h",
         "mesh_codec.h",

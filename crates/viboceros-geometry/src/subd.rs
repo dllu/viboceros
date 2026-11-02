@@ -9,6 +9,7 @@ mod chains;
 mod cone;
 mod control_net;
 mod crease;
+mod curvature;
 mod cylinder;
 mod edges;
 mod ellipsoid;

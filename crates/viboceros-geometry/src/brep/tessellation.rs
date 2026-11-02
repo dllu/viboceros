@@ -6,6 +6,7 @@ use super::*;
 mod audit;
 mod conforming;
 mod creases;
+mod curvature;
 mod independent;
 mod normals;
 

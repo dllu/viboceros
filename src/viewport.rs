@@ -81,6 +81,8 @@ use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, select
 #[cfg(test)]
 pub(crate) mod clip_tests;
 #[cfg(test)]
+mod curvature_analysis_tests;
+#[cfg(test)]
 mod draft_angle_tests;
 #[cfg(test)]
 mod imported_shading_tests;
@@ -343,6 +345,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub(crate) curvature_analysis: Option<&'a viboceros_command::curvature_analysis::View>,
     pub(crate) draft_angle_analysis: Option<&'a viboceros_command::draft_angle_analysis::View>,
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
@@ -470,6 +473,7 @@ impl Default for ViewportInput<'_> {
         Self {
             direction_analysis: None,
             draft_angle_analysis: None,
+            curvature_analysis: None,
             direction: None,
             insert_edges: None,
             insert_mesh: None,
@@ -648,6 +652,8 @@ pub struct Viewport {
     grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
     analysis_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
+    curvature_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
+    curvature_meshes: Option<viboceros_command::curvature_analysis::Meshes>,
     cached_clipping: Option<clipping::ClipRefreshKey>,
     edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
     object_snap_cache: std::cell::RefCell<viboceros_drafting::ObjectSnapCache>,
@@ -710,6 +716,8 @@ impl Viewport {
             grip_preview_cache: Default::default(),
             cached_scene: Default::default(),
             analysis_objects: None,
+            curvature_objects: None,
+            curvature_meshes: None,
             cached_clipping: None,
             edge_snap_cache: Default::default(),
             object_snap_cache: Default::default(),
@@ -1259,6 +1267,8 @@ impl Viewport {
         active: bool,
     ) -> ViewportOutput {
         self.analysis_objects = input.draft_angle_analysis.map(|view| view.objects.clone());
+        self.curvature_objects = input.curvature_analysis.map(|v| v.objects.clone());
+        self.curvature_meshes = input.curvature_analysis.map(|v| v.meshes.clone());
         let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
@@ -2105,13 +2115,16 @@ impl Viewport {
             &painter,
             rect,
             viewport_index,
-            self.object_scene_with_analysis(
+            self.object_scene_with_analyses(
                 rect,
                 document,
                 input.selection_preview,
                 input.selection_preview_ids,
                 object_preview,
-                input.draft_angle_analysis,
+                scene::SurfaceAnalyses {
+                    draft: input.draft_angle_analysis,
+                    curvature: input.curvature_analysis,
+                },
             ),
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);

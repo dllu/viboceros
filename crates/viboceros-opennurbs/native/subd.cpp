@@ -12,8 +12,11 @@
 #include "subd_append.h"
 #include "subd_interpolation.h"
 #include "subd_subdivision.h"
+#include "subd_curvature.h"
 
 struct ViboSubDResult {
+  std::vector<double> surface_jets;
+  std::vector<uint32_t> corner_jet_indices;
   std::vector<ViboNgonSpan> mesh_ngons;
   std::vector<uint32_t> mesh_ngon_vertices, mesh_ngon_faces;
   std::vector<double> mesh_texture_coordinates, mesh_vertex_normals;
@@ -28,8 +31,9 @@ void point(std::vector<double>& out, const ON_3dPoint& p) {
   require(p.IsValid(), "Nonfinite SubD point");
   out.insert(out.end(),{p.x,p.y,p.z});
 }
-std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false, const std::unordered_map<unsigned,uint32_t>* sources=nullptr, const std::unordered_set<unsigned>* retained_faces=nullptr) {
+std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false, const std::unordered_map<unsigned,uint32_t>* sources=nullptr, const std::unordered_set<unsigned>* retained_faces=nullptr, bool curvature=false) {
   auto out=std::make_unique<ViboSubDResult>();
+  vibo_subd::JetSamples jets;
   if (!evaluated) out->archive=vibo_subd::encode(subd);
   std::unordered_map<const ON_SubDVertex*,uint32_t> indices;
   std::vector<const ON_SubDVertex*> vertices;
@@ -69,6 +73,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
     out->face_sizes.push_back(f->EdgeCount());
     if(sources) out->face_sources.push_back(sources->at(f->m_level_zero_face_id));
     for (unsigned i=0; i<f->EdgeCount(); ++i) {
+      if(curvature) jets.append(f,i);
       out->face_vertices.push_back(indices.at(f->Vertex(i)));
       if(normals) {
         auto normal=f->Vertex(i)->SurfaceNormal(f,true);
@@ -78,6 +83,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
       }
     }
   }
+  out->surface_jets=std::move(jets.jets);out->corner_jet_indices=std::move(jets.corners);
   return out;
 }
 template<class Result,class F> int guard(Result** out, char* error, size_t capacity, F&& f) {
@@ -251,7 +257,7 @@ extern "C" int vibo_subd_transform(const uint8_t* bytes,size_t n,const double* m
 extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned density,int normals,
     ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
-    require(normals==0 || normals==1,"Invalid SubD normal request");
+    require(normals>=0 && normals<=2,"Invalid SubD differential request");
     require(density>=1 && density<=6,"SubD display density must be between 1 and 6");
     auto subd=vibo_subd::decode(bytes,n);
     // Count in 64 bits before subdivision; GlobalSubdivideQuadCount() returns u32.
@@ -268,7 +274,7 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
       const_cast<ON_SubDFace*>(f)->m_level_zero_face_id=f->m_id;
     }
     require(subd->GlobalSubdivide(density),"SubD subdivision failed");
-    return extract(*subd,true,normals!=0,&sources);
+    return extract(*subd,true,normals!=0,&sources,nullptr,normals==2);
   });
 }
 extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
@@ -279,7 +285,8 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
     r->mesh_ngons.size(),r->mesh_ngon_vertices.size(),r->mesh_ngon_faces.size(),
     r->mesh_texture_coordinates.size()/2,r->mesh_vertex_normals.size()/3,
     r->mesh_ngons.data(),r->mesh_ngon_vertices.data(),r->mesh_ngon_faces.data(),
-    r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data()};return 1;
+    r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data(),
+    r->surface_jets.size()/18,r->corner_jet_indices.size(),r->surface_jets.data(),r->corner_jet_indices.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 

@@ -1,7 +1,9 @@
 //! Optional source-surface channels, separate from editable mesh topology.
+mod curvature;
 use crate::{
     GeometryError, NurbsSurface, ParameterSide, Point2, Real, Tolerance, TriangleMesh, UnitVector3,
 };
+pub use curvature::CurvatureMesh;
 
 /// Each triangle corner keeps its own normal, preserving face and knot creases.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -66,18 +68,7 @@ pub(crate) fn triangle_corners(
     // averaging parameter coordinates that might overflow or erase an interval.
     std::array::from_fn(|i| {
         let p = uv[i];
-        let side = |axis: usize| {
-            let coordinate = |p: Point2| if axis == 0 { p.x() } else { p.y() };
-            uv.iter()
-                .find(|q| coordinate(**q) != coordinate(p))
-                .map_or(ParameterSide::Right, |q| {
-                    if coordinate(*q) < coordinate(p) {
-                        ParameterSide::Left
-                    } else {
-                        ParameterSide::Right
-                    }
-                })
-        };
+        let side = |axis: usize| corner_side(uv, i, axis);
         let regular = surface.normal_at_on_sides(p.x(), p.y(), side(0), side(1));
         let (normal, normal_source) = match regular {
             Ok(n) => (Some(n), TessellationNormalSource::Analytic),
@@ -95,6 +86,19 @@ pub(crate) fn triangle_corners(
             normal_source,
         }
     })
+}
+
+fn corner_side(uv: [Point2; 3], i: usize, axis: usize) -> ParameterSide {
+    let coordinate = |p: Point2| if axis == 0 { p.x() } else { p.y() };
+    uv.iter()
+        .find(|q| coordinate(**q) != coordinate(uv[i]))
+        .map_or(ParameterSide::Right, |q| {
+            if coordinate(*q) < coordinate(uv[i]) {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            }
+        })
 }
 
 pub(crate) fn limiting_normal(

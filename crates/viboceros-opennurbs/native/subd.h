@@ -41,6 +41,9 @@ typedef struct {
   const ViboNgonSpan* mesh_ngons;
   const uint32_t *mesh_ngon_vertices, *mesh_ngon_faces;
   const double *mesh_texture_coordinates, *mesh_vertex_normals;
+  size_t surface_jet_count, corner_jet_count;
+  const double* surface_jets;
+  const uint32_t* corner_jet_indices;
 } ViboSubDView;
 int vibo_subd_create(const double*, size_t, const uint32_t*, size_t,
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);

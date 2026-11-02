@@ -1006,6 +1006,7 @@ impl VibocerosApp {
                     | "Dir"
                     | "ShowDir"
                     | "DraftAngleAnalysis"
+                    | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Rebuild"

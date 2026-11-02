@@ -21,6 +21,7 @@ pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
 mod create_unique_block;
 mod create_uv_curves;
+pub mod curvature_analysis;
 pub mod curvature_graph;
 pub mod curve_deviation;
 pub mod divide;
@@ -917,6 +918,7 @@ pub struct CommandRegistry {
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
     draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
+    curvature_analysis: std::sync::Arc<curvature_analysis::Session>,
     edge_analysis: std::sync::Arc<edge_analysis::Session>,
     edge_zoom: std::sync::Arc<edge_analysis::Session>,
     point_deviation: std::sync::Arc<point_deviation::Session>,
@@ -959,9 +961,17 @@ impl CommandRegistry {
             .expect("unique built-in command");
         for off in [false, true] {
             registry
+                .register(curvature_analysis::AnalysisCommand {
+                    session: registry.curvature_analysis.clone(),
+                    draft: registry.draft_angle_analysis.clone(),
+                    off,
+                })
+                .expect("unique built-in command");
+            registry
                 .register(draft_angle_analysis::AnalysisCommand {
                     session: registry.draft_angle_analysis.clone(),
                     off,
+                    curvature: registry.curvature_analysis.clone(),
                 })
                 .expect("unique built-in command");
             registry
@@ -2813,6 +2823,12 @@ impl CommandRegistry {
     }
     pub fn draft_angle_analysis_view(&self, doc: &Document) -> Option<draft_angle_analysis::View> {
         self.draft_angle_analysis.view(doc)
+    }
+    pub fn curvature_analysis_view(&self, doc: &Document) -> Option<curvature_analysis::View> {
+        self.curvature_analysis.view(doc)
+    }
+    pub fn object_has_curvature_analysis(&self, id: ObjectId) -> bool {
+        self.curvature_analysis.contains(id)
     }
     pub fn object_has_draft_angle_analysis(&self, id: ObjectId) -> bool {
         self.draft_angle_analysis.contains(id)

@@ -1,0 +1,203 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-box-Gaussian",
+      "source": "box",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-box-Mean",
+      "source": "box",
+      "style": "Mean",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-box-MinRadius",
+      "source": "box",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-box-MaxRadius",
+      "source": "box",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-sphere-Gaussian",
+      "source": "sphere",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-sphere-Mean",
+      "source": "sphere",
+      "style": "Mean",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-sphere-MinRadius",
+      "source": "sphere",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-sphere-MaxRadius",
+      "source": "sphere",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-warped-Gaussian",
+      "source": "warped",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-warped-Mean",
+      "source": "warped",
+      "style": "Mean",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-warped-MinRadius",
+      "source": "warped",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-range-warped-MaxRadius",
+      "source": "warped",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "MaxRange",
+        "CurvatureAnalysisOff"
+      ]
+    }
+  ]
+}

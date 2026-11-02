@@ -2321,6 +2321,10 @@ def compare_responses(
             from .brep_direction_comparison import canonical
             local_value = canonical(operation, local_value, native=False)
             native_value = canonical(operation, native_value, native=True)
+        if operation is not None and operation.get('op') == 'curvature_analysis':
+            from .curvature_analysis_comparison import canonical
+            local_value = canonical(operation, local_value, native=False)
+            native_value = canonical(operation, native_value, native=True)
         if operation is not None and operation.get('op') == 'draft_angle_analysis':
             from .draft_angle_comparison import canonical
             local_value = canonical(operation, local_value, native=False)

@@ -5,6 +5,7 @@
 //! handles. Retaining ownership prevents address reuse from masquerading as a hit.
 
 use super::*;
+mod curvature;
 mod draft;
 mod subd;
 use std::cell::{OnceCell, RefCell};
@@ -183,6 +184,8 @@ pub(super) struct DisplayGeometry {
     mesh: OnceCell<Option<GeneratedDisplayMesh>>,
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
     draft_colors: RefCell<Option<draft::Drawing>>,
+    curvature_mesh: OnceCell<Option<std::sync::Arc<viboceros_geometry::CurvatureMesh>>>,
+    curvature_colors: RefCell<Option<curvature::Drawing>>,
     edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
     block_members: OnceCell<Vec<Rc<DisplayGeometry>>>,
     pub(super) topology_vertices: OnceCell<Vec<Point3>>,
@@ -234,6 +237,8 @@ impl DisplayGeometry {
             mesh: OnceCell::new(),
             normals: OnceCell::new(),
             draft_colors: RefCell::new(None),
+            curvature_mesh: OnceCell::new(),
+            curvature_colors: RefCell::new(None),
             edges: OnceCell::new(),
             block_members: OnceCell::new(),
             component_regions: OnceCell::new(),

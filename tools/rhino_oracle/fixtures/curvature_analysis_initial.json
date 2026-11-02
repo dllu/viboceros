@@ -1,0 +1,931 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-warped-0",
+      "source": "warped",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-warped-1",
+      "source": "warped",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-holed-0",
+      "source": "holed",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-holed-1",
+      "source": "holed",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-box-0",
+      "source": "box",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-box-1",
+      "source": "box",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-sphere-0",
+      "source": "sphere",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-sphere-1",
+      "source": "sphere",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-cylinder-0",
+      "source": "cylinder",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-cylinder-1",
+      "source": "cylinder",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-cone-0",
+      "source": "cone",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-cone-1",
+      "source": "cone",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-torus-0",
+      "source": "torus",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-torus-1",
+      "source": "torus",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-subd_plane-0",
+      "source": "subd_plane",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-subd_plane-1",
+      "source": "subd_plane",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-subd_box-0",
+      "source": "subd_box",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": false,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-life-subd_box-1",
+      "source": "subd_box",
+      "style": "Gaussian",
+      "range": [
+        -1,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "Hide",
+        "Show",
+        "Delete",
+        "Undo",
+        "Redo",
+        "Undo",
+        "CurvatureAnalysisOff",
+        "Undo"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-warped-Gaussian",
+      "source": "warped",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-warped-Mean",
+      "source": "warped",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-warped-MinRadius",
+      "source": "warped",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-warped-MaxRadius",
+      "source": "warped",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-holed-Gaussian",
+      "source": "holed",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-holed-Mean",
+      "source": "holed",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-holed-MinRadius",
+      "source": "holed",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-holed-MaxRadius",
+      "source": "holed",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-sphere-Gaussian",
+      "source": "sphere",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-sphere-Mean",
+      "source": "sphere",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-sphere-MinRadius",
+      "source": "sphere",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-sphere-MaxRadius",
+      "source": "sphere",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cylinder-Gaussian",
+      "source": "cylinder",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cylinder-Mean",
+      "source": "cylinder",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cylinder-MinRadius",
+      "source": "cylinder",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cylinder-MaxRadius",
+      "source": "cylinder",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cone-Gaussian",
+      "source": "cone",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cone-Mean",
+      "source": "cone",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cone-MinRadius",
+      "source": "cone",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-cone-MaxRadius",
+      "source": "cone",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-torus-Gaussian",
+      "source": "torus",
+      "style": "Gaussian",
+      "range": [
+        -0.5,
+        0.5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-torus-Mean",
+      "source": "torus",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-torus-MinRadius",
+      "source": "torus",
+      "style": "MinRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-colors-torus-MaxRadius",
+      "source": "torus",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        5
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-reverse-Gaussian",
+      "source": "warped",
+      "style": "Gaussian",
+      "range": [
+        1,
+        -1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-equal-Gaussian",
+      "source": "box",
+      "style": "Gaussian",
+      "range": [
+        0,
+        0
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-reverse-Mean",
+      "source": "warped",
+      "style": "Mean",
+      "range": [
+        1,
+        -1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-equal-Mean",
+      "source": "box",
+      "style": "Mean",
+      "range": [
+        0,
+        0
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-reverse-MinRadius",
+      "source": "warped",
+      "style": "MinRadius",
+      "range": [
+        1,
+        -1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-equal-MinRadius",
+      "source": "box",
+      "style": "MinRadius",
+      "range": [
+        0,
+        0
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-reverse-MaxRadius",
+      "source": "warped",
+      "style": "MaxRadius",
+      "range": [
+        1,
+        -1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-equal-MaxRadius",
+      "source": "box",
+      "style": "MaxRadius",
+      "range": [
+        0,
+        0
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-exclusive-warped",
+      "source": "warped",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff",
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff",
+        "DraftAngleAnalysis",
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff",
+        "DraftAngleAnalysisOff"
+      ]
+    },
+    {
+      "op": "curvature_analysis",
+      "id": "curvature-exclusive-subd_box",
+      "source": "subd_box",
+      "style": "Mean",
+      "range": [
+        0,
+        1
+      ],
+      "preselect": true,
+      "steps": [
+        "CurvatureAnalysis",
+        "DraftAngleAnalysis",
+        "DraftAngleAnalysisOff",
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff",
+        "DraftAngleAnalysis",
+        "CurvatureAnalysis",
+        "CurvatureAnalysisOff",
+        "DraftAngleAnalysisOff"
+      ]
+    }
+  ]
+}

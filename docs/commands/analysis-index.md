@@ -6,6 +6,7 @@
 - [Dir surface charts and normal directions](direction.md)
 - [ShowDir persistent Direction Analysis](direction-analysis.md)
 - [DraftAngleAnalysis false-color display](draft-angle-analysis.md)
+- [CurvatureAnalysis surface curvature colors](curvature-analysis.md)
 - [ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](show-edges.md)
 - [Fit a line through points, clouds, meshes and grips](line-through-points.md)
 - [PointDeviation distance analysis](point-deviation.md)
