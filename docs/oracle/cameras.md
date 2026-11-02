@@ -1,5 +1,7 @@
 # Camera and view comparisons
 
+[Stored camera vectors and draft View controls](camera-vectors.md).
+
 [Oracle overview](../oracle.md) · [Evidence index](README.md)
 
 ## SetView option prompt probe

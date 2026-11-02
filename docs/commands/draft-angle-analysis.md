@@ -66,8 +66,9 @@ establish identical tessellation, native pixels, saved-file analysis persistence
 or general performance parity. Another 26 native direction cases cover the five
 choices available in the oracle build, including acknowledged physical surface-edge
 picks and their start tangents. Named CPlanes have application frame tests.
-View captures use unit camera axes; viewport import does not retain nonunit
-camera-direction lengths.
+Another [35 camera/vector cases](../oracle/camera-vectors.md) cover raw camera
+metadata, navigation resets and nonunit View pull vectors. Import, named views and
+SaveAs/Open retain raw camera vectors independently of the rendering frame.
 Mesh-density controls and draft-curve extraction remain unimplemented.
 
 ```sh

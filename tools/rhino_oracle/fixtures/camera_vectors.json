@@ -1,0 +1,647 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-None",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-Zoom",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Zoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-MousePan",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MousePan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-MouseZoom",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MouseZoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-WorldTop",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "WorldTop"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-skew-Plan",
+      "projection": "Parallel",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Plan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-orthogonal-None",
+      "projection": "Parallel",
+      "direction": [
+        0,
+        0,
+        -3
+      ],
+      "up": [
+        0,
+        5,
+        0
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-small-None",
+      "projection": "Parallel",
+      "direction": [
+        1e-08,
+        2e-08,
+        -2e-08
+      ],
+      "up": [
+        0,
+        4e-08,
+        1e-08
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Parallel-large-None",
+      "projection": "Parallel",
+      "direction": [
+        1e+48,
+        2e+48,
+        -2e+48
+      ],
+      "up": [
+        0,
+        4e+48,
+        1e+48
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-None",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-Zoom",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Zoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-MousePan",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MousePan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-MouseZoom",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MouseZoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-WorldTop",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "WorldTop"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-Plan",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Plan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-skew-PhysicalOrbit",
+      "projection": "Perspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "PhysicalOrbit",
+      "mouse_drag": [
+        12,
+        -7
+      ]
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-orthogonal-None",
+      "projection": "Perspective",
+      "direction": [
+        0,
+        0,
+        -3
+      ],
+      "up": [
+        0,
+        5,
+        0
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-orthogonal-PhysicalOrbit",
+      "projection": "Perspective",
+      "direction": [
+        0,
+        0,
+        -3
+      ],
+      "up": [
+        0,
+        5,
+        0
+      ],
+      "action": "PhysicalOrbit",
+      "mouse_drag": [
+        12,
+        -7
+      ]
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-small-None",
+      "projection": "Perspective",
+      "direction": [
+        1e-08,
+        2e-08,
+        -2e-08
+      ],
+      "up": [
+        0,
+        4e-08,
+        1e-08
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "Perspective-large-None",
+      "projection": "Perspective",
+      "direction": [
+        1e+48,
+        2e+48,
+        -2e+48
+      ],
+      "up": [
+        0,
+        4e+48,
+        1e+48
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-None",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-Zoom",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Zoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-MousePan",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MousePan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-MouseZoom",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "MouseZoom"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-WorldTop",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "WorldTop"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-Plan",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "Plan"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-skew-PhysicalOrbit",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1,
+        2,
+        -2
+      ],
+      "up": [
+        0,
+        4,
+        1
+      ],
+      "action": "PhysicalOrbit",
+      "mouse_drag": [
+        12,
+        -7
+      ]
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-orthogonal-None",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        0,
+        0,
+        -3
+      ],
+      "up": [
+        0,
+        5,
+        0
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-orthogonal-PhysicalOrbit",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        0,
+        0,
+        -3
+      ],
+      "up": [
+        0,
+        5,
+        0
+      ],
+      "action": "PhysicalOrbit",
+      "mouse_drag": [
+        12,
+        -7
+      ]
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-small-None",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1e-08,
+        2e-08,
+        -2e-08
+      ],
+      "up": [
+        0,
+        4e-08,
+        1e-08
+      ],
+      "action": "None"
+    },
+    {
+      "op": "camera_vectors",
+      "id": "TwoPointPerspective-large-None",
+      "projection": "TwoPointPerspective",
+      "direction": [
+        1e+48,
+        2e+48,
+        -2e+48
+      ],
+      "up": [
+        0,
+        4e+48,
+        1e+48
+      ],
+      "action": "None"
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "draft-view-skew",
+      "mode": "View",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        1,
+        2,
+        -2
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "draft-view-orthogonal",
+      "mode": "View",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        0,
+        0,
+        -3
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "draft-view-small",
+      "mode": "View",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        1e-08,
+        2e-08,
+        -2e-08
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    },
+    {
+      "op": "draft_pull_direction",
+      "id": "draft-view-large",
+      "mode": "View",
+      "plane": [
+        0,
+        0,
+        1
+      ],
+      "view": [
+        1e+48,
+        2e+48,
+        -2e+48
+      ],
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve": "None",
+      "edge": 0,
+      "reverse": false,
+      "cancel": false
+    }
+  ]
+}

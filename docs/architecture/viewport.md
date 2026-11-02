@@ -10,7 +10,8 @@ state into document transactions:
 
 | Module | Responsibility |
 | --- | --- |
-| `viewport/camera` | Projection, drafting rays, navigation, and GPU camera coordinates |
+| `viewport/camera` | Projection, drafting rays, camera metadata, and GPU camera coordinates |
+| `viewport/navigation` | Mouse gestures, orbit axes, and camera-vector reset policy |
 | `viewport/extents` | Staged, atomic visible/selected bounds fitting |
 | `viewport/screen` | Shared clipping, containment, and screen-distance predicates |
 | `viewport/selection` | Object filters, click dispatch, and window/crossing selection |

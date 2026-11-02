@@ -1,6 +1,7 @@
 use super::*;
 use crate::app::draft_angle_analysis::Source;
 use viboceros_geometry::{LineSegment, Vector3};
+mod camera_vectors;
 mod native;
 mod viewport;
 

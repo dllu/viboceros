@@ -127,7 +127,8 @@ cover the same production path.
 ## Camera coordinates
 
 The app's `viewport/camera` module owns CPU projection/unprojection, drafting
-rays, navigation updates, view depth, and GPU camera matrices. It rebases GPU
+rays, view depth, and GPU camera matrices. `viewport/navigation` applies mouse
+gestures from their initial camera and controls raw-vector normalization. The camera module rebases GPU
 positions around the model-space camera target in f64 before f32 conversion;
 parallel views additionally apply pixels-per-model-unit before GPU conversion.
 This avoids subnormal screen coefficients at tiny parallel zoom scales. The

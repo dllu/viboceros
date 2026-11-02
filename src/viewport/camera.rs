@@ -1,7 +1,7 @@
-//! Shared camera projection, drafting rays, and checked navigation.
+//! Shared camera projection, drafting rays, and camera metadata.
 
 use super::*;
-use nalgebra::{Matrix4 as NaMatrix4, Unit, UnitQuaternion};
+use nalgebra::Matrix4 as NaMatrix4;
 
 #[derive(Clone, Copy)]
 struct ParallelAxes {
@@ -90,6 +90,7 @@ impl Viewport {
         self.pan = Vec2::ZERO;
         self.perspective_frame = None;
         self.camera_up_hint = None;
+        self.camera_direction_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         // The public OpenNURBS default world perspective direction is
@@ -156,6 +157,21 @@ impl Viewport {
             Vector3::try_from([right.x, right.y, right.z])?,
             Vector3::try_from([up.x, up.y, up.z])?,
             Tolerance::DEFAULT,
+        )
+    }
+
+    /// Stored camera direction, including its original length. Rendering and
+    /// geometric angle queries use the orthonormal camera frame separately.
+    pub(crate) fn camera_direction(&self) -> Vector3 {
+        self.camera_direction_hint.map_or_else(
+            || {
+                self.viewward_direction()
+                    .scaled(-1.)
+                    .expect("finite camera axis")
+            },
+            |hint| {
+                Vector3::try_from([hint.x, hint.y, hint.z]).expect("finite stored camera direction")
+            },
         )
     }
 
@@ -540,114 +556,6 @@ impl Viewport {
             -forward * self.perspective_camera_distance,
             forward + right * horizontal + up * vertical,
         )
-    }
-
-    pub(super) fn apply_navigation_drag(
-        &mut self,
-        button: PointerButton,
-        modifiers: egui::Modifiers,
-        delta: Vec2,
-    ) {
-        if !delta.is_finite() {
-            return;
-        }
-        if button == PointerButton::Middle
-            || (button == PointerButton::Secondary && (self.kind.is_parallel() || modifiers.shift))
-        {
-            if self.kind == ViewKind::Perspective {
-                let Some(rect) = self
-                    .last_rect
-                    .filter(|rect| rect.is_finite() && rect.is_positive())
-                else {
-                    return;
-                };
-                let (right, up, _) = self.perspective_basis();
-                let scale =
-                    self.perspective_camera_distance / self.perspective_focal_length_pixels(rect);
-                let target = self.target - right * (Real::from(delta.x) * scale)
-                    + up * (Real::from(delta.y) * scale);
-                if target.iter().all(|value| value.is_finite()) {
-                    self.target = target;
-                }
-            } else {
-                let pan = self.pan + delta;
-                if pan.is_finite() {
-                    self.pan = pan;
-                }
-            }
-        } else if button == PointerButton::Secondary && self.two_point_perspective {
-            let Some(rect) = self
-                .last_rect
-                .filter(|rect| rect.is_finite() && rect.is_positive())
-            else {
-                return;
-            };
-            let (right, up, _) = self.perspective_basis();
-            // Six owned Rhino 8 drags calibrate yaw to 0.3 degrees/pixel and
-            // vertical travel to eight target-plane pixels per mouse pixel.
-            let yaw = -Real::from(delta.x) * std::f64::consts::PI / 600.0;
-            let vertical = 8.0 * Real::from(delta.y) * self.perspective_camera_distance
-                / self.perspective_focal_length_pixels(rect);
-            let target = self.target + up * vertical;
-            let shift = self.perspective_lens_shift[1]
-                - 16.0 * Real::from(delta.y) / Real::from(rect.height().max(1.0));
-            if !target.iter().all(|value| value.is_finite()) || !shift.is_finite() {
-                return;
-            }
-            if self.perspective_frame.is_some() {
-                let rotation = UnitQuaternion::from_axis_angle(&Unit::new_normalize(up), yaw);
-                let right = rotation.transform_vector(&right);
-                let Ok(frame) = Frame3::try_from_directions(
-                    Point3::try_from([target.x, target.y, target.z]).expect("finite target"),
-                    Vector3::try_from([right.x, right.y, right.z]).expect("finite camera axis"),
-                    Vector3::try_from([up.x, up.y, up.z]).expect("finite camera axis"),
-                    Tolerance::DEFAULT,
-                ) else {
-                    return;
-                };
-                self.perspective_frame = Some(frame);
-                self.camera_up_hint = self
-                    .camera_up_hint
-                    .map(|hint| rotation.transform_vector(&hint));
-            } else {
-                self.orbit_yaw += yaw;
-            }
-            self.target = target;
-            self.perspective_lens_shift[1] = shift;
-            self.cplane_direction = None;
-        } else if button == PointerButton::Secondary {
-            if let Some(frame) = self.perspective_frame {
-                let (right, up, _) = self.perspective_basis();
-                let yaw = UnitQuaternion::from_axis_angle(
-                    &Unit::new_normalize(up),
-                    -Real::from(delta.x) * 0.01,
-                );
-                let pitch = UnitQuaternion::from_axis_angle(
-                    &Unit::new_normalize(yaw.transform_vector(&right)),
-                    Real::from(delta.y) * 0.01,
-                );
-                let rotation = pitch * yaw;
-                let new_right = rotation.transform_vector(&right);
-                let new_up = rotation.transform_vector(&up);
-                if let Ok(camera_frame) = Frame3::try_from_directions(
-                    frame.origin(),
-                    Vector3::try_from([new_right.x, new_right.y, new_right.z])
-                        .expect("finite camera axis"),
-                    Vector3::try_from([new_up.x, new_up.y, new_up.z]).expect("finite camera axis"),
-                    Tolerance::DEFAULT,
-                ) {
-                    self.perspective_frame = Some(camera_frame);
-                    self.camera_up_hint = self
-                        .camera_up_hint
-                        .map(|hint| rotation.transform_vector(&hint));
-                    self.cplane_direction = None;
-                }
-            } else {
-                self.orbit_yaw -= Real::from(delta.x) * 0.01;
-                self.orbit_pitch = (self.orbit_pitch + Real::from(delta.y) * 0.01)
-                    .clamp(-1.553_343_034_274_953_2, 1.553_343_034_274_953_2);
-            }
-        }
     }
 
     pub(super) fn world_origin(&self, rect: Rect) -> Pos2 {

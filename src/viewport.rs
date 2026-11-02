@@ -29,6 +29,7 @@ mod clipping;
 pub(crate) mod direction;
 mod drafting;
 mod named_view;
+mod navigation;
 mod normal_point;
 pub(crate) mod soft_crease;
 #[cfg(test)]
@@ -195,6 +196,7 @@ pub(crate) struct CameraSnapshot {
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     camera_up_hint: Option<NaVector3<Real>>,
+    camera_direction_hint: Option<NaVector3<Real>>,
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
     pixels_per_unit: Real,
@@ -669,6 +671,8 @@ pub struct Viewport {
     perspective_frame: Option<Frame3>,
     /// Preserve imported CameraUp independently of the orthonormal screen axes.
     camera_up_hint: Option<NaVector3<Real>>,
+    /// Preserve raw CameraDirection for 3DM and direction-sensitive analysis.
+    camera_direction_hint: Option<NaVector3<Real>>,
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
     pub(crate) plane: ConstructionPlaneState,
@@ -731,6 +735,7 @@ impl Viewport {
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
             camera_up_hint: None,
+            camera_direction_hint: None,
             cplane_direction: None,
             synchronized_role: None,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
@@ -772,6 +777,7 @@ impl Viewport {
             plan_frame: self.plan_frame,
             perspective_frame: self.perspective_frame,
             camera_up_hint: self.camera_up_hint,
+            camera_direction_hint: self.camera_direction_hint,
             cplane_direction: self.cplane_direction,
             synchronized_role: self.synchronized_role,
             pixels_per_unit: self.pixels_per_unit,
@@ -887,6 +893,7 @@ impl Viewport {
         self.plan_frame = camera.plan_frame;
         self.perspective_frame = camera.perspective_frame;
         self.camera_up_hint = camera.camera_up_hint;
+        self.camera_direction_hint = camera.camera_direction_hint;
         self.cplane_direction = camera.cplane_direction;
         self.synchronized_role = camera.synchronized_role;
         self.pixels_per_unit = camera.pixels_per_unit;
@@ -1151,6 +1158,7 @@ impl Viewport {
         self.perspective_frame =
             keep_perspective.then(|| Self::default_plane(kind).with_origin(target));
         self.camera_up_hint = None;
+        self.camera_direction_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(target.to_array());
@@ -1191,6 +1199,7 @@ impl Viewport {
         self.two_point_perspective = false;
         self.perspective_frame = None;
         self.camera_up_hint = None;
+        self.camera_direction_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
@@ -1223,6 +1232,7 @@ impl Viewport {
                 .expect("orthonormal CPlane camera frame");
         self.plan_frame = camera_frame;
         self.camera_up_hint = None;
+        self.camera_direction_hint = None;
         self.cplane_direction = Some(direction);
         self.synchronized_role = synchronized_name;
         if self.kind == ViewKind::Perspective {
@@ -1375,9 +1385,17 @@ impl Viewport {
             self.navigation_drag_start = Some(self.camera_snapshot());
         }
         if response.dragged_by(PointerButton::Middle) {
-            self.apply_navigation_drag(PointerButton::Middle, modifiers, response.drag_delta());
+            self.apply_navigation_gesture(
+                PointerButton::Middle,
+                modifiers,
+                response.total_drag_delta().unwrap_or_default(),
+            );
         } else if response.dragged_by(PointerButton::Secondary) {
-            self.apply_navigation_drag(PointerButton::Secondary, modifiers, response.drag_delta());
+            self.apply_navigation_gesture(
+                PointerButton::Secondary,
+                modifiers,
+                response.total_drag_delta().unwrap_or_default(),
+            );
         }
         if (response.drag_stopped_by(PointerButton::Middle)
             || response.drag_stopped_by(PointerButton::Secondary))
@@ -3022,6 +3040,7 @@ fn circular_arc_samples(arc: CircularArc3) -> usize {
 
 #[cfg(test)]
 mod tests {
+    mod camera_vectors;
     mod construction_plane;
     mod cplane_two_point;
     mod named_view_policy;
@@ -4083,11 +4102,15 @@ mod tests {
                     {
                         assert_eq!(viewport.pan, Vec2::ZERO);
                         assert!(
-                            (viewport.orbit_yaw - (angles.0 - Real::from(delta.x) * 0.01)).abs()
+                            (viewport.orbit_yaw
+                                - (angles.0 - Real::from(delta.x) * std::f64::consts::PI / 600.0))
+                                .abs()
                                 < 1e-14
                         );
                         assert!(
-                            (viewport.orbit_pitch - (angles.1 + Real::from(delta.y) * 0.01)).abs()
+                            (viewport.orbit_pitch
+                                - (angles.1 + Real::from(delta.y) * std::f64::consts::PI / 600.0))
+                                .abs()
                                 < 1e-14
                         );
                     } else {

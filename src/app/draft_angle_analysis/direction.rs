@@ -68,7 +68,12 @@ impl VibocerosApp {
                         .z_axis()
                         .as_vector(),
                 ),
-                Source::View => Some(self.viewports[self.active_viewport].viewward_direction()),
+                Source::View => Some(
+                    self.viewports[self.active_viewport]
+                        .camera_direction()
+                        .scaled(-1.)
+                        .map_err(|e| e.to_string())?,
+                ),
                 Source::NamedCPlane(name) => Some(
                     self.named_cplanes
                         .get(name)

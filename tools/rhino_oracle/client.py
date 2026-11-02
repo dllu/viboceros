@@ -1423,7 +1423,7 @@ class OracleClient:
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
             interaction = IdlePicker()
-        if any(op.get("op") == "view_camera_probe" and "mouse_drag" in op
+        if any(op.get("op") in ("view_camera_probe", "camera_vectors") and "mouse_drag" in op
                for op in request.get("operations", [])):
             from .camera_navigation import CameraNavigator
             interaction = CameraNavigator(request)

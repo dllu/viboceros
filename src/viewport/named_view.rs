@@ -30,7 +30,12 @@ impl Viewport {
     }
 
     pub(crate) fn pick_projection(&self) -> Option<viboceros_command::picking::Projection> {
-        let view = Self::named_view_to_3dm(self.named_view_snapshot(), String::new()).ok()?;
+        // Picking uses the rendered orthonormal frame. File records retain raw
+        // vectors, which can differ from that frame with a locked two-point up.
+        let mut saved = self.named_view_snapshot();
+        saved.camera.camera_up_hint = None;
+        saved.camera.camera_direction_hint = None;
+        let view = Self::named_view_to_3dm(saved, String::new()).ok()?;
         viboceros_command::picking::Projection::from_view(&view).ok()
     }
 
@@ -115,7 +120,7 @@ impl Viewport {
             name,
             projection,
             camera_location: point(location)?,
-            camera_direction: vector(direction)?,
+            camera_direction: vector(camera.camera_direction_hint.unwrap_or(direction))?,
             camera_up: vector(up)?,
             target: Some(point(target)?),
             construction_plane: saved.plane,
@@ -175,7 +180,8 @@ impl Viewport {
         view.perspective_camera_distance = distance;
         let axis_target = location + forward * distance;
         view.camera_target_offset = nominal_target - axis_target;
-        view.camera_up_hint = Some(up_hint.normalize());
+        view.camera_up_hint = Some(up_hint);
+        view.camera_direction_hint = Some(NaVector3::from(source.camera_direction.to_array()));
         if !view
             .camera_target_offset
             .iter()
