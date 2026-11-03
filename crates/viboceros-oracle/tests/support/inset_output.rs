@@ -15,12 +15,24 @@ pub fn assert_document(
     assert_eq!(doc.objects().len(), expected.len(), "{label}: object count");
     let mut used = std::collections::BTreeSet::new();
     for (i, row) in expected.iter().enumerate() {
-        let object = doc
+        let candidates = doc
             .objects()
-            .find(|o| {
+            .filter(|o| {
                 !used.contains(&o.id())
                     && (row["source"] != 0 || o.id() == source)
                     && matches_geometry(o.geometry(), row, epsilon)
+            })
+            .collect::<Vec<_>>();
+        let object = candidates
+            .iter()
+            .copied()
+            .find(|o| {
+                candidates.len() == 1
+                    || match o.geometry() {
+                        // Opposite curved strips can share all vertices.
+                        Geometry::Brep(b) => matches_brep_edges(b, &row["brep"], epsilon),
+                        _ => true,
+                    }
             })
             .unwrap_or_else(|| {
                 let actual = doc
@@ -121,6 +133,26 @@ fn matches_geometry(g: &Geometry, row: &Value, epsilon: f64) -> bool {
     let expected = curve_record(&row["curve"]);
     native_surface::curve_witnesses(&actual, &expected, epsilon).is_ok()
         && native_surface::curve_witnesses(&expected, &actual, epsilon).is_ok()
+}
+fn matches_brep_edges(brep: &viboceros_geometry::Brep, record: &Value, epsilon: f64) -> bool {
+    let native = record["edges"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| curve_record(&e["curve"]))
+        .collect::<Vec<_>>();
+    let mut used = vec![false; native.len()];
+    for edge in brep.edges() {
+        let Some(index) = native.iter().enumerate().position(|(i, curve)| {
+            !used[i]
+                && native_surface::curve_witnesses(edge.curve(), curve, epsilon).is_ok()
+                && native_surface::curve_witnesses(curve, edge.curve(), epsilon).is_ok()
+        }) else {
+            return false;
+        };
+        used[index] = true;
+    }
+    true
 }
 fn curve_record(v: &Value) -> NurbsCurve {
     if !v["definition"].is_null() {

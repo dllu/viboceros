@@ -11,6 +11,8 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
         "inset_surface_sdk",
         "inset_planar_curves",
         "inset_cusp_sdk",
+        "inset_multiedge_sdk",
+        "inset_continuity_sdk",
     ] {
         let native = common::cases_for(family).remove(0).1;
         for mode in [
@@ -21,7 +23,11 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             let mut app = test_app();
             let (doc, id) = if matches!(
                 family,
-                "inset_surface_sdk" | "inset_planar_curves" | "inset_cusp_sdk"
+                "inset_surface_sdk"
+                    | "inset_planar_curves"
+                    | "inset_cusp_sdk"
+                    | "inset_multiedge_sdk"
+                    | "inset_continuity_sdk"
             ) {
                 native_surface::fixture(&native["before"])
             } else {

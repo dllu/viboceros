@@ -1,6 +1,8 @@
 //! Smooth planar trim loops, analytic offsets and shared NURBS fitting.
 use super::*;
 use crate::{CurveSegment3, ParameterSide, PolyCurve3};
+mod collinear;
+mod groups;
 mod producer;
 use producer::{aligned, offset, shifted_start};
 
@@ -50,19 +52,8 @@ impl Brep {
             loose,
         } = options;
         let old = &boundary.trims;
-        let mut sources = Vec::with_capacity(old.len());
-        for trim in old {
-            // Joining even one segment clamps it. Loose interpolation needs
-            // the original periodic basis until its cyclic solve completes.
-            sources.push(if loose {
-                oriented(self, trim)?
-            } else {
-                joined(self, std::slice::from_ref(trim))?
-            });
-        }
-        if sources.is_empty() {
-            return Err(invalid("inset requires closed trim loops"));
-        }
+        let groups = groups::collect(self, old, loose, crease, tolerance)?;
+        let sources = groups.iter().map(|g| &g.curve).collect::<Vec<_>>();
         for (j, curve) in sources.iter().enumerate() {
             let next = &sources[(j + 1) % sources.len()];
             if curve.has_full_multiplicity_kink(tolerance)?
@@ -83,7 +74,23 @@ impl Brep {
         let mut offsets = Vec::with_capacity(sources.len());
         for (j, source) in sources.iter().enumerate() {
             let (curve, preserve_ends) =
-                offset(source, normal, distance, tolerance, loose, operations)?;
+                match offset(source, normal, distance, tolerance, loose, operations) {
+                    Ok(result) => result,
+                    Err(GeometryError::Degenerate {
+                        context: "NURBS offset cusp",
+                    }) if !loose && !crease && sources.len() > 1 => {
+                        // A cusp can cross original edge boundaries. Offset the
+                        // complete smooth loop before its reversed ears are cut.
+                        offsets.clear();
+                        let full = joined(self, old)?;
+                        let (curve, _) =
+                            offset(&full, normal, distance, tolerance, false, operations)?;
+                        work.charge_curve(&curve)?;
+                        offsets.push(curve);
+                        break;
+                    }
+                    Err(error) => return Err(error),
+                };
             // A periodic Greville window need not include the seam parameter.
             // Its cyclic interpolation closes naturally; forcing normal-shot
             // endpoints would change that interpolated curve.
@@ -95,7 +102,7 @@ impl Brep {
             work.charge_curve(&curve)?;
             offsets.push(curve);
         }
-        let strips = crease && old.len() > 1;
+        let strips = crease && groups.len() > 1;
         if !strips && offsets.len() > 1 {
             let joined = PolyCurve3::try_new(
                 offsets
@@ -107,6 +114,11 @@ impl Brep {
             work.charge_curve(&joined)?;
             offsets = vec![joined];
         }
+        let offsets = if strips {
+            collinear::simplify(offsets, tolerance)?
+        } else {
+            offsets.into_iter().map(Some).collect()
+        };
         let mut group_starts = Vec::with_capacity(offsets.len());
         let mut pieces = Vec::new();
         let kink_tolerance = Tolerance::try_new(
@@ -116,6 +128,9 @@ impl Brep {
         )?;
         for curve in offsets {
             group_starts.push(pieces.len());
+            let Some(curve) = curve else {
+                continue;
+            };
             let kinks = curve.full_multiplicity_kink_parameters(kink_tolerance)?;
             if kinks.is_empty() {
                 pieces.push(curve);
@@ -162,19 +177,25 @@ impl Brep {
         }
         let mut borders = Vec::new();
         if strips {
-            let mut connectors = Vec::with_capacity(old.len());
-            for (j, trim) in old.iter().enumerate() {
+            let mut connectors = Vec::with_capacity(groups.len());
+            for (j, group) in groups.iter().enumerate() {
+                let trim = &group.trims[0];
+                let cap = vertex_start + group_starts[j] % count;
                 connectors.push(self.inset_line_trim(
                     &face.surface,
-                    [trim.vertices[0], vertex_start + group_starts[j]],
-                    [self.vertices[trim.vertices[0]].point, goals[j]],
+                    [trim.vertices[0], cap],
+                    [
+                        self.vertices[trim.vertices[0]].point,
+                        self.vertices[cap].point,
+                    ],
                     tolerance,
                 )?);
             }
-            for j in 0..old.len() {
-                let k = (j + 1) % old.len();
+            for (j, group) in groups.iter().enumerate() {
+                let k = (j + 1) % groups.len();
                 let end = group_starts.get(j + 1).copied().unwrap_or(inset.len());
-                let mut trims = vec![old[j].clone(), connectors[k].clone()];
+                let mut trims = group.trims.clone();
+                trims.push(connectors[k].clone());
                 for trim in inset[group_starts[j]..end].iter().rev() {
                     trims.push(reverse_trim(trim)?);
                 }

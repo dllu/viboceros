@@ -1,4 +1,5 @@
 use super::*;
+mod curved_groups;
 
 fn cube() -> Brep {
     let frame = Frame3::try_from_normal(
@@ -81,7 +82,7 @@ fn planar_inset_loose_periodic_even_degree_keeps_its_interpolated_seam() {
 }
 
 #[test]
-fn planar_inset_loose_strips_share_multiple_cap_segments_per_source_edge() {
+fn planar_inset_loose_smooth_partitions_share_an_annular_border() {
     let tolerance = Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap();
     let ellipse = crate::Ellipse3::try_from_three_points(
         Point3::try_new(0., 0., 0.).unwrap(),
@@ -109,18 +110,16 @@ fn planar_inset_loose_strips_share_multiple_cap_segments_per_source_edge() {
             PlanarInsetOperations::default(),
         )
         .unwrap();
-    assert_eq!(output.faces().len(), 3);
-    assert_eq!(output.edges().len(), 8);
+    assert_eq!(output.faces().len(), 2);
+    assert_eq!(output.edges().len(), 6);
     assert_eq!(output.vertices().len(), 6);
     assert_eq!(output.faces()[0].loops()[0].trims().len(), 4);
-    assert!(
-        output.faces()[1..]
-            .iter()
-            .all(|f| f.loops()[0].trims().len() == 5)
-    );
+    assert_eq!(output.faces()[1].loops().len(), 2);
+    assert_eq!(output.faces()[1].loops()[0].trims().len(), 2);
+    assert_eq!(output.faces()[1].loops()[1].trims().len(), 4);
     assert_eq!(
         output.edge_use_counts().iter().filter(|&&n| n == 2).count(),
-        6
+        4
     );
     assert!((output.area(tolerance).unwrap() - source.area(tolerance).unwrap()).abs() < 1e-8);
     let before = source.clone();

@@ -151,6 +151,13 @@ pub fn epsilon_for(operation: &Value) -> f64 {
         return 1e-10;
     }
     if matches!(
+        operation["op"].as_str(),
+        Some("inset_continuity_sdk" | "inset_continuity_command" | "inset_continuity_limits")
+    ) || operation["op"] == "inset_collinear_sdk" && operation["scene"] == "elliptic_stadium"
+    {
+        return 2e-6;
+    }
+    if matches!(
         operation["scene"].as_str().unwrap(),
         "ellipse" | "oval" | "concave_oval" | "bezier" | "holes"
     ) {
@@ -163,6 +170,8 @@ pub fn epsilon_for(operation: &Value) -> f64 {
                 | "inset_output_limits"
                 | "inset_cusp_command"
                 | "inset_cusp_sdk"
+                | "inset_multiedge_sdk"
+                | "inset_multiedge_command"
         ) {
             2e-6
         } else {
@@ -296,7 +305,11 @@ pub fn curve_witnesses(
     let domain = source.domain();
     for (a, b) in source.spans() {
         for i in 0..=4 {
-            let t = a + (b - a) * (i as f64 / 4.);
+            let t = match i {
+                0 => a,
+                4 => b,
+                _ => (a + (b - a) * (i as f64 / 4.)).clamp(a, b),
+            };
             let p = source.evaluate(t).unwrap();
             let fraction = (t - domain.start()) / (domain.end() - domain.start());
             let seed = target

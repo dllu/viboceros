@@ -120,6 +120,15 @@ pub(super) fn find(
                         if !include(pair[0])? || !include(pair[1])? {
                             continue;
                         }
+                        for t in &mut pair {
+                            if *t == 1. {
+                                *t = 0.;
+                            }
+                        }
+                        pair.sort_by(Real::total_cmp);
+                        if pair[0] == pair[1] {
+                            continue;
+                        }
                         if !hits.iter().any(|p: &[Real; 2]| {
                             (p[0] - pair[0]).abs() < 1e-8 && (p[1] - pair[1]).abs() < 1e-8
                         }) {

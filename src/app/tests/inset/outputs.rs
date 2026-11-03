@@ -61,6 +61,8 @@ fn inset_output_previews_native_identity_components_attributes_and_history() {
         .into_iter()
         .chain(common::cases_for("inset_output_modes"))
         .chain(common::cases_for("inset_cusp_command"))
+        .chain(common::cases_for("inset_multiedge_command"))
+        .chain(common::cases_for("inset_continuity_command"))
         .filter(|(op, _)| {
             matches!(
                 op["id"].as_str().unwrap(),
@@ -75,10 +77,15 @@ fn inset_output_previews_native_identity_components_attributes_and_history() {
                     | "ellipse_plain_3.0_False_curves"
                     | "ellipse_tilted_3.0_True_pieces"
                     | "bezier_plain_2.8_True_pieces"
+                    | "ellipse_shifted_3.0_True_pieces"
+                    | "ellipse_clustered_3.0_False_curves"
+                    | "ellipse_independent_0.3_True_True_pieces"
+                    | "asymmetric_plain_3.0_False_False_curves"
+                    | "elliptic_stadium_plain_1.5_False_False_pieces"
             )
         })
         .collect::<Vec<_>>();
-    assert_eq!(cases.len(), 11);
+    assert_eq!(cases.len(), 16);
     for (op, native) in cases {
         let label = op["id"].as_str().unwrap();
         let mut app = test_app();

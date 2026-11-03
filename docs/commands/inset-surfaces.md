@@ -18,14 +18,15 @@ Inset 0.3 JoinOutputs=No
 ```
 
 `CreaseCorners=No` (initial default) creates one annular border face per boundary.
-`Yes` connects old and inset corners, creating one strip per edge. Outer boundaries
+`Yes` connects old and inset corners, creating polygon strips and strips at curved
+G2 breaks. Outer boundaries
 shrink; holes expand. Concave polygons and adjacent selected faces are supported
 when the offset retains the boundary topology. Whole surface inputs address all
 faces; typed `Faces` lists restrict the selected objects to zero-based face indices.
 Surface inputs must be processed separately from mesh/SubD inputs.
 Smooth NURBS loops, circular holes, annuli and tangent-continuous line/arc loops
 are also supported; see [curved-boundary behavior and qualification](inset-curves.md).
-A single smooth closed edge stays annular even with `CreaseCorners=Yes`.
+A smooth curved G2 loop stays annular even with `CreaseCorners=Yes`.
 `Loose=On` offsets original Greville edit points without refining the source
 basis. Loose starts at `Off` on each invocation; completed distance and
 `CreaseCorners` settings are remembered, and canceled changes are discarded.
@@ -48,18 +49,18 @@ Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seams,
 poles, collapsed edges and
 crossing/touching inset loops return errors. Insets that change topology at the
 medial axis are also rejected, apart from [local cusp-loop removal](inset-cusps.md)
-on a single smooth closed edge. `ThroughPoint` and `IgnoreSeams` remain pending.
+on a smooth closed boundary. `ThroughPoint` and `IgnoreSeams` remain pending.
 
-Frozen private-display evidence includes 140 public `Brep.InsetFaces` cases,
-268 commands and 19 preference steps. Qualification covers 131 SDK cases,
-214 successful commands and 18 native command failures. Nonplanar results
+Frozen private-display evidence covers public `Brep.InsetFaces`, real commands
+and preference steps. [Partition and continuity controls](inset-partitions.md)
+record their comparison counts and pending topology differences. Nonplanar results
 remain pending. Polygon, analytic and Loose
 comparisons use `1e-10`; tight fitted-curve tolerances are documented in the
 [curved-boundary guide](inset-curves.md). Checks retain oriented loops, edge
 incidence, supporting surfaces and solid status.
 Controls include triangles, reflected face sense, skewed charts and subdivided
 collinear boundaries. Collinear inset corners simplify; their old crease
-connectors meet the following retained corner, matching the captured native strips.
+connectors meet the nearer retained cap endpoint, with documented midpoint ties.
 Joined outputs also roundtrip through native 3DM. App tests cover preselection,
 command-first input, previews, cancellation, history and all three display modes.
 

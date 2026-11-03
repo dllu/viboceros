@@ -2,13 +2,14 @@
 
 [Curved boundaries](inset-curves.md) · [Output modes](inset-outputs.md)
 
-With `Loose=Off`, a smooth closed source edge can offset beyond its first
+With `Loose=Off`, a smooth closed boundary can offset beyond its first
 curvature cusp while leaving a valid inset region. The normal locus reverses
 locally and develops small loops. Inset removes oppositely wound loops, joins
 the surviving arcs, and validates the complete region before staging output.
-The original seam may be removed. New cap kinks use the existing one-degree
-edge-splitting threshold; a single source edge keeps an annular border for
-either `CreaseCorners` setting.
+The original seam remains when it survives trimming. New cap kinks use the
+existing one-degree edge-splitting threshold. Curved G2 edge partitions keep an
+annular border for either `CreaseCorners` setting; see [partition controls and
+remaining creased cusp fans](inset-partitions.md).
 
 The shared Hermite fitter represents the full signed normal locus with a tighter
 fit budget. A bounded Bézier-hull sweep finds distinct forward visits; derivative
@@ -16,7 +17,7 @@ control hulls exclude reversed stretches. Signed polynomial areas and cyclic
 interval containment select the smallest reversed loops, including cases where
 both complementary arcs contain negative area. Structural intersection and trim
 operations use usd-brep when enabled. Complete collapse, ambiguous contacts,
-region splitting, and unresolved multi-edge cusps still return errors.
+region splitting, and creased cusp fans still return errors.
 Support-strip bounds reject provable collapses before the contact search.
 Exact separating-plane predicates also certify adjacent Bézier spans at sharp
 joins without a tangent-intersection search.

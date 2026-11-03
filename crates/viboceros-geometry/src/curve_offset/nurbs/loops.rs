@@ -71,7 +71,15 @@ pub(crate) fn offset_closed_region(
             continue;
         }
         let start = end.rem_euclid(1.);
-        kept.push([start, start + next - end]);
+        let stop = start + (next - end);
+        // Keep the stored seam when it survives. Splitting its cyclic range
+        // here retains the seam vertex independently of new cusp junctions.
+        if stop > 1. {
+            kept.push([start, 1.]);
+            kept.push([0., stop - 1.]);
+        } else {
+            kept.push([start, stop]);
+        }
     }
     if kept.is_empty() {
         return Err(GeometryError::DegenerateOffsetRegion);

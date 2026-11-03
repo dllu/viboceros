@@ -49,8 +49,8 @@ impl Brep {
     /// Insets planar faces with straight polygon loops or smooth NURBS loops.
     /// Outer boundaries shrink, holes expand, and original surfaces/outer
     /// edges survive. Selected slots hold caps; border faces are appended.
-    /// `crease_corners` adds border strips at polygon corners and at joins
-    /// between smooth source edges. A single smooth closed edge stays annular.
+    /// `crease_corners` adds border strips at polygon corners and G2 breaks
+    /// in curved chains. G2 closed loops stay annular.
     /// Non-affine charts, curved G0 corners, seams, poles, crossing/collapsing
     /// offsets and topology changes are errors. Sources are immutable on error.
     /// Admission bounds selected corners to 100,000, boundary-pair work to

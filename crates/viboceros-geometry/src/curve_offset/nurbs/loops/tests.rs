@@ -130,6 +130,43 @@ fn cusp_support_width_rejects_collapse_without_rejecting_nearby_regions_or_outwa
 }
 
 #[test]
+fn cusp_trimming_retains_a_surviving_stored_seam() {
+    let source = ellipse();
+    let seam = source.parameter_at(0.125).unwrap();
+    let source = source.try_change_closed_seam(seam).unwrap();
+    let normal = Vector3::try_new(0., 0., 1.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    let tolerance = Tolerance::try_new(2.5e-7, 1e-12, 1e-6).unwrap();
+    let expected = offset_sample(
+        &source,
+        3.,
+        normal,
+        *source.domain().start(),
+        ParameterSide::Right,
+    )
+    .unwrap()
+    .point;
+    let result = offset_closed_region(&source, 3., normal, tolerance, None).unwrap();
+    assert!(
+        result
+            .evaluate(*result.domain().start())
+            .unwrap()
+            .distance_to(expected)
+            .unwrap()
+            < 1e-9
+    );
+    assert_eq!(
+        result
+            .full_multiplicity_kink_parameters(Tolerance::DEFAULT)
+            .unwrap()
+            .len(),
+        2
+    );
+}
+
+#[test]
 fn cusp_reversed_traversal_and_negative_weight_gauge_keep_the_analytic_tip() {
     let source = ellipse();
     let negative = NurbsCurve::try_new_rational(

@@ -8,8 +8,9 @@ can occur on the same face. Tangent-continuous line/arc chains also work.
 The supporting surface and original boundaries remain unchanged.
 
 With `Loose=Off`, `CreaseCorners=No` keeps a smooth offset loop as one closed edge with an annular
-border. `Yes` splits a chain at its original edge joins and adds connecting strips;
-a single smooth closed source edge still has an annular border. The same command,
+border. `Yes` splits a chain at curvature breaks and adds connecting strips;
+curved G2 joins share an annular border. See [edge partitions and curvature
+joins](inset-partitions.md). The same command,
 face picker, preview, cancellation, attributes and history rules apply to all inputs.
 Previews sample every nonempty curve span and share the existing segment limit.
 
@@ -23,8 +24,8 @@ requiring their control hulls to fit inside an inscribed polygon.
 Convex-loop certificates use an exact convex hull; hole-pair candidates use a
 cached-bound sweep to avoid scanning unrelated boundaries.
 
-Tight offsets of a single smooth closed edge can remove cusp loops while
-retaining one cap boundary. The original seam can disappear, and new tangent
+Tight offsets of a smooth closed boundary can remove cusp loops while
+retaining one cap boundary. The original seam survives unless trimmed away, and new tangent
 kinks split cap edges. See [cusp trimming and numerical limits](inset-cusps.md).
 
 Frozen comparisons cover ellipses, periodic convex/concave splines, cubic Bézier

@@ -57,9 +57,9 @@ impl Brep {
         if retained.len() < 3 {
             return Err(invalid("inset boundary has fewer than three corners"));
         }
-        // Native offsets simplify collinear source junctions. The crease
-        // connector at such an old vertex goes to the following retained
-        // offset corner; the following strip can therefore be triangular.
+        // Native offsets simplify collinear source junctions. A removed
+        // corner connects to the nearer retained endpoint, giving one of the
+        // neighboring strips a triangular boundary.
         let offset_points = retained
             .iter()
             .map(|&j| offset_points[j])
@@ -73,6 +73,17 @@ impl Brep {
                 next = cursor;
             }
             mapped[j] = next;
+        }
+        for j in 0..old.len() {
+            if retained.binary_search(&j).is_ok() {
+                continue;
+            }
+            let next = mapped[j];
+            let previous = (next + retained.len() - 1) % retained.len();
+            let p = self.vertices[old[j].vertices[0]].point;
+            if p.distance_to(offset_points[previous])? < p.distance_to(offset_points[next])? {
+                mapped[j] = previous;
+            }
         }
         let vertex_start = self.vertices.len();
         for &p in &offset_points {

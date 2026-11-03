@@ -1,0 +1,291 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_shared_0.3_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "shared",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_shared_0.3_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "shared",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_shared_0.3_True_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "shared",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_shared_0.3_True_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "shared",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_independent_0.3_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "independent",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_independent_0.3_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "independent",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_independent_0.3_True_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "independent",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_independent_0.3_True_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "ellipse",
+      "variant": "independent",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_0.3_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_0.3_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_2.0_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_2.0_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_3.0_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_3.0_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_3.5_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 3.5,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "asymmetric_plain_3.5_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "asymmetric",
+      "variant": "plain",
+      "distance": 3.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_0.3_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_0.3_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_1.5_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_1.5_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_2.0_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_plain_2.0_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "plain",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_0.3_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_0.3_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_1.5_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_1.5_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_2.0_False_False_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "elliptic_stadium_split_2.0_False_True_sdk",
+      "op": "inset_continuity_sdk",
+      "scene": "elliptic_stadium",
+      "variant": "split",
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    }
+  ]
+}
