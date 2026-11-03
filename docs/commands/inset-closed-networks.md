@@ -25,6 +25,9 @@ moving a closed curve's seam.
 
 The tight fitter retains the source degree and refines its knot basis using
 homogeneous Greville interpolation. A banded solve avoids dense storage.
+The native backend supplies usd-brep's fixed-row interpolation through the
+existing edit-point solver; fitting and topology policy remain shared. Malformed
+or nonfinite solver results return errors, and basis limits apply before the call.
 Normal-distance samples control refinement to model tolerance; these samples
 are numerical checks, not a continuous error proof. Admission allows degree 17,
 1000 fit controls, 8192 network inputs/fragments, and the shared 64 MiB Inset

@@ -1,6 +1,7 @@
 //! Adaptive original-basis normal loci for curvature-partitioned Inset caps.
 use super::*;
-use crate::{spline_collocation::Axis, spline_collocation::general_banded};
+use crate::spline_collocation::Axis;
+mod solve;
 use faer::Mat;
 
 const MAX_CONTROLS: usize = 1000;
@@ -10,6 +11,7 @@ pub(crate) fn fit_normal_locus(
     distance: Real,
     normal: UnitVector3,
     tolerance: Tolerance,
+    solver: Option<crate::CurveEditPointSolver>,
 ) -> Result<NurbsCurve, GeometryError> {
     if source.degree() > 17 || source.control_points().len() > MAX_CONTROLS {
         return Err(GeometryError::NurbsOffsetFitLimit);
@@ -17,7 +19,7 @@ pub(crate) fn fit_normal_locus(
     let source = source.clamped_to_active_domain()?;
     let mut knots = source.knots().to_vec();
     for _ in 0..32 {
-        let candidate = interpolate(&source, knots.clone(), distance, normal)?;
+        let candidate = interpolate(&source, knots.clone(), distance, normal, solver)?;
         let mut inserted = Vec::new();
         for (a, b) in candidate.spans() {
             let mut largest = 0_f64;
@@ -80,6 +82,7 @@ fn interpolate(
     knots: Vec<Real>,
     distance: Real,
     normal: UnitVector3,
+    solver: Option<crate::CurveEditPointSolver>,
 ) -> Result<NurbsCurve, GeometryError> {
     let p = source.degree();
     let axis = Axis::sites(p, knots)?;
@@ -90,14 +93,8 @@ fn interpolate(
         .iter()
         .map(|c| c.weight().abs())
         .fold(0., Real::max);
-    let mut rows = Vec::with_capacity(count);
     let mut rhs = Mat::zeros(count, 4);
     for (i, station) in axis.stations.iter().enumerate() {
-        rows.push(if station.fixed {
-            (i, vec![1.])
-        } else {
-            crate::nurbs::bspline_basis_nonzero(&axis.knots, p, count, station.parameter)?
-        });
         let weight = source.evaluate_scaled_homogeneous(station.parameter, scale)?[3];
         let sample = offset_sample_with_reversals(
             source,
@@ -113,7 +110,7 @@ fn interpolate(
         }
         rhs[(i, 3)] = weight;
     }
-    let result = general_banded::solve(p, &rows, rhs)?;
+    let result = solve::solve(&axis, rhs, solver)?;
     let controls = (0..count)
         .map(|i| {
             let w = result[(i, 3)];
@@ -127,114 +124,4 @@ fn interpolate(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::Ellipse3;
-
-    fn ellipse(center: Point3, rx: Real, ry: Real) -> Ellipse3 {
-        let axis = |x, y, z| {
-            Vector3::try_new(x, y, z)
-                .unwrap()
-                .normalized_nonzero()
-                .unwrap()
-        };
-        Ellipse3::try_new(
-            center,
-            rx,
-            ry,
-            axis(1., 0., 0.),
-            axis(0., 1., 0.),
-            Tolerance::DEFAULT,
-        )
-        .unwrap()
-    }
-
-    #[test]
-    fn circle_loci_retain_degree_and_accurate_radius_after_translation() {
-        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
-        for center in [
-            Point3::try_new(0., 0., 0.).unwrap(),
-            Point3::try_new(100_000., -200_000., 300_000.).unwrap(),
-        ] {
-            let circle = ellipse(center, 5., 5.);
-            for degree in [2, 3, 7, 17] {
-                let source = circle
-                    .to_nurbs()
-                    .unwrap()
-                    .try_change_degree(degree, false)
-                    .unwrap();
-                for distance in [-1.5, 1.5] {
-                    let offset =
-                        fit_normal_locus(&source, distance, circle.normal().unwrap(), tolerance)
-                            .unwrap();
-                    assert_eq!(offset.degree(), degree);
-                    assert_eq!(offset.control_points().len(), source.control_points().len());
-                    let domain = offset.domain();
-                    for i in 0..=256 {
-                        let t = domain.start() + (domain.end() - domain.start()) * i as Real / 256.;
-                        let radius = center.distance_to(offset.evaluate(t).unwrap()).unwrap();
-                        assert!(
-                            (radius - (5. - distance)).abs() < tolerance.absolute() * 0.1,
-                            "degree {degree}: {radius}"
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn refined_ellipse_locus_has_constant_analytic_nearest_distance() {
-        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
-        let ellipse = ellipse(Point3::try_new(0., 0., 0.).unwrap(), 6., 2.);
-        for degree in [2, 3, 7] {
-            let source = ellipse
-                .to_nurbs()
-                .unwrap()
-                .try_change_degree(degree, false)
-                .unwrap();
-            let offset =
-                fit_normal_locus(&source, -2., ellipse.normal().unwrap(), tolerance).unwrap();
-            assert_eq!(offset.degree(), degree);
-            assert!(offset.control_points().len() > source.control_points().len());
-            let domain = offset.domain();
-            for i in 0..1024 {
-                let t =
-                    domain.start() + (domain.end() - domain.start()) * (i as Real + 0.37) / 1024.;
-                let point = offset.evaluate(t).unwrap();
-                let closest = ellipse
-                    .evaluate(ellipse.closest_parameter(point).unwrap())
-                    .unwrap();
-                let distance = point.distance_to(closest).unwrap();
-                assert!(
-                    (distance - 2.).abs() <= 2. * tolerance.absolute(),
-                    "degree {degree}: {distance}"
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn oversized_source_basis_declines_before_interpolation() {
-        let circle = ellipse(Point3::try_new(0., 0., 0.).unwrap(), 5., 5.);
-        let high_degree = circle
-            .to_nurbs()
-            .unwrap()
-            .try_change_degree(18, false)
-            .unwrap();
-        let controls = (0..1001)
-            .map(|i| Point3::try_new(i as Real, 0., 0.).unwrap())
-            .collect();
-        let knots = std::iter::once(0.)
-            .chain((0..=1000).map(|i| i as Real))
-            .chain(std::iter::once(1000.))
-            .collect();
-        let many_controls = NurbsCurve::try_new(1, controls, knots).unwrap();
-        for source in [high_degree, many_controls] {
-            assert!(matches!(
-                fit_normal_locus(&source, 1., circle.normal().unwrap(), Tolerance::DEFAULT),
-                Err(GeometryError::NurbsOffsetFitLimit)
-            ));
-        }
-    }
-}
+mod tests;

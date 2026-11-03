@@ -48,6 +48,14 @@ The production path now assembles regular closed-edge networks with source-edge
 lineage and all output modes. Cusp fans still need qualified fitting and
 connector correspondence against their complete native outputs.
 
+Cusp-tip corner choices are sensitive to roundoff. The degree-two stadium at
+distance 1.4 connects its left tip to the lower old corner; at distance 1.5 it
+uses the upper corner. Their recorded tip Y coordinates are about `-1.1e-14`
+and `1.3e-15`. Five controls freeze these choices and verify that both candidate
+squared distances differ by less than `1e-12`. A fixed preceding/following tie
+rule cannot reproduce all of them. Matching the cap locus alone is insufficient
+to qualify a fan's connector incidence.
+
 ```sh
 python3 -m unittest tools.rhino_oracle.test_inset_fans
 ```

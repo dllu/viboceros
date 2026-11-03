@@ -60,7 +60,13 @@ pub(super) fn inset(
     let anchor = brep.vertices[boundary.trims[0].vertices[0]].point;
     let source = joined(brep, &boundary.trims)?;
     work.charge_curve(&source)?;
-    let raw = crate::curve_offset::fit_normal_locus(&source, distance, normal, tolerance)?;
+    let raw = crate::curve_offset::fit_normal_locus(
+        &source,
+        distance,
+        normal,
+        tolerance,
+        operations.edit_points,
+    )?;
     work.charge_curve(&raw)?;
     let mut pieces = crate::curve_offset::trim_normal_locus(
         &source,

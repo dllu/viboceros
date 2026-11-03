@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import unittest
+from decimal import Decimal
 from .test_inset_continuity import native
 from .capture_family import HERE
 from .generate_inset_surface import request
@@ -92,6 +93,44 @@ class InsetFanDiagnosticsTests(unittest.TestCase):
         faces = rows[0]['value']['output']['geometry']['topology']['faces']
         sizes = collections.Counter(sum(len(loop['trims']) for loop in face['loops']) for face in faces)
         self.assertEqual(sizes, {3:94, 4:16, 5:16, 21:2, 48:1})
+
+    def test_cusp_tip_corner_choices_change_at_roundoff_scale(self):
+        expected = {
+            '3.0_1.4_2_False': (2, 0),
+            '3.0_1.5_2_False': (1, 3),
+            '3.0_1.6_2_False': (1, 3),
+            '3.0_1.8_2_False': (2, 0),
+            '3.0_1.4_3_False': (2, 3),
+        }
+        covered = set()
+        for row in native('inset_fan_interior')['results']:
+            if row['id'] not in expected:
+                continue
+            covered.add(row['id'])
+            value = row['value']; source = value['before']['geometry']['vertices']
+            geometry = value['output']['geometry']; vertices = geometry['vertices']
+            tips = sorted((i for i in range(len(source), len(vertices))
+                           if abs(vertices[i]['point'][1]) < 2e-14
+                           and abs(vertices[i]['point'][0]) > 4),
+                          key=lambda i: vertices[i]['point'][0])
+            self.assertEqual(len(tips), 2)
+            for tip, owner in zip(tips, expected[row['id']]):
+                point = vertices[tip]['point']; owners = set()
+                for edge, (a, b) in zip(geometry['edges'], geometry['topology']['edges']):
+                    if tip not in (a, b) or edge['curve']['definition']['degree'] != 1:
+                        continue
+                    end = vertices[b if a == tip else a]['point']
+                    dx, dy = end[0] - point[0], end[1] - point[1]
+                    for i, old in enumerate(source):
+                        x, y, _ = old['point']
+                        if abs((x - point[0]) * dy - (y - point[1]) * dx) < 1e-8 * math.hypot(dx, dy):
+                            owners.add(i)
+                self.assertEqual(owners, {owner}, row['id'])
+                corners = source[1:3] if point[0] < 0 else [source[0], source[3]]
+                distances = [sum((Decimal(x) - Decimal(y)) ** 2
+                                 for x, y in zip(point, corner['point'])) for corner in corners]
+                self.assertLess(abs(distances[0] - distances[1]), Decimal('1e-12'))
+        self.assertEqual(covered, set(expected))
 
     def test_tolerance_controls_change_curvature_partitions(self):
         expected = [(9,23,16),(16,42,28),(32,84,54),(48,126,80),
