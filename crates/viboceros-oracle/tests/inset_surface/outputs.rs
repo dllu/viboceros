@@ -17,9 +17,10 @@ fn curved_output_modes_match_native_geometry_metadata_and_history() {
     assert_eq!(cases.len(), 72);
     replay(cases);
 }
-fn replay(cases: Vec<(serde_json::Value, serde_json::Value)>) {
+pub(super) fn replay(cases: Vec<(serde_json::Value, serde_json::Value)>) {
     for (op, native) in cases {
         let label = op["id"].as_str().unwrap();
+        eprintln!("Inset command: {label}");
         let (mut doc, id) = native_surface::fixture(&native);
         if native["before"][0]["selected"] == true {
             doc.select_objects_direct([id], SelectionMode::Replace)
@@ -47,8 +48,10 @@ fn replay(cases: Vec<(serde_json::Value, serde_json::Value)>) {
         plan.commit(&mut doc).unwrap();
         if !options.split {
             assert_eq!(doc.object(id).unwrap().geometry_snapshot(), &before);
-        } else {
+        } else if !options.join_outputs {
             assert!(doc.object(id).is_none());
+        } else {
+            assert!(doc.object(id).is_some());
         }
         let epsilon = native_surface::epsilon_for(&op);
         output_support::assert_document(&doc, id, &native["after"], epsilon, label);
@@ -83,12 +86,11 @@ fn replay(cases: Vec<(serde_json::Value, serde_json::Value)>) {
 }
 
 #[test]
-fn output_modes_reject_native_collapses_and_replay_large_loose_insets() {
+fn output_modes_reject_native_collapses_and_replay_large_insets() {
     let mut rejected = 0;
-    let mut pending = 0;
     let mut supported = Vec::new();
     for (op, native) in common::cases_for("inset_output_limits") {
-        if native["results"][0] == "Success" && op["loose"] == true {
+        if native["results"][0] == "Success" {
             supported.push((op, native));
             continue;
         }
@@ -101,18 +103,12 @@ fn output_modes_reject_native_collapses_and_replay_large_loose_insets() {
             join_outputs: false,
             ..Options::default()
         };
-        let error = Plan::prepare(&doc, [(id, 0)], options).unwrap_err();
-        if native["results"][0] == "Success" {
-            assert!(!options.loose && options.distance == 3.);
-            assert!(error.to_string().contains("cusp"), "{error}");
-            pending += 1;
-        } else {
-            assert_eq!(native["results"][0], "Failure");
-            rejected += 1;
-        }
+        Plan::prepare(&doc, [(id, 0)], options).unwrap_err();
+        assert_eq!(native["results"][0], "Failure");
+        rejected += 1;
         assert_eq!(doc.object(id).unwrap().geometry_snapshot(), &before);
         assert!(!doc.can_undo());
     }
-    assert_eq!((rejected, pending, supported.len()), (12, 2, 2));
+    assert_eq!((rejected, supported.len()), (12, 4));
     replay(supported);
 }

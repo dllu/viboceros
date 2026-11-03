@@ -60,6 +60,7 @@ fn inset_output_previews_native_identity_components_attributes_and_history() {
     let cases = common::cases_for("inset_surface_ready")
         .into_iter()
         .chain(common::cases_for("inset_output_modes"))
+        .chain(common::cases_for("inset_cusp_command"))
         .filter(|(op, _)| {
             matches!(
                 op["id"].as_str().unwrap(),
@@ -71,10 +72,13 @@ fn inset_output_previews_native_identity_components_attributes_and_history() {
                     | "ellipse_False_False_pieces"
                     | "stadium_False_True_curves"
                     | "holes_True_False_pieces"
+                    | "ellipse_plain_3.0_False_curves"
+                    | "ellipse_tilted_3.0_True_pieces"
+                    | "bezier_plain_2.8_True_pieces"
             )
         })
         .collect::<Vec<_>>();
-    assert_eq!(cases.len(), 8);
+    assert_eq!(cases.len(), 11);
     for (op, native) in cases {
         let label = op["id"].as_str().unwrap();
         let mut app = test_app();
@@ -112,7 +116,10 @@ fn inset_output_previews_native_identity_components_attributes_and_history() {
                 if op["split"] == true { "Yes" } else { "No" }
             ),
         );
-        enter(&mut app, ".3");
+        enter(
+            &mut app,
+            &op["distance"].as_f64().unwrap_or(0.3).to_string(),
+        );
         assert!(!app.inset_session.as_ref().unwrap().edges().is_empty());
         assert_eq!(
             app.document.object(id).unwrap().geometry_snapshot(),

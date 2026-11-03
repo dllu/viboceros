@@ -42,17 +42,7 @@ def run(op,host,iterations,tolerance):
     if iterations != 1 or list(R.RhinoDoc.ActiveDoc.Objects) or R.Commands.Command.InCommand():
         raise ValueError('empty owned idle document required')
     if op != PREFERENCES:
-        original = host['_interchange_curve_record']
-        def record_curve(curve):
-            value = original(curve)
-            if 'definition' not in value:
-                nurbs = curve.ToNurbsCurve()
-                try: value['definition'] = host['_nurbs_curve_definition'](nurbs)
-                finally: nurbs.Dispose()
-            return value
-        host['_interchange_curve_record'] = record_curve
-        try: return run_source(op,host,iterations,tolerance,source(op['scene'],R))
-        finally: host['_interchange_curve_record'] = original
+        return run_with_definitions(op,host,iterations,tolerance,source(op['scene'],R))
     records = []
     for split,join,cancel in STEPS:
         step = dict(op='inset_output_preferences',scene='ellipse',loose=False,
@@ -60,3 +50,17 @@ def run(op,host,iterations,tolerance):
         value,_ = run_source(step,host,iterations,tolerance,source('ellipse',R))
         records.append(dict(input=step,value=value))
     return dict(steps=records),0
+
+
+def run_with_definitions(op,host,iterations,tolerance,brep):
+    original = host['_interchange_curve_record']
+    def record_curve(curve):
+        value = original(curve)
+        if 'definition' not in value:
+            nurbs = curve.ToNurbsCurve()
+            try: value['definition'] = host['_nurbs_curve_definition'](nurbs)
+            finally: nurbs.Dispose()
+        return value
+    host['_interchange_curve_record'] = record_curve
+    try: return run_source(op,host,iterations,tolerance,brep)
+    finally: host['_interchange_curve_record'] = original

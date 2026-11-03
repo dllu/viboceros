@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::io::Read;
 pub fn cases_for(family: &str) -> Vec<(Value, Value)> {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
@@ -11,7 +12,12 @@ pub fn cases_for(family: &str) -> Vec<(Value, Value)> {
     .unwrap();
     let file =
         std::fs::File::open(path.join("observations").join(format!("{family}.json.gz"))).unwrap();
-    let native: Value = serde_json::from_reader(flate2::read::GzDecoder::new(file)).unwrap();
+    // Parse a slice: from_reader otherwise asks the gzip decoder for each byte.
+    let mut bytes = Vec::new();
+    flate2::read::GzDecoder::new(file)
+        .read_to_end(&mut bytes)
+        .unwrap();
+    let native: Value = serde_json::from_slice(&bytes).unwrap();
     query["operations"]
         .as_array()
         .unwrap()

@@ -44,8 +44,9 @@ Polygon, analytic and Loose loci use `1e-10`; independent tight command fits all
 
 Frozen evidence adds 72 curved output cases, 12 preference steps and 16 limit
 controls to the earlier polygon cases. Checks cover 96 ordinary output cases,
-two large Loose ellipse insets and 12 native failures. Two successful native tight
-ellipse cusp cases remain explicitly unsupported by the shared offset fitter.
+four large ellipse insets and 12 native failures. Another 72 commands cover
+[cusp limits](inset-cusps.md) in all three output modes: 66 successes and six
+unchanged-source collapse failures.
 Touching/crossing annuli are rejected even with curve output. Existing planar
 Inset work/storage limits apply; separate output also uses the edge-separation
 limit of 100,000 cuts. Preview geometry shares the 400,000-segment limit.

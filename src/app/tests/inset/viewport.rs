@@ -10,6 +10,7 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
         "inset_mesh_ready",
         "inset_surface_sdk",
         "inset_planar_curves",
+        "inset_cusp_sdk",
     ] {
         let native = common::cases_for(family).remove(0).1;
         for mode in [
@@ -18,7 +19,10 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             DisplayMode::Ghosted,
         ] {
             let mut app = test_app();
-            let (doc, id) = if matches!(family, "inset_surface_sdk" | "inset_planar_curves") {
+            let (doc, id) = if matches!(
+                family,
+                "inset_surface_sdk" | "inset_planar_curves" | "inset_cusp_sdk"
+            ) {
                 native_surface::fixture(&native["before"])
             } else {
                 support::fixture(&native)
@@ -103,7 +107,14 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             if family == "inset_surface_sdk" {
                 enter(&mut app, "JoinOutputs=No");
             }
-            enter(&mut app, ".3");
+            enter(
+                &mut app,
+                if family == "inset_cusp_sdk" {
+                    "3"
+                } else {
+                    ".3"
+                },
+            );
             frame(vec![], &app);
             assert!(!app.document.can_undo());
             enter(&mut app, "");

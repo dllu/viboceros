@@ -14,6 +14,9 @@ const CHECKS_PER_SPAN: usize = 15;
 const MAX_REGION_PIECES: usize = 8_192;
 
 mod closed_offset;
+mod junction;
+mod loops;
+pub(crate) use loops::offset_closed_region;
 mod sharp_offset;
 use closed_offset::offset_nurbs_closed_gaps;
 pub(super) use sharp_offset::offset_nurbs_sharp;
@@ -142,6 +145,16 @@ fn offset_sample(
     parameter: Real,
     side: ParameterSide,
 ) -> Result<Sample, GeometryError> {
+    offset_sample_with_reversals(curve, distance, normal, parameter, side, false)
+}
+fn offset_sample_with_reversals(
+    curve: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    parameter: Real,
+    side: ParameterSide,
+    allow_reversals: bool,
+) -> Result<Sample, GeometryError> {
     let (point, velocity, acceleration) =
         curve.evaluate_with_second_derivative_on_side(parameter, side)?;
     let speed = velocity.length()?;
@@ -153,7 +166,7 @@ fn offset_sample(
     let left = normal.as_vector().cross(velocity)?.normalized_nonzero()?;
     let curvature = velocity.cross(acceleration)?.dot(normal.as_vector())? / speed.powi(3);
     let factor = 1.0 - distance * curvature;
-    if !factor.is_finite() || factor <= 0.0 {
+    if !factor.is_finite() || (!allow_reversals && factor <= 0.0) {
         return Err(GeometryError::Degenerate {
             context: "NURBS offset cusp",
         });
@@ -210,7 +223,22 @@ fn offset_nurbs_with_closure(
     closed: bool,
     operations: Option<CurveOffsetOperations>,
 ) -> Result<NurbsCurve, GeometryError> {
+    fit_offset_nurbs(
+        curve, distance, fallback, tolerance, closed, operations, false,
+    )
+}
+fn fit_offset_nurbs(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    closed: bool,
+    operations: Option<CurveOffsetOperations>,
+    allow_reversals: bool,
+) -> Result<NurbsCurve, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
+    let sample =
+        |t, side| offset_sample_with_reversals(curve, distance, normal, t, side, allow_reversals);
     curve.tight_bounds(tolerance)?; // Reject poles before the adaptive fit.
     let source_spans = curve.spans().collect::<Vec<_>>();
     if source_spans.len() > MAX_OFFSET_SPANS {
@@ -219,8 +247,8 @@ fn offset_nurbs_with_closure(
     let mut boundaries = Vec::with_capacity(source_spans.len());
     for &(a, b) in &source_spans {
         boundaries.push((
-            offset_sample(curve, distance, normal, a, ParameterSide::Right)?,
-            offset_sample(curve, distance, normal, b, ParameterSide::Left)?,
+            sample(a, ParameterSide::Right)?,
+            sample(b, ParameterSide::Left)?,
         ));
     }
     for pair in boundaries.windows(2) {
@@ -243,7 +271,8 @@ fn offset_nurbs_with_closure(
             context: "NURBS offset source seam kink",
         });
     }
-    if let Some(operations) = operations
+    if !allow_reversals
+        && let Some(operations) = operations
         && let Some(result) = (operations.smooth)(curve, distance, normal, tolerance, closed)?
     {
         validate_native_offset(curve, &result, distance, normal, tolerance, closed)?;
@@ -260,8 +289,7 @@ fn offset_nurbs_with_closure(
             let parameter = start
                 .parameter
                 .mul_add(1.0 - fraction, end.parameter * fraction);
-            let expected =
-                offset_sample(curve, distance, normal, parameter, ParameterSide::Right)?.point;
+            let expected = sample(parameter, ParameterSide::Right)?.point;
             largest = largest.max(cubic_point(controls, fraction)?.distance_to(expected)?);
         }
         if largest <= target {
@@ -275,13 +303,7 @@ fn offset_nurbs_with_closure(
         if middle_parameter <= start.parameter || middle_parameter >= end.parameter {
             return Err(GeometryError::NurbsOffsetFitLimit);
         }
-        let middle = offset_sample(
-            curve,
-            distance,
-            normal,
-            middle_parameter,
-            ParameterSide::Right,
-        )?;
+        let middle = sample(middle_parameter, ParameterSide::Right)?;
         pending.push((middle, end));
         pending.push((start, middle));
     }
@@ -308,8 +330,7 @@ fn offset_nurbs_with_closure(
             let parameter = start
                 .parameter
                 .mul_add(1.0 - fraction, end.parameter * fraction);
-            let expected =
-                offset_sample(curve, distance, normal, parameter, ParameterSide::Right)?.point;
+            let expected = sample(parameter, ParameterSide::Right)?.point;
             if result.evaluate(parameter)?.distance_to(expected)? > tolerance.absolute() {
                 return Err(GeometryError::NurbsOffsetFitLimit);
             }
@@ -893,6 +914,16 @@ fn simple_region_pieces(
                         < boxes[i].min().to_array()[axis]
             }) {
                 continue;
+            }
+            if adjacent {
+                let (a, b) = if j == i + 1 {
+                    (&pieces[i], &pieces[j])
+                } else {
+                    (&pieces[j], &pieces[i])
+                };
+                if junction::separated(a, b)? {
+                    continue;
+                }
             }
             let events = offset_intersections(&pieces[i], &pieces[j], tolerance, operations)?;
             if !adjacent && !events.is_empty() {

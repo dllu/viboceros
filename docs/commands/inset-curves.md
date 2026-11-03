@@ -23,6 +23,10 @@ requiring their control hulls to fit inside an inscribed polygon.
 Convex-loop certificates use an exact convex hull; hole-pair candidates use a
 cached-bound sweep to avoid scanning unrelated boundaries.
 
+Tight offsets of a single smooth closed edge can remove cusp loops while
+retaining one cap boundary. The original seam can disappear, and new tangent
+kinks split cap edges. See [cusp trimming and numerical limits](inset-cusps.md).
+
 Frozen comparisons cover ellipses, periodic convex/concave splines, cubic Bézier
 chains, stadium outlines, mixed polygon/circular loops, several holes, tilted
 circles and narrow annuli. Analytic loci use `1e-10`. General fitted SDK curves use
@@ -59,10 +63,10 @@ getter. Later captures use the native `Loose=On|Off` spelling, with no unknown
 tokens. All successful captures retain their exact producers and are immutable.
 
 Curved G0 corners, higher-degree polygon-edge encodings, non-affine surface charts,
-seams, poles and topology-changing offsets remain pending. Offset cusps, touching
+seams, poles and region-splitting offsets remain pending. Unresolved cusps, touching
 or crossing boundaries, nested holes and exhausted fitting/storage budgets return
 errors without modifying the document. `ThroughPoint`, seam options and
-topology-changing tight offsets remain unimplemented. Curve and separate-surface
+region-splitting tight offsets remain unimplemented. Curve and separate-surface
 output are described in [output modes](inset-outputs.md).
 
 ```sh

@@ -5,7 +5,7 @@
 - [ShortPath surface geodesics](short-path.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [DivideAlongCreases](divide-along-creases.md)
-- [Inset planar polygon faces and holes](inset-surfaces.md)
+- [Inset planar faces and curved boundaries](inset-surfaces.md)
 - [Planar surface offsets](offset-srf.md)
 - [Polysurface edge chamfers](chamfer-edge.md)
 - [Curvature-continuous edge blends](blend-edge.md)

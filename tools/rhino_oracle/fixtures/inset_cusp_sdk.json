@@ -1,0 +1,251 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_plain_2.6_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 2.6,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_2.6_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 2.6,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_2.67_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 2.67,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_2.67_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 2.67,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.0_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.0_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.5_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.5,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.5_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.99_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.99,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_3.99_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 3.99,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_4.0_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 4.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_plain_4.0_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "plain",
+      "distance": 4.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "bezier_plain_2.2_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "bezier",
+      "variant": "plain",
+      "distance": 2.2,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "bezier_plain_2.2_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "bezier",
+      "variant": "plain",
+      "distance": 2.2,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "bezier_plain_2.8_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "bezier",
+      "variant": "plain",
+      "distance": 2.8,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "bezier_plain_2.8_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "bezier",
+      "variant": "plain",
+      "distance": 2.8,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "oval_plain_1.0_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "oval",
+      "variant": "plain",
+      "distance": 1.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "oval_plain_1.0_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "oval",
+      "variant": "plain",
+      "distance": 1.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "oval_plain_1.5_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "oval",
+      "variant": "plain",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "oval_plain_1.5_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "oval",
+      "variant": "plain",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_tilted_3.0_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "tilted",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_tilted_3.0_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "tilted",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_degree7_3.0_False_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "degree7",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "ellipse_degree7_3.0_True_sdk",
+      "op": "inset_cusp_sdk",
+      "scene": "ellipse",
+      "variant": "degree7",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    }
+  ]
+}

@@ -82,11 +82,12 @@ impl Brep {
             .collect::<Result<Vec<_>, _>>()?;
         let mut offsets = Vec::with_capacity(sources.len());
         for (j, source) in sources.iter().enumerate() {
-            let curve = offset(source, normal, distance, tolerance, loose, operations)?;
+            let (curve, preserve_ends) =
+                offset(source, normal, distance, tolerance, loose, operations)?;
             // A periodic Greville window need not include the seam parameter.
             // Its cyclic interpolation closes naturally; forcing normal-shot
             // endpoints would change that interpolated curve.
-            let curve = if loose && source.is_periodic() {
+            let curve = if !preserve_ends || loose && source.is_periodic() {
                 curve
             } else {
                 aligned(curve, goals[j], goals[(j + 1) % goals.len()], tolerance)?
@@ -115,11 +116,7 @@ impl Brep {
         )?;
         for curve in offsets {
             group_starts.push(pieces.len());
-            let kinks = if loose {
-                curve.full_multiplicity_kink_parameters(kink_tolerance)?
-            } else {
-                Vec::new()
-            };
+            let kinks = curve.full_multiplicity_kink_parameters(kink_tolerance)?;
             if kinks.is_empty() {
                 pieces.push(curve);
             } else {

@@ -84,29 +84,44 @@ pub(super) fn offset(
     tolerance: Tolerance,
     loose: bool,
     operations: PlanarInsetOperations,
-) -> Result<NurbsCurve, GeometryError> {
+) -> Result<(NurbsCurve, bool), GeometryError> {
     curve.tight_bounds(tolerance)?;
     if let Some(result) = analytic_offset(curve, normal, distance, tolerance)? {
-        return Ok(result);
+        return Ok((result, true));
     }
     if loose {
-        return curve.try_loose_planar_offset(distance, normal, tolerance, operations.edit_points);
+        return curve
+            .try_loose_planar_offset(distance, normal, tolerance, operations.edit_points)
+            .map(|c| (c, true));
     }
     let fit = Tolerance::try_new(
         tolerance.absolute() * 0.25,
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    Curve3::NurbsCurve(curve.clone())
-        .try_offset_with_operations(
-            distance,
-            normal,
-            fit,
-            CurveOffsetCornerStyle::Sharp,
-            operations.curves,
-        )?
-        .as_ref()
-        .to_nurbs()
+    let regular = Curve3::NurbsCurve(curve.clone()).try_offset_with_operations(
+        distance,
+        normal,
+        fit,
+        CurveOffsetCornerStyle::Sharp,
+        operations.curves,
+    );
+    match regular {
+        Ok(c) => Ok((c.as_ref().to_nurbs()?, true)),
+        Err(GeometryError::Degenerate {
+            context: "NURBS offset cusp",
+        }) if curve.is_closed()? => Ok((
+            crate::curve_offset::offset_closed_region(
+                curve,
+                distance,
+                normal,
+                fit,
+                operations.curves,
+            )?,
+            false,
+        )),
+        Err(e) => Err(e),
+    }
 }
 
 pub(super) fn aligned(

@@ -47,12 +47,13 @@ two-control-point edges and trims; curved loops require smooth spans and joins.
 Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seams,
 poles, collapsed edges and
 crossing/touching inset loops return errors. Insets that change topology at the
-medial axis are also rejected. `ThroughPoint` and `IgnoreSeams` remain pending.
+medial axis are also rejected, apart from [local cusp-loop removal](inset-cusps.md)
+on a single smooth closed edge. `ThroughPoint` and `IgnoreSeams` remain pending.
 
-Frozen private-display evidence includes 116 public `Brep.InsetFaces` cases,
-196 commands and 19 preference steps. Qualification covers 107 SDK cases,
-146 successful commands and 12 native failures. Nonplanar results and two
-captured tight cusp insets remain pending. Polygon, analytic and Loose
+Frozen private-display evidence includes 140 public `Brep.InsetFaces` cases,
+268 commands and 19 preference steps. Qualification covers 131 SDK cases,
+214 successful commands and 18 native command failures. Nonplanar results
+remain pending. Polygon, analytic and Loose
 comparisons use `1e-10`; tight fitted-curve tolerances are documented in the
 [curved-boundary guide](inset-curves.md). Checks retain oriented loops, edge
 incidence, supporting surfaces and solid status.

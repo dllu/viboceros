@@ -6,6 +6,8 @@ mod common;
 mod support;
 use support as native_surface;
 use support::{assert_geometry, source};
+#[path = "inset_surface/cusps.rs"]
+mod cusps;
 #[path = "support/inset_output.rs"]
 mod output_support;
 #[path = "inset_surface/outputs.rs"]
