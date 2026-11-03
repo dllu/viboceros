@@ -7,6 +7,7 @@ mod crease;
 mod edges;
 mod extrude;
 mod face_grids;
+mod face_packs;
 mod faces;
 mod insert;
 mod inset;
@@ -26,6 +27,7 @@ pub use extrude::{SubDExtrudeDirection, subd_extrude};
 pub use face_grids::{
     SubDFaceGrid, SubDPatchStencil, subd_face_grids, subd_patch_stencils, subd_refined_face_grids,
 };
+pub use face_packs::{SubDFacePack, subd_face_packs};
 pub use faces::subd_retain_faces;
 pub use insert::{subd_insert_face_edge, subd_insert_path, subd_insert_vertex};
 pub use inset::subd_inset;

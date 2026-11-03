@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "grid_L_shuffled_0",
+      "op": "subd_packing",
+      "scene": "grid_L_shuffled",
+      "mode": 0
+    },
+    {
+      "id": "grid_L_shuffled_3",
+      "op": "subd_packing",
+      "scene": "grid_L_shuffled",
+      "mode": 3
+    },
+    {
+      "id": "subdivided_box2_0",
+      "op": "subd_packing",
+      "scene": "subdivided_box2",
+      "mode": 0
+    },
+    {
+      "id": "subdivided_box2_3",
+      "op": "subd_packing",
+      "scene": "subdivided_box2",
+      "mode": 3
+    },
+    {
+      "id": "subdivided_box2_4",
+      "op": "subd_packing",
+      "scene": "subdivided_box2",
+      "mode": 4
+    },
+    {
+      "id": "torus_5x3_0",
+      "op": "subd_packing",
+      "scene": "torus_5x3",
+      "mode": 0
+    },
+    {
+      "id": "torus_5x3_3",
+      "op": "subd_packing",
+      "scene": "torus_5x3",
+      "mode": 3
+    },
+    {
+      "id": "torus_shifted_0",
+      "op": "subd_packing",
+      "scene": "torus_shifted",
+      "mode": 0
+    },
+    {
+      "id": "torus_shifted_3",
+      "op": "subd_packing",
+      "scene": "torus_shifted",
+      "mode": 3
+    },
+    {
+      "id": "torus_first_rotated_0",
+      "op": "subd_packing",
+      "scene": "torus_first_rotated",
+      "mode": 0
+    },
+    {
+      "id": "torus_first_rotated_3",
+      "op": "subd_packing",
+      "scene": "torus_first_rotated",
+      "mode": 3
+    },
+    {
+      "id": "torus_crease_loop_0",
+      "op": "subd_packing",
+      "scene": "torus_crease_loop",
+      "mode": 0
+    },
+    {
+      "id": "torus_crease_loop_3",
+      "op": "subd_packing",
+      "scene": "torus_crease_loop",
+      "mode": 3
+    },
+    {
+      "id": "cylinder_shifted_0",
+      "op": "subd_packing",
+      "scene": "cylinder_shifted",
+      "mode": 0
+    },
+    {
+      "id": "cylinder_shifted_3",
+      "op": "subd_packing",
+      "scene": "cylinder_shifted",
+      "mode": 3
+    },
+    {
+      "id": "cylinder_crease_0",
+      "op": "subd_packing",
+      "scene": "cylinder_crease",
+      "mode": 0
+    },
+    {
+      "id": "cylinder_crease_3",
+      "op": "subd_packing",
+      "scene": "cylinder_crease",
+      "mode": 3
+    },
+    {
+      "id": "twisted_torus_0",
+      "op": "subd_packing",
+      "scene": "twisted_torus",
+      "mode": 0
+    },
+    {
+      "id": "twisted_torus_3",
+      "op": "subd_packing",
+      "scene": "twisted_torus",
+      "mode": 3
+    },
+    {
+      "id": "coincident_grids_0",
+      "op": "subd_packing",
+      "scene": "coincident_grids",
+      "mode": 0
+    },
+    {
+      "id": "coincident_grids_3",
+      "op": "subd_packing",
+      "scene": "coincident_grids",
+      "mode": 3
+    }
+  ]
+}

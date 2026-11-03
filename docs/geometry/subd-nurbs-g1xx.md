@@ -65,4 +65,5 @@ also account for positive rational weight differences introduced by elevation.
 
 Output admits at most four million controls, including quartic elevation.
 Nonmanifold, repeated or disconnected smooth face fans and smooth valence below
-three reject. Packing, soft sharpness and command integration remain open.
+three reject. [Packing](subd-nurbs-packing.md) applies after this processing;
+soft sharpness and command integration remain open.

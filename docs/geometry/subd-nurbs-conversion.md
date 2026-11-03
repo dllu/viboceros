@@ -46,7 +46,8 @@ trim splits, resource admission and immutable soft-sharpness rejection.
 
 Surface domains are normalized to [0,1], and redundant knots can differ from
 Rhino. [G1, G1x, G1xx and G2 processing](subd-nurbs-continuity.md) is available through the
-mode-based API; packing and soft sharpness remain open. The finite G0
+mode-based API; [rectangular packing](subd-nurbs-packing.md) combines the patches
+and assembles periodic seams. Soft sharpness remains open. The finite G0
 approximation has no continuous error certificate against the mathematical SubD
 limit. Arbitrary nonmanifold
 inputs, degenerate patches and comparative performance remain unqualified.

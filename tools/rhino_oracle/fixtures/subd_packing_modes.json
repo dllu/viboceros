@@ -1,0 +1,35 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "subdivided_box_1",
+      "op": "subd_packing",
+      "scene": "subdivided_box",
+      "mode": 1
+    },
+    {
+      "id": "subdivided_box_2",
+      "op": "subd_packing",
+      "scene": "subdivided_box",
+      "mode": 2
+    },
+    {
+      "id": "subdivided_box2_1",
+      "op": "subd_packing",
+      "scene": "subdivided_box2",
+      "mode": 1
+    },
+    {
+      "id": "subdivided_box2_2",
+      "op": "subd_packing",
+      "scene": "subdivided_box2",
+      "mode": 2
+    }
+  ]
+}

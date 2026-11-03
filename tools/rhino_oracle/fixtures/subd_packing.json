@@ -1,0 +1,341 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "grid_2x1_0",
+      "op": "subd_packing",
+      "scene": "grid_2x1",
+      "mode": 0
+    },
+    {
+      "id": "grid_2x1_3",
+      "op": "subd_packing",
+      "scene": "grid_2x1",
+      "mode": 3
+    },
+    {
+      "id": "grid_1x4_0",
+      "op": "subd_packing",
+      "scene": "grid_1x4",
+      "mode": 0
+    },
+    {
+      "id": "grid_1x4_3",
+      "op": "subd_packing",
+      "scene": "grid_1x4",
+      "mode": 3
+    },
+    {
+      "id": "grid_2x2_0",
+      "op": "subd_packing",
+      "scene": "grid_2x2",
+      "mode": 0
+    },
+    {
+      "id": "grid_2x2_3",
+      "op": "subd_packing",
+      "scene": "grid_2x2",
+      "mode": 3
+    },
+    {
+      "id": "grid_0",
+      "op": "subd_packing",
+      "scene": "grid",
+      "mode": 0
+    },
+    {
+      "id": "grid_3",
+      "op": "subd_packing",
+      "scene": "grid",
+      "mode": 3
+    },
+    {
+      "id": "grid_smooth_0",
+      "op": "subd_packing",
+      "scene": "grid_smooth",
+      "mode": 0
+    },
+    {
+      "id": "grid_smooth_3",
+      "op": "subd_packing",
+      "scene": "grid_smooth",
+      "mode": 3
+    },
+    {
+      "id": "grid_rotated_0",
+      "op": "subd_packing",
+      "scene": "grid_rotated",
+      "mode": 0
+    },
+    {
+      "id": "grid_rotated_3",
+      "op": "subd_packing",
+      "scene": "grid_rotated",
+      "mode": 3
+    },
+    {
+      "id": "grid_reversed_0",
+      "op": "subd_packing",
+      "scene": "grid_reversed",
+      "mode": 0
+    },
+    {
+      "id": "grid_reversed_3",
+      "op": "subd_packing",
+      "scene": "grid_reversed",
+      "mode": 3
+    },
+    {
+      "id": "grid_shuffled_0",
+      "op": "subd_packing",
+      "scene": "grid_shuffled",
+      "mode": 0
+    },
+    {
+      "id": "grid_shuffled_3",
+      "op": "subd_packing",
+      "scene": "grid_shuffled",
+      "mode": 3
+    },
+    {
+      "id": "grid_crease_0",
+      "op": "subd_packing",
+      "scene": "grid_crease",
+      "mode": 0
+    },
+    {
+      "id": "grid_crease_3",
+      "op": "subd_packing",
+      "scene": "grid_crease",
+      "mode": 3
+    },
+    {
+      "id": "grid_short_crease_0",
+      "op": "subd_packing",
+      "scene": "grid_short_crease",
+      "mode": 0
+    },
+    {
+      "id": "grid_short_crease_3",
+      "op": "subd_packing",
+      "scene": "grid_short_crease",
+      "mode": 3
+    },
+    {
+      "id": "grid_L_0",
+      "op": "subd_packing",
+      "scene": "grid_L",
+      "mode": 0
+    },
+    {
+      "id": "grid_L_3",
+      "op": "subd_packing",
+      "scene": "grid_L",
+      "mode": 3
+    },
+    {
+      "id": "grid_hole_0",
+      "op": "subd_packing",
+      "scene": "grid_hole",
+      "mode": 0
+    },
+    {
+      "id": "grid_hole_3",
+      "op": "subd_packing",
+      "scene": "grid_hole",
+      "mode": 3
+    },
+    {
+      "id": "grid_T_0",
+      "op": "subd_packing",
+      "scene": "grid_T",
+      "mode": 0
+    },
+    {
+      "id": "grid_T_3",
+      "op": "subd_packing",
+      "scene": "grid_T",
+      "mode": 3
+    },
+    {
+      "id": "cylinder_0",
+      "op": "subd_packing",
+      "scene": "cylinder",
+      "mode": 0
+    },
+    {
+      "id": "cylinder_3",
+      "op": "subd_packing",
+      "scene": "cylinder",
+      "mode": 3
+    },
+    {
+      "id": "cylinder_rotated_0",
+      "op": "subd_packing",
+      "scene": "cylinder_rotated",
+      "mode": 0
+    },
+    {
+      "id": "cylinder_rotated_3",
+      "op": "subd_packing",
+      "scene": "cylinder_rotated",
+      "mode": 3
+    },
+    {
+      "id": "torus_0",
+      "op": "subd_packing",
+      "scene": "torus",
+      "mode": 0
+    },
+    {
+      "id": "torus_3",
+      "op": "subd_packing",
+      "scene": "torus",
+      "mode": 3
+    },
+    {
+      "id": "torus_rotated_0",
+      "op": "subd_packing",
+      "scene": "torus_rotated",
+      "mode": 0
+    },
+    {
+      "id": "torus_rotated_3",
+      "op": "subd_packing",
+      "scene": "torus_rotated",
+      "mode": 3
+    },
+    {
+      "id": "torus_crease_0",
+      "op": "subd_packing",
+      "scene": "torus_crease",
+      "mode": 0
+    },
+    {
+      "id": "torus_crease_3",
+      "op": "subd_packing",
+      "scene": "torus_crease",
+      "mode": 3
+    },
+    {
+      "id": "two_grids_0",
+      "op": "subd_packing",
+      "scene": "two_grids",
+      "mode": 0
+    },
+    {
+      "id": "two_grids_3",
+      "op": "subd_packing",
+      "scene": "two_grids",
+      "mode": 3
+    },
+    {
+      "id": "box_0",
+      "op": "subd_packing",
+      "scene": "box",
+      "mode": 0
+    },
+    {
+      "id": "box_3",
+      "op": "subd_packing",
+      "scene": "box",
+      "mode": 3
+    },
+    {
+      "id": "subdivided_box_0",
+      "op": "subd_packing",
+      "scene": "subdivided_box",
+      "mode": 0
+    },
+    {
+      "id": "subdivided_box_3",
+      "op": "subd_packing",
+      "scene": "subdivided_box",
+      "mode": 3
+    },
+    {
+      "id": "subdivided_box_4",
+      "op": "subd_packing",
+      "scene": "subdivided_box",
+      "mode": 4
+    },
+    {
+      "id": "pentagonal_prism_0",
+      "op": "subd_packing",
+      "scene": "pentagonal_prism",
+      "mode": 0
+    },
+    {
+      "id": "pentagonal_prism_3",
+      "op": "subd_packing",
+      "scene": "pentagonal_prism",
+      "mode": 3
+    },
+    {
+      "id": "five_fan_0",
+      "op": "subd_packing",
+      "scene": "five_fan",
+      "mode": 0
+    },
+    {
+      "id": "five_fan_3",
+      "op": "subd_packing",
+      "scene": "five_fan",
+      "mode": 3
+    },
+    {
+      "id": "seven_fan_0",
+      "op": "subd_packing",
+      "scene": "seven_fan",
+      "mode": 0
+    },
+    {
+      "id": "seven_fan_3",
+      "op": "subd_packing",
+      "scene": "seven_fan",
+      "mode": 3
+    },
+    {
+      "id": "fan6_0",
+      "op": "subd_packing",
+      "scene": "fan6",
+      "mode": 0
+    },
+    {
+      "id": "fan6_3",
+      "op": "subd_packing",
+      "scene": "fan6",
+      "mode": 3
+    },
+    {
+      "id": "fan6_4",
+      "op": "subd_packing",
+      "scene": "fan6",
+      "mode": 4
+    },
+    {
+      "id": "fan8_0",
+      "op": "subd_packing",
+      "scene": "fan8",
+      "mode": 0
+    },
+    {
+      "id": "fan8_3",
+      "op": "subd_packing",
+      "scene": "fan8",
+      "mode": 3
+    },
+    {
+      "id": "fan8_4",
+      "op": "subd_packing",
+      "scene": "fan8",
+      "mode": 4
+    }
+  ]
+}

@@ -4,6 +4,8 @@ use crate::NurbsSurface;
 mod continuity;
 mod g1x;
 mod g1xx;
+mod packing;
+pub use packing::{SubDNurbsPackedPatch, SubDNurbsTile};
 mod stencil;
 mod topology;
 
@@ -25,6 +27,24 @@ pub struct SubDNurbsPatch {
 }
 
 impl SubD {
+    /// Rectangular packs of quad patches; n-gons retain their corner sectors.
+    /// Each original patch occupies one normalized grid cell. Retained native
+    /// pack partitions are used when valid; otherwise topology determines them.
+    pub fn to_packed_nurbs_patches(
+        &self,
+        mode: SubDNurbsContinuity,
+    ) -> Result<Vec<SubDNurbsPackedPatch>, GeometryError> {
+        packing::build(self, self.to_nurbs_patches(mode)?)
+    }
+
+    /// Packed B-rep with shared source boundaries and periodic seam trims.
+    pub fn to_packed_nurbs_brep(
+        &self,
+        mode: SubDNurbsContinuity,
+        tolerance: crate::Tolerance,
+    ) -> Result<crate::Brep, GeometryError> {
+        topology::assemble_packed(self, self.to_packed_nurbs_patches(mode)?, tolerance)
+    }
     /// Unpacked NURBS patches with local extraordinary-vertex processing.
     pub fn to_nurbs_patches(
         &self,

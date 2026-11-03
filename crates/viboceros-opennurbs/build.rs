@@ -37,6 +37,7 @@ fn main() {
         "subd_patch_stencils.h",
         "subd_regular_patches.h",
         "subd_vertex_normals.h",
+        "subd_face_packs.h",
         "subd_curvature.h",
         "subd_interpolation.h",
         "subd_subdivision.h",

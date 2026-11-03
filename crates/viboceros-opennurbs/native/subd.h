@@ -106,6 +106,12 @@ int vibo_subd_regular_patches(const uint8_t*,size_t,ViboSubDRegularPatches**,cha
 int vibo_subd_regular_patches_view(const ViboSubDRegularPatches*,ViboSubDRegularPatchesView*);
 void vibo_subd_regular_patches_free(ViboSubDRegularPatches*);
 typedef struct ViboSubDVertexNormals ViboSubDVertexNormals;
+typedef struct ViboSubDFacePacks ViboSubDFacePacks;
+typedef struct {uint32_t id,rotation,set;double rectangle[4];} ViboSubDFacePack;
+typedef struct {size_t count;const ViboSubDFacePack* records;} ViboSubDFacePacksView;
+int vibo_subd_face_packs(const uint8_t*,size_t,ViboSubDFacePacks**,char*,size_t);
+int vibo_subd_face_packs_view(const ViboSubDFacePacks*,ViboSubDFacePacksView*);
+void vibo_subd_face_packs_free(ViboSubDFacePacks*);
 typedef struct {size_t count;const double* normals;} ViboSubDVertexNormalsView;
 int vibo_subd_smooth_vertex_normals(const uint8_t*,size_t,const size_t*,size_t,ViboSubDVertexNormals**,char*,size_t);
 int vibo_subd_vertex_normals_view(const ViboSubDVertexNormals*,ViboSubDVertexNormalsView*);

@@ -3827,6 +3827,7 @@ dependencies = [
 name = "viboceros-io"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "monstertruck",
  "num-rational",
  "num-traits",
