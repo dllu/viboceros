@@ -1,0 +1,521 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "quad_corners_0",
+      "op": "subd_continuity",
+      "scene": "quad_corners",
+      "mode": 0
+    },
+    {
+      "id": "quad_corners_1",
+      "op": "subd_continuity",
+      "scene": "quad_corners",
+      "mode": 1
+    },
+    {
+      "id": "quad_corners_2",
+      "op": "subd_continuity",
+      "scene": "quad_corners",
+      "mode": 2
+    },
+    {
+      "id": "quad_corners_3",
+      "op": "subd_continuity",
+      "scene": "quad_corners",
+      "mode": 3
+    },
+    {
+      "id": "quad_corners_4",
+      "op": "subd_continuity",
+      "scene": "quad_corners",
+      "mode": 4
+    },
+    {
+      "id": "quad_smooth_0",
+      "op": "subd_continuity",
+      "scene": "quad_smooth",
+      "mode": 0
+    },
+    {
+      "id": "quad_smooth_1",
+      "op": "subd_continuity",
+      "scene": "quad_smooth",
+      "mode": 1
+    },
+    {
+      "id": "quad_smooth_2",
+      "op": "subd_continuity",
+      "scene": "quad_smooth",
+      "mode": 2
+    },
+    {
+      "id": "quad_smooth_3",
+      "op": "subd_continuity",
+      "scene": "quad_smooth",
+      "mode": 3
+    },
+    {
+      "id": "quad_smooth_4",
+      "op": "subd_continuity",
+      "scene": "quad_smooth",
+      "mode": 4
+    },
+    {
+      "id": "grid_0",
+      "op": "subd_continuity",
+      "scene": "grid",
+      "mode": 0
+    },
+    {
+      "id": "grid_1",
+      "op": "subd_continuity",
+      "scene": "grid",
+      "mode": 1
+    },
+    {
+      "id": "grid_2",
+      "op": "subd_continuity",
+      "scene": "grid",
+      "mode": 2
+    },
+    {
+      "id": "grid_3",
+      "op": "subd_continuity",
+      "scene": "grid",
+      "mode": 3
+    },
+    {
+      "id": "grid_4",
+      "op": "subd_continuity",
+      "scene": "grid",
+      "mode": 4
+    },
+    {
+      "id": "box_0",
+      "op": "subd_continuity",
+      "scene": "box",
+      "mode": 0
+    },
+    {
+      "id": "box_1",
+      "op": "subd_continuity",
+      "scene": "box",
+      "mode": 1
+    },
+    {
+      "id": "box_2",
+      "op": "subd_continuity",
+      "scene": "box",
+      "mode": 2
+    },
+    {
+      "id": "box_3",
+      "op": "subd_continuity",
+      "scene": "box",
+      "mode": 3
+    },
+    {
+      "id": "box_4",
+      "op": "subd_continuity",
+      "scene": "box",
+      "mode": 4
+    },
+    {
+      "id": "pentagon_0",
+      "op": "subd_continuity",
+      "scene": "pentagon",
+      "mode": 0
+    },
+    {
+      "id": "pentagon_1",
+      "op": "subd_continuity",
+      "scene": "pentagon",
+      "mode": 1
+    },
+    {
+      "id": "pentagon_2",
+      "op": "subd_continuity",
+      "scene": "pentagon",
+      "mode": 2
+    },
+    {
+      "id": "pentagon_3",
+      "op": "subd_continuity",
+      "scene": "pentagon",
+      "mode": 3
+    },
+    {
+      "id": "pentagon_4",
+      "op": "subd_continuity",
+      "scene": "pentagon",
+      "mode": 4
+    },
+    {
+      "id": "creased_box_0",
+      "op": "subd_continuity",
+      "scene": "creased_box",
+      "mode": 0
+    },
+    {
+      "id": "creased_box_1",
+      "op": "subd_continuity",
+      "scene": "creased_box",
+      "mode": 1
+    },
+    {
+      "id": "creased_box_2",
+      "op": "subd_continuity",
+      "scene": "creased_box",
+      "mode": 2
+    },
+    {
+      "id": "creased_box_3",
+      "op": "subd_continuity",
+      "scene": "creased_box",
+      "mode": 3
+    },
+    {
+      "id": "creased_box_4",
+      "op": "subd_continuity",
+      "scene": "creased_box",
+      "mode": 4
+    },
+    {
+      "id": "torus_0",
+      "op": "subd_continuity",
+      "scene": "torus",
+      "mode": 0
+    },
+    {
+      "id": "torus_1",
+      "op": "subd_continuity",
+      "scene": "torus",
+      "mode": 1
+    },
+    {
+      "id": "torus_2",
+      "op": "subd_continuity",
+      "scene": "torus",
+      "mode": 2
+    },
+    {
+      "id": "torus_3",
+      "op": "subd_continuity",
+      "scene": "torus",
+      "mode": 3
+    },
+    {
+      "id": "torus_4",
+      "op": "subd_continuity",
+      "scene": "torus",
+      "mode": 4
+    },
+    {
+      "id": "smooth_pentagon_0",
+      "op": "subd_continuity",
+      "scene": "smooth_pentagon",
+      "mode": 0
+    },
+    {
+      "id": "smooth_pentagon_1",
+      "op": "subd_continuity",
+      "scene": "smooth_pentagon",
+      "mode": 1
+    },
+    {
+      "id": "smooth_pentagon_2",
+      "op": "subd_continuity",
+      "scene": "smooth_pentagon",
+      "mode": 2
+    },
+    {
+      "id": "smooth_pentagon_3",
+      "op": "subd_continuity",
+      "scene": "smooth_pentagon",
+      "mode": 3
+    },
+    {
+      "id": "smooth_pentagon_4",
+      "op": "subd_continuity",
+      "scene": "smooth_pentagon",
+      "mode": 4
+    },
+    {
+      "id": "five_fan_0",
+      "op": "subd_continuity",
+      "scene": "five_fan",
+      "mode": 0
+    },
+    {
+      "id": "five_fan_1",
+      "op": "subd_continuity",
+      "scene": "five_fan",
+      "mode": 1
+    },
+    {
+      "id": "five_fan_2",
+      "op": "subd_continuity",
+      "scene": "five_fan",
+      "mode": 2
+    },
+    {
+      "id": "five_fan_3",
+      "op": "subd_continuity",
+      "scene": "five_fan",
+      "mode": 3
+    },
+    {
+      "id": "five_fan_4",
+      "op": "subd_continuity",
+      "scene": "five_fan",
+      "mode": 4
+    },
+    {
+      "id": "seven_fan_0",
+      "op": "subd_continuity",
+      "scene": "seven_fan",
+      "mode": 0
+    },
+    {
+      "id": "seven_fan_1",
+      "op": "subd_continuity",
+      "scene": "seven_fan",
+      "mode": 1
+    },
+    {
+      "id": "seven_fan_2",
+      "op": "subd_continuity",
+      "scene": "seven_fan",
+      "mode": 2
+    },
+    {
+      "id": "seven_fan_3",
+      "op": "subd_continuity",
+      "scene": "seven_fan",
+      "mode": 3
+    },
+    {
+      "id": "seven_fan_4",
+      "op": "subd_continuity",
+      "scene": "seven_fan",
+      "mode": 4
+    },
+    {
+      "id": "pentagonal_prism_0",
+      "op": "subd_continuity",
+      "scene": "pentagonal_prism",
+      "mode": 0
+    },
+    {
+      "id": "pentagonal_prism_1",
+      "op": "subd_continuity",
+      "scene": "pentagonal_prism",
+      "mode": 1
+    },
+    {
+      "id": "pentagonal_prism_2",
+      "op": "subd_continuity",
+      "scene": "pentagonal_prism",
+      "mode": 2
+    },
+    {
+      "id": "pentagonal_prism_3",
+      "op": "subd_continuity",
+      "scene": "pentagonal_prism",
+      "mode": 3
+    },
+    {
+      "id": "pentagonal_prism_4",
+      "op": "subd_continuity",
+      "scene": "pentagonal_prism",
+      "mode": 4
+    },
+    {
+      "id": "tilted_grid_0",
+      "op": "subd_continuity",
+      "scene": "tilted_grid",
+      "mode": 0
+    },
+    {
+      "id": "tilted_grid_1",
+      "op": "subd_continuity",
+      "scene": "tilted_grid",
+      "mode": 1
+    },
+    {
+      "id": "tilted_grid_2",
+      "op": "subd_continuity",
+      "scene": "tilted_grid",
+      "mode": 2
+    },
+    {
+      "id": "tilted_grid_3",
+      "op": "subd_continuity",
+      "scene": "tilted_grid",
+      "mode": 3
+    },
+    {
+      "id": "tilted_grid_4",
+      "op": "subd_continuity",
+      "scene": "tilted_grid",
+      "mode": 4
+    },
+    {
+      "id": "reversed_fan_0",
+      "op": "subd_continuity",
+      "scene": "reversed_fan",
+      "mode": 0
+    },
+    {
+      "id": "reversed_fan_1",
+      "op": "subd_continuity",
+      "scene": "reversed_fan",
+      "mode": 1
+    },
+    {
+      "id": "reversed_fan_2",
+      "op": "subd_continuity",
+      "scene": "reversed_fan",
+      "mode": 2
+    },
+    {
+      "id": "reversed_fan_3",
+      "op": "subd_continuity",
+      "scene": "reversed_fan",
+      "mode": 3
+    },
+    {
+      "id": "reversed_fan_4",
+      "op": "subd_continuity",
+      "scene": "reversed_fan",
+      "mode": 4
+    },
+    {
+      "id": "skew_box_0",
+      "op": "subd_continuity",
+      "scene": "skew_box",
+      "mode": 0
+    },
+    {
+      "id": "skew_box_1",
+      "op": "subd_continuity",
+      "scene": "skew_box",
+      "mode": 1
+    },
+    {
+      "id": "skew_box_2",
+      "op": "subd_continuity",
+      "scene": "skew_box",
+      "mode": 2
+    },
+    {
+      "id": "skew_box_3",
+      "op": "subd_continuity",
+      "scene": "skew_box",
+      "mode": 3
+    },
+    {
+      "id": "skew_box_4",
+      "op": "subd_continuity",
+      "scene": "skew_box",
+      "mode": 4
+    },
+    {
+      "id": "one_crease_box_0",
+      "op": "subd_continuity",
+      "scene": "one_crease_box",
+      "mode": 0
+    },
+    {
+      "id": "one_crease_box_1",
+      "op": "subd_continuity",
+      "scene": "one_crease_box",
+      "mode": 1
+    },
+    {
+      "id": "one_crease_box_2",
+      "op": "subd_continuity",
+      "scene": "one_crease_box",
+      "mode": 2
+    },
+    {
+      "id": "one_crease_box_3",
+      "op": "subd_continuity",
+      "scene": "one_crease_box",
+      "mode": 3
+    },
+    {
+      "id": "one_crease_box_4",
+      "op": "subd_continuity",
+      "scene": "one_crease_box",
+      "mode": 4
+    },
+    {
+      "id": "crease_chain_box_0",
+      "op": "subd_continuity",
+      "scene": "crease_chain_box",
+      "mode": 0
+    },
+    {
+      "id": "crease_chain_box_1",
+      "op": "subd_continuity",
+      "scene": "crease_chain_box",
+      "mode": 1
+    },
+    {
+      "id": "crease_chain_box_2",
+      "op": "subd_continuity",
+      "scene": "crease_chain_box",
+      "mode": 2
+    },
+    {
+      "id": "crease_chain_box_3",
+      "op": "subd_continuity",
+      "scene": "crease_chain_box",
+      "mode": 3
+    },
+    {
+      "id": "crease_chain_box_4",
+      "op": "subd_continuity",
+      "scene": "crease_chain_box",
+      "mode": 4
+    },
+    {
+      "id": "fan_asymmetric_0",
+      "op": "subd_continuity",
+      "scene": "fan_asymmetric",
+      "mode": 0
+    },
+    {
+      "id": "fan_asymmetric_1",
+      "op": "subd_continuity",
+      "scene": "fan_asymmetric",
+      "mode": 1
+    },
+    {
+      "id": "fan_asymmetric_2",
+      "op": "subd_continuity",
+      "scene": "fan_asymmetric",
+      "mode": 2
+    },
+    {
+      "id": "fan_asymmetric_3",
+      "op": "subd_continuity",
+      "scene": "fan_asymmetric",
+      "mode": 3
+    },
+    {
+      "id": "fan_asymmetric_4",
+      "op": "subd_continuity",
+      "scene": "fan_asymmetric",
+      "mode": 4
+    }
+  ]
+}

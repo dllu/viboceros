@@ -17,6 +17,7 @@ mod remap;
 mod sharpness;
 mod soft_crease;
 mod spin;
+mod vertex_normals;
 pub use chains::subd_edge_chains;
 pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
@@ -36,6 +37,7 @@ pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
 pub use soft_crease::subd_soft_crease;
 pub use soft_crease::subd_stored_sharpness;
 pub use spin::subd_spin_edge;
+pub use vertex_normals::subd_smooth_vertex_normals;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]

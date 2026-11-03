@@ -29,9 +29,9 @@ pub use subd::{
     subd_from_archive, subd_from_mesh, subd_from_polygons, subd_insert_face_edge, subd_insert_path,
     subd_insert_vertex, subd_inset, subd_join_assemble, subd_offset, subd_patch_stencils,
     subd_refined_face_grids, subd_regular_patches, subd_remap_vertices, subd_retain_faces,
-    subd_set_tags, subd_sharpness_from_percent, subd_soft_crease, subd_spin_edge,
-    subd_stored_sharpness, subd_subdivide, subd_tessellate, subd_tessellate_with_jets,
-    subd_tessellate_with_normals, subd_transform,
+    subd_set_tags, subd_sharpness_from_percent, subd_smooth_vertex_normals, subd_soft_crease,
+    subd_spin_edge, subd_stored_sharpness, subd_subdivide, subd_tessellate,
+    subd_tessellate_with_jets, subd_tessellate_with_normals, subd_transform,
 };
 
 mod subd_interpolation;

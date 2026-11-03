@@ -1,8 +1,19 @@
 //! Unpacked base cubic patch construction before continuity postprocessing.
 use super::*;
 use crate::NurbsSurface;
+mod continuity;
 mod stencil;
 mod topology;
+
+/// Extraordinary-vertex processing, using Rhino's named continuity modes.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SubDNurbsContinuity {
+    G0,
+    G1,
+    G1x,
+    G1xx,
+    G2,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubDNurbsPatch {
@@ -12,6 +23,31 @@ pub struct SubDNurbsPatch {
 }
 
 impl SubD {
+    /// Unpacked NURBS patches with local extraordinary-vertex processing.
+    /// G1x and G1xx remain unimplemented and reject before fitting.
+    pub fn to_nurbs_patches(
+        &self,
+        mode: SubDNurbsContinuity,
+    ) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
+        if matches!(mode, SubDNurbsContinuity::G1x | SubDNurbsContinuity::G1xx) {
+            return Err(viboceros_opennurbs::SubDError(
+                "Requested SubD continuity mode is not implemented".into(),
+            )
+            .into());
+        }
+        let mut patches = self.to_nurbs_patches_g0()?;
+        continuity::apply(self, &mut patches, mode)?;
+        Ok(patches)
+    }
+
+    pub fn to_nurbs_brep(
+        &self,
+        mode: SubDNurbsContinuity,
+        tolerance: crate::Tolerance,
+    ) -> Result<crate::Brep, GeometryError> {
+        topology::assemble(self, self.to_nurbs_patches(mode)?, tolerance)
+    }
+
     /// Unpacked G0 B-rep with shared topology inherited from source component
     /// identities. N-gon sectors split their shared control edges at midpoints;
     /// adjacent quad faces retain one surface with the corresponding trim split.

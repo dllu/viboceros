@@ -105,6 +105,11 @@ typedef struct {
 int vibo_subd_regular_patches(const uint8_t*,size_t,ViboSubDRegularPatches**,char*,size_t);
 int vibo_subd_regular_patches_view(const ViboSubDRegularPatches*,ViboSubDRegularPatchesView*);
 void vibo_subd_regular_patches_free(ViboSubDRegularPatches*);
+typedef struct ViboSubDVertexNormals ViboSubDVertexNormals;
+typedef struct {size_t count;const double* normals;} ViboSubDVertexNormalsView;
+int vibo_subd_smooth_vertex_normals(const uint8_t*,size_t,const size_t*,size_t,ViboSubDVertexNormals**,char*,size_t);
+int vibo_subd_vertex_normals_view(const ViboSubDVertexNormals*,ViboSubDVertexNormalsView*);
+void vibo_subd_vertex_normals_free(ViboSubDVertexNormals*);
 typedef struct ViboSubDChains ViboSubDChains;
 typedef struct {
   size_t chain_count,edge_count;

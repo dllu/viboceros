@@ -14,9 +14,10 @@ are also no-ops: Rhino already stores them as NURBS curves; Viboceros retains
 its equivalent compact analytic representation. Headless execution with no eligible
 selection is an error; the GUI instead starts an object-selection prompt.
 
-Whole-SubD command conversion remains under development. Its independent
-[G0 geometry converter](../geometry/subd-nurbs-conversion.md) has native SDK
-controls; packing, continuity processing and command integration remain open.
+Whole-SubD command conversion remains under development. Its unpacked
+[geometry converter](../geometry/subd-nurbs-conversion.md) and
+[G1/G2 processing](../geometry/subd-nurbs-continuity.md) have native SDK controls;
+packing, G1x/G1xx and command integration remain open.
 
 With preselection, `DeleteInputObjects=No` creates unselected copies with the source's attributes,
 layer, name, color policy, and ordered group memberships. Sources and selection

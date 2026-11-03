@@ -11,6 +11,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [SubD geometry](../subd.md)
 - [SubD limit charts and exact NURBS patches](subd-limit-faces.md)
 - [SubD to NURBS base conversion and shared topology](subd-nurbs-conversion.md)
+- [SubD NURBS continuity modes and native controls](subd-nurbs-continuity.md)
 - [InsertPoint geometry, staging and compatibility limits](insert-point.md)
 - [Mesh vertex channels and 3DM preservation](mesh-channels.md)
 - [Mesh Boolean commands, getters and history](../mesh-boolean-commands.md)

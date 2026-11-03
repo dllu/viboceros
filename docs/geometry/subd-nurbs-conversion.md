@@ -45,9 +45,10 @@ are compared to native outputs. Further tests cover coincident shells, mixed
 trim splits, resource admission and immutable soft-sharpness rejection.
 
 Surface domains are normalized to [0,1], and redundant knots can differ from
-Rhino. These geometry APIs do not yet implement packed faces, G1/G1x/G1xx/G2
-processing, or soft sharpness. The finite G0 approximation has no continuous
-error certificate against the mathematical SubD limit. Arbitrary nonmanifold
+Rhino. [G1 and G2 processing](subd-nurbs-continuity.md) is available through the
+mode-based API; packing, G1x/G1xx and soft sharpness remain open. The finite G0
+approximation has no continuous error certificate against the mathematical SubD
+limit. Arbitrary nonmanifold
 inputs, degenerate patches and comparative performance remain unqualified.
 Parallel control edges joining the same vertex pair currently reject.
 Whole-SubD command options, attributes, option memory and undo/getter workflows

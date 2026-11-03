@@ -45,7 +45,7 @@ pub use insert::SubDVertexInsertion;
 pub use join::{SubDJoinResult, join_subds, join_subds_seeded};
 pub use limit_faces::SubDLimitFaceGrid;
 pub use mesh_conversion::SubDFromMeshOptions;
-pub use nurbs_conversion::SubDNurbsPatch;
+pub use nurbs_conversion::{SubDNurbsContinuity, SubDNurbsPatch};
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
