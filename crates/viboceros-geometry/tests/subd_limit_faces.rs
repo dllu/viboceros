@@ -199,3 +199,33 @@ fn density_archive_and_preallocation_limits_are_checked() {
     assert_eq!(source.archive(), archive);
     assert_eq!(source.limit_face_grids(1).unwrap().len(), 256);
 }
+
+#[test]
+fn refined_control_charts_are_distinct_from_limit_evaluations() {
+    let source = native::source(&native::case("quad_smooth")["before"]);
+    let archive = source.archive().to_vec();
+    let grids = viboceros_opennurbs::subd_refined_face_grids(source.archive(), 2).unwrap();
+    assert_eq!(grids.len(), 1);
+    assert_eq!(grids[0].side, 4);
+    // Two cubic crease-subdivision steps of the rounded rectangle corner.
+    assert_eq!(grids[0].points[0], [0.625, 0.46875, 0.]);
+    assert_eq!(grids[0].crease_corners, [true; 4]);
+    let refined = source.subdivided(2).unwrap();
+    for point in &grids[0].points {
+        let point = Point3::try_from(*point).unwrap();
+        assert!(
+            refined
+                .control_points()
+                .iter()
+                .any(|&p| p.distance_to(point).unwrap() < 1e-12)
+        );
+    }
+    let limit = source.limit_face_grids(2).unwrap()[0].points[0];
+    assert!(
+        limit
+            .distance_to(Point3::try_from(grids[0].points[0]).unwrap())
+            .unwrap()
+            > 0.01
+    );
+    assert_eq!(source.archive(), archive);
+}

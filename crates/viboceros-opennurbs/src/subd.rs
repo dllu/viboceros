@@ -22,7 +22,9 @@ pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
 pub use extrude::{SubDExtrudeDirection, subd_extrude};
-pub use face_grids::{SubDFaceGrid, subd_face_grids};
+pub use face_grids::{
+    SubDFaceGrid, SubDPatchStencil, subd_face_grids, subd_patch_stencils, subd_refined_face_grids,
+};
 pub use faces::subd_retain_faces;
 pub use insert::{subd_insert_face_edge, subd_insert_path, subd_insert_vertex};
 pub use inset::subd_inset;

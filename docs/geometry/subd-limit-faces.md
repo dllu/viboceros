@@ -51,10 +51,10 @@ ToBrep Bezier controls. Matching positive bases bound the complete surface image
 within `1e-12`; this check does not rely on surface sampling. Other tests check
 source slots, orientation, active levels, and soft-sharpness exclusion.
 
-Whole-SubD ToNURBS conversion remains unimplemented. The open-source OpenNURBS
-`ON_SubD::BrepForm` returns null; exact patch extraction and sampling are separate
-foundations for an independent assembler. Packing, extraordinary-vertex fitting,
-B-rep adjacency, command options, history and native command comparisons remain.
-The SDK controls do not qualify those command workflows or performance. Rhino's
+The independent [G0 converter](subd-nurbs-conversion.md) now constructs base patches
+and shared B-rep topology. The open-source OpenNURBS `ON_SubD::BrepForm` returns
+null. Packing, extraordinary-vertex continuity processing, command integration,
+history and native command comparisons remain. The SDK controls do not qualify
+those command workflows or performance. Rhino's
 [ToNURBS reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/tonurbs.htm)
 describes the target packing and continuity options.

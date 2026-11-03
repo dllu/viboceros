@@ -34,6 +34,7 @@ fn main() {
         "subd_sharpness.h",
         "subd_edges.h",
         "subd_face_grids.h",
+        "subd_patch_stencils.h",
         "subd_regular_patches.h",
         "subd_curvature.h",
         "subd_interpolation.h",

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "quad_corners",
+      "op": "subd_to_nurbs_g0",
+      "scene": "quad_corners"
+    },
+    {
+      "id": "quad_smooth",
+      "op": "subd_to_nurbs_g0",
+      "scene": "quad_smooth"
+    },
+    {
+      "id": "grid",
+      "op": "subd_to_nurbs_g0",
+      "scene": "grid"
+    },
+    {
+      "id": "box",
+      "op": "subd_to_nurbs_g0",
+      "scene": "box"
+    },
+    {
+      "id": "pentagon",
+      "op": "subd_to_nurbs_g0",
+      "scene": "pentagon"
+    },
+    {
+      "id": "creased_box",
+      "op": "subd_to_nurbs_g0",
+      "scene": "creased_box"
+    },
+    {
+      "id": "torus",
+      "op": "subd_to_nurbs_g0",
+      "scene": "torus"
+    },
+    {
+      "id": "smooth_pentagon",
+      "op": "subd_to_nurbs_g0",
+      "scene": "smooth_pentagon"
+    },
+    {
+      "id": "five_fan",
+      "op": "subd_to_nurbs_g0",
+      "scene": "five_fan"
+    },
+    {
+      "id": "seven_fan",
+      "op": "subd_to_nurbs_g0",
+      "scene": "seven_fan"
+    }
+  ]
+}

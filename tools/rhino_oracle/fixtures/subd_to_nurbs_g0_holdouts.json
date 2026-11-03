@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "pentagonal_prism",
+      "op": "subd_to_nurbs_g0",
+      "scene": "pentagonal_prism"
+    },
+    {
+      "id": "tilted_grid",
+      "op": "subd_to_nurbs_g0",
+      "scene": "tilted_grid"
+    },
+    {
+      "id": "reversed_fan",
+      "op": "subd_to_nurbs_g0",
+      "scene": "reversed_fan"
+    }
+  ]
+}

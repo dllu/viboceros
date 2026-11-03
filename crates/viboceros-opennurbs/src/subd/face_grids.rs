@@ -1,4 +1,4 @@
-//! Oriented dyadic samples of each control face's limit surface.
+//! Oriented dyadic face charts for limit samples and refined control nets.
 use super::*;
 
 /// A chart with source face winding: (0,0), (1,0), (1,1), (0,1).
@@ -12,6 +12,22 @@ pub struct SubDFaceGrid {
     pub side: usize,
     /// Row-major points, with the first chart coordinate varying fastest.
     pub points: Vec<[f64; 3]>,
+    /// Source chart corners tagged Crease with two adjacent hard crease sides.
+    pub crease_corners: [bool; 4],
+}
+
+/// Refined source-face controls with four clockwise rows just outside the
+/// chart, and exact limit positions at its corners. Crease halos reflect the
+/// interior row; smooth halos follow shared native topology.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SubDPatchStencil {
+    pub face: usize,
+    pub corner: Option<usize>,
+    pub side: usize,
+    pub controls: Vec<[f64; 3]>,
+    pub halo: [Vec<[f64; 3]>; 4],
+    pub limit_corners: [[f64; 3]; 4],
+    pub crease_corners: [bool; 4],
 }
 
 #[repr(C)]
@@ -24,6 +40,7 @@ struct GridInfo {
     corner: usize,
     side: usize,
     offset: usize,
+    crease_corners: usize,
 }
 #[repr(C)]
 #[derive(Default)]
@@ -38,6 +55,7 @@ unsafe extern "C" {
         bytes: *const u8,
         count: usize,
         density: u32,
+        kind: c_int,
         out: *mut *mut NativeGrids,
         error: *mut c_char,
         capacity: usize,
@@ -57,6 +75,42 @@ impl Drop for GridsOwner {
 /// The input archive is immutable. Linear interpolation between samples does
 /// not provide a bound on the intervening surface approximation error.
 pub fn subd_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, SubDError> {
+    face_grids(bytes, density, 1)
+}
+
+/// Refined control points in the same charts as `subd_face_grids`, after
+/// `density` global subdivision steps. These are control vertices, not surface
+/// evaluations; density, immutability and resource limits match that query.
+pub fn subd_refined_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, SubDError> {
+    face_grids(bytes, density, 0)
+}
+
+/// Bounded bicubic construction stencils, using the same source charts as the
+/// limit query. Outer diagonal controls are intentionally left to the fitter.
+pub fn subd_patch_stencils(bytes: &[u8], density: u32) -> Result<Vec<SubDPatchStencil>, SubDError> {
+    face_grids(bytes, density, 2)?
+        .into_iter()
+        .map(|grid| {
+            let stride = grid.side + 1;
+            let inner = stride * stride;
+            Ok(SubDPatchStencil {
+                face: grid.face,
+                corner: grid.corner,
+                side: grid.side,
+                crease_corners: grid.crease_corners,
+                controls: grid.points[..inner].to_vec(),
+                halo: std::array::from_fn(|side| {
+                    grid.points[inner + side * stride..inner + (side + 1) * stride].to_vec()
+                }),
+                limit_corners: grid.points[inner + 4 * stride..]
+                    .try_into()
+                    .map_err(|_| SubDError("Invalid stencil corner count".into()))?,
+            })
+        })
+        .collect()
+}
+
+fn face_grids(bytes: &[u8], density: u32, kind: c_int) -> Result<Vec<SubDFaceGrid>, SubDError> {
     check_archive(bytes)?;
     if !(1..=6).contains(&density) {
         return Err(SubDError("Invalid face sample density".into()));
@@ -68,6 +122,7 @@ pub fn subd_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, 
             bytes.as_ptr(),
             bytes.len(),
             density,
+            kind,
             &mut out,
             error.as_mut_ptr().cast(),
             error.len(),
@@ -108,8 +163,9 @@ pub fn subd_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, 
     for grid in grids {
         let corner = (grid.corner != usize::MAX).then_some(grid.corner);
         let side = 1usize << (density - u32::from(corner.is_some()));
-        let count = (side + 1).pow(2);
+        let count = (side + if kind == 2 { 3 } else { 1 }).pow(2);
         if grid.side != side
+            || grid.crease_corners > 15
             || grid.offset != offset
             || offset > points.len()
             || count > points.len() - offset
@@ -121,6 +177,7 @@ pub fn subd_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, 
             corner,
             side,
             points: points[offset..offset + count].to_vec(),
+            crease_corners: std::array::from_fn(|i| grid.crease_corners & (1 << i) != 0),
         });
         offset += count;
     }

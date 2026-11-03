@@ -86,14 +86,14 @@ int vibo_subd_edge_samples_view(const ViboSubDEdgeSamples*, ViboSubDEdgeSamplesV
 void vibo_subd_edge_samples_free(ViboSubDEdgeSamples*);
 typedef struct ViboSubDFaceGrids ViboSubDFaceGrids;
 typedef struct {
-  size_t face, corner, side, offset;
+  size_t face, corner, side, offset, crease_corners;
 } ViboSubDFaceGridInfo;
 typedef struct {
   size_t grid_count, point_count;
   const ViboSubDFaceGridInfo* grids;
   const double* points;
 } ViboSubDFaceGridsView;
-int vibo_subd_face_grids(const uint8_t*,size_t,unsigned,ViboSubDFaceGrids**,char*,size_t);
+int vibo_subd_face_grids(const uint8_t*,size_t,unsigned,int,ViboSubDFaceGrids**,char*,size_t);
 int vibo_subd_face_grids_view(const ViboSubDFaceGrids*,ViboSubDFaceGridsView*);
 void vibo_subd_face_grids_free(ViboSubDFaceGrids*);
 typedef struct ViboSubDRegularPatches ViboSubDRegularPatches;
