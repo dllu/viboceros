@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'nurbs_meshing': ('nurbs_meshing_probe', ('merge_edges_probe',)),
     'analysis_subd_details': ('analysis_subd_details_probe', ('merge_edges_probe',)),
     'analysis_mesh_parameters': ('analysis_mesh_parameters_probe', ('merge_edges_probe',)),
     'extract_analysis_mesh': ('extract_analysis_mesh_probe', ('join_probe','merge_edges_probe')),

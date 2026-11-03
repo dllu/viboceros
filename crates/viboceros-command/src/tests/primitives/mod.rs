@@ -5,6 +5,7 @@ mod arcs;
 mod conics;
 mod mesh_axial;
 mod mesh_planar;
+mod mesh_quality;
 mod mesh_round;
 mod planar;
 mod solids;

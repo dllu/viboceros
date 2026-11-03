@@ -1,0 +1,335 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-density0",
+      "source": "plane",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-density25",
+      "source": "plane",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-density50",
+      "source": "plane",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-density80",
+      "source": "plane",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-density100",
+      "source": "plane",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-analysis",
+      "source": "plane",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-chord01",
+      "source": "plane",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-angle10",
+      "source": "plane",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "plane-maxedge05",
+      "source": "plane",
+      "profile": "maxedge05"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-density0",
+      "source": "saddle",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-density25",
+      "source": "saddle",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-density50",
+      "source": "saddle",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-density80",
+      "source": "saddle",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-density100",
+      "source": "saddle",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-analysis",
+      "source": "saddle",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-chord01",
+      "source": "saddle",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-angle10",
+      "source": "saddle",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "saddle-maxedge05",
+      "source": "saddle",
+      "profile": "maxedge05"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-density0",
+      "source": "bump",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-density25",
+      "source": "bump",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-density50",
+      "source": "bump",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-density80",
+      "source": "bump",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-density100",
+      "source": "bump",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-analysis",
+      "source": "bump",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-chord01",
+      "source": "bump",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-angle10",
+      "source": "bump",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "bump-maxedge05",
+      "source": "bump",
+      "profile": "maxedge05"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-density0",
+      "source": "oscillating",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-density25",
+      "source": "oscillating",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-density50",
+      "source": "oscillating",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-density80",
+      "source": "oscillating",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-density100",
+      "source": "oscillating",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-analysis",
+      "source": "oscillating",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-chord01",
+      "source": "oscillating",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-angle10",
+      "source": "oscillating",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "oscillating-maxedge05",
+      "source": "oscillating",
+      "profile": "maxedge05"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-density0",
+      "source": "sphere",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-density25",
+      "source": "sphere",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-density50",
+      "source": "sphere",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-density80",
+      "source": "sphere",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-density100",
+      "source": "sphere",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-analysis",
+      "source": "sphere",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-chord01",
+      "source": "sphere",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-angle10",
+      "source": "sphere",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "sphere-maxedge05",
+      "source": "sphere",
+      "profile": "maxedge05"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-density0",
+      "source": "cylinder",
+      "profile": "density0"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-density25",
+      "source": "cylinder",
+      "profile": "density25"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-density50",
+      "source": "cylinder",
+      "profile": "density50"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-density80",
+      "source": "cylinder",
+      "profile": "density80"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-density100",
+      "source": "cylinder",
+      "profile": "density100"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-analysis",
+      "source": "cylinder",
+      "profile": "analysis"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-chord01",
+      "source": "cylinder",
+      "profile": "chord01"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-angle10",
+      "source": "cylinder",
+      "profile": "angle10"
+    },
+    {
+      "op": "nurbs_meshing",
+      "id": "cylinder-maxedge05",
+      "source": "cylinder",
+      "profile": "maxedge05"
+    }
+  ]
+}

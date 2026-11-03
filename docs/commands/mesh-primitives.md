@@ -5,8 +5,8 @@
 `Mesh` creates editable polygon meshes from selected NURBS surfaces and B-reps
 while retaining the selected sources. The new meshes copy source names, layers,
 colors, and display attributes, remain unselected, and do not inherit source
-groups, matching Rhino's derived-object behavior. `Density=0..1` selects a
-bounded per-knot-span sampling level; `SimplePlanes=Yes` minimizes entirely
+groups, matching Rhino's derived-object behavior. `Density=0..1` selects
+[geometry-driven NURBS refinement](../nurbs-meshing.md); `SimplePlanes=Yes` minimizes entirely
 planar inputs, and `JaggedSeams=Yes` disables shared-edge snapping on B-reps.
 Regular surface cells remain quadrilaterals, singular sides and planar trim
 regions use triangles. [Smooth-seam boundary auditing](../brep-meshing.md) checks

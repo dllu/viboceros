@@ -103,6 +103,24 @@ impl Brep {
             .into_iter()
             .max()
             .expect("a validated B-rep has at least one face");
+        // A B-rep currently needs one common resolution for seam stitching.
+        // Check its aggregate rectangular grid before any face allocates it;
+        // an anisotropic surface's maximum count can be much larger in both axes.
+        let spans = self.faces.iter().try_fold(0usize, |sum, face| {
+            let count = face
+                .surface
+                .spans_u()
+                .count()
+                .checked_mul(face.surface.spans_v().count())?;
+            sum.checked_add(count)
+        });
+        let vertices = samples_per_span
+            .checked_add(1)
+            .and_then(|side| side.checked_mul(side))
+            .and_then(|n| n.checked_mul(spans?));
+        if vertices.is_none_or(|n| n > 1_048_576) {
+            return Err(GeometryError::MeshSubdivisionLimit);
+        }
         self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance, false)
             .map(|(mesh, _, _)| mesh)
     }
