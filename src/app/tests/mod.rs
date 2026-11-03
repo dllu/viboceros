@@ -335,6 +335,7 @@ pub(super) fn test_app() -> VibocerosApp {
         surface_offset_session: None,
         short_path_session: None,
         offset_subd_session: None,
+        extrude_subd_session: None,
         mesh_polyline_session: None,
         face_create_session: None,
         surface_interpolation_session: None,
@@ -445,3 +446,8 @@ fn type_to_command_frame(
 mod subd_native;
 
 mod subd_offset;
+
+use subd_native as common;
+#[path = "../../../crates/viboceros-oracle/tests/support/subd_sources.rs"]
+mod source_archives;
+mod subd_extrude;

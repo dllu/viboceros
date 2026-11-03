@@ -15,6 +15,8 @@ pub enum ComponentPickFilter {
     Edges,
     Faces,
     SurfaceAndSubDFaces,
+    /// SubD naked edges take priority over faces; excludes other geometry.
+    SubDExtrude,
     MeshAndSubDFaces,
     /// Individual stored mesh faces, including faces inside logical n-gons.
     RawMeshFaces,
@@ -65,6 +67,21 @@ impl Viewport {
     ) -> Vec<ComponentPick> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::SubDExtrude {
+            let mut edges = self.pick_component_edges(pointer, rect, document, false);
+            edges.retain(|p| {
+                p.kind == ComponentSelectionKind::SubDEdge
+                    && document
+                        .object(p.object)
+                        .is_some_and(|o| match o.geometry() {
+                            Geometry::SubD(s) => s.edge_face_counts().get(p.index) == Some(&1),
+                            _ => false,
+                        })
+            });
+            if !edges.is_empty() {
+                return edges;
+            }
         }
         if matches!(
             filter,
@@ -168,12 +185,15 @@ impl Viewport {
             ComponentPickFilter::MeshAndSubDFaces
                 | ComponentPickFilter::RawMeshFaces
                 | ComponentPickFilter::SurfaceAndSubDFaces
+                | ComponentPickFilter::SubDExtrude
         )
         .then(|| {
             document
                 .selectable_objects()
                 .filter(|o| {
-                    if filter == ComponentPickFilter::SurfaceAndSubDFaces {
+                    if filter == ComponentPickFilter::SubDExtrude {
+                        matches!(o.geometry(), Geometry::SubD(_))
+                    } else if filter == ComponentPickFilter::SurfaceAndSubDFaces {
                         matches!(
                             o.geometry(),
                             Geometry::SubD(_) | Geometry::Brep(_) | Geometry::NurbsSurface(_)
@@ -243,6 +263,28 @@ impl Viewport {
             || selection.height() < 2.
         {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::SubDExtrude {
+            let mut result = Vec::new();
+            for object in document.selectable_objects() {
+                let Geometry::SubD(s) = object.geometry() else {
+                    continue;
+                };
+                result.extend(
+                    self.polygon_edges_in_rectangle(
+                        viewport, selection, document, object, crossing, inverted,
+                    )
+                    .into_iter()
+                    .filter(|p| {
+                        p.kind == ComponentSelectionKind::SubDEdge
+                            && s.edge_face_counts().get(p.index) == Some(&1)
+                    }),
+                );
+                result.extend(self.polygon_components_in_rectangle(
+                    viewport, selection, document, object, crossing, inverted,
+                ));
+            }
+            return result;
         }
         let mut result = Vec::new();
         for object in document.selectable_objects() {

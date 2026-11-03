@@ -1,0 +1,123 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_redundant-Z-1.5",
+      "target": "bent_redundant",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_redundant-Z--1.5",
+      "target": "bent_redundant",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_redundant-N-1.5",
+      "target": "bent_redundant",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_redundant-N--1.5",
+      "target": "bent_redundant",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_separate-Z-1.5",
+      "target": "bent_separate",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_separate-Z--1.5",
+      "target": "bent_separate",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_separate-N-1.5",
+      "target": "bent_separate",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_separate-N--1.5",
+      "target": "bent_separate",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_redundant-Z-1.5",
+      "target": "creased_redundant",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_redundant-Z--1.5",
+      "target": "creased_redundant",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_redundant-N-1.5",
+      "target": "creased_redundant",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_redundant-N--1.5",
+      "target": "creased_redundant",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_mixed-Z-1.5",
+      "target": "grid_mixed",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_mixed-Z--1.5",
+      "target": "grid_mixed",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_mixed-N-1.5",
+      "target": "grid_mixed",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_mixed-N--1.5",
+      "target": "grid_mixed",
+      "mode": "N",
+      "distance": -1.5
+    }
+  ]
+}

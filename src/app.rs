@@ -224,6 +224,7 @@ use interactive_state::{
 };
 #[cfg(test)]
 mod crease_native_tests;
+mod extrude_subd;
 mod intersect_two_sets;
 mod iplane;
 mod length;
@@ -441,6 +442,7 @@ pub struct VibocerosApp {
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
     offset_subd_session: Option<offset_subd::Session>,
+    extrude_subd_session: Option<extrude_subd::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
     face_create_session: Option<face_create::Session>,
     surface_interpolation_session: Option<surface_interpolation::Session>,
@@ -603,6 +605,7 @@ impl VibocerosApp {
             surface_offset_session: None,
             short_path_session: None,
             offset_subd_session: None,
+            extrude_subd_session: None,
             mesh_polyline_session: None,
             face_create_session: None,
             surface_interpolation_session: None,
@@ -759,7 +762,7 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.continue_offset_subd(&input) {
+        if self.continue_extrude_subd(&input) || self.continue_offset_subd(&input) {
             return;
         }
         if self.try_continue_circle_deform(&input)

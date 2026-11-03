@@ -1,0 +1,585 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_whole-Z-1.5",
+      "target": "quad_whole",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_whole-Z--1.5",
+      "target": "quad_whole",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_whole-N-1.5",
+      "target": "quad_whole",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_whole-N--1.5",
+      "target": "quad_whole",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_face-Z-1.5",
+      "target": "quad_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_face-Z--1.5",
+      "target": "quad_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_face-N-1.5",
+      "target": "quad_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_face-N--1.5",
+      "target": "quad_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-Z-1.5",
+      "target": "quad_edge",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-Z--1.5",
+      "target": "quad_edge",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-N-1.5",
+      "target": "quad_edge",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-N--1.5",
+      "target": "quad_edge",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-V-1.5",
+      "target": "quad_edge",
+      "mode": "V",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_edge-V--1.5",
+      "target": "quad_edge",
+      "mode": "V",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-Z-1.5",
+      "target": "quad_loop",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-Z--1.5",
+      "target": "quad_loop",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-N-1.5",
+      "target": "quad_loop",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-N--1.5",
+      "target": "quad_loop",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-V-1.5",
+      "target": "quad_loop",
+      "mode": "V",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "quad_loop-V--1.5",
+      "target": "quad_loop",
+      "mode": "V",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "warped_face-Z-1.5",
+      "target": "warped_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "warped_face-Z--1.5",
+      "target": "warped_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "warped_face-N-1.5",
+      "target": "warped_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "warped_face-N--1.5",
+      "target": "warped_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_whole-Z-1.5",
+      "target": "bent_whole",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_whole-Z--1.5",
+      "target": "bent_whole",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_whole-N-1.5",
+      "target": "bent_whole",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_whole-N--1.5",
+      "target": "bent_whole",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_face-Z-1.5",
+      "target": "bent_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_face-Z--1.5",
+      "target": "bent_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_face-N-1.5",
+      "target": "bent_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_face-N--1.5",
+      "target": "bent_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_faces-Z-1.5",
+      "target": "bent_faces",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_faces-Z--1.5",
+      "target": "bent_faces",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_faces-N-1.5",
+      "target": "bent_faces",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_faces-N--1.5",
+      "target": "bent_faces",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-Z-1.5",
+      "target": "bent_edge",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-Z--1.5",
+      "target": "bent_edge",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-N-1.5",
+      "target": "bent_edge",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-N--1.5",
+      "target": "bent_edge",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-V-1.5",
+      "target": "bent_edge",
+      "mode": "V",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "bent_edge-V--1.5",
+      "target": "bent_edge",
+      "mode": "V",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_face-Z-1.5",
+      "target": "grid_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_face-Z--1.5",
+      "target": "grid_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_face-N-1.5",
+      "target": "grid_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_face-N--1.5",
+      "target": "grid_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_faces-Z-1.5",
+      "target": "grid_faces",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_faces-Z--1.5",
+      "target": "grid_faces",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_faces-N-1.5",
+      "target": "grid_faces",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_faces-N--1.5",
+      "target": "grid_faces",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_disjoint-Z-1.5",
+      "target": "grid_disjoint",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_disjoint-Z--1.5",
+      "target": "grid_disjoint",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_disjoint-N-1.5",
+      "target": "grid_disjoint",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "grid_disjoint-N--1.5",
+      "target": "grid_disjoint",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_face-Z-1.5",
+      "target": "creased_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_face-Z--1.5",
+      "target": "creased_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_face-N-1.5",
+      "target": "creased_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "creased_face-N--1.5",
+      "target": "creased_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_whole-Z-1.5",
+      "target": "closed_whole",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_whole-Z--1.5",
+      "target": "closed_whole",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_whole-N-1.5",
+      "target": "closed_whole",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_whole-N--1.5",
+      "target": "closed_whole",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_face-Z-1.5",
+      "target": "closed_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_face-Z--1.5",
+      "target": "closed_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_face-N-1.5",
+      "target": "closed_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_face-N--1.5",
+      "target": "closed_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_faces-Z-1.5",
+      "target": "closed_faces",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_faces-Z--1.5",
+      "target": "closed_faces",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_faces-N-1.5",
+      "target": "closed_faces",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "closed_faces-N--1.5",
+      "target": "closed_faces",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_face-Z-1.5",
+      "target": "triangles_face",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_face-Z--1.5",
+      "target": "triangles_face",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_face-N-1.5",
+      "target": "triangles_face",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_face-N--1.5",
+      "target": "triangles_face",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_faces-Z-1.5",
+      "target": "triangles_faces",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_faces-Z--1.5",
+      "target": "triangles_faces",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_faces-N-1.5",
+      "target": "triangles_faces",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "triangles_faces-N--1.5",
+      "target": "triangles_faces",
+      "mode": "N",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "disjoint_whole-Z-1.5",
+      "target": "disjoint_whole",
+      "mode": "Z",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "disjoint_whole-Z--1.5",
+      "target": "disjoint_whole",
+      "mode": "Z",
+      "distance": -1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "disjoint_whole-N-1.5",
+      "target": "disjoint_whole",
+      "mode": "N",
+      "distance": 1.5
+    },
+    {
+      "op": "subd_extrude_command",
+      "id": "disjoint_whole-N--1.5",
+      "target": "disjoint_whole",
+      "mode": "N",
+      "distance": -1.5
+    }
+  ]
+}

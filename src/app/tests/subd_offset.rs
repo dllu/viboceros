@@ -1,3 +1,4 @@
+use super::source_archives;
 use super::*;
 use crate::app::tests::subd_native as common;
 #[path = "../../../crates/viboceros-oracle/tests/support/subd_offset.rs"]

@@ -356,6 +356,7 @@ pub struct ViewportInput<'a> {
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
+    pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -483,6 +484,7 @@ impl Default for ViewportInput<'_> {
             insert_edges: None,
             insert_mesh: None,
             offset_subd_edges: None,
+            extrude_subd_edges: None,
             soft_crease: None,
             drafting: DraftingInput::default(),
             point_filter: None,
@@ -2878,6 +2880,9 @@ impl Viewport {
                 )
             })
         });
+        if let Some(edges) = input.extrude_subd_edges {
+            self.paint_insert_edges(&painter, rect, edges, None);
+        }
         if let Some(edges) = input.offset_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }

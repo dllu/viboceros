@@ -15,6 +15,7 @@ impl InteractiveCommand {
             Self::OrientCurveToEdge => "OrientCrvToEdge",
             Self::OffsetCurveOnSurface => "OffsetCrvOnSrf",
             Self::OffsetSubD => "OffsetSubD",
+            Self::ExtrudeSubD => "ExtrudeSubD",
             Self::ShortPath { .. } => "ShortPath",
             Self::ArrayCurveOnSurface => "ArrayCrvOnSrf",
             Self::CurveArray { .. } => "ArrayCrv",
@@ -284,6 +285,7 @@ impl InteractiveCommand {
             | Self::SrfPt {
                 corners: [None, _, _],
             }
+            | Self::ExtrudeSubD
             | Self::OffsetSubD
             | Self::ExtractSrf { .. }
             | Self::Curvature { .. }

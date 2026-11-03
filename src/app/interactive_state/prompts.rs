@@ -4,6 +4,9 @@ use super::*;
 impl InteractiveCommand {
     pub(in crate::app) const fn prompt(self) -> &'static str {
         match self {
+            Self::ExtrudeSubD => {
+                "ExtrudeSubD: select faces or naked edges; enter distance and direction; Enter accepts, Esc cancels"
+            }
             Self::OffsetSubD => {
                 "OffsetSubD: enter distance or options; click inputs to flip; Enter commits, Esc cancels"
             }

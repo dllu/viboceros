@@ -510,6 +510,7 @@ impl eframe::App for VibocerosApp {
             && self.shrink_prompt_mode().is_none()
             && !self.to_subd_pending()
             && !self.picking_subdivide()
+            && self.extrude_subd_session.is_none()
             && !self.picking_extract_faces()
         {
             self.component_selection.valid_picks(&self.document);
@@ -568,6 +569,13 @@ impl eframe::App for VibocerosApp {
                 && self.plane_prompt.is_none()
                 && !end_analysis_picking)
                 .then_some(crate::viewport::ComponentPickFilter::Crease)
+        });
+        let component_pick = component_pick.or_else(|| {
+            (self.picking_extrude_subd()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::SubDExtrude)
         });
         let component_pick = component_pick.or_else(|| {
             (self.picking_extract_faces()
@@ -989,6 +997,10 @@ impl eframe::App for VibocerosApp {
                             insert_edges,
                             insert_mesh,
                             offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
+                            extrude_subd_edges: self
+                                .extrude_subd_session
+                                .as_ref()
+                                .map(|s| s.edges()),
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
                             angle_plane,

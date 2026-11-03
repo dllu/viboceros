@@ -13,6 +13,7 @@
 #include "subd_join.h"
 #include "subd_faces.h"
 #include "subd_offset.h"
+#include "subd_extrude.h"
 #include "subd_interpolation.h"
 #include "subd_subdivision.h"
 #include "subd_curvature.h"
@@ -399,4 +400,10 @@ extern "C" int vibo_subd_retain_faces(const uint8_t* bytes,size_t byte_count,con
 
 extern "C" int vibo_subd_offset(const uint8_t* bytes,size_t count,double distance,int solid,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{auto subd=vibo_subd::offset_subd(bytes,count,distance,solid!=0);return extract(*subd);});
+}
+
+extern "C" int vibo_subd_extrude(const uint8_t* bytes,size_t count,const size_t* faces,size_t face_count,
+    const size_t* edges,size_t edge_count,int whole,int mode,double distance,const double* direction,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{require(whole==0 || whole==1,"Invalid SubD extrusion selection mode");auto subd=vibo_subd::extrude_subd(bytes,count,faces,face_count,edges,edge_count,whole!=0,mode,distance,direction);return extract(*subd);});
 }

@@ -301,6 +301,7 @@ impl VibocerosApp {
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
             && !self.picking_extract_points()
+            && !self.picking_extrude_subd()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
@@ -392,6 +393,12 @@ impl VibocerosApp {
                 .collect()
         } else if self.shell_prompt.is_some() {
             self.shellable_picks(click.picks)
+        } else if self.picking_extrude_subd() {
+            click
+                .picks
+                .into_iter()
+                .filter(|p| super::extrude_subd::eligible(&self.document, p))
+                .collect()
         } else if self.picking_extract_faces() {
             click
                 .picks
@@ -645,6 +652,11 @@ impl VibocerosApp {
                 .picks
                 .retain(|p| p.kind == ComponentSelectionKind::BrepFace);
         }
+        if self.picking_extrude_subd() {
+            window
+                .picks
+                .retain(|p| super::extrude_subd::eligible(&self.document, p));
+        }
         if self.picking_subdivide() {
             window.picks.retain(|p| {
                 matches!(
@@ -668,6 +680,7 @@ impl VibocerosApp {
         } else if self.crease_prompt.is_some()
             || self.picking_soft_crease_edges()
             || self.picking_extract_points()
+            || self.picking_extrude_subd()
         {
             let action =
                 if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {

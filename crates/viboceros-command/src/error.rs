@@ -420,6 +420,12 @@ pub enum CommandError {
     UnsupportedOffsetMeshGeometry,
     #[error("OffsetSubD requires selected SubD objects")]
     UnsupportedOffsetSubDGeometry,
+    #[error("ExtrudeSubD requires SubD faces or naked edges")]
+    UnsupportedExtrudeSubDGeometry,
+    #[error(
+        "ExtrudeSubD sources, selection, attributes, groups or tolerance changed; select inputs again"
+    )]
+    ExtrudeSubDStale,
     #[error(
         "OffsetSubD sources, selection, attributes, groups or tolerance changed; select inputs again"
     )]

@@ -117,7 +117,7 @@ impl VibocerosApp {
         if self.start_short_path(input) {
             return true;
         }
-        if self.start_offset_subd(input, false) {
+        if self.start_extrude_subd(input) || self.start_offset_subd(input, false) {
             return true;
         }
         if self.start_surface_offset(input) {

@@ -453,3 +453,119 @@ fn extraction_face_filter_picks_subd_regions_and_excludes_meshes() {
         );
     }
 }
+
+#[test]
+fn subd_extrusion_filter_prefers_naked_edges_and_excludes_other_geometry() {
+    use viboceros_geometry::{MeshFace, SubD, TriangleMesh};
+    let mut doc = Document::default();
+    let source = SubD::try_from_polygons(
+        vec![
+            point(0., 0.),
+            point(4., 0.),
+            point(4., 3.),
+            point(0., 3.),
+            point(8., 0.),
+            point(8., 3.),
+        ],
+        vec![vec![0, 1, 2, 3], vec![1, 4, 5, 2]],
+    )
+    .unwrap();
+    let lines = source.display_edge_polylines().unwrap();
+    let boundary = source
+        .edge_face_counts()
+        .iter()
+        .position(|&n| n == 1)
+        .unwrap();
+    let id = doc.add_geometry(Geometry::SubD(source.clone())).unwrap();
+    doc.add_geometry(Geometry::Mesh(
+        TriangleMesh::try_from_face_records(
+            vec![
+                point(10., 0.),
+                point(14., 0.),
+                point(14., 3.),
+                point(10., 3.),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+        )
+        .unwrap(),
+    ))
+    .unwrap();
+    for mode in [
+        DisplayMode::Wireframe,
+        DisplayMode::Shaded,
+        DisplayMode::Ghosted,
+    ] {
+        for cage in [true, false] {
+            doc.set_subd_control_net(cage);
+            let view = Viewport {
+                display_mode: mode,
+                ..Viewport::new(ViewKind::Top)
+            };
+            let edge_point = if cage {
+                point(2., 0.)
+            } else {
+                let l = &lines[boundary];
+                l[l.len() / 2]
+            };
+            let filter = ComponentPickFilter::SubDExtrude;
+            assert_eq!(
+                view.pick_components(
+                    view.project(edge_point, rect()).unwrap(),
+                    rect(),
+                    &doc,
+                    filter
+                ),
+                [ComponentPick {
+                    object: id,
+                    kind: ComponentSelectionKind::SubDEdge,
+                    index: boundary
+                }]
+            );
+            assert_eq!(
+                view.pick_components(
+                    view.project(point(2., 1.5), rect()).unwrap(),
+                    rect(),
+                    &doc,
+                    filter
+                ),
+                [ComponentPick {
+                    object: id,
+                    kind: ComponentSelectionKind::SubDFace,
+                    index: 0
+                }]
+            );
+            assert!(
+                view.pick_components(
+                    view.project(point(12., 1.5), rect()).unwrap(),
+                    rect(),
+                    &doc,
+                    filter
+                )
+                .is_empty()
+            );
+            let picks = view.components_in_rectangle(
+                rect(),
+                selection(&view, (-1., -1.), (15., 4.)),
+                &doc,
+                filter,
+                false,
+                false,
+            );
+            assert_eq!(
+                picks
+                    .iter()
+                    .filter(|p| p.kind == ComponentSelectionKind::SubDFace)
+                    .count(),
+                2
+            );
+            assert_eq!(
+                picks
+                    .iter()
+                    .filter(|p| p.kind == ComponentSelectionKind::SubDEdge)
+                    .count(),
+                6
+            );
+            assert!(picks.iter().all(|p| p.object == id));
+        }
+    }
+}

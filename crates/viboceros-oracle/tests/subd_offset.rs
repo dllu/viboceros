@@ -1,3 +1,5 @@
+#[path = "support/subd_sources.rs"]
+mod source_archives;
 use serde_json::{Value, json};
 use viboceros_document::Geometry;
 use viboceros_geometry::SubD;

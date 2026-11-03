@@ -9,6 +9,7 @@
 - [MeshPolyline from closed polylines](mesh-polyline.md)
 - [3DFace from corner points and boundary edges](3dface.md)
 - [ToSubD: mesh, surface, extrusion and selected-face conversion](to-subd.md)
+- [ExtrudeSubD: face and naked-edge walls with staged previews](extrude-subd.md)
 - [OffsetSubD: signed skins, solid shells and side previews](offset-subd.md)
 - [ExtractSrf: editable SubD regions and remainders](extract-srf-subd.md)
 - [SubDivide: whole objects, selected faces and SubD selection](subdivide.md)
