@@ -32,7 +32,7 @@ impl ExtractCommand {
                     if let Some(mesh) = analysis_mesh::generate(
                         &member.geometry,
                         doc.tolerance(),
-                        doc.analysis_subd_density(),
+                        doc.analysis_mesh_settings(),
                     )? {
                         output.push((
                             analysis_mesh::copy_mesh(&mesh, None, doc.tolerance())?,

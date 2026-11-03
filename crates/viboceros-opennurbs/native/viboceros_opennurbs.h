@@ -244,7 +244,7 @@ int32_t vibo_3dm_object_geometry_user_text(const ViboThreeDmModel* model,
 int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double meters_per_unit, const char* unit_name,
                        double absolute_tolerance, double relative_tolerance,
-                       double angle_tolerance, uint32_t analysis_subd_level,
+                       double angle_tolerance, double analysis_nurbs_density, uint32_t analysis_subd_level,
                        uint32_t analysis_subd_adaptive,
                        const ViboWriteLayer* layers,
                        size_t layer_count, int32_t current_layer_index,
@@ -260,6 +260,7 @@ int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
                           double* absolute, double* relative, double* angle);
 int32_t vibo_3dm_analysis_subd_density(const ViboThreeDmModel* model,
                                      uint32_t* level, uint32_t* adaptive);
+int32_t vibo_3dm_analysis_nurbs_density(const ViboThreeDmModel* model, double* density);
 
 #ifdef __cplusplus
 }

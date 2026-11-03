@@ -6,9 +6,11 @@ impl VibocerosApp {
         let density = self.document.analysis_subd_density();
         let mut level = density.level();
         let mut adaptive = density.is_adaptive();
-        egui::CollapsingHeader::new("Adjust SubD mesh")
+        let mut nurbs = self.document.analysis_nurbs_density().value();
+        egui::CollapsingHeader::new("Adjust analysis mesh")
             .default_open(true)
             .show(ui, |ui| {
+                ui.add(egui::Slider::new(&mut nurbs, 0.0..=1.0).text("NURBS density"));
                 ui.add(
                     egui::Slider::new(&mut level, 1..=5)
                         .clamping(egui::SliderClamping::Never)
@@ -19,11 +21,15 @@ impl VibocerosApp {
                 if ui.button("Restore defaults").clicked() {
                     level = 4;
                     adaptive = true;
+                    nurbs = 0.8;
                 }
             });
-        if level != density.level() || adaptive != density.is_adaptive() {
+        if nurbs != self.document.analysis_nurbs_density().value()
+            || level != density.level()
+            || adaptive != density.is_adaptive()
+        {
             self.set_analysis_display(&format!(
-                "{command} SubDLevel={level} SubDAdaptive={}",
+                "{command} NurbsDensity={nurbs} SubDLevel={level} SubDAdaptive={}",
                 if adaptive { "Yes" } else { "No" }
             ));
         }

@@ -1,0 +1,128 @@
+{
+  "engine": "rhino",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "file_settings_properties": [
+          "ModelAbsoluteTolerance",
+          "ModelAngleToleranceDegrees",
+          "ModelAngleToleranceRadians",
+          "ModelBasepoint",
+          "ModelRelativeTolerance",
+          "ModelUnitSystem",
+          "ModelUrl",
+          "PageAbsoluteTolerance",
+          "PageAngleToleranceDegrees",
+          "PageAngleToleranceRadians",
+          "PageRelativeTolerance",
+          "PageUnitSystem",
+          "RenderSettings"
+        ],
+        "variants": [
+          {
+            "custom": null,
+            "render": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.65,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 0.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 16,
+              "RefineAngle": 0.0,
+              "RefineGrid": true,
+              "SimplePlanes": true
+            },
+            "style": "Fast",
+            "analysis": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.65,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 0.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 16,
+              "RefineAngle": 0.0,
+              "RefineGrid": true,
+              "SimplePlanes": true
+            }
+          },
+          {
+            "custom": 0.2,
+            "render": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.2,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 6.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 0,
+              "RefineAngle": 0.0,
+              "RefineGrid": true,
+              "SimplePlanes": false
+            },
+            "style": "Custom",
+            "analysis": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.65,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 0.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 16,
+              "RefineAngle": 0.0,
+              "RefineGrid": true,
+              "SimplePlanes": true
+            }
+          },
+          {
+            "custom": 0.9,
+            "render": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.9,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 6.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 0,
+              "RefineAngle": 0.0,
+              "RefineGrid": false,
+              "SimplePlanes": false
+            },
+            "style": "Custom",
+            "analysis": {
+              "MaximumEdgeLength": 0.0,
+              "RelativeTolerance": 0.65,
+              "ComputeCurvature": false,
+              "GridAspectRatio": 0.0,
+              "MinimumEdgeLength": 0.0001,
+              "GridAngle": 0.0,
+              "GridMinCount": 16,
+              "RefineAngle": 0.0,
+              "RefineGrid": true,
+              "SimplePlanes": true
+            }
+          }
+        ]
+      },
+      "id": "zero"
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "provenance": {
+    "request_sha256": "d9d6cb360fefe52c237fac7ec7d731fc31f53d4afd5085f4058ba47fa957df66",
+    "sources": {
+      "generate_analysis_nurbs_zero.py": "e39cb91f883aabf71874636817be51d16ef538992f0d6cc65ea243e3107be1b8",
+      "analysis_nurbs_zero_probe.py": "4696f74e47e54fe79d9d21878a6d021eec16bd60a0a07dca43cdf2ce770911f7",
+      "client.py": "61d6e78a15278e20b7649507e94fa60a5d336d42f0d9f6ecbcde999eba9a7874",
+      "rhino_worker.py": "3e179f289daa922cc7767b1e83c70c435b6428e356fa5062671892b0f30b9a63",
+      "structural_sdk.py": "9c7b77e43bbcb97c77d874ac0881016327eda6d156288a78afdf1daebabb6a08",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "fixtures/analysis_nurbs_settings/density0.3dm": "a673dd924201cf1371550d7a7515cf6bdb6c8523c3d292017f74caf635294e06",
+      "capture_family.py": "749f8fc772b09be8f9b6db9afe83bcd898106c3162bb45a04d2687bca2543994"
+    }
+  }
+}

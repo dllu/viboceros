@@ -133,6 +133,25 @@ impl Brep {
         tolerance: Tolerance,
         retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        self.tessellate_sampling(
+            Sampling::uniform(samples_per_span),
+            preserve_quads,
+            jagged_seams,
+            tolerance,
+            retain_parameters,
+        )
+    }
+
+    pub(super) fn tessellate_sampling(
+        &self,
+        sampling: Sampling<'_>,
+        preserve_quads: bool,
+        jagged_seams: bool,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        sampling.validate(&self.faces)?;
+        let samples_per_span = sampling.edge;
         if samples_per_span == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
@@ -143,9 +162,10 @@ impl Brep {
         for (face_index, face) in self.faces.iter().enumerate() {
             let frame = face.local_parameter_frame()?;
             let face = frame.face.as_ref();
+            let resolution = sampling.grid(face_index);
             let (mesh, parameters) = if face_covers_full_surface_domain(face, tolerance)? {
-                let (surface_mesh, parameters) = face.surface.tessellate_grid_with_parameters(
-                    samples_per_span,
+                let (surface_mesh, parameters) = face.surface.tessellate_grid_with_resolution(
+                    resolution,
                     preserve_quads,
                     tolerance,
                     retain_parameters,
@@ -155,6 +175,7 @@ impl Brep {
                     self.snap_face_boundary_vertices(
                         face,
                         &mut face_vertices,
+                        resolution,
                         samples_per_span,
                         tolerance,
                     )?;
@@ -171,8 +192,8 @@ impl Brep {
                 let surface = face
                     .surface
                     .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
-                surface.tessellate_grid_with_parameters(
-                    samples_per_span,
+                surface.tessellate_grid_with_resolution(
+                    resolution,
                     preserve_quads,
                     tolerance,
                     retain_parameters,
@@ -190,7 +211,7 @@ impl Brep {
                 self.tessellate_nonplanar_trimmed_face(
                     face_index,
                     face,
-                    samples_per_span,
+                    sampling,
                     jagged_seams,
                     tolerance,
                     retain_parameters,
@@ -204,6 +225,9 @@ impl Brep {
                 .ok_or(GeometryError::TooManyMeshVertices)?;
             if combined_vertex_count > u32::MAX as usize {
                 return Err(GeometryError::TooManyMeshVertices);
+            }
+            if combined_vertex_count > sampling.vertex_limit() {
+                return Err(GeometryError::MeshSubdivisionLimit);
             }
             if retain_parameters {
                 vertex_parameters.extend(parameters);
@@ -226,7 +250,7 @@ impl Brep {
         if !jagged_seams
             && !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)?
         {
-            return self.tessellate_conforming_impl(samples_per_span, tolerance, retain_parameters);
+            return self.tessellate_conforming_sampling(sampling, tolerance, retain_parameters);
         }
         Ok((mesh, face_sources, vertex_parameters))
     }
@@ -298,11 +322,12 @@ impl Brep {
         &self,
         face_index: usize,
         face: &BrepFace,
-        samples_per_span: usize,
+        sampling: Sampling<'_>,
         jagged_seams: bool,
         tolerance: Tolerance,
         retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
+        let samples_per_span = sampling.edge;
         let sampled_loops = face
             .loops
             .iter()
@@ -315,7 +340,7 @@ impl Brep {
             &mut parameters,
             &loop_lengths,
             &face.surface,
-            samples_per_span,
+            sampling.grid(face_index),
         )?;
         let triangles = if retain_parameters {
             creases::triangulate(&parameters, &loop_lengths, &face.surface, face_index)?
@@ -342,17 +367,23 @@ impl Brep {
         &self,
         face: &BrepFace,
         vertices: &mut [Point3],
+        resolution: [usize; 2],
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<(), GeometryError> {
         let candidates = self.face_boundary_snap_points(face, samples_per_span, tolerance)?;
         let span_count_u = face.surface.spans_u().count();
         let span_count_v = face.surface.spans_v().count();
-        let side = samples_per_span
+        let [samples_u, samples_v] = resolution;
+        let side = samples_u
             .checked_add(1)
             .ok_or(GeometryError::TooManyMeshVertices)?;
         let vertices_per_patch = side
-            .checked_mul(side)
+            .checked_mul(
+                samples_v
+                    .checked_add(1)
+                    .ok_or(GeometryError::TooManyMeshVertices)?,
+            )
             .ok_or(GeometryError::TooManyMeshVertices)?;
         let expected_vertex_count = span_count_u
             .checked_mul(span_count_v)
@@ -366,16 +397,16 @@ impl Brep {
             for u_span in 0..span_count_u {
                 let patch = v_span * span_count_u + u_span;
                 let patch_offset = patch * vertices_per_patch;
-                for v_sample in 0..=samples_per_span {
-                    for u_sample in 0..=samples_per_span {
+                for v_sample in 0..=samples_v {
+                    for u_sample in 0..=samples_u {
                         let vertex = &mut vertices[patch_offset + v_sample * side + u_sample];
                         if v_span == 0 && v_sample == 0 {
                             snap_point_to_candidates(vertex, &candidates[0], tolerance);
                         }
-                        if u_span + 1 == span_count_u && u_sample == samples_per_span {
+                        if u_span + 1 == span_count_u && u_sample == samples_u {
                             snap_point_to_candidates(vertex, &candidates[1], tolerance);
                         }
-                        if v_span + 1 == span_count_v && v_sample == samples_per_span {
+                        if v_span + 1 == span_count_v && v_sample == samples_v {
                             snap_point_to_candidates(vertex, &candidates[2], tolerance);
                         }
                         if u_span == 0 && u_sample == 0 {

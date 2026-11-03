@@ -1,48 +1,58 @@
 # Analysis meshes
 
 [Draft angle analysis](draft-angle-analysis.md) and
-[curvature analysis](curvature-analysis.md) share the document's SubD analysis
-mesh settings. Each panel provides subdivision level, adaptive subdivision and
-Restore defaults controls. Changes refresh analysis faces and
-[ExtractAnalysisMesh](extract-analysis-mesh.md), including placed block leaves,
-without changing control geometry, selection, model history or an active point
-getter. Ordinary viewport meshing keeps its own settings.
+[curvature analysis](curvature-analysis.md) share document analysis mesh settings.
+Both panels provide NURBS density, SubD subdivision/adaptive controls and Restore
+defaults. Changes refresh display and [ExtractAnalysisMesh](extract-analysis-mesh.md),
+including placed block leaves, without editing source geometry, selection,
+model history or an active point getter. Ordinary viewport meshing is separate.
 
-The default is adaptive level 4. The slider exposes levels 1–5: an isolated quad
-produces a 2×2, 4×4, 8×8, 16×16 or 32×32 grid. Adaptive mode reduces the level
-when control-face count times `4^level` exceeds 512,000, down to level 1.
-Disabling adaptive mode keeps the requested level. Meshing still enforces the
-implementation's one-million-face allocation limit.
+NURBS/B-rep density defaults to `0.8` and accepts `0..1`. Positive values use
+[geometric Bézier error estimates](../nurbs-meshing.md); the initial grid has at
+least sixteen cells per face before trimming. Bilinear faces keep that grid.
+Each face can use different U/V counts, preserving sparse rows along straight extrusion
+directions. Trim boundaries share edge sampling; the conforming fallback retains
+face provenance, one-sided crease normals and per-face interior grids.
 
-Both analysis commands expose these panel settings as Viboceros console bindings:
+SubDs default to adaptive level 4. The slider exposes levels 1–5, giving an
+isolated quad a 2×2 through 32×32 grid. Adaptive mode reduces subdivision when
+control-face count times `4^level` exceeds 512,000, down to level 1. The API and
+console accept levels 0–6; level 0 needs one subdivision for nonquad fragments.
+Imported values outside the slider range remain intact until edited.
+
+These Viboceros console bindings expose panel actions:
 
 ```text
-DraftAngleAnalysis SubDLevel=4 SubDAdaptive=Yes
-CurvatureAnalysis SubDLevel=3 SubDAdaptive=No
+DraftAngleAnalysis NurbsDensity=0.5
+CurvatureAnalysis NurbsDensity=0.8 SubDLevel=4 SubDAdaptive=Yes
 ```
 
-The API and console accept levels 0–6. Absolute level 0 samples an unsubdivided
-quad net; nonquad faces require at least one subdivision for quad analysis
-fragments. Imported levels outside the slider range remain intact until edited.
-Open/Save/SaveAs/Export retain level and adaptive mode in native 3DM analysis
-meshing settings. Import keeps the destination document's policy. Analysis
-membership and color ranges remain session settings.
+Settings are stored in native 3DM analysis meshing parameters. Open restores
+them; Save/SaveAs/Export retain them, and Import keeps the destination policy.
+BlockEdit save/cancel and model Undo/Redo retain the current display settings.
+Analysis membership and color ranges remain session settings. Cache keys include
+only the parameters relevant to each geometry family, so changing NURBS density
+does not discard SubD geometry, or vice versa.
 
-Frozen Rhino 8.32 observations cover defaults, adaptive thresholds, analysis
-extraction at the default level, and native headless reads of files written by
-Viboceros. Mesh face counts agree across five slider levels for a quad, box,
-triangle and pentagon. Separate public `Subdivide`/`SurfacePoint` observations
-qualify the sampled limit geometry to `1e-10` in those cases. Rhino's display
-mesher can use different sample positions and duplicate seam vertices; identical
-display tessellation, colors and pixels are not qualified. NURBS/B-rep density
-and detailed meshing controls remain unimplemented.
+Native Rhino 8.32 archive reads and rewrites cover five NURBS densities and six
+SubD configurations. A stored zero NURBS density survives raw file rewriting,
+but Rhino's document API reports a different profile after loading it (relative
+tolerance `0.65`, simplified planes, no stored curvature). Changing the loaded
+document's render density afterwards does not change that profile. Viboceros
+currently preserves zero and uses its coarse analysis grid; this native
+zero-density profile reset remains a compatibility gap.
+
+Mesh and native vertex samples are tested independently. Identical Rhino
+analysis tessellation, pixels, trimmed-face error bounds and detailed meshing
+controls are not qualified. Adaptive NURBS/B-rep meshing enforces a 1,048,576
+vertex limit and a refinement-work budget; SubD meshing limits output to one
+million faces. Unavailable analysis objects are reported by the curvature panel.
 
 ```sh
-cargo test -p viboceros-geometry --lib analysis_subd_density
-cargo test -p viboceros-command --lib analysis_subd_density
-cargo test -p viboceros --bin viboceros analysis_subd_density
-python3 -m unittest tools.rhino_oracle.test_analysis_mesh_parameters
+cargo test -p viboceros-geometry --lib analysis_nurbs_density
+cargo test -p viboceros-command --lib analysis_nurbs_density
+cargo test -p viboceros --bin viboceros analysis
+python3 -m unittest tools.rhino_oracle.test_analysis_nurbs_density
 ```
 
-References: [Rhino analysis mesh options](https://docs.mcneel.com/rhino/8/help/en-us/information/analysismeshoptions.htm),
-[public SubD display parameters](https://developer.rhino3d.com/api/rhinocommon/type/rhino.geometry.subddisplayparameters/).
+Reference: [Rhino analysis mesh options](https://docs.mcneel.com/rhino/8/help/en-us/information/analysismeshoptions.htm).

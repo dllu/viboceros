@@ -70,8 +70,9 @@ Another [35 camera/vector cases](../oracle/camera-vectors.md) cover raw camera
 metadata, navigation resets and nonunit View pull vectors. Import, named views and
 SaveAs/Open retain raw camera vectors independently of the rendering frame.
 [ExtractAnalysisMesh](extract-analysis-mesh.md) copies this display into model
-meshes with stored normals and vertex colors. Shared [SubD mesh controls](analysis-mesh.md)
-set subdivision density. NURBS/B-rep density and draft-curve extraction remain unimplemented.
+meshes with stored normals and vertex colors. Shared
+[analysis mesh controls](analysis-mesh.md) set NURBS density and SubD subdivision.
+Draft-curve extraction remains unimplemented.
 
 ```sh
 cargo test -p viboceros-command --lib draft_angle_analysis

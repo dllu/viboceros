@@ -449,6 +449,7 @@ impl Group {
 
 #[derive(Clone, Debug)]
 pub struct Document {
+    analysis_nurbs_density: viboceros_geometry::NurbsMeshDensity,
     analysis_subd_density: viboceros_geometry::SubDMeshDensity,
     subd_control_net: bool,
     block_edit: Option<Box<block_edit::BlockEditSession>>,
@@ -485,6 +486,7 @@ impl Document {
         let current_layer = default_layer.id;
         Self {
             analysis_subd_density: Default::default(),
+            analysis_nurbs_density: Default::default(),
             block_edit: None,
             subd_control_net: false,
             tolerance,

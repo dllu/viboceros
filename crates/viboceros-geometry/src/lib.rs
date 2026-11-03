@@ -4,7 +4,9 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod analysis_mesh;
 mod edge_insertion;
+pub use analysis_mesh::{AnalysisMeshSettings, NurbsMeshDensity};
 pub mod interop;
 pub use edge_insertion::PolygonEdgePoint;
 mod subd;

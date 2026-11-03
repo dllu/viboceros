@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "analysis_nurbs_density",
+      "id": "density0",
+      "archive": "density0"
+    },
+    {
+      "op": "analysis_nurbs_density",
+      "id": "density25",
+      "archive": "density25"
+    },
+    {
+      "op": "analysis_nurbs_density",
+      "id": "density50",
+      "archive": "density50"
+    },
+    {
+      "op": "analysis_nurbs_density",
+      "id": "density80",
+      "archive": "density80"
+    },
+    {
+      "op": "analysis_nurbs_density",
+      "id": "density100",
+      "archive": "density100"
+    }
+  ]
+}

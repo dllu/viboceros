@@ -13,7 +13,7 @@ writes the model without changing the application's current file name.
 Save and export preserve working viewport cameras, titles, construction planes,
 display modes, and grid settings. Open restores the views, layout, active
 viewport, maximized state, and active layer.
-[SubD analysis mesh settings](commands/analysis-mesh.md) also persist; Import keeps the destination policy. `ReadViewportsFromFile path.3dm`
+[Analysis mesh settings](commands/analysis-mesh.md) also persist; Import keeps the destination policy. `ReadViewportsFromFile path.3dm`
 copies views and layout into the current document without importing objects.
 
 3DM object UUIDs are retained through ordinary Open/Save/SaveAs, including

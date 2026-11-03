@@ -31,8 +31,9 @@ Refinement failures leave a `Mesh` command's sources, selection and redo intact.
 The error estimate concerns untrimmed knot cells before seam snapping.
 Trim-boundary approximation and constrained trimmed-face triangles do not yet
 have the same bound. Detailed native meshing controls and identical Rhino
-tessellation counts remain unqualified. Analysis panels still use their existing
-NURBS/B-rep sampling; their density controls require further integration.
+tessellation counts remain unqualified.
+[Analysis panels](commands/analysis-mesh.md) use the same density rule with a
+minimum initial grid and independent per-face counts.
 
 Frozen Rhino 8.32 records cover 54 public SDK combinations: six surface shapes
 with density presets, default analysis settings, chord, angle and maximum-edge

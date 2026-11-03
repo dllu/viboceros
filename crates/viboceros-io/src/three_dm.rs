@@ -15,8 +15,10 @@ use viboceros_geometry::{
 use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
+mod analysis_mesh;
 mod blocks;
 mod camera;
+use analysis_mesh::{analysis_nurbs_density, analysis_subd_density};
 use camera::{decode_view, encode_view, scale_view, validate_view_camera};
 mod instances;
 pub use blocks::{
@@ -221,6 +223,7 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    pub analysis_nurbs_density: viboceros_geometry::NurbsMeshDensity,
     pub analysis_subd_density: viboceros_geometry::SubDMeshDensity,
     pub definitions: Vec<ThreeDmDefinition>,
     /// Stored model policy, distinct from the tolerance used to decode geometry.
@@ -249,6 +252,7 @@ impl ThreeDmModel {
         Self {
             definitions: Vec::new(),
             analysis_subd_density: Default::default(),
+            analysis_nurbs_density: Default::default(),
             units: LengthUnitSystem::default(),
             tolerance: Tolerance::DEFAULT,
             layers,
@@ -810,6 +814,7 @@ pub fn write_3dm_file(
             model.tolerance.absolute(),
             model.tolerance.relative(),
             model.tolerance.angular(),
+            model.analysis_nurbs_density.value(),
             u32::from(model.analysis_subd_density.level()),
             u32::from(model.analysis_subd_density.is_adaptive()),
             pointer_or_null(&layers),
@@ -888,25 +893,6 @@ fn model_tolerance(handle: &ModelHandle) -> Result<Tolerance, ThreeDmError> {
     }
     Tolerance::try_new(absolute, relative, angle)
         .map_err(|_| ThreeDmError::InvalidModel("invalid model tolerance metadata".into()))
-}
-
-fn analysis_subd_density(
-    handle: &ModelHandle,
-) -> Result<viboceros_geometry::SubDMeshDensity, ThreeDmError> {
-    let (mut level, mut adaptive) = (0, 0);
-    // SAFETY: the handle is live and both output pointers are writable.
-    if unsafe { ffi::vibo_3dm_analysis_subd_density(handle.0.as_ptr(), &mut level, &mut adaptive) }
-        == 0
-        || adaptive > 1
-    {
-        return Err(ThreeDmError::MalformedBridge(
-            "invalid analysis SubD density",
-        ));
-    }
-    u8::try_from(level)
-        .ok()
-        .and_then(|level| viboceros_geometry::SubDMeshDensity::new(level, adaptive != 0))
-        .ok_or(ThreeDmError::MalformedBridge("invalid analysis SubD level"))
 }
 
 fn decode_model(
@@ -1019,6 +1005,7 @@ fn decode_model(
         }
     }
     let model = ThreeDmModel {
+        analysis_nurbs_density: analysis_nurbs_density(handle)?,
         analysis_subd_density: analysis_subd_density(handle)?,
         definitions: Vec::new(),
         tolerance: stored_tolerance,
@@ -2311,6 +2298,7 @@ mod ffi {
             absolute_tolerance: f64,
             relative_tolerance: f64,
             angle_tolerance: f64,
+            analysis_nurbs_density: f64,
             analysis_subd_level: u32,
             analysis_subd_adaptive: u32,
             layers: *const ViboWriteLayer,
@@ -2342,6 +2330,10 @@ mod ffi {
             model: *const ViboThreeDmModel,
             level: *mut u32,
             adaptive: *mut u32,
+        ) -> c_int;
+        pub fn vibo_3dm_analysis_nurbs_density(
+            model: *const ViboThreeDmModel,
+            density: *mut f64,
         ) -> c_int;
     }
 }

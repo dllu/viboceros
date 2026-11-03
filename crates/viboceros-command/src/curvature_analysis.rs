@@ -30,7 +30,7 @@ impl std::fmt::Debug for View {
 struct Cache {
     source: GeometrySnapshot,
     tolerance: Tolerance,
-    density: viboceros_geometry::SubDMeshDensity,
+    settings: viboceros_geometry::AnalysisMeshSettings,
     mesh: Option<Arc<CurvatureMesh>>,
 }
 #[derive(Default)]
@@ -98,8 +98,11 @@ fn refresh(state: &mut State, doc: &Document, cache: &analysis_mesh::Cache) {
         }
         if state.cache.get(&id).is_none_or(|c| {
             c.tolerance != doc.tolerance()
-                || matches!(object.geometry(), Geometry::SubD(_))
-                    && c.density != doc.analysis_subd_density()
+                || c.settings
+                    != analysis_mesh::settings_for_geometry(
+                        object.geometry(),
+                        doc.analysis_mesh_settings(),
+                    )
                 || !c.source.shares_storage_with(object.geometry_snapshot())
         }) {
             let mesh = cache.get(object, doc).ok().flatten();
@@ -108,7 +111,10 @@ fn refresh(state: &mut State, doc: &Document, cache: &analysis_mesh::Cache) {
                 Cache {
                     source: object.geometry_snapshot().clone(),
                     tolerance: doc.tolerance(),
-                    density: doc.analysis_subd_density(),
+                    settings: analysis_mesh::settings_for_geometry(
+                        object.geometry(),
+                        doc.analysis_mesh_settings(),
+                    ),
                     mesh,
                 },
             );

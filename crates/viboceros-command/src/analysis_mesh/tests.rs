@@ -93,6 +93,12 @@ fn analysis_subd_density_options_are_validated_atomically() {
             .unwrap();
         r.execute(&mut d, command).unwrap();
         for args in [
+            "NurbsDensity=-0.1",
+            "NurbsDensity=1.1",
+            "NurbsDensity=NaN",
+            "NurbsDensity=inf",
+            "NurbsDensity=0.25 NurbsDensity=0.5",
+            "NurbsDensity=0.25 Range=NaN,1",
             "SubDLevel=7",
             "SubDLevel=-1",
             "SubDLevel=1.5",

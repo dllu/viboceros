@@ -104,6 +104,7 @@ impl CurvatureMesh {
             normals,
             samples: LazyLock::new(Box::new(move || {
                 let mut cache = HashMap::new();
+                let mut regular = HashMap::new();
                 let mut jets = Vec::new();
                 let mut principal = Vec::new();
                 let mut indices = Vec::with_capacity(corners.len());
@@ -117,15 +118,33 @@ impl CurvatureMesh {
                             side(0) == ParameterSide::Left,
                             side(1) == ParameterSide::Left,
                         );
-                        *cache.entry(key).or_insert_with(|| {
-                            let surface = &surfaces[corners[i].face.unwrap_or(0)];
-                            let jet = sample_jet(surface, uv, i, [side(0), side(1)])?;
-                            let k = jet.curvature().ok()?.principal;
-                            let index = jets.len();
-                            jets.push(jet);
-                            principal.push(k);
-                            Some(index)
-                        })
+                        let surface = &surfaces[corners[i].face.unwrap_or(0)];
+                        let sides = super::regular_sides(surface, uv[i], [side(0), side(1)]);
+                        let regular_key = (
+                            corners[i].face,
+                            triangle[i],
+                            sides.map(|s| s == ParameterSide::Left),
+                        );
+                        if let Some(index) = regular.get(&regular_key) {
+                            return Some(*index);
+                        }
+                        if let Some(index) = cache.get(&key) {
+                            return *index;
+                        }
+                        let sampled = sample_jet(surface, uv, i, [side(0), side(1)]);
+                        let Some((jet, k, is_regular)) = sampled else {
+                            cache.insert(key, None);
+                            return None;
+                        };
+                        let index = jets.len();
+                        jets.push(jet);
+                        principal.push(k);
+                        if is_regular {
+                            regular.insert(regular_key, index);
+                        } else {
+                            cache.insert(key, Some(index));
+                        }
+                        Some(index)
                     }));
                 }
                 Samples {
@@ -177,6 +196,16 @@ impl CurvatureMesh {
 }
 
 impl NurbsSurface {
+    pub fn curvature_mesh_with_density(
+        &self,
+        density: crate::NurbsMeshDensity,
+        tolerance: crate::Tolerance,
+    ) -> Result<CurvatureMesh, GeometryError> {
+        Ok(CurvatureMesh::from_tessellation(
+            self.tessellate_with_density(density, tolerance)?,
+            &[self],
+        ))
+    }
     pub fn curvature_mesh(
         &self,
         samples_per_span: usize,
@@ -194,13 +223,13 @@ fn sample_jet(
     uv: [Point2; 3],
     i: usize,
     sides: [ParameterSide; 2],
-) -> Option<SurfaceJet2> {
+) -> Option<(SurfaceJet2, [Real; 2], bool)> {
     let p = uv[i];
     let jet = s
         .evaluate_with_second_derivatives_on_sides(p.x(), p.y(), sides[0], sides[1])
         .ok()?;
-    if jet.curvature().is_ok() {
-        return Some(jet);
+    if let Ok(k) = jet.curvature() {
+        return Some((jet, k.principal, true));
     }
     // An incident UV ray can resolve a singular corner's sampled limit. A
     // diverging cone apex or unstable approach remains unavailable.
@@ -226,7 +255,7 @@ fn sample_jet(
                 0
             };
             if converged >= 2 {
-                return Some(jet);
+                return Some((jet, k, false));
             }
         }
         previous = Some(k);

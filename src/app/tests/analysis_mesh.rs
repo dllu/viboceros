@@ -26,9 +26,12 @@ fn analysis_subd_density_changes_preserve_a_partially_answered_point_getter() {
         enter(&mut app, "Line");
         enter(&mut app, "0,0,0");
         let active = app.active_command;
-        app.set_analysis_display(&format!("{command} SubDLevel=2 SubDAdaptive=No"));
+        app.set_analysis_display(&format!(
+            "{command} NurbsDensity=0.25 SubDLevel=2 SubDAdaptive=No"
+        ));
         assert_eq!(app.active_command, active);
         assert!(app.object_prompt.is_none());
+        assert_eq!(app.document.analysis_nurbs_density().value(), 0.25);
         assert_eq!(
             app.document.analysis_subd_density(),
             SubDMeshDensity::new(2, false).unwrap()

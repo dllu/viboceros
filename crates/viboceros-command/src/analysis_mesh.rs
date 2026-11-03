@@ -2,8 +2,11 @@
 use super::*;
 use std::sync::{Arc, Mutex};
 use viboceros_document::{GeometrySnapshot, Object};
+use viboceros_geometry::AnalysisMeshSettings;
 use viboceros_geometry::{CurvatureMesh, DraftAngleMapping, GeometryError};
 mod copy;
+#[cfg(test)]
+mod nurbs_tests;
 mod options;
 #[cfg(test)]
 mod tests;
@@ -13,7 +16,7 @@ pub(crate) use options::MeshOptions;
 struct Entry {
     source: GeometrySnapshot,
     tolerance: Tolerance,
-    density: viboceros_geometry::SubDMeshDensity,
+    settings: AnalysisMeshSettings,
     mesh: Result<Option<Arc<CurvatureMesh>>, GeometryError>,
 }
 #[derive(Default)]
@@ -25,29 +28,23 @@ impl Cache {
         doc: &Document,
     ) -> Result<Option<Arc<CurvatureMesh>>, GeometryError> {
         let tolerance = doc.tolerance();
-        // Only SubD geometry depends on this setting; changing its level must
-        // not discard expensive NURBS/B-rep curvature samples.
-        let density = if matches!(object.geometry(), Geometry::SubD(_)) {
-            doc.analysis_subd_density()
-        } else {
-            Default::default()
-        };
+        let settings = settings_for_geometry(object.geometry(), doc.analysis_mesh_settings());
         let mut cache = self.0.lock().unwrap();
         let entry = cache.entry(object.id()).or_insert_with(|| Entry {
             source: object.geometry_snapshot().clone(),
             tolerance,
-            density,
-            mesh: generate(object.geometry(), tolerance, density),
+            settings,
+            mesh: generate(object.geometry(), tolerance, settings),
         });
         if entry.tolerance != tolerance
-            || entry.density != density
+            || entry.settings != settings
             || !entry.source.shares_storage_with(object.geometry_snapshot())
         {
             *entry = Entry {
                 source: object.geometry_snapshot().clone(),
                 tolerance,
-                density,
-                mesh: generate(object.geometry(), tolerance, density),
+                settings,
+                mesh: generate(object.geometry(), tolerance, settings),
             };
         }
         entry.mesh.clone()
@@ -62,15 +59,37 @@ impl Cache {
 pub(crate) fn generate(
     geometry: &Geometry,
     tolerance: Tolerance,
-    density: viboceros_geometry::SubDMeshDensity,
+    settings: AnalysisMeshSettings,
 ) -> Result<Option<Arc<CurvatureMesh>>, GeometryError> {
     Ok(match geometry {
-        Geometry::NurbsSurface(s) => Some(s.curvature_mesh(8, tolerance)?),
-        Geometry::Brep(b) => Some(b.curvature_mesh(8, tolerance)?),
-        Geometry::SubD(s) => Some(s.curvature_mesh_with_density(density)?),
+        Geometry::NurbsSurface(s) => {
+            Some(s.curvature_mesh_with_density(settings.nurbs_density, tolerance)?)
+        }
+        Geometry::Brep(b) => {
+            Some(b.curvature_mesh_with_density(settings.nurbs_density, tolerance)?)
+        }
+        Geometry::SubD(s) => Some(s.curvature_mesh_with_density(settings.subd_density)?),
         _ => None,
     }
     .map(Arc::new))
+}
+
+/// Cache only settings which affect this geometry family.
+pub fn settings_for_geometry(
+    geometry: &Geometry,
+    settings: AnalysisMeshSettings,
+) -> AnalysisMeshSettings {
+    match geometry {
+        Geometry::NurbsSurface(_) | Geometry::Brep(_) => AnalysisMeshSettings {
+            nurbs_density: settings.nurbs_density,
+            ..Default::default()
+        },
+        Geometry::SubD(_) => AnalysisMeshSettings {
+            subd_density: settings.subd_density,
+            ..Default::default()
+        },
+        _ => Default::default(),
+    }
 }
 
 pub fn normals(mesh: &CurvatureMesh) -> impl Iterator<Item = [Vector3; 3]> + '_ {

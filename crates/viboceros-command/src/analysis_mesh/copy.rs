@@ -14,6 +14,11 @@ pub fn copy_mesh(
         });
     }
     let normals = normals(source).collect::<Vec<_>>();
+    if normals.len() != source.mesh.triangles().len() {
+        return Err(GeometryError::Degenerate {
+            context: "analysis normal channels",
+        });
+    }
     let mut vertices = Vec::new();
     let mut output_normals = Vec::new();
     let mut output_colors = Vec::new();
@@ -60,8 +65,28 @@ pub fn copy_mesh(
                 index(triangle + 1, 1)?,
                 index(triangle + 1, 2)?,
             ];
-            if a[0] == b[0] && a[2] == b[1] {
-                faces.push(MeshFace::Quad([a[0], a[1], a[2], b[2]]));
+            let originals = [
+                source.mesh.triangles()[triangle],
+                source.mesh.triangles()[triangle + 1],
+            ];
+            let mut quad = [0; 4];
+            let mut consistent = true;
+            for (i, original) in face.indices().iter().enumerate() {
+                let mut mapped = None;
+                for (indices, copies) in originals.iter().zip([a, b]) {
+                    if let Some(j) = indices.iter().position(|index| index == original) {
+                        if mapped.is_some_and(|old| old != copies[j]) {
+                            consistent = false;
+                        }
+                        mapped = Some(copies[j]);
+                    }
+                }
+                quad[i] = mapped.ok_or(GeometryError::Degenerate {
+                    context: "analysis quad triangulation",
+                })?;
+            }
+            if consistent {
+                faces.push(MeshFace::Quad(quad));
             } else {
                 faces.extend([MeshFace::Triangle(a), MeshFace::Triangle(b)]);
             }

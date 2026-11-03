@@ -354,6 +354,7 @@ pub fn open_3dm_with_views_and_cplanes(
     let mut document = Document::with_units(model.tolerance, model.units.clone())
         .map_err(viboceros_document::DocumentError::from)?;
     document.set_analysis_subd_density(model.analysis_subd_density);
+    document.set_analysis_nurbs_density(model.analysis_nurbs_density);
     let message = import_3dm_model(&mut document, path, model, true)?;
     document.clear_history()?;
     Ok((
@@ -749,6 +750,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
     model.units = document.units().clone();
     model.tolerance = document.tolerance();
     model.analysis_subd_density = document.analysis_subd_density();
+    model.analysis_nurbs_density = document.analysis_nurbs_density();
     Ok(model)
 }
 

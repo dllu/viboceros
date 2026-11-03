@@ -2002,6 +2002,7 @@ struct ViboThreeDmModel {
   double relative_tolerance = 0.01;
   double angle_tolerance = ON_PI / 180.0;
   ON_SubDDisplayParameters analysis_subd;
+  double analysis_nurbs_density = 0.8;
   uint32_t unit_system = 0;
   double meters_per_unit = 1.0;
   std::string unit_name;
@@ -2048,6 +2049,7 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
     decoded->relative_tolerance = tolerances.m_relative_tolerance;
     decoded->angle_tolerance = tolerances.m_angle_tolerance;
     decoded->analysis_subd = source.m_settings.m_AnalysisMeshSettings.SubDDisplayParameters();
+    decoded->analysis_nurbs_density = source.m_settings.m_AnalysisMeshSettings.RelativeTolerance();
     const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
     decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
     if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
@@ -2446,10 +2448,16 @@ extern "C" int32_t vibo_3dm_analysis_subd_density(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" int32_t vibo_3dm_analysis_nurbs_density(const ViboThreeDmModel* model, double* density) {
+  if(!model || !density) return 0;
+  *density=model->analysis_nurbs_density;
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
-    double angle_tolerance, uint32_t analysis_subd_level, uint32_t analysis_subd_adaptive,
+    double angle_tolerance, double analysis_nurbs_density, uint32_t analysis_subd_level, uint32_t analysis_subd_adaptive,
     const ViboWriteLayer* layers, size_t layer_count,
     int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
@@ -2476,6 +2484,11 @@ extern "C" int32_t vibo_3dm_write(
   try {
     begin_open_nurbs();
     ONX_Model model;
+    if(!std::isfinite(analysis_nurbs_density) || analysis_nurbs_density<0.0 || analysis_nurbs_density>1.0) {
+      set_error(error,error_capacity,"Invalid analysis NURBS density");
+      return 0;
+    }
+    model.m_settings.m_AnalysisMeshSettings.SetRelativeTolerance(analysis_nurbs_density);
     if(analysis_subd_level>6 || analysis_subd_adaptive>1) {
       set_error(error,error_capacity,"Invalid analysis SubD density");
       return 0;

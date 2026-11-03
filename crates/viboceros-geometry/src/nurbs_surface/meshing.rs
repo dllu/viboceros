@@ -4,6 +4,39 @@ mod grid;
 mod quality;
 
 impl NurbsSurface {
+    pub(crate) fn analysis_mesh_resolution(
+        &self,
+        density: crate::NurbsMeshDensity,
+    ) -> Result<[usize; 2], GeometryError> {
+        let mut counts = if self.degree_u == 1 && self.degree_v == 1 {
+            [1, 1]
+        } else {
+            quality::counts(self, density.value())?
+        };
+        let patches = self
+            .spans_u()
+            .count()
+            .checked_mul(self.spans_v().count())
+            .ok_or(GeometryError::MeshSubdivisionLimit)?;
+        while counts[0].saturating_mul(counts[1]).saturating_mul(patches) < 16 {
+            let axis = usize::from(counts[1] < counts[0]);
+            counts[axis] *= 2;
+        }
+        self.validate_mesh_resolution(counts)?;
+        Ok(counts)
+    }
+    pub(crate) fn validate_mesh_resolution(&self, counts: [usize; 2]) -> Result<(), GeometryError> {
+        let vertices = counts[0]
+            .checked_add(1)
+            .and_then(|u| counts[1].checked_add(1).and_then(|v| u.checked_mul(v)))
+            .and_then(|n| n.checked_mul(self.spans_u().count()))
+            .and_then(|n| n.checked_mul(self.spans_v().count()));
+        if vertices.is_none_or(|n| n > 1_048_576) {
+            Err(GeometryError::MeshSubdivisionLimit)
+        } else {
+            Ok(())
+        }
+    }
     /// Creates an editable triangle/quad mesh with normalized density controls.
     /// Curved directions refine from rational Bezier chord-error bounds;
     /// straight extrusion directions retain their smaller sampling counts.
@@ -14,14 +47,7 @@ impl NurbsSurface {
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
         let counts = self.polygon_mesh_counts(density, simple_planes, tolerance)?;
-        let vertices = counts[0]
-            .checked_add(1)
-            .and_then(|u| counts[1].checked_add(1).and_then(|v| u.checked_mul(v)))
-            .and_then(|n| n.checked_mul(self.spans_u().count()))
-            .and_then(|n| n.checked_mul(self.spans_v().count()));
-        if vertices.is_none_or(|n| n > 1_048_576) {
-            return Err(GeometryError::MeshSubdivisionLimit);
-        }
+        self.validate_mesh_resolution(counts)?;
         self.tessellate_grid_with_resolution(counts, true, tolerance, false)
             .map(|(mesh, _)| mesh)
     }

@@ -25,7 +25,7 @@ impl NurbsSurface {
             retain_parameters,
         )
     }
-    pub(super) fn tessellate_grid_with_resolution(
+    pub(crate) fn tessellate_grid_with_resolution(
         &self,
         resolution: [usize; 2],
         preserve_quads: bool,

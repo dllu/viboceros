@@ -69,9 +69,8 @@ Range panel captures document real-surface behavior. Bounds from the two
 products' analysis meshes can differ; these captures do not qualify identical
 tessellation or pixels. [ExtractAnalysisMesh](extract-analysis-mesh.md) copies the
 current analysis representation and colors into model mesh objects. Shared
-[SubD mesh controls](analysis-mesh.md) set subdivision density; NURBS/B-rep density
-controls remain unimplemented. Ordinary meshes without surface curvature data are
-unsupported.
+[analysis mesh controls](analysis-mesh.md) set NURBS density and SubD subdivision.
+Ordinary meshes without surface curvature data are unsupported.
 
 ```sh
 cargo test -p viboceros-oracle --test curvature_analysis_native

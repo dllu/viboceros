@@ -4,6 +4,25 @@ use super::{Document, Edit};
 use viboceros_geometry::Tolerance;
 
 impl Document {
+    pub const fn analysis_nurbs_density(&self) -> viboceros_geometry::NurbsMeshDensity {
+        self.analysis_nurbs_density
+    }
+    pub fn set_analysis_nurbs_density(
+        &mut self,
+        density: viboceros_geometry::NurbsMeshDensity,
+    ) -> bool {
+        if self.analysis_nurbs_density == density {
+            return false;
+        }
+        self.analysis_nurbs_density = density;
+        true
+    }
+    pub const fn analysis_mesh_settings(&self) -> viboceros_geometry::AnalysisMeshSettings {
+        viboceros_geometry::AnalysisMeshSettings {
+            nurbs_density: self.analysis_nurbs_density,
+            subd_density: self.analysis_subd_density,
+        }
+    }
     pub const fn analysis_subd_density(&self) -> viboceros_geometry::SubDMeshDensity {
         self.analysis_subd_density
     }
@@ -48,8 +67,8 @@ mod tests {
     use viboceros_geometry::{LengthUnitSystem, LineSegment, Point3};
 
     #[test]
-    fn analysis_subd_density_survives_block_edit_save_cancel_and_history() {
-        use viboceros_geometry::SubDMeshDensity;
+    fn analysis_mesh_settings_survive_block_edit_save_cancel_and_history() {
+        use viboceros_geometry::{NurbsMeshDensity, SubDMeshDensity};
         for save in [false, true] {
             let mut doc = Document::default();
             let point = Point3::try_new(1., 2., 3.).unwrap();
@@ -58,16 +77,21 @@ mod tests {
             doc.open_block_edit(instance).unwrap();
             let density = SubDMeshDensity::new(2, false).unwrap();
             doc.set_analysis_subd_density(density);
+            let nurbs = NurbsMeshDensity::new(0.25).unwrap();
+            doc.set_analysis_nurbs_density(nurbs);
             if save {
                 doc.save_block_edit().unwrap();
             } else {
                 doc.discard_block_edit().unwrap();
             }
             assert_eq!(doc.analysis_subd_density(), density);
+            assert_eq!(doc.analysis_nurbs_density(), nurbs);
             doc.undo().unwrap();
             assert_eq!(doc.analysis_subd_density(), density);
+            assert_eq!(doc.analysis_nurbs_density(), nurbs);
             doc.redo().unwrap();
             assert_eq!(doc.analysis_subd_density(), density);
+            assert_eq!(doc.analysis_nurbs_density(), nurbs);
         }
     }
 

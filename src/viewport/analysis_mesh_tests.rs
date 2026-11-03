@@ -3,6 +3,72 @@ use super::*;
 use viboceros_command::CommandRegistry;
 
 #[test]
+fn analysis_nurbs_density_refreshes_rendered_faces_and_temporary_meshes() {
+    use viboceros_geometry::{AnalysisMeshSettings, NurbsMeshDensity, NurbsSurface};
+    let r = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let surface = NurbsSurface::try_new(
+        3,
+        1,
+        4,
+        2,
+        (0..2)
+            .flat_map(|v| {
+                [0., 1., -1., 0.]
+                    .into_iter()
+                    .enumerate()
+                    .map(move |(u, z)| Point3::try_new(u as Real / 3., v as Real, z).unwrap())
+            })
+            .collect(),
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    r.execute(&mut doc, "DraftAngleAnalysis").unwrap();
+    let view = r.draft_angle_analysis_view(&doc).unwrap();
+    let geometry = doc.object(id).unwrap().geometry_snapshot().clone();
+    let display = display_cache::DisplayGeometry::new(geometry.clone(), 1, doc.tolerance());
+    let ordinary = display.mesh().unwrap().faces().len();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(512.));
+    let mut counts = vec![];
+    for density in [0.25, 0.8, 1.] {
+        r.execute(
+            &mut doc,
+            &format!("DraftAngleAnalysis NurbsDensity={density}"),
+        )
+        .unwrap();
+        let settings = AnalysisMeshSettings {
+            nurbs_density: NurbsMeshDensity::new(density).unwrap(),
+            ..Default::default()
+        };
+        let temporary = display.curvature_mesh_with_settings(settings).unwrap();
+        assert!(std::sync::Arc::ptr_eq(
+            &temporary,
+            &display.curvature_mesh_with_settings(settings).unwrap()
+        ));
+        counts.push(temporary.mesh.faces().len());
+        assert_eq!(display.mesh().unwrap().faces().len(), ordinary);
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            viewport.display_mode = mode;
+            let scene =
+                viewport.object_scene_with_analysis(rect, &doc, None, &[], None, Some(&view));
+            assert_eq!(scene.triangles.len(), temporary.mesh.triangles().len() * 3);
+        }
+        assert!(geometry.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    }
+    assert!(counts.windows(2).all(|c| c[0] <= c[1]));
+    assert!(counts[0] < counts[2]);
+}
+
+#[test]
 fn analysis_subd_density_refreshes_rendered_faces_and_temporary_meshes() {
     use viboceros_geometry::{SubD, SubDMeshDensity};
     let registry = CommandRegistry::with_builtins();
@@ -30,11 +96,21 @@ fn analysis_subd_density_refreshes_rendered_faces_and_temporary_meshes() {
             .execute(&mut doc, &format!("DraftAngleAnalysis SubDLevel={level}"))
             .unwrap();
         let density = SubDMeshDensity::new(level, true).unwrap();
-        let temporary = display.curvature_mesh_with_density(density).unwrap();
+        let temporary = display
+            .curvature_mesh_with_settings(viboceros_geometry::AnalysisMeshSettings {
+                subd_density: density,
+                ..Default::default()
+            })
+            .unwrap();
         assert_eq!(temporary.mesh.faces().len(), 4usize.pow(u32::from(level)));
         assert!(std::sync::Arc::ptr_eq(
             &temporary,
-            &display.curvature_mesh_with_density(density).unwrap()
+            &display
+                .curvature_mesh_with_settings(viboceros_geometry::AnalysisMeshSettings {
+                    subd_density: density,
+                    ..Default::default()
+                })
+                .unwrap()
         ));
         assert_eq!(display.mesh().unwrap().faces().len(), ordinary_faces);
         for mode in [

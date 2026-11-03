@@ -33,6 +33,20 @@ impl Brep {
         tolerance: Tolerance,
         retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        self.tessellate_conforming_sampling(
+            Sampling::uniform(samples_per_span),
+            tolerance,
+            retain_parameters,
+        )
+    }
+    pub(super) fn tessellate_conforming_sampling(
+        &self,
+        sampling: Sampling<'_>,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        sampling.validate(&self.faces)?;
+        let samples_per_span = sampling.edge;
         let frames = self
             .faces
             .iter()
@@ -223,7 +237,7 @@ impl Brep {
                 &mut parameters,
                 &lengths,
                 &face.surface,
-                samples_per_span,
+                sampling.grid(index),
             )?;
             let face_triangles = if retain_parameters {
                 creases::triangulate(&parameters, &lengths, &face.surface, index)?
@@ -233,6 +247,13 @@ impl Brep {
             .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            if vertices
+                .len()
+                .checked_add(parameters.len())
+                .is_none_or(|n| n > sampling.vertex_limit())
+            {
+                return Err(GeometryError::MeshSubdivisionLimit);
+            }
             if vertices
                 .len()
                 .checked_add(parameters.len())

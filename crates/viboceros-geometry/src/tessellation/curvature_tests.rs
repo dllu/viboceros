@@ -110,3 +110,15 @@ fn normal_mesh_defers_and_reuses_curvature_samples() {
     ));
     assert_eq!(normals, mesh.normals);
 }
+
+#[test]
+fn regular_vertices_share_differential_samples_across_incident_triangles() {
+    let plane = NurbsSurface::try_bilinear(
+        [[0., 0., 0.], [3., 0., 0.], [3., 2., 0.], [0., 2., 0.]]
+            .map(|p| Point3::try_from(p).unwrap()),
+    )
+    .unwrap();
+    let mesh = plane.curvature_mesh(8, Tolerance::DEFAULT).unwrap();
+    assert!(mesh.principal_samples().all(|k| k == [0., 0.]));
+    assert_eq!(mesh.samples.jets.len(), mesh.mesh.vertices().len());
+}

@@ -4,7 +4,7 @@ use std::sync::Arc;
 use viboceros_geometry::{AffineTransform3, CurvatureColorMapping, CurvatureMesh};
 
 pub(super) struct CachedMesh {
-    density: viboceros_geometry::SubDMeshDensity,
+    settings: viboceros_geometry::AnalysisMeshSettings,
     mesh: Option<Arc<CurvatureMesh>>,
 }
 
@@ -15,33 +15,30 @@ pub(super) struct Drawing {
     colors: DraftColors,
 }
 impl DisplayGeometry {
-    pub(in crate::viewport) fn curvature_mesh_with_density(
+    pub(in crate::viewport) fn curvature_mesh_with_settings(
         &self,
-        density: viboceros_geometry::SubDMeshDensity,
+        settings: viboceros_geometry::AnalysisMeshSettings,
     ) -> Option<Arc<CurvatureMesh>> {
-        let density = if matches!(&*self.geometry, Geometry::SubD(_)) {
-            density
-        } else {
-            Default::default()
-        };
+        let settings =
+            viboceros_command::analysis_mesh::settings_for_geometry(&self.geometry, settings);
         if let Some(old) = &*self.curvature_mesh.borrow()
-            && old.density == density
+            && old.settings == settings
         {
             return old.mesh.clone();
         }
         let mesh = match &*self.geometry {
             Geometry::NurbsSurface(s) => s
-                .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                .curvature_mesh_with_density(settings.nurbs_density, self.tolerance)
                 .ok(),
             Geometry::Brep(b) => b
-                .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                .curvature_mesh_with_density(settings.nurbs_density, self.tolerance)
                 .ok(),
-            Geometry::SubD(s) => s.curvature_mesh_with_density(density).ok(),
+            Geometry::SubD(s) => s.curvature_mesh_with_density(settings.subd_density).ok(),
             _ => None,
         }
         .map(Arc::new);
         *self.curvature_mesh.borrow_mut() = Some(CachedMesh {
-            density,
+            settings,
             mesh: mesh.clone(),
         });
         mesh

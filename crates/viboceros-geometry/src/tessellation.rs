@@ -1,4 +1,6 @@
 //! Optional source-surface channels, separate from editable mesh topology.
+#[cfg(test)]
+mod analysis_tests;
 mod curvature;
 use crate::{
     GeometryError, NurbsSurface, ParameterSide, Point2, Real, Tolerance, TriangleMesh, UnitVector3,
@@ -39,6 +41,30 @@ pub struct SurfaceTessellation {
 }
 
 impl NurbsSurface {
+    pub fn tessellate_with_density(
+        &self,
+        density: crate::NurbsMeshDensity,
+        tolerance: Tolerance,
+    ) -> Result<SurfaceTessellation, GeometryError> {
+        let counts = self.analysis_mesh_resolution(density)?;
+        let (mesh, parameters) =
+            self.tessellate_grid_with_resolution(counts, true, tolerance, true)?;
+        let mut sampler = CornerSampler::default();
+        let corners = mesh
+            .triangles()
+            .iter()
+            .map(|triangle| {
+                sampler.corners(
+                    self,
+                    *triangle,
+                    triangle.map(|i| parameters[i as usize]),
+                    None,
+                    false,
+                )
+            })
+            .collect();
+        Ok(SurfaceTessellation { mesh, corners })
+    }
     /// Retain analytic per-corner normals and native UV samples for export.
     pub fn tessellate_with_normals(
         &self,
@@ -47,43 +73,84 @@ impl NurbsSurface {
     ) -> Result<SurfaceTessellation, GeometryError> {
         let (mesh, parameters) =
             self.tessellate_grid_with_parameters(samples_per_span, false, tolerance, true)?;
+        let mut sampler = CornerSampler::default();
         let corners = mesh
             .triangles()
             .iter()
             .map(|triangle| {
-                triangle_corners(self, triangle.map(|i| parameters[i as usize]), None, false)
+                sampler.corners(
+                    self,
+                    *triangle,
+                    triangle.map(|i| parameters[i as usize]),
+                    None,
+                    false,
+                )
             })
             .collect();
         Ok(SurfaceTessellation { mesh, corners })
     }
 }
 
-pub(crate) fn triangle_corners(
+type NormalKey = (Option<usize>, u32, [bool; 2]);
+#[derive(Default)]
+pub(crate) struct CornerSampler {
+    normals: std::collections::HashMap<NormalKey, Option<UnitVector3>>,
+}
+impl CornerSampler {
+    pub fn corners(
+        &mut self,
+        surface: &NurbsSurface,
+        triangle: [u32; 3],
+        uv: [Point2; 3],
+        face: Option<usize>,
+        reversed: bool,
+    ) -> [TessellationCorner; 3] {
+        // Use an incident sample to choose a side at internal knots, without
+        // averaging parameter coordinates that might overflow or erase an interval.
+        std::array::from_fn(|i| {
+            let p = uv[i];
+            let side = |axis: usize| corner_side(uv, i, axis);
+            let sides = regular_sides(surface, p, [side(0), side(1)]);
+            let key = (face, triangle[i], sides.map(|s| s == ParameterSide::Left));
+            let regular = *self.normals.entry(key).or_insert_with(|| {
+                surface
+                    .normal_at_on_sides(p.x(), p.y(), sides[0], sides[1])
+                    .ok()
+            });
+            let (normal, normal_source) = match regular {
+                Some(n) => (Some(n), TessellationNormalSource::Analytic),
+                None => match limiting_normal(surface, p, uv[(i + 1) % 3], uv[(i + 2) % 3]) {
+                    Some(n) => (Some(n), TessellationNormalSource::SampledLimit),
+                    None => (None, TessellationNormalSource::Unavailable),
+                },
+            };
+            let normal = normal.map(|n| if reversed { n.opposite() } else { n });
+            TessellationCorner {
+                face,
+                uv: p,
+                uv_origin: [0.; 2],
+                normal,
+                normal_source,
+            }
+        })
+    }
+}
+
+fn regular_sides(
     surface: &NurbsSurface,
-    uv: [Point2; 3],
-    face: Option<usize>,
-    reversed: bool,
-) -> [TessellationCorner; 3] {
-    // Use an incident sample to choose a side at internal knots, without
-    // averaging parameter coordinates that might overflow or erase an interval.
-    std::array::from_fn(|i| {
-        let p = uv[i];
-        let side = |axis: usize| corner_side(uv, i, axis);
-        let regular = surface.normal_at_on_sides(p.x(), p.y(), side(0), side(1));
-        let (normal, normal_source) = match regular {
-            Ok(n) => (Some(n), TessellationNormalSource::Analytic),
-            Err(_) => match limiting_normal(surface, p, uv[(i + 1) % 3], uv[(i + 2) % 3]) {
-                Some(n) => (Some(n), TessellationNormalSource::SampledLimit),
-                None => (None, TessellationNormalSource::Unavailable),
-            },
-        };
-        let normal = normal.map(|n| if reversed { n.opposite() } else { n });
-        TessellationCorner {
-            face,
-            uv: p,
-            uv_origin: [0.; 2],
-            normal,
-            normal_source,
+    p: Point2,
+    sides: [ParameterSide; 2],
+) -> [ParameterSide; 2] {
+    let knots = [surface.knots_u(), surface.knots_v()];
+    let parameters = [p.x(), p.y()];
+    std::array::from_fn(|axis| {
+        if knots[axis]
+            .binary_search_by(|k| k.partial_cmp(&parameters[axis]).unwrap())
+            .is_ok()
+        {
+            sides[axis]
+        } else {
+            ParameterSide::Right
         }
     })
 }

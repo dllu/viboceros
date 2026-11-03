@@ -515,7 +515,8 @@ impl Viewport {
                         curvature: display.curvature.as_ref().map(|c| CurvatureFaces {
                             options: c.options,
                             mesh: if partial {
-                                posed.curvature_mesh_with_density(document.analysis_subd_density())
+                                posed
+                                    .curvature_mesh_with_settings(document.analysis_mesh_settings())
                             } else {
                                 c.mesh.clone()
                             },
@@ -529,7 +530,7 @@ impl Viewport {
                         face_member_colors_enabled: display.face_member_colors_enabled,
                         draft: display.draft,
                         draft_mesh: if partial && display.draft.is_some() {
-                            posed.curvature_mesh_with_density(document.analysis_subd_density())
+                            posed.curvature_mesh_with_settings(document.analysis_mesh_settings())
                         } else {
                             display.draft_mesh.clone()
                         },

@@ -9,6 +9,8 @@ mod creases;
 mod curvature;
 mod independent;
 mod normals;
+mod sampling;
+use sampling::Sampling;
 
 #[cfg(test)]
 mod tests;

@@ -9052,7 +9052,7 @@ fn append_trimmed_surface_grid_parameters(
     parameters: &mut Vec<Point2>,
     loop_lengths: &[usize],
     surface: &NurbsSurface,
-    samples_per_span: usize,
+    resolution: [usize; 2],
 ) -> Result<(), GeometryError> {
     let boundary_vertex_count = loop_lengths
         .iter()
@@ -9095,29 +9095,30 @@ fn append_trimmed_surface_grid_parameters(
         }))
     };
 
-    let sample_direction = |spans: Vec<(Real, Real)>| -> Result<Vec<Real>, GeometryError> {
-        let capacity = spans
-            .len()
-            .checked_mul(samples_per_span)
-            .and_then(|count| count.checked_add(1))
-            .ok_or(GeometryError::TooManyMeshVertices)?;
-        if capacity > MAX_CONSTRAINED_TRIM_VERTICES {
-            return Err(GeometryError::TooManyMeshVertices);
-        }
-        let mut result = Vec::with_capacity(capacity);
-        for (span_index, span) in spans.into_iter().enumerate() {
-            let first_sample = usize::from(span_index != 0);
-            for sample in first_sample..=samples_per_span {
-                result.push(normalized_span_parameter(
-                    [span.0, span.1],
-                    sample as Real / samples_per_span as Real,
-                )?);
+    let sample_direction =
+        |spans: Vec<(Real, Real)>, samples_per_span: usize| -> Result<Vec<Real>, GeometryError> {
+            let capacity = spans
+                .len()
+                .checked_mul(samples_per_span)
+                .and_then(|count| count.checked_add(1))
+                .ok_or(GeometryError::TooManyMeshVertices)?;
+            if capacity > MAX_CONSTRAINED_TRIM_VERTICES {
+                return Err(GeometryError::TooManyMeshVertices);
             }
-        }
-        Ok(result)
-    };
-    let parameters_u = sample_direction(surface.spans_u().collect())?;
-    let parameters_v = sample_direction(surface.spans_v().collect())?;
+            let mut result = Vec::with_capacity(capacity);
+            for (span_index, span) in spans.into_iter().enumerate() {
+                let first_sample = usize::from(span_index != 0);
+                for sample in first_sample..=samples_per_span {
+                    result.push(normalized_span_parameter(
+                        [span.0, span.1],
+                        sample as Real / samples_per_span as Real,
+                    )?);
+                }
+            }
+            Ok(result)
+        };
+    let parameters_u = sample_direction(surface.spans_u().collect(), resolution[0])?;
+    let parameters_v = sample_direction(surface.spans_v().collect(), resolution[1])?;
     if parameters_u
         .len()
         .checked_mul(parameters_v.len())
