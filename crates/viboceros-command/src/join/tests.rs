@@ -3,6 +3,7 @@ use viboceros_geometry::MeshFace;
 
 mod breps;
 mod copy;
+mod subds;
 
 fn quad(x: f64) -> Geometry {
     Geometry::Mesh(

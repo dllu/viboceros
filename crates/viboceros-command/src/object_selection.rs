@@ -171,7 +171,10 @@ impl ObjectSelectionFilter {
                 geometry.curve_ref().is_some()
                     || matches!(
                         geometry,
-                        Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                        Geometry::Mesh(_)
+                            | Geometry::NurbsSurface(_)
+                            | Geometry::Brep(_)
+                            | Geometry::SubD(_)
                     )
             }
             Self::ToSubD => crate::to_subd::accepts(geometry),

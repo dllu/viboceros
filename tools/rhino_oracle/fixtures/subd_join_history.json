@@ -1,0 +1,299 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_join_history",
+      "id": "single-Join-post-smooth",
+      "scene": "single",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "single-Join-pre-smooth",
+      "scene": "single",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "single-JoinCopy-post-smooth",
+      "scene": "single",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "single-JoinCopy-pre-smooth",
+      "scene": "single",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-Join-post-smooth",
+      "scene": "adjacent",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-Join-post-crease",
+      "scene": "adjacent",
+      "command": "Join",
+      "preselect": false,
+      "crease": true
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-Join-pre-smooth",
+      "scene": "adjacent",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-Join-pre-crease",
+      "scene": "adjacent",
+      "command": "Join",
+      "preselect": true,
+      "crease": true
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-JoinCopy-post-smooth",
+      "scene": "adjacent",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-JoinCopy-post-crease",
+      "scene": "adjacent",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": true
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-JoinCopy-pre-smooth",
+      "scene": "adjacent",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "adjacent-JoinCopy-pre-crease",
+      "scene": "adjacent",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": true
+    },
+    {
+      "op": "subd_join_history",
+      "id": "disjoint-Join-post-smooth",
+      "scene": "disjoint",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "disjoint-Join-pre-smooth",
+      "scene": "disjoint",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "disjoint-JoinCopy-post-smooth",
+      "scene": "disjoint",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "disjoint-JoinCopy-pre-smooth",
+      "scene": "disjoint",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "point-Join-post-smooth",
+      "scene": "point",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "point-Join-pre-smooth",
+      "scene": "point",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "point-JoinCopy-post-smooth",
+      "scene": "point",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "point-JoinCopy-pre-smooth",
+      "scene": "point",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "chain-Join-post-smooth",
+      "scene": "chain",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "chain-Join-pre-smooth",
+      "scene": "chain",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "chain-JoinCopy-post-smooth",
+      "scene": "chain",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "chain-JoinCopy-pre-smooth",
+      "scene": "chain",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "duplicate-Join-post-smooth",
+      "scene": "duplicate",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "duplicate-Join-pre-smooth",
+      "scene": "duplicate",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "duplicate-JoinCopy-post-smooth",
+      "scene": "duplicate",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "duplicate-JoinCopy-pre-smooth",
+      "scene": "duplicate",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "threeway-Join-post-smooth",
+      "scene": "threeway",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "threeway-Join-pre-smooth",
+      "scene": "threeway",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "threeway-JoinCopy-post-smooth",
+      "scene": "threeway",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "threeway-JoinCopy-pre-smooth",
+      "scene": "threeway",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "gap_half-Join-post-smooth",
+      "scene": "gap_half",
+      "command": "Join",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "gap_half-Join-pre-smooth",
+      "scene": "gap_half",
+      "command": "Join",
+      "preselect": true,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "gap_half-JoinCopy-post-smooth",
+      "scene": "gap_half",
+      "command": "JoinCopy",
+      "preselect": false,
+      "crease": false
+    },
+    {
+      "op": "subd_join_history",
+      "id": "gap_half-JoinCopy-pre-smooth",
+      "scene": "gap_half",
+      "command": "JoinCopy",
+      "preselect": true,
+      "crease": false
+    }
+  ]
+}

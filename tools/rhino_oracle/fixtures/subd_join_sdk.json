@@ -1,0 +1,167 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_join_sdk",
+      "id": "single-smooth",
+      "scene": "single",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "single-crease",
+      "scene": "single",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "adjacent-smooth",
+      "scene": "adjacent",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "adjacent-crease",
+      "scene": "adjacent",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "bent-smooth",
+      "scene": "bent",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "bent-crease",
+      "scene": "bent",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "reversed-smooth",
+      "scene": "reversed",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "reversed-crease",
+      "scene": "reversed",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "disjoint-smooth",
+      "scene": "disjoint",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "disjoint-crease",
+      "scene": "disjoint",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "point-smooth",
+      "scene": "point",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "point-crease",
+      "scene": "point",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_half-smooth",
+      "scene": "gap_half",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_half-crease",
+      "scene": "gap_half",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_equal-smooth",
+      "scene": "gap_equal",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_equal-crease",
+      "scene": "gap_equal",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_beyond-smooth",
+      "scene": "gap_beyond",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "gap_beyond-crease",
+      "scene": "gap_beyond",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "chain-smooth",
+      "scene": "chain",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "chain-crease",
+      "scene": "chain",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "duplicate-smooth",
+      "scene": "duplicate",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "duplicate-crease",
+      "scene": "duplicate",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "threeway-smooth",
+      "scene": "threeway",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "threeway-crease",
+      "scene": "threeway",
+      "crease": true
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "retained_tags-smooth",
+      "scene": "retained_tags",
+      "crease": false
+    },
+    {
+      "op": "subd_join_sdk",
+      "id": "retained_tags-crease",
+      "scene": "retained_tags",
+      "crease": true
+    }
+  ]
+}

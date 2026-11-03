@@ -1500,6 +1500,12 @@ impl VibocerosApp {
                             error,
                             viboceros_command::CommandError::NoPlanarSurfaceBoundaries
                         ))
+                        || (matches!(pending.description.command, "Join" | "JoinCopy")
+                            && matches!(error, viboceros_command::CommandError::NothingJoined)
+                            && self
+                                .document
+                                .selected_objects()
+                                .all(|o| matches!(o.geometry(), Geometry::SubD(_))))
                     {
                         self.object_prompt = None;
                     }

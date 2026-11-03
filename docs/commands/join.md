@@ -10,10 +10,11 @@ JoinCopy
 JoinCopy JoinDisjointMeshes=No
 ```
 
-`Join` and `JoinCopy` accept curves, polygon meshes, or surfaces/polysurfaces.
+`Join` and `JoinCopy` accept curves, polygon meshes, surfaces/polysurfaces, or SubDs.
 Each invocation uses one family; natural NURBS surfaces and B-reps can mix.
 The command-first workflow filters eligible objects and exposes the remembered
-mesh option. Mixed-family and SubD joining remain unimplemented. Surface joining
+mesh option and [SubD smooth/crease choices](join-subd.md). Mixed-family joining
+remains unimplemented. Surface joining
 uses [certified boundary assembly](../brep-edge-joining.md) with the coverage and
 Rhino differences described below.
 

@@ -160,6 +160,7 @@ mod polyline_on_mesh;
 mod primitive_input;
 mod round_primitive_input;
 mod selection_sidebar;
+mod subd_join;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;

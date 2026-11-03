@@ -3,11 +3,13 @@ use super::*;
 mod breps;
 mod curves;
 mod meshes;
+mod subds;
 #[cfg(test)]
 mod tests;
 
 pub(super) struct JoinCommand {
     disjoint: remembered::Remembered<bool>,
+    crease: remembered::Remembered<bool>,
     copy_inputs: bool,
 }
 
@@ -15,6 +17,7 @@ impl Default for JoinCommand {
     fn default() -> Self {
         Self {
             disjoint: remembered::Remembered::new(true),
+            crease: remembered::Remembered::new(false),
             copy_inputs: false,
         }
     }
@@ -42,22 +45,30 @@ impl Command for JoinCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let options = self.parse(arguments)?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Join,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
             menus: vec![],
-            choices: vec![],
+            choices: vec![ChoiceSelectionOption {
+                name: "SubDJoinedEdges",
+                value: if options.crease { "Crease" } else { "Smooth" },
+                choices: &["Smooth", "Crease"],
+                toggle: None,
+            }],
             options: vec![BooleanSelectionOption {
                 name: "JoinDisjointMeshes",
-                value: self.parse(arguments)?,
+                value: options.disjoint,
                 aliases: &[],
             }],
         }))
     }
 
     fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
-        self.disjoint.set(self.parse(arguments)?);
+        let options = self.parse(arguments)?;
+        self.disjoint.set(options.disjoint);
+        self.crease.set(options.crease);
         Ok(())
     }
 
@@ -130,21 +141,41 @@ impl JoinCommand {
         }
     }
 
-    fn parse(&self, arguments: &[&str]) -> Result<bool, CommandError> {
-        if arguments.is_empty() {
-            return Ok(self.disjoint.get());
-        }
+    fn parse(&self, arguments: &[&str]) -> Result<JoinOptions, CommandError> {
         let usage = if self.copy_inputs {
-            "JoinCopy [JoinDisjointMeshes=Yes|No]"
+            "JoinCopy [JoinDisjointMeshes=Yes|No] [SubDJoinedEdges=Smooth|Crease]"
         } else {
-            "Join [JoinDisjointMeshes=Yes|No]"
+            "Join [JoinDisjointMeshes=Yes|No] [SubDJoinedEdges=Smooth|Crease]"
         };
-        let (name, value, consumed) = orient_option(arguments, 0, usage)?;
-        require_consumed(arguments, consumed, usage)?;
-        if !option_name_eq(name, "JoinDisjointMeshes") {
-            return Err(CommandError::Usage(usage));
+        let mut result = JoinOptions {
+            disjoint: self.disjoint.get(),
+            crease: self.crease.get(),
+        };
+        let mut seen = [false; 2];
+        let mut index = 0;
+        while index < arguments.len() {
+            let (name, value, count) = orient_option(arguments, index, usage)?;
+            let field = if option_name_eq(name, "JoinDisjointMeshes") {
+                result.disjoint = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+                0
+            } else if option_name_eq(name, "SubDJoinedEdges") {
+                result.crease = if option_name_eq(value, "Smooth") {
+                    false
+                } else if option_name_eq(value, "Crease") {
+                    true
+                } else {
+                    return Err(CommandError::Usage(usage));
+                };
+                1
+            } else {
+                return Err(CommandError::Usage(usage));
+            };
+            if std::mem::replace(&mut seen[field], true) {
+                return Err(CommandError::Usage(usage));
+            }
+            index += count;
         }
-        parse_yes_no(value).ok_or(CommandError::Usage(usage))
+        Ok(result)
     }
 
     fn execute(
@@ -153,7 +184,7 @@ impl JoinCommand {
         arguments: &[&str],
         postselected: bool,
     ) -> Result<String, CommandError> {
-        let disjoint = self.parse(arguments)?;
+        let options = self.parse(arguments)?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
@@ -171,10 +202,15 @@ impl JoinCommand {
             .iter()
             .all(|o| matches!(o.geometry(), Geometry::Mesh(_)));
         let surfaces = sources.iter().all(|o| breps::accepts(o.geometry()));
+        let subds = sources
+            .iter()
+            .all(|o| matches!(o.geometry(), Geometry::SubD(_)));
         let plan = if meshes {
-            meshes::stage(&sources, document.tolerance(), disjoint)?
+            meshes::stage(&sources, document.tolerance(), options.disjoint)?
         } else if surfaces {
             breps::stage(&sources, document.tolerance(), postselected)?
+        } else if subds {
+            subds::stage(&sources, document.tolerance(), options.crease, postselected)?
         } else {
             curves::stage(
                 &sources,
@@ -186,7 +222,11 @@ impl JoinCommand {
         if plan.copies.is_empty() && (sources.len() == 1 || postselected) {
             return Err(CommandError::NothingJoined);
         }
-        let keep_sources = self.copy_inputs && (meshes || surfaces || plan.closed_on_pick);
+        let keep_sources = self.copy_inputs && (meshes || surfaces || subds || plan.closed_on_pick);
+        if subds && postselected {
+            let picks = sources.iter().map(|o| o.id()).collect::<Vec<_>>();
+            document.release_command_selection_on_history_replay(picks)?;
+        }
         let outputs = document.copy_object_pieces_into_source_groups(plan.copies)?;
         document.select_objects_direct(plan.release, SelectionMode::Remove)?;
         if postselected && keep_sources {
@@ -206,9 +246,15 @@ impl JoinCommand {
             // Keep selected originals/singletons without expanding their groups.
             document.select_objects_direct(outputs, SelectionMode::Add)?;
         }
-        self.disjoint.set(disjoint);
+        self.disjoint.set(options.disjoint);
+        self.crease.set(options.crease);
         Ok(plan.description)
     }
+}
+
+struct JoinOptions {
+    disjoint: bool,
+    crease: bool,
 }
 
 /// All geometry is validated before the shared, transactional document edit.

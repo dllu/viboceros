@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "subd_append.h"
+#include "subd_join.h"
 #include "subd_interpolation.h"
 #include "subd_subdivision.h"
 #include "subd_curvature.h"
@@ -147,6 +148,15 @@ extern "C" int vibo_subd_append(const uint8_t* bytes,size_t count,const double* 
   return guard(out,error,capacity,[&]{
     auto subd=vibo_subd::decode(bytes,count);
     vibo_subd::append_polygons(*subd,points,point_count,sizes,face_count,corners,corner_count);
+    return extract(*subd);
+  });
+}
+extern "C" int vibo_subd_join_assemble(const uint8_t* bytes,size_t byte_count,const size_t* sizes,
+    size_t source_count,const uint32_t* maps,size_t map_count,const uint8_t* flips,int crease,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&] {
+    require(crease==0 || crease==1,"Invalid SubD join edge type");
+    auto subd=vibo_subd::join_assemble(bytes,byte_count,sizes,source_count,maps,map_count,flips,crease!=0);
     return extract(*subd);
   });
 }

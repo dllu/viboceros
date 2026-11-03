@@ -3809,6 +3809,7 @@ name = "viboceros-geometry"
 version = "0.1.0"
 dependencies = [
  "faer",
+ "flate2",
  "i_overlay",
  "nalgebra",
  "num-bigint",
@@ -3853,6 +3854,7 @@ dependencies = [
  "num-traits",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.20",
  "viboceros-command",
  "viboceros-document",

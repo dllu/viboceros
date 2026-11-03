@@ -223,6 +223,7 @@ pub mod curve_path_extrusion;
 pub mod direction_analysis;
 pub mod draft_angle_analysis;
 pub mod loft_splitting;
+pub mod subd_join;
 pub mod surface_apex_extrusion;
 pub use surface_apex_extrusion::CommandFixture as SurfaceApexCommandFixture;
 pub use surface_apex_extrusion::Fixture as SurfaceApexExtrusionFixture;
