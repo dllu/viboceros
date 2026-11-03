@@ -27,7 +27,9 @@ cases expose this topology difference; their strict regressions remain ignored.
 Creased cusp fans remain unsupported. Four native SDK successes construct 7–79
 faces from fitted cap pieces and triangular fans to old corners. The kernel
 returns a cusp error without modifying the source. Strict ignored regressions
-retain those native results for future implementation.
+retain those native results for future implementation. Additional
+[fan diagnostics](../geometry/inset-fans.md) freeze 68 cases covering connector
+crossings, degree changes, tolerance refinement and independent offset APIs.
 
 | Capture | Cases | Active full comparisons | Pending native successes |
 | --- | ---: | --- | --- |

@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "hole_asymmetric_0.1",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 0.1,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.01",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 0.01,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.001",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 0.001,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.0001",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 0.0001,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_1e-05",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 1e-05,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_1e-06",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 1e-06,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.1",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 0.1,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.01",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 0.01,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.001",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 0.001,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.0001",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 0.0001,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_1e-05",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 1e-05,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_1e-06",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 1e-06,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.1_loose",
+      "op": "inset_fan_refinement",
+      "scene": "hole_asymmetric",
+      "distance": 2.0,
+      "fit_tolerance": 0.1,
+      "crease_corners": true,
+      "loose": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.1_loose",
+      "op": "inset_fan_refinement",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "fit_tolerance": 0.1,
+      "crease_corners": true,
+      "loose": true,
+      "ignore_seams": true
+    }
+  ]
+}

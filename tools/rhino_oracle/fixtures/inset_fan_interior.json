@@ -1,0 +1,191 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "3.0_1.4_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.5_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.5,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.6_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.6,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.8_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.8,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "2.5_1.7_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 2.5,
+      "distance": 1.7,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "4.0_1.5_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 4.0,
+      "distance": 1.5,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "5.0_1.4_2_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 5.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.4_3_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 3,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.5_3_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.5,
+      "degree": 3,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.8_3_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.8,
+      "degree": 3,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.5_7_False",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.5,
+      "degree": 7,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.4_2_True",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": true,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.6_2_True",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.6,
+      "degree": 2,
+      "subdivide": true,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.8_2_True",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.8,
+      "degree": 2,
+      "subdivide": true,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "3.0_1.5_3_True",
+      "op": "inset_fan_interior",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.5,
+      "degree": 3,
+      "subdivide": true,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true
+    }
+  ]
+}

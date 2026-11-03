@@ -1,0 +1,95 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "upper_2.0_0.0001",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 2.0,
+      "fit_tolerance": 0.0001
+    },
+    {
+      "id": "upper_2.0_1e-06",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 2.0,
+      "fit_tolerance": 1e-06
+    },
+    {
+      "id": "upper_2.0_1e-07",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 2.0,
+      "fit_tolerance": 1e-07
+    },
+    {
+      "id": "upper_3.0_0.0001",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 3.0,
+      "fit_tolerance": 0.0001
+    },
+    {
+      "id": "upper_3.0_1e-06",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 3.0,
+      "fit_tolerance": 1e-06
+    },
+    {
+      "id": "upper_3.0_1e-07",
+      "op": "inset_fan_surface_fit",
+      "scene": "upper",
+      "distance": 3.0,
+      "fit_tolerance": 1e-07
+    },
+    {
+      "id": "lower_2.0_0.0001",
+      "op": "inset_fan_surface_fit",
+      "scene": "lower",
+      "distance": 2.0,
+      "fit_tolerance": 0.0001
+    },
+    {
+      "id": "lower_2.0_1e-06",
+      "op": "inset_fan_surface_fit",
+      "scene": "lower",
+      "distance": 2.0,
+      "fit_tolerance": 1e-06
+    },
+    {
+      "id": "lower_2.0_1e-07",
+      "op": "inset_fan_surface_fit",
+      "scene": "lower",
+      "distance": 2.0,
+      "fit_tolerance": 1e-07
+    },
+    {
+      "id": "left_1.5_0.0001",
+      "op": "inset_fan_surface_fit",
+      "scene": "left",
+      "distance": 1.5,
+      "fit_tolerance": 0.0001
+    },
+    {
+      "id": "left_1.5_1e-06",
+      "op": "inset_fan_surface_fit",
+      "scene": "left",
+      "distance": 1.5,
+      "fit_tolerance": 1e-06
+    },
+    {
+      "id": "left_1.5_1e-07",
+      "op": "inset_fan_surface_fit",
+      "scene": "left",
+      "distance": 1.5,
+      "fit_tolerance": 1e-07
+    }
+  ]
+}
