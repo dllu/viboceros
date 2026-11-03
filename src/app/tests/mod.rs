@@ -334,6 +334,7 @@ pub(super) fn test_app() -> VibocerosApp {
         orient_edge_session: None,
         surface_offset_session: None,
         short_path_session: None,
+        offset_subd_session: None,
         mesh_polyline_session: None,
         face_create_session: None,
         surface_interpolation_session: None,
@@ -442,3 +443,5 @@ fn type_to_command_frame(
 
 #[path = "../../../crates/viboceros-oracle/tests/support/subd_join.rs"]
 mod subd_native;
+
+mod subd_offset;

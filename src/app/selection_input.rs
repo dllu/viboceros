@@ -3,6 +3,9 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.flip_offset_subd_input(click.object_id) {
+            return;
+        }
         if self.direction_session.is_some() {
             if let Some(id) = click.object_id {
                 self.direction_click(id);

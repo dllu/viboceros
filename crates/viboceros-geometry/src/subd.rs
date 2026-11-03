@@ -20,6 +20,7 @@ mod insert;
 mod interpolation;
 mod join;
 mod mesh_conversion;
+mod offset;
 mod primitives;
 mod seams;
 mod soft_crease;

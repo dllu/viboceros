@@ -6,6 +6,10 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'subd_offset_batch': ('subd_offset_batch', ('subd_offset_command_probe','subd_offset_command_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
+    'subd_offset_preferences': ('subd_offset_preferences', ('subd_offset_command_probe','subd_offset_command_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
+    'subd_offset_command': ('subd_offset_command_probe', ('subd_offset_command_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
+    'subd_offset_sdk': ('subd_offset_probe', ('subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','merge_edges_probe')),
     'subd_extract_preferences': ('subd_extract_preferences', ('subd_extract_probe','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_extract_sources': ('subd_extract_sources', ('subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','merge_edges_probe')),
     'subd_extract_command': ('subd_extract_probe', ('subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),

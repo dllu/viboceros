@@ -1,0 +1,347 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad--0.75-skin",
+      "scene": "quad",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad--0.75-solid",
+      "scene": "quad",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad-0.0-skin",
+      "scene": "quad",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad-0.0-solid",
+      "scene": "quad",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad-0.75-skin",
+      "scene": "quad",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "quad-0.75-solid",
+      "scene": "quad",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped--0.75-skin",
+      "scene": "warped",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped--0.75-solid",
+      "scene": "warped",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped-0.0-skin",
+      "scene": "warped",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped-0.0-solid",
+      "scene": "warped",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped-0.75-skin",
+      "scene": "warped",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "warped-0.75-solid",
+      "scene": "warped",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent--0.75-skin",
+      "scene": "bent",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent--0.75-solid",
+      "scene": "bent",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent-0.0-skin",
+      "scene": "bent",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent-0.0-solid",
+      "scene": "bent",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent-0.75-skin",
+      "scene": "bent",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "bent-0.75-solid",
+      "scene": "bent",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased--0.75-skin",
+      "scene": "creased",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased--0.75-solid",
+      "scene": "creased",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased-0.0-skin",
+      "scene": "creased",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased-0.0-solid",
+      "scene": "creased",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased-0.75-skin",
+      "scene": "creased",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "creased-0.75-solid",
+      "scene": "creased",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid--0.75-skin",
+      "scene": "grid",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid--0.75-solid",
+      "scene": "grid",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid-0.0-skin",
+      "scene": "grid",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid-0.0-solid",
+      "scene": "grid",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid-0.75-skin",
+      "scene": "grid",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "grid-0.75-solid",
+      "scene": "grid",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed--0.75-skin",
+      "scene": "closed",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed--0.75-solid",
+      "scene": "closed",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed-0.0-skin",
+      "scene": "closed",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed-0.0-solid",
+      "scene": "closed",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed-0.75-skin",
+      "scene": "closed",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "closed-0.75-solid",
+      "scene": "closed",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles--0.75-skin",
+      "scene": "triangles",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles--0.75-solid",
+      "scene": "triangles",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles-0.0-skin",
+      "scene": "triangles",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles-0.0-solid",
+      "scene": "triangles",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles-0.75-skin",
+      "scene": "triangles",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "triangles-0.75-solid",
+      "scene": "triangles",
+      "distance": 0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint--0.75-skin",
+      "scene": "disjoint",
+      "distance": -0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint--0.75-solid",
+      "scene": "disjoint",
+      "distance": -0.75,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint-0.0-skin",
+      "scene": "disjoint",
+      "distance": 0.0,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint-0.0-solid",
+      "scene": "disjoint",
+      "distance": 0.0,
+      "solid": true
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint-0.75-skin",
+      "scene": "disjoint",
+      "distance": 0.75,
+      "solid": false
+    },
+    {
+      "op": "subd_offset_sdk",
+      "id": "disjoint-0.75-solid",
+      "scene": "disjoint",
+      "distance": 0.75,
+      "solid": true
+    }
+  ]
+}

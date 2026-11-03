@@ -310,6 +310,9 @@ impl PendingObjectCommand {
             ObjectPromptPhase::RebuildValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
+            ObjectPromptPhase::Selecting if self.description.command == "OffsetSubD" => {
+                "Select SubD objects; Enter opens offset options, Esc cancels"
+            }
             ObjectPromptPhase::Selecting => match self.description.workflow {
                 ObjectSelectionWorkflow::OptionsDuringSelection
                 | ObjectSelectionWorkflow::QuestionOnPreselection { .. } => {
@@ -1012,6 +1015,7 @@ impl VibocerosApp {
                     | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
+                    | "OffsetSubD"
                     | "Rebuild"
                     | "ShowEdges"
                     | "CurvatureGraph"
@@ -1414,6 +1418,13 @@ impl VibocerosApp {
                 self.object_prompt = None;
                 self.try_start_interactive_command(&command);
                 return true;
+            }
+            if pending.description.command == "OffsetSubD" {
+                self.object_prompt = None;
+                if self.start_offset_subd(&command, pending.postselected) {
+                    return true;
+                }
+                self.object_prompt = Some(pending.clone());
             }
             if matches!(
                 pending.description.command,

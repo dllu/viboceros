@@ -9,6 +9,7 @@ impl VibocerosApp {
         self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
+        self.offset_subd_session = None;
         self.remap_cplane_session = None;
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;

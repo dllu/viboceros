@@ -988,6 +988,7 @@ impl eframe::App for VibocerosApp {
                                 .map(direction::Session::overlay),
                             insert_edges,
                             insert_mesh,
+                            offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
                             angle_plane,
@@ -1060,7 +1061,9 @@ impl eframe::App for VibocerosApp {
                                 }
                                 None => None,
                             },
-                            object_filter: if selecting_normal {
+                            object_filter: if self.offset_subd_session.is_some() {
+                                Some(viboceros_command::ObjectSelectionFilter::SubD)
+                            } else if selecting_normal {
                                 Some(viboceros_command::ObjectSelectionFilter::Parametric)
                             } else if plane_object_pick {
                                 Some(viboceros_command::ObjectSelectionFilter::Any)

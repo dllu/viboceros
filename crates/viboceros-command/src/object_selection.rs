@@ -20,6 +20,7 @@ pub enum ObjectSelectionFilter {
     MeshSplitCutters,
     FaceAppend,
     MeshAndSubD,
+    SubD,
     MeshPatchSources,
     MeshPatchHoles,
     LineCurves,
@@ -150,6 +151,7 @@ impl ObjectSelectionFilter {
                     )
             }
             Self::Mesh => matches!(geometry, Geometry::Mesh(_) | Geometry::EmptyMesh),
+            Self::SubD => matches!(geometry, Geometry::SubD(_)),
             Self::FaceAppend | Self::MeshAndSubD => {
                 matches!(geometry, Geometry::Mesh(_) | Geometry::SubD(_))
             }

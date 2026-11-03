@@ -418,6 +418,12 @@ pub enum CommandError {
     OffsetSurfaceCollapsedTorus,
     #[error("OffsetMesh requires selected meshes only")]
     UnsupportedOffsetMeshGeometry,
+    #[error("OffsetSubD requires selected SubD objects")]
+    UnsupportedOffsetSubDGeometry,
+    #[error(
+        "OffsetSubD sources, selection, attributes, groups or tolerance changed; select inputs again"
+    )]
+    OffsetSubDStale,
     #[error("mesh n-gon commands require selected meshes only")]
     UnsupportedMeshNgonGeometry,
 

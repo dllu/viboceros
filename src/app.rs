@@ -233,6 +233,7 @@ mod mirror;
 mod move_normal;
 mod named_view;
 mod object_selection;
+mod offset_subd;
 mod orient_curve;
 mod orient_edge;
 mod orient_points;
@@ -439,6 +440,7 @@ pub struct VibocerosApp {
     orient_edge_session: Option<orient_edge::Session>,
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
+    offset_subd_session: Option<offset_subd::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
     face_create_session: Option<face_create::Session>,
     surface_interpolation_session: Option<surface_interpolation::Session>,
@@ -600,6 +602,7 @@ impl VibocerosApp {
             orient_edge_session: None,
             surface_offset_session: None,
             short_path_session: None,
+            offset_subd_session: None,
             mesh_polyline_session: None,
             face_create_session: None,
             surface_interpolation_session: None,
@@ -756,6 +759,9 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
+        if self.continue_offset_subd(&input) {
+            return;
+        }
         if self.try_continue_circle_deform(&input)
             || self.try_continue_arc_deform(&input)
             || self.try_continue_arc_extension(&input)

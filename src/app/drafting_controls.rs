@@ -16,6 +16,7 @@ impl VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
+                && self.offset_subd_session.is_none()
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()

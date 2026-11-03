@@ -310,6 +310,7 @@ mod mesh_trim;
 pub use mesh_trim::MeshTrimCutters;
 mod object_name;
 mod offset_mesh;
+pub mod offset_subd;
 mod offset_surface;
 mod pipe;
 pub mod point_selection;
@@ -653,6 +654,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_conic_options(&self, _value: conic::Options) -> bool {
+        false
+    }
+    fn offset_subd_options(&self) -> Option<offset_subd::Options> {
+        None
+    }
+    fn remember_offset_subd_options(&self, _options: offset_subd::Options) -> bool {
         false
     }
     fn extract_subd_corners(&self) -> Option<bool> {
@@ -1935,6 +1942,9 @@ impl CommandRegistry {
         registry
             .register(ExtractMeshPartCommand)
             .expect("unique built-in command");
+        registry
+            .register(offset_subd::OffsetSubDCommand::default())
+            .expect("unique OffsetSubD");
         registry
             .register(OffsetMeshCommand)
             .expect("unique built-in command");
