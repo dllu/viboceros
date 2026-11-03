@@ -142,30 +142,37 @@ fn replay_smooth_planar(operations: Option<viboceros_geometry::CurveOffsetOperat
     for (op, native) in common::cases_for("inset_surface_sdk")
         .into_iter()
         .chain(common::cases_for("inset_planar_curves"))
+        .chain(common::cases_for("inset_loose_controls"))
     {
         let family = op["op"].as_str().unwrap();
         let scene = op["scene"].as_str().unwrap();
         if family == "inset_surface_sdk" && !matches!(scene, "circle" | "annulus") {
             continue;
         }
-        if op["loose"] == true
-            && !matches!(
-                scene,
-                "circle" | "annulus" | "mixed" | "stadium" | "circle_rotated" | "annulus_narrow"
-            )
-        {
-            continue;
-        }
         let id = op["id"].as_str().unwrap();
+        let tolerance = Tolerance::try_new(
+            tolerance.absolute(),
+            tolerance.relative(),
+            op["angle_tolerance"]
+                .as_f64()
+                .unwrap_or(tolerance.angular()),
+        )
+        .unwrap();
         let original = source(&native["before"]);
         let before = original.clone();
         let output = original
-            .try_inset_planar_faces_with_operations(
+            .try_inset_planar_faces_with_options(
                 &[0],
-                op["distance"].as_f64().unwrap(),
-                op["crease_corners"].as_bool().unwrap(),
+                viboceros_geometry::PlanarInsetOptions {
+                    distance: op["distance"].as_f64().unwrap(),
+                    crease_corners: op["crease_corners"].as_bool().unwrap(),
+                    loose: op["loose"].as_bool().unwrap(),
+                },
                 tolerance,
-                operations,
+                viboceros_geometry::PlanarInsetOperations {
+                    curves: operations,
+                    edit_points: native_edit_solver(operations.is_some()),
+                },
             )
             .unwrap_or_else(|e| panic!("{id}: {e}"));
         assert_eq!(original, before);
@@ -186,7 +193,7 @@ fn replay_smooth_planar(operations: Option<viboceros_geometry::CurveOffsetOperat
         }));
         covered += 1;
     }
-    assert_eq!(covered, 34);
+    assert_eq!(covered, 66);
 }
 
 #[test]
@@ -197,6 +204,7 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
     for (op, native) in common::cases_for("inset_surface_ready")
         .into_iter()
         .chain(common::cases_for("inset_planar_curves_command"))
+        .chain(common::cases_for("inset_loose_command"))
     {
         if op["join_outputs"] != true {
             continue;
@@ -217,6 +225,7 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
         let options = Options {
             distance: 0.3,
             crease_corners: op["crease_corners"].as_bool().unwrap(),
+            loose: op["loose"].as_bool().unwrap_or(false),
             ..Options::default()
         };
         let plan = Plan::prepare(&doc, indices.into_iter().map(|i| (id, i)), options).unwrap();
@@ -262,5 +271,17 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
         );
         covered += 1;
     }
-    assert_eq!(covered, 30);
+    assert_eq!(covered, 48);
+}
+
+fn native_edit_solver(enabled: bool) -> Option<viboceros_geometry::CurveEditPointSolver> {
+    #[cfg(feature = "native-smlib")]
+    {
+        enabled.then_some(viboceros_smlib::curve_edit_point_interpolation)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        let _ = enabled;
+        None
+    }
 }

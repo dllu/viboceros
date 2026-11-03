@@ -23,6 +23,9 @@ pub struct CurveEditPointInterpolation<'a> {
     pub periodic_shift: Option<usize>,
 }
 
+pub type CurveEditPointSolver =
+    fn(&CurveEditPointInterpolation<'_>) -> Result<Vec<Real>, GeometryError>;
+
 struct Layout {
     parameters: Vec<Real>,
     sides: Vec<ParameterSide>,
@@ -225,11 +228,42 @@ impl NurbsCurve {
 fn portable(job: &CurveEditPointInterpolation<'_>) -> Result<Vec<Real>, GeometryError> {
     let system = &job.system.system;
     if let Some(shift) = job.periodic_shift {
-        return crate::nurbs::portable_periodic_interpolation(system, shift);
+        let n = system.parameters.len() - 1;
+        let rows = system.parameters[..n]
+            .iter()
+            .map(|&t| {
+                crate::nurbs::bspline_basis_nonzero(
+                    system.knots,
+                    system.degree,
+                    n + system.degree,
+                    t,
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let rhs = Mat::from_fn(n, 4, |i, j| system.targets[i * 4 + j]);
+        let result = crate::spline_collocation::cyclic::solve(system.degree, &rows, shift, rhs)?;
+        return Ok((0..n)
+            .flat_map(|i| {
+                let result = &result;
+                (0..4).map(move |j| result[(i, j)])
+            })
+            .collect());
     }
-    let axis = Axis::new(system.degree, system.knots.to_vec())?;
-    let rhs = Mat::from_fn(axis.stations.len(), 4, |i, j| system.targets[i * 4 + j]);
-    let result = axis.solve(rhs)?;
+    let n = system.parameters.len();
+    let rows = system
+        .parameters
+        .iter()
+        .enumerate()
+        .map(|(i, &t)| {
+            if job.system.fixed_rows[i] != 0 {
+                Ok((i, vec![1.]))
+            } else {
+                crate::nurbs::bspline_basis_nonzero(system.knots, system.degree, n, t)
+            }
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let rhs = Mat::from_fn(n, 4, |i, j| system.targets[i * 4 + j]);
+    let result = crate::spline_collocation::general_banded::solve(system.degree, &rows, rhs)?;
     Ok((0..result.nrows())
         .flat_map(|i| {
             let result = &result;

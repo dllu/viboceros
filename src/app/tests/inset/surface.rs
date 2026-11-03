@@ -6,6 +6,7 @@ fn inset_surface_native_preselection_previews_selection_and_history() {
     for (op, native) in common::cases_for("inset_surface_ready")
         .into_iter()
         .chain(common::cases_for("inset_planar_curves_command"))
+        .chain(common::cases_for("inset_loose_command"))
     {
         if op["join_outputs"] != true {
             continue;
@@ -44,6 +45,9 @@ fn inset_surface_native_preselection_previews_selection_and_history() {
                 "CreaseCorners=No"
             },
         );
+        if op["loose"] == true {
+            enter(&mut app, "Loose=On");
+        }
         enter(&mut app, ".3");
         assert!(!app.inset_session.as_ref().unwrap().edges().is_empty());
         assert_eq!(
@@ -84,7 +88,7 @@ fn inset_surface_native_preselection_previews_selection_and_history() {
         native_surface::assert_metadata(&app.document, id, &native["redo"][0]);
         covered += 1;
     }
-    assert_eq!(covered, 30);
+    assert_eq!(covered, 48);
 }
 
 #[test]

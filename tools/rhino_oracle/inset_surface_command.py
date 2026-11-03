@@ -84,11 +84,15 @@ def run_source(op, host, iterations, tolerance, b):
         marker = 'Owned surface Inset ' + str(S.Guid.NewGuid())
         R.RhinoApp.WriteLine(marker)
         yn = lambda value: '_Yes' if value else '_No'
-        macro = '_Inset _Loose=' + ('_No' if op['op'] == 'inset_surface_command' else '_Off')
-        macro += ' _IgnoreSeams=_Yes _CreaseCorners=' + yn(op['crease_corners'])
+        macro = '_Inset'
+        loose = op.get('loose',False)
+        if loose is not None:
+            macro += ' _Loose=' + ('_On' if loose else '_No' if op['op'] == 'inset_surface_command' else '_Off')
+        macro += ' _IgnoreSeams=_Yes'
+        if op['crease_corners'] is not None: macro += ' _CreaseCorners=' + yn(op['crease_corners'])
         macro += ' _Split=' + yn(op['split'])
         if op['split']: macro += ' _JoinOutputs=' + yn(op['join_outputs'])
-        macro += ' 0.3 _Enter _Cancel _Cancel'
+        macro += ' _Cancel' if op.get('cancel',False) else ' '+str(op.get('distance',0.3))+' _Enter _Cancel _Cancel'
         success, after, events = observe_command(R.Commands.Command, 'Inset',
             lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
         if R.Commands.Command.InCommand(): raise ValueError('Inset command left active')

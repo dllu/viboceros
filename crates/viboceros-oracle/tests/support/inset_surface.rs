@@ -4,23 +4,9 @@ use serde_json::Value;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId};
 use viboceros_geometry::{Brep, LineSegment, NurbsCurve, Point3, Tolerance, WeightedPoint3};
 
-pub fn source(record: &Value) -> Brep {
-    let dir = tempfile::tempdir().unwrap();
-    let path = dir.path().join("surface.3dm");
-    let bytes = record["archive"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|b| u8::try_from(b.as_u64().unwrap()).unwrap())
-        .collect::<Vec<_>>();
-    std::fs::write(&path, bytes).unwrap();
-    let (doc, _, _, _, _) =
-        viboceros_command::open_3dm_with_views_and_cplanes(path.to_str().unwrap()).unwrap();
-    let Geometry::Brep(brep) = doc.objects().next().unwrap().geometry() else {
-        panic!("expected B-rep")
-    };
-    brep.clone()
-}
+#[path = "brep_archive.rs"]
+mod archive;
+pub use archive::source;
 pub fn fixture(record: &Value) -> (Document, ObjectId) {
     let mut doc = Document::default();
     doc.set_tolerance(Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap());
@@ -151,6 +137,9 @@ pub fn assert_geometry(output: &Brep, expected: &Value, tolerance: Tolerance, id
     assert_geometry_with_epsilon(output, expected, tolerance, 1e-10, id)
 }
 pub fn epsilon_for(operation: &Value) -> f64 {
+    if operation["loose"] == true {
+        return 1e-10;
+    }
     if matches!(
         operation["scene"].as_str().unwrap(),
         "ellipse" | "oval" | "concave_oval" | "bezier" | "holes"
@@ -213,20 +202,43 @@ pub fn assert_geometry_with_epsilon(
         "{id}: bijective vertex correspondence"
     );
     common::compare(&topology(output, &mapping), &native_topology(expected), id);
+    let mut used = std::collections::BTreeSet::new();
     for (i, edge) in expected["edges"].as_array().unwrap().iter().enumerate() {
         let ends = &expected["topology"]["edges"][i];
         let ends = [
             ends[0].as_u64().unwrap() as usize,
             ends[1].as_u64().unwrap() as usize,
         ];
-        let actual = output
+        let candidates = output
             .edges()
             .iter()
-            .find(|e| {
+            .enumerate()
+            .filter(|(index, e)| {
                 let mapped = e.vertices().map(|v| mapping[v]);
-                mapped == ends || mapped == [ends[1], ends[0]]
+                !used.contains(index) && (mapped == ends || mapped == [ends[1], ends[0]])
             })
-            .unwrap();
+            .map(|(i, _)| i)
+            .collect::<Vec<_>>();
+        // Two complementary arcs can have the same endpoint pair. Match their
+        // loci bijectively instead of selecting the first table entry twice.
+        let index = if let [index] = candidates.as_slice() {
+            *index
+        } else {
+            let native = nurbs_definition(&edge["curve"]["definition"]);
+            let index = candidates
+                .iter()
+                .copied()
+                .find(|&i| {
+                    let actual = output.edges()[i].curve();
+                    curve_witnesses(actual, &native, epsilon).is_ok()
+                        && curve_witnesses(&native, actual, epsilon).is_ok()
+                })
+                .unwrap_or_else(|| panic!("{id}: no corresponding unused curve for edge {i}"));
+            used.insert(index);
+            continue; // Both directions were already checked above.
+        };
+        used.insert(index);
+        let actual = &output.edges()[index];
         if actual.curve().degree() == 1 && actual.curve().control_points().len() == 2 {
             let ends = actual.vertices().map(|v| output.vertices()[v].point());
             let line = LineSegment::try_new(ends[0], ends[1], tolerance).unwrap();
@@ -242,12 +254,14 @@ pub fn assert_geometry_with_epsilon(
         } else {
             let definition = &edge["curve"]["definition"];
             let native = nurbs_definition(definition);
-            curve_witnesses(actual.curve(), &native, epsilon, id);
-            curve_witnesses(&native, actual.curve(), epsilon, id);
+            curve_witnesses(actual.curve(), &native, epsilon)
+                .unwrap_or_else(|e| panic!("{id}: {e}"));
+            curve_witnesses(&native, actual.curve(), epsilon)
+                .unwrap_or_else(|e| panic!("{id}: {e}"));
         }
     }
 }
-fn curve_witnesses(source: &NurbsCurve, target: &NurbsCurve, epsilon: f64, id: &str) {
+fn curve_witnesses(source: &NurbsCurve, target: &NurbsCurve, epsilon: f64) -> Result<(), String> {
     let reverse = source
         .derivative_at(*source.domain().start())
         .unwrap()
@@ -274,10 +288,12 @@ fn curve_witnesses(source: &NurbsCurve, target: &NurbsCurve, epsilon: f64, id: &
                 let global = target.closest_parameter(p, query).unwrap();
                 distance = target.evaluate(global).unwrap().distance_to(p).unwrap();
             }
-            assert!(
-                distance <= epsilon,
-                "{id}: corresponding curve witness {distance} exceeds {epsilon}"
-            );
+            if distance > epsilon {
+                return Err(format!(
+                    "corresponding curve witness {distance} exceeds {epsilon}"
+                ));
+            }
         }
     }
+    Ok(())
 }

@@ -97,6 +97,9 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             app.accept_component_click(click);
             enter(&mut app, "");
             assert!(!app.picking_inset());
+            if family == "inset_planar_curves" {
+                enter(&mut app, "Loose=On");
+            }
             enter(&mut app, ".3");
             frame(vec![], &app);
             assert!(!app.document.can_undo());

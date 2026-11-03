@@ -1,0 +1,15 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "loose_preferences",
+      "op": "inset_loose_preferences"
+    }
+  ]
+}

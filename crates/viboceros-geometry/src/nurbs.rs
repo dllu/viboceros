@@ -24,6 +24,7 @@ mod integration_frame;
 mod knot_reduction;
 pub use knot_reduction::{KnotReduction, MAX_KNOT_REDUCTION_GROUPS};
 mod linear_trim;
+mod loose_offset;
 mod parameter_frame;
 pub(crate) mod periodic;
 mod poles;
@@ -4435,6 +4436,29 @@ fn bspline_basis_values_impl(
     parameter: Real,
     extended: bool,
 ) -> Result<Vec<Real>, GeometryError> {
+    let (first, local) =
+        bspline_basis_local_impl(knots, degree, control_count, parameter, extended)?;
+    let mut values = vec![0.0; control_count];
+    values[first..first + local.len()].copy_from_slice(&local);
+    Ok(values)
+}
+
+pub(crate) fn bspline_basis_nonzero(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+) -> Result<(usize, Vec<Real>), GeometryError> {
+    bspline_basis_local_impl(knots, degree, control_count, parameter, false)
+}
+
+fn bspline_basis_local_impl(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+    extended: bool,
+) -> Result<(usize, Vec<Real>), GeometryError> {
     debug_assert_eq!(knots.len(), control_count + degree + 1);
     debug_assert!(control_count > degree);
     let domain_start = knots[degree];
@@ -4468,9 +4492,7 @@ fn bspline_basis_values_impl(
     }
     require_finite(local.iter().copied(), "B-spline basis")?;
 
-    let mut values = vec![0.0; control_count];
-    values[span - degree..=span].copy_from_slice(&local);
-    Ok(values)
+    Ok((span - degree, local))
 }
 
 pub(crate) fn find_span_in_knots(

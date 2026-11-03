@@ -12,6 +12,7 @@ from mesh and SubD distances.
 ```text
 Inset 0.3
 Inset 0.3 Faces=0,1 CreaseCorners=Yes
+Inset 0.2 Loose=On
 ```
 
 `CreaseCorners=No` (initial default) creates one annular border face per boundary.
@@ -23,6 +24,9 @@ Surface inputs must be processed separately from mesh/SubD inputs.
 Smooth NURBS loops, circular holes, annuli and tangent-continuous line/arc loops
 are also supported; see [curved-boundary behavior and qualification](inset-curves.md).
 A single smooth closed edge stays annular even with `CreaseCorners=Yes`.
+`Loose=On` offsets original Greville edit points without refining the source
+basis. Loose starts at `Off` on each invocation; completed distance and
+`CreaseCorners` settings are remembered, and canceled changes are discarded.
 
 The operation replaces each input while retaining its ID, attributes, ordered
 groups and whole-object selection. Surface component picks clear after completion.
@@ -37,16 +41,15 @@ two-control-point edges and trims; curved loops require smooth spans and joins.
 Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seams,
 poles, collapsed edges and
 crossing/touching inset loops return errors. Insets that change topology at the
-medial axis are also rejected. `ThroughPoint`, `Loose`, `IgnoreSeams`, `Split=No`
+medial axis are also rejected. `ThroughPoint`, `IgnoreSeams`, `Split=No`
 and `JoinOutputs=No` remain pending; output currently stays joined to the input.
 
-Frozen private-display evidence includes 94 public `Brep.InsetFaces` cases and
-90 commands covering outputs, attributes, selection and real history. The kernel
-matches 41 polygon and 34 curved SDK cases plus 30 joined command cases; pending
-nonplanar and loose-fit results remain in the immutable evidence. Polygon and
-analytic-curve comparisons use `1e-10`; fitted-curve tolerances are documented in
-the [curved-boundary guide](inset-curves.md). Checks retain oriented loops, edge
-incidence, supporting surfaces and solid status.
+Frozen private-display evidence includes 116 public `Brep.InsetFaces` cases,
+108 commands and seven preference steps. The kernel matches 41 polygon and
+66 curved SDK cases plus 48 joined command cases; nonplanar results remain
+pending. Polygon, analytic and Loose comparisons use `1e-10`; tight fitted-curve
+tolerances are documented in the [curved-boundary guide](inset-curves.md).
+Checks retain oriented loops, edge incidence, supporting surfaces and solid status.
 Controls include triangles, reflected face sense, skewed charts and subdivided
 collinear boundaries. Collinear inset corners simplify; their old crease
 connectors meet the following retained corner, matching the captured native strips.
@@ -63,5 +66,5 @@ cargo test -p viboceros-geometry --lib planar_inset
 cargo test -p viboceros-command --lib inset
 cargo test -p viboceros-oracle --test inset_surface
 cargo test -p viboceros --bin viboceros inset
-python3 -m unittest tools.rhino_oracle.test_inset_surface
+python3 -m unittest tools.rhino_oracle.test_inset_surface tools.rhino_oracle.test_inset_loose
 ```

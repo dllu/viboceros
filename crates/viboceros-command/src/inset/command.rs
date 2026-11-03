@@ -37,7 +37,10 @@ impl Command for InsetCommand {
     }
     fn remember_inset_surface_options(&self, options: Options) -> bool {
         let mut d = self.0.get();
-        d.surface = options;
+        d.surface = Options {
+            loose: false,
+            ..options
+        };
         self.0.set(d);
         true
     }

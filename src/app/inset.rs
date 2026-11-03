@@ -15,6 +15,7 @@ pub(super) struct Session {
     surface: bool,
     distance_supplied: bool,
     crease_supplied: bool,
+    loose_supplied: bool,
 }
 impl Session {
     pub(super) fn edges(&self) -> &[viboceros_geometry::LineSegment] {
@@ -186,6 +187,7 @@ impl VibocerosApp {
             surface,
             distance_supplied: parsed.distance_supplied,
             crease_supplied: parsed.crease_supplied,
+            loose_supplied: parsed.loose_supplied,
         });
         self.active_command = Some(InteractiveCommand::Inset);
         self.log_inset();
@@ -232,13 +234,14 @@ impl VibocerosApp {
                 "Inset: select surface, mesh or SubD faces; Ctrl/Command removes; Enter accepts selection; Esc cancels".into()
             } else if s.surface {
                 format!(
-                    "Inset Distance={} CreaseCorners={}; enter a positive distance or CreaseCorners=Yes|No; Enter commits, Esc cancels",
+                    "Inset Distance={} CreaseCorners={} Loose={}; enter a positive distance, CreaseCorners=Yes|No or Loose=On|Off; Enter commits, Esc cancels",
                     s.options.distance,
                     if s.options.crease_corners {
                         "Yes"
                     } else {
                         "No"
-                    }
+                    },
+                    if s.options.loose { "On" } else { "Off" }
                 )
             } else if s.mesh {
                 format!(
@@ -270,6 +273,9 @@ impl VibocerosApp {
             }
             if !s.crease_supplied {
                 s.options.crease_corners = defaults.crease_corners;
+            }
+            if !s.loose_supplied {
+                s.options.loose = defaults.loose;
             }
             s.targets = Some(targets);
             s.witness = Some(witness);
@@ -340,6 +346,7 @@ impl VibocerosApp {
                                             s.options = p.options;
                                             s.distance_supplied |= p.distance_supplied;
                                             s.crease_supplied |= p.crease_supplied;
+                                            s.loose_supplied |= p.loose_supplied;
                                         }
                                         return Err(e);
                                     }
@@ -352,6 +359,7 @@ impl VibocerosApp {
                     s.options = p.options;
                     s.distance_supplied |= p.distance_supplied;
                     s.crease_supplied |= p.crease_supplied;
+                    s.loose_supplied |= p.loose_supplied;
                     Ok(())
                 });
             if let Err(e) = result {

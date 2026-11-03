@@ -43,6 +43,7 @@ mod edge_split;
 mod face_split;
 mod incidence;
 mod inset;
+pub use inset::{PlanarInsetOperations, PlanarInsetOptions};
 mod isocurves;
 mod join_edges;
 pub use join_edges::{

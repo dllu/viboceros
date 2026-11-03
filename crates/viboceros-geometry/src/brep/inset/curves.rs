@@ -1,26 +1,26 @@
 //! Smooth planar trim loops, analytic offsets and shared NURBS fitting.
 use super::*;
-use crate::{
-    Curve3, CurveOffsetCornerStyle, CurveSegment3, ParameterSide, PolyCurve3, WeightedPoint3,
-};
+use crate::{CurveSegment3, ParameterSide, PolyCurve3};
+mod producer;
+use producer::{aligned, offset, shifted_start};
 
+fn oriented(brep: &Brep, trim: &BrepTrim) -> Result<NurbsCurve, GeometryError> {
+    let edge = trim
+        .edge
+        .ok_or_else(|| invalid("inset does not support poles"))?;
+    if !matches!(trim.trim_type, BrepTrimType::Boundary | BrepTrimType::Mated) {
+        return Err(invalid("inset does not support seam trims"));
+    }
+    if trim.reversed_3d {
+        brep.edges[edge].curve.reversed()
+    } else {
+        Ok(brep.edges[edge].curve.clone())
+    }
+}
 pub(super) fn joined(brep: &Brep, trims: &[BrepTrim]) -> Result<NurbsCurve, GeometryError> {
     let segments = trims
         .iter()
-        .map(|trim| {
-            let edge = trim
-                .edge
-                .ok_or_else(|| invalid("inset does not support poles"))?;
-            if !matches!(trim.trim_type, BrepTrimType::Boundary | BrepTrimType::Mated) {
-                return Err(invalid("inset does not support seam trims"));
-            }
-            let curve = if trim.reversed_3d {
-                brep.edges[edge].curve.reversed()?
-            } else {
-                brep.edges[edge].curve.clone()
-            };
-            Ok(CurveSegment3::NurbsCurve(curve))
-        })
+        .map(|t| oriented(brep, t).map(CurveSegment3::NurbsCurve))
         .collect::<Result<Vec<_>, GeometryError>>()?;
     PolyCurve3::try_new(segments)?.to_nurbs()
 }
@@ -32,131 +32,6 @@ fn gap(a: UnitVector3, b: UnitVector3) -> Result<Real, GeometryError> {
         .atan2(a.as_vector().dot(b.as_vector())?))
 }
 
-fn shifted_start(
-    curve: &NurbsCurve,
-    normal: UnitVector3,
-    distance: Real,
-) -> Result<Point3, GeometryError> {
-    let t = *curve.domain().start();
-    let tangent = curve.tangent_at_on_side(t, ParameterSide::Right)?;
-    curve.evaluate(t)?.translated(
-        normal
-            .as_vector()
-            .cross(tangent.as_vector())?
-            .scaled(distance)?,
-    )
-}
-
-fn analytic_offset(
-    curve: &NurbsCurve,
-    normal: UnitVector3,
-    distance: Real,
-    tolerance: Tolerance,
-) -> Result<Option<NurbsCurve>, GeometryError> {
-    let tight = Tolerance::try_new(
-        tolerance.absolute() * 0.01,
-        tolerance.relative(),
-        tolerance.angular(),
-    )?;
-    let transform = if matches!(curve.analytic_form(tight)?, Some(CurveSegment3::Line(_))) {
-        let t = *curve.domain().start();
-        let shift = normal
-            .as_vector()
-            .cross(
-                curve
-                    .tangent_at_on_side(t, ParameterSide::Right)?
-                    .as_vector(),
-            )?
-            .scaled(distance)?;
-        crate::AffineTransform3::from_translation(shift)
-    } else if let Some(center) = curve.circular_center(tight)? {
-        let p = curve.evaluate(*curve.domain().start())?;
-        let radius = center.distance_to(p)?;
-        let target = shifted_start(curve, normal, distance)?;
-        let left = p.vector_to(target)?;
-        let radial = center.vector_to(p)?.normalized_nonzero()?.as_vector();
-        let new_radius = radius + left.dot(radial)?;
-        if new_radius <= tolerance.absolute() {
-            return Err(invalid("inset collapses a circular boundary"));
-        }
-        crate::AffineTransform3::try_uniform_scale(center, new_radius / radius)?
-    } else {
-        return Ok(None);
-    };
-    let candidate = curve.transformed(transform)?;
-    // Recognition bounds positions. Match the shared offset fitter's normal-
-    // locus sampling policy too, before accepting an analytic shortcut.
-    for (a, b) in curve.spans() {
-        for i in 0..=16 {
-            let t = a * (1. - i as Real / 16.) + b * (i as Real / 16.);
-            let side = if i == 16 {
-                ParameterSide::Left
-            } else {
-                ParameterSide::Right
-            };
-            let expected = curve.evaluate(t)?.translated(
-                normal
-                    .as_vector()
-                    .cross(curve.tangent_at_on_side(t, side)?.as_vector())?
-                    .scaled(distance)?,
-            )?;
-            if candidate.evaluate(t)?.distance_to(expected)? > tolerance.absolute() * 0.25 {
-                return Ok(None);
-            }
-        }
-    }
-    Ok(Some(candidate))
-}
-
-fn offset(
-    curve: &NurbsCurve,
-    normal: UnitVector3,
-    distance: Real,
-    tolerance: Tolerance,
-    operations: Option<CurveOffsetOperations>,
-) -> Result<NurbsCurve, GeometryError> {
-    curve.tight_bounds(tolerance)?;
-    if let Some(result) = analytic_offset(curve, normal, distance, tolerance)? {
-        return Ok(result);
-    }
-    let fit = Tolerance::try_new(
-        tolerance.absolute() * 0.25,
-        tolerance.relative(),
-        tolerance.angular(),
-    )?;
-    Curve3::NurbsCurve(curve.clone())
-        .try_offset_with_operations(
-            distance,
-            normal,
-            fit,
-            CurveOffsetCornerStyle::Sharp,
-            operations,
-        )?
-        .as_ref()
-        .to_nurbs()
-}
-
-fn aligned(
-    curve: NurbsCurve,
-    a: Point3,
-    b: Point3,
-    tolerance: Tolerance,
-) -> Result<NurbsCurve, GeometryError> {
-    let curve = curve.clamped_to_active_domain()?;
-    if curve.evaluate(*curve.domain().start())?.distance_to(a)? > tolerance.absolute() * 0.5
-        || curve.evaluate(*curve.domain().end())?.distance_to(b)? > tolerance.absolute() * 0.5
-    {
-        return Err(invalid(
-            "smooth inset endpoint correspondence is unresolved",
-        ));
-    }
-    let mut controls = curve.control_points().to_vec();
-    let last = controls.len() - 1;
-    controls[0] = WeightedPoint3::try_new(a, controls[0].weight())?;
-    controls[last] = WeightedPoint3::try_new(b, controls[last].weight())?;
-    NurbsCurve::try_new_rational(curve.degree(), controls, curve.knots().to_vec())
-}
-
 impl Brep {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn inset_smooth_boundary(
@@ -164,16 +39,26 @@ impl Brep {
         face: &BrepFace,
         boundary: &BrepLoop,
         normal: UnitVector3,
-        distance: Real,
-        crease: bool,
+        options: PlanarInsetOptions,
         tolerance: Tolerance,
-        operations: Option<CurveOffsetOperations>,
+        operations: PlanarInsetOperations,
         work: &mut Work,
     ) -> Result<Boundary, GeometryError> {
+        let PlanarInsetOptions {
+            distance,
+            crease_corners: crease,
+            loose,
+        } = options;
         let old = &boundary.trims;
         let mut sources = Vec::with_capacity(old.len());
         for trim in old {
-            sources.push(joined(self, std::slice::from_ref(trim))?);
+            // Joining even one segment clamps it. Loose interpolation needs
+            // the original periodic basis until its cyclic solve completes.
+            sources.push(if loose {
+                oriented(self, trim)?
+            } else {
+                joined(self, std::slice::from_ref(trim))?
+            });
         }
         if sources.is_empty() {
             return Err(invalid("inset requires closed trim loops"));
@@ -197,12 +82,15 @@ impl Brep {
             .collect::<Result<Vec<_>, _>>()?;
         let mut offsets = Vec::with_capacity(sources.len());
         for (j, source) in sources.iter().enumerate() {
-            let curve = aligned(
-                offset(source, normal, distance, tolerance, operations)?,
-                goals[j],
-                goals[(j + 1) % goals.len()],
-                tolerance,
-            )?;
+            let curve = offset(source, normal, distance, tolerance, loose, operations)?;
+            // A periodic Greville window need not include the seam parameter.
+            // Its cyclic interpolation closes naturally; forcing normal-shot
+            // endpoints would change that interpolated curve.
+            let curve = if loose && source.is_periodic() {
+                curve
+            } else {
+                aligned(curve, goals[j], goals[(j + 1) % goals.len()], tolerance)?
+            };
             work.charge_curve(&curve)?;
             offsets.push(curve);
         }
@@ -218,6 +106,38 @@ impl Brep {
             work.charge_curve(&joined)?;
             offsets = vec![joined];
         }
+        let mut group_starts = Vec::with_capacity(offsets.len());
+        let mut pieces = Vec::new();
+        let kink_tolerance = Tolerance::try_new(
+            tolerance.absolute(),
+            tolerance.relative(),
+            std::f64::consts::PI / 180.,
+        )?;
+        for curve in offsets {
+            group_starts.push(pieces.len());
+            let kinks = if loose {
+                curve.full_multiplicity_kink_parameters(kink_tolerance)?
+            } else {
+                Vec::new()
+            };
+            if kinks.is_empty() {
+                pieces.push(curve);
+            } else {
+                // B-rep splitting retains the stored seam as a vertex, even
+                // when it is smooth. The curve split API instead merges the
+                // two seam-adjacent pieces of a closed curve.
+                let mut remainder = curve;
+                for parameter in kinks {
+                    let (piece, right) = remainder.try_split(parameter)?;
+                    work.charge_curve(&piece)?;
+                    pieces.push(piece);
+                    remainder = right;
+                }
+                work.charge_curve(&remainder)?;
+                pieces.push(remainder);
+            }
+        }
+        let offsets = pieces;
         let vertex_start = self.vertices.len();
         for curve in &offsets {
             self.vertices.push(BrepVertex::try_new(
@@ -249,19 +169,19 @@ impl Brep {
             for (j, trim) in old.iter().enumerate() {
                 connectors.push(self.inset_line_trim(
                     &face.surface,
-                    [trim.vertices[0], vertex_start + j],
+                    [trim.vertices[0], vertex_start + group_starts[j]],
                     [self.vertices[trim.vertices[0]].point, goals[j]],
                     tolerance,
                 )?);
             }
             for j in 0..old.len() {
                 let k = (j + 1) % old.len();
-                let trims = vec![
-                    old[j].clone(),
-                    connectors[k].clone(),
-                    reverse_trim(&inset[j])?,
-                    reverse_trim(&connectors[j])?,
-                ];
+                let end = group_starts.get(j + 1).copied().unwrap_or(inset.len());
+                let mut trims = vec![old[j].clone(), connectors[k].clone()];
+                for trim in inset[group_starts[j]..end].iter().rev() {
+                    trims.push(reverse_trim(trim)?);
+                }
+                trims.push(reverse_trim(&connectors[j])?);
                 borders.push(BrepFace::try_new(
                     face.surface.clone(),
                     face.reversed,

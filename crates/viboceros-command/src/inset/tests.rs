@@ -21,7 +21,7 @@ fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
         assert_eq!(registry.inset_surface_options().distance, 1.);
         let before = doc.object(id).unwrap().geometry_snapshot().clone();
         registry
-            .execute(&mut doc, "Inset .3 CreaseCorners=Yes")
+            .execute(&mut doc, "Inset .3 CreaseCorners=Yes Loose=On")
             .unwrap();
         let Geometry::Brep(b) = doc.object(id).unwrap().geometry() else {
             panic!()
@@ -30,6 +30,7 @@ fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
         assert!(doc.is_selected(id));
         assert_eq!(registry.inset_surface_options().distance, 0.3);
         assert!(registry.inset_surface_options().crease_corners);
+        assert!(!registry.inset_surface_options().loose);
         assert_eq!(registry.inset_options(false).distance, 0.1);
         assert_eq!(registry.inset_options(true).distance, 1.);
         doc.undo().unwrap();
@@ -39,6 +40,9 @@ fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
             "Inset .7 CreaseCorners=Maybe",
             "Inset .7 CreaseCorners=Yes CreaseCorners=No",
             "Inset .7 Split=No",
+            "Inset .7 Loose=No",
+            "Inset .7 Loose=Yes",
+            "Inset .7 Loose=On Loose=Off",
             "Inset .7 Faces=1",
             "Inset 5",
         ] {
@@ -112,6 +116,7 @@ fn inset_invalid_and_mixed_inputs_preserve_geometry_redo_and_defaults() {
             "Inset -1 Faces=0",
             "Inset NaN Faces=0",
             "Inset .3 Faces=999",
+            "Inset .3 Faces=0 Loose=On",
             "Inset .3 Faces=-1",
             "Inset .3 Faces=0 Mode=Other",
             "Inset .3 Faces=0 Mode=Group Mode=Single",

@@ -1,6 +1,6 @@
 //! Planar face insets retaining supporting surfaces and shared boundary topology.
 use super::*;
-use crate::{CurveOffsetOperations, UnitVector3};
+use crate::{CurveEditPointSolver, CurveOffsetOperations, UnitVector3};
 mod curves;
 mod polygon;
 mod regions;
@@ -10,6 +10,19 @@ mod tests;
 const MAX_CORNERS: usize = 100_000;
 fn invalid(context: &'static str) -> GeometryError {
     GeometryError::InvalidBrepTopology { context }
+}
+/// Surface Inset options shared by typed commands and interactive previews.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PlanarInsetOptions {
+    pub distance: Real,
+    pub crease_corners: bool,
+    pub loose: bool,
+}
+/// Optional native curve producers; topology and validation stay shared.
+#[derive(Clone, Copy, Default)]
+pub struct PlanarInsetOperations {
+    pub curves: Option<CurveOffsetOperations>,
+    pub edit_points: Option<CurveEditPointSolver>,
 }
 struct Boundary {
     inset: Vec<BrepTrim>,
@@ -65,6 +78,35 @@ impl Brep {
         tolerance: Tolerance,
         operations: Option<CurveOffsetOperations>,
     ) -> Result<Self, GeometryError> {
+        self.try_inset_planar_faces_with_options(
+            selected,
+            PlanarInsetOptions {
+                distance,
+                crease_corners,
+                loose: false,
+            },
+            tolerance,
+            PlanarInsetOperations {
+                curves: operations,
+                ..PlanarInsetOperations::default()
+            },
+        )
+    }
+    /// Loose mode offsets original Greville edit points without refining the
+    /// source basis. It retains the edit-point API's degree/count limits and
+    /// splits new internal tangent kinks at the native one-degree threshold.
+    pub fn try_inset_planar_faces_with_options(
+        &self,
+        selected: &[usize],
+        options: PlanarInsetOptions,
+        tolerance: Tolerance,
+        operations: PlanarInsetOperations,
+    ) -> Result<Self, GeometryError> {
+        let PlanarInsetOptions {
+            distance,
+            crease_corners,
+            ..
+        } = options;
         if !distance.is_finite() || distance <= 0. || selected.is_empty() {
             return Err(invalid(
                 "planar inset requires faces and a positive finite distance",
@@ -93,26 +135,23 @@ impl Brep {
         };
         let mut output = self.clone();
         for i in indices {
-            output.inset_planar_face(
-                i,
-                distance,
-                crease_corners,
-                tolerance,
-                operations,
-                &mut work,
-            )?;
+            output.inset_planar_face(i, options, tolerance, operations, &mut work)?;
         }
         Self::try_new(output.vertices, output.edges, output.faces, tolerance)
     }
     fn inset_planar_face(
         &mut self,
         index: usize,
-        distance: Real,
-        crease: bool,
+        options: PlanarInsetOptions,
         tolerance: Tolerance,
-        operations: Option<CurveOffsetOperations>,
+        operations: PlanarInsetOperations,
         work: &mut Work,
     ) -> Result<(), GeometryError> {
+        let PlanarInsetOptions {
+            distance,
+            crease_corners: crease,
+            ..
+        } = options;
         let face = self.faces[index].clone();
         let [origin, east, _, north] = face.surface.try_affine_patch_corners(tolerance)?;
         let normal = origin
@@ -127,7 +166,7 @@ impl Brep {
                 self.inset_polygon_boundary(&face, boundary, normal, distance, crease, tolerance)?
             } else {
                 self.inset_smooth_boundary(
-                    &face, boundary, normal, distance, crease, tolerance, operations, work,
+                    &face, boundary, normal, options, tolerance, operations, work,
                 )?
             };
             caps.push(result.inset);
@@ -136,7 +175,7 @@ impl Brep {
         self.faces[index] = if polygonal {
             BrepFace::try_from_polygon_boundaries(face.surface, face.reversed, caps)?
         } else {
-            regions::validate(self, &face, &caps, normal, tolerance, operations)?;
+            regions::validate(self, &face, &caps, normal, tolerance, operations.curves)?;
             let loops = caps
                 .into_iter()
                 .zip(&face.loops)

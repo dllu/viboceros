@@ -6,6 +6,10 @@ use std::ops::RangeInclusive;
 
 mod axis;
 mod banded;
+pub(crate) mod cyclic;
+pub(crate) mod general_banded;
+#[cfg(test)]
+mod greville_tests;
 pub(crate) use axis::Axis;
 
 pub(crate) const DEGREE: usize = 3;

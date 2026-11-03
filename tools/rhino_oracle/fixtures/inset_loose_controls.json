@@ -1,0 +1,235 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_1e-08_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "ellipse_1e-08_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "ellipse_0.1_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "ellipse_0.1_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "bezier_1e-08_False",
+      "op": "inset_loose_controls",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "bezier_1e-08_True",
+      "op": "inset_loose_controls",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "bezier_0.1_False",
+      "op": "inset_loose_controls",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "bezier_0.1_True",
+      "op": "inset_loose_controls",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "oval_1e-08_False",
+      "op": "inset_loose_controls",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "oval_1e-08_True",
+      "op": "inset_loose_controls",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-08
+    },
+    {
+      "id": "oval_0.1_False",
+      "op": "inset_loose_controls",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "oval_0.1_True",
+      "op": "inset_loose_controls",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 0.1
+    },
+    {
+      "id": "ellipse_distance_0.05_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.05,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_distance_0.05_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.05,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_distance_0.1_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.1,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_distance_0.1_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.1,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_distance_0.4_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.4,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_distance_0.4_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.4,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-06
+    },
+    {
+      "id": "ellipse_degree_3_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-06,
+      "degree": 3
+    },
+    {
+      "id": "ellipse_degree_3_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-06,
+      "degree": 3
+    },
+    {
+      "id": "ellipse_degree_7_False",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false,
+      "angle_tolerance": 1e-06,
+      "degree": 7
+    },
+    {
+      "id": "ellipse_degree_7_True",
+      "op": "inset_loose_controls",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true,
+      "angle_tolerance": 1e-06,
+      "degree": 7
+    }
+  ]
+}

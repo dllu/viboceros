@@ -1,0 +1,173 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_False",
+      "op": "inset_loose_command",
+      "scene": "ellipse",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "ellipse_True",
+      "op": "inset_loose_command",
+      "scene": "ellipse",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "oval_False",
+      "op": "inset_loose_command",
+      "scene": "oval",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "oval_True",
+      "op": "inset_loose_command",
+      "scene": "oval",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "concave_oval_False",
+      "op": "inset_loose_command",
+      "scene": "concave_oval",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "concave_oval_True",
+      "op": "inset_loose_command",
+      "scene": "concave_oval",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "bezier_False",
+      "op": "inset_loose_command",
+      "scene": "bezier",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "bezier_True",
+      "op": "inset_loose_command",
+      "scene": "bezier",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "stadium_False",
+      "op": "inset_loose_command",
+      "scene": "stadium",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "stadium_True",
+      "op": "inset_loose_command",
+      "scene": "stadium",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "mixed_False",
+      "op": "inset_loose_command",
+      "scene": "mixed",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "mixed_True",
+      "op": "inset_loose_command",
+      "scene": "mixed",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "holes_False",
+      "op": "inset_loose_command",
+      "scene": "holes",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "holes_True",
+      "op": "inset_loose_command",
+      "scene": "holes",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "circle_rotated_False",
+      "op": "inset_loose_command",
+      "scene": "circle_rotated",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "circle_rotated_True",
+      "op": "inset_loose_command",
+      "scene": "circle_rotated",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "annulus_narrow_False",
+      "op": "inset_loose_command",
+      "scene": "annulus_narrow",
+      "crease_corners": false,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "annulus_narrow_True",
+      "op": "inset_loose_command",
+      "scene": "annulus_narrow",
+      "crease_corners": true,
+      "loose": true,
+      "split": true,
+      "join_outputs": true
+    }
+  ]
+}

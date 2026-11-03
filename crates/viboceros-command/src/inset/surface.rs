@@ -4,9 +4,9 @@ pub(super) fn is_surface(geometry: &Geometry) -> bool {
     matches!(geometry, Geometry::Brep(_) | Geometry::NurbsSurface(_))
 }
 pub(super) fn require_polygon_options(options: Options) -> Result<(), CommandError> {
-    if options.crease_corners {
+    if options.crease_corners || options.loose {
         Err(CommandError::Usage(
-            "CreaseCorners requires planar surface faces",
+            "CreaseCorners and Loose require planar surface faces",
         ))
     } else {
         Ok(())
@@ -27,12 +27,18 @@ pub(super) fn prepare(
         }
         _ => return Err(CommandError::UnsupportedInsetGeometry),
     };
-    let result = brep.try_inset_planar_faces_with_operations(
+    let result = brep.try_inset_planar_faces_with_options(
         faces,
-        options.distance,
-        options.crease_corners,
+        viboceros_geometry::PlanarInsetOptions {
+            distance: options.distance,
+            crease_corners: options.crease_corners,
+            loose: options.loose,
+        },
         tolerance,
-        offset_curve::offset_operations(),
+        viboceros_geometry::PlanarInsetOperations {
+            curves: offset_curve::offset_operations(),
+            edit_points: edit_point_solver(),
+        },
     )?;
     let mut bytes = result.vertices().len().saturating_mul(32);
     for edge in result.edges() {
@@ -59,4 +65,15 @@ pub(super) fn prepare(
         ComponentSelectionKind::BrepFace,
         bytes,
     ))
+}
+
+fn edit_point_solver() -> Option<viboceros_geometry::CurveEditPointSolver> {
+    #[cfg(feature = "native-smlib")]
+    {
+        Some(viboceros_smlib::curve_edit_point_interpolation)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        None
+    }
 }

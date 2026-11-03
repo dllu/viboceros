@@ -1,5 +1,5 @@
 use super::*;
-pub const USAGE: &str = "Inset [distance|Distance=value] [Mode=Group|Single] [CreaseCorners=Yes|No] [Faces=All|0,1,...]";
+pub const USAGE: &str = "Inset [distance|Distance=value] [Mode=Group|Single] [CreaseCorners=Yes|No] [Loose=On|Off] [Faces=All|0,1,...]";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Mode {
     Group,
@@ -10,6 +10,7 @@ pub struct Options {
     pub distance: f64,
     pub mode: Mode,
     pub crease_corners: bool,
+    pub loose: bool,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -17,6 +18,7 @@ impl Default for Options {
             distance: 0.1,
             mode: Mode::Group,
             crease_corners: false,
+            loose: false,
         }
     }
 }
@@ -47,9 +49,10 @@ pub struct Input {
     pub faces: Option<Vec<usize>>,
     pub faces_supplied: bool,
     pub crease_supplied: bool,
+    pub loose_supplied: bool,
 }
 pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError> {
-    let mut seen = [false; 4];
+    let mut seen = [false; 5];
     let mut faces = None;
     let mut i = 0;
     while i < args.len() {
@@ -79,6 +82,15 @@ pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError>
         } else if option_name_eq(name, "CreaseCorners") {
             options.crease_corners = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
             3
+        } else if option_name_eq(name, "Loose") {
+            options.loose = if option_name_eq(value, "On") {
+                true
+            } else if option_name_eq(value, "Off") {
+                false
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            4
         } else if option_name_eq(name, "Faces") {
             if value.len() > 4_000_000 {
                 return Err(CommandError::Usage(USAGE));
@@ -114,5 +126,6 @@ pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError>
         faces_supplied: seen[2],
         faces,
         crease_supplied: seen[3],
+        loose_supplied: seen[4],
     })
 }

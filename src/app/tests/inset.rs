@@ -2,6 +2,7 @@ use super::*;
 use crate::app::tests::subd_native as common;
 use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
+mod loose;
 #[path = "../../../crates/viboceros-oracle/tests/support/inset_surface.rs"]
 mod native_surface;
 #[path = "../../../crates/viboceros-oracle/tests/support/inset.rs"]
