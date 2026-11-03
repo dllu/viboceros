@@ -1,0 +1,263 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_extract_command",
+      "id": "single-remove-smooth",
+      "scene": "single",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "single-remove-corners",
+      "scene": "single",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "single-copy-smooth",
+      "scene": "single",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "single-copy-corners",
+      "scene": "single",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "adjacent-remove-smooth",
+      "scene": "adjacent",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "adjacent-remove-corners",
+      "scene": "adjacent",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "adjacent-copy-smooth",
+      "scene": "adjacent",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "adjacent-copy-corners",
+      "scene": "adjacent",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "disjoint-remove-smooth",
+      "scene": "disjoint",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "disjoint-remove-corners",
+      "scene": "disjoint",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "disjoint-copy-smooth",
+      "scene": "disjoint",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "disjoint-copy-corners",
+      "scene": "disjoint",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "all-remove-smooth",
+      "scene": "all",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "all-remove-corners",
+      "scene": "all",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "all-copy-smooth",
+      "scene": "all",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "all-copy-corners",
+      "scene": "all",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "cut-remove-smooth",
+      "scene": "cut",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "cut-remove-corners",
+      "scene": "cut",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "cut-copy-smooth",
+      "scene": "cut",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "cut-copy-corners",
+      "scene": "cut",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "tagged-remove-smooth",
+      "scene": "tagged",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "tagged-remove-corners",
+      "scene": "tagged",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "tagged-copy-smooth",
+      "scene": "tagged",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "tagged-copy-corners",
+      "scene": "tagged",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed-remove-smooth",
+      "scene": "closed",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed-remove-corners",
+      "scene": "closed",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed-copy-smooth",
+      "scene": "closed",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed-copy-corners",
+      "scene": "closed",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed_disjoint-remove-smooth",
+      "scene": "closed_disjoint",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed_disjoint-remove-corners",
+      "scene": "closed_disjoint",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed_disjoint-copy-smooth",
+      "scene": "closed_disjoint",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "closed_disjoint-copy-corners",
+      "scene": "closed_disjoint",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "multiple-remove-smooth",
+      "scene": "multiple",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "multiple-remove-corners",
+      "scene": "multiple",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "multiple-copy-smooth",
+      "scene": "multiple",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "multiple-copy-corners",
+      "scene": "multiple",
+      "copy": true,
+      "corners": true
+    }
+  ]
+}

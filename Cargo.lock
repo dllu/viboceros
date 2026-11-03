@@ -3755,6 +3755,7 @@ dependencies = [
  "nalgebra",
  "pollster",
  "serde_json",
+ "tempfile",
  "viboceros-command",
  "viboceros-document",
  "viboceros-drafting",

@@ -5,6 +5,7 @@ use viboceros_document::{ObjectId, SelectionMode};
 use viboceros_geometry::Brep;
 
 mod native;
+mod subd;
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

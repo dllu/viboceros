@@ -640,7 +640,7 @@ pub enum CommandError {
     #[error("temporary curve input changed; select the source again")]
     SubcurveInputStale,
 
-    #[error("ExtractSrf supports selected NURBS surfaces and B-reps only")]
+    #[error("ExtractSrf supports selected NURBS surfaces, B-reps and SubDs")]
     UnsupportedExtractSurfaceGeometry,
     #[error(
         "ExtractSrf sources, source order, attributes, tolerance, or output layer changed; select faces again"

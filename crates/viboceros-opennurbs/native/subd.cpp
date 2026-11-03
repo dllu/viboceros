@@ -11,6 +11,7 @@
 
 #include "subd_append.h"
 #include "subd_join.h"
+#include "subd_faces.h"
 #include "subd_interpolation.h"
 #include "subd_subdivision.h"
 #include "subd_curvature.h"
@@ -389,4 +390,8 @@ extern "C" int vibo_subd_from_mesh(const ViboMeshView* input,int corners,int cre
     require(corner_count<=4*vibo_subd::component_limit,"Converted SubD corner budget exceeded");
     return extract(*subd);
   });
+}
+
+extern "C" int vibo_subd_retain_faces(const uint8_t* bytes,size_t byte_count,const size_t* indices,size_t count,const size_t* corners,size_t corner_count,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{auto subd=vibo_subd::decode(bytes,byte_count);vibo_subd::retain_faces(*subd,indices,count,corners,corner_count);return extract(*subd);});
 }

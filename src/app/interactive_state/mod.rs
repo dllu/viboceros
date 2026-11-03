@@ -442,6 +442,7 @@ pub(super) enum InteractiveCommand {
     ExtractSrf {
         copy: bool,
         output_on_current_layer: bool,
+        subd_add_corners: bool,
     },
     Curvature {
         mark: bool,

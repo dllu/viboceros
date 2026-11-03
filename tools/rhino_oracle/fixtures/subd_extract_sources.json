@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_extract_sources",
+      "id": "single",
+      "scene": "single"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "adjacent",
+      "scene": "adjacent"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "disjoint",
+      "scene": "disjoint"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "all",
+      "scene": "all"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "cut",
+      "scene": "cut"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "tagged",
+      "scene": "tagged"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "closed",
+      "scene": "closed"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "closed_disjoint",
+      "scene": "closed_disjoint"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "multiple",
+      "scene": "multiple"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "default",
+      "scene": "default"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "point_contact",
+      "scene": "point_contact"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "interior",
+      "scene": "interior"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "triangles",
+      "scene": "triangles"
+    },
+    {
+      "op": "subd_extract_sources",
+      "id": "triangle_pair",
+      "scene": "triangle_pair"
+    }
+  ]
+}

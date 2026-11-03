@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "subd_extract_command",
+      "id": "default-remove-smooth",
+      "scene": "default",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "default-copy-smooth",
+      "scene": "default",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "point_contact-remove-smooth",
+      "scene": "point_contact",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "point_contact-remove-corners",
+      "scene": "point_contact",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "point_contact-copy-smooth",
+      "scene": "point_contact",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "point_contact-copy-corners",
+      "scene": "point_contact",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "interior-remove-smooth",
+      "scene": "interior",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "interior-remove-corners",
+      "scene": "interior",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "interior-copy-smooth",
+      "scene": "interior",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "interior-copy-corners",
+      "scene": "interior",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangles-remove-smooth",
+      "scene": "triangles",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangles-remove-corners",
+      "scene": "triangles",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangles-copy-smooth",
+      "scene": "triangles",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangles-copy-corners",
+      "scene": "triangles",
+      "copy": true,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangle_pair-remove-smooth",
+      "scene": "triangle_pair",
+      "copy": false,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangle_pair-remove-corners",
+      "scene": "triangle_pair",
+      "copy": false,
+      "corners": true
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangle_pair-copy-smooth",
+      "scene": "triangle_pair",
+      "copy": true,
+      "corners": false
+    },
+    {
+      "op": "subd_extract_command",
+      "id": "triangle_pair-copy-corners",
+      "scene": "triangle_pair",
+      "copy": true,
+      "corners": true
+    }
+  ]
+}

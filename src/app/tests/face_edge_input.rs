@@ -77,6 +77,7 @@ fn interactive_extract_surface_accumulates_a_face_location_until_enter() {
         Some(InteractiveCommand::ExtractSrf {
             copy: false,
             output_on_current_layer: false,
+            subd_add_corners: false,
         })
     );
     assert!(app.command_log.back().unwrap().contains("select faces"));

@@ -2,7 +2,8 @@
 
 [Command reference](README.md)
 
-`ExtractSrf` separates exact faces into independent surface objects. Start the
+`ExtractSrf` separates exact NURBS/B-rep faces into independent surface objects.
+[SubD region extraction](extract-srf-subd.md) has its own topology and group rules. Start the
 command, click faces or select them with a viewport rectangle, then press Enter.
 Ctrl/Command removes faces from the picked set. Ctrl/Command+Shift face
 preselection is also accepted. Picks can span multiple objects; geometry stays
@@ -131,5 +132,5 @@ render meshes. These checks certify input locations; command selection is measur
 from the actual delivered mouse events. Mouse/key handlers and
 pressed modifiers are released on failures; incomplete sequences are rejected.
 
-Perspective picking, native SubD editing, remembered output-layer defaults,
+Perspective picking, remembered output-layer defaults,
 and every imported trim representation remain unverified by these cases.

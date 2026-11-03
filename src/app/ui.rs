@@ -570,7 +570,14 @@ impl eframe::App for VibocerosApp {
                 .then_some(crate::viewport::ComponentPickFilter::Crease)
         });
         let component_pick = component_pick.or_else(|| {
-            ((self.picking_extract_faces() || self.shell_prompt.is_some())
+            (self.picking_extract_faces()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::SurfaceAndSubDFaces)
+        });
+        let component_pick = component_pick.or_else(|| {
+            ((self.shell_prompt.is_some())
                 && model_input_active
                 && self.plane_prompt.is_none()
                 && !end_analysis_picking)

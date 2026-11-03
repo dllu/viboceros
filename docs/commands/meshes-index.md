@@ -9,6 +9,7 @@
 - [MeshPolyline from closed polylines](mesh-polyline.md)
 - [3DFace from corner points and boundary edges](3dface.md)
 - [ToSubD: mesh, surface, extrusion and selected-face conversion](to-subd.md)
+- [ExtractSrf: editable SubD regions and remainders](extract-srf-subd.md)
 - [SubDivide: whole objects, selected faces and SubD selection](subdivide.md)
 - [Crease and RemoveCrease: SubD corners/edges and mesh seams](crease.md)
 - [WeldEdge and UnweldEdge: SubD cuts and coincident boundary joins](subd-edge-seams.md)

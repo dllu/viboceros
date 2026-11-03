@@ -12,9 +12,9 @@ pub use edge_insertion::PolygonEdgePoint;
 mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
-    SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDFromMeshOptions, SubDFromSurfaceMethod,
-    SubDJoinResult, SubDMeshDensity, SubDSphereStyle, SubDVertexInsertion, join_subds,
-    join_subds_seeded,
+    SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDFaceExtraction, SubDFromMeshOptions,
+    SubDFromSurfaceMethod, SubDJoinResult, SubDMeshDensity, SubDSphereStyle, SubDVertexInsertion,
+    join_subds, join_subds_seeded,
 };
 mod area_mass_properties;
 mod mass_integration;

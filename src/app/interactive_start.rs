@@ -1170,16 +1170,18 @@ impl VibocerosApp {
                 }
             }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
-            let Some((copy, output_on_current_layer)) = extract_surface::options(
+            let Some((copy, output_on_current_layer, subd_add_corners)) = extract_surface::options(
                 &arguments,
                 self.commands.copy_default("ExtractSrf").unwrap(),
                 false,
+                self.commands.extract_subd_corners(),
             ) else {
                 return false;
             };
             InteractiveCommand::ExtractSrf {
                 copy,
                 output_on_current_layer,
+                subd_add_corners,
             }
         } else if matches!(normalized.as_str(), "dupfaceborder" | "duplicatefaceborder") {
             let mut output_on_current_layer = true;
@@ -2276,9 +2278,10 @@ impl VibocerosApp {
         if let InteractiveCommand::ExtractSrf {
             copy,
             output_on_current_layer,
+            subd_add_corners,
         } = command
         {
-            self.start_extract_faces(copy, output_on_current_layer);
+            self.start_extract_faces(copy, output_on_current_layer, subd_add_corners);
             return true;
         }
         if picked_sources.is_none() {

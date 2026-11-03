@@ -396,7 +396,7 @@ impl VibocerosApp {
             click
                 .picks
                 .into_iter()
-                .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                .filter(|p| super::extract_surface::eligible(p.kind))
                 .collect()
         } else if self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some() {
             self.unjoinable_picks(click.picks)
@@ -687,7 +687,7 @@ impl VibocerosApp {
                 window
                     .picks
                     .into_iter()
-                    .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                    .filter(|p| super::extract_surface::eligible(p.kind))
                     .collect()
             } else {
                 self.unjoinable_picks(window.picks)

@@ -20,6 +20,7 @@ fn main() {
         "subd_archive_sharpness.h",
         "subd_append.h",
         "subd_join.h",
+        "subd_faces.h",
         "subd_crease.h",
         "subd_remap.h",
         "subd_spin.h",

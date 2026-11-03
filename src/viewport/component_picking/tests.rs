@@ -385,3 +385,71 @@ fn command_click_retains_press_modifiers_after_keyboard_release() {
         assert!(output.selection_click.is_none() && output.picked_point.is_none());
     }
 }
+
+#[test]
+fn extraction_face_filter_picks_subd_regions_and_excludes_meshes() {
+    use viboceros_geometry::{MeshFace, SubD, TriangleMesh};
+    let mut doc = Document::default();
+    let points = vec![point(0., 0.), point(4., 0.), point(4., 3.), point(0., 3.)];
+    let subd = SubD::try_from_polygons(points.clone(), vec![vec![0, 1, 2, 3]]).unwrap();
+    let id = doc.add_geometry(Geometry::SubD(subd)).unwrap();
+    let mesh = TriangleMesh::try_from_face_records(
+        vec![point(8., 0.), point(12., 0.), point(12., 3.), point(8., 3.)],
+        vec![MeshFace::Quad([0, 1, 2, 3])],
+    )
+    .unwrap();
+    doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    for mode in [
+        DisplayMode::Wireframe,
+        DisplayMode::Shaded,
+        DisplayMode::Ghosted,
+    ] {
+        let view = Viewport {
+            display_mode: mode,
+            ..Viewport::new(ViewKind::Top)
+        };
+        let pick = ComponentPick {
+            object: id,
+            index: 0,
+            kind: ComponentSelectionKind::SubDFace,
+        };
+        assert_eq!(
+            view.pick_components(
+                view.project(point(2., 1.5), rect()).unwrap(),
+                rect(),
+                &doc,
+                ComponentPickFilter::SurfaceAndSubDFaces
+            ),
+            [pick]
+        );
+        assert!(
+            view.pick_components(
+                view.project(point(10., 1.5), rect()).unwrap(),
+                rect(),
+                &doc,
+                ComponentPickFilter::SurfaceAndSubDFaces
+            )
+            .is_empty()
+        );
+        assert_eq!(
+            view.components_in_rectangle(
+                rect(),
+                selection(&view, (-1., -1.), (13., 4.)),
+                &doc,
+                ComponentPickFilter::SurfaceAndSubDFaces,
+                false,
+                false
+            ),
+            [pick]
+        );
+        assert!(
+            view.pick_components(
+                view.project(point(2., 1.5), rect()).unwrap(),
+                rect(),
+                &doc,
+                ComponentPickFilter::Faces
+            )
+            .is_empty()
+        );
+    }
+}

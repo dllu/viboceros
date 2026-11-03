@@ -1,7 +1,6 @@
+use super::subd_native as support;
 use super::*;
 use viboceros_oracle::subd_join::{Fixture, expected, snapshot};
-#[path = "../../../crates/viboceros-oracle/tests/support/subd_join.rs"]
-mod support;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

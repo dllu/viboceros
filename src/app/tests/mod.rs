@@ -439,3 +439,6 @@ fn type_to_command_frame(
         )
         .drop_without_applying_deltas();
 }
+
+#[path = "../../../crates/viboceros-oracle/tests/support/subd_join.rs"]
+mod subd_native;

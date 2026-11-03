@@ -97,6 +97,7 @@ int vibo_subd_sharpness_from_percent(double,double*,char*,size_t);
 int vibo_subd_chain_sharpness(const double*,size_t,double*,char*,size_t);
 int vibo_subd_stored_sharpness(const uint8_t*,size_t,const size_t*,const double*,size_t,
   size_t*,ViboSubDResult**,char*,size_t);
+int vibo_subd_retain_faces(const uint8_t*,size_t,const size_t*,size_t,const size_t*,size_t,ViboSubDResult**,char*,size_t);
 #ifdef __cplusplus
 }
 #endif

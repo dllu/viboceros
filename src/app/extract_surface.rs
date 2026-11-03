@@ -6,8 +6,9 @@ pub(super) fn options(
     arguments: &[&str],
     mut copy: bool,
     mut current: bool,
-) -> Option<(bool, bool)> {
-    let mut seen = [false; 2];
+    mut corners: bool,
+) -> Option<(bool, bool, bool)> {
+    let mut seen = [false; 3];
     let mut i = 0;
     while i < arguments.len() {
         let (name, value, consumed) = if let Some((name, value)) = arguments[i].split_once('=') {
@@ -35,6 +36,15 @@ pub(super) fn options(
                 return None;
             };
             1
+        } else if name.eq_ignore_ascii_case("SubDAddCorners") {
+            corners = if value.eq_ignore_ascii_case("Yes") {
+                true
+            } else if value.eq_ignore_ascii_case("No") {
+                false
+            } else {
+                return None;
+            };
+            2
         } else {
             return None;
         };
@@ -44,7 +54,7 @@ pub(super) fn options(
         seen[index] = true;
         i += consumed;
     }
-    Some((copy, current))
+    Some((copy, current, corners))
 }
 
 impl VibocerosApp {
@@ -55,27 +65,30 @@ impl VibocerosApp {
         )
     }
 
-    pub(super) fn start_extract_faces(&mut self, copy: bool, current: bool) {
+    pub(super) fn start_extract_faces(&mut self, copy: bool, current: bool, corners: bool) {
         self.commands.begin_copy_options("ExtractSrf");
+        self.commands.remember_extract_subd_corners(corners);
         self.component_selection.valid_picks(&self.document);
         self.active_command = Some(InteractiveCommand::ExtractSrf {
             copy,
             output_on_current_layer: current,
+            subd_add_corners: corners,
         });
-        self.push_log("ExtractSrf: select faces; Ctrl/Command removes; Enter extracts; Copy=Yes|No, OutputLayer=Input|Current (Esc cancels)".into());
+        self.push_log("ExtractSrf: select faces; Ctrl/Command removes; Enter extracts; Copy=Yes|No, OutputLayer=Input|Current, SubDAddCorners=Yes|No (Esc cancels)".into());
     }
 
     pub(super) fn try_continue_extract_faces(&mut self, input: &str) -> bool {
         let Some(InteractiveCommand::ExtractSrf {
             copy,
             output_on_current_layer: current,
+            subd_add_corners: corners,
         }) = self.active_command
         else {
             return false;
         };
         let input = input.trim();
         if input.is_empty() {
-            self.finish_extract_faces(copy, current);
+            self.finish_extract_faces(copy, current, corners);
         } else if input.trim_start_matches('_').eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
         } else if ["None", "SelNone"]
@@ -84,17 +97,23 @@ impl VibocerosApp {
         {
             self.cancel_interactive_command(false);
             self.document.clear_selection();
-        } else if let Some((copy, current)) =
-            options(&input.split_whitespace().collect::<Vec<_>>(), copy, current)
-        {
+        } else if let Some((copy, current, corners)) = options(
+            &input.split_whitespace().collect::<Vec<_>>(),
+            copy,
+            current,
+            corners,
+        ) {
+            self.commands.remember_extract_subd_corners(corners);
             self.active_command = Some(InteractiveCommand::ExtractSrf {
                 copy,
                 output_on_current_layer: current,
+                subd_add_corners: corners,
             });
             self.push_log(format!(
-                "Copy={} OutputLayer={}",
+                "Copy={} OutputLayer={} SubDAddCorners={}",
                 if copy { "Yes" } else { "No" },
-                if current { "Current" } else { "Input" }
+                if current { "Current" } else { "Input" },
+                if corners { "Yes" } else { "No" }
             ));
         } else if input
             .split_whitespace()
@@ -112,20 +131,21 @@ impl VibocerosApp {
         true
     }
 
-    fn finish_extract_faces(&mut self, copy: bool, current: bool) {
+    fn finish_extract_faces(&mut self, copy: bool, current: bool, corners: bool) {
         let result = self
             .component_selection
             .checked_picks(&self.document)
             .map_err(str::to_owned)
             .and_then(|picks| {
-                ExtractSurfaceSelection::prepare(
+                ExtractSurfaceSelection::prepare_with_subd_corners(
                     &self.document,
                     picks
                         .into_iter()
-                        .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                        .filter(|p| eligible(p.kind))
                         .map(|p| (p.object, p.index)),
                     copy,
                     current,
+                    corners,
                 )
                 .and_then(|s| s.commit(&mut self.document))
                 .map_err(|e| e.to_string())
@@ -159,6 +179,7 @@ impl VibocerosApp {
                         let (u, v) = s.closest_parameters(point, self.document.tolerance())?;
                         Some((0, s.evaluate(u, v)?))
                     }
+                    Geometry::SubD(s) => s.closest_display_face(point)?,
                     _ => None,
                 };
                 if let Some((index, p)) = candidate {
@@ -182,7 +203,14 @@ impl VibocerosApp {
                 picks: vec![crate::viewport::ComponentPick {
                     object,
                     index,
-                    kind: ComponentSelectionKind::BrepFace,
+                    kind: if matches!(
+                        self.document.object(object).unwrap().geometry(),
+                        Geometry::SubD(_)
+                    ) {
+                        ComponentSelectionKind::SubDFace
+                    } else {
+                        ComponentSelectionKind::BrepFace
+                    },
                 }],
                 preselection: false,
                 modifiers: Default::default(),
@@ -191,4 +219,11 @@ impl VibocerosApp {
             self.push_log("Error: no extractable surface face".into());
         }
     }
+}
+
+pub(super) fn eligible(kind: ComponentSelectionKind) -> bool {
+    matches!(
+        kind,
+        ComponentSelectionKind::BrepFace | ComponentSelectionKind::SubDFace
+    )
 }

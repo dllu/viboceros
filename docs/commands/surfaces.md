@@ -118,6 +118,7 @@ faces preserve attributes, become selected independent objects, and never
 inherit source groups. `Copy=Yes` retains the source. Output defaults to the
 input layer; `OutputLayer=Current` changes only the result layer.
 See [face selection, staging, native order, and verification](extract-srf.md).
+[SubD face regions](extract-srf-subd.md) use separate connectivity and group rules.
 
 `ExtractIsocurve` creates the exact U, V, or both rational isocurves nearest a
 model-space point on every selected NURBS surface or B-rep. B-rep results come

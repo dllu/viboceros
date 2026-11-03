@@ -655,6 +655,12 @@ pub trait Command: Send + Sync {
     fn remember_conic_options(&self, _value: conic::Options) -> bool {
         false
     }
+    fn extract_subd_corners(&self) -> Option<bool> {
+        None
+    }
+    fn remember_extract_subd_corners(&self, _value: bool) -> bool {
+        false
+    }
     fn subd_sphere_preferences(&self) -> Option<subd_sphere::Preferences> {
         None
     }
@@ -1674,7 +1680,7 @@ impl CommandRegistry {
             .register(ExtractControlPolygonCommand)
             .expect("unique built-in command");
         registry
-            .register(ExtractSurfaceCommand)
+            .register(ExtractSurfaceCommand::default())
             .expect("unique built-in command");
         registry
             .register(ExtractSubcurveCommand)
@@ -8112,7 +8118,7 @@ fn mark_selected_curve_endpoints(
     Ok(format!("Added {} point(s) at curve {location}", ids.len()))
 }
 
-const EXTRACT_SURFACE_USAGE: &str = "ExtractSrf (point|Faces=All|Faces=0,2,...|Face=index [Object=selected-uuid]) [Copy=Yes|No] [OutputLayer=Input|Current]";
+const EXTRACT_SURFACE_USAGE: &str = "ExtractSrf (point|Faces=All|Faces=0,2,...|Face=index [Object=selected-uuid]) [Copy=Yes|No] [OutputLayer=Input|Current] [SubDAddCorners=Yes|No]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExtractSurfaceOutputLayer {
@@ -8173,9 +8179,11 @@ struct ExtractSurfaceOptions {
     selection: SurfaceFaceSelection,
     copy: bool,
     output_layer: ExtractSurfaceOutputLayer,
+    subd_add_corners: bool,
 }
 
-struct ExtractSurfaceCommand;
+#[derive(Default)]
+struct ExtractSurfaceCommand(remembered::Remembered<bool>);
 
 struct SurfaceFaceSource {
     id: ObjectId,
@@ -8184,6 +8192,13 @@ struct SurfaceFaceSource {
 }
 
 impl Command for ExtractSurfaceCommand {
+    fn extract_subd_corners(&self) -> Option<bool> {
+        Some(self.0.get())
+    }
+    fn remember_extract_subd_corners(&self, value: bool) -> bool {
+        self.0.set(value);
+        true
+    }
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -8197,7 +8212,8 @@ impl Command for ExtractSurfaceCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_extract_surface_arguments(arguments)?;
+        let options = parse_extract_surface_arguments(arguments, self.0.get())?;
+        self.0.set(options.subd_add_corners);
         if options
             .selection
             .object()
@@ -8216,7 +8232,7 @@ impl Command for ExtractSurfaceCommand {
             .map(|object| {
                 if !matches!(
                     object.geometry(),
-                    Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                    Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::SubD(_)
                 ) {
                     return Err(CommandError::UnsupportedExtractSurfaceGeometry);
                 }
@@ -8237,7 +8253,7 @@ impl Command for ExtractSurfaceCommand {
             document.tolerance(),
             SurfaceFaceCommand::ExtractSurface,
         )?;
-        ExtractSurfaceSelection::prepare(
+        ExtractSurfaceSelection::prepare_with_subd_corners(
             document,
             selections.into_iter().flat_map(|(index, faces)| {
                 let id = sources[index].id;
@@ -8245,6 +8261,7 @@ impl Command for ExtractSurfaceCommand {
             }),
             options.copy,
             options.output_layer == ExtractSurfaceOutputLayer::Current,
+            options.subd_add_corners,
         )?
         .apply(document)
     }
@@ -8301,6 +8318,10 @@ fn selected_surface_faces(
                                 .map(|distance| (distance, face))
                         })
                         .transpose()?,
+                    Geometry::SubD(subd) => subd
+                        .closest_display_face(*point)?
+                        .map(|(face, p)| p.distance_to(*point).map(|d| (d, face)))
+                        .transpose()?,
                     _ => unreachable!("surface-face sources were validated above"),
                 };
                 let Some((distance, face)) = candidate else {
@@ -8322,14 +8343,17 @@ fn extract_surface_face_count(geometry: &Geometry) -> usize {
     match geometry {
         Geometry::NurbsSurface(_) => 1,
         Geometry::Brep(brep) => brep.faces().len(),
+        Geometry::SubD(subd) => subd.faces().len(),
         _ => 0,
     }
 }
 
 fn parse_extract_surface_arguments(
     arguments: &[&str],
+    mut subd_add_corners: bool,
 ) -> Result<ExtractSurfaceOptions, CommandError> {
     let mut copy = false;
+    let mut corners_seen = false;
     let mut output_layer = ExtractSurfaceOutputLayer::Input;
     let mut face_selection = None;
     let mut face_index = None;
@@ -8344,6 +8368,7 @@ fn parse_extract_surface_arguments(
             Some((name, value, 1))
         } else if option_name_eq(argument, "Copy")
             || option_name_eq(argument, "OutputLayer")
+            || option_name_eq(argument, "SubDAddCorners")
             || option_name_eq(argument, "Faces")
             || option_name_eq(argument, "FaceIndices")
             || option_name_eq(argument, "Face")
@@ -8364,6 +8389,10 @@ fn parse_extract_surface_arguments(
         if option_name_eq(name, "Copy") && !copy_seen {
             copy = parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_SURFACE_USAGE))?;
             copy_seen = true;
+        } else if option_name_eq(name, "SubDAddCorners") && !corners_seen {
+            subd_add_corners =
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_SURFACE_USAGE))?;
+            corners_seen = true;
         } else if option_name_eq(name, "OutputLayer") && !output_layer_seen {
             let value = value.trim_start_matches('_');
             output_layer = if value.eq_ignore_ascii_case("Input") {
@@ -8424,6 +8453,7 @@ fn parse_extract_surface_arguments(
         selection,
         copy,
         output_layer,
+        subd_add_corners,
     })
 }
 

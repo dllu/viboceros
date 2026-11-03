@@ -14,6 +14,7 @@ pub enum ComponentPickFilter {
     Any,
     Edges,
     Faces,
+    SurfaceAndSubDFaces,
     MeshAndSubDFaces,
     /// Individual stored mesh faces, including faces inside logical n-gons.
     RawMeshFaces,
@@ -164,15 +165,24 @@ impl Viewport {
         }
         let allowed = matches!(
             filter,
-            ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::RawMeshFaces
+            ComponentPickFilter::MeshAndSubDFaces
+                | ComponentPickFilter::RawMeshFaces
+                | ComponentPickFilter::SurfaceAndSubDFaces
         )
         .then(|| {
             document
                 .selectable_objects()
                 .filter(|o| {
-                    matches!(o.geometry(), Geometry::Mesh(_))
-                        || filter == ComponentPickFilter::MeshAndSubDFaces
-                            && matches!(o.geometry(), Geometry::SubD(_))
+                    if filter == ComponentPickFilter::SurfaceAndSubDFaces {
+                        matches!(
+                            o.geometry(),
+                            Geometry::SubD(_) | Geometry::Brep(_) | Geometry::NurbsSurface(_)
+                        )
+                    } else {
+                        matches!(o.geometry(), Geometry::Mesh(_))
+                            || filter == ComponentPickFilter::MeshAndSubDFaces
+                                && matches!(o.geometry(), Geometry::SubD(_))
+                    }
                 })
                 .map(|o| o.id())
                 .collect::<std::collections::BTreeSet<_>>()
@@ -255,7 +265,9 @@ impl Viewport {
                 if matches!(
                     filter,
                     ComponentPickFilter::Any | ComponentPickFilter::MeshAndSubDFaces
-                ) {
+                ) || filter == ComponentPickFilter::SurfaceAndSubDFaces
+                    && matches!(object.geometry(), Geometry::SubD(_))
+                {
                     result.extend(self.polygon_components_in_rectangle(
                         viewport, selection, document, object, crossing, inverted,
                     ));

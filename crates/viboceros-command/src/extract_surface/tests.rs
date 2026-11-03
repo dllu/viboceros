@@ -154,3 +154,135 @@ fn changed_source_order_or_current_output_layer_rejects_staged_outputs_atomicall
     assert_eq!(doc.objects().len(), 5);
     assert_eq!(doc.undo_label(), Some("ExtractSrf"));
 }
+
+fn subd_source(doc: &mut Document) -> ObjectId {
+    let s = viboceros_geometry::SubD::try_from_polygons(
+        [
+            [0., 0., 0.],
+            [4., 0., 0.],
+            [8., 0., 0.],
+            [0., 3., 0.],
+            [4., 3., 1.],
+            [8., 3., 2.],
+        ]
+        .into_iter()
+        .map(|p| Point3::try_from(p).unwrap())
+        .collect(),
+        vec![vec![0, 1, 4, 3], vec![1, 2, 5, 4]],
+    )
+    .unwrap();
+    doc.add_geometry(Geometry::SubD(s)).unwrap()
+}
+#[test]
+fn subd_extract_invalid_stale_and_all_faces_preserve_geometry_and_pending_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let id = subd_source(&mut doc);
+    doc.clear_history().unwrap();
+    registry.execute(&mut doc, "Point 50,50,50").unwrap();
+    doc.undo().unwrap();
+    let before = doc.object(id).unwrap().geometry().clone();
+    let redo = doc.redo_label().unwrap().to_owned();
+    assert!(
+        ExtractSurfaceSelection::prepare_with_subd_corners(
+            &doc,
+            [(id, 0), (id, 2)],
+            false,
+            false,
+            true
+        )
+        .is_err()
+    );
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    assert!(
+        registry
+            .execute(
+                &mut doc,
+                "ExtractSrf Face=0 SubDAddCorners=Yes SubDAddCorners=No"
+            )
+            .is_err()
+    );
+    assert!(!registry.extract_subd_corners());
+    registry
+        .execute(&mut doc, "ExtractSrf Faces=All Copy=Yes")
+        .unwrap();
+    assert_eq!(doc.object(id).unwrap().geometry(), &before);
+    assert_eq!(doc.objects().len(), 1);
+    assert_eq!(doc.redo_label(), Some(redo.as_str()));
+    assert!(!doc.can_undo());
+    let stage =
+        ExtractSurfaceSelection::prepare_with_subd_corners(&doc, [(id, 0)], false, false, true)
+            .unwrap();
+    doc.add_group(Some("changed".into()), [id]).unwrap();
+    assert!(matches!(
+        stage.commit(&mut doc),
+        Err(CommandError::ExtractSurfaceStale)
+    ));
+    assert_eq!(doc.object(id).unwrap().geometry(), &before);
+}
+#[test]
+fn subd_extract_copy_keeps_group_peers_unselected_and_uses_input_layer() {
+    let mut doc = Document::default();
+    let id = subd_source(&mut doc);
+    let peer = doc
+        .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+        .unwrap();
+    let group = doc
+        .add_group(Some("source group".into()), [id, peer])
+        .unwrap();
+    let layer = doc
+        .add_layer("current output", viboceros_document::ColorRgb::new(1, 2, 3))
+        .unwrap();
+    doc.set_current_layer(layer).unwrap();
+    let source = doc.object(id).unwrap().geometry().clone();
+    doc.clear_history().unwrap();
+    ExtractSurfaceSelection::prepare_with_subd_corners(&doc, [(id, 0), (id, 0)], true, true, true)
+        .unwrap()
+        .commit(&mut doc)
+        .unwrap();
+    assert_eq!(doc.object(id).unwrap().geometry(), &source);
+    assert!(!doc.is_selected(id));
+    assert!(!doc.is_selected(peer));
+    let output = doc.selected_objects().next().unwrap();
+    assert_eq!(output.group_ids(), [group]);
+    assert_eq!(
+        output.attributes().layer_id(),
+        doc.object(id).unwrap().attributes().layer_id()
+    );
+    assert_eq!(doc.selected_object_count(), 1);
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().len(), 2);
+    doc.redo().unwrap();
+    assert_eq!(doc.selected_object_count(), 1);
+}
+#[test]
+fn subd_extract_location_input_resolves_evaluated_face_and_mixed_sources_are_atomic() {
+    let mut doc = Document::default();
+    let subd = subd_source(&mut doc);
+    let brep = source(&mut doc);
+    doc.clear_history().unwrap();
+    ExtractSurfaceSelection::prepare_with_subd_corners(
+        &doc,
+        [(subd, 0), (brep, 2)],
+        false,
+        false,
+        true,
+    )
+    .unwrap()
+    .commit(&mut doc)
+    .unwrap();
+    assert_eq!(doc.objects().len(), 4);
+    assert_eq!(doc.selected_object_count(), 2);
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().len(), 2);
+    doc.select_objects_direct([subd], SelectionMode::Replace)
+        .unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut doc, "ExtractSrf 1,1,0 Copy=Yes")
+        .unwrap();
+    let Geometry::SubD(output) = doc.selected_objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(output.faces().len(), 1);
+}
