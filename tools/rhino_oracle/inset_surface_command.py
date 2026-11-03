@@ -29,13 +29,16 @@ def validate(op):
 
 def run(op, host, iterations, tolerance):
     validate(op)
+    return run_source(op,host,iterations,tolerance,source(op['scene'],host['Rhino']))
+
+
+def run_source(op, host, iterations, tolerance, b):
     from join_probe import observe_command
     R, S = host['Rhino'], host['System']
     doc = R.RhinoDoc.ActiveDoc
     if iterations != 1 or list(doc.Objects) or R.Commands.Command.InCommand():
         raise ValueError('empty owned idle document required')
     group = layer = -1
-    b = source(op['scene'], R)
     previous_tolerance = doc.ModelAbsoluteTolerance
     previous_angle = doc.ModelAngleToleranceRadians
     try:
@@ -81,7 +84,7 @@ def run(op, host, iterations, tolerance):
         marker = 'Owned surface Inset ' + str(S.Guid.NewGuid())
         R.RhinoApp.WriteLine(marker)
         yn = lambda value: '_Yes' if value else '_No'
-        macro = '_Inset _Loose=' + ('_Off' if op['op'] == 'inset_surface_ready' else '_No')
+        macro = '_Inset _Loose=' + ('_No' if op['op'] == 'inset_surface_command' else '_Off')
         macro += ' _IgnoreSeams=_Yes _CreaseCorners=' + yn(op['crease_corners'])
         macro += ' _Split=' + yn(op['split'])
         if op['split']: macro += ' _JoinOutputs=' + yn(op['join_outputs'])

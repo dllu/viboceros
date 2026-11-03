@@ -2,7 +2,7 @@
 use super::common;
 use serde_json::Value;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId};
-use viboceros_geometry::{Brep, LineSegment, Point3, Tolerance};
+use viboceros_geometry::{Brep, LineSegment, NurbsCurve, Point3, Tolerance, WeightedPoint3};
 
 pub fn source(record: &Value) -> Brep {
     let dir = tempfile::tempdir().unwrap();
@@ -148,6 +148,50 @@ fn native_topology(record: &Value) -> Value {
 /// every oriented face loop and every edge endpoint pair. Spatial station
 /// checks use those corresponding edges, never nearest unrelated geometry.
 pub fn assert_geometry(output: &Brep, expected: &Value, tolerance: Tolerance, id: &str) {
+    assert_geometry_with_epsilon(output, expected, tolerance, 1e-10, id)
+}
+pub fn epsilon_for(operation: &Value) -> f64 {
+    if matches!(
+        operation["scene"].as_str().unwrap(),
+        "ellipse" | "oval" | "concave_oval" | "bezier" | "holes"
+    ) {
+        // Independent fits can consume both model-tolerance allowances.
+        if operation["op"] == "inset_planar_curves_command" {
+            2e-6
+        } else {
+            1e-6
+        }
+    } else {
+        1e-10
+    }
+}
+pub fn nurbs_definition(definition: &Value) -> NurbsCurve {
+    NurbsCurve::try_new_rational(
+        definition["degree"].as_u64().unwrap() as usize,
+        definition["control_points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|c| {
+                WeightedPoint3::try_new(point(&c["point"]), c["weight"].as_f64().unwrap()).unwrap()
+            })
+            .collect(),
+        definition["knots"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|k| k.as_f64().unwrap())
+            .collect(),
+    )
+    .unwrap()
+}
+pub fn assert_geometry_with_epsilon(
+    output: &Brep,
+    expected: &Value,
+    tolerance: Tolerance,
+    epsilon: f64,
+    id: &str,
+) {
     let vertices = expected["vertices"].as_array().unwrap();
     assert_eq!(output.vertices().len(), vertices.len(), "{id}");
     let mapping = output
@@ -156,7 +200,7 @@ pub fn assert_geometry(output: &Brep, expected: &Value, tolerance: Tolerance, id
         .map(|v| {
             vertices
                 .iter()
-                .position(|w| v.point().distance_to(point(&w["point"])).unwrap() <= 1e-10)
+                .position(|w| v.point().distance_to(point(&w["point"])).unwrap() <= epsilon)
                 .unwrap_or_else(|| panic!("{id}: unmatched vertex {:?}", v.point()))
         })
         .collect::<Vec<_>>();
@@ -183,18 +227,57 @@ pub fn assert_geometry(output: &Brep, expected: &Value, tolerance: Tolerance, id
                 mapped == ends || mapped == [ends[1], ends[0]]
             })
             .unwrap();
-        assert_eq!(actual.curve().degree(), 1);
-        assert_eq!(actual.curve().control_points().len(), 2);
-        let ends = actual.vertices().map(|v| output.vertices()[v].point());
-        let line = LineSegment::try_new(ends[0], ends[1], tolerance).unwrap();
-        for p in edge["curve"]["samples"].as_array().unwrap() {
-            let p = point(p);
-            let distance = line
-                .closest_point(p, tolerance)
-                .unwrap()
-                .distance_to(p)
+        if actual.curve().degree() == 1 && actual.curve().control_points().len() == 2 {
+            let ends = actual.vertices().map(|v| output.vertices()[v].point());
+            let line = LineSegment::try_new(ends[0], ends[1], tolerance).unwrap();
+            for p in edge["curve"]["samples"].as_array().unwrap() {
+                let p = point(p);
+                let distance = line
+                    .closest_point(p, tolerance)
+                    .unwrap()
+                    .distance_to(p)
+                    .unwrap();
+                assert!(distance <= epsilon, "{id}: edge witness {distance}");
+            }
+        } else {
+            let definition = &edge["curve"]["definition"];
+            let native = nurbs_definition(definition);
+            curve_witnesses(actual.curve(), &native, epsilon, id);
+            curve_witnesses(&native, actual.curve(), epsilon, id);
+        }
+    }
+}
+fn curve_witnesses(source: &NurbsCurve, target: &NurbsCurve, epsilon: f64, id: &str) {
+    let reverse = source
+        .derivative_at(*source.domain().start())
+        .unwrap()
+        .dot(target.derivative_at(*target.domain().start()).unwrap())
+        .unwrap()
+        < 0.;
+    // This needs a point within epsilon, not the exact minimum of two
+    // independently fitted curves. Keep the final physical-distance check.
+    let query = Tolerance::try_new(epsilon * 0.75, 1e-14, 1e-10).unwrap();
+    let domain = source.domain();
+    for (a, b) in source.spans() {
+        for i in 0..=4 {
+            let t = a + (b - a) * (i as f64 / 4.);
+            let p = source.evaluate(t).unwrap();
+            let fraction = (t - domain.start()) / (domain.end() - domain.start());
+            let seed = target
+                .parameter_at(if reverse { 1. - fraction } else { fraction })
                 .unwrap();
-            assert!(distance <= 1e-10, "{id}: edge witness {distance}");
+            let parameter = target
+                .point_getter_parameter_from_seed(p, seed, query)
+                .unwrap();
+            let mut distance = target.evaluate(parameter).unwrap().distance_to(p).unwrap();
+            if distance > epsilon {
+                let global = target.closest_parameter(p, query).unwrap();
+                distance = target.evaluate(global).unwrap().distance_to(p).unwrap();
+            }
+            assert!(
+                distance <= epsilon,
+                "{id}: corresponding curve witness {distance} exceeds {epsilon}"
+            );
         }
     }
 }

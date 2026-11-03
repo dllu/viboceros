@@ -139,27 +139,38 @@ impl Plan {
                     m.topology_edge_points()
                 }
                 Geometry::Brep(b) => {
-                    if b.edges()
-                        .len()
-                        .saturating_mul(8)
-                        .saturating_add(lines.len())
-                        > 400_000
-                    {
-                        return Err(too_many_span_outputs("Inset"));
-                    }
                     let mut pairs = Vec::new();
                     for edge in b.edges() {
                         let curve = edge.curve();
-                        let count = if curve.degree() == 1 && curve.control_points().len() == 2 {
+                        let linear = curve.degree() == 1 && curve.control_points().len() == 2;
+                        let count = if linear {
                             1
                         } else {
-                            8
+                            curve.spans().count().saturating_mul(8)
                         };
-                        let mut a = curve.evaluate(*curve.domain().start())?;
-                        for i in 1..=count {
-                            let b = curve.evaluate(curve.parameter_at(i as f64 / count as f64)?)?;
-                            pairs.push([a, b]);
-                            a = b;
+                        if lines
+                            .len()
+                            .saturating_add(pairs.len())
+                            .saturating_add(count)
+                            > 400_000
+                        {
+                            return Err(too_many_span_outputs("Inset"));
+                        }
+                        if linear {
+                            pairs.push([
+                                curve.evaluate(*curve.domain().start())?,
+                                curve.evaluate(*curve.domain().end())?,
+                            ]);
+                        } else {
+                            let sampler = curve.parameter_sampler()?;
+                            for span in sampler.spans() {
+                                let mut a = span.evaluate(0.)?;
+                                for i in 1..=8 {
+                                    let b = span.evaluate(i as f64 / 8.)?;
+                                    pairs.push([a, b]);
+                                    a = b;
+                                }
+                            }
                         }
                     }
                     pairs

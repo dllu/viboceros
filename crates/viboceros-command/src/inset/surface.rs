@@ -27,8 +27,13 @@ pub(super) fn prepare(
         }
         _ => return Err(CommandError::UnsupportedInsetGeometry),
     };
-    let result =
-        brep.try_inset_planar_faces(faces, options.distance, options.crease_corners, tolerance)?;
+    let result = brep.try_inset_planar_faces_with_operations(
+        faces,
+        options.distance,
+        options.crease_corners,
+        tolerance,
+        offset_curve::offset_operations(),
+    )?;
     let mut bytes = result.vertices().len().saturating_mul(32);
     for edge in result.edges() {
         bytes = bytes

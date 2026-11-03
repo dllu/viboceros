@@ -1,0 +1,335 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "ellipse_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "ellipse_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "ellipse_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "ellipse",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "oval_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "oval_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "oval_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "oval_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "concave_oval_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "concave_oval",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "concave_oval_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "concave_oval",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "concave_oval_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "concave_oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "concave_oval_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "concave_oval",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "bezier_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "bezier_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "bezier_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "bezier_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "bezier",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "stadium_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "stadium",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "stadium_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "stadium",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "stadium_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "stadium",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "stadium_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "stadium",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "mixed_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "mixed",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "mixed_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "mixed",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "mixed_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "mixed",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "mixed_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "mixed",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "holes_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "holes",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "holes_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "holes",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "holes_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "holes",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "holes_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "holes",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "circle_rotated_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "circle_rotated",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "circle_rotated_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "circle_rotated",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "circle_rotated_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "circle_rotated",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "circle_rotated_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "circle_rotated",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "annulus_narrow_tight_ring",
+      "op": "inset_planar_curves",
+      "scene": "annulus_narrow",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "annulus_narrow_tight_crease",
+      "op": "inset_planar_curves",
+      "scene": "annulus_narrow",
+      "distance": 0.2,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "annulus_narrow_loose_ring",
+      "op": "inset_planar_curves",
+      "scene": "annulus_narrow",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "annulus_narrow_loose_crease",
+      "op": "inset_planar_curves",
+      "scene": "annulus_narrow",
+      "distance": 0.2,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    }
+  ]
+}

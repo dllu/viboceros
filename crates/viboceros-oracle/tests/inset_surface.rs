@@ -68,13 +68,10 @@ fn planar_polygon_insets_match_native_vertices_incidence_and_trimmed_regions() {
 }
 
 #[test]
-fn curved_surface_and_boundary_recipes_remain_explicitly_unsupported() {
+fn nonplanar_surface_recipes_remain_explicitly_unsupported() {
     let mut covered = 0;
     for (op, native) in common::cases_for("inset_surface_sdk") {
-        if !matches!(
-            op["scene"].as_str().unwrap(),
-            "circle" | "annulus" | "warped" | "cylinder"
-        ) {
+        if !matches!(op["scene"].as_str().unwrap(), "warped" | "cylinder") {
             continue;
         }
         let original = source(&native["before"]);
@@ -93,7 +90,103 @@ fn curved_surface_and_boundary_recipes_remain_explicitly_unsupported() {
         assert_eq!(native["output"]["valid"], true);
         covered += 1;
     }
-    assert_eq!(covered, 17);
+    assert_eq!(covered, 9);
+}
+
+#[test]
+fn native_ellipse_command_fit_error_is_measured_against_the_source() {
+    let (_, native) = common::cases_for("inset_planar_curves_command").remove(0);
+    let source = source(&native);
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
+    let actual = source
+        .try_inset_planar_faces(&[0], 0.3, false, tolerance)
+        .unwrap();
+    let expected =
+        support::nurbs_definition(&native["after"][0]["brep"]["edges"][1]["curve"]["definition"]);
+    let source = source.edges()[0].curve();
+    let query = Tolerance::try_new(1e-12, 1e-14, 1e-10).unwrap();
+    for (label, curve) in [("native", &expected), ("shared", actual.edges()[1].curve())] {
+        let mut largest = 0_f64;
+        for (a, b) in curve.spans() {
+            for i in 0..=4 {
+                let p = curve.evaluate(a + (b - a) * (i as f64 / 4.)).unwrap();
+                let t = source.closest_parameter(p, query).unwrap();
+                largest =
+                    largest.max((source.evaluate(t).unwrap().distance_to(p).unwrap() - 0.3).abs());
+            }
+        }
+        eprintln!("{label} ellipse inset maximum sampled distance error: {largest}");
+        if label == "shared" {
+            assert!(largest < tolerance.absolute() * 0.1, "{label}: {largest}");
+        } else {
+            assert!(
+                largest > tolerance.absolute() * 0.5 && largest < tolerance.absolute(),
+                "{label}: {largest}"
+            );
+        }
+    }
+}
+
+#[test]
+fn smooth_planar_insets_match_native_curves_and_regions() {
+    replay_smooth_planar(None);
+}
+#[cfg(feature = "native-smlib")]
+#[test]
+fn smooth_planar_insets_with_usd_brep_match_native_curves_and_regions() {
+    replay_smooth_planar(Some(viboceros_smlib::curve_offset_operations()));
+}
+fn replay_smooth_planar(operations: Option<viboceros_geometry::CurveOffsetOperations>) {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
+    let mut covered = 0;
+    for (op, native) in common::cases_for("inset_surface_sdk")
+        .into_iter()
+        .chain(common::cases_for("inset_planar_curves"))
+    {
+        let family = op["op"].as_str().unwrap();
+        let scene = op["scene"].as_str().unwrap();
+        if family == "inset_surface_sdk" && !matches!(scene, "circle" | "annulus") {
+            continue;
+        }
+        if op["loose"] == true
+            && !matches!(
+                scene,
+                "circle" | "annulus" | "mixed" | "stadium" | "circle_rotated" | "annulus_narrow"
+            )
+        {
+            continue;
+        }
+        let id = op["id"].as_str().unwrap();
+        let original = source(&native["before"]);
+        let before = original.clone();
+        let output = original
+            .try_inset_planar_faces_with_operations(
+                &[0],
+                op["distance"].as_f64().unwrap(),
+                op["crease_corners"].as_bool().unwrap(),
+                tolerance,
+                operations,
+            )
+            .unwrap_or_else(|e| panic!("{id}: {e}"));
+        assert_eq!(original, before);
+        assert_eq!(native["output"]["valid"], true);
+        let epsilon = support::epsilon_for(&op);
+        support::assert_geometry_with_epsilon(
+            &output,
+            &native["output"]["geometry"],
+            tolerance,
+            epsilon,
+            id,
+        );
+        assert!(output.faces().iter().all(|f| {
+            original
+                .faces()
+                .iter()
+                .any(|s| f.surface() == s.surface() && f.is_reversed() == s.is_reversed())
+        }));
+        covered += 1;
+    }
+    assert_eq!(covered, 34);
 }
 
 #[test]
@@ -101,7 +194,10 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
     use viboceros_command::inset::{Options, Plan};
     use viboceros_document::{Geometry, SelectionMode};
     let mut covered = 0;
-    for (op, native) in common::cases_for("inset_surface_ready") {
+    for (op, native) in common::cases_for("inset_surface_ready")
+        .into_iter()
+        .chain(common::cases_for("inset_planar_curves_command"))
+    {
         if op["join_outputs"] != true {
             continue;
         }
@@ -131,7 +227,13 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
         let Geometry::Brep(result) = doc.object(id).unwrap().geometry() else {
             panic!()
         };
-        assert_geometry(result, &native["after"][0]["brep"], doc.tolerance(), label);
+        support::assert_geometry_with_epsilon(
+            result,
+            &native["after"][0]["brep"],
+            doc.tolerance(),
+            support::epsilon_for(&op),
+            label,
+        );
         let after = doc.object(id).unwrap().geometry_snapshot().clone();
         // The trailing macro Cancel releases whole-object selection separately
         // from Inset, before native history replay.
@@ -151,8 +253,14 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
         let Geometry::Brep(result) = restored.object(id).unwrap().geometry() else {
             panic!()
         };
-        assert_geometry(result, &native["after"][0]["brep"], doc.tolerance(), label);
+        support::assert_geometry_with_epsilon(
+            result,
+            &native["after"][0]["brep"],
+            doc.tolerance(),
+            support::epsilon_for(&op),
+            label,
+        );
         covered += 1;
     }
-    assert_eq!(covered, 12);
+    assert_eq!(covered, 30);
 }

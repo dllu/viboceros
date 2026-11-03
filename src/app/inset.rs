@@ -331,20 +331,23 @@ impl VibocerosApp {
                         if !s.witness.as_ref().unwrap().is_current(&self.document) {
                             return Err(CommandError::InsetStale);
                         }
-                        let plan = match Plan::prepare(&self.document, targets.clone(), p.options) {
-                            Ok(plan) => plan,
-                            Err(e) => {
-                                if s.plan.is_none() {
-                                    s.options = p.options;
-                                    s.distance_supplied |= p.distance_supplied;
-                                    s.crease_supplied |= p.crease_supplied;
-                                }
-                                return Err(e);
-                            }
-                        };
-                        let edges = plan.preview_edges()?;
-                        s.plan = Some(plan);
-                        s.edges = edges;
+                        if s.plan.is_none() || s.options != p.options {
+                            let plan =
+                                match Plan::prepare(&self.document, targets.clone(), p.options) {
+                                    Ok(plan) => plan,
+                                    Err(e) => {
+                                        if s.plan.is_none() {
+                                            s.options = p.options;
+                                            s.distance_supplied |= p.distance_supplied;
+                                            s.crease_supplied |= p.crease_supplied;
+                                        }
+                                        return Err(e);
+                                    }
+                                };
+                            let edges = plan.preview_edges()?;
+                            s.plan = Some(plan);
+                            s.edges = edges;
+                        }
                     }
                     s.options = p.options;
                     s.distance_supplied |= p.distance_supplied;

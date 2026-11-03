@@ -2,7 +2,7 @@
 
 [Inset](inset.md) · [Command input](../command-line.md)
 
-`Inset` partitions selected planar polygon faces into an inset cap and border
+`Inset` partitions selected planar faces into an inset cap and border
 faces. Select a surface or polysurface, select individual faces, or start the
 command and click/window faces, then press Enter. Enter a positive distance to
 preview the result, then Enter to commit. Escape cancels without changing geometry
@@ -20,6 +20,9 @@ shrink; holes expand. Concave polygons and adjacent selected faces are supported
 when the offset retains the boundary topology. Whole surface inputs address all
 faces; typed `Faces` lists restrict the selected objects to zero-based face indices.
 Surface inputs must be processed separately from mesh/SubD inputs.
+Smooth NURBS loops, circular holes, annuli and tangent-continuous line/arc loops
+are also supported; see [curved-boundary behavior and qualification](inset-curves.md).
+A single smooth closed edge stays annular even with `CreaseCorners=Yes`.
 
 The operation replaces each input while retaining its ID, attributes, ordered
 groups and whole-object selection. Surface component picks clear after completion.
@@ -29,21 +32,21 @@ and border faces are appended. Native Rhino face/edge table order and parameter
 clocks can differ. One edit supports Undo/Redo. Stale geometry, selection, metadata
 or tolerance rejects the preview before any change.
 
-Currently this path requires affine planar charts with individual degree-one,
-two-control-point edges and trims. Curved boundaries, higher-degree line encodings,
-nonplanar faces, seams, poles, collapsed edges and
+This path requires affine planar charts. Polygon loops use individual degree-one,
+two-control-point edges and trims; curved loops require smooth spans and joins.
+Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seams,
+poles, collapsed edges and
 crossing/touching inset loops return errors. Insets that change topology at the
 medial axis are also rejected. `ThroughPoint`, `Loose`, `IgnoreSeams`, `Split=No`
 and `JoinOutputs=No` remain pending; output currently stays joined to the input.
 
-Frozen private-display evidence includes 58 public `Brep.InsetFaces` cases and
-two 36-command sequences covering split/join outputs, attributes and real history.
-The first command sequence records an invalid `Loose=No` token which Rhino rejects
-inside the getter; the second uses `Loose=Off` and has no unknown tokens. Successful
-captures are immutable and retain their exact producers. Curved cases remain in
-the evidence for subsequent implementation. The current kernel matches 41 planar
-SDK cases and 12 joined command cases: vertex positions and corresponding edge
-stations within `1e-10`, oriented face loops, incidence, areas and solid status.
+Frozen private-display evidence includes 94 public `Brep.InsetFaces` cases and
+90 commands covering outputs, attributes, selection and real history. The kernel
+matches 41 polygon and 34 curved SDK cases plus 30 joined command cases; pending
+nonplanar and loose-fit results remain in the immutable evidence. Polygon and
+analytic-curve comparisons use `1e-10`; fitted-curve tolerances are documented in
+the [curved-boundary guide](inset-curves.md). Checks retain oriented loops, edge
+incidence, supporting surfaces and solid status.
 Controls include triangles, reflected face sense, skewed charts and subdivided
 collinear boundaries. Collinear inset corners simplify; their old crease
 connectors meet the following retained corner, matching the captured native strips.

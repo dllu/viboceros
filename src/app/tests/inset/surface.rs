@@ -3,7 +3,10 @@ use super::*;
 #[test]
 fn inset_surface_native_preselection_previews_selection_and_history() {
     let mut covered = 0;
-    for (op, native) in common::cases_for("inset_surface_ready") {
+    for (op, native) in common::cases_for("inset_surface_ready")
+        .into_iter()
+        .chain(common::cases_for("inset_planar_curves_command"))
+    {
         if op["join_outputs"] != true {
             continue;
         }
@@ -61,10 +64,11 @@ fn inset_surface_native_preselection_previews_selection_and_history() {
         let Geometry::Brep(b) = app.document.object(id).unwrap().geometry() else {
             panic!()
         };
-        native_surface::assert_geometry(
+        native_surface::assert_geometry_with_epsilon(
             b,
             &native["after"][0]["brep"],
             app.document.tolerance(),
+            native_surface::epsilon_for(&op),
             label,
         );
         let after = app.document.object(id).unwrap().geometry_snapshot().clone();
@@ -80,7 +84,7 @@ fn inset_surface_native_preselection_previews_selection_and_history() {
         native_surface::assert_metadata(&app.document, id, &native["redo"][0]);
         covered += 1;
     }
-    assert_eq!(covered, 12);
+    assert_eq!(covered, 30);
 }
 
 #[test]
