@@ -28,6 +28,15 @@ enum ViboObjectType {
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;
 
+typedef struct ViboAnalysisParameters {
+  double density;
+  uint32_t subd_level;
+  uint32_t subd_adaptive;
+  uint32_t simple_planes;
+  const uint8_t* data;
+  size_t data_count;
+} ViboAnalysisParameters;
+
 typedef struct ViboObjectInfo {
   const char* id;
   int32_t object_type;
@@ -246,6 +255,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double absolute_tolerance, double relative_tolerance,
                        double angle_tolerance, double analysis_nurbs_density, uint32_t analysis_subd_level,
                        uint32_t analysis_subd_adaptive,
+                       uint8_t analysis_simple_planes,
+                       const uint8_t* analysis_parameters, size_t analysis_parameter_count,
                        const ViboWriteLayer* layers,
                        size_t layer_count, int32_t current_layer_index,
                        const ViboWriteGroup* groups,
@@ -258,9 +269,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
 
 int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
                           double* absolute, double* relative, double* angle);
-int32_t vibo_3dm_analysis_subd_density(const ViboThreeDmModel* model,
-                                     uint32_t* level, uint32_t* adaptive);
-int32_t vibo_3dm_analysis_nurbs_density(const ViboThreeDmModel* model, double* density);
+int32_t vibo_3dm_analysis_parameters(const ViboThreeDmModel* model, uint8_t for_document,
+                                   ViboAnalysisParameters* parameters);
 
 #ifdef __cplusplus
 }

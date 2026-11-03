@@ -9,6 +9,8 @@ mod copy;
 mod nurbs_tests;
 mod options;
 #[cfg(test)]
+mod profile_tests;
+#[cfg(test)]
 mod tests;
 pub use copy::copy_mesh;
 pub(crate) use options::MeshOptions;
@@ -63,11 +65,9 @@ pub(crate) fn generate(
 ) -> Result<Option<Arc<CurvatureMesh>>, GeometryError> {
     Ok(match geometry {
         Geometry::NurbsSurface(s) => {
-            Some(s.curvature_mesh_with_density(settings.nurbs_density, tolerance)?)
+            Some(s.curvature_mesh_with_analysis_settings(settings, tolerance)?)
         }
-        Geometry::Brep(b) => {
-            Some(b.curvature_mesh_with_density(settings.nurbs_density, tolerance)?)
-        }
+        Geometry::Brep(b) => Some(b.curvature_mesh_with_analysis_settings(settings, tolerance)?),
         Geometry::SubD(s) => Some(s.curvature_mesh_with_density(settings.subd_density)?),
         _ => None,
     }
@@ -82,6 +82,7 @@ pub fn settings_for_geometry(
     match geometry {
         Geometry::NurbsSurface(_) | Geometry::Brep(_) => AnalysisMeshSettings {
             nurbs_density: settings.nurbs_density,
+            simple_planes: settings.simple_planes,
             ..Default::default()
         },
         Geometry::SubD(_) => AnalysisMeshSettings {

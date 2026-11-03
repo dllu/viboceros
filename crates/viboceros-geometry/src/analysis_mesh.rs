@@ -19,6 +19,7 @@ impl NurbsMeshDensity {
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct AnalysisMeshSettings {
+    pub simple_planes: bool,
     pub nurbs_density: NurbsMeshDensity,
     pub subd_density: SubDMeshDensity,
 }

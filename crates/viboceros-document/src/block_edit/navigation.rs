@@ -246,6 +246,8 @@ impl Document {
         Document {
             analysis_subd_density: self.analysis_subd_density,
             analysis_nurbs_density: self.analysis_nurbs_density,
+            analysis_simple_planes: self.analysis_simple_planes,
+            analysis_mesh_parameters: self.analysis_mesh_parameters.clone(),
             subd_control_net: self.subd_control_net,
             block_edit: self.block_edit.clone(),
             tolerance: self.tolerance,

@@ -32,8 +32,9 @@ pub use three_dm::{
     ThreeDmError, ThreeDmGeometry, ThreeDmGridSettings, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
     ThreeDmNamedCPlane, ThreeDmNamedView, ThreeDmObject, ThreeDmProjection, ThreeDmViewport,
     ThreeDmWriteReport, check_3dm_geometry, check_3dm_instance_reference, read_3dm_file,
-    read_3dm_file_in_units, read_3dm_file_with_blocks, read_3dm_file_with_blocks_in_units,
-    read_3dm_file_with_blocks_model_tolerance, read_3dm_file_with_model_tolerance,
-    read_3dm_named_cplanes_file_in_units, read_3dm_named_views_file_in_units,
-    read_3dm_viewports_file, read_3dm_viewports_file_in_units, save_3dm_file, write_3dm_file,
+    read_3dm_file_for_document, read_3dm_file_in_units, read_3dm_file_with_blocks,
+    read_3dm_file_with_blocks_in_units, read_3dm_file_with_blocks_model_tolerance,
+    read_3dm_file_with_model_tolerance, read_3dm_named_cplanes_file_in_units,
+    read_3dm_named_views_file_in_units, read_3dm_viewports_file, read_3dm_viewports_file_in_units,
+    save_3dm_file, write_3dm_file,
 };

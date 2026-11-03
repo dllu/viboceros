@@ -120,7 +120,10 @@ fn analysis_nurbs_density_roundtrips_file_settings_and_native_written_archives()
         let raw = viboceros_io::read_3dm_file_with_blocks_model_tolerance(&path).unwrap();
         assert_eq!(raw.analysis_nurbs_density, density);
         let (opened, _, _, _, _) = open_3dm_with_views_and_cplanes(path.to_str().unwrap()).unwrap();
-        assert_eq!(opened.analysis_nurbs_density(), density);
+        assert_eq!(
+            opened.analysis_nurbs_density().value(),
+            if value == 0. { 0.65 } else { value }
+        );
     }
     let mut destination = Document::default();
     destination.set_analysis_nurbs_density(NurbsMeshDensity::new(0.25).unwrap());

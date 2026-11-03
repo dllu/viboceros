@@ -27,15 +27,22 @@ fn analysis_subd_density_changes_preserve_a_partially_answered_point_getter() {
         enter(&mut app, "0,0,0");
         let active = app.active_command;
         app.set_analysis_display(&format!(
-            "{command} NurbsDensity=0.25 SubDLevel=2 SubDAdaptive=No"
+            "{command} NurbsDensity=0.25 SimplePlanes=Yes SubDLevel=2 SubDAdaptive=No"
         ));
         assert_eq!(app.active_command, active);
         assert!(app.object_prompt.is_none());
         assert_eq!(app.document.analysis_nurbs_density().value(), 0.25);
+        assert!(app.document.analysis_simple_planes());
         assert_eq!(
             app.document.analysis_subd_density(),
             SubDMeshDensity::new(2, false).unwrap()
         );
+        app.document
+            .set_analysis_mesh_parameters(Some(std::sync::Arc::from([17, 23, 41])));
+        app.set_analysis_display(&format!("{command} MeshDefaults=Yes"));
+        assert_eq!(app.active_command, active);
+        assert_eq!(app.document.analysis_mesh_settings(), Default::default());
+        assert!(app.document.analysis_mesh_parameters().is_none());
         enter(&mut app, "1,1,0");
         assert!(app.active_command.is_none());
         assert_eq!(

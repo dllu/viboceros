@@ -7,6 +7,19 @@ impl Brep {
         density: crate::NurbsMeshDensity,
         tolerance: Tolerance,
     ) -> Result<SurfaceTessellation, GeometryError> {
+        self.tessellate_with_analysis_settings(
+            crate::AnalysisMeshSettings {
+                nurbs_density: density,
+                ..Default::default()
+            },
+            tolerance,
+        )
+    }
+    pub fn tessellate_with_analysis_settings(
+        &self,
+        settings: crate::AnalysisMeshSettings,
+        tolerance: Tolerance,
+    ) -> Result<SurfaceTessellation, GeometryError> {
         let grids = self
             .faces
             .iter()
@@ -19,7 +32,11 @@ impl Brep {
                 } else {
                     face.surface.clone()
                 };
-                surface.analysis_mesh_resolution(density)
+                surface.analysis_mesh_resolution(
+                    settings.nurbs_density,
+                    settings.simple_planes,
+                    tolerance,
+                )
             })
             .collect::<Result<Vec<_>, _>>()?;
         let sampling = Sampling::per_face(&grids);

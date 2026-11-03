@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "analysis_profile_identity",
+      "id": "zero-compute-off",
+      "archive": "zero-compute-off"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "zero-texture2",
+      "archive": "zero-texture2"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "zero-custom",
+      "archive": "zero-custom"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "zero-absolute4",
+      "archive": "zero-absolute4"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "default-compute-on",
+      "archive": "default-compute-on"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "default-texture1",
+      "archive": "default-texture1"
+    },
+    {
+      "op": "analysis_profile_identity",
+      "id": "default-custom",
+      "archive": "default-custom"
+    }
+  ]
+}

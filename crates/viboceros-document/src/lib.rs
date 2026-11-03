@@ -449,6 +449,8 @@ impl Group {
 
 #[derive(Clone, Debug)]
 pub struct Document {
+    analysis_mesh_parameters: Option<std::sync::Arc<[u8]>>,
+    analysis_simple_planes: bool,
     analysis_nurbs_density: viboceros_geometry::NurbsMeshDensity,
     analysis_subd_density: viboceros_geometry::SubDMeshDensity,
     subd_control_net: bool,
@@ -487,6 +489,8 @@ impl Document {
         Self {
             analysis_subd_density: Default::default(),
             analysis_nurbs_density: Default::default(),
+            analysis_simple_planes: false,
+            analysis_mesh_parameters: None,
             block_edit: None,
             subd_control_net: false,
             tolerance,

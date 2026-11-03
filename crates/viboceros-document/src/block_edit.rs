@@ -239,6 +239,8 @@ impl Document {
         let mut accepted = (*edit.cancel_checkpoint).clone();
         accepted.analysis_subd_density = self.analysis_subd_density;
         accepted.analysis_nurbs_density = self.analysis_nurbs_density;
+        accepted.analysis_simple_planes = self.analysis_simple_planes;
+        accepted.analysis_mesh_parameters = self.analysis_mesh_parameters.clone();
         if !Arc::ptr_eq(&edit.baseline, &edit.cancel_checkpoint) {
             accepted.history = edit.baseline.history.clone();
             accepted.begin_transaction("BlockEdit")?;
@@ -521,6 +523,8 @@ impl Document {
         let mut accepted = (*edit.baseline).clone();
         accepted.analysis_subd_density = self.analysis_subd_density;
         accepted.analysis_nurbs_density = self.analysis_nurbs_density;
+        accepted.analysis_simple_planes = self.analysis_simple_planes;
+        accepted.analysis_mesh_parameters = self.analysis_mesh_parameters.clone();
         accepted.layers = self.layers.clone();
         self.restore_block_edit_layer_flags(&mut accepted);
         accepted.current_layer = self.current_layer;

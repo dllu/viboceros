@@ -196,6 +196,16 @@ impl CurvatureMesh {
 }
 
 impl NurbsSurface {
+    pub fn curvature_mesh_with_analysis_settings(
+        &self,
+        settings: crate::AnalysisMeshSettings,
+        tolerance: crate::Tolerance,
+    ) -> Result<CurvatureMesh, GeometryError> {
+        Ok(CurvatureMesh::from_tessellation(
+            self.tessellate_with_analysis_settings(settings, tolerance)?,
+            &[self],
+        ))
+    }
     pub fn curvature_mesh_with_density(
         &self,
         density: crate::NurbsMeshDensity,

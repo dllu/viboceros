@@ -7,6 +7,7 @@
 #include "subd_codec.h"
 #include "extrusion_codec.h"
 #include "view_camera.h"
+#include "analysis_mesh.h"
 
 #include <algorithm>
 #include <array>
@@ -2001,8 +2002,8 @@ struct ViboThreeDmModel {
   double absolute_tolerance = 0.001;
   double relative_tolerance = 0.01;
   double angle_tolerance = ON_PI / 180.0;
-  ON_SubDDisplayParameters analysis_subd;
-  double analysis_nurbs_density = 0.8;
+  ON_MeshParameters analysis_stored, analysis_document;
+  std::vector<uint8_t> analysis_stored_bytes, analysis_document_bytes;
   uint32_t unit_system = 0;
   double meters_per_unit = 1.0;
   std::string unit_name;
@@ -2048,8 +2049,13 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
     decoded->absolute_tolerance = tolerances.m_absolute_tolerance;
     decoded->relative_tolerance = tolerances.m_relative_tolerance;
     decoded->angle_tolerance = tolerances.m_angle_tolerance;
-    decoded->analysis_subd = source.m_settings.m_AnalysisMeshSettings.SubDDisplayParameters();
-    decoded->analysis_nurbs_density = source.m_settings.m_AnalysisMeshSettings.RelativeTolerance();
+    decoded->analysis_stored = source.m_settings.m_AnalysisMeshSettings;
+    decoded->analysis_document = vibo_analysis::for_document(decoded->analysis_stored);
+    if (!vibo_analysis::retained(decoded->analysis_stored, decoded->analysis_stored_bytes) ||
+        !vibo_analysis::retained(decoded->analysis_document, decoded->analysis_document_bytes)) {
+      set_error(error, error_capacity, "Cannot retain analysis meshing parameters");
+      return 0;
+    }
     const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
     decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
     if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
@@ -2440,17 +2446,18 @@ extern "C" int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
   return 1;
 }
 
-extern "C" int32_t vibo_3dm_analysis_subd_density(const ViboThreeDmModel* model,
-    uint32_t* level, uint32_t* adaptive) {
-  if(!model || !level || !adaptive) return 0;
-  *level=model->analysis_subd.GetRawDisplayDensityForExperts();
-  *adaptive=model->analysis_subd.DisplayDensityIsAdaptive()?1:0;
-  return 1;
-}
-
-extern "C" int32_t vibo_3dm_analysis_nurbs_density(const ViboThreeDmModel* model, double* density) {
-  if(!model || !density) return 0;
-  *density=model->analysis_nurbs_density;
+extern "C" int32_t vibo_3dm_analysis_parameters(const ViboThreeDmModel* model,
+    uint8_t for_document, ViboAnalysisParameters* output) {
+  if (!model || !output || for_document > 1) return 0;
+  const auto& mp = for_document ? model->analysis_document : model->analysis_stored;
+  const auto& bytes = for_document ? model->analysis_document_bytes : model->analysis_stored_bytes;
+  const auto subd = mp.SubDDisplayParameters();
+  output->density = mp.RelativeTolerance();
+  output->subd_level = subd.GetRawDisplayDensityForExperts();
+  output->subd_adaptive = subd.DisplayDensityIsAdaptive() ? 1 : 0;
+  output->simple_planes = mp.SimplePlanes() ? 1 : 0;
+  output->data = bytes.data();
+  output->data_count = bytes.size();
   return 1;
 }
 
@@ -2458,6 +2465,7 @@ extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
     double angle_tolerance, double analysis_nurbs_density, uint32_t analysis_subd_level, uint32_t analysis_subd_adaptive,
+    uint8_t analysis_simple_planes, const uint8_t* analysis_parameters, size_t analysis_parameter_count,
     const ViboWriteLayer* layers, size_t layer_count,
     int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
@@ -2488,14 +2496,22 @@ extern "C" int32_t vibo_3dm_write(
       set_error(error,error_capacity,"Invalid analysis NURBS density");
       return 0;
     }
-    model.m_settings.m_AnalysisMeshSettings.SetRelativeTolerance(analysis_nurbs_density);
+    auto& analysis = model.m_settings.m_AnalysisMeshSettings;
+    if (analysis_simple_planes > 1 || (analysis_parameter_count != 0 &&
+        !vibo_analysis::decode(analysis_parameters, analysis_parameter_count, analysis))) {
+      set_error(error, error_capacity, "Invalid retained analysis mesh parameters");
+      return 0;
+    }
+    analysis.SetRelativeTolerance(analysis_nurbs_density);
+    analysis.SetSimplePlanes(analysis_simple_planes != 0);
     if(analysis_subd_level>6 || analysis_subd_adaptive>1) {
       set_error(error,error_capacity,"Invalid analysis SubD density");
       return 0;
     }
-    model.m_settings.m_AnalysisMeshSettings.SetSubDDisplayParameters(
-      analysis_subd_adaptive?ON_SubDDisplayParameters::CreateFromDisplayDensity(analysis_subd_level)
-                           :ON_SubDDisplayParameters::CreateFromAbsoluteDisplayDensity(analysis_subd_level));
+    auto subd = analysis.SubDDisplayParameters();
+    if (analysis_subd_adaptive) subd.SetAdaptiveDisplayDensity(analysis_subd_level);
+    else subd.SetAbsoluteDisplayDensity(analysis_subd_level);
+    analysis.SetSubDDisplayParameters(subd);
     if (!std::isfinite(absolute_tolerance) || absolute_tolerance <= 0.0 ||
         !std::isfinite(relative_tolerance) || relative_tolerance <= 0.0 || relative_tolerance >= 1.0 ||
         !std::isfinite(angle_tolerance) || angle_tolerance <= 0.0 || angle_tolerance > ON_PI) {

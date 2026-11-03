@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "analysis_profile",
+      "id": "zero",
+      "archive": "zero"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-default",
+      "archive": "zero-default"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-constructor",
+      "archive": "zero-constructor"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-tolerance",
+      "archive": "zero-tolerance"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-grid64",
+      "archive": "zero-grid64"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-simple",
+      "archive": "zero-simple"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-subd2",
+      "archive": "zero-subd2"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-render-quality",
+      "archive": "zero-render-quality"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "zero-render-custom",
+      "archive": "zero-render-custom"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "tiny",
+      "archive": "tiny"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "epsilon",
+      "archive": "epsilon"
+    },
+    {
+      "op": "analysis_profile",
+      "id": "positive",
+      "archive": "positive"
+    }
+  ]
+}

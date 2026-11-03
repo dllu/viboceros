@@ -7,7 +7,13 @@ impl NurbsSurface {
     pub(crate) fn analysis_mesh_resolution(
         &self,
         density: crate::NurbsMeshDensity,
+        simple_planes: bool,
+        tolerance: Tolerance,
     ) -> Result<[usize; 2], GeometryError> {
+        if simple_planes && self.plane(tolerance)?.is_some() {
+            self.validate_mesh_resolution([1, 1])?;
+            return Ok([1, 1]);
+        }
         let mut counts = if self.degree_u == 1 && self.degree_v == 1 {
             [1, 1]
         } else {

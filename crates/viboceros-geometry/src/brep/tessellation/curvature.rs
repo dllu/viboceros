@@ -1,5 +1,13 @@
 use super::*;
 impl Brep {
+    pub fn curvature_mesh_with_analysis_settings(
+        &self,
+        settings: crate::AnalysisMeshSettings,
+        tolerance: Tolerance,
+    ) -> Result<crate::CurvatureMesh, GeometryError> {
+        let t = self.tessellate_with_analysis_settings(settings, tolerance)?;
+        self.curvature_from_tessellation(t)
+    }
     pub fn curvature_mesh_with_density(
         &self,
         density: crate::NurbsMeshDensity,

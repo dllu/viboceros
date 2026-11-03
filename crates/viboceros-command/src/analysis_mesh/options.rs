@@ -2,12 +2,14 @@
 use super::*;
 use viboceros_geometry::{NurbsMeshDensity, SubDMeshDensity};
 
-const USAGE: &str = "Analysis mesh: NurbsDensity=0..1 SubDLevel=0..6 SubDAdaptive=Yes|No";
+const USAGE: &str = "Analysis mesh: NurbsDensity=0..1 SimplePlanes=Yes|No SubDLevel=0..6 SubDAdaptive=Yes|No MeshDefaults=Yes";
 pub(crate) struct MeshOptions<'a> {
     pub args: Vec<&'a str>,
     level: Option<u8>,
     adaptive: Option<bool>,
     nurbs: Option<NurbsMeshDensity>,
+    simple: Option<bool>,
+    defaults: bool,
 }
 impl<'a> MeshOptions<'a> {
     pub fn parse(args: &'a [&'a str]) -> Result<Self, CommandError> {
@@ -16,13 +18,25 @@ impl<'a> MeshOptions<'a> {
             level: None,
             adaptive: None,
             nurbs: None,
+            simple: None,
+            defaults: false,
         };
         for arg in args {
             let Some((key, value)) = arg.trim_start_matches(['_', '-']).split_once('=') else {
                 result.args.push(arg);
                 continue;
             };
-            if key.eq_ignore_ascii_case("NurbsDensity") {
+            if key.eq_ignore_ascii_case("MeshDefaults") {
+                if result.defaults || parse_yes_no(value) != Some(true) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                result.defaults = true;
+            } else if key.eq_ignore_ascii_case("SimplePlanes") {
+                let simple = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+                if result.simple.replace(simple).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if key.eq_ignore_ascii_case("NurbsDensity") {
                 let density = value
                     .parse::<Real>()
                     .ok()
@@ -53,9 +67,19 @@ impl<'a> MeshOptions<'a> {
     }
     pub fn configure_only(&self) -> bool {
         self.args.is_empty()
-            && (self.nurbs.is_some() || self.level.is_some() || self.adaptive.is_some())
+            && (self.defaults
+                || self.simple.is_some()
+                || self.nurbs.is_some()
+                || self.level.is_some()
+                || self.adaptive.is_some())
     }
     pub fn apply(&self, doc: &mut Document) {
+        if self.defaults {
+            doc.restore_analysis_mesh_settings();
+        }
+        if let Some(simple) = self.simple {
+            doc.set_analysis_simple_planes(simple);
+        }
         if let Some(density) = self.nurbs {
             doc.set_analysis_nurbs_density(density);
         }

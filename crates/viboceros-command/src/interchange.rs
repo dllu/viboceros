@@ -347,7 +347,7 @@ pub fn open_3dm_with_views(path: &str) -> Result<Opened3dmWithViews, CommandErro
 pub fn open_3dm_with_views_and_cplanes(
     path: &str,
 ) -> Result<Opened3dmWithViewsAndCplanes, CommandError> {
-    let mut model = viboceros_io::read_3dm_file_with_blocks_model_tolerance(path)?;
+    let mut model = viboceros_io::read_3dm_file_for_document(path)?;
     let views = std::mem::take(&mut model.named_views);
     let viewports = std::mem::take(&mut model.viewports);
     let cplanes = std::mem::take(&mut model.named_cplanes);
@@ -355,6 +355,8 @@ pub fn open_3dm_with_views_and_cplanes(
         .map_err(viboceros_document::DocumentError::from)?;
     document.set_analysis_subd_density(model.analysis_subd_density);
     document.set_analysis_nurbs_density(model.analysis_nurbs_density);
+    document.set_analysis_simple_planes(model.analysis_simple_planes);
+    document.set_analysis_mesh_parameters(model.analysis_mesh_parameters.clone());
     let message = import_3dm_model(&mut document, path, model, true)?;
     document.clear_history()?;
     Ok((
@@ -751,6 +753,8 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
     model.tolerance = document.tolerance();
     model.analysis_subd_density = document.analysis_subd_density();
     model.analysis_nurbs_density = document.analysis_nurbs_density();
+    model.analysis_simple_planes = document.analysis_simple_planes();
+    model.analysis_mesh_parameters = document.analysis_mesh_parameters().cloned();
     Ok(model)
 }
 

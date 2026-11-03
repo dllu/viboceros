@@ -4,6 +4,24 @@ use super::{Document, Edit};
 use viboceros_geometry::Tolerance;
 
 impl Document {
+    pub fn analysis_mesh_parameters(&self) -> Option<&std::sync::Arc<[u8]>> {
+        self.analysis_mesh_parameters.as_ref()
+    }
+    pub fn set_analysis_mesh_parameters(&mut self, parameters: Option<std::sync::Arc<[u8]>>) {
+        self.analysis_mesh_parameters = parameters;
+    }
+    pub const fn analysis_simple_planes(&self) -> bool {
+        self.analysis_simple_planes
+    }
+    pub fn set_analysis_simple_planes(&mut self, simple: bool) {
+        self.analysis_simple_planes = simple;
+    }
+    pub fn restore_analysis_mesh_settings(&mut self) {
+        self.analysis_mesh_parameters = None;
+        self.analysis_simple_planes = false;
+        self.analysis_nurbs_density = Default::default();
+        self.analysis_subd_density = Default::default();
+    }
     pub const fn analysis_nurbs_density(&self) -> viboceros_geometry::NurbsMeshDensity {
         self.analysis_nurbs_density
     }
@@ -19,6 +37,7 @@ impl Document {
     }
     pub const fn analysis_mesh_settings(&self) -> viboceros_geometry::AnalysisMeshSettings {
         viboceros_geometry::AnalysisMeshSettings {
+            simple_planes: self.analysis_simple_planes,
             nurbs_density: self.analysis_nurbs_density,
             subd_density: self.analysis_subd_density,
         }
@@ -79,6 +98,9 @@ mod tests {
             doc.set_analysis_subd_density(density);
             let nurbs = NurbsMeshDensity::new(0.25).unwrap();
             doc.set_analysis_nurbs_density(nurbs);
+            doc.set_analysis_simple_planes(true);
+            let parameters: std::sync::Arc<[u8]> = std::sync::Arc::from([17, 23, 41]);
+            doc.set_analysis_mesh_parameters(Some(parameters.clone()));
             if save {
                 doc.save_block_edit().unwrap();
             } else {
@@ -86,12 +108,16 @@ mod tests {
             }
             assert_eq!(doc.analysis_subd_density(), density);
             assert_eq!(doc.analysis_nurbs_density(), nurbs);
+            assert!(doc.analysis_simple_planes());
+            assert_eq!(doc.analysis_mesh_parameters(), Some(&parameters));
             doc.undo().unwrap();
             assert_eq!(doc.analysis_subd_density(), density);
             assert_eq!(doc.analysis_nurbs_density(), nurbs);
             doc.redo().unwrap();
             assert_eq!(doc.analysis_subd_density(), density);
             assert_eq!(doc.analysis_nurbs_density(), nurbs);
+            assert!(doc.analysis_simple_planes());
+            assert_eq!(doc.analysis_mesh_parameters(), Some(&parameters));
         }
     }
 

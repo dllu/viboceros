@@ -3,6 +3,47 @@ use super::*;
 use viboceros_command::CommandRegistry;
 
 #[test]
+fn analysis_profile_simple_planes_refreshes_all_modes_and_temporary_meshes() {
+    let surface = viboceros_geometry::NurbsSurface::try_bilinear(
+        [[0., 0., 0.], [3., 0., 0.], [3., 2., 0.], [0., 2., 0.]]
+            .map(|p| Point3::try_from(p).unwrap()),
+    )
+    .unwrap();
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "DraftAngleAnalysis").unwrap();
+    let view = registry.draft_angle_analysis_view(&doc).unwrap();
+    let geometry = doc.object(id).unwrap().geometry_snapshot().clone();
+    let display = display_cache::DisplayGeometry::new(geometry, 1, doc.tolerance());
+    let ordinary = display.mesh().unwrap().faces().len();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(512.));
+    for (option, faces) in [("SimplePlanes=Yes", 1), ("MeshDefaults=Yes", 16)] {
+        registry
+            .execute(&mut doc, &format!("DraftAngleAnalysis {option}"))
+            .unwrap();
+        let mesh = display
+            .curvature_mesh_with_settings(doc.analysis_mesh_settings())
+            .unwrap();
+        assert_eq!(mesh.mesh.faces().len(), faces);
+        assert_eq!(display.mesh().unwrap().faces().len(), ordinary);
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            viewport.display_mode = mode;
+            let scene =
+                viewport.object_scene_with_analysis(rect, &doc, None, &[], None, Some(&view));
+            assert_eq!(scene.triangles.len(), mesh.mesh.triangles().len() * 3);
+        }
+    }
+}
+
+#[test]
 fn analysis_nurbs_density_refreshes_rendered_faces_and_temporary_meshes() {
     use viboceros_geometry::{AnalysisMeshSettings, NurbsMeshDensity, NurbsSurface};
     let r = CommandRegistry::with_builtins();

@@ -28,10 +28,10 @@ impl DisplayGeometry {
         }
         let mesh = match &*self.geometry {
             Geometry::NurbsSurface(s) => s
-                .curvature_mesh_with_density(settings.nurbs_density, self.tolerance)
+                .curvature_mesh_with_analysis_settings(settings, self.tolerance)
                 .ok(),
             Geometry::Brep(b) => b
-                .curvature_mesh_with_density(settings.nurbs_density, self.tolerance)
+                .curvature_mesh_with_analysis_settings(settings, self.tolerance)
                 .ok(),
             Geometry::SubD(s) => s.curvature_mesh_with_density(settings.subd_density).ok(),
             _ => None,

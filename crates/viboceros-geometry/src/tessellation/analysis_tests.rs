@@ -74,8 +74,10 @@ fn analysis_nurbs_density_preserves_native_plane_floor_and_curved_direction_rows
             surface.mesh.faces().len(),
             "density {} surface grid {:?}, shell grid {:?}",
             density.value(),
-            cylinder.analysis_mesh_resolution(density),
-            brep.faces()[0].surface().analysis_mesh_resolution(density)
+            cylinder.analysis_mesh_resolution(density, false, Tolerance::DEFAULT),
+            brep.faces()[0]
+                .surface()
+                .analysis_mesh_resolution(density, false, Tolerance::DEFAULT)
         );
         assert_eq!(shell.corners.len(), shell.mesh.triangles().len());
         assert!(
@@ -121,4 +123,43 @@ fn analysis_nurbs_density_conforming_fallback_keeps_shared_edges_and_face_normal
         .collect::<std::collections::BTreeSet<_>>();
     assert_eq!(faces, std::collections::BTreeSet::from([0, 1]));
     assert_eq!(before, joined[0].brep);
+}
+
+#[test]
+fn analysis_profile_simple_planes_keeps_curved_bilinear_faces_and_analytic_channels() {
+    let settings = crate::AnalysisMeshSettings {
+        simple_planes: true,
+        ..Default::default()
+    };
+    for raised in [false, true] {
+        let surface = NurbsSurface::try_bilinear(
+            [
+                [0., 0., 0.],
+                [3., 0., 0.],
+                [3., 2., if raised { 1. } else { 0. }],
+                [0., 2., 0.],
+            ]
+            .map(|p| Point3::try_from(p).unwrap()),
+        )
+        .unwrap();
+        let brep = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
+        for mesh in [
+            surface
+                .curvature_mesh_with_analysis_settings(settings, Tolerance::DEFAULT)
+                .unwrap(),
+            brep.curvature_mesh_with_analysis_settings(settings, Tolerance::DEFAULT)
+                .unwrap(),
+        ] {
+            assert_eq!(mesh.mesh.faces().len(), if raised { 16 } else { 1 });
+            assert!(mesh.mesh.faces().iter().all(|face| face.is_quad()));
+            assert_eq!(mesh.normals.len(), mesh.mesh.triangles().len());
+            assert!(mesh.normals.iter().flatten().all(Option::is_some));
+            assert!(
+                mesh.principal_curvatures(None)
+                    .iter()
+                    .flatten()
+                    .all(Option::is_some)
+            );
+        }
+    }
 }

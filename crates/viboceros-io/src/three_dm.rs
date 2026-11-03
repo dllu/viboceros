@@ -18,7 +18,7 @@ use crate::three_dm_geometry::{self, GeometryCodecError};
 mod analysis_mesh;
 mod blocks;
 mod camera;
-use analysis_mesh::{analysis_nurbs_density, analysis_subd_density};
+pub use analysis_mesh::read_3dm_file_for_document;
 use camera::{decode_view, encode_view, scale_view, validate_view_camera};
 mod instances;
 pub use blocks::{
@@ -223,6 +223,9 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    /// Retained native meshing controls; edited density and plane settings override them.
+    pub analysis_mesh_parameters: Option<std::sync::Arc<[u8]>>,
+    pub analysis_simple_planes: bool,
     pub analysis_nurbs_density: viboceros_geometry::NurbsMeshDensity,
     pub analysis_subd_density: viboceros_geometry::SubDMeshDensity,
     pub definitions: Vec<ThreeDmDefinition>,
@@ -253,6 +256,8 @@ impl ThreeDmModel {
             definitions: Vec::new(),
             analysis_subd_density: Default::default(),
             analysis_nurbs_density: Default::default(),
+            analysis_simple_planes: false,
+            analysis_mesh_parameters: None,
             units: LengthUnitSystem::default(),
             tolerance: Tolerance::DEFAULT,
             layers,
@@ -817,6 +822,15 @@ pub fn write_3dm_file(
             model.analysis_nurbs_density.value(),
             u32::from(model.analysis_subd_density.level()),
             u32::from(model.analysis_subd_density.is_adaptive()),
+            u8::from(model.analysis_simple_planes),
+            model
+                .analysis_mesh_parameters
+                .as_ref()
+                .map_or(std::ptr::null(), |p| p.as_ptr()),
+            model
+                .analysis_mesh_parameters
+                .as_ref()
+                .map_or(0, |p| p.len()),
             pointer_or_null(&layers),
             layers.len(),
             current_layer_index,
@@ -1004,9 +1018,11 @@ fn decode_model(
             Err(error) => return Err(error),
         }
     }
-    let model = ThreeDmModel {
-        analysis_nurbs_density: analysis_nurbs_density(handle)?,
-        analysis_subd_density: analysis_subd_density(handle)?,
+    let mut model = ThreeDmModel {
+        analysis_nurbs_density: Default::default(),
+        analysis_subd_density: Default::default(),
+        analysis_simple_planes: false,
+        analysis_mesh_parameters: None,
         definitions: Vec::new(),
         tolerance: stored_tolerance,
         units,
@@ -1023,6 +1039,7 @@ fn decode_model(
             ffi::vibo_3dm_expanded_instance_count(handle.0.as_ptr())
         },
     };
+    analysis_mesh::apply(handle, &mut model, false)?;
     blocks::decode_definitions(handle, model)
 }
 
@@ -1989,6 +2006,16 @@ fn ffi_slice<T>(
 
 mod ffi {
     #[repr(C)]
+    #[derive(Default)]
+    pub struct ViboAnalysisParameters {
+        pub density: f64,
+        pub subd_level: u32,
+        pub subd_adaptive: u32,
+        pub simple_planes: u32,
+        pub data: *const u8,
+        pub data_count: usize,
+    }
+    #[repr(C)]
     pub struct ViboWriteDefinition {
         pub name: *const c_char,
         pub first_object: usize,
@@ -2301,6 +2328,9 @@ mod ffi {
             analysis_nurbs_density: f64,
             analysis_subd_level: u32,
             analysis_subd_adaptive: u32,
+            analysis_simple_planes: u8,
+            analysis_parameters: *const u8,
+            analysis_parameter_count: usize,
             layers: *const ViboWriteLayer,
             layer_count: usize,
             current_layer_index: i32,
@@ -2326,14 +2356,10 @@ mod ffi {
             relative: *mut f64,
             angle: *mut f64,
         ) -> c_int;
-        pub fn vibo_3dm_analysis_subd_density(
+        pub fn vibo_3dm_analysis_parameters(
             model: *const ViboThreeDmModel,
-            level: *mut u32,
-            adaptive: *mut u32,
-        ) -> c_int;
-        pub fn vibo_3dm_analysis_nurbs_density(
-            model: *const ViboThreeDmModel,
-            density: *mut f64,
+            for_document: u8,
+            parameters: *mut ViboAnalysisParameters,
         ) -> c_int;
     }
 }

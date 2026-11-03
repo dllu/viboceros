@@ -6,6 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'analysis_profile_identity': ('analysis_profile_probe', ('merge_edges_probe',)),
+    'analysis_profile': ('analysis_profile_probe', ('merge_edges_probe',)),
     'analysis_nurbs_zero': ('analysis_nurbs_zero_probe', ('merge_edges_probe',)),
     'analysis_nurbs_density': ('analysis_nurbs_density_probe', ('merge_edges_probe',)),
     'nurbs_meshing': ('nurbs_meshing_probe', ('merge_edges_probe',)),
@@ -237,6 +239,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
+    if 'analysis_profile_probe' in modules:
+        from .analysis_profile_probe import ARCHIVES,IDENTITY_ARCHIVES
+        for name in ARCHIVES+IDENTITY_ARCHIVES:
+            asset=Path('fixtures/analysis_profiles')/(name+'.3dm')
+            (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source_directory/asset,destination/asset)
     if 'analysis_nurbs_zero_probe' in modules:
         asset=Path('fixtures/analysis_nurbs_settings/density0.3dm')
         (destination/asset.parent).mkdir(parents=True,exist_ok=True)

@@ -46,7 +46,24 @@ impl NurbsSurface {
         density: crate::NurbsMeshDensity,
         tolerance: Tolerance,
     ) -> Result<SurfaceTessellation, GeometryError> {
-        let counts = self.analysis_mesh_resolution(density)?;
+        self.tessellate_with_analysis_settings(
+            crate::AnalysisMeshSettings {
+                nurbs_density: density,
+                ..Default::default()
+            },
+            tolerance,
+        )
+    }
+    pub fn tessellate_with_analysis_settings(
+        &self,
+        settings: crate::AnalysisMeshSettings,
+        tolerance: Tolerance,
+    ) -> Result<SurfaceTessellation, GeometryError> {
+        let counts = self.analysis_mesh_resolution(
+            settings.nurbs_density,
+            settings.simple_planes,
+            tolerance,
+        )?;
         let (mesh, parameters) =
             self.tessellate_grid_with_resolution(counts, true, tolerance, true)?;
         let mut sampler = CornerSampler::default();
