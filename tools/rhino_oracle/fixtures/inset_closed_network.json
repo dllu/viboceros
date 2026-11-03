@@ -1,0 +1,59 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "adjacent_sdk",
+      "op": "inset_closed_network",
+      "scene": "hole_stadium",
+      "mode": "sdk",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "adjacent_curves",
+      "op": "inset_closed_network",
+      "scene": "hole_stadium",
+      "mode": "curves",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "adjacent_pieces",
+      "op": "inset_closed_network",
+      "scene": "hole_stadium",
+      "mode": "pieces",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "adjacent_joined",
+      "op": "inset_closed_network",
+      "scene": "hole_stadium",
+      "mode": "joined",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": true
+    }
+  ]
+}

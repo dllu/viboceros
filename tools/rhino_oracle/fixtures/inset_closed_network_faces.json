@@ -1,0 +1,59 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "faces_adjacent_sdk",
+      "op": "inset_closed_network_faces",
+      "scene": "box_closed_network",
+      "mode": "sdk",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "faces_adjacent_curves",
+      "op": "inset_closed_network_faces",
+      "scene": "box_closed_network",
+      "mode": "curves",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "faces_adjacent_pieces",
+      "op": "inset_closed_network_faces",
+      "scene": "box_closed_network",
+      "mode": "pieces",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "faces_adjacent_joined",
+      "op": "inset_closed_network_faces",
+      "scene": "box_closed_network",
+      "mode": "joined",
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": true
+    }
+  ]
+}

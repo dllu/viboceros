@@ -6,6 +6,9 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'inset_closed_network': ('inset_closed_network_probe', ('inset_fan_basis_probe','inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
+    'inset_closed_seams': ('inset_closed_seams_probe', ('inset_fan_basis_probe','inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
+    'inset_closed_network_faces': ('inset_closed_network_probe', ('inset_fan_basis_probe','inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
     'inset_fan_commands': ('inset_fan_commands_probe', ('inset_fan_interior_probe','inset_fan_basis_probe','inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
     'inset_fan_interior': ('inset_fan_interior_probe', ('inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
     'inset_fan_refinement': ('inset_fan_basis_probe', ('inset_continuity_probe','inset_multiedge_probe','inset_outputs_probe','inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),

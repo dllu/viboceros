@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "hole_stadium_0.125",
+      "op": "inset_closed_seams",
+      "scene": "hole_stadium",
+      "seam_fraction": 0.125,
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.4",
+      "op": "inset_closed_seams",
+      "scene": "hole_stadium",
+      "seam_fraction": 0.4,
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_stadium_0.5",
+      "op": "inset_closed_seams",
+      "scene": "hole_stadium",
+      "seam_fraction": 0.5,
+      "distance": 1.5,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.125",
+      "op": "inset_closed_seams",
+      "scene": "hole_asymmetric",
+      "seam_fraction": 0.125,
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.4",
+      "op": "inset_closed_seams",
+      "scene": "hole_asymmetric",
+      "seam_fraction": 0.4,
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "hole_asymmetric_0.5",
+      "op": "inset_closed_seams",
+      "scene": "hole_asymmetric",
+      "seam_fraction": 0.5,
+      "distance": 2.0,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    }
+  ]
+}
