@@ -1,6 +1,25 @@
 //! Local tangent-plane processing at original smooth extraordinary vertices.
 use super::*;
 
+pub(super) fn valences(source: &SubD) -> Vec<usize> {
+    let mut valence = vec![0usize; source.control_points().len()];
+    for &[a, b] in source.edges() {
+        valence[a as usize] += 1;
+        valence[b as usize] += 1;
+    }
+    valence
+}
+
+pub(super) fn extraordinary_vertices(source: &SubD) -> Vec<usize> {
+    let valence = valences(source);
+    source
+        .vertex_tags()
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &tag)| (tag == 1 && valence[i] != 4).then_some(i))
+        .collect()
+}
+
 pub(super) fn apply(
     source: &SubD,
     patches: &mut [SubDNurbsPatch],
@@ -9,22 +28,12 @@ pub(super) fn apply(
     if mode == SubDNurbsContinuity::G0 {
         return Ok(());
     }
-    let mut valence = vec![0usize; source.control_points().len()];
-    for &[a, b] in source.edges() {
-        valence[a as usize] += 1;
-        valence[b as usize] += 1;
-    }
-    let selected = source
-        .vertex_tags()
-        .iter()
-        .enumerate()
-        .filter_map(|(i, &tag)| (tag == 1 && valence[i] != 4).then_some(i))
-        .collect::<Vec<_>>();
+    let selected = extraordinary_vertices(source);
     if selected.is_empty() {
         return Ok(());
     }
     let normals = viboceros_opennurbs::subd_smooth_vertex_normals(source.archive(), &selected)?;
-    let mut by_vertex = vec![None; valence.len()];
+    let mut by_vertex = vec![None; source.control_points().len()];
     for (vertex, normal) in selected.into_iter().zip(normals) {
         by_vertex[vertex] = Some(normal);
     }

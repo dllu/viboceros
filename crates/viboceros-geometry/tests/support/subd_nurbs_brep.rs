@@ -25,7 +25,13 @@ fn curve(value: &Value) -> NurbsCurve {
 fn curve_bound(a: &NurbsCurve, b: &NurbsCurve) -> f64 {
     let mut a = a.try_reparameterized(0. ..=1.).unwrap();
     let mut b = b.try_reparameterized(0. ..=1.).unwrap();
-    assert_eq!(a.degree(), b.degree());
+    let degree = a.degree().max(b.degree());
+    if a.degree() != degree {
+        a = a.try_change_degree(degree, false).unwrap();
+    }
+    if b.degree() != degree {
+        b = b.try_change_degree(degree, false).unwrap();
+    }
     let mut knots = Vec::new();
     for c in [&a, &b] {
         for g in c.knots().chunk_by(|a, b| a == b) {
@@ -42,15 +48,17 @@ fn curve_bound(a: &NurbsCurve, b: &NurbsCurve) -> f64 {
     }
     assert_eq!(a.knots(), b.knots());
     assert_eq!(a.control_points().len(), b.control_points().len());
-    a.control_points()
-        .iter()
-        .zip(b.control_points())
-        .map(|(a, b)| {
-            assert_eq!(a.weight(), 1.);
-            assert_eq!(b.weight(), 1.);
-            a.point().distance_to(b.point()).unwrap()
-        })
-        .fold(0_f64, f64::max)
+    let anchor = b.control_points()[0].point();
+    let (mut delta, mut weight_delta, mut radius, mut minimum) =
+        (0_f64, 0_f64, 0_f64, f64::INFINITY);
+    for (a, b) in a.control_points().iter().zip(b.control_points()) {
+        assert!(a.weight() > 0. && b.weight() > 0.);
+        delta = delta.max(a.point().distance_to(b.point()).unwrap());
+        weight_delta = weight_delta.max((a.weight() - b.weight()).abs());
+        radius = radius.max(anchor.distance_to(b.point()).unwrap());
+        minimum = minimum.min(a.weight());
+    }
+    delta + 2. * weight_delta * radius / minimum + 128. * f64::EPSILON * radius.max(1.)
 }
 fn cycle(values: &[usize]) -> Vec<usize> {
     (0..values.len())

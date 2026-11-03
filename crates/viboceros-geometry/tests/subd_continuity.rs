@@ -24,6 +24,15 @@ fn captures() -> &'static Value {
                 .as_slice(),
             include_bytes!("../../../tools/rhino_oracle/observations/subd_g1x_charts.json.gz")
                 .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1xx.json.gz").as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1xx_even.json.gz")
+                .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1xx_charts.json.gz")
+                .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1xx_creases.json.gz")
+                .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1xx_degree.json.gz")
+                .as_slice(),
         ] {
             let mut text = Vec::new();
             flate2::read::GzDecoder::new(bytes)
@@ -44,6 +53,7 @@ fn check(scene: &str) {
             (1, SubDNurbsContinuity::G1),
             (2, SubDNurbsContinuity::G2),
             (3, SubDNurbsContinuity::G1x),
+            (4, SubDNurbsContinuity::G1xx),
         ],
     );
 }
@@ -69,7 +79,33 @@ fn check_modes(scene: &str, modes: &[(usize, SubDNurbsContinuity)]) {
                 target = target.try_reversed_u().unwrap().try_reversed_v().unwrap();
             }
             let (a, b) = basis::common_basis(&patch.surface, &target);
-            maximum = maximum.max(bound::complete_bound(&a, &b));
+            let error = bound::complete_bound(&a, &b);
+            if error > 1e-11 {
+                let (index, (ca, cb)) = a
+                    .control_points()
+                    .iter()
+                    .zip(b.control_points())
+                    .enumerate()
+                    .max_by(|(_, (a, b)), (_, (c, d))| {
+                        a.point()
+                            .distance_to(b.point())
+                            .unwrap()
+                            .total_cmp(&c.point().distance_to(d.point()).unwrap())
+                    })
+                    .unwrap();
+                panic!(
+                    "{id}, face {}, corner {:?}, common controls {}x{}, at {}: {:?} vs {:?}, full bound {}",
+                    patch.face,
+                    patch.corner,
+                    a.control_point_count_u(),
+                    a.control_point_count_v(),
+                    index,
+                    ca.point(),
+                    cb.point(),
+                    error
+                );
+            }
+            maximum = maximum.max(error);
         }
         println!(
             "SUBD_CONTINUITY {}",
@@ -85,7 +121,7 @@ fn check_modes(scene: &str, modes: &[(usize, SubDNurbsContinuity)]) {
 }
 
 macro_rules! holdouts {($($scene:ident),* $(,)?) => {$ (
-    #[test]fn $scene(){check_modes(stringify!($scene),&[(0,SubDNurbsContinuity::G0),(1,SubDNurbsContinuity::G1),(3,SubDNurbsContinuity::G1x)]);}
+    #[test]fn $scene(){check_modes(stringify!($scene),&[(0,SubDNurbsContinuity::G0),(1,SubDNurbsContinuity::G1),(3,SubDNurbsContinuity::G1x),(4,SubDNurbsContinuity::G1xx)]);}
 )*};}
 holdouts!(
     fan6,
@@ -149,6 +185,22 @@ holdouts!(
     chart_mixed_varied
 );
 
+macro_rules! even_cases {($($scene:ident),* $(,)?) => {$ (
+    #[test]fn $scene(){check_modes(stringify!($scene),&[(4,SubDNurbsContinuity::G1xx)]);}
+)*};}
+even_cases!(
+    even_tri6,
+    even_mixed6,
+    even_mixed6_charts,
+    trapezo6,
+    trapezo6_tilt,
+    trapezo8_asymmetric,
+    trapezo6_charts
+);
+even_cases!(even_corner1, even_corner2, even_corner3, even_varied);
+even_cases!(trapezo6_first_even1, trapezo6_first_even2);
+even_cases!(trapezo6_first_crease, dart8);
+
 #[test]
 fn smooth_limit_normals_preserve_order_units_and_immutable_queries() {
     let source = native::source(&native::case("box")["before"]);
@@ -173,12 +225,4 @@ fn smooth_limit_normals_preserve_order_units_and_immutable_queries() {
     assert!(viboceros_opennurbs::subd_smooth_vertex_normals(b"invalid archive data", &[]).is_err());
     assert!(viboceros_opennurbs::subd_smooth_vertex_normals(boundary.archive(), &[0]).is_err());
     assert_eq!(source.archive(), archive);
-}
-
-#[test]
-fn unfinished_modes_reject_without_editing_the_source() {
-    let source = native::source(&native::case("box")["before"]);
-    let before = source.archive().to_vec();
-    assert!(source.to_nurbs_patches(SubDNurbsContinuity::G1xx).is_err());
-    assert_eq!(source.archive(), before);
 }

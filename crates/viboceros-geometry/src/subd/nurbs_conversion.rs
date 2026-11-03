@@ -1,8 +1,9 @@
-//! Unpacked base cubic patch construction before continuity postprocessing.
+//! Unpacked base patches and extraordinary-vertex continuity processing.
 use super::*;
 use crate::NurbsSurface;
 mod continuity;
 mod g1x;
+mod g1xx;
 mod stencil;
 mod topology;
 
@@ -25,19 +26,16 @@ pub struct SubDNurbsPatch {
 
 impl SubD {
     /// Unpacked NURBS patches with local extraordinary-vertex processing.
-    /// G1xx remains unimplemented and rejects before fitting.
     pub fn to_nurbs_patches(
         &self,
         mode: SubDNurbsContinuity,
     ) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
-        if mode == SubDNurbsContinuity::G1xx {
-            return Err(viboceros_opennurbs::SubDError(
-                "Requested SubD continuity mode is not implemented".into(),
-            )
-            .into());
-        }
         let mut patches = self.to_nurbs_patches_g0()?;
-        continuity::apply(self, &mut patches, mode)?;
+        if mode == SubDNurbsContinuity::G1xx {
+            g1xx::apply(self, &mut patches)?;
+        } else {
+            continuity::apply(self, &mut patches, mode)?;
+        }
         Ok(patches)
     }
 

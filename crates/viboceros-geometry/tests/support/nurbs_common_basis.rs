@@ -4,6 +4,16 @@ use viboceros_geometry::NurbsSurface;
 pub fn common_basis(a: &NurbsSurface, b: &NurbsSurface) -> (NurbsSurface, NurbsSurface) {
     let mut a = a.try_reparameterized(0. ..=1., 0. ..=1.).unwrap();
     let mut b = b.try_reparameterized(0. ..=1., 0. ..=1.).unwrap();
+    let degrees = (
+        a.degree_u().max(b.degree_u()),
+        a.degree_v().max(b.degree_v()),
+    );
+    if (a.degree_u(), a.degree_v()) != degrees {
+        a = a.try_change_degree(degrees.0, degrees.1, false).unwrap();
+    }
+    if (b.degree_u(), b.degree_v()) != degrees {
+        b = b.try_change_degree(degrees.0, degrees.1, false).unwrap();
+    }
     for axis in 0..2 {
         let knots = |s: &NurbsSurface| {
             if axis == 0 {

@@ -1,0 +1,35 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "even_corner1_4",
+      "op": "subd_g1xx",
+      "scene": "even_corner1",
+      "mode": 4
+    },
+    {
+      "id": "even_corner2_4",
+      "op": "subd_g1xx",
+      "scene": "even_corner2",
+      "mode": 4
+    },
+    {
+      "id": "even_corner3_4",
+      "op": "subd_g1xx",
+      "scene": "even_corner3",
+      "mode": 4
+    },
+    {
+      "id": "even_varied_4",
+      "op": "subd_g1xx",
+      "scene": "even_varied",
+      "mode": 4
+    }
+  ]
+}

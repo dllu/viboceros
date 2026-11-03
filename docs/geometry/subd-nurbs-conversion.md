@@ -45,8 +45,8 @@ are compared to native outputs. Further tests cover coincident shells, mixed
 trim splits, resource admission and immutable soft-sharpness rejection.
 
 Surface domains are normalized to [0,1], and redundant knots can differ from
-Rhino. [G1, G1x and G2 processing](subd-nurbs-continuity.md) is available through the
-mode-based API; packing, G1xx and soft sharpness remain open. The finite G0
+Rhino. [G1, G1x, G1xx and G2 processing](subd-nurbs-continuity.md) is available through the
+mode-based API; packing and soft sharpness remain open. The finite G0
 approximation has no continuous error certificate against the mathematical SubD
 limit. Arbitrary nonmanifold
 inputs, degenerate patches and comparative performance remain unqualified.

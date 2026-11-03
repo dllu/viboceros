@@ -6,6 +6,8 @@
 processing to the unpacked G0 patches. `G2` processes a larger neighborhood;
 `G0` retains the base conversion. `to_nurbs_brep(mode, tolerance)` assembles the
 corresponding shared B-rep topology and validates the complete result.
+`G1xx` adds [cyclic tangent/twist compatibility](subd-nurbs-g1xx.md), with cubic
+odd-valence and chart-dependent quartic even-valence processing.
 
 `G1x` starts with G1 and improves the sampled normal gap near each processed
 edge end. It compares the two incident patches at seven interior eighths of the
@@ -23,7 +25,7 @@ neighborhood, keeping the corner itself fixed. G2 projects the three-by-three
 neighborhood, giving zero normal curvature at that vertex. These are local
 processing modes; they do not make every shared edge globally G1 or G2.
 
-Normals come from the public OpenNURBS smooth-sector limit evaluation in a
+G1, G1x and G2 normals come from public OpenNURBS smooth-sector limit evaluation in a
 private decoded source. Requested source vertex order and duplicate requests
 are preserved. Nonsmooth indices, unavailable normals and invalid input reject.
 No tessellation is constructed. Smooth-vertex cache reuse avoids repeated
@@ -48,15 +50,17 @@ The `subd_g1x_sectors` and `subd_g1x_charts` families add 36 workflows covering
 triangle sectors, mixed quad/triangle seams, rotated face corners and reversed
 winding, including seams with different parameter scales on each side.
 
-`subd_continuity` compares 152 implemented workflows, including 1,437
+Five G1xx families add 43 workflows covering quartics, adjacent odd/even vertices
+and native UV-corner conventions; their evidence is described with the algorithm.
+
+`subd_continuity` compares 212 implemented workflows, including 2,049
 surface patches, complete edge curves and oriented B-rep topology. Exact common
 basis refinement and positive control bounds verify whole images at `1e-11`;
 the maximum observed surface bound is about `7.2e-13`. Separate tests check
-normal selection/order, unit length, invalid queries, immutable sources and
-explicit rejection of unfinished modes. Shared comparison helpers also serve
+normal selection/order, unit length, invalid queries and immutable sources.
+Shared comparison helpers also serve
 the original G0 regressions.
 
-G1xx is represented in `SubDNurbsContinuity` but currently rejects before
-fitting. Packing, soft sharpness and command integration remain open. Domains
+Packing, soft sharpness and command integration remain open. Domains
 remain normalized, redundant knots may differ from Rhino, and this finite
 conversion has no continuous error certificate against the true SubD limit.

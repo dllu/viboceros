@@ -1,0 +1,179 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "fan6_4",
+      "op": "subd_g1xx",
+      "scene": "fan6",
+      "mode": 4
+    },
+    {
+      "id": "fan8_4",
+      "op": "subd_g1xx",
+      "scene": "fan8",
+      "mode": 4
+    },
+    {
+      "id": "fan9_4",
+      "op": "subd_g1xx",
+      "scene": "fan9",
+      "mode": 4
+    },
+    {
+      "id": "eight_asymmetric_4",
+      "op": "subd_g1xx",
+      "scene": "eight_asymmetric",
+      "mode": 4
+    },
+    {
+      "id": "seven_tilt_4",
+      "op": "subd_g1xx",
+      "scene": "seven_tilt",
+      "mode": 4
+    },
+    {
+      "id": "seven_small_4",
+      "op": "subd_g1xx",
+      "scene": "seven_small",
+      "mode": 4
+    },
+    {
+      "id": "seven_large_4",
+      "op": "subd_g1xx",
+      "scene": "seven_large",
+      "mode": 4
+    },
+    {
+      "id": "seven_z050_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z050",
+      "mode": 4
+    },
+    {
+      "id": "seven_z075_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z075",
+      "mode": 4
+    },
+    {
+      "id": "seven_z0832_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z0832",
+      "mode": 4
+    },
+    {
+      "id": "seven_z0834_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z0834",
+      "mode": 4
+    },
+    {
+      "id": "seven_z101_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z101",
+      "mode": 4
+    },
+    {
+      "id": "seven_z102_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z102",
+      "mode": 4
+    },
+    {
+      "id": "seven_z125_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z125",
+      "mode": 4
+    },
+    {
+      "id": "seven_z150_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z150",
+      "mode": 4
+    },
+    {
+      "id": "seven_z200_4",
+      "op": "subd_g1xx",
+      "scene": "seven_z200",
+      "mode": 4
+    },
+    {
+      "id": "sector_tri7_4",
+      "op": "subd_g1xx",
+      "scene": "sector_tri7",
+      "mode": 4
+    },
+    {
+      "id": "sector_tri9_4",
+      "op": "subd_g1xx",
+      "scene": "sector_tri9",
+      "mode": 4
+    },
+    {
+      "id": "sector_mixed7_4",
+      "op": "subd_g1xx",
+      "scene": "sector_mixed7",
+      "mode": 4
+    },
+    {
+      "id": "sector_mixed9_4",
+      "op": "subd_g1xx",
+      "scene": "sector_mixed9",
+      "mode": 4
+    },
+    {
+      "id": "sector_mixed7_tilt_4",
+      "op": "subd_g1xx",
+      "scene": "sector_mixed7_tilt",
+      "mode": 4
+    },
+    {
+      "id": "chart_corner1_4",
+      "op": "subd_g1xx",
+      "scene": "chart_corner1",
+      "mode": 4
+    },
+    {
+      "id": "chart_corner2_4",
+      "op": "subd_g1xx",
+      "scene": "chart_corner2",
+      "mode": 4
+    },
+    {
+      "id": "chart_corner3_4",
+      "op": "subd_g1xx",
+      "scene": "chart_corner3",
+      "mode": 4
+    },
+    {
+      "id": "chart_varied_4",
+      "op": "subd_g1xx",
+      "scene": "chart_varied",
+      "mode": 4
+    },
+    {
+      "id": "chart_reversed_4",
+      "op": "subd_g1xx",
+      "scene": "chart_reversed",
+      "mode": 4
+    },
+    {
+      "id": "chart_mixed1_4",
+      "op": "subd_g1xx",
+      "scene": "chart_mixed1",
+      "mode": 4
+    },
+    {
+      "id": "chart_mixed_varied_4",
+      "op": "subd_g1xx",
+      "scene": "chart_mixed_varied",
+      "mode": 4
+    }
+  ]
+}
