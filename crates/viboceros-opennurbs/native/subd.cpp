@@ -14,6 +14,7 @@
 #include "subd_faces.h"
 #include "subd_offset.h"
 #include "subd_extrude.h"
+#include "subd_inset.h"
 #include "subd_interpolation.h"
 #include "subd_subdivision.h"
 #include "subd_curvature.h"
@@ -406,4 +407,9 @@ extern "C" int vibo_subd_extrude(const uint8_t* bytes,size_t count,const size_t*
     const size_t* edges,size_t edge_count,int whole,int mode,double distance,const double* direction,
     ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{require(whole==0 || whole==1,"Invalid SubD extrusion selection mode");auto subd=vibo_subd::extrude_subd(bytes,count,faces,face_count,edges,edge_count,whole!=0,mode,distance,direction);return extract(*subd);});
+}
+
+extern "C" int vibo_subd_inset(const uint8_t* bytes,size_t count,const size_t* faces,size_t face_count,double distance,int group,size_t* changed,ViboSubDResult** out,char* error,size_t capacity) {
+  if(changed)*changed=0;
+  return guard(out,error,capacity,[&]{require(changed && (group==0 || group==1),"Invalid SubD inset mode");bool edited=false;auto subd=vibo_subd::inset_subd(bytes,count,faces,face_count,distance,group!=0,edited);*changed=edited?1:0;if(!edited)return std::make_unique<ViboSubDResult>();return extract(*subd);});
 }

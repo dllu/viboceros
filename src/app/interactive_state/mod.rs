@@ -111,6 +111,7 @@ pub(super) enum InteractiveCommand {
     OffsetCurveOnSurface,
     OffsetSubD,
     ExtrudeSubD,
+    Inset,
     ShortPath {
         start: Option<Point3>,
     },

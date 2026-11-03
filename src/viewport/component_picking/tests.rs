@@ -569,3 +569,6 @@ fn subd_extrusion_filter_prefers_naked_edges_and_excludes_other_geometry() {
         }
     }
 }
+
+#[path = "inset_tests.rs"]
+mod inset_tests;

@@ -1925,7 +1925,9 @@ impl VibocerosApp {
             } => {
                 return self.finish_radius(point, diameter, mark, display_units);
             }
-            InteractiveCommand::OffsetSubD | InteractiveCommand::ExtrudeSubD => {}
+            InteractiveCommand::OffsetSubD
+            | InteractiveCommand::ExtrudeSubD
+            | InteractiveCommand::Inset => {}
             InteractiveCommand::ExtractSrf { .. } => {
                 self.pick_extract_face_point(point);
             }

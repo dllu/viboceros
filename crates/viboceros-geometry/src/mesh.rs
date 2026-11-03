@@ -18,6 +18,7 @@ mod components;
 mod connected_faces;
 mod draft_angle;
 mod insert;
+mod inset;
 pub use connected_faces::MeshPartBoundary;
 mod containment;
 mod section;

@@ -18,6 +18,7 @@ mod extrude;
 mod extrusion_conversion;
 mod faces;
 mod insert;
+mod inset;
 mod interpolation;
 mod join;
 mod mesh_conversion;

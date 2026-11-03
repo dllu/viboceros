@@ -356,6 +356,7 @@ pub struct ViewportInput<'a> {
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
+    pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
@@ -484,6 +485,7 @@ impl Default for ViewportInput<'_> {
             insert_edges: None,
             insert_mesh: None,
             offset_subd_edges: None,
+            inset_edges: None,
             extrude_subd_edges: None,
             soft_crease: None,
             drafting: DraftingInput::default(),
@@ -2151,7 +2153,14 @@ impl Viewport {
                 },
             ),
         );
-        self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        self.paint_component_highlights(
+            &painter,
+            rect,
+            document,
+            input.component_highlights,
+            input.component_pick == Some(ComponentPickFilter::InsetFaces)
+                || input.inset_edges.is_some(),
+        );
         self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);
         if let Some(view) = input.direction_analysis {
             self.paint_direction_analysis(
@@ -2223,7 +2232,14 @@ impl Viewport {
             && let Some(pointer) = response.hover_pos()
         {
             let hover = self.pick_components(pointer, rect, document, filter);
-            self.paint_component_highlights(&painter, rect, document, &hover);
+            self.paint_component_highlights(
+                &painter,
+                rect,
+                document,
+                &hover,
+                input.component_pick == Some(ComponentPickFilter::InsetFaces)
+                    || input.inset_edges.is_some(),
+            );
         }
         for (index, marker) in input.end_markers.iter().enumerate() {
             if let Some(pixel) = self.project(marker.point, rect) {
@@ -2880,6 +2896,9 @@ impl Viewport {
                 )
             })
         });
+        if let Some(edges) = input.inset_edges {
+            self.paint_insert_edges(&painter, rect, edges, None);
+        }
         if let Some(edges) = input.extrude_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }

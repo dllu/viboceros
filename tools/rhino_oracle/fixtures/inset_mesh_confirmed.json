@@ -1,0 +1,123 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "quad-0.3",
+      "target": "quad",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "warped-0.3",
+      "target": "warped",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "bent_face-0.3",
+      "target": "bent_face",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "bent_both-0.3",
+      "target": "bent_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "grid_face-0.3",
+      "target": "grid_face",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "grid_pair-0.3",
+      "target": "grid_pair",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "grid_concave-0.3",
+      "target": "grid_concave",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "closed_face-0.3",
+      "target": "closed_face",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "closed_all-0.3",
+      "target": "closed_all",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "triangles_face-0.3",
+      "target": "triangles_face",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "triangles_both-0.3",
+      "target": "triangles_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "disjoint-0.3",
+      "target": "disjoint",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "pentagon-0.3",
+      "target": "pentagon",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "concave-0.3",
+      "target": "concave",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "ring-0.3",
+      "target": "ring",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_mesh_confirmed",
+      "id": "quad_channels-0.3",
+      "target": "quad_channels",
+      "mode": "Single",
+      "distance": 0.3
+    }
+  ]
+}

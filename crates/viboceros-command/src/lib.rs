@@ -309,6 +309,7 @@ mod mesh_split;
 mod mesh_trim;
 pub use mesh_trim::MeshTrimCutters;
 pub mod extrude_subd;
+pub mod inset;
 mod object_name;
 mod offset_mesh;
 pub mod offset_subd;
@@ -655,6 +656,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_conic_options(&self, _value: conic::Options) -> bool {
+        false
+    }
+    fn inset_options(&self, _mesh: bool) -> Option<inset::Options> {
+        None
+    }
+    fn remember_inset_options(&self, _options: inset::Options, _mesh: bool) -> bool {
         false
     }
     fn extrude_subd_options(&self) -> Option<extrude_subd::Options> {
@@ -1949,6 +1956,9 @@ impl CommandRegistry {
         registry
             .register(ExtractMeshPartCommand)
             .expect("unique built-in command");
+        registry
+            .register(inset::InsetCommand::default())
+            .expect("unique Inset");
         registry
             .register(extrude_subd::ExtrudeSubDCommand::default())
             .expect("unique ExtrudeSubD");

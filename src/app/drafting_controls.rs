@@ -18,6 +18,7 @@ impl VibocerosApp {
                 && !self.picking_extract_faces()
                 && self.offset_subd_session.is_none()
                 && self.extrude_subd_session.is_none()
+                && self.inset_session.is_none()
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()

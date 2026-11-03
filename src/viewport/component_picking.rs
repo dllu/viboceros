@@ -15,6 +15,8 @@ pub enum ComponentPickFilter {
     Edges,
     Faces,
     SurfaceAndSubDFaces,
+    /// Stored mesh polygons and SubD control faces, including n-gon members.
+    InsetFaces,
     /// SubD naked edges take priority over faces; excludes other geometry.
     SubDExtrude,
     MeshAndSubDFaces,
@@ -186,12 +188,15 @@ impl Viewport {
                 | ComponentPickFilter::RawMeshFaces
                 | ComponentPickFilter::SurfaceAndSubDFaces
                 | ComponentPickFilter::SubDExtrude
+                | ComponentPickFilter::InsetFaces
         )
         .then(|| {
             document
                 .selectable_objects()
                 .filter(|o| {
-                    if filter == ComponentPickFilter::SubDExtrude {
+                    if filter == ComponentPickFilter::InsetFaces {
+                        matches!(o.geometry(), Geometry::SubD(_) | Geometry::Mesh(_))
+                    } else if filter == ComponentPickFilter::SubDExtrude {
                         matches!(o.geometry(), Geometry::SubD(_))
                     } else if filter == ComponentPickFilter::SurfaceAndSubDFaces {
                         matches!(
@@ -221,8 +226,10 @@ impl Viewport {
         )
         .map_or_else(Vec::new, |(object, face, _)| {
             let source = document.object(object).unwrap();
-            let face = if filter != ComponentPickFilter::RawMeshFaces
-                && matches!(source.geometry(), Geometry::Mesh(_))
+            let face = if !matches!(
+                filter,
+                ComponentPickFilter::RawMeshFaces | ComponentPickFilter::InsetFaces
+            ) && matches!(source.geometry(), Geometry::Mesh(_))
             {
                 self.display_cache
                     .borrow_mut()
@@ -263,6 +270,25 @@ impl Viewport {
             || selection.height() < 2.
         {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::InsetFaces {
+            return document
+                .selectable_objects()
+                .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
+                .flat_map(|o| {
+                    self.polygon_faces_in_rectangle(
+                        viewport,
+                        selection,
+                        document,
+                        o,
+                        super::polygon_components::FaceWindowOptions {
+                            crossing,
+                            inverted,
+                            stored_mesh: true,
+                        },
+                    )
+                })
+                .collect();
         }
         if filter == ComponentPickFilter::SubDExtrude {
             let mut result = Vec::new();
@@ -420,6 +446,7 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         picks: &[ComponentPick],
+        stored_mesh_faces: bool,
     ) {
         let mut edges = Vec::new();
         let mut polygon_regions = std::collections::BTreeSet::new();
@@ -463,6 +490,27 @@ impl Viewport {
                     edge: pick.index,
                 }),
                 ComponentSelectionKind::SubDFace | ComponentSelectionKind::MeshFace => {
+                    if stored_mesh_faces
+                        && pick.kind == ComponentSelectionKind::MeshFace
+                        && let Geometry::Mesh(mesh) = object.geometry()
+                    {
+                        if let Some(face) = mesh.faces().get(pick.index) {
+                            let v = face.indices();
+                            for j in 0..v.len() {
+                                if let Some([a, b]) = self.project_selection_segment(
+                                    mesh.vertices()[v[j] as usize],
+                                    mesh.vertices()[v[(j + 1) % v.len()] as usize],
+                                    rect,
+                                ) {
+                                    painter.line_segment(
+                                        [a, b],
+                                        Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+                                    );
+                                }
+                            }
+                        }
+                        continue;
+                    }
                     if !matches!(
                         (pick.kind, object.geometry()),
                         (ComponentSelectionKind::SubDFace, Geometry::SubD(_))

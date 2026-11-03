@@ -23,6 +23,7 @@ fn main() {
         "subd_faces.h",
         "subd_offset.h",
         "subd_extrude.h",
+        "subd_inset.h",
         "subd_crease.h",
         "subd_remap.h",
         "subd_spin.h",

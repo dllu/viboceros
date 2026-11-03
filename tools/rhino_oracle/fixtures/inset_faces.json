@@ -1,0 +1,438 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "inset_faces",
+      "id": "quad-Group-0.3",
+      "target": "quad",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "quad-Group--0.3",
+      "target": "quad",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "warped-Group-0.3",
+      "target": "warped",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "warped-Group--0.3",
+      "target": "warped",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_face-Group-0.3",
+      "target": "bent_face",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_face-Group--0.3",
+      "target": "bent_face",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_both-Group-0.3",
+      "target": "bent_both",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_both-Group--0.3",
+      "target": "bent_both",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_both-Single-0.3",
+      "target": "bent_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "bent_both-Single--0.3",
+      "target": "bent_both",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_face-Group-0.3",
+      "target": "creased_face",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_face-Group--0.3",
+      "target": "creased_face",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_both-Group-0.3",
+      "target": "creased_both",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_both-Group--0.3",
+      "target": "creased_both",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_both-Single-0.3",
+      "target": "creased_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "creased_both-Single--0.3",
+      "target": "creased_both",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_face-Group-0.3",
+      "target": "grid_face",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_face-Group--0.3",
+      "target": "grid_face",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_pair-Group-0.3",
+      "target": "grid_pair",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_pair-Group--0.3",
+      "target": "grid_pair",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_pair-Single-0.3",
+      "target": "grid_pair",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_pair-Single--0.3",
+      "target": "grid_pair",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_concave-Group-0.3",
+      "target": "grid_concave",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_concave-Group--0.3",
+      "target": "grid_concave",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_concave-Single-0.3",
+      "target": "grid_concave",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_concave-Single--0.3",
+      "target": "grid_concave",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_vertex-Group-0.3",
+      "target": "grid_vertex",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_vertex-Group--0.3",
+      "target": "grid_vertex",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_vertex-Single-0.3",
+      "target": "grid_vertex",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "grid_vertex-Single--0.3",
+      "target": "grid_vertex",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_face-Group-0.3",
+      "target": "closed_face",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_face-Group--0.3",
+      "target": "closed_face",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_both-Group-0.3",
+      "target": "closed_both",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_both-Group--0.3",
+      "target": "closed_both",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_both-Single-0.3",
+      "target": "closed_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_both-Single--0.3",
+      "target": "closed_both",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_all-Group-0.3",
+      "target": "closed_all",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_all-Group--0.3",
+      "target": "closed_all",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_all-Single-0.3",
+      "target": "closed_all",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "closed_all-Single--0.3",
+      "target": "closed_all",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_face-Group-0.3",
+      "target": "triangles_face",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_face-Group--0.3",
+      "target": "triangles_face",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_both-Group-0.3",
+      "target": "triangles_both",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_both-Group--0.3",
+      "target": "triangles_both",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_both-Single-0.3",
+      "target": "triangles_both",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "triangles_both-Single--0.3",
+      "target": "triangles_both",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "disjoint-Group-0.3",
+      "target": "disjoint",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "disjoint-Group--0.3",
+      "target": "disjoint",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "disjoint-Single-0.3",
+      "target": "disjoint",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "disjoint-Single--0.3",
+      "target": "disjoint",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "pentagon-Group-0.3",
+      "target": "pentagon",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "pentagon-Group--0.3",
+      "target": "pentagon",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "concave-Group-0.3",
+      "target": "concave",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "concave-Group--0.3",
+      "target": "concave",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "ring-Group-0.3",
+      "target": "ring",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "ring-Group--0.3",
+      "target": "ring",
+      "mode": "Group",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "ring-Single-0.3",
+      "target": "ring",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "ring-Single--0.3",
+      "target": "ring",
+      "mode": "Single",
+      "distance": -0.3
+    },
+    {
+      "op": "inset_faces",
+      "id": "quad-Group-0.0",
+      "target": "quad",
+      "mode": "Group",
+      "distance": 0.0
+    },
+    {
+      "op": "inset_faces",
+      "id": "quad-Group-2.0",
+      "target": "quad",
+      "mode": "Group",
+      "distance": 2.0
+    },
+    {
+      "op": "inset_faces",
+      "id": "quad-Group-10.0",
+      "target": "quad",
+      "mode": "Group",
+      "distance": 10.0
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "inset_extra_faces",
+      "id": "quad_whole-Group",
+      "target": "quad_whole",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "bent_whole-Group",
+      "target": "bent_whole",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "bent_whole-Single",
+      "target": "bent_whole",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "closed_whole-Group",
+      "target": "closed_whole",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "closed_whole-Single",
+      "target": "closed_whole",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "grid_all-Group",
+      "target": "grid_all",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "grid_all-Single",
+      "target": "grid_all",
+      "mode": "Single",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "collinear-Group",
+      "target": "collinear",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "skew-Group",
+      "target": "skew",
+      "mode": "Group",
+      "distance": 0.3
+    },
+    {
+      "op": "inset_extra_faces",
+      "id": "large-Group",
+      "target": "large",
+      "mode": "Group",
+      "distance": 0.3
+    }
+  ]
+}

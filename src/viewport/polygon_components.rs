@@ -96,6 +96,11 @@ impl DisplayGeometry {
             .map_or(&[], Vec::as_slice)
     }
 }
+pub(super) struct FaceWindowOptions {
+    pub crossing: bool,
+    pub inverted: bool,
+    pub stored_mesh: bool,
+}
 impl Viewport {
     pub(super) fn polygon_components_in_rectangle(
         &self,
@@ -106,6 +111,31 @@ impl Viewport {
         crossing: bool,
         inverted: bool,
     ) -> Vec<ComponentPick> {
+        self.polygon_faces_in_rectangle(
+            viewport,
+            selection,
+            document,
+            object,
+            FaceWindowOptions {
+                crossing,
+                inverted,
+                stored_mesh: false,
+            },
+        )
+    }
+    pub(super) fn polygon_faces_in_rectangle(
+        &self,
+        viewport: Rect,
+        selection: Rect,
+        document: &Document,
+        object: &viboceros_document::Object,
+        options: FaceWindowOptions,
+    ) -> Vec<ComponentPick> {
+        let FaceWindowOptions {
+            crossing,
+            inverted,
+            stored_mesh,
+        } = options;
         let kind = match object.geometry() {
             Geometry::Mesh(_) => ComponentSelectionKind::MeshFace,
             Geometry::SubD(_) => ComponentSelectionKind::SubDFace,
@@ -116,7 +146,38 @@ impl Viewport {
             document.tolerance(),
             document.subd_control_net(),
         );
-        let regions = display.polygon_face_regions();
+        let raw = if stored_mesh
+            && let Geometry::Mesh(mesh) = object.geometry()
+            && !mesh.ngons().is_empty()
+        {
+            let indices = (0..mesh.face_count()).collect::<Vec<_>>();
+            let outlines = mesh
+                .faces()
+                .iter()
+                .map(|f| {
+                    let v = f.indices();
+                    (0..v.len())
+                        .map(|j| {
+                            [
+                                mesh.vertices()[v[j] as usize],
+                                mesh.vertices()[v[(j + 1) % v.len()] as usize],
+                            ]
+                        })
+                        .collect()
+                })
+                .collect();
+            Some(FaceRegions {
+                outlines,
+                display_sources: indices.clone(),
+                pick_sources: indices.clone(),
+                representatives: indices,
+            })
+        } else {
+            None
+        };
+        let regions = raw
+            .as_ref()
+            .unwrap_or_else(|| display.polygon_face_regions());
         let mut groups = (0..regions.outlines.len())
             .map(|_| ProjectedPrimitives::default())
             .collect::<Vec<_>>();

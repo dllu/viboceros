@@ -104,6 +104,22 @@ impl ComponentSelection {
         }
         Ok(self.order.clone())
     }
+    pub(super) fn replace_faces(
+        &mut self,
+        document: &Document,
+        picks: Vec<ComponentPick>,
+    ) -> Result<(), &'static str> {
+        if picks.iter().any(|p| {
+            !matches!(
+                p.kind,
+                ComponentSelectionKind::SubDFace | ComponentSelectionKind::MeshFace
+            )
+        }) {
+            return Err("expected mesh or SubD faces");
+        }
+        self.clear();
+        self.apply(document, picks, ComponentAction::Add)
+    }
     pub(super) fn replace_subdivision_faces(
         &mut self,
         document: &Document,
@@ -301,6 +317,7 @@ impl VibocerosApp {
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
             && !self.picking_extract_points()
+            && !self.picking_inset()
             && !self.picking_extrude_subd()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
@@ -393,6 +410,12 @@ impl VibocerosApp {
                 .collect()
         } else if self.shell_prompt.is_some() {
             self.shellable_picks(click.picks)
+        } else if self.picking_inset() {
+            click
+                .picks
+                .into_iter()
+                .filter(|p| super::inset::eligible(&self.document, p))
+                .collect()
         } else if self.picking_extrude_subd() {
             click
                 .picks
@@ -652,6 +675,11 @@ impl VibocerosApp {
                 .picks
                 .retain(|p| p.kind == ComponentSelectionKind::BrepFace);
         }
+        if self.picking_inset() {
+            window
+                .picks
+                .retain(|p| super::inset::eligible(&self.document, p));
+        }
         if self.picking_extrude_subd() {
             window
                 .picks
@@ -681,6 +709,7 @@ impl VibocerosApp {
             || self.picking_soft_crease_edges()
             || self.picking_extract_points()
             || self.picking_extrude_subd()
+            || self.picking_inset()
         {
             let action =
                 if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {

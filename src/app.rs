@@ -225,6 +225,7 @@ use interactive_state::{
 #[cfg(test)]
 mod crease_native_tests;
 mod extrude_subd;
+mod inset;
 mod intersect_two_sets;
 mod iplane;
 mod length;
@@ -443,6 +444,7 @@ pub struct VibocerosApp {
     short_path_session: Option<short_path::Session>,
     offset_subd_session: Option<offset_subd::Session>,
     extrude_subd_session: Option<extrude_subd::Session>,
+    inset_session: Option<inset::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
     face_create_session: Option<face_create::Session>,
     surface_interpolation_session: Option<surface_interpolation::Session>,
@@ -606,6 +608,7 @@ impl VibocerosApp {
             short_path_session: None,
             offset_subd_session: None,
             extrude_subd_session: None,
+            inset_session: None,
             mesh_polyline_session: None,
             face_create_session: None,
             surface_interpolation_session: None,
@@ -762,7 +765,10 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.continue_extrude_subd(&input) || self.continue_offset_subd(&input) {
+        if self.continue_inset(&input)
+            || self.continue_extrude_subd(&input)
+            || self.continue_offset_subd(&input)
+        {
             return;
         }
         if self.try_continue_circle_deform(&input)
@@ -1115,8 +1121,13 @@ impl VibocerosApp {
             self.cancel_interactive_command(false);
         }
         self.push_log(format!("> {command_input}"));
-        let release_control_polygon_components = self.replaying_control_polygon_selection(input)
-            || self.replaying_extracted_point_components(input);
+        let release_components = self.replaying_control_polygon_selection(input)
+            || self.replaying_extracted_point_components(input)
+            || self.replaying_inset_faces(input)
+            || input.split_whitespace().next().is_some_and(|name| {
+                name.trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("SelNone")
+            });
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
             let context = viboceros_command::CommandContext { construction_plane };
@@ -1137,7 +1148,7 @@ impl VibocerosApp {
             Ok(message) => {
                 self.push_log(message);
                 self.start_edge_zoom_options(input);
-                if release_control_polygon_components {
+                if release_components {
                     self.component_selection.clear();
                 }
                 if self.document.units().meters_per_unit() != previous_unit_scale {
