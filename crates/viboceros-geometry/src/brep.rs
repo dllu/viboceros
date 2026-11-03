@@ -4602,6 +4602,7 @@ fn surface_cut_halfedge_follows_source(
 }
 
 struct SurfaceCutGraph {
+    source_breaks: Vec<Vec<SurfaceCutArrangementBreak>>,
     nodes: Vec<SurfaceCutArrangementNode>,
     edges: Vec<SurfaceCutArrangementEdge>,
     regions: Vec<SurfaceCutArrangementRegion>,
@@ -4622,6 +4623,7 @@ fn try_rectangular_surface_cut_arrangement(
         tolerance,
         false,
         crate::MAX_SURFACE_WIRES,
+        |_| Some(tolerance.angular()),
     )?;
     graph
         .regions

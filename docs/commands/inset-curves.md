@@ -5,7 +5,8 @@
 Planar `Inset` supports smooth closed NURBS loops, circles and circular annuli,
 including narrow annuli and multiple holes. Polygon loops and smooth curved loops
 can occur on the same face. Tangent-continuous line/arc chains also work.
-The supporting surface and original boundaries remain unchanged.
+Supporting surfaces and original boundary loci are retained; crossing crease
+connectors can subdivide source edges and unselected coplanar neighbors.
 
 With `Loose=Off`, `CreaseCorners=No` keeps a smooth offset loop as one closed edge with an annular
 border. `Yes` splits a chain at curvature breaks and adds connecting strips;
@@ -27,6 +28,8 @@ cached-bound sweep to avoid scanning unrelated boundaries.
 Tight offsets of a smooth closed boundary can remove cusp loops while
 retaining one cap boundary. The original seam survives unless trimmed away, and new tangent
 kinks split cap edges. See [cusp trimming and numerical limits](inset-cusps.md).
+Single closed-edge curvature breaks use [closed-edge networks](inset-closed-networks.md),
+including connector crossings and seam-dependent borders.
 
 Frozen comparisons cover ellipses, periodic convex/concave splines, cubic Bézier
 chains, stadium outlines, mixed polygon/circular loops, several holes, tilted
@@ -64,7 +67,7 @@ getter. Later captures use the native `Loose=On|Off` spelling, with no unknown
 tokens. All successful captures retain their exact producers and are immutable.
 
 Curved G0 corners, higher-degree polygon-edge encodings, non-affine surface charts,
-seams, poles and region-splitting offsets remain pending. Unresolved cusps, touching
+seam trims, poles and region-splitting offsets remain pending. Unresolved cusps, touching
 or crossing boundaries, nested holes and exhausted fitting/storage budgets return
 errors without modifying the document. `ThroughPoint`, seam options and
 region-splitting tight offsets remain unimplemented. Curve and separate-surface

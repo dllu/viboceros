@@ -2,11 +2,14 @@
 use super::*;
 use crate::{CurveEditPointSolver, CurveOffsetOperations, UnitVector3};
 mod curves;
+mod output_curves;
 mod outputs;
 mod polygon;
 pub use outputs::{PlanarInsetOutput, PlanarInsetOutputMode};
 mod regions;
+mod source_edges;
 mod storage;
+use source_edges::SourceEdges;
 #[cfg(test)]
 mod tests;
 const MAX_CORNERS: usize = 100_000;
@@ -30,8 +33,27 @@ struct Boundary {
     inset: Vec<BrepTrim>,
     borders: Vec<BrepFace>,
 }
+#[derive(Default)]
 struct Work {
     bytes: usize,
+    source_edges: SourceEdges,
+    network_curves: output_curves::CurveOutputs,
+    keep_curves: bool,
+    selected: BTreeSet<usize>,
+    face: usize,
+    boundary: usize,
+}
+struct NetworkCurves {
+    face: usize,
+    boundary: usize,
+    cap: NurbsCurve,
+    connectors: Vec<NurbsCurve>,
+    edges: Vec<usize>,
+}
+struct PreparedInset {
+    brep: Brep,
+    source_edges: Vec<bool>,
+    networks: Vec<NetworkCurves>,
 }
 impl Work {
     fn charge_curve(&mut self, curve: &NurbsCurve) -> Result<(), GeometryError> {
@@ -47,12 +69,13 @@ impl Work {
 }
 impl Brep {
     /// Insets planar faces with straight polygon loops or smooth NURBS loops.
-    /// Outer boundaries shrink, holes expand, and original surfaces/outer
-    /// edges survive. Selected slots hold caps; border faces are appended.
+    /// Outer boundaries shrink and holes expand. Supporting surfaces and
+    /// original boundary loci survive, with shared edges subdivided where
+    /// crease connectors cross them. Selected slots hold caps; borders append.
     /// `crease_corners` adds border strips at polygon corners and G2 breaks
     /// in curved chains. G2 closed loops stay annular.
-    /// Non-affine charts, curved G0 corners, seams, poles, crossing/collapsing
-    /// offsets and topology changes are errors. Sources are immutable on error.
+    /// Non-affine charts, curved G0 corners, seam trims, poles, crossing/collapsing
+    /// offsets and cusp topology changes are errors. Sources are immutable on error.
     /// Admission bounds selected corners to 100,000, boundary-pair work to
     /// 16 million and estimated output storage to 64 MiB before surface copies.
     pub fn try_inset_planar_faces(
@@ -104,6 +127,17 @@ impl Brep {
         tolerance: Tolerance,
         operations: PlanarInsetOperations,
     ) -> Result<Self, GeometryError> {
+        self.inset_prepared(selected, options, tolerance, operations, false)
+            .map(|p| p.brep)
+    }
+    fn inset_prepared(
+        &self,
+        selected: &[usize],
+        options: PlanarInsetOptions,
+        tolerance: Tolerance,
+        operations: PlanarInsetOperations,
+        keep_curves: bool,
+    ) -> Result<PreparedInset, GeometryError> {
         let PlanarInsetOptions {
             distance,
             crease_corners,
@@ -134,12 +168,21 @@ impl Brep {
         }
         let mut work = Work {
             bytes: self.inset_storage_estimate(&indices, crease_corners)?,
+            source_edges: SourceEdges::new(self),
+            selected: indices.clone(),
+            keep_curves,
+            ..Default::default()
         };
         let mut output = self.clone();
         for i in indices {
             output.inset_planar_face(i, options, tolerance, operations, &mut work)?;
         }
-        Self::try_new(output.vertices, output.edges, output.faces, tolerance)
+        work.source_edges.reserve_edges(output.edges.len());
+        Ok(PreparedInset {
+            brep: Self::try_new(output.vertices, output.edges, output.faces, tolerance)?,
+            source_edges: work.source_edges.flags(),
+            networks: work.network_curves.into_records(),
+        })
     }
     fn inset_planar_face(
         &mut self,
@@ -163,7 +206,9 @@ impl Brep {
         let polygonal = face.loops.iter().all(|l| polygon::supported(self, l));
         let mut caps = Vec::new();
         let mut borders = Vec::new();
-        for boundary in &face.loops {
+        work.face = index;
+        for (boundary_index, boundary) in face.loops.iter().enumerate() {
+            work.boundary = boundary_index;
             let result = if polygon::supported(self, boundary) {
                 self.inset_polygon_boundary(&face, boundary, normal, distance, crease, tolerance)?
             } else {
@@ -174,10 +219,19 @@ impl Brep {
             caps.push(result.inset);
             borders.extend(result.borders);
         }
+        // Subdivision has already refreshed this face's original loops.
+        work.source_edges.remove_face(self, index);
         self.faces[index] = if polygonal {
             BrepFace::try_from_polygon_boundaries(face.surface, face.reversed, caps)?
         } else {
-            regions::validate(self, &face, &caps, normal, tolerance, operations.curves)?;
+            regions::validate(
+                self,
+                &self.faces[index],
+                &caps,
+                normal,
+                tolerance,
+                operations.curves,
+            )?;
             let loops = caps
                 .into_iter()
                 .zip(&face.loops)
@@ -185,7 +239,11 @@ impl Brep {
                 .collect::<Result<_, _>>()?;
             BrepFace::try_new(face.surface, face.reversed, loops)?
         };
+        let first = self.faces.len();
+        work.source_edges.append_faces(index, borders.len());
         self.faces.extend(borders);
+        work.source_edges
+            .add_faces(self, std::iter::once(index).chain(first..self.faces.len()));
         Ok(())
     }
     fn inset_line_trim(

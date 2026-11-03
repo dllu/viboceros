@@ -6,6 +6,8 @@ mod common;
 mod support;
 use support as native_surface;
 use support::{assert_geometry, source};
+#[path = "inset_surface/closed_curves.rs"]
+mod closed_curves;
 #[path = "inset_surface/collinear.rs"]
 mod collinear;
 #[path = "inset_surface/continuity.rs"]

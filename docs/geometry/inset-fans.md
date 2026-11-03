@@ -17,7 +17,10 @@ preservation, native validity, and the recorded topology.
 | `inset_fan_surface_fit` | 12 | Surface-offset controls |
 | `inset_fan_commands` | 6 | Curves, separate and joined crossed-cap outputs |
 
-These are diagnostic captures, with no claim of complete Rust/native agreement.
+The basis family and three expanding-hole command modes now have full production
+comparisons; see [closed-edge networks](../commands/inset-closed-networks.md).
+The remaining families retain diagnostic evidence without a claim of complete
+Rust/native agreement.
 Direct curve and surface offsets return cubic curves for these quadratic inputs;
 Inset retains a quadratic cap basis. Substituting either public offset API does
 not reproduce that basis. Fit tolerance also changes native curvature partitions
@@ -41,10 +44,9 @@ and one cap, while split mode returns 129 faces. The expanding-hole control
 returns two cap loops and four connectors, or six separate faces. Command
 captures also preserve attributes, selection, undo/redo and source 3DM archives.
 
-Further work must assemble the network into shared B-rep topology, preserve
-source-edge lineage and output modes, and qualify the original-degree fitting
-and all cells against these complete native outputs. The shared curve-network
-splitter is available as a prerequisite.
+The production path now assembles regular closed-edge networks with source-edge
+lineage and all output modes. Cusp fans still need qualified fitting and
+connector correspondence against their complete native outputs.
 
 ```sh
 python3 -m unittest tools.rhino_oracle.test_inset_fans

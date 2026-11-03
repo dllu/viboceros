@@ -152,7 +152,17 @@ pub fn epsilon_for(operation: &Value) -> f64 {
     }
     if matches!(
         operation["op"].as_str(),
-        Some("inset_continuity_sdk" | "inset_continuity_command" | "inset_continuity_limits")
+        Some(
+            "inset_continuity_sdk"
+                | "inset_continuity_command"
+                | "inset_continuity_limits"
+                | "inset_fan_basis"
+                | "inset_fan_interior"
+                | "inset_fan_commands"
+                | "inset_closed_network"
+                | "inset_closed_network_faces"
+                | "inset_closed_seams"
+        )
     ) || operation["op"] == "inset_collinear_sdk" && operation["scene"] == "elliptic_stadium"
     {
         return 2e-6;

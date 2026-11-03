@@ -34,14 +34,77 @@ pub(crate) fn offset_closed_region(
         tolerance.angular(),
     )?;
     let raw = fit_offset_nurbs(&source, distance, normal, fit, true, None, true)?;
-    let contacts = contacts::find(&raw, &source, fit, operations, |t| {
+    let pieces = trim_normal_locus(
+        &source, &raw, distance, normal, tolerance, operations, false,
+    )?;
+    let result = PolyCurve3::try_new(
+        pieces
+            .into_iter()
+            .map(CurveSegment3::NurbsCurve)
+            .collect::<Vec<_>>(),
+    )?
+    .to_nurbs()?;
+    // The B-rep caller validates the complete region, including other boundaries.
+    if cycles::area(&result, normal)? * orientation <= 0. {
+        return Err(GeometryError::DegenerateOffsetRegion);
+    }
+    Ok(result)
+}
+
+/// Trims one fitted normal locus while retaining each surviving source interval.
+pub(crate) fn trim_normal_locus(
+    source: &NurbsCurve,
+    raw: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
+    allow_regular: bool,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    if !source.is_closed()? || raw.domain() != source.domain() {
+        return Err(GeometryError::DegenerateOffsetRegion);
+    }
+    let source = source.try_reparameterized(0. ..=1.)?;
+    let raw = raw.try_reparameterized(0. ..=1.)?;
+    let normal = offset_plane(&source, fallback, tolerance)?;
+    let orientation = nurbs_region_inward_sign(&source, normal, tolerance, operations)?;
+    if limits::collapsed(&source, normal, distance * orientation, tolerance)? {
+        return Err(GeometryError::DegenerateOffsetRegion);
+    }
+    let query = Tolerance::try_new(
+        tolerance.absolute() * 0.01,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let contacts = contacts::find(&raw, &source, query, operations, |t| {
         let (_, v, a) = source.evaluate_with_second_derivative(t)?;
         let speed = v.length()?;
         let gain = 1. - distance * v.cross(a)?.dot(normal.as_vector())? / speed.powi(3);
         Ok(gain > 0.)
     })?;
     if contacts.is_empty() {
-        return Err(GeometryError::DegenerateOffsetRegion);
+        if !allow_regular {
+            return Err(GeometryError::DegenerateOffsetRegion);
+        }
+        for (a, b) in source.spans() {
+            for i in 0..=16 {
+                offset_sample(
+                    &source,
+                    distance,
+                    normal,
+                    a + (b - a) * i as Real / 16.,
+                    if i == 16 {
+                        ParameterSide::Left
+                    } else {
+                        ParameterSide::Right
+                    },
+                )?;
+            }
+        }
+        if cycles::area(&raw, normal)? * orientation <= tolerance.absolute().powi(2) {
+            return Err(GeometryError::DegenerateOffsetRegion);
+        }
+        return Ok(vec![raw]);
     }
     let mut candidates = Vec::new();
     for [a, b] in contacts {
@@ -114,18 +177,7 @@ pub(crate) fn offset_closed_region(
         .map(|[a, b]| cyclic_trim(&raw, a, b, operations))
         .collect::<Result<Vec<_>, _>>()?;
     close_junctions(&mut pieces, tolerance)?;
-    let result = PolyCurve3::try_new(
-        pieces
-            .into_iter()
-            .map(CurveSegment3::NurbsCurve)
-            .collect::<Vec<_>>(),
-    )?
-    .to_nurbs()?;
-    // The B-rep caller validates the complete region, including other boundaries.
-    if cycles::area(&result, normal)? * orientation <= 0. {
-        return Err(GeometryError::DegenerateOffsetRegion);
-    }
-    Ok(result)
+    Ok(pieces)
 }
 
 fn cyclic_trim(

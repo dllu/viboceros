@@ -1,8 +1,10 @@
 //! Smooth planar trim loops, analytic offsets and shared NURBS fitting.
 use super::*;
 use crate::{CurveSegment3, ParameterSide, PolyCurve3};
+mod build;
 mod collinear;
 mod groups;
+mod network;
 mod producer;
 use producer::{aligned, offset, shifted_start};
 
@@ -66,6 +68,31 @@ impl Brep {
                     "curved inset currently requires smooth boundary joins",
                 ));
             }
+        }
+        if boundary.trims.len() == 1
+            && crease
+            && !loose
+            && sources.len() == 1
+            && sources[0].is_closed()?
+            && !sources[0]
+                .discontinuity_parameters(
+                    crate::CurveContinuity::G2,
+                    tolerance.angular().max(1e-6),
+                )?
+                .is_empty()
+            && let Some(seam_connector) = network::seam_policy(sources[0], tolerance)?
+        {
+            return network::inset(
+                self,
+                face,
+                boundary,
+                normal,
+                distance,
+                tolerance,
+                operations,
+                work,
+                seam_connector,
+            );
         }
         let goals = sources
             .iter()
@@ -150,37 +177,14 @@ impl Brep {
             }
         }
         let offsets = pieces;
-        let vertex_start = self.vertices.len();
-        for curve in &offsets {
-            self.vertices.push(BrepVertex::try_new(
-                curve.evaluate(*curve.domain().start())?,
-                0.,
-            )?);
-        }
-        let mut inset = Vec::with_capacity(offsets.len());
-        let count = offsets.len();
-        for (j, curve) in offsets.into_iter().enumerate() {
-            let uv = face.surface.try_pullback_affine_curve(&curve, tolerance)?;
-            let vertices = [vertex_start + j, vertex_start + (j + 1) % count];
-            let edge = self.edges.len();
-            self.edges.push(BrepEdge::try_new(vertices, curve, 0.)?);
-            let iso = trim_iso::classify(&uv, &face.surface);
-            inset.push(BrepTrim::try_new(
-                vertices,
-                Some(edge),
-                false,
-                uv,
-                BrepTrimType::Mated,
-                iso,
-                [0.; 2],
-            )?);
-        }
+        let inset = build::cap(self, &face.surface, offsets, tolerance)?;
+        let count = inset.len();
         let mut borders = Vec::new();
         if strips {
             let mut connectors = Vec::with_capacity(groups.len());
             for (j, group) in groups.iter().enumerate() {
                 let trim = &group.trims[0];
-                let cap = vertex_start + group_starts[j] % count;
+                let cap = inset[group_starts[j] % count].vertices[0];
                 connectors.push(self.inset_line_trim(
                     &face.surface,
                     [trim.vertices[0], cap],
@@ -207,24 +211,7 @@ impl Brep {
                 )?);
             }
         } else {
-            let reversed = inset
-                .iter()
-                .rev()
-                .map(reverse_trim)
-                .collect::<Result<Vec<_>, _>>()?;
-            let (outer, inner) = if boundary.loop_type == BrepLoopType::Outer {
-                (old.clone(), reversed)
-            } else {
-                (reversed, old.clone())
-            };
-            borders.push(BrepFace::try_new(
-                face.surface.clone(),
-                face.reversed,
-                vec![
-                    BrepLoop::try_new(BrepLoopType::Outer, outer)?,
-                    BrepLoop::try_new(BrepLoopType::Inner, inner)?,
-                ],
-            )?);
+            borders.push(build::annulus(face, boundary, &inset)?);
         }
         Ok(Boundary { inset, borders })
     }

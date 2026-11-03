@@ -1,5 +1,25 @@
 //! Conservative output-storage admission before supporting surfaces are copied.
 use super::*;
+impl Work {
+    pub(super) fn charge_extra_strips(
+        &mut self,
+        surface: &NurbsSurface,
+        count: usize,
+    ) -> Result<(), GeometryError> {
+        let bytes = surface
+            .control_points()
+            .len()
+            .saturating_mul(32)
+            .saturating_add(surface.knots_u().len().saturating_mul(8))
+            .saturating_add(surface.knots_v().len().saturating_mul(8))
+            .saturating_add(2304);
+        self.bytes = self.bytes.saturating_add(bytes.saturating_mul(count));
+        if self.bytes > 64 * 1024 * 1024 {
+            return Err(invalid("planar inset exceeds its output-storage budget"));
+        }
+        Ok(())
+    }
+}
 impl Brep {
     pub(super) fn inset_storage_estimate(
         &self,

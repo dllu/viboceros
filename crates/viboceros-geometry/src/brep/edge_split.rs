@@ -22,6 +22,7 @@ impl Budget {
 }
 
 struct SplitPlan {
+    source: BrepEdge,
     parameters: Vec<Real>,
     edges: Vec<usize>,
     points: Vec<Point3>,
@@ -43,6 +44,19 @@ impl Brep {
         splits: &[(usize, Vec<Real>)],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        let ordered = self.edge_split_parameters(splits)?;
+        if ordered.is_empty() {
+            return Ok(self.clone());
+        }
+        let mut result = self.clone();
+        result.split_edge_plan(ordered, None, tolerance)?;
+        Self::try_new(result.vertices, result.edges, result.faces, tolerance)
+    }
+
+    fn edge_split_parameters(
+        &self,
+        splits: &[(usize, Vec<Real>)],
+    ) -> Result<BTreeMap<usize, Vec<Real>>, GeometryError> {
         let mut ordered = BTreeMap::new();
         let mut count = 0usize;
         for (edge, parameters) in splits {
@@ -70,15 +84,33 @@ impl Brep {
             }
             ordered.insert(*edge, parameters);
         }
-        if ordered.is_empty() {
-            return Ok(self.clone());
-        }
+        Ok(ordered)
+    }
+
+    /// Internal subdivision of an owned candidate. The caller validates its
+    /// completed operation and discards this candidate on any error.
+    pub(super) fn split_edges_in_place(
+        &mut self,
+        splits: &[(usize, Vec<Real>)],
+        incident: &[Vec<usize>],
+        tolerance: Tolerance,
+    ) -> Result<Vec<(usize, Vec<usize>)>, GeometryError> {
+        let ordered = self.edge_split_parameters(splits)?;
+        self.split_edge_plan(ordered, Some(incident), tolerance)
+    }
+
+    fn split_edge_plan(
+        &mut self,
+        ordered: BTreeMap<usize, Vec<Real>>,
+        incident: Option<&[Vec<usize>]>,
+        tolerance: Tolerance,
+    ) -> Result<Vec<(usize, Vec<usize>)>, GeometryError> {
         let mut budget = Budget(MAX_WORK);
-        let mut vertices = self.vertices.clone();
-        let mut edges = self.edges.clone();
+        let vertices = &mut self.vertices;
+        let edges = &mut self.edges;
         let mut plans = BTreeMap::new();
         for (index, parameters) in ordered {
-            let source = &self.edges[index];
+            let source = edges[index].clone();
             let mut points = Vec::with_capacity(parameters.len());
             for &parameter in &parameters {
                 budget.charge(source.curve.degree().saturating_add(1))?;
@@ -117,22 +149,38 @@ impl Brep {
             plans.insert(
                 index,
                 SplitPlan {
+                    source,
                     parameters,
                     edges: edge_ids,
                     points,
                 },
             );
         }
-        let mut faces = self.faces.clone();
-        for (face, source_face) in faces.iter_mut().zip(&self.faces) {
-            if !source_face
-                .loops
-                .iter()
-                .flat_map(|l| &l.trims)
-                .any(|t| t.edge.is_some_and(|e| plans.contains_key(&e)))
-            {
-                continue;
+        let affected = if let Some(incident) = incident {
+            let mut affected = BTreeSet::new();
+            for &edge in plans.keys() {
+                let Some(faces) = incident.get(edge) else {
+                    return invalid("edge split is missing source incidence");
+                };
+                affected.extend(faces.iter().copied());
             }
+            affected
+        } else {
+            self.faces
+                .iter()
+                .enumerate()
+                .filter_map(|(i, face)| {
+                    face.loops
+                        .iter()
+                        .flat_map(|l| &l.trims)
+                        .any(|t| t.edge.is_some_and(|e| plans.contains_key(&e)))
+                        .then_some(i)
+                })
+                .collect()
+        };
+        for index in affected {
+            let face = &mut self.faces[index];
+            let source_face = face.clone();
             budget.charge(
                 source_face
                     .loops
@@ -161,7 +209,7 @@ impl Brep {
                     let cuts = correspondence::parameters(
                         &image,
                         trim,
-                        &self.edges[index],
+                        &plan.source,
                         plan,
                         tolerance,
                         &mut budget,
@@ -221,7 +269,10 @@ impl Brep {
                 boundary.trims = trims;
             }
         }
-        Self::try_new(vertices, edges, faces, tolerance)
+        Ok(plans
+            .into_iter()
+            .map(|(index, plan)| (index, plan.edges))
+            .collect())
     }
 
     /// Subdivides tangent discontinuities on the requested edges. The angle

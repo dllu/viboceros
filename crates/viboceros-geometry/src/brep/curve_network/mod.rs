@@ -64,6 +64,7 @@ pub(super) fn split(
         tolerance,
         true,
         maximum,
+        |_| Some(tolerance.angular()),
     )?;
     graph
         .regions

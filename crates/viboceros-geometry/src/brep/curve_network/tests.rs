@@ -108,6 +108,7 @@ fn curve_network_preserves_source_split_parameters_with_nonunit_weights() {
         Tolerance::DEFAULT,
         true,
         64,
+        |_| Some(Tolerance::DEFAULT.angular()),
     )
     .unwrap();
     let domains = graph
@@ -191,6 +192,7 @@ fn curve_network_bounds_input_collection_and_graph_growth() {
         Tolerance::DEFAULT,
         true,
         5,
+        |_| Some(Tolerance::DEFAULT.angular()),
     )
     .err()
     .unwrap();
@@ -276,4 +278,58 @@ fn shared_endpoint_certificate_keeps_collinear_near_parallel_and_rational_fallba
     };
     assert!(index::only_common_endpoint(&a, &rational(4.), Tolerance::DEFAULT).unwrap());
     assert!(!index::only_common_endpoint(&a, &rational(-4.), Tolerance::DEFAULT).unwrap());
+}
+
+#[test]
+fn caller_kink_policy_preserves_small_fitted_turns_without_extra_vertices() {
+    let curve = NurbsCurve::try_new(
+        2,
+        vec![p(-10., 0.), p(-5., 0.), p(0., 0.), p(5., 1e-4), p(10., 0.)],
+        vec![0., 0., 0., 0.5, 0.5, 1., 1., 1.],
+    )
+    .unwrap();
+    for (angle, expected_nodes, expected_edges) in [
+        (Some(Tolerance::DEFAULT.angular()), 7, 2),
+        (Some(std::f64::consts::PI / 180.), 6, 1),
+        (None, 6, 1),
+    ] {
+        let graph = build(
+            &plane(),
+            [[-10., 10.]; 2],
+            vec![curve.clone()],
+            Tolerance::DEFAULT,
+            true,
+            64,
+            |_| angle,
+        )
+        .unwrap();
+        assert_eq!(graph.nodes.len(), expected_nodes);
+        let cutters = graph
+            .edges
+            .iter()
+            .filter(|e| matches!(e.kind, SurfaceCutArrangementEdgeKind::Cut { .. }))
+            .collect::<Vec<_>>();
+        assert_eq!(cutters.len(), expected_edges);
+        assert_eq!(graph.regions.len(), 2);
+        if expected_edges == 1 {
+            assert_eq!(cutters[0].spatial, curve);
+        }
+        let pieces = graph
+            .regions
+            .iter()
+            .map(|r| {
+                try_surface_cut_arrangement_face(
+                    plane(),
+                    false,
+                    &graph.nodes,
+                    &graph.edges,
+                    r,
+                    &graph.source_info,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_partition(&pieces, 2);
+    }
 }

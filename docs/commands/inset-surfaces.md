@@ -37,15 +37,17 @@ surface component picks. `Split=No` retains the source and creates curves;
 `JoinOutputs=No` replaces it with separate surface pieces. New objects receive
 default attributes on the current layer. See [output modes](inset-outputs.md) for
 selection, option memory and history details.
-The supporting NURBS surfaces, old vertices/edges and unselected faces are retained;
-new edges are shared between caps and borders. Selected face slots contain caps,
+Supporting NURBS surfaces and original boundary loci are retained; crossing
+connectors can subdivide source edges and unselected coplanar faces through
+[closed-edge networks](inset-closed-networks.md). New edges are shared between
+caps and borders. Selected face slots contain caps,
 and border faces are appended. Native Rhino face/edge table order and parameter
 clocks can differ. One edit supports Undo/Redo. Stale geometry, selection, metadata
 or tolerance rejects the preview before any change.
 
 This path requires affine planar charts. Polygon loops use individual degree-one,
 two-control-point edges and trims; curved loops require smooth spans and joins.
-Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seams,
+Higher-degree polygon-edge encodings, curved G0 corners, nonplanar faces, seam trims,
 poles, collapsed edges and
 crossing/touching inset loops return errors. Insets that change topology at the
 medial axis are also rejected, apart from [local cusp-loop removal](inset-cusps.md)

@@ -330,3 +330,104 @@ fn exact_partition_handles_full_order_jumps_nonclamped_ends_and_interior_cuts() 
         }
     }
 }
+
+fn incident_faces(brep: &Brep) -> Vec<Vec<usize>> {
+    let mut result = vec![Vec::new(); brep.edges.len()];
+    for (i, face) in brep.faces.iter().enumerate() {
+        for edge in face
+            .loops
+            .iter()
+            .flat_map(|l| &l.trims)
+            .filter_map(|t| t.edge)
+        {
+            let faces = &mut result[edge];
+            if faces.last() != Some(&i) {
+                faces.push(i);
+            }
+        }
+    }
+    result
+}
+
+#[test]
+fn owned_cached_subdivision_matches_public_results_for_shared_edges_and_seams() {
+    for source in [
+        Brep::try_box(frame(), [[0., 2.], [0., 3.], [0., 5.]], Tolerance::DEFAULT).unwrap(),
+        Brep::try_cylinder(frame(), 2., 0., 5., Tolerance::DEFAULT).unwrap(),
+    ] {
+        let splits = (0..source.edges.len())
+            .map(|i| {
+                (
+                    i,
+                    vec![
+                        source.edges[i].curve.parameter_at(0.25).unwrap(),
+                        source.edges[i].curve.parameter_at(0.75).unwrap(),
+                    ],
+                )
+            })
+            .collect::<Vec<_>>();
+        let expected = source
+            .try_split_edges_at_parameters(&splits, Tolerance::DEFAULT)
+            .unwrap();
+        let mut output = source.clone();
+        let records = output
+            .split_edges_in_place(&splits, &incident_faces(&source), Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(output, expected);
+        assert_eq!(records.len(), source.edges.len());
+        for (old, fragments) in records {
+            assert_eq!(fragments.len(), 3);
+            assert_eq!(fragments[0], old);
+            assert_eq!(
+                output.edges[fragments[0]].vertices[0],
+                source.edges[old].vertices[0]
+            );
+            assert_eq!(
+                output.edges[fragments[2]].vertices[1],
+                source.edges[old].vertices[1]
+            );
+        }
+        assert!(output.is_solid());
+    }
+}
+
+#[test]
+fn repeated_owned_subdivision_reuses_incidence_on_appended_source_fragments() {
+    let source =
+        Brep::try_box(frame(), [[0., 2.], [0., 3.], [0., 5.]], Tolerance::DEFAULT).unwrap();
+    let mut output = source.clone();
+    let mut incident = incident_faces(&source);
+    for fraction in [0.5, 0.25, 0.75] {
+        let edge = output.edges.len() - 1;
+        let splits = vec![(
+            edge,
+            vec![output.edges[edge].curve.parameter_at(fraction).unwrap()],
+        )];
+        let expected = output
+            .try_split_edges_at_parameters(&splits, Tolerance::DEFAULT)
+            .unwrap();
+        let records = output
+            .split_edges_in_place(&splits, &incident, Tolerance::DEFAULT)
+            .unwrap();
+        incident.resize_with(output.edges.len(), Vec::new);
+        for (old, fragments) in records {
+            let original = incident[old].clone();
+            for fragment in fragments {
+                incident[fragment] = original.clone();
+            }
+        }
+        assert_eq!(output, expected);
+        assert!(output.is_solid());
+        for (e, faces) in incident.iter().enumerate() {
+            for &i in faces {
+                assert!(
+                    output.faces[i]
+                        .loops
+                        .iter()
+                        .flat_map(|l| &l.trims)
+                        .any(|t| t.edge == Some(e))
+                );
+            }
+        }
+    }
+}

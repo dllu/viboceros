@@ -8,6 +8,7 @@ pub(in crate::brep) fn build(
     tolerance: Tolerance,
     network: bool,
     maximum: usize,
+    kink_angle: impl Fn(usize) -> Option<Real>,
 ) -> Result<SurfaceCutGraph, GeometryError> {
     if cut_curves.len() > maximum || maximum < 4 {
         return invalid("a surface cutting arrangement exceeds its work limit");
@@ -84,7 +85,7 @@ pub(in crate::brep) fn build(
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let mut node_index = NodeIndex::new(&nodes);
     let mut break_count = 0usize;
-    for cut in &mut cuts {
+    for (cut_index, cut) in cuts.iter_mut().enumerate() {
         let domain = cut.spatial.domain();
         let endpoint_parameters = [*domain.start(), *domain.end()];
         for (end, endpoint_parameter) in endpoint_parameters.into_iter().enumerate() {
@@ -102,7 +103,19 @@ pub(in crate::brep) fn build(
                 node,
             });
         }
-        for knot in cut.spatial.full_multiplicity_kink_parameters(tolerance)? {
+        // Existing boundaries retain their stored internal turns. Consumers
+        // can independently choose a kink policy for newly generated cutters.
+        let kinks = if let Some(angle) = kink_angle(cut_index) {
+            cut.spatial
+                .full_multiplicity_kink_parameters(Tolerance::try_new(
+                    tolerance.absolute(),
+                    tolerance.relative(),
+                    angle,
+                )?)?
+        } else {
+            Vec::new()
+        };
+        for knot in kinks {
             let parameter = cut.parameter.evaluate(knot)?;
             let node = node_index.node(
                 &mut nodes,
@@ -322,9 +335,9 @@ pub(in crate::brep) fn build(
                         && *parameter < *domain.end() - parameter_epsilon
                 })
                 .map(|parameter| {
-                    cut.spatial
-                        .kink_angle_at(parameter)
-                        .map(|angle| u8::from(angle <= tolerance.angular()))
+                    cut.spatial.kink_angle_at(parameter).map(|angle| {
+                        u8::from(angle <= kink_angle(cut_index).unwrap_or(tolerance.angular()))
+                    })
                 })
                 .try_fold(0_u8, |total, continuation| {
                     continuation.map(|continuation| total + continuation)
@@ -629,6 +642,7 @@ pub(in crate::brep) fn build(
     });
 
     Ok(SurfaceCutGraph {
+        source_breaks: cuts.iter().map(|c| c.breaks.clone()).collect(),
         nodes,
         edges,
         regions,

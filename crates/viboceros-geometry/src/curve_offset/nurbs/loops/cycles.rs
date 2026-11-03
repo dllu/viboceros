@@ -8,7 +8,40 @@ pub(super) fn area(curve: &NurbsCurve, normal: UnitVector3) -> Result<Real, Geom
         let c = span.control_points();
         let p = span.degree();
         if c.iter().any(|v| v.weight() != c[0].weight()) {
-            return Err(GeometryError::NurbsOffsetFitLimit);
+            let local = NurbsCurve::try_new_rational(
+                p,
+                c.iter()
+                    .map(|v| {
+                        WeightedPoint3::try_new(
+                            Point3::try_from(origin.vector_to(v.point())?.to_array())?,
+                            v.weight(),
+                        )
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?,
+                span.knots().to_vec(),
+            )?
+            .try_reparameterized(0. ..=1.)?;
+            let scale = c
+                .iter()
+                .map(|v| origin.distance_to(v.point()))
+                .collect::<Result<Vec<_>, _>>()?
+                .into_iter()
+                .fold(0., Real::max);
+            let value = crate::integration::integrate_adaptive(
+                0.,
+                1.,
+                (scale * scale * 1e-14).max(Real::MIN_POSITIVE),
+                1e-12,
+                |t| {
+                    let (point, tangent) = local.evaluate_with_derivative(t)?;
+                    Ok(Vector3::try_from(point.to_array())?
+                        .cross(tangent)?
+                        .dot(normal.as_vector())?
+                        * 0.5)
+                },
+            )?;
+            sum.add(value)?;
+            continue;
         }
         let a = crate::bezier::polynomial::binomial(p);
         let b = crate::bezier::polynomial::binomial(p - 1);

@@ -31,17 +31,25 @@ impl Brep {
         tolerance: Tolerance,
         operations: PlanarInsetOperations,
     ) -> Result<PlanarInsetOutput, GeometryError> {
-        let result =
-            self.try_inset_planar_faces_with_options(selected, options, tolerance, operations)?;
+        let PreparedInset {
+            brep: result,
+            source_edges,
+            networks,
+        } = self.inset_prepared(
+            selected,
+            options,
+            tolerance,
+            operations,
+            mode == PlanarInsetOutputMode::Curves,
+        )?;
         if mode == PlanarInsetOutputMode::Joined {
             return Ok(PlanarInsetOutput::Breps(vec![result]));
         }
-        let first_new = self.edges.len();
         if mode == PlanarInsetOutputMode::Separate {
             // Components are connected through old edges. New edges internal
             // to one component remain joined, including crease connectors on
             // a border still attached to unselected faces.
-            let components = result.edge_connected_face_components_where(|e| e < first_new);
+            let components = result.edge_connected_face_components_where(|e| source_edges[e]);
             let mut membership = vec![0; result.faces.len()];
             for (c, faces) in components.iter().enumerate() {
                 for &f in faces {
@@ -61,11 +69,12 @@ impl Brep {
                     }
                 }
             }
-            let edges = (first_new..result.edges.len())
-                .filter(|&e| cut[e])
+            let edges = (0..result.edges.len())
+                .filter(|&e| !source_edges[e] && cut[e])
                 .collect::<Vec<_>>();
             let mut work = Work {
                 bytes: result.inset_storage_estimate(&BTreeSet::new(), false)?,
+                ..Default::default()
             };
             for &edge in &edges {
                 work.charge_curve(&result.edges[edge].curve)?;
@@ -76,12 +85,21 @@ impl Brep {
             }
             return Ok(PlanarInsetOutput::Breps(parts));
         }
-        let mut work = Work { bytes: 0 };
+        let mut work = Work::default();
         let mut curves = Vec::new();
         let mut used = vec![false; result.edges.len()];
+        let networks = networks
+            .into_iter()
+            .map(|n| ((n.face, n.boundary), n))
+            .collect::<BTreeMap<_, _>>();
         for index in selected.iter().copied().collect::<BTreeSet<_>>() {
-            for boundary in &result.faces[index].loops {
-                let curve = curves::joined(&result, &boundary.trims)?;
+            for (b, boundary) in result.faces[index].loops.iter().enumerate() {
+                let network = networks.get(&(index, b));
+                let curve = if let Some(network) = network {
+                    network.cap.clone()
+                } else {
+                    curves::joined(&result, &boundary.trims)?
+                };
                 work.charge_curve(&curve)?;
                 curves.push(curve);
                 for trim in &boundary.trims {
@@ -91,8 +109,17 @@ impl Brep {
                 }
             }
         }
-        for (i, edge) in result.edges.iter().enumerate().skip(first_new) {
-            if !used[i] {
+        for network in networks.into_values() {
+            for edge in network.edges {
+                used[edge] = true;
+            }
+            for curve in network.connectors {
+                work.charge_curve(&curve)?;
+                curves.push(curve);
+            }
+        }
+        for (i, edge) in result.edges.iter().enumerate() {
+            if !source_edges[i] && !used[i] {
                 work.charge_curve(&edge.curve)?;
                 curves.push(edge.curve.clone());
             }

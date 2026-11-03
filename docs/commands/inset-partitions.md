@@ -2,6 +2,10 @@
 
 [Curved boundaries](inset-curves.md) · [Cusp loops](inset-cusps.md)
 
+Single closed-edge curvature breaks and crossing connectors are covered by
+[closed-edge networks](inset-closed-networks.md), including source subdivisions,
+unselected coplanar neighbors and stored seam controls.
+
 Splitting a smooth curved boundary into several B-rep edges preserves the
 annular border for both `CreaseCorners` settings. Original vertices and edges
 remain in the outer boundary. Grouping uses public OpenNURBS G2 classification,
