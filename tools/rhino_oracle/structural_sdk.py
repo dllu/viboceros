@@ -6,6 +6,10 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'inset_surface_controls': ('inset_surface_controls', ('inset_surface_probe','merge_edges_probe')),
+    'inset_surface_ready': ('inset_surface_command', ('inset_surface_probe','join_probe','merge_edges_probe')),
+    'inset_surface_command': ('inset_surface_command', ('inset_surface_probe','join_probe','merge_edges_probe')),
+    'inset_surface_sdk': ('inset_surface_probe', ('merge_edges_probe',)),
     'inset_preferences': ('inset_preferences',('inset_probe','inset_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'inset_extra_faces': ('inset_extra_probe',('inset_probe','inset_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'inset_mesh_faces': ('inset_mesh_probe',('inset_probe','inset_cases','subd_offset_cases','subd_extract_cases','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),

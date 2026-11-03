@@ -1,4 +1,54 @@
 use super::*;
+#[test]
+fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
+    let surface = NurbsSurface::try_bilinear(
+        [[0., 0., 0.], [8., 0., 0.], [8., 6., 0.], [0., 6., 0.]]
+            .map(|p| Point3::try_from(p).unwrap()),
+    )
+    .unwrap();
+    for nurbs in [false, true] {
+        let mut doc = Document::default();
+        let geometry = if nurbs {
+            Geometry::NurbsSurface(surface.clone())
+        } else {
+            Geometry::Brep(Brep::try_surface_face(surface.clone(), doc.tolerance()).unwrap())
+        };
+        let id = doc.add_geometry(geometry).unwrap();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        let registry = CommandRegistry::with_builtins();
+        assert_eq!(registry.inset_surface_options().distance, 1.);
+        let before = doc.object(id).unwrap().geometry_snapshot().clone();
+        registry
+            .execute(&mut doc, "Inset .3 CreaseCorners=Yes")
+            .unwrap();
+        let Geometry::Brep(b) = doc.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(b.faces().len(), 5);
+        assert!(doc.is_selected(id));
+        assert_eq!(registry.inset_surface_options().distance, 0.3);
+        assert!(registry.inset_surface_options().crease_corners);
+        assert_eq!(registry.inset_options(false).distance, 0.1);
+        assert_eq!(registry.inset_options(true).distance, 1.);
+        doc.undo().unwrap();
+        assert_eq!(doc.object(id).unwrap().geometry_snapshot(), &before);
+        for bad in [
+            "Inset 0",
+            "Inset .7 CreaseCorners=Maybe",
+            "Inset .7 CreaseCorners=Yes CreaseCorners=No",
+            "Inset .7 Split=No",
+            "Inset .7 Faces=1",
+            "Inset 5",
+        ] {
+            assert!(registry.execute(&mut doc, bad).is_err(), "{bad}");
+            assert_eq!(doc.object(id).unwrap().geometry_snapshot(), &before);
+            assert_eq!(doc.redo_label(), Some("Inset"));
+            assert_eq!(registry.inset_surface_options().distance, 0.3);
+        }
+    }
+}
 fn fixture(mesh: bool) -> (Document, ObjectId) {
     let mut doc = Document::default();
     let points = [[0., 0., 0.], [4., 0., 0.], [4., 3., 0.], [0., 3., 0.]]

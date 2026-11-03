@@ -661,6 +661,12 @@ pub trait Command: Send + Sync {
     fn inset_options(&self, _mesh: bool) -> Option<inset::Options> {
         None
     }
+    fn inset_surface_options(&self) -> Option<inset::Options> {
+        None
+    }
+    fn remember_inset_surface_options(&self, _options: inset::Options) -> bool {
+        false
+    }
     fn remember_inset_options(&self, _options: inset::Options, _mesh: bool) -> bool {
         false
     }

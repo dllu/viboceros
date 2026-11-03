@@ -2,8 +2,11 @@ use super::*;
 use crate::app::tests::subd_native as common;
 use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
+#[path = "../../../crates/viboceros-oracle/tests/support/inset_surface.rs"]
+mod native_surface;
 #[path = "../../../crates/viboceros-oracle/tests/support/inset.rs"]
 mod support;
+mod surface;
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

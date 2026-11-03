@@ -1,0 +1,155 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "triangle_tight_ring",
+      "op": "inset_surface_controls",
+      "scene": "triangle",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "triangle_tight_crease",
+      "op": "inset_surface_controls",
+      "scene": "triangle",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "triangle_loose_ring",
+      "op": "inset_surface_controls",
+      "scene": "triangle",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "triangle_loose_crease",
+      "op": "inset_surface_controls",
+      "scene": "triangle",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "reversed_tight_ring",
+      "op": "inset_surface_controls",
+      "scene": "reversed",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "reversed_tight_crease",
+      "op": "inset_surface_controls",
+      "scene": "reversed",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "reversed_loose_ring",
+      "op": "inset_surface_controls",
+      "scene": "reversed",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "reversed_loose_crease",
+      "op": "inset_surface_controls",
+      "scene": "reversed",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "parallelogram_tight_ring",
+      "op": "inset_surface_controls",
+      "scene": "parallelogram",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "parallelogram_tight_crease",
+      "op": "inset_surface_controls",
+      "scene": "parallelogram",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "parallelogram_loose_ring",
+      "op": "inset_surface_controls",
+      "scene": "parallelogram",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "parallelogram_loose_crease",
+      "op": "inset_surface_controls",
+      "scene": "parallelogram",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "collinear_tight_ring",
+      "op": "inset_surface_controls",
+      "scene": "collinear",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "collinear_tight_crease",
+      "op": "inset_surface_controls",
+      "scene": "collinear",
+      "distance": 0.3,
+      "loose": false,
+      "crease_corners": true,
+      "ignore_seams": true
+    },
+    {
+      "id": "collinear_loose_ring",
+      "op": "inset_surface_controls",
+      "scene": "collinear",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": false,
+      "ignore_seams": true
+    },
+    {
+      "id": "collinear_loose_crease",
+      "op": "inset_surface_controls",
+      "scene": "collinear",
+      "distance": 0.3,
+      "loose": true,
+      "crease_corners": true,
+      "ignore_seams": true
+    }
+  ]
+}

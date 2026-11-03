@@ -5,7 +5,7 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
         ComponentPickFilter, DisplayMode, ViewKind, Viewport, ViewportInput, ViewportOutput,
     };
     use egui::{Context, Event, PointerButton, Pos2, Rect, Vec2};
-    for family in ["inset_faces", "inset_mesh_ready"] {
+    for family in ["inset_faces", "inset_mesh_ready", "inset_surface_sdk"] {
         let native = common::cases_for(family).remove(0).1;
         for mode in [
             DisplayMode::Wireframe,
@@ -13,7 +13,11 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             DisplayMode::Ghosted,
         ] {
             let mut app = test_app();
-            let (doc, id) = support::fixture(&native);
+            let (doc, id) = if family == "inset_surface_sdk" {
+                native_surface::fixture(&native["before"])
+            } else {
+                support::fixture(&native)
+            };
             app.document = doc;
             enter(&mut app, "Inset");
             let context = Context::default();

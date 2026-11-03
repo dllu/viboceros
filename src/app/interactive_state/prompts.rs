@@ -5,7 +5,7 @@ impl InteractiveCommand {
     pub(in crate::app) const fn prompt(self) -> &'static str {
         match self {
             Self::Inset => {
-                "Inset: select faces; enter a positive distance or Mode=Group|Single; Enter accepts, Esc cancels"
+                "Inset: select faces; enter a positive distance or face options; Enter accepts, Esc cancels"
             }
             Self::ExtrudeSubD => {
                 "ExtrudeSubD: select faces or naked edges; enter distance and direction; Enter accepts, Esc cancels"

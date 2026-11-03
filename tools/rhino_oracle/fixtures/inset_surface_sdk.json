@@ -1,0 +1,389 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "rectangle_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "rectangle",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "rectangle_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "rectangle",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "rectangle_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "rectangle",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "rectangle_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "rectangle",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "skew_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "skew",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "skew_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "skew",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "skew_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "skew",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "skew_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "skew",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "concave_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "concave",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "concave_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "concave",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "concave_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "concave",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "concave_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "concave",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "hole_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "hole",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "hole_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "hole",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "hole_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "hole",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "hole_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "hole",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "circle_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "circle",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "circle_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "circle",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "circle_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "circle",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "circle_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "circle",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "annulus_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "annulus",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "annulus_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "annulus",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "annulus_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "annulus",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "annulus_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "annulus",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "warped_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "warped",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "warped_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "warped",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "warped_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "warped",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "warped_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "warped",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "cylinder_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "cylinder",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "cylinder_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "cylinder",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "cylinder_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "cylinder",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "cylinder_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "cylinder",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "box_one_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "box_one",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "box_one_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "box_one",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "box_one_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "box_one",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "box_one_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "box_one",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "box_pair_tight_ring",
+      "op": "inset_surface_sdk",
+      "scene": "box_pair",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "box_pair_tight_crease",
+      "op": "inset_surface_sdk",
+      "scene": "box_pair",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "box_pair_loose_ring",
+      "op": "inset_surface_sdk",
+      "scene": "box_pair",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": false
+    },
+    {
+      "id": "box_pair_loose_crease",
+      "op": "inset_surface_sdk",
+      "scene": "box_pair",
+      "distance": 0.3,
+      "loose": true,
+      "ignore_seams": true,
+      "crease_corners": true
+    },
+    {
+      "id": "cylinder_offset_seam",
+      "op": "inset_surface_sdk",
+      "scene": "cylinder",
+      "distance": 0.3,
+      "loose": false,
+      "ignore_seams": false,
+      "crease_corners": true
+    },
+    {
+      "id": "rectangle_large",
+      "op": "inset_surface_sdk",
+      "scene": "rectangle",
+      "distance": 2.1,
+      "loose": false,
+      "ignore_seams": true,
+      "crease_corners": true
+    }
+  ]
+}

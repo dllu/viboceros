@@ -426,7 +426,7 @@ pub enum CommandError {
         "ExtrudeSubD sources, selection, attributes, groups or tolerance changed; select inputs again"
     )]
     ExtrudeSubDStale,
-    #[error("Inset currently requires mesh or SubD faces")]
+    #[error("Inset requires planar polygon surface, mesh or SubD faces")]
     UnsupportedInsetGeometry,
     #[error(
         "Inset sources, selection, attributes, groups or tolerance changed; select faces again"

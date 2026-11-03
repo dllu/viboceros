@@ -2,8 +2,9 @@
 
 [Meshes and SubDs](meshes-index.md) · [Command input](../command-line.md)
 
-`Inset` inserts a ring of faces inside selected mesh polygons or SubD control
-faces. Select faces before starting, or start the command and click or window
+`Inset` inserts border faces inside planar surfaces, mesh polygons or SubD control
+faces. [Surface inputs and limitations](inset-surfaces.md) have a separate guide.
+For mesh and SubD inputs, select faces before starting, or start the command and click or window
 faces, then press Enter. Ctrl/Command removes picks. Enter a positive distance
 to update the control-cage preview, then Enter to commit; Escape cancels.
 
@@ -15,7 +16,7 @@ Inset 0.3 Faces=All Mode=Single
 
 Typed `Faces` selectors address zero-based faces on selected objects; the
 interactive getter uses component picks. Entire objects alone do not select
-faces. Surface and B-rep insets remain unimplemented.
+faces. Whole planar surface inputs also support implicit face selection.
 
 SubD Group mode surrounds the combined face boundary. Internal controls stay in
 place; boundary controls follow available internal edges at folds. Single mode

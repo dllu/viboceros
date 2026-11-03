@@ -42,6 +42,7 @@ pub use wire_cage::BrepWireCage;
 mod edge_split;
 mod face_split;
 mod incidence;
+mod inset;
 mod isocurves;
 mod join_edges;
 pub use join_edges::{

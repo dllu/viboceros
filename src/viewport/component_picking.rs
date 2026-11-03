@@ -195,7 +195,13 @@ impl Viewport {
                 .selectable_objects()
                 .filter(|o| {
                     if filter == ComponentPickFilter::InsetFaces {
-                        matches!(o.geometry(), Geometry::SubD(_) | Geometry::Mesh(_))
+                        matches!(
+                            o.geometry(),
+                            Geometry::SubD(_)
+                                | Geometry::Mesh(_)
+                                | Geometry::Brep(_)
+                                | Geometry::NurbsSurface(_)
+                        )
                     } else if filter == ComponentPickFilter::SubDExtrude {
                         matches!(o.geometry(), Geometry::SubD(_))
                     } else if filter == ComponentPickFilter::SurfaceAndSubDFaces {
@@ -271,25 +277,6 @@ impl Viewport {
         {
             return Vec::new();
         }
-        if filter == ComponentPickFilter::InsetFaces {
-            return document
-                .selectable_objects()
-                .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
-                .flat_map(|o| {
-                    self.polygon_faces_in_rectangle(
-                        viewport,
-                        selection,
-                        document,
-                        o,
-                        super::polygon_components::FaceWindowOptions {
-                            crossing,
-                            inverted,
-                            stored_mesh: true,
-                        },
-                    )
-                })
-                .collect();
-        }
         if filter == ComponentPickFilter::SubDExtrude {
             let mut result = Vec::new();
             for object in document.selectable_objects() {
@@ -315,6 +302,20 @@ impl Viewport {
         let mut result = Vec::new();
         for object in document.selectable_objects() {
             if matches!(object.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)) {
+                if filter == ComponentPickFilter::InsetFaces {
+                    result.extend(self.polygon_faces_in_rectangle(
+                        viewport,
+                        selection,
+                        document,
+                        object,
+                        super::polygon_components::FaceWindowOptions {
+                            crossing,
+                            inverted,
+                            stored_mesh: true,
+                        },
+                    ));
+                    continue;
+                }
                 if matches!(
                     filter,
                     ComponentPickFilter::Any | ComponentPickFilter::Crease

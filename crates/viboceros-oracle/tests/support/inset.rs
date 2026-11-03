@@ -78,6 +78,7 @@ pub fn options(op: &Value, distance: f64) -> viboceros_command::inset::Options {
         } else {
             viboceros_command::inset::Mode::Single
         },
+        ..Default::default()
     }
 }
 pub fn subd_value(s: &SubD) -> Value {
