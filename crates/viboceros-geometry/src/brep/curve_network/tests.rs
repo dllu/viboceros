@@ -221,3 +221,59 @@ fn curve_network_hull_search_is_conservative_for_relative_tolerance_and_missing_
         vec![0, 1, 2, 3]
     );
 }
+
+#[test]
+fn dense_radial_network_reuses_the_shared_endpoint_without_extra_contacts() {
+    let mut rays = Vec::new();
+    for side in 0..4 {
+        for i in 0..64 {
+            let t = -10. + 20. * i as Real / 64.;
+            let end = match side {
+                0 => p(t, -10.),
+                1 => p(10., t),
+                2 => p(-t, 10.),
+                _ => p(-10., -t),
+            };
+            rays.push(line(p(0., 0.), end));
+        }
+    }
+    let pieces = network(rays).unwrap();
+    assert_partition(&pieces, 256);
+    assert!(
+        pieces
+            .iter()
+            .all(|piece| piece.vertices.len() == 3 && piece.edges.len() == 3)
+    );
+}
+
+#[test]
+fn shared_endpoint_certificate_keeps_collinear_near_parallel_and_rational_fallbacks() {
+    let a = line(p(0., 0.), p(1., 0.));
+    assert!(
+        index::only_common_endpoint(&a, &line(p(0., 0.), p(1., 1.)), Tolerance::DEFAULT).unwrap()
+    );
+    assert!(
+        index::only_common_endpoint(&a, &line(p(1., 1.), p(0., 0.)), Tolerance::DEFAULT).unwrap()
+    );
+    for b in [
+        line(p(0., 0.), p(2., 0.)),
+        line(p(0., 0.), p(-1., 0.)),
+        line(p(0., 0.), p(1., 1e-12)),
+        line(p(0., 1.), p(1., 2.)),
+    ] {
+        assert!(!index::only_common_endpoint(&a, &b, Tolerance::DEFAULT).unwrap());
+    }
+    let rational = |w| {
+        NurbsCurve::try_new_rational(
+            1,
+            vec![
+                WeightedPoint3::try_new(p(0., 0.), 1.).unwrap(),
+                WeightedPoint3::try_new(p(1., 1.), w).unwrap(),
+            ],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap()
+    };
+    assert!(index::only_common_endpoint(&a, &rational(4.), Tolerance::DEFAULT).unwrap());
+    assert!(!index::only_common_endpoint(&a, &rational(-4.), Tolerance::DEFAULT).unwrap());
+}

@@ -20,12 +20,17 @@ nearby UV nodes. Mixed-sign rational weights and extreme coordinates take a
 conservative fallback; tolerance includes the intersection solver's relative
 coordinate scale. Candidate ordering remains stable so existing coincident-edge
 and trim-seam policies retain their behavior. An endpoint-pair index restricts
-fragment coincidence checks to edges that can share the same nodes.
+fragment coincidence checks to edges that can share the same nodes. Complete
+open-curve duplicates must also have matching endpoint sets. Clearly
+noncollinear straight rays sharing an exact endpoint need no further contact
+search; nearly parallel rays, overlaps and uncertain arithmetic retain the
+general intersection path.
 
 The network entry point bounds input collection and graph growth using a
 64 MiB storage estimate. Both arrangement modes limit candidate curve-pair work
 to 16 million comparisons. Tests cover interior junctions, concentric rational
 loops crossed by spokes, shared crossing coordinates, reversed orientations,
 nonunit rational endpoint weights, dangling ends, conservative hull queries,
-and resource limits. Existing command arrangement comparisons remain separate;
-the command's boundary-to-boundary admission policy is unchanged.
+resource limits, and a 256-ray radial partition. Existing command arrangement
+comparisons remain separate; the command's boundary-to-boundary admission policy
+is unchanged.

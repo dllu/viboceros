@@ -37,6 +37,9 @@ pub(in crate::brep) fn build(
             if pair_work > 16_000_000 {
                 return invalid("a surface cutting arrangement exceeds its pair-work limit");
             }
+            if !index::may_duplicate(&candidate, existing, tolerance).unwrap_or(true) {
+                continue;
+            }
             for event in candidate
                 .spatial
                 .intersection_events_with_curve(&existing.spatial, tolerance)?
@@ -128,6 +131,12 @@ pub(in crate::brep) fn build(
             let (first_slice, second_slice) = cuts.split_at_mut(second_index);
             let first = &mut first_slice[first_index];
             let second = &mut second_slice[0];
+            if network
+                && index::only_common_endpoint(&first.spatial, &second.spatial, tolerance)
+                    .unwrap_or(false)
+            {
+                continue;
+            }
             let events = first
                 .spatial
                 .intersection_events_with_curve(&second.spatial, tolerance)?;
