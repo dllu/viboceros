@@ -2001,6 +2001,7 @@ struct ViboThreeDmModel {
   double absolute_tolerance = 0.001;
   double relative_tolerance = 0.01;
   double angle_tolerance = ON_PI / 180.0;
+  ON_SubDDisplayParameters analysis_subd;
   uint32_t unit_system = 0;
   double meters_per_unit = 1.0;
   std::string unit_name;
@@ -2046,6 +2047,7 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
     decoded->absolute_tolerance = tolerances.m_absolute_tolerance;
     decoded->relative_tolerance = tolerances.m_relative_tolerance;
     decoded->angle_tolerance = tolerances.m_angle_tolerance;
+    decoded->analysis_subd = source.m_settings.m_AnalysisMeshSettings.SubDDisplayParameters();
     const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
     decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
     if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
@@ -2436,10 +2438,19 @@ extern "C" int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" int32_t vibo_3dm_analysis_subd_density(const ViboThreeDmModel* model,
+    uint32_t* level, uint32_t* adaptive) {
+  if(!model || !level || !adaptive) return 0;
+  *level=model->analysis_subd.GetRawDisplayDensityForExperts();
+  *adaptive=model->analysis_subd.DisplayDensityIsAdaptive()?1:0;
+  return 1;
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
-    double angle_tolerance, const ViboWriteLayer* layers, size_t layer_count,
+    double angle_tolerance, uint32_t analysis_subd_level, uint32_t analysis_subd_adaptive,
+    const ViboWriteLayer* layers, size_t layer_count,
     int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboNamedView* named_views, size_t named_view_count,
@@ -2465,6 +2476,13 @@ extern "C" int32_t vibo_3dm_write(
   try {
     begin_open_nurbs();
     ONX_Model model;
+    if(analysis_subd_level>6 || analysis_subd_adaptive>1) {
+      set_error(error,error_capacity,"Invalid analysis SubD density");
+      return 0;
+    }
+    model.m_settings.m_AnalysisMeshSettings.SetSubDDisplayParameters(
+      analysis_subd_adaptive?ON_SubDDisplayParameters::CreateFromDisplayDensity(analysis_subd_level)
+                           :ON_SubDDisplayParameters::CreateFromAbsoluteDisplayDensity(analysis_subd_level));
     if (!std::isfinite(absolute_tolerance) || absolute_tolerance <= 0.0 ||
         !std::isfinite(relative_tolerance) || relative_tolerance <= 0.0 || relative_tolerance >= 1.0 ||
         !std::isfinite(angle_tolerance) || angle_tolerance <= 0.0 || angle_tolerance > ON_PI) {

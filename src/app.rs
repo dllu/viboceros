@@ -160,6 +160,7 @@ mod circle_around;
 mod circle_deform;
 mod tangent;
 use circle::CircleSizeMode;
+mod analysis_mesh;
 mod apply_curves;
 mod array_curve_surface;
 mod array_surface;

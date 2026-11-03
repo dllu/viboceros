@@ -353,6 +353,7 @@ pub fn open_3dm_with_views_and_cplanes(
     let cplanes = std::mem::take(&mut model.named_cplanes);
     let mut document = Document::with_units(model.tolerance, model.units.clone())
         .map_err(viboceros_document::DocumentError::from)?;
+    document.set_analysis_subd_density(model.analysis_subd_density);
     let message = import_3dm_model(&mut document, path, model, true)?;
     document.clear_history()?;
     Ok((
@@ -747,6 +748,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
     model.current_layer_index = Some(layer_indices[&document.current_layer_id()]);
     model.units = document.units().clone();
     model.tolerance = document.tolerance();
+    model.analysis_subd_density = document.analysis_subd_density();
     Ok(model)
 }
 

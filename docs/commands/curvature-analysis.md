@@ -68,7 +68,8 @@ native outputs preserve these differences. Another 32 Auto Range and 12 Max
 Range panel captures document real-surface behavior. Bounds from the two
 products' analysis meshes can differ; these captures do not qualify identical
 tessellation or pixels. [ExtractAnalysisMesh](extract-analysis-mesh.md) copies the
-current analysis representation and colors into model mesh objects. Analysis-density
+current analysis representation and colors into model mesh objects. Shared
+[SubD mesh controls](analysis-mesh.md) set subdivision density; NURBS/B-rep density
 controls remain unimplemented. Ordinary meshes without surface curvature data are
 unsupported.
 

@@ -3,6 +3,55 @@ use super::*;
 use viboceros_command::CommandRegistry;
 
 #[test]
+fn analysis_subd_density_refreshes_rendered_faces_and_temporary_meshes() {
+    use viboceros_geometry::{SubD, SubDMeshDensity};
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let subd = SubD::try_from_polygons(
+        [[0., 0., 0.], [3., 0., 0.], [3., 2., 0.], [0., 2., 0.]]
+            .into_iter()
+            .map(|p| Point3::try_from(p).unwrap())
+            .collect(),
+        vec![vec![0, 1, 2, 3]],
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::SubD(subd)).unwrap();
+    let geometry = doc.object(id).unwrap().geometry_snapshot().clone();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    registry.execute(&mut doc, "DraftAngleAnalysis").unwrap();
+    let analysis = registry.draft_angle_analysis_view(&doc).unwrap();
+    let display = display_cache::DisplayGeometry::new(geometry.clone(), 1, doc.tolerance());
+    let ordinary_faces = display.mesh().unwrap().faces().len();
+    let mut view = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(512.));
+    for level in [2, 4, 1] {
+        registry
+            .execute(&mut doc, &format!("DraftAngleAnalysis SubDLevel={level}"))
+            .unwrap();
+        let density = SubDMeshDensity::new(level, true).unwrap();
+        let temporary = display.curvature_mesh_with_density(density).unwrap();
+        assert_eq!(temporary.mesh.faces().len(), 4usize.pow(u32::from(level)));
+        assert!(std::sync::Arc::ptr_eq(
+            &temporary,
+            &display.curvature_mesh_with_density(density).unwrap()
+        ));
+        assert_eq!(display.mesh().unwrap().faces().len(), ordinary_faces);
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            view.display_mode = mode;
+            let scene =
+                view.object_scene_with_analysis(rect, &doc, None, &[], None, Some(&analysis));
+            assert_eq!(scene.triangles.len(), temporary.mesh.triangles().len() * 3);
+        }
+        assert!(geometry.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    }
+}
+
+#[test]
 fn extracted_analysis_mesh_copies_displayed_colors_and_leaves_other_faces_visible() {
     let r = CommandRegistry::with_builtins();
     let mut doc = Document::default();
@@ -14,9 +63,7 @@ fn extracted_analysis_mesh_copies_displayed_colors_and_leaves_other_faces_visibl
     r.execute(&mut doc, "DraftAngleAnalysis Range=-45,45 Up=1,0,0")
         .unwrap();
     let analysis = r.draft_angle_analysis_view(&doc).unwrap();
-    let source = analysis
-        .mesh(doc.object(id).unwrap(), doc.tolerance())
-        .unwrap();
+    let source = analysis.mesh(doc.object(id).unwrap(), &doc).unwrap();
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(512.));
     let mut view = Viewport::new(ViewKind::Top);
     for mode in [

@@ -3,6 +3,11 @@ use super::*;
 use std::sync::Arc;
 use viboceros_geometry::{AffineTransform3, CurvatureColorMapping, CurvatureMesh};
 
+pub(super) struct CachedMesh {
+    density: viboceros_geometry::SubDMeshDensity,
+    mesh: Option<Arc<CurvatureMesh>>,
+}
+
 pub(super) struct Drawing {
     source: Option<Arc<CurvatureMesh>>,
     mapping: CurvatureColorMapping,
@@ -10,22 +15,36 @@ pub(super) struct Drawing {
     colors: DraftColors,
 }
 impl DisplayGeometry {
-    pub(in crate::viewport) fn curvature_mesh(&self) -> Option<Arc<CurvatureMesh>> {
-        self.curvature_mesh
-            .get_or_init(|| {
-                match &*self.geometry {
-                    Geometry::NurbsSurface(s) => s
-                        .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
-                        .ok(),
-                    Geometry::Brep(b) => b
-                        .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
-                        .ok(),
-                    Geometry::SubD(s) => s.curvature_mesh().ok(),
-                    _ => None,
-                }
-                .map(Arc::new)
-            })
-            .clone()
+    pub(in crate::viewport) fn curvature_mesh_with_density(
+        &self,
+        density: viboceros_geometry::SubDMeshDensity,
+    ) -> Option<Arc<CurvatureMesh>> {
+        let density = if matches!(&*self.geometry, Geometry::SubD(_)) {
+            density
+        } else {
+            Default::default()
+        };
+        if let Some(old) = &*self.curvature_mesh.borrow()
+            && old.density == density
+        {
+            return old.mesh.clone();
+        }
+        let mesh = match &*self.geometry {
+            Geometry::NurbsSurface(s) => s
+                .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                .ok(),
+            Geometry::Brep(b) => b
+                .curvature_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                .ok(),
+            Geometry::SubD(s) => s.curvature_mesh_with_density(density).ok(),
+            _ => None,
+        }
+        .map(Arc::new);
+        *self.curvature_mesh.borrow_mut() = Some(CachedMesh {
+            density,
+            mesh: mesh.clone(),
+        });
+        mesh
     }
     pub(in crate::viewport) fn curvature_colors(
         &self,

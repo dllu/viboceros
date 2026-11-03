@@ -32,6 +32,7 @@ impl VibocerosApp {
                     ui.add(egui::DragValue::new(&mut options.ranges[i][1]).speed(0.001));
                 });
                 ui.checkbox(&mut options.show_isocurves, "Show edges and isocurves");
+                self.show_analysis_mesh_controls(ui, "CurvatureAnalysis");
                 ui.horizontal(|ui| {
                     if ui.button("Auto range").clicked() {
                         range_action = Some("CurvatureAnalysis AutoRange");

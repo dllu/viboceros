@@ -30,6 +30,7 @@ impl std::fmt::Debug for View {
 struct Cache {
     source: GeometrySnapshot,
     tolerance: Tolerance,
+    density: viboceros_geometry::SubDMeshDensity,
     mesh: Option<Arc<CurvatureMesh>>,
 }
 #[derive(Default)]
@@ -97,14 +98,17 @@ fn refresh(state: &mut State, doc: &Document, cache: &analysis_mesh::Cache) {
         }
         if state.cache.get(&id).is_none_or(|c| {
             c.tolerance != doc.tolerance()
+                || matches!(object.geometry(), Geometry::SubD(_))
+                    && c.density != doc.analysis_subd_density()
                 || !c.source.shares_storage_with(object.geometry_snapshot())
         }) {
-            let mesh = cache.get(object, doc.tolerance()).ok().flatten();
+            let mesh = cache.get(object, doc).ok().flatten();
             state.cache.insert(
                 id,
                 Cache {
                     source: object.geometry_snapshot().clone(),
                     tolerance: doc.tolerance(),
+                    density: doc.analysis_subd_density(),
                     mesh,
                 },
             );
@@ -149,7 +153,12 @@ impl Command for AnalysisCommand {
             require_consumed(args, 0, USAGE)?;
             return Ok(None);
         }
-        let action = parse(&mut Options::default(), args)?;
+        let mesh_options = analysis_mesh::MeshOptions::parse(args)?;
+        let action = if mesh_options.configure_only() {
+            Action::Configure
+        } else {
+            parse(&mut Options::default(), &mesh_options.args)?
+        };
         let enabled = self.session.0.lock().unwrap().enabled;
         Ok(
             (matches!(action, Action::Start | Action::Add | Action::Remove) || !enabled).then(
@@ -194,7 +203,12 @@ impl AnalysisCommand {
             return Ok("Curvature analysis off".into());
         }
         let mut options = state.options;
-        let action = parse(&mut options, args)?;
+        let mesh_options = analysis_mesh::MeshOptions::parse(args)?;
+        let action = if mesh_options.configure_only() {
+            Action::Configure
+        } else {
+            parse(&mut options, &mesh_options.args)?
+        };
         let mut targets = BTreeSet::new();
         if matches!(action, Action::Start | Action::Add | Action::Remove) || !state.enabled {
             targets = doc
@@ -215,6 +229,7 @@ impl AnalysisCommand {
                 doc.clear_selection();
             }
         }
+        mesh_options.apply(doc);
         state.enabled = true;
         state.options = options;
         if matches!(action, Action::MaxRange | Action::AutoRange) {
@@ -256,11 +271,11 @@ impl View {
     pub fn mesh(
         &self,
         object: &viboceros_document::Object,
-        tolerance: Tolerance,
+        doc: &Document,
     ) -> Option<Arc<CurvatureMesh>> {
         if !self.objects.contains(&object.id()) {
             return None;
         }
-        self.cache.get(object, tolerance).ok().flatten()
+        self.cache.get(object, doc).ok().flatten()
     }
 }

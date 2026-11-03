@@ -469,13 +469,13 @@ impl Viewport {
                 draft_mesh: analyses
                     .draft
                     .filter(|v| v.objects.contains(&object.id()))
-                    .and_then(|v| v.mesh(object, document.tolerance())),
+                    .and_then(|v| v.mesh(object, document)),
                 curvature: analyses
                     .curvature
                     .filter(|v| v.objects.contains(&object.id()))
                     .map(|v| CurvatureFaces {
                         options: v.options,
-                        mesh: v.mesh(object, document.tolerance()),
+                        mesh: v.mesh(object, document),
                     }),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
@@ -515,7 +515,7 @@ impl Viewport {
                         curvature: display.curvature.as_ref().map(|c| CurvatureFaces {
                             options: c.options,
                             mesh: if partial {
-                                posed.curvature_mesh()
+                                posed.curvature_mesh_with_density(document.analysis_subd_density())
                             } else {
                                 c.mesh.clone()
                             },
@@ -529,7 +529,7 @@ impl Viewport {
                         face_member_colors_enabled: display.face_member_colors_enabled,
                         draft: display.draft,
                         draft_mesh: if partial && display.draft.is_some() {
-                            posed.curvature_mesh()
+                            posed.curvature_mesh_with_density(document.analysis_subd_density())
                         } else {
                             display.draft_mesh.clone()
                         },

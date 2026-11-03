@@ -60,6 +60,7 @@ impl VibocerosApp {
                     }
                 });
                 ui.checkbox(&mut options.show_isocurves, "Show edges and isocurves");
+                self.show_analysis_mesh_controls(ui, "DraftAngleAnalysis");
                 ui.horizontal(|ui| {
                     if ui.button("Add objects").clicked() {
                         action = Some("DraftAngleAnalysis Add");

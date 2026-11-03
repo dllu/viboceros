@@ -1,9 +1,26 @@
-//! Undoable document settings which do not transform existing geometry.
+//! Model policy and analysis display settings.
 
 use super::{Document, Edit};
 use viboceros_geometry::Tolerance;
 
 impl Document {
+    pub const fn analysis_subd_density(&self) -> viboceros_geometry::SubDMeshDensity {
+        self.analysis_subd_density
+    }
+
+    /// Analysis display settings are saved with the document but do not edit
+    /// control geometry, selection, or model undo/redo history.
+    pub fn set_analysis_subd_density(
+        &mut self,
+        density: viboceros_geometry::SubDMeshDensity,
+    ) -> bool {
+        if self.analysis_subd_density == density {
+            return false;
+        }
+        self.analysis_subd_density = density;
+        true
+    }
+
     /// Sets validated model tolerances for subsequent operations.
     /// Existing geometry, attributes, selection, and units are untouched; this
     /// does not refit geometry or reinterpret stored B-rep edge tolerances.
@@ -29,6 +46,30 @@ mod tests {
     use super::*;
     use crate::Geometry;
     use viboceros_geometry::{LengthUnitSystem, LineSegment, Point3};
+
+    #[test]
+    fn analysis_subd_density_survives_block_edit_save_cancel_and_history() {
+        use viboceros_geometry::SubDMeshDensity;
+        for save in [false, true] {
+            let mut doc = Document::default();
+            let point = Point3::try_new(1., 2., 3.).unwrap();
+            let id = doc.add_geometry(Geometry::Point(point)).unwrap();
+            let (_, instance) = doc.create_block_from_objects("part", point, [id]).unwrap();
+            doc.open_block_edit(instance).unwrap();
+            let density = SubDMeshDensity::new(2, false).unwrap();
+            doc.set_analysis_subd_density(density);
+            if save {
+                doc.save_block_edit().unwrap();
+            } else {
+                doc.discard_block_edit().unwrap();
+            }
+            assert_eq!(doc.analysis_subd_density(), density);
+            doc.undo().unwrap();
+            assert_eq!(doc.analysis_subd_density(), density);
+            doc.redo().unwrap();
+            assert_eq!(doc.analysis_subd_density(), density);
+        }
+    }
 
     #[test]
     fn tolerance_edits_preserve_existing_geometry_units_and_selection() {

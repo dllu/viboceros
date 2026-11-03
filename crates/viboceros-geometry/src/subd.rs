@@ -11,6 +11,7 @@ mod control_net;
 mod crease;
 mod curvature;
 mod cylinder;
+mod density;
 mod edges;
 mod ellipsoid;
 mod extrusion_conversion;
@@ -30,6 +31,7 @@ pub use append::SubDAppendResult;
 pub use chains::{SubDDirectedEdge, SubDEdgeChain};
 pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
+pub use density::SubDMeshDensity;
 pub use insert::SubDVertexInsertion;
 pub use mesh_conversion::SubDFromMeshOptions;
 pub use seams::SubDEdgeSeamResult;
@@ -185,7 +187,8 @@ impl SubD {
         Self::from_native(viboceros_opennurbs::subd_transform(self.archive(), matrix)?)
     }
     /// Samples the exact limit surface on a uniformly subdivided net. Density
-    /// 1..=6 means 1..=6 subdivision steps; at most one million quads are made.
+    /// 0..=6 subdivision steps; at most one million faces are made.
+    /// Zero steps require a quad-only control net.
     /// Polygonal interpolation between samples has no model-tolerance guarantee.
     pub fn tessellate(&self, density: u32) -> Result<TriangleMesh, GeometryError> {
         let data = viboceros_opennurbs::subd_tessellate(self.archive(), density)?;
@@ -281,7 +284,7 @@ mod tests {
         );
         assert_eq!(s.tessellate(1).unwrap().faces().len(), 4);
         assert_eq!(s.tessellate(3).unwrap().faces().len(), 64);
-        assert!(s.tessellate(0).is_err());
+        assert_eq!(s.tessellate(0).unwrap().faces().len(), 1);
         assert!(s.tessellate(7).is_err());
     }
     #[test]

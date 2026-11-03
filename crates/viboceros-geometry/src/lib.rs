@@ -11,7 +11,7 @@ mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
     SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDFromMeshOptions, SubDFromSurfaceMethod,
-    SubDSphereStyle, SubDVertexInsertion,
+    SubDMeshDensity, SubDSphereStyle, SubDVertexInsertion,
 };
 mod area_mass_properties;
 mod mass_integration;

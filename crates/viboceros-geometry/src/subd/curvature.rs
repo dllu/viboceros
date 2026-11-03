@@ -3,8 +3,15 @@ impl SubD {
     /// Regular bicubic limit-patch jets from the public OpenNURBS kernel.
     /// Extraordinary corners without a regular sector remain unavailable.
     pub fn curvature_mesh(&self) -> Result<crate::CurvatureMesh, GeometryError> {
+        self.curvature_mesh_with_density(SubDMeshDensity::default())
+    }
+
+    pub fn curvature_mesh_with_density(
+        &self,
+        density: SubDMeshDensity,
+    ) -> Result<crate::CurvatureMesh, GeometryError> {
         let mut data =
-            viboceros_opennurbs::subd_tessellate_with_jets(self.archive(), self.display_density())?;
+            viboceros_opennurbs::subd_tessellate_with_jets(self.archive(), density.for_subd(self))?;
         let indices = std::mem::take(&mut data.corner_jet_indices);
         let jets = std::mem::take(&mut data.surface_jets)
             .into_iter()

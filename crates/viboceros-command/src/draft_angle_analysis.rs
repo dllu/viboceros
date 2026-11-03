@@ -89,7 +89,12 @@ impl Command for AnalysisCommand {
             require_consumed(args, 0, USAGE)?;
             return Ok(None);
         }
-        let action = parse(&mut Options::default(), args)?;
+        let mesh_options = analysis_mesh::MeshOptions::parse(args)?;
+        let action = if mesh_options.configure_only() {
+            Action::Configure
+        } else {
+            parse(&mut Options::default(), &mesh_options.args)?
+        };
         let enabled = self.session.0.lock().unwrap().enabled;
         Ok(
             (action != Action::Configure || !enabled).then(|| ObjectSelectionPrompt {
@@ -114,7 +119,12 @@ impl Command for AnalysisCommand {
         }
         let mut proposed = state.clone();
         let mut targets = BTreeSet::new();
-        let action = parse(&mut proposed.options, args)?;
+        let mesh_options = analysis_mesh::MeshOptions::parse(args)?;
+        let action = if mesh_options.configure_only() {
+            Action::Configure
+        } else {
+            parse(&mut proposed.options, &mesh_options.args)?
+        };
         if action != Action::Configure || !state.enabled {
             let selected = doc
                 .selected_objects()
@@ -144,6 +154,7 @@ impl Command for AnalysisCommand {
             }
             doc.clear_selection();
         }
+        mesh_options.apply(doc);
         proposed.enabled = true;
         let count = proposed
             .objects
@@ -171,11 +182,11 @@ impl View {
     pub fn mesh(
         &self,
         object: &viboceros_document::Object,
-        tolerance: Tolerance,
+        doc: &Document,
     ) -> Option<Arc<viboceros_geometry::CurvatureMesh>> {
         if !self.objects.contains(&object.id()) {
             return None;
         }
-        self.cache.get(object, tolerance).ok().flatten()
+        self.cache.get(object, doc).ok().flatten()
     }
 }

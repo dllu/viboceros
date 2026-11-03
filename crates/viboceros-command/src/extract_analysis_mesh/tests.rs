@@ -51,7 +51,7 @@ fn extract_analysis_mesh_copies_display_colors_attributes_and_one_history_record
     r.execute(&mut d, "DraftAngleAnalysis Range=-5,7 Up=0,0,1")
         .unwrap();
     let view = r.draft_angle_analysis_view(&d).unwrap();
-    let source = view.mesh(d.object(id).unwrap(), d.tolerance()).unwrap();
+    let source = view.mesh(d.object(id).unwrap(), &d).unwrap();
     let geometry = d.object(id).unwrap().geometry_snapshot().clone();
     select(&mut d, id);
     r.execute(&mut d, "ExtractAnalysisMesh").unwrap();
@@ -84,7 +84,7 @@ fn extract_analysis_mesh_copies_display_colors_attributes_and_one_history_record
         &source,
         &r.draft_angle_analysis_view(&d)
             .unwrap()
-            .mesh(d.object(id).unwrap(), d.tolerance())
+            .mesh(d.object(id).unwrap(), &d)
             .unwrap()
     ));
 }
@@ -103,7 +103,7 @@ fn extraction_generates_plain_meshes_and_analysis_modes_share_their_tessellation
     let source = r
         .draft_angle_analysis_view(&d)
         .unwrap()
-        .mesh(d.object(id).unwrap(), d.tolerance())
+        .mesh(d.object(id).unwrap(), &d)
         .unwrap();
     select(&mut d, id);
     r.execute(&mut d, "CurvatureAnalysis Style=Gaussian Range=-1,1")

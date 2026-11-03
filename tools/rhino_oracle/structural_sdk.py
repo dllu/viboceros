@@ -6,6 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'analysis_subd_details': ('analysis_subd_details_probe', ('merge_edges_probe',)),
+    'analysis_mesh_parameters': ('analysis_mesh_parameters_probe', ('merge_edges_probe',)),
     'extract_analysis_mesh': ('extract_analysis_mesh_probe', ('join_probe','merge_edges_probe')),
     'camera_archive': ('camera_archive_probe', ('merge_edges_probe',)),
     'camera_vectors': ('camera_vectors_probe', ('merge_edges_probe',)),
@@ -232,6 +234,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
+    if 'analysis_subd_details_probe' in modules:
+        from .analysis_subd_details_probe import ARCHIVES
+        for name in ARCHIVES:
+            asset = Path('fixtures/analysis_subd_settings') / (name + '.3dm')
+            (destination / asset.parent).mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source_directory / asset, destination / asset)
     if 'extract_analysis_mesh_probe' in modules or 'brep_direction_probe' in modules or 'direction_analysis_probe' in modules or 'draft_angle_probe' in modules or 'curvature_analysis_probe' in modules:
         for op in request['operations']:
             if op.get('op') not in ('extract_analysis_mesh','brep_direction_command','direction_analysis','draft_angle_analysis','curvature_analysis'): continue

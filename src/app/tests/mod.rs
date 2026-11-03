@@ -1,5 +1,6 @@
 mod affine_preview;
 mod align;
+mod analysis_mesh;
 mod angle;
 mod apply_curves;
 mod arc_deform;

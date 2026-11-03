@@ -33,7 +33,8 @@ blocks, repeat extraction and Undo/Redo. Source geometry CRCs remain unchanged.
 App replays exercise both preselection and viewport picks. Renderer checks compare
 submitted colors with extracted corner colors in all display modes. Tessellation
 counts and sampling locations are not identical to Rhino's analysis mesher;
-analysis-density controls remain unimplemented.
+[SubD density controls](analysis-mesh.md) apply to both display and extraction.
+NURBS/B-rep density controls remain unimplemented.
 
 ```sh
 cargo test -p viboceros-command --lib extract_analysis_mesh

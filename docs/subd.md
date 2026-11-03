@@ -75,8 +75,9 @@ The facets between samples are approximations without a model-tolerance
 certificate. Exact SubD projection/intersections, surface snaps, certified tight
 bounds and border extraction are not implemented. Construction is limited to
 100,000 vertices and faces, 400,000 face corners and a 64 MiB archive; tessellation
-accepts density 1–6 with a one-million-quad budget. Display density adapts to that
-budget. Unsupported commands reject SubDs rather than changing their family.
+accepts density 1–6 with a one-million-quad budget, plus level 0 for quad-only nets.
+Display density adapts to that budget. [Analysis mesh settings](commands/analysis-mesh.md)
+provide separate subdivision and adaptive controls. Unsupported commands reject SubDs rather than changing their family.
 
 [Qualification report](subd-qualification.json): ten Rhino 8 recipes captured
 for control topology and again for limit meshes. Command and interactive getter

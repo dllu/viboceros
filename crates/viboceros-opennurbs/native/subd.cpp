@@ -258,11 +258,14 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
     ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
     require(normals>=0 && normals<=2,"Invalid SubD differential request");
-    require(density>=1 && density<=6,"SubD display density must be between 1 and 6");
+    require(density<=6,"SubD display density must be between 0 and 6");
     auto subd=vibo_subd::decode(bytes,n);
     // Count in 64 bits before subdivision; GlobalSubdivideQuadCount() returns u32.
     uint64_t quads=0;auto fit=subd->FaceIterator();
-    for(auto* f=fit.FirstFace();f;f=fit.NextFace()) quads+=f->EdgeCount();
+    for(auto* f=fit.FirstFace();f;f=fit.NextFace()) {
+      require(density>0 || f->EdgeCount()==4,"Nonquad SubD faces require at least one subdivision");
+      quads+=density>0?f->EdgeCount():1;
+    }
     for(unsigned i=1;i<density;++i) quads*=4;
     require(quads<=1000000,"SubD tessellation face budget exceeded");
     std::unordered_map<unsigned,uint32_t> sources;
@@ -273,7 +276,7 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
       // including archives whose active level is already globally subdivided.
       const_cast<ON_SubDFace*>(f)->m_level_zero_face_id=f->m_id;
     }
-    require(subd->GlobalSubdivide(density),"SubD subdivision failed");
+    if(density>0) require(subd->GlobalSubdivide(density),"SubD subdivision failed");
     return extract(*subd,true,normals!=0,&sources,nullptr,normals==2);
   });
 }

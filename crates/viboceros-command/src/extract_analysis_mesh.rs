@@ -29,8 +29,11 @@ impl ExtractCommand {
         for object in selected {
             if let Geometry::BlockInstance(instance) = object.geometry() {
                 for member in instance.members() {
-                    if let Some(mesh) = analysis_mesh::generate(&member.geometry, doc.tolerance())?
-                    {
+                    if let Some(mesh) = analysis_mesh::generate(
+                        &member.geometry,
+                        doc.tolerance(),
+                        doc.analysis_subd_density(),
+                    )? {
                         output.push((
                             analysis_mesh::copy_mesh(&mesh, None, doc.tolerance())?,
                             member.attributes.clone(),
@@ -39,7 +42,7 @@ impl ExtractCommand {
                 }
                 continue;
             }
-            let Some(mesh) = cache.get(object, doc.tolerance())? else {
+            let Some(mesh) = cache.get(object, doc)? else {
                 continue;
             };
             let colors = if let Some(view) = curvature
