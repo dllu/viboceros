@@ -5,6 +5,7 @@
 These pages describe geometry algorithms, numeric conventions and their
 validation. Command behavior belongs in the [command reference](../commands/README.md).
 
+- [Surface curve networks and interior junctions](curve-networks.md)
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
