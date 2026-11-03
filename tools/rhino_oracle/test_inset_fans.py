@@ -12,6 +12,7 @@ from . import inset_fan_basis_probe as basis
 from . import inset_fan_fit_probe as fit
 from . import inset_fan_interior_probe as interior
 from . import inset_fan_surface_probe as surface_fit
+from . import inset_fan_commands_probe as commands
 
 
 FAMILIES = (
@@ -100,6 +101,25 @@ class InsetFanDiagnosticsTests(unittest.TestCase):
         for row, counts in zip(native('inset_fan_refinement')['results'], expected):
             self.assertTrue(row['value']['output']['valid'])
             self.assertEqual(topology(row['value']), counts, row['id'])
+
+    def test_crossed_cap_command_modes_and_immutable_provenance(self):
+        family='inset_fan_commands';operations=commands.cases()
+        path=HERE / ('fixtures/' + family + '.json');data=native(family)
+        query=request();query['operations']=operations
+        self.assertEqual(json.loads(path.read_bytes()),query)
+        self.assertEqual([r['id'] for r in data['results']],[o['id'] for o in operations])
+        self.assertEqual(data['provenance']['request_sha256'],hashlib.sha256(path.read_bytes()).hexdigest())
+        for sha in data['provenance']['sources'].values():
+            frozen=gzip.decompress((HERE / ('observations/source_snapshots/'+sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(frozen).hexdigest(),sha)
+        self.assertEqual([len(r['value']['after']) for r in data['results']],[96,129,1,7,6,1])
+        for op,row in zip(operations,data['results']):
+            commands.validate(op);v=row['value']
+            self.assertEqual(v['results'],['Success']);self.assertNotIn('Unknown command:',v['history'])
+            self.assertEqual(v['before'][0]['brep'],v['undo'][0]['brep'])
+            self.assertEqual(v['after_script'],v['redo'])
+            for changes in ({'id':'unowned'},{'extra':True},{'split':1},{'distance':True}):
+                with self.assertRaises(ValueError): commands.validate(dict(op,**changes))
 
     def test_malformed_recipes_decline(self):
         for _, cases, validate in FAMILIES:

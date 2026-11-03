@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "3.0_1.4_2_False_curves",
+      "op": "inset_fan_commands",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "3.0_1.4_2_False_pieces",
+      "op": "inset_fan_commands",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "3.0_1.4_2_False_joined",
+      "op": "inset_fan_commands",
+      "scene": "elliptic_stadium",
+      "radius_x": 3.0,
+      "distance": 1.4,
+      "degree": 2,
+      "subdivide": false,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": true
+    },
+    {
+      "id": "hole_stadium_1.5_True_curves",
+      "op": "inset_fan_commands",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "hole_stadium_1.5_True_pieces",
+      "op": "inset_fan_commands",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "hole_stadium_1.5_True_joined",
+      "op": "inset_fan_commands",
+      "scene": "hole_stadium",
+      "distance": 1.5,
+      "crease_corners": true,
+      "loose": false,
+      "ignore_seams": true,
+      "split": true,
+      "join_outputs": true
+    }
+  ]
+}

@@ -26,7 +26,12 @@ def validate(op):
 
 
 def run(op,host,iterations,tolerance):
-    validate(op);R,S=host['Rhino'],host['System'];G=R.Geometry
+    validate(op)
+    return run_source(op,host,iterations,tolerance,source(op,host,tolerance))
+
+
+def source(op,host,tolerance):
+    R,S=host['Rhino'],host['System'];G=R.Geometry
     b=boundary(dict(scene='elliptic_stadium',variant='plain'),host,tolerance)
     curves=[e.ToNurbsCurve() for e in b.Edges];b.Dispose();composite=G.PolyCurve()
     try:
@@ -48,4 +53,4 @@ def run(op,host,iterations,tolerance):
     finally:
         composite.Dispose()
         for c in curves:c.Dispose()
-    return run_source(op,host,iterations,tolerance,b)
+    return b
