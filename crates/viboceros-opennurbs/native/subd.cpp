@@ -308,6 +308,8 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
 #include "subd_edges.h"
+#include "subd_face_grids.h"
+#include "subd_regular_patches.h"
 
 extern "C" int vibo_subd_cylinder(const double* frame,double radius,double height,const uint32_t* counts,uint32_t cap,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{

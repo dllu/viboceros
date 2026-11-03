@@ -14,7 +14,8 @@ pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
     SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDExtrudeDirection, SubDExtrudeSelection,
     SubDFaceExtraction, SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult,
-    SubDMeshDensity, SubDSphereStyle, SubDVertexInsertion, join_subds, join_subds_seeded,
+    SubDLimitFaceGrid, SubDMeshDensity, SubDSphereStyle, SubDVertexInsertion, join_subds,
+    join_subds_seeded,
 };
 mod area_mass_properties;
 mod mass_integration;

@@ -84,6 +84,27 @@ typedef struct {
 int vibo_subd_edge_samples(const uint8_t*, size_t, unsigned, ViboSubDEdgeSamples**, char*, size_t);
 int vibo_subd_edge_samples_view(const ViboSubDEdgeSamples*, ViboSubDEdgeSamplesView*);
 void vibo_subd_edge_samples_free(ViboSubDEdgeSamples*);
+typedef struct ViboSubDFaceGrids ViboSubDFaceGrids;
+typedef struct {
+  size_t face, corner, side, offset;
+} ViboSubDFaceGridInfo;
+typedef struct {
+  size_t grid_count, point_count;
+  const ViboSubDFaceGridInfo* grids;
+  const double* points;
+} ViboSubDFaceGridsView;
+int vibo_subd_face_grids(const uint8_t*,size_t,unsigned,ViboSubDFaceGrids**,char*,size_t);
+int vibo_subd_face_grids_view(const ViboSubDFaceGrids*,ViboSubDFaceGridsView*);
+void vibo_subd_face_grids_free(ViboSubDFaceGrids*);
+typedef struct ViboSubDRegularPatches ViboSubDRegularPatches;
+typedef struct {
+  size_t patch_count;
+  const size_t* faces;
+  const double* controls;
+} ViboSubDRegularPatchesView;
+int vibo_subd_regular_patches(const uint8_t*,size_t,ViboSubDRegularPatches**,char*,size_t);
+int vibo_subd_regular_patches_view(const ViboSubDRegularPatches*,ViboSubDRegularPatchesView*);
+void vibo_subd_regular_patches_free(ViboSubDRegularPatches*);
 typedef struct ViboSubDChains ViboSubDChains;
 typedef struct {
   size_t chain_count,edge_count;

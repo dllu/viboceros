@@ -1,0 +1,221 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "quad_corners_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "quad_corners",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "quad_corners_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "quad_corners",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "quad_smooth_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "quad_smooth",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "quad_smooth_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "quad_smooth",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "grid_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "grid",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "grid_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "grid",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "box_False_0",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": false,
+      "vertex": 0
+    },
+    {
+      "id": "box_False_1",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": false,
+      "vertex": 1
+    },
+    {
+      "id": "box_False_2",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": false,
+      "vertex": 2
+    },
+    {
+      "id": "box_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "box_False_4",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": false,
+      "vertex": 4
+    },
+    {
+      "id": "box_True_0",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": true,
+      "vertex": 0
+    },
+    {
+      "id": "box_True_1",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": true,
+      "vertex": 1
+    },
+    {
+      "id": "box_True_2",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": true,
+      "vertex": 2
+    },
+    {
+      "id": "box_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "box_True_4",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "box",
+      "packed": true,
+      "vertex": 4
+    },
+    {
+      "id": "pentagon_False_0",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": false,
+      "vertex": 0
+    },
+    {
+      "id": "pentagon_False_1",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": false,
+      "vertex": 1
+    },
+    {
+      "id": "pentagon_False_2",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": false,
+      "vertex": 2
+    },
+    {
+      "id": "pentagon_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "pentagon_False_4",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": false,
+      "vertex": 4
+    },
+    {
+      "id": "pentagon_True_0",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": true,
+      "vertex": 0
+    },
+    {
+      "id": "pentagon_True_1",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": true,
+      "vertex": 1
+    },
+    {
+      "id": "pentagon_True_2",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": true,
+      "vertex": 2
+    },
+    {
+      "id": "pentagon_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "pentagon_True_4",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "pentagon",
+      "packed": true,
+      "vertex": 4
+    },
+    {
+      "id": "creased_box_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "creased_box",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "creased_box_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "creased_box",
+      "packed": true,
+      "vertex": 3
+    },
+    {
+      "id": "torus_False_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "torus",
+      "packed": false,
+      "vertex": 3
+    },
+    {
+      "id": "torus_True_3",
+      "op": "subd_to_nurbs_sdk",
+      "scene": "torus",
+      "packed": true,
+      "vertex": 3
+    }
+  ]
+}

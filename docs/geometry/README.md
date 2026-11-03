@@ -9,6 +9,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
+- [SubD limit charts and exact NURBS patches](subd-limit-faces.md)
 - [InsertPoint geometry, staging and compatibility limits](insert-point.md)
 - [Mesh vertex channels and 3DM preservation](mesh-channels.md)
 - [Mesh Boolean commands, getters and history](../mesh-boolean-commands.md)
