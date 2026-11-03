@@ -90,8 +90,9 @@ def run_source(op, host, iterations, tolerance, b):
             macro += ' _Loose=' + ('_On' if loose else '_No' if op['op'] == 'inset_surface_command' else '_Off')
         macro += ' _IgnoreSeams=_Yes'
         if op['crease_corners'] is not None: macro += ' _CreaseCorners=' + yn(op['crease_corners'])
-        macro += ' _Split=' + yn(op['split'])
-        if op['split']: macro += ' _JoinOutputs=' + yn(op['join_outputs'])
+        if op['split'] is not None: macro += ' _Split=' + yn(op['split'])
+        if op['split'] is not False and op['join_outputs'] is not None:
+            macro += ' _JoinOutputs=' + yn(op['join_outputs'])
         macro += ' _Cancel' if op.get('cancel',False) else ' '+str(op.get('distance',0.3))+' _Enter _Cancel _Cancel'
         success, after, events = observe_command(R.Commands.Command, 'Inset',
             lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)

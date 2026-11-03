@@ -62,7 +62,8 @@ Curved G0 corners, higher-degree polygon-edge encodings, non-affine surface char
 seams, poles and topology-changing offsets remain pending. Offset cusps, touching
 or crossing boundaries, nested holes and exhausted fitting/storage budgets return
 errors without modifying the document. `ThroughPoint`, seam options and
-separate/curve-only output modes are still unimplemented.
+topology-changing tight offsets remain unimplemented. Curve and separate-surface
+output are described in [output modes](inset-outputs.md).
 
 ```sh
 cargo test -p viboceros-oracle --test inset_surface --test inset_loose

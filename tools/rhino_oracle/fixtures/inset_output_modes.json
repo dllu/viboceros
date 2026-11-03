@@ -1,0 +1,659 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "ellipse_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "ellipse",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "oval_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "oval",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "concave_oval_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "concave_oval",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "bezier_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "bezier",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "stadium_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "stadium",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "mixed_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "mixed",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "holes_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "holes",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "circle_rotated_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "circle_rotated",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_False_False_curves",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_False_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_False_True_curves",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": false,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_False_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": false,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_True_False_curves",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_True_False_pieces",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_True_True_curves",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": true,
+      "crease_corners": true,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_True_True_pieces",
+      "op": "inset_output_modes",
+      "scene": "annulus_narrow",
+      "loose": true,
+      "crease_corners": true,
+      "split": true,
+      "join_outputs": false
+    }
+  ]
+}

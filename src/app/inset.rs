@@ -16,6 +16,8 @@ pub(super) struct Session {
     distance_supplied: bool,
     crease_supplied: bool,
     loose_supplied: bool,
+    split_supplied: bool,
+    join_supplied: bool,
 }
 impl Session {
     pub(super) fn edges(&self) -> &[viboceros_geometry::LineSegment] {
@@ -188,6 +190,8 @@ impl VibocerosApp {
             distance_supplied: parsed.distance_supplied,
             crease_supplied: parsed.crease_supplied,
             loose_supplied: parsed.loose_supplied,
+            split_supplied: parsed.split_supplied,
+            join_supplied: parsed.join_supplied,
         });
         self.active_command = Some(InteractiveCommand::Inset);
         self.log_inset();
@@ -198,25 +202,28 @@ impl VibocerosApp {
             Ok(message) => {
                 if surface {
                     self.commands.remember_inset_surface_options(options);
-                    self.component_selection.clear();
+                    if options.split {
+                        self.component_selection.clear();
+                    }
                 } else {
                     self.commands.remember_inset_options(options, mesh);
                 }
-                let picks = plan
-                    .faces()
-                    .iter()
-                    .map(|f| ComponentPick {
-                        object: f.object,
-                        index: f.index,
-                        kind: f.kind,
-                    })
-                    .collect();
-                if !surface
-                    && let Err(e) = self
+                if !surface {
+                    let picks = plan
+                        .faces()
+                        .iter()
+                        .map(|f| ComponentPick {
+                            object: f.object,
+                            index: f.index,
+                            kind: f.kind,
+                        })
+                        .collect();
+                    if let Err(e) = self
                         .component_selection
                         .replace_faces(&self.document, picks)
-                {
-                    self.push_log(format!("Error: {e}"));
+                    {
+                        self.push_log(format!("Error: {e}"));
+                    }
                 }
                 self.active_command = None;
                 self.push_log(message);
@@ -234,14 +241,13 @@ impl VibocerosApp {
                 "Inset: select surface, mesh or SubD faces; Ctrl/Command removes; Enter accepts selection; Esc cancels".into()
             } else if s.surface {
                 format!(
-                    "Inset Distance={} CreaseCorners={} Loose={}; enter a positive distance, CreaseCorners=Yes|No or Loose=On|Off; Enter commits, Esc cancels",
-                    s.options.distance,
-                    if s.options.crease_corners {
-                        "Yes"
+                    "{}; enter a positive distance, CreaseCorners=Yes|No, Loose=On|Off, Split=Yes|No{}; Enter commits, Esc cancels",
+                    s.options.surface_command(),
+                    if s.options.split {
+                        " or JoinOutputs=Yes|No"
                     } else {
-                        "No"
-                    },
-                    if s.options.loose { "On" } else { "Off" }
+                        ""
+                    }
                 )
             } else if s.mesh {
                 format!(
@@ -276,6 +282,12 @@ impl VibocerosApp {
             }
             if !s.loose_supplied {
                 s.options.loose = defaults.loose;
+            }
+            if !s.split_supplied {
+                s.options.split = defaults.split;
+            }
+            if !s.join_supplied {
+                s.options.join_outputs = defaults.join_outputs;
             }
             s.targets = Some(targets);
             s.witness = Some(witness);
@@ -347,6 +359,8 @@ impl VibocerosApp {
                                             s.distance_supplied |= p.distance_supplied;
                                             s.crease_supplied |= p.crease_supplied;
                                             s.loose_supplied |= p.loose_supplied;
+                                            s.split_supplied |= p.split_supplied;
+                                            s.join_supplied |= p.join_supplied;
                                         }
                                         return Err(e);
                                     }
@@ -360,6 +374,8 @@ impl VibocerosApp {
                     s.distance_supplied |= p.distance_supplied;
                     s.crease_supplied |= p.crease_supplied;
                     s.loose_supplied |= p.loose_supplied;
+                    s.split_supplied |= p.split_supplied;
+                    s.join_supplied |= p.join_supplied;
                     Ok(())
                 });
             if let Err(e) = result {

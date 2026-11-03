@@ -145,7 +145,13 @@ pub fn epsilon_for(operation: &Value) -> f64 {
         "ellipse" | "oval" | "concave_oval" | "bezier" | "holes"
     ) {
         // Independent fits can consume both model-tolerance allowances.
-        if operation["op"] == "inset_planar_curves_command" {
+        if matches!(
+            operation["op"].as_str().unwrap(),
+            "inset_planar_curves_command"
+                | "inset_output_modes"
+                | "inset_output_preferences"
+                | "inset_output_limits"
+        ) {
             2e-6
         } else {
             1e-6
@@ -261,7 +267,11 @@ pub fn assert_geometry_with_epsilon(
         }
     }
 }
-fn curve_witnesses(source: &NurbsCurve, target: &NurbsCurve, epsilon: f64) -> Result<(), String> {
+pub fn curve_witnesses(
+    source: &NurbsCurve,
+    target: &NurbsCurve,
+    epsilon: f64,
+) -> Result<(), String> {
     let reverse = source
         .derivative_at(*source.domain().start())
         .unwrap()

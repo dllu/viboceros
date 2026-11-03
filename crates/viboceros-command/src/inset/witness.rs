@@ -7,6 +7,7 @@ struct Source {
     geometry: GeometrySnapshot,
     attributes: ObjectAttributes,
     groups: Vec<GroupId>,
+    text: BTreeMap<String, String>,
 }
 #[derive(Clone, Debug)]
 pub struct Witness {
@@ -44,6 +45,7 @@ impl Witness {
                     geometry: object.geometry_snapshot().clone(),
                     attributes: object.attributes().clone(),
                     groups: object.group_ids().to_vec(),
+                    text: object.geometry_user_text().clone(),
                 })
             })
             .collect::<Result<_, CommandError>>()?;
@@ -68,6 +70,7 @@ impl Witness {
                         o.geometry_snapshot() == &s.geometry
                             && o.attributes() == &s.attributes
                             && o.group_ids() == s.groups
+                            && o.geometry_user_text() == &s.text
                     })
             })
     }

@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "annulus_narrow_0.5_False_curves",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.5,
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.5_False_pieces",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.5,
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.5_True_curves",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.5,
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.5_True_pieces",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.5,
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.6_False_curves",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.6,
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.6_False_pieces",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.6,
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.6_True_curves",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.6,
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "annulus_narrow_0.6_True_pieces",
+      "op": "inset_output_limits",
+      "scene": "annulus_narrow",
+      "distance": 0.6,
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_3.0_False_curves",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_3.0_False_pieces",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 3.0,
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_3.0_True_curves",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 3.0,
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_3.0_True_pieces",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 3.0,
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_4.0_False_curves",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 4.0,
+      "loose": false,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_4.0_False_pieces",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 4.0,
+      "loose": false,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_4.0_True_curves",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 4.0,
+      "loose": true,
+      "crease_corners": false,
+      "split": false,
+      "join_outputs": false
+    },
+    {
+      "id": "ellipse_4.0_True_pieces",
+      "op": "inset_output_limits",
+      "scene": "ellipse",
+      "distance": 4.0,
+      "loose": true,
+      "crease_corners": false,
+      "split": true,
+      "join_outputs": false
+    }
+  ]
+}

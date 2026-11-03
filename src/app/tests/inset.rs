@@ -5,6 +5,9 @@ use viboceros_command::ComponentSelectionKind;
 mod loose;
 #[path = "../../../crates/viboceros-oracle/tests/support/inset_surface.rs"]
 mod native_surface;
+#[path = "../../../crates/viboceros-oracle/tests/support/inset_output.rs"]
+mod output_support;
+mod outputs;
 #[path = "../../../crates/viboceros-oracle/tests/support/inset.rs"]
 mod support;
 mod surface;

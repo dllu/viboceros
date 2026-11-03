@@ -2,7 +2,9 @@
 use super::*;
 use crate::{CurveEditPointSolver, CurveOffsetOperations, UnitVector3};
 mod curves;
+mod outputs;
 mod polygon;
+pub use outputs::{PlanarInsetOutput, PlanarInsetOutputMode};
 mod regions;
 mod storage;
 #[cfg(test)]

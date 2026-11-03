@@ -6,6 +6,9 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'inset_output_limits': ('inset_outputs_probe', ('inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
+    'inset_output_modes': ('inset_outputs_probe', ('inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
+    'inset_output_preferences': ('inset_outputs_probe', ('inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
     'inset_loose_controls': ('inset_loose_controls', ('inset_planar_curves','inset_surface_probe','merge_edges_probe')),
     'inset_loose_command': ('inset_loose_command', ('inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),
     'inset_loose_preferences': ('inset_loose_command', ('inset_planar_curves','inset_surface_probe','inset_surface_command','join_probe','merge_edges_probe')),

@@ -98,7 +98,10 @@ fn inset_pointer_face_picks_and_previews_work_in_all_display_modes() {
             enter(&mut app, "");
             assert!(!app.picking_inset());
             if family == "inset_planar_curves" {
-                enter(&mut app, "Loose=On");
+                enter(&mut app, "Loose=On Split=No");
+            }
+            if family == "inset_surface_sdk" {
+                enter(&mut app, "JoinOutputs=No");
             }
             enter(&mut app, ".3");
             frame(vec![], &app);

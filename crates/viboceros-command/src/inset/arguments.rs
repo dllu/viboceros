@@ -1,5 +1,5 @@
 use super::*;
-pub const USAGE: &str = "Inset [distance|Distance=value] [Mode=Group|Single] [CreaseCorners=Yes|No] [Loose=On|Off] [Faces=All|0,1,...]";
+pub const USAGE: &str = "Inset [distance|Distance=value] [Mode=Group|Single] [CreaseCorners=Yes|No] [Loose=On|Off] [Split=Yes|No] [JoinOutputs=Yes|No] [Faces=All|0,1,...]";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Mode {
     Group,
@@ -11,6 +11,8 @@ pub struct Options {
     pub mode: Mode,
     pub crease_corners: bool,
     pub loose: bool,
+    pub split: bool,
+    pub join_outputs: bool,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -19,6 +21,8 @@ impl Default for Options {
             mode: Mode::Group,
             crease_corners: false,
             loose: false,
+            split: true,
+            join_outputs: true,
         }
     }
 }
@@ -29,6 +33,23 @@ impl Options {
         } else {
             Ok(())
         }
+    }
+    pub fn surface_command(self) -> String {
+        let mut text = format!(
+            "Inset Distance={} CreaseCorners={} Loose={} Split={}",
+            self.distance,
+            if self.crease_corners { "Yes" } else { "No" },
+            if self.loose { "On" } else { "Off" },
+            if self.split { "Yes" } else { "No" }
+        );
+        if self.split {
+            text.push_str(if self.join_outputs {
+                " JoinOutputs=Yes"
+            } else {
+                " JoinOutputs=No"
+            });
+        }
+        text
     }
     pub fn command(self) -> String {
         format!(
@@ -50,9 +71,11 @@ pub struct Input {
     pub faces_supplied: bool,
     pub crease_supplied: bool,
     pub loose_supplied: bool,
+    pub split_supplied: bool,
+    pub join_supplied: bool,
 }
 pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError> {
-    let mut seen = [false; 5];
+    let mut seen = [false; 7];
     let mut faces = None;
     let mut i = 0;
     while i < args.len() {
@@ -91,6 +114,12 @@ pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError>
                 return Err(CommandError::Usage(USAGE));
             };
             4
+        } else if option_name_eq(name, "Split") {
+            options.split = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+            5
+        } else if option_name_eq(name, "JoinOutputs") {
+            options.join_outputs = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+            6
         } else if option_name_eq(name, "Faces") {
             if value.len() > 4_000_000 {
                 return Err(CommandError::Usage(USAGE));
@@ -127,5 +156,7 @@ pub fn parse(args: &[&str], mut options: Options) -> Result<Input, CommandError>
         faces,
         crease_supplied: seen[3],
         loose_supplied: seen[4],
+        split_supplied: seen[5],
+        join_supplied: seen[6],
     })
 }

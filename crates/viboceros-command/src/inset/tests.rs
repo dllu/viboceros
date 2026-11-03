@@ -1,4 +1,5 @@
 use super::*;
+mod outputs;
 #[test]
 fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
     let surface = NurbsSurface::try_bilinear(
@@ -39,7 +40,10 @@ fn inset_whole_planar_surfaces_and_separate_defaults_replay_atomically() {
             "Inset 0",
             "Inset .7 CreaseCorners=Maybe",
             "Inset .7 CreaseCorners=Yes CreaseCorners=No",
-            "Inset .7 Split=No",
+            "Inset .7 Split=Maybe",
+            "Inset .7 JoinOutputs=Maybe",
+            "Inset .7 Split=Yes Split=No",
+            "Inset .7 JoinOutputs=Yes JoinOutputs=No",
             "Inset .7 Loose=No",
             "Inset .7 Loose=Yes",
             "Inset .7 Loose=On Loose=Off",
@@ -117,6 +121,8 @@ fn inset_invalid_and_mixed_inputs_preserve_geometry_redo_and_defaults() {
             "Inset NaN Faces=0",
             "Inset .3 Faces=999",
             "Inset .3 Faces=0 Loose=On",
+            "Inset .3 Faces=0 Split=No",
+            "Inset .3 Faces=0 JoinOutputs=No",
             "Inset .3 Faces=-1",
             "Inset .3 Faces=0 Mode=Other",
             "Inset .3 Faces=0 Mode=Group Mode=Single",
@@ -141,7 +147,7 @@ fn inset_invalid_and_mixed_inputs_preserve_geometry_redo_and_defaults() {
 }
 #[test]
 fn inset_stale_attributes_groups_selection_tolerance_and_geometry_reject_commit() {
-    for change in 0..5 {
+    for change in 0..6 {
         let (mut doc, id) = fixture(false);
         let plan = Plan::prepare(&doc, [(id, 0)], Options::default()).unwrap();
         match change {
@@ -157,6 +163,10 @@ fn inset_stale_attributes_groups_selection_tolerance_and_geometry_reject_commit(
             }
             3 => {
                 doc.set_tolerance(Tolerance::try_new(0.002, 1e-6, 0.01).unwrap());
+            }
+            4 => {
+                doc.set_object_geometry_user_text([id], "Changed", Some("value"))
+                    .unwrap();
             }
             _ => {
                 doc.replace_object_geometries([(
