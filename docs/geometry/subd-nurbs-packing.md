@@ -64,7 +64,7 @@ Maximum observed surface and spatial-curve bounds are about `1.4e-13` and
 Separate 3DM-import tests verify retained IDs/charts, packed topology, source
 immutability and invalidation after a crease edit. Output is limited to four
 million controls, with tensor admission before common-basis refinement; existing
-SubD refinement budgets also apply. Soft sharpness, command integration and
-general performance parity remain open. The finite approximation still has no
+SubD refinement budgets also apply. The [ToNURBS command](../commands/to-nurbs-subd.md)
+exposes packing. Soft sharpness and general performance parity remain open. The finite approximation still has no
 continuous error certificate against the mathematical SubD limit. B-rep output
 does not yet carry Rhino's per-face pack-ID user data.

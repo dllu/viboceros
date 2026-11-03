@@ -1,0 +1,348 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "bootstrap",
+      "scene": "subdivided_box",
+      "steps": [
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "grid_False_G1x",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "grid_True_G1x",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_False_G0",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_False_G1",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_False_G2",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G2",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_False_G1x",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_False_G1xx",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1xx",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_True_G0",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G0",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_True_G1",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_True_G2",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G2",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_True_G1x",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "subdivided_box_True_G1xx",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "torus_False_G1x",
+      "scene": "torus",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "torus_True_G1x",
+      "scene": "torus",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "pentagonal_prism_False_G1x",
+      "scene": "pentagonal_prism",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "pentagonal_prism_True_G1x",
+      "scene": "pentagonal_prism",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1x",
+          "delete": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "mixed_False_False",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": false,
+          "postselect": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "mixed_False_True",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": false,
+          "postselect": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "mixed_True_False",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": false
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "mixed_True_True",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "memory",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G2",
+          "delete": true
+        },
+        {},
+        {
+          "packed": true
+        },
+        {},
+        {
+          "mode": "G1"
+        },
+        {},
+        {
+          "delete": false
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "cancel_selection",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "cancel": "selection"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "cancel_options",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "cancel": "options"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "cancel_submenu",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "cancel": "submenu"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    }
+  ]
+}

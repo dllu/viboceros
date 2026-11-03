@@ -23,6 +23,7 @@ default = []
 native-smlib = ["dep:viboceros-smlib", "viboceros-io/native-smlib"]
 
 [dev-dependencies]
+flate2.workspace = true
 serde_json.workspace = true
 tempfile = "3.27.0"
 monstertruck.workspace = true

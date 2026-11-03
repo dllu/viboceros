@@ -5,20 +5,20 @@ ToNURBS DeleteInputObjects=No
 ToNURBS DeleteInputObjects=Yes
 ToNURBS MeshOptions TrimTriangularFaces=Yes DeleteInputObjects=No
 ToNURBS TrimTriangularFaces=No
+ToNURBS SubDOptions Faces=Packed ExtraordinaryVertex=G1x DeleteInputObjects=No
 ```
 
 Converts selected lines, circular arcs/circles, polylines, and polycurves to exact
-NURBS curves, and triangle/quad meshes to NURBS B-reps. Points and point clouds
+NURBS curves, and triangle/quad meshes and whole SubDs to NURBS B-reps. Lightweight
+extrusion records expand to explicit B-reps. Points and point clouds
 are ignored. Existing NURBS curves, surfaces, and B-reps are unchanged. Ellipses
 are also no-ops: Rhino already stores them as NURBS curves; Viboceros retains
 its equivalent compact analytic representation. Headless execution with no eligible
 selection is an error; the GUI instead starts an object-selection prompt.
 
-Whole-SubD command conversion remains under development. Its unpacked
-[geometry converter](../geometry/subd-nurbs-conversion.md),
-[face packing](../geometry/subd-nurbs-packing.md) and
-[G1/G1x/G1xx/G2 processing](../geometry/subd-nurbs-continuity.md) have native SDK controls;
-command integration and soft sharpness remain open.
+Whole SubDs support packed/unpacked faces and all five extraordinary-vertex
+continuity choices through `SubDOptions`. Their conversion is a finite approximation.
+See [SubD options and native command evidence](to-nurbs-subd.md).
 
 With preselection, `DeleteInputObjects=No` creates unselected copies with the source's attributes,
 layer, name, color policy, and ordered group memberships. Sources and selection
@@ -78,6 +78,7 @@ Mesh conversion reuses the exact `Brep::try_from_mesh` topology assembler. Aggre
 output is bounded to 1,048,576 NURBS controls (four per mesh face). Resource or
 geometry failures leave sources, attributes, groups, selection, history, and
 remembered choices unchanged. This budget is not an approximation tolerance.
+Command-first picks, including unchanged peers, remain cleared on undo and redo.
 
 The document `object_order` module renews chronological order independently of
 geometry. A linear-time permutation and its inverse preserve object contents;
@@ -127,8 +128,7 @@ cancellation, remembered choices, no-ops, and undo/redo. Exact source and output
 geometry, native polyline parameters, triangle trims, attributes, and group tables
 match the expected models. Display and CPlane changes preserve confirmation state.
 
-SubD conversion, mesh/SubD edge subobject conversion, and lightweight extrusion
-objects are not implemented. Meshes currently contain triangle/quad faces, not
+Mesh/SubD edge subobject conversion is not implemented. Meshes currently contain triangle/quad faces, not
 Rhino n-gon regions. General performance parity is not established. These are
 explicit gaps relative to the [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/tonurbs.htm),
 not alternative definitions of the command. Runtime attribute/order policies

@@ -52,5 +52,5 @@ approximation has no continuous error certificate against the mathematical SubD
 limit. Arbitrary nonmanifold
 inputs, degenerate patches and comparative performance remain unqualified.
 Parallel control edges joining the same vertex pair currently reject.
-Whole-SubD command options, attributes, option memory and undo/getter workflows
-still need integration and native command comparisons.
+[Whole-SubD command options, metadata and undo/getter workflows](../commands/to-nurbs-subd.md)
+are covered by separate native command comparisons.

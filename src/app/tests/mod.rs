@@ -134,6 +134,7 @@ mod native_curve_comparison;
 #[path = "../../../crates/viboceros-command/tests/support/modify_radius.rs"]
 mod native_object_comparison;
 mod nurbs_selection;
+mod nurbs_subd_selection;
 mod object_selection;
 #[cfg(feature = "native-smlib")]
 mod offset_surface;

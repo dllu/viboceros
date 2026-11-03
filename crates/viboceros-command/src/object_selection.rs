@@ -233,9 +233,10 @@ pub struct BooleanSelectionOption {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct BooleanSelectionMenu {
+pub struct SelectionOptionMenu {
     pub name: &'static str,
     pub options: Vec<BooleanSelectionOption>,
+    pub choices: Vec<ChoiceSelectionOption>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -283,7 +284,7 @@ pub struct ObjectSelectionPrompt {
     pub command: &'static str,
     pub filter: ObjectSelectionFilter,
     pub options: Vec<BooleanSelectionOption>,
-    pub menus: Vec<BooleanSelectionMenu>,
+    pub menus: Vec<SelectionOptionMenu>,
     pub choices: Vec<ChoiceSelectionOption>,
     pub workflow: ObjectSelectionWorkflow,
 }
@@ -319,11 +320,16 @@ impl ObjectSelectionPrompt {
         let mut changed = false;
         let mut i = 0;
         while i < arguments.len() {
-            if let Some(choice) = staged.choices.iter_mut().find(|c| {
-                c.toggle
-                    .as_ref()
-                    .is_some_and(|t| option_name_eq(arguments[i], t.name))
-            }) {
+            if let Some(choice) = staged
+                .choices
+                .iter_mut()
+                .chain(staged.menus.iter_mut().flat_map(|m| &mut m.choices))
+                .find(|c| {
+                    c.toggle
+                        .as_ref()
+                        .is_some_and(|t| option_name_eq(arguments[i], t.name))
+                })
+            {
                 choice.toggle()?;
                 changed = true;
                 i += 1;
@@ -344,6 +350,7 @@ impl ObjectSelectionPrompt {
             if let Some(choice) = staged
                 .choices
                 .iter_mut()
+                .chain(staged.menus.iter_mut().flat_map(|m| &mut m.choices))
                 .find(|c| option_name_eq(name, c.name))
             {
                 if !seen.insert(choice.name) {
@@ -378,20 +385,20 @@ impl ObjectSelectionPrompt {
     }
 
     pub fn update_menu_options(&mut self, menu: usize, input: &str) -> Result<(), CommandError> {
-        let options = self
+        let selected = self
             .menus
             .get(menu)
             .ok_or(CommandError::Usage("known option submenu"))?
-            .options
             .clone();
         let mut scoped = Self {
-            options,
+            options: selected.options,
             menus: vec![],
-            choices: vec![],
+            choices: selected.choices,
             ..self.clone()
         };
         scoped.update_options(input)?;
         self.menus[menu].options = scoped.options;
+        self.menus[menu].choices = scoped.choices;
         Ok(())
     }
 
@@ -415,6 +422,9 @@ impl ObjectSelectionPrompt {
                     option.name,
                     if option.value { "Yes" } else { "No" }
                 ));
+            }
+            for choice in &menu.choices {
+                input.push_str(&format!(" {}={}", choice.name, choice.value));
             }
         }
         input

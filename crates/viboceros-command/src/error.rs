@@ -1012,7 +1012,7 @@ pub enum CommandError {
     #[error("Offset requires selected line, circle, circular arc, or planar polyline curves")]
     UnsupportedOffsetGeometry,
 
-    #[error("ToNURBS requires a curve, surface, B-rep, or mesh")]
+    #[error("ToNURBS requires a curve, surface, B-rep, mesh, or SubD")]
     UnsupportedToNurbsGeometry,
 
     #[error("ToNURBS would create more than {maximum} NURBS control points")]

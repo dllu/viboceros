@@ -248,8 +248,8 @@ pub use component_selection::{
 };
 pub mod quadrangulate_mesh;
 pub use object_selection::{
-    BooleanSelectionMenu, BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter,
-    ObjectSelectionPrompt, ObjectSelectionWorkflow, SelectionToggle,
+    BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt,
+    ObjectSelectionWorkflow, SelectionOptionMenu, SelectionToggle,
 };
 mod explode;
 mod explode_block;

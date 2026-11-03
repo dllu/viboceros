@@ -1,0 +1,185 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "lifecycle_bootstrap",
+      "scene": "fan6",
+      "steps": [
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_mixed_False_False",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": false,
+          "postselect": false,
+          "mesh": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_mixed_False_True",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": false,
+          "postselect": true,
+          "mesh": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_mixed_True_False",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": false,
+          "mesh": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_mixed_True_True",
+      "scene": "mixed",
+      "steps": [
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "mesh": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_cancel_False_options",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": false,
+          "cancel": "options"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_cancel_False_submenu",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": false,
+          "cancel": "submenu"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_cancel_True_options",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "cancel": "options"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_cancel_True_submenu",
+      "scene": "grid",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G0",
+          "delete": false
+        },
+        {
+          "packed": true,
+          "mode": "G1xx",
+          "delete": true,
+          "postselect": true,
+          "cancel": "submenu"
+        },
+        {}
+      ],
+      "op": "subd_nurbs_command"
+    },
+    {
+      "id": "lifecycle_independent",
+      "scene": "subdivided_box",
+      "steps": [
+        {
+          "packed": false,
+          "mode": "G2",
+          "delete": true,
+          "mesh": true
+        },
+        {
+          "mesh": true
+        },
+        {
+          "packed": true,
+          "mesh": true
+        },
+        {
+          "mesh": true
+        },
+        {
+          "mode": "G1x",
+          "mesh": true
+        },
+        {
+          "mesh": true
+        }
+      ],
+      "op": "subd_nurbs_command"
+    }
+  ]
+}

@@ -62,6 +62,7 @@ Shared comparison helpers also serve
 the original G0 regressions.
 
 [Packing](subd-nurbs-packing.md) is available after continuity processing.
-Soft sharpness and command integration remain open. Domains
+The [ToNURBS command](../commands/to-nurbs-subd.md) exposes these choices.
+Soft sharpness remains open. Domains
 remain normalized, redundant knots may differ from Rhino, and this finite
 conversion has no continuous error certificate against the true SubD limit.

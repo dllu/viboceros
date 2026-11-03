@@ -52,6 +52,7 @@ pub(super) enum ObjectPromptPhase {
     Options,
     Menu(usize),
     Choice(usize),
+    MenuChoice { menu: usize, choice: usize },
     SmoothFactor,
     SmoothSteps,
     RebuildValue(&'static str),
@@ -132,6 +133,9 @@ impl PendingObjectCommand {
         match self.phase {
             ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
             ObjectPromptPhase::Choice(index) => self.description.choices[index].name,
+            ObjectPromptPhase::MenuChoice { menu, choice } => {
+                self.description.menus[menu].choices[choice].name
+            }
             ObjectPromptPhase::SmoothFactor => "SmoothFactor",
             ObjectPromptPhase::SmoothSteps => "Steps",
             ObjectPromptPhase::RebuildValue(name) => name,
@@ -356,9 +360,9 @@ impl PendingObjectCommand {
             }
             ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
             ObjectPromptPhase::Menu(_) => {
-                "Set mesh options; Enter returns to conversion options, Esc cancels"
+                "Set options; Enter returns to conversion options, Esc cancels"
             }
-            ObjectPromptPhase::Choice(_) => {
+            ObjectPromptPhase::Choice(_) | ObjectPromptPhase::MenuChoice { .. } => {
                 "Choose a value; Enter keeps the shown choice, Esc cancels"
             }
             ObjectPromptPhase::SmoothFactor | ObjectPromptPhase::SmoothSteps => {
@@ -1080,15 +1084,25 @@ impl VibocerosApp {
                 .clone()
                 .unwrap_or_else(|| pending.description.command_line());
             let mut message = format!("{}. {}", pending.hint(), command);
-            for (index, choice) in pending.description.choices.iter().enumerate() {
+            let (choices, selected) = match pending.phase {
+                ObjectPromptPhase::Menu(menu) => (&pending.description.menus[menu].choices, None),
+                ObjectPromptPhase::MenuChoice { menu, choice } => {
+                    (&pending.description.menus[menu].choices, Some(choice))
+                }
+                ObjectPromptPhase::Choice(choice) => (&pending.description.choices, Some(choice)),
+                _ => (&pending.description.choices, None),
+            };
+            for (index, choice) in choices.iter().enumerate() {
                 if pending.phase == ObjectPromptPhase::Selecting
-                    || matches!(pending.phase, ObjectPromptPhase::Choice(selected) if selected != index)
+                    || selected.is_some_and(|selected| selected != index)
                 {
                     continue;
                 }
                 message.push_str(&format!("; {}: {}", choice.name, choice.choices.join("/")));
-                if pending.phase == ObjectPromptPhase::Options
-                    && let Some(toggle) = &choice.toggle
+                if matches!(
+                    pending.phase,
+                    ObjectPromptPhase::Options | ObjectPromptPhase::Menu(_)
+                ) && let Some(toggle) = &choice.toggle
                     && toggle.values.contains(&choice.value)
                 {
                     message.push_str(&format!("; {}", toggle.name));
@@ -1249,6 +1263,13 @@ impl VibocerosApp {
                 return true;
             }
             if self.finish_shrink_faces(pending.postselected) {
+                return true;
+            }
+            if let ObjectPromptPhase::MenuChoice { menu, .. } = pending.phase {
+                pending.phase = ObjectPromptPhase::Menu(menu);
+                self.object_prompt = Some(pending);
+                self.log_object_prompt();
+                self.command_input.clear();
                 return true;
             }
             if matches!(
@@ -1622,14 +1643,29 @@ impl VibocerosApp {
             .split('=')
             .next()
             .unwrap_or("");
-        let local_choice = pending.description.choices.iter().any(|c| {
-            c.name.eq_ignore_ascii_case(option_name)
-                || c.toggle
-                    .as_ref()
-                    .is_some_and(|t| t.name.eq_ignore_ascii_case(option_name))
+        let local_choice = pending
+            .description
+            .choices
+            .iter()
+            .chain(pending.description.menus.iter().flat_map(|m| &m.choices))
+            .any(|c| {
+                c.name.eq_ignore_ascii_case(option_name)
+                    || c.toggle
+                        .as_ref()
+                        .is_some_and(|t| t.name.eq_ignore_ascii_case(option_name))
+            });
+        let value_choices = match pending.phase {
+            ObjectPromptPhase::Choice(index) => Some(&pending.description.choices[index]),
+            ObjectPromptPhase::MenuChoice { menu, choice } => {
+                Some(&pending.description.menus[menu].choices[choice])
+            }
+            _ => None,
+        };
+        let local_value = value_choices.is_some_and(|c| {
+            c.choices
+                .iter()
+                .any(|v| v.eq_ignore_ascii_case(&normalized))
         });
-        let local_value = matches!(pending.phase, ObjectPromptPhase::Choice(index)
-            if pending.description.choices[index].choices.iter().any(|v| v.eq_ignore_ascii_case(&normalized)));
         if !local_choice
             && !local_value
             && input
@@ -1674,6 +1710,18 @@ impl VibocerosApp {
             self.log_object_prompt();
             return true;
         }
+        if let ObjectPromptPhase::Menu(menu) = pending.phase
+            && let Some(choice) = pending.description.menus[menu]
+                .choices
+                .iter()
+                .position(|choice| choice.name.eq_ignore_ascii_case(&normalized))
+        {
+            pending.phase = ObjectPromptPhase::MenuChoice { menu, choice };
+            self.object_prompt = Some(pending);
+            self.command_input.clear();
+            self.log_object_prompt();
+            return true;
+        }
         let update = if pending.description.command == "Align" {
             self.update_align_selection(&pending.description, input)
                 .map(|description| pending.description = description)
@@ -1683,6 +1731,9 @@ impl VibocerosApp {
                     pending.description.update_menu_options(index, input)
                 }
                 ObjectPromptPhase::Choice(index) => pending.description.choices[index].set(input),
+                ObjectPromptPhase::MenuChoice { menu, choice } => {
+                    pending.description.menus[menu].choices[choice].set(input)
+                }
                 _ => self
                     .commands
                     .update_object_selection_options(&mut pending.description, input),
@@ -1693,7 +1744,9 @@ impl VibocerosApp {
                 .accept_object_selection_options(&pending.description)
         }) {
             Ok(()) => {
-                if matches!(pending.phase, ObjectPromptPhase::Choice(_)) {
+                if let ObjectPromptPhase::MenuChoice { menu, .. } = pending.phase {
+                    pending.phase = ObjectPromptPhase::Menu(menu);
+                } else if matches!(pending.phase, ObjectPromptPhase::Choice(_)) {
                     pending.phase = if pending.description.allows_selection_options() {
                         ObjectPromptPhase::Selecting
                     } else {

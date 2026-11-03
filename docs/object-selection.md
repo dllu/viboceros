@@ -30,7 +30,7 @@ ordinary pick APIs continue to reject restricted seeds.
 
 | Behavior | MeshToNURB | ToNURBS | ConvertToBeziers |
 | --- | --- | --- | --- |
-| Eligible picks | Meshes | Curves, surfaces, B-reps, meshes | Curves, surfaces, single-face B-reps |
+| Eligible picks | Meshes | Curves, surfaces, B-reps, meshes, SubDs | Curves, surfaces, single-face B-reps |
 | Enter after picking | Converts | Opens confirmation; no-op-only input finishes | Opens deletion question |
 | With preselection | Converts immediately | Opens confirmation unless all inputs are no-ops | Asks deletion; explicit answer executes immediately |
 | Option edits | Accepted immediately | Staged until a real conversion succeeds | Yes/No answer converts immediately |
@@ -40,11 +40,13 @@ At the MeshToNURB prompt, type `TrimTriangularFaces=No`, `UseNgons=No`, or both.
 Paired forms such as `TrimTriangularFaces No` are also accepted.
 
 For ToNURBS, finish picking first. At confirmation, set `DeleteInputObjects=Yes|No`.
-If meshes were picked, `MeshOptions` opens a triangle-trimming submenu. Enter
+`MeshOptions` opens triangle trimming for meshes; `SubDOptions` exposes face
+packing and extraordinary-vertex continuity for SubDs. A named choice opens its
+values, then returns to its own submenu. Enter
 returns from the submenu to the main options; another Enter converts. Flat or
-inline mesh options and the `DeleteInput` alias are also accepted. Invalid or
+inline options and the `DeleteInput` alias are also accepted. Invalid or
 duplicate options leave the whole input editable and do not partially accept it.
-Mesh-only options are unavailable for curve-only selections.
+Submenus are available only for their selected geometry types.
 
 For ConvertToBeziers, finish picking first, then answer `Yes` or `No` to delete
 or keep the inputs. Enter uses the displayed choice. Named deletion options also
@@ -75,7 +77,8 @@ conversion is one undoable edit.
 ## Separation of responsibilities
 
 `viboceros-command::object_selection` defines object eligibility filters, typed boolean
-options/aliases, menus, finite choices and two-value actions, and workflow descriptions. The command supplies a
+options/aliases, menus containing booleans and finite choices, two-value actions,
+and workflow descriptions. The command supplies a
 selection-dependent confirmation description; no-op-only input can bypass it.
 Reading descriptions and validating edits do not change document state.
 Command-owned acceptance hooks distinguish immediate option memory from deferred

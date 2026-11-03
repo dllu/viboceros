@@ -1,25 +1,14 @@
-//! Exact object representation conversion, distinct from span decomposition.
+//! Object representation conversion, including finite SubD approximation.
 use super::*;
 
+mod options;
+#[cfg(test)]
+mod subd_tests;
 #[cfg(test)]
 mod tests;
+use options::{Kinds, Options, parse, prompt};
 
-const USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No] [MeshOptions TrimTriangularFaces=Yes|No]";
 const MAX_OUTPUT_CONTROLS: usize = 1_048_576;
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct Options {
-    delete_input: bool,
-    trim_triangles: bool,
-}
-impl Default for Options {
-    fn default() -> Self {
-        Self {
-            delete_input: false,
-            trim_triangles: true,
-        }
-    }
-}
 
 #[derive(Default)]
 pub(super) struct ToNurbsCommand {
@@ -35,8 +24,8 @@ impl Command for ToNurbsCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let (options, mesh) = parse(arguments, self.options.get())?;
-        Ok(Some(prompt(options, mesh)))
+        let (options, kinds) = parse(arguments, self.options.get())?;
+        Ok(Some(prompt(options, kinds)))
     }
 
     fn object_selection_confirmation(
@@ -44,13 +33,9 @@ impl Command for ToNurbsCommand {
         document: &Document,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let (options, mesh_option) = parse(arguments, self.options.get())?;
-        let mesh = document
-            .selected_objects()
-            .any(|o| matches!(o.geometry(), Geometry::Mesh(_)));
-        if mesh_option && !mesh {
-            return Err(CommandError::Usage(USAGE));
-        }
+        let (options, required) = parse(arguments, self.options.get())?;
+        let kinds = Kinds::selected(document);
+        required.require(&kinds)?;
         let convertible = document.selected_objects().any(|o| {
             matches!(
                 o.geometry(),
@@ -60,9 +45,10 @@ impl Command for ToNurbsCommand {
                     | Geometry::Polyline(_)
                     | Geometry::PolyCurve(_)
                     | Geometry::Mesh(_)
+                    | Geometry::SubD(_)
             ) || matches!(o.geometry(), Geometry::Brep(b) if b.is_extrusion())
         });
-        Ok(convertible.then(|| prompt(options, mesh)))
+        Ok(convertible.then(|| prompt(options, kinds)))
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -94,17 +80,11 @@ impl ToNurbsCommand {
         arguments: &[&str],
         postselected: bool,
     ) -> Result<String, CommandError> {
-        let (options, mesh_option) = parse(arguments, self.options.get())?;
+        let (options, required) = parse(arguments, self.options.get())?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
-        if mesh_option
-            && !document
-                .selected_objects()
-                .any(|o| matches!(o.geometry(), Geometry::Mesh(_)))
-        {
-            return Err(CommandError::Usage(USAGE));
-        }
+        required.require(&Kinds::selected(document))?;
         let mut eligible = 0;
         let mut controls = 0usize;
         let mut conversions = Vec::new();
@@ -138,6 +118,20 @@ impl ToNurbsCommand {
                         document.tolerance(),
                     )?)
                 }
+                Geometry::SubD(subd) => {
+                    let brep = if options.packed {
+                        subd.to_packed_nurbs_brep(options.continuity, document.tolerance())?
+                    } else {
+                        subd.to_nurbs_brep(options.continuity, document.tolerance())?
+                    };
+                    charge(
+                        &mut controls,
+                        brep.faces().iter().fold(0usize, |n, f| {
+                            n.saturating_add(f.surface().control_points().len())
+                        }),
+                    )?;
+                    Geometry::Brep(brep)
+                }
                 source => {
                     let Some(curve) = source.converted_to_nurbs_curve()? else {
                         continue;
@@ -160,6 +154,13 @@ impl ToNurbsCommand {
                 .map(|(i, id)| (id, i))
                 .collect::<BTreeMap<_, _>>();
             conversions.sort_unstable_by_key(|(id, _)| ranks[id]);
+            if converted > 0 {
+                // Prompted picks are transient, including no-op peers. Clear
+                // them before replacement captures selection in history.
+                let picks = document.selected_object_ids().collect::<Vec<_>>();
+                document.release_command_selection_on_history_replay(picks)?;
+                document.clear_selection();
+            }
         }
         if options.delete_input {
             let ids = conversions.iter().map(|(id, _)| *id).collect::<Vec<_>>();
@@ -180,7 +181,7 @@ impl ToNurbsCommand {
             self.options.set(options);
         }
         Ok(format!(
-            "Converted {converted} object(s) to exact NURBS geometry; {} unchanged{}",
+            "Converted {converted} object(s) to NURBS geometry; {} unchanged{}",
             eligible - converted,
             if options.delete_input {
                 "; inputs replaced"
@@ -188,32 +189,6 @@ impl ToNurbsCommand {
                 "; inputs retained"
             }
         ))
-    }
-}
-
-fn prompt(options: Options, mesh: bool) -> ObjectSelectionPrompt {
-    ObjectSelectionPrompt {
-        command: "ToNURBS",
-        filter: ObjectSelectionFilter::ToNurbs,
-        workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
-        choices: vec![],
-        options: vec![BooleanSelectionOption {
-            name: "DeleteInputObjects",
-            value: options.delete_input,
-            aliases: &["DeleteInput"],
-        }],
-        menus: if mesh {
-            vec![BooleanSelectionMenu {
-                name: "MeshOptions",
-                options: vec![BooleanSelectionOption {
-                    name: "TrimTriangularFaces",
-                    value: options.trim_triangles,
-                    aliases: &[],
-                }],
-            }]
-        } else {
-            vec![]
-        },
     }
 }
 
@@ -225,30 +200,4 @@ fn charge(total: &mut usize, count: usize) -> Result<(), CommandError> {
         });
     }
     Ok(())
-}
-
-fn parse(arguments: &[&str], mut options: Options) -> Result<(Options, bool), CommandError> {
-    let (mut delete_seen, mut trim_seen, mut mesh_seen, mut i) = (false, false, false, 0);
-    while i < arguments.len() {
-        if option_name_eq(arguments[i], "MeshOptions") && !mesh_seen {
-            mesh_seen = true;
-            i += 1;
-            continue;
-        }
-        let (name, value, consumed) = orient_option(arguments, i, USAGE)?;
-        let value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
-        if (option_name_eq(name, "DeleteInputObjects") || option_name_eq(name, "DeleteInput"))
-            && !delete_seen
-        {
-            options.delete_input = value;
-            delete_seen = true;
-        } else if option_name_eq(name, "TrimTriangularFaces") && !trim_seen {
-            options.trim_triangles = value;
-            trim_seen = true;
-        } else {
-            return Err(CommandError::Usage(USAGE));
-        }
-        i += consumed;
-    }
-    Ok((options, mesh_seen || trim_seen))
 }
