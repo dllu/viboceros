@@ -15,22 +15,41 @@ mod surface;
 fn captures() -> &'static Value {
     static DATA: OnceLock<Value> = OnceLock::new();
     DATA.get_or_init(|| {
-        let bytes =
-            include_bytes!("../../../tools/rhino_oracle/observations/subd_continuity.json.gz");
-        let mut text = Vec::new();
-        flate2::read::GzDecoder::new(&bytes[..])
-            .read_to_end(&mut text)
-            .unwrap();
-        serde_json::from_slice(&text).unwrap()
+        let mut results = Vec::new();
+        for bytes in [
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_continuity.json.gz")
+                .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1x.json.gz").as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1x_sectors.json.gz")
+                .as_slice(),
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_g1x_charts.json.gz")
+                .as_slice(),
+        ] {
+            let mut text = Vec::new();
+            flate2::read::GzDecoder::new(bytes)
+                .read_to_end(&mut text)
+                .unwrap();
+            let mut data: Value = serde_json::from_slice(&text).unwrap();
+            results.append(data["results"].as_array_mut().unwrap());
+        }
+        serde_json::json!({"results":results})
     })
 }
 
 fn check(scene: &str) {
-    for (mode, process) in [
-        (0, SubDNurbsContinuity::G0),
-        (1, SubDNurbsContinuity::G1),
-        (2, SubDNurbsContinuity::G2),
-    ] {
+    check_modes(
+        scene,
+        &[
+            (0, SubDNurbsContinuity::G0),
+            (1, SubDNurbsContinuity::G1),
+            (2, SubDNurbsContinuity::G2),
+            (3, SubDNurbsContinuity::G1x),
+        ],
+    );
+}
+
+fn check_modes(scene: &str, modes: &[(usize, SubDNurbsContinuity)]) {
+    for &(mode, process) in modes {
         let id = format!("{scene}_{mode}");
         let value = &captures()["results"]
             .as_array()
@@ -64,6 +83,28 @@ fn check(scene: &str) {
         assert_eq!(source.archive(), archive);
     }
 }
+
+macro_rules! holdouts {($($scene:ident),* $(,)?) => {$ (
+    #[test]fn $scene(){check_modes(stringify!($scene),&[(0,SubDNurbsContinuity::G0),(1,SubDNurbsContinuity::G1),(3,SubDNurbsContinuity::G1x)]);}
+)*};}
+holdouts!(
+    fan6,
+    fan8,
+    fan9,
+    eight_asymmetric,
+    seven_tilt,
+    seven_small,
+    seven_large,
+    seven_z050,
+    seven_z075,
+    seven_z0832,
+    seven_z0834,
+    seven_z101,
+    seven_z102,
+    seven_z125,
+    seven_z150,
+    seven_z200
+);
 macro_rules! cases {($($scene:ident),* $(,)?) => {$ (
     #[test]fn $scene(){check(stringify!($scene));}
 )*};}
@@ -89,6 +130,24 @@ cases!(
 fn smooth_box() {
     check("box");
 }
+
+holdouts!(
+    sector_tri7,
+    sector_tri9,
+    sector_mixed7,
+    sector_mixed9,
+    sector_mixed7_tilt
+);
+
+holdouts!(
+    chart_corner1,
+    chart_corner2,
+    chart_corner3,
+    chart_varied,
+    chart_reversed,
+    chart_mixed1,
+    chart_mixed_varied
+);
 
 #[test]
 fn smooth_limit_normals_preserve_order_units_and_immutable_queries() {
@@ -120,8 +179,6 @@ fn smooth_limit_normals_preserve_order_units_and_immutable_queries() {
 fn unfinished_modes_reject_without_editing_the_source() {
     let source = native::source(&native::case("box")["before"]);
     let before = source.archive().to_vec();
-    for mode in [SubDNurbsContinuity::G1x, SubDNurbsContinuity::G1xx] {
-        assert!(source.to_nurbs_patches(mode).is_err());
-    }
+    assert!(source.to_nurbs_patches(SubDNurbsContinuity::G1xx).is_err());
     assert_eq!(source.archive(), before);
 }

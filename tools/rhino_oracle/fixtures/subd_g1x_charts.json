@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "chart_corner1_0",
+      "op": "subd_g1x",
+      "scene": "chart_corner1",
+      "mode": 0
+    },
+    {
+      "id": "chart_corner1_1",
+      "op": "subd_g1x",
+      "scene": "chart_corner1",
+      "mode": 1
+    },
+    {
+      "id": "chart_corner1_3",
+      "op": "subd_g1x",
+      "scene": "chart_corner1",
+      "mode": 3
+    },
+    {
+      "id": "chart_corner2_0",
+      "op": "subd_g1x",
+      "scene": "chart_corner2",
+      "mode": 0
+    },
+    {
+      "id": "chart_corner2_1",
+      "op": "subd_g1x",
+      "scene": "chart_corner2",
+      "mode": 1
+    },
+    {
+      "id": "chart_corner2_3",
+      "op": "subd_g1x",
+      "scene": "chart_corner2",
+      "mode": 3
+    },
+    {
+      "id": "chart_corner3_0",
+      "op": "subd_g1x",
+      "scene": "chart_corner3",
+      "mode": 0
+    },
+    {
+      "id": "chart_corner3_1",
+      "op": "subd_g1x",
+      "scene": "chart_corner3",
+      "mode": 1
+    },
+    {
+      "id": "chart_corner3_3",
+      "op": "subd_g1x",
+      "scene": "chart_corner3",
+      "mode": 3
+    },
+    {
+      "id": "chart_varied_0",
+      "op": "subd_g1x",
+      "scene": "chart_varied",
+      "mode": 0
+    },
+    {
+      "id": "chart_varied_1",
+      "op": "subd_g1x",
+      "scene": "chart_varied",
+      "mode": 1
+    },
+    {
+      "id": "chart_varied_3",
+      "op": "subd_g1x",
+      "scene": "chart_varied",
+      "mode": 3
+    },
+    {
+      "id": "chart_reversed_0",
+      "op": "subd_g1x",
+      "scene": "chart_reversed",
+      "mode": 0
+    },
+    {
+      "id": "chart_reversed_1",
+      "op": "subd_g1x",
+      "scene": "chart_reversed",
+      "mode": 1
+    },
+    {
+      "id": "chart_reversed_3",
+      "op": "subd_g1x",
+      "scene": "chart_reversed",
+      "mode": 3
+    },
+    {
+      "id": "chart_mixed1_0",
+      "op": "subd_g1x",
+      "scene": "chart_mixed1",
+      "mode": 0
+    },
+    {
+      "id": "chart_mixed1_1",
+      "op": "subd_g1x",
+      "scene": "chart_mixed1",
+      "mode": 1
+    },
+    {
+      "id": "chart_mixed1_3",
+      "op": "subd_g1x",
+      "scene": "chart_mixed1",
+      "mode": 3
+    },
+    {
+      "id": "chart_mixed_varied_0",
+      "op": "subd_g1x",
+      "scene": "chart_mixed_varied",
+      "mode": 0
+    },
+    {
+      "id": "chart_mixed_varied_1",
+      "op": "subd_g1x",
+      "scene": "chart_mixed_varied",
+      "mode": 1
+    },
+    {
+      "id": "chart_mixed_varied_3",
+      "op": "subd_g1x",
+      "scene": "chart_mixed_varied",
+      "mode": 3
+    }
+  ]
+}

@@ -29,13 +29,17 @@ def source(scene):
     return g0_source(scene)
 
 def run(op,host,iterations,tolerance):
-    validate(op);R=host['Rhino'];G=R.Geometry;S=host['System']
+    validate(op)
+    return run_recipe(source(op['scene']),op['mode'],host,iterations,tolerance)
+
+def run_recipe(recipe,mode,host,iterations,tolerance):
+    R=host['Rhino'];G=R.Geometry;S=host['System']
     if iterations!=1 or list(R.RhinoDoc.ActiveDoc.Objects) or R.Commands.Command.InCommand():
         raise ValueError('empty private idle document required')
-    recipe=source(op['scene']);subd=make_source(recipe,host);brep=None;options=None
+    subd=make_source(recipe,host);brep=None;options=None
     try:
         before=subd_value(subd,host);crc=int(subd.DataCRC(0))
-        options=G.SubDToBrepOptions(False,S.Enum.ToObject(G.SubDToBrepOptions.ExtraordinaryVertexProcessOption,op['mode']))
+        options=G.SubDToBrepOptions(False,S.Enum.ToObject(G.SubDToBrepOptions.ExtraordinaryVertexProcessOption,mode))
         brep=subd.ToBrep(options)
         if brep is None or not brep.IsValid:raise ValueError('native continuity conversion failed')
         if int(subd.DataCRC(0))!=crc:raise ValueError('native continuity conversion edited source')

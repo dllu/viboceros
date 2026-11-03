@@ -28,7 +28,7 @@ pub(super) fn apply(
     for (vertex, normal) in selected.into_iter().zip(normals) {
         by_vertex[vertex] = Some(normal);
     }
-    for patch in patches {
+    for patch in patches.iter_mut() {
         let face = &source.faces()[patch.face];
         let corners = if let Some(corner) = patch.corner {
             [by_vertex[face[corner] as usize], None, None, None]
@@ -47,6 +47,9 @@ pub(super) fn apply(
                 2
             },
         )?;
+    }
+    if mode == SubDNurbsContinuity::G1x {
+        super::g1x::improve(source, patches, &by_vertex)?;
     }
     Ok(())
 }

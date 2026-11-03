@@ -2,6 +2,7 @@
 use super::*;
 use crate::NurbsSurface;
 mod continuity;
+mod g1x;
 mod stencil;
 mod topology;
 
@@ -24,12 +25,12 @@ pub struct SubDNurbsPatch {
 
 impl SubD {
     /// Unpacked NURBS patches with local extraordinary-vertex processing.
-    /// G1x and G1xx remain unimplemented and reject before fitting.
+    /// G1xx remains unimplemented and rejects before fitting.
     pub fn to_nurbs_patches(
         &self,
         mode: SubDNurbsContinuity,
     ) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
-        if matches!(mode, SubDNurbsContinuity::G1x | SubDNurbsContinuity::G1xx) {
+        if mode == SubDNurbsContinuity::G1xx {
             return Err(viboceros_opennurbs::SubDError(
                 "Requested SubD continuity mode is not implemented".into(),
             )

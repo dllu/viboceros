@@ -7,6 +7,15 @@ processing to the unpacked G0 patches. `G2` processes a larger neighborhood;
 `G0` retains the base conversion. `to_nurbs_brep(mode, tolerance)` assembles the
 corresponding shared B-rep topology and validates the complete result.
 
+`G1x` starts with G1 and improves the sampled normal gap near each processed
+edge end. It compares the two incident patches at seven interior eighths of the
+first knot span, using a one-degree cosine threshold. Up to four quarter-step
+projections move the second edge control inward from the corner and its adjacent
+interior control.
+Both incident patches receive the same displacement, preserving their shared
+edge. The sampling convention matters: a denser check changes native output
+decisions in the near-threshold controls. It is not a continuous normal-gap bound.
+
 Only original smooth source vertices with valence other than four receive this
 processing. Crease, corner and dart vertices remain unchanged. Newly generated
 n-gon face centers are also unchanged. G1 projects the nearest two-by-two control
@@ -31,15 +40,23 @@ source CRC checks. G1x and G1xx observations remain distinct: the valence-seven
 fan changes under G1x, and G1xx introduces double knots near extraordinary
 vertices. Neither mode is silently treated as G1.
 
-`subd_continuity` compares the 51 implemented G0/G1/G2 workflows, including 405
+The `subd_g1x` family adds 48 G0/G1/G1x workflows across 16 valence, height,
+affine and scale profiles, including valences six, eight and nine. Fixed profiles
+straddle the sampled normal-gap threshold. Producer snapshots, recipes, valid
+native output and source CRC checks remain immutable and independently verified.
+The `subd_g1x_sectors` and `subd_g1x_charts` families add 36 workflows covering
+triangle sectors, mixed quad/triangle seams, rotated face corners and reversed
+winding, including seams with different parameter scales on each side.
+
+`subd_continuity` compares 152 implemented workflows, including 1,437
 surface patches, complete edge curves and oriented B-rep topology. Exact common
 basis refinement and positive control bounds verify whole images at `1e-11`;
-the maximum observed surface bound is about `1.6e-13`. Separate tests check
+the maximum observed surface bound is about `7.2e-13`. Separate tests check
 normal selection/order, unit length, invalid queries, immutable sources and
 explicit rejection of unfinished modes. Shared comparison helpers also serve
 the original G0 regressions.
 
-G1x and G1xx are represented in `SubDNurbsContinuity` but currently reject before
+G1xx is represented in `SubDNurbsContinuity` but currently rejects before
 fitting. Packing, soft sharpness and command integration remain open. Domains
 remain normalized, redundant knots may differ from Rhino, and this finite
 conversion has no continuous error certificate against the true SubD limit.
