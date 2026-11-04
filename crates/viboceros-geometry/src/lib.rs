@@ -6,17 +6,19 @@
 
 mod analysis_mesh;
 mod edge_insertion;
+mod edge_ring;
 pub use analysis_mesh::{AnalysisMeshSettings, NurbsMeshDensity};
+pub use edge_ring::{PolygonEdgeRing, PolygonEdgeRingIndex};
 pub mod interop;
 pub use edge_insertion::PolygonEdgePoint;
 mod subd;
 pub use subd::{
-    SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
-    SubDDisplayMesh, SubDEdgeChain, SubDEdgeChainType, SubDEdgeSeamResult, SubDExtrudeDirection,
-    SubDExtrudeSelection, SubDFaceExtraction, SubDFacePack, SubDFromMeshOptions,
-    SubDFromSurfaceMethod, SubDJoinResult, SubDLimitFaceGrid, SubDMeshDensity, SubDNurbsContinuity,
-    SubDNurbsPackedPatch, SubDNurbsPatch, SubDNurbsTile, SubDSphereStyle, SubDVertexInsertion,
-    join_subds, join_subds_seeded,
+    SubD, SubDAppendResult, SubDComponentIds, SubDControlNetPriority, SubDCylinderCap,
+    SubDDirectedEdge, SubDDisplayMesh, SubDEdgeChain, SubDEdgeChainType, SubDEdgeSeamResult,
+    SubDExtrudeDirection, SubDExtrudeSelection, SubDFaceExtraction, SubDFacePack,
+    SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult, SubDLimitFaceGrid, SubDMeshDensity,
+    SubDNurbsContinuity, SubDNurbsPackedPatch, SubDNurbsPatch, SubDNurbsTile, SubDSphereStyle,
+    SubDVertexInsertion, join_subds, join_subds_seeded,
 };
 mod area_mass_properties;
 mod mass_integration;

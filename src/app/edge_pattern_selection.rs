@@ -1,31 +1,35 @@
-//! Standalone SelEdgeLoop: bright seeds, dim loop previews, no model history.
+//! Standalone loop/ring selection: bright seeds, dim loop previews, no model history.
 use super::*;
 use crate::viewport::ComponentPick;
 use viboceros_command::{
     CommandError,
     component_selection::ComponentAction,
-    edge_loop_selection::{Session, eligible},
+    edge_pattern_selection::{Pattern, Session, eligible},
 };
 
 pub(super) const HINT: &str =
-    "Select mesh or SubD edges from loops; Ctrl removes seeds; Enter accepts, Esc cancels";
+    "Select mesh or SubD edges; Ctrl removes seeds; Enter accepts, Esc cancels";
 #[derive(Debug, Default)]
 pub(super) struct Prompt {
     session: Session,
 }
 impl Prompt {
+    pub(super) fn command(&self) -> &'static str {
+        self.session.pattern().command()
+    }
     pub(super) fn preview(&self) -> &[ComponentPick] {
         self.session.preview()
     }
 }
 impl VibocerosApp {
-    pub(super) fn start_edge_loop(&mut self, input: &str) -> bool {
+    pub(super) fn start_edge_pattern(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
-        if !words.next().is_some_and(|s| {
-            s.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("SelEdgeLoop")
-        }) || words.next().is_some()
-        {
+        let pattern = match words.next().map(|s| s.trim_start_matches(['_', '-'])) {
+            Some(s) if s.eq_ignore_ascii_case("SelEdgeLoop") => Pattern::Loop,
+            Some(s) if s.eq_ignore_ascii_case("SelEdgeRing") => Pattern::Ring,
+            _ => return false,
+        };
+        if words.next().is_some() {
             return false;
         }
         // Preserve eligible preselection across cancellation of another getter.
@@ -44,22 +48,24 @@ impl VibocerosApp {
                 .component_selection()
                 .replace(&self.document, picks);
             match result {
-                Ok(()) => self.execute_command("SelEdgeLoop"),
+                Ok(()) => self.execute_command(pattern.command()),
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
         } else {
             self.component_selection.clear();
-            self.edge_loop_prompt = Some(Prompt::default());
-            self.push_log(format!("SelEdgeLoop: {HINT}"));
+            self.edge_pattern_prompt = Some(Prompt {
+                session: Session::new(pattern),
+            });
+            self.push_log(format!("{}: {HINT}", pattern.command()));
         }
         true
     }
-    pub(super) fn pick_edge_loop(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+    pub(super) fn pick_edge_pattern(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
         let picks = picks
             .into_iter()
             .filter(|p| eligible(*p) && !self.document.is_selected(p.object))
             .collect::<Vec<_>>();
-        let Some(p) = &mut self.edge_loop_prompt else {
+        let Some(p) = &mut self.edge_pattern_prompt else {
             return;
         };
         let result = p
@@ -76,8 +82,8 @@ impl VibocerosApp {
             self.push_log(format!("Error: {e}"));
         }
     }
-    pub(super) fn finish_edge_loop(&mut self, accept: bool) {
-        let Some(p) = self.edge_loop_prompt.take() else {
+    pub(super) fn finish_edge_pattern(&mut self, accept: bool) {
+        let Some(p) = self.edge_pattern_prompt.take() else {
             return;
         };
         self.component_selection.clear();
@@ -97,22 +103,22 @@ impl VibocerosApp {
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
         } else {
-            self.push_log("SelEdgeLoop canceled".into());
+            self.push_log(format!("{} canceled", p.command()));
         }
         self.command_input.clear();
     }
-    pub(super) fn validate_edge_loop(&mut self) {
+    pub(super) fn validate_edge_pattern(&mut self) {
         if self
-            .edge_loop_prompt
+            .edge_pattern_prompt
             .as_ref()
             .is_some_and(|p| !p.session.current(&self.document))
         {
-            self.finish_edge_loop(false);
-            self.push_log("Error: edge-loop source changed; select again".into());
+            self.finish_edge_pattern(false);
+            self.push_log("Error: edge selection source changed; select again".into());
         }
     }
-    pub(super) fn continue_edge_loop(&mut self, input: &str) -> bool {
-        if self.edge_loop_prompt.is_none() {
+    pub(super) fn continue_edge_pattern(&mut self, input: &str) -> bool {
+        if self.edge_pattern_prompt.is_none() {
             return false;
         }
         if self.component_selection.has_choices() && self.try_continue_component_choice(input) {
@@ -120,11 +126,11 @@ impl VibocerosApp {
         }
         let key = input.trim().trim_start_matches(['_', '-']);
         if key.is_empty() || key.eq_ignore_ascii_case("Enter") {
-            self.finish_edge_loop(true);
+            self.finish_edge_pattern(true);
             return true;
         }
         if key == "!" || key.eq_ignore_ascii_case("Cancel") {
-            self.finish_edge_loop(false);
+            self.finish_edge_pattern(false);
             return true;
         }
         if input
@@ -132,7 +138,7 @@ impl VibocerosApp {
             .next()
             .is_some_and(|s| self.commands.recognizes(s))
         {
-            self.finish_edge_loop(false);
+            self.finish_edge_pattern(false);
             return false;
         }
         self.command_input.clear();

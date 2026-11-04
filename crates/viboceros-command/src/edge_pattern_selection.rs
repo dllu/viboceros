@@ -1,9 +1,46 @@
-//! SelEdgeLoop stages seed picks and previews, independently of model history.
+//! Mesh/SubD loop and ring seed selections stay outside model history.
 use super::*;
 use component_selection::{ComponentAction, ComponentPick, ComponentSelection, stage_sources};
 use std::sync::Arc;
 use viboceros_document::GeometrySnapshot;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Pattern {
+    #[default]
+    Loop,
+    Ring,
+}
+impl Pattern {
+    pub fn command(self) -> &'static str {
+        match self {
+            Self::Loop => "SelEdgeLoop",
+            Self::Ring => "SelEdgeRing",
+        }
+    }
+    fn usage(self) -> &'static str {
+        match self {
+            Self::Loop => "SelEdgeLoop [Edges=0,1,...|All Object=uuid]",
+            Self::Ring => "SelEdgeRing [Edges=0,1,...|All Object=uuid]",
+        }
+    }
+    fn path(self, geometry: &Geometry, seed: usize) -> Result<Vec<usize>, CommandError> {
+        Ok(match (self, geometry) {
+            (Self::Loop, Geometry::Mesh(m)) => m.try_edge_loop(seed)?.edges,
+            (Self::Loop, Geometry::SubD(s)) => s
+                .try_edge_loop(
+                    seed,
+                    viboceros_geometry::SubDEdgeChainType::EqualEdgeTagAndOrdinary,
+                )?
+                .edges
+                .into_iter()
+                .map(|e| e.index)
+                .collect(),
+            (Self::Ring, Geometry::Mesh(m)) => m.try_edge_ring(seed)?.edges,
+            (Self::Ring, Geometry::SubD(s)) => s.try_edge_ring(seed)?.edges,
+            _ => return Err(CommandError::EdgeLoopUnavailable),
+        })
+    }
+}
 const MAX_SEEDS: usize = 100_000;
 const MAX_COMPONENTS: usize = 400_000;
 pub fn eligible(p: ComponentPick) -> bool {
@@ -15,12 +52,23 @@ pub fn eligible(p: ComponentPick) -> bool {
 
 #[derive(Debug, Default)]
 pub struct Session {
+    pattern: Pattern,
+    ring_indices: BTreeMap<ObjectId, Arc<viboceros_geometry::PolygonEdgeRingIndex>>,
     seeds: BTreeSet<ComponentPick>,
     sources: BTreeMap<ObjectId, GeometrySnapshot>,
     paths: BTreeMap<ComponentPick, Arc<[ComponentPick]>>,
     preview: Vec<ComponentPick>,
 }
 impl Session {
+    pub fn new(pattern: Pattern) -> Self {
+        Self {
+            pattern,
+            ..Default::default()
+        }
+    }
+    pub fn pattern(&self) -> Pattern {
+        self.pattern
+    }
     pub fn current(&self, doc: &Document) -> bool {
         self.sources.iter().all(|(&id, w)| {
             doc.is_object_selectable(id)
@@ -50,6 +98,7 @@ impl Session {
         let mut seeds = self.seeds.clone();
         let mut paths = BTreeMap::<ComponentPick, Arc<[ComponentPick]>>::new();
         let mut sources = BTreeMap::new();
+        let mut ring_indices = BTreeMap::new();
         for (p, w) in staged {
             let remove = matches!(action, ComponentAction::Remove)
                 || matches!(action, ComponentAction::Toggle) && seeds.contains(&p);
@@ -58,18 +107,22 @@ impl Session {
                 continue;
             }
             if !self.paths.contains_key(&p) && !paths.contains_key(&p) {
-                let indices = match doc.object(p.object).unwrap().geometry() {
-                    Geometry::Mesh(m) => m.try_edge_loop(p.index)?.edges,
-                    Geometry::SubD(s) => s
-                        .try_edge_loop(
-                            p.index,
-                            viboceros_geometry::SubDEdgeChainType::EqualEdgeTagAndOrdinary,
-                        )?
-                        .edges
-                        .into_iter()
-                        .map(|e| e.index)
-                        .collect(),
-                    _ => return Err(CommandError::EdgeLoopUnavailable),
+                let geometry = doc.object(p.object).unwrap().geometry();
+                let indices = if self.pattern == Pattern::Ring {
+                    let index = if let Some(i) = self.ring_indices.get(&p.object) {
+                        i
+                    } else {
+                        ring_indices.entry(p.object).or_insert_with(|| {
+                            Arc::new(match geometry {
+                                Geometry::Mesh(m) => m.edge_ring_index(),
+                                Geometry::SubD(s) => s.edge_ring_index(),
+                                _ => unreachable!(),
+                            })
+                        })
+                    };
+                    index.try_ring(p.index)?.edges
+                } else {
+                    self.pattern.path(geometry, p.index)?
                 };
                 if indices
                     .len()
@@ -84,6 +137,7 @@ impl Session {
                     .map(|index| ComponentPick { index, ..p })
                     .collect::<Vec<_>>()
                     .into();
+                paths.insert(p, path.clone());
                 for &edge in path.iter() {
                     paths.insert(edge, path.clone());
                 }
@@ -95,6 +149,7 @@ impl Session {
             return Err(CommandError::EdgeLoopResourceLimit);
         }
         self.sources.extend(sources);
+        self.ring_indices.extend(ring_indices);
         self.paths.extend(paths);
         self.seeds = seeds;
         let mut seen = BTreeSet::new();
@@ -126,17 +181,18 @@ impl Session {
     }
 }
 
-pub(super) struct SelEdgeLoopCommand {
+pub(super) struct SelEdgePatternCommand {
+    pattern: Pattern,
     selection: ComponentSelection,
 }
-impl SelEdgeLoopCommand {
-    pub fn new(selection: ComponentSelection) -> Self {
-        Self { selection }
+impl SelEdgePatternCommand {
+    pub fn new(selection: ComponentSelection, pattern: Pattern) -> Self {
+        Self { selection, pattern }
     }
 }
-impl Command for SelEdgeLoopCommand {
+impl Command for SelEdgePatternCommand {
     fn name(&self) -> &'static str {
-        "SelEdgeLoop"
+        self.pattern.command()
     }
     fn records_history(&self) -> bool {
         false
@@ -146,10 +202,10 @@ impl Command for SelEdgeLoopCommand {
         args: &[&str],
     ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
         if !args.is_empty() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.pattern.usage()));
         }
         Ok(Some(ComponentSelectionPrompt {
-            command: "SelEdgeLoop",
+            command: self.pattern.command(),
             kind: ComponentSelectionKind::MeshEdge,
             options: Vec::new(),
             numbers: Vec::new(),
@@ -164,9 +220,9 @@ impl Command for SelEdgeLoopCommand {
                 .filter(|p| eligible(*p))
                 .collect()
         } else {
-            selectors(doc, args)?
+            selectors(doc, args, self.pattern.usage())?
         };
-        let mut session = Session::default();
+        let mut session = Session::new(self.pattern);
         session.pick(doc, &targets, ComponentAction::Add)?;
         let selected = session.finish(doc)?;
         let count = selected.len();
@@ -178,25 +234,28 @@ impl Command for SelEdgeLoopCommand {
         Ok(format!("Selected {count} edge(s)"))
     }
 }
-const USAGE: &str = "SelEdgeLoop [Edges=0,1,...|All Object=uuid]";
-fn selectors(doc: &Document, args: &[&str]) -> Result<Vec<ComponentPick>, CommandError> {
+fn selectors(
+    doc: &Document,
+    args: &[&str],
+    usage: &'static str,
+) -> Result<Vec<ComponentPick>, CommandError> {
     let (mut edges, mut object) = (None, None);
     let mut i = 0;
     while i < args.len() {
-        let (name, value, n) = orient_option(args, i, USAGE)?;
+        let (name, value, n) = orient_option(args, i, usage)?;
         let slot = if option_name_eq(name, "Edges") || option_name_eq(name, "Edge") {
             &mut edges
         } else if option_name_eq(name, "Object") {
             &mut object
         } else {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(usage));
         };
         if slot.replace(value).is_some() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(usage));
         }
         i += n;
     }
-    let edges = edges.ok_or(CommandError::Usage(USAGE))?;
+    let edges = edges.ok_or(CommandError::Usage(usage))?;
     let id = if let Some(id) = object {
         id.parse::<ObjectId>()
             .map_err(|_| CommandError::EdgeLoopUnavailable)?

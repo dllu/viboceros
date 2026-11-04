@@ -1,8 +1,9 @@
 //! Standalone selection lifecycle from owned grid recipes, without native output input.
 use super::*;
 use viboceros_command::{
-    ComponentPick, ComponentSelectionKind as Kind, component_selection::ComponentAction,
-    edge_loop_selection::Session,
+    ComponentPick, ComponentSelectionKind as Kind,
+    component_selection::ComponentAction,
+    edge_pattern_selection::{Pattern, Session},
 };
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
@@ -26,7 +27,7 @@ fn snapshot(
     doc: &Document,
     registry: &CommandRegistry,
     id: ObjectId,
-    mesh: bool,
+    ids: Option<&viboceros_geometry::SubDComponentIds>,
 ) -> Result<Value, ProbeError> {
     let mut picks = registry
         .component_selection()
@@ -38,7 +39,21 @@ fn snapshot(
         .filter(|p| matches!(p.kind, Kind::MeshEdge | Kind::SubDEdge))
         .map(|p| p.index)
         .collect::<Vec<_>>();
-    let components=picks.iter().map(|p|json!({"kind":match p.kind{Kind::MeshEdge=>"MeshTopologyEdge",Kind::SubDEdge=>"SubdEdge",Kind::MeshFace=>"MeshFace",Kind::SubDFace=>"SubdFace",Kind::MeshVertex=>"MeshVertex",Kind::SubDVertex=>"SubdVertex",_=>unreachable!()},"index":p.index+usize::from(!mesh)})).collect::<Vec<_>>();
+    let components = picks
+        .iter()
+        .map(|p| {
+            let (kind, index) = match p.kind {
+                Kind::MeshEdge => ("MeshTopologyEdge", p.index),
+                Kind::MeshFace => ("MeshFace", p.index),
+                Kind::MeshVertex => ("MeshVertex", p.index),
+                Kind::SubDEdge => ("SubdEdge", ids.unwrap().edges[p.index] as usize),
+                Kind::SubDFace => ("SubdFace", ids.unwrap().faces[p.index] as usize),
+                Kind::SubDVertex => ("SubdVertex", ids.unwrap().vertices[p.index] as usize),
+                _ => unreachable!(),
+            };
+            json!({"kind":kind,"index":index})
+        })
+        .collect::<Vec<_>>();
     Ok(
         json!({"whole":doc.is_selected(id),"components":components,"ordinals":ordinals,"objects":doc.objects().len()}),
     )
@@ -48,8 +63,15 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    run_pattern(f, iterations, tolerance, Pattern::Loop)
+}
+pub(super) fn run_pattern(
+    f: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+    pattern: Pattern,
+) -> Result<(Value, u64), ProbeError> {
     if !matches!(f.kind.as_str(), "mesh" | "subd")
-        || f.scene != "grid"
         || f.initial.len() > 24
         || f.steps.len() > 24
         || !matches!(f.finish.as_str(), "Enter" | "Cancel")
@@ -61,55 +83,37 @@ pub(super) fn run(
             .any(|s| s.kind != "click" || !matches!(s.modifiers.as_str(), "plain" | "ctrl"))
     {
         return Err(ProbeError::FixtureInvariant(
-            "owned edge-loop grid workflow required",
+            "owned edge selection workflow required",
         ));
     }
     measure_probe(iterations, || {
-        let points = (0..4)
-            .flat_map(|y| {
-                (0..5).map(move |x| Point3::try_new(x as f64 * 3., y as f64 * 3., 0.).unwrap())
-            })
-            .collect::<Vec<_>>();
-        let faces = (0..3)
-            .flat_map(|y| {
-                (0..4).map(move |x| {
-                    let a = y * 5 + x;
-                    vec![a, a + 1, a + 6, a + 5]
-                })
-            })
-            .collect::<Vec<Vec<u32>>>();
         let mesh = f.kind == "mesh";
-        let source = TriangleMesh::try_new_faces(
-            points,
-            faces
-                .into_iter()
-                .map(|f| MeshFace::Quad(f.try_into().unwrap()))
-                .collect(),
-            tolerance,
-        )?;
-        let geometry = if mesh {
-            Geometry::Mesh(source)
-        } else {
-            Geometry::SubD(
-                viboceros_geometry::SubD::try_from_mesh(&source, Default::default(), tolerance)?
-                    .try_with_vertex_tags(&[(0, 3), (4, 3), (15, 3), (19, 3)])?,
-            )
-        };
+        let (geometry, source_points) =
+            edge_pattern_source::geometry(&f.kind, &f.scene, tolerance)?;
+        let mut vertices = std::collections::BTreeMap::new();
+        for (i, p) in source_points.iter().enumerate() {
+            vertices.entry(p.to_array().map(f64::to_bits)).or_insert(i);
+        }
         let edges = match &geometry {
-            Geometry::Mesh(m) => {
-                let vertices = m
-                    .vertices()
-                    .iter()
-                    .enumerate()
-                    .map(|(i, p)| (p.to_array().map(f64::to_bits), i))
-                    .collect::<std::collections::BTreeMap<_, _>>();
-                m.topology_edge_points()
-                    .iter()
-                    .map(|e| e.map(|p| vertices[&p.to_array().map(f64::to_bits)]))
-                    .collect::<Vec<_>>()
-            }
-            Geometry::SubD(s) => s.edges().iter().map(|e| e.map(|v| v as usize)).collect(),
+            Geometry::Mesh(m) => m
+                .topology_edge_points()
+                .iter()
+                .map(|e| e.map(|p| vertices[&p.to_array().map(f64::to_bits)]))
+                .collect::<Vec<_>>(),
+            Geometry::SubD(s) => s
+                .edges()
+                .iter()
+                .map(|e| {
+                    e.map(|v| {
+                        vertices[&s.control_points()[v as usize].to_array().map(f64::to_bits)]
+                    })
+                })
+                .collect(),
             _ => unreachable!(),
+        };
+        let ids = match &geometry {
+            Geometry::SubD(s) => Some(s.component_ids()?),
+            _ => None,
         };
         let mut doc = Document::new(tolerance);
         let id = doc.add_geometry(geometry)?;
@@ -125,7 +129,7 @@ pub(super) fn run(
             let index = edges
                 .iter()
                 .position(|e| *e == pair || *e == [pair[1], pair[0]])
-                .ok_or(ProbeError::FixtureInvariant("grid edge pair required"))?;
+                .ok_or(ProbeError::FixtureInvariant("source edge pair required"))?;
             Ok(ComponentPick {
                 object: id,
                 index,
@@ -154,7 +158,7 @@ pub(super) fn run(
             .component_selection()
             .replace(&doc, initial)
             .map_err(ProbeError::FixtureInvariant)?;
-        let before = snapshot(&doc, &registry, id, mesh)?;
+        let before = snapshot(&doc, &registry, id, ids.as_ref())?;
         let mut trace = Vec::new();
         if !f.initial.is_empty() {
             if !f.steps.is_empty() {
@@ -162,10 +166,10 @@ pub(super) fn run(
                     "preselected loops complete immediately",
                 ));
             }
-            registry.execute(&mut doc, "SelEdgeLoop")?;
+            registry.execute(&mut doc, pattern.command())?;
         } else {
             registry.component_selection().clear();
-            let mut session = Session::default();
+            let mut session = Session::new(pattern);
             for step in &f.steps {
                 let p = edge(step.pair)?;
                 if !doc.is_selected(id) {
@@ -183,7 +187,7 @@ pub(super) fn run(
                     .component_selection()
                     .replace(&doc, session.seeds())
                     .map_err(ProbeError::FixtureInvariant)?;
-                trace.push(snapshot(&doc, &registry, id, mesh)?);
+                trace.push(snapshot(&doc, &registry, id, ids.as_ref())?);
             }
             let selected = if f.finish == "Enter" {
                 session.finish(&doc)?
@@ -195,11 +199,11 @@ pub(super) fn run(
                 .replace(&doc, selected)
                 .map_err(ProbeError::FixtureInvariant)?;
         }
-        let after = snapshot(&doc, &registry, id, mesh)?;
+        let after = snapshot(&doc, &registry, id, ids.as_ref())?;
         registry.execute(&mut doc, "Redo")?;
-        let redo = snapshot(&doc, &registry, id, mesh)?;
+        let redo = snapshot(&doc, &registry, id, ids.as_ref())?;
         registry.execute(&mut doc, "Undo")?;
-        let undo = snapshot(&doc, &registry, id, mesh)?;
+        let undo = snapshot(&doc, &registry, id, ids.as_ref())?;
         Ok(
             json!({"before":before,"trace":trace,"after":after,"redo":redo,"undo":undo,"success":f.finish=="Enter","source_unchanged":doc.object(id).unwrap().geometry_snapshot()==&original}),
         )

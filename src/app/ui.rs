@@ -41,7 +41,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
-        self.validate_edge_loop();
+        self.validate_edge_pattern();
         self.validate_select_uv();
         self.validate_refinement();
         self.validate_reparameterize();
@@ -75,7 +75,7 @@ impl eframe::App for VibocerosApp {
             && self.fillet_surface_prompt.is_none()
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
-            && self.edge_loop_prompt.is_none()
+            && self.edge_pattern_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.direction_session.is_none()
             && self.group_prompt.is_none()
@@ -555,10 +555,10 @@ impl eframe::App for VibocerosApp {
         let component_highlight_segments = self.merge_face_mesh_wires();
         let component_preselection = self.component_preselection_available();
         let control_point_pick = model_input_active
-            && self.edge_loop_prompt.is_none()
+            && self.edge_pattern_prompt.is_none()
             && self.control_point_picking_available();
         let loop_pick = (model_input_active
-            && self.edge_loop_prompt.is_some()
+            && self.edge_pattern_prompt.is_some()
             && self.plane_prompt.is_none()
             && !end_analysis_picking)
             .then_some(crate::viewport::ComponentPickFilter::MeshAndSubDEdges);
@@ -1268,7 +1268,7 @@ impl eframe::App for VibocerosApp {
                             control_point_pick,
                             component_pick,
                             component_previews: self
-                                .edge_loop_prompt
+                                .edge_pattern_prompt
                                 .as_ref()
                                 .map_or(&[], |p| p.preview()),
                             component_highlights: &component_highlights,

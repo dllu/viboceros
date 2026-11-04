@@ -64,5 +64,6 @@ qualify seed accumulation/removal, preselection, acceptance, cancellation and
 selection through redo/undo. Independent Rust grid recipes reproduce every
 captured state; UI replays also check the resulting ToNURBS handoff.
 
-Edge rings, face/vertex chains, surface tangent chains and nested `SelEdgeLoop`
+See [SelEdgeRing](component-edge-rings.md) for opposite-edge selection.
+Face/vertex chains, surface tangent chains and nested `SelEdgeLoop`
 inside another command remain separate work.

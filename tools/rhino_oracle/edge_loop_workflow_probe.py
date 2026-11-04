@@ -38,10 +38,14 @@ def cases():
     return rows
 
 def run(op,host,iterations,tolerance):
-    validate(op);R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc
+    validate(op)
+    return run_owned(op,host,iterations,tolerance,'SelEdgeLoop')
+
+def run_owned(op,host,iterations,tolerance,command,input_factory=Input):
+    R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects) or R.Commands.Command.InCommand():raise ValueError('empty private idle document required')
     R.RhinoApp.RunScript('_SelectionFilterNone',False)
-    with Input(op,host) as value:
+    with input_factory(op,host) as value:
         if not R.RhinoApp.RunScript('_Point w40,50,60',False):raise ValueError('cannot seed owned redo')
         if not R.RhinoApp.RunScript('_Undo',False) or len(list(doc.Objects))!=1:raise ValueError('cannot prepare owned redo')
         obj=doc.Objects.FindId(value.key)
@@ -63,7 +67,7 @@ def run(op,host,iterations,tolerance):
         before=snapshot();trace=[];events=[]
         marker='Owned loop workflow '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         def ended(sender,event):
-            if event.CommandEnglishName=='SelEdgeLoop':events.append(dict(result=str(event.CommandResult),selection=snapshot()))
+            if event.CommandEnglishName==command:events.append(dict(result=str(event.CommandResult),selection=snapshot()))
         R.Commands.Command.EndCommand+=ended
         try:
             if op['steps']:
@@ -72,8 +76,8 @@ def run(op,host,iterations,tolerance):
                 for step in op['steps']:
                     a,b=[R.Geometry.Point3d(*value.recipe['points'][i]) for i in step['pair']]
                     points.append([R.Geometry.Point3d((a.X+b.X)*.5,(a.Y+b.Y)*.5,(a.Z+b.Z)*.5)])
-                success=drive(op,points,host,snapshot,trace,'SelEdgeLoop')
-            else:success=R.RhinoApp.RunScript('_SelEdgeLoop _'+('Enter' if op['finish']=='Enter' else 'Cancel'),True)
+                success=drive(op,points,host,snapshot,trace,command)
+            else:success=R.RhinoApp.RunScript('_'+command+' _'+('Enter' if op['finish']=='Enter' else 'Cancel'),True)
         finally:R.Commands.Command.EndCommand-=ended
         if R.Commands.Command.InCommand():raise ValueError('owned loop workflow left active input')
         after=snapshot();history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()

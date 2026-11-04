@@ -32,8 +32,8 @@ impl VibocerosApp {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
-        } else if self.edge_loop_prompt.is_some() {
-            self.finish_edge_loop(false);
+        } else if self.edge_pattern_prompt.is_some() {
+            self.finish_edge_pattern(false);
         } else if self.select_uv_prompt.is_some() {
             self.finish_select_uv();
         } else if self.refinement_prompt.is_some() {

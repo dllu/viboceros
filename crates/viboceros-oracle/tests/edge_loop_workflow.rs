@@ -1,10 +1,16 @@
 use serde_json::Value;
 use std::io::Read;
 #[test]
-fn independent_grid_recipes_match_all_native_workflow_states() {
+fn independent_polygon_recipes_match_all_native_loop_and_ring_workflow_states() {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     let mut count = 0;
-    for family in ["edge_loop_workflow_discovery", "edge_loop_workflows"] {
+    for family in [
+        "edge_loop_workflow_discovery",
+        "edge_loop_workflows",
+        "edge_ring_discovery",
+        "edge_ring_commands",
+        "edge_ring_ngons",
+    ] {
         let query = std::fs::read(base.join(format!("fixtures/{family}.json"))).unwrap();
         let request = serde_json::from_slice(&query).unwrap();
         let result =
@@ -36,5 +42,5 @@ fn independent_grid_recipes_match_all_native_workflow_states() {
             }
         }
     }
-    assert_eq!(count, 44);
+    assert_eq!(count, 129);
 }

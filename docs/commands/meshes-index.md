@@ -45,6 +45,7 @@
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [ToNURBS mesh/SubD edge curves](to-nurbs-edges.md)
 - [Mesh/SubD edge loops and bounded component ranges](component-edge-loops.md)
+- [SelEdgeRing and opposite-edge selection](component-edge-rings.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)
 

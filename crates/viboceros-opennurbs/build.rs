@@ -30,6 +30,7 @@ fn main() {
         "subd_insert.h",
         "subd_soft_crease.h",
         "subd_chains.h",
+        "subd_ids.h",
         "subd_control_mesh.h",
         "subd_sharpness.h",
         "subd_edges.h",

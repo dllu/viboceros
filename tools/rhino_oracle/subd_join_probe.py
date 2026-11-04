@@ -11,6 +11,7 @@ def source(record,host):
     try:
         for p in record['points']:mesh.Vertices.Add(G.Point3d(*p))
         for f in record['faces']:mesh.Faces.AddFace(*f)
+        for n in record.get('ngons',[]):mesh.Ngons.AddNgon(G.MeshNgon.Create(host['System'].Array[host['System'].UInt32](n['vertices']),host['System'].Array[host['System'].UInt32](n['faces'])))
         mesh.Normals.ComputeNormals()
         subd=G.SubD.CreateFromMesh(mesh)
     finally:mesh.Dispose()

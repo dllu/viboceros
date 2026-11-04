@@ -2,6 +2,8 @@
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
 mod chains;
+mod ids;
+pub use ids::{SubDComponentIds, subd_component_ids};
 mod control_net;
 mod crease;
 mod edges;

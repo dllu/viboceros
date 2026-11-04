@@ -8,10 +8,10 @@ else:
 
 
 class Input:
-    def __init__(self,op,host):
+    def __init__(self,op,host,recipe=None):
         self.op=op;self.host=host;self.R=host['Rhino'];self.S=host['System'];self.G=self.R.Geometry
         self.doc=self.R.RhinoDoc.ActiveDoc;self.geometry=None;self.key=None
-        self.old_display=self.doc.SubDAppearance;self.mesh=None
+        self.old_display=self.doc.SubDAppearance;self.mesh=None;self.recipe_override=recipe
 
     def __enter__(self):
         try:return self.setup()
@@ -20,11 +20,12 @@ class Input:
 
     def setup(self):
         G,R,S=self.G,self.R,self.S;op=self.op;doc=self.doc
-        self.recipe=source(op['scene']);self.mesh=G.Mesh();mesh=self.mesh;mesh.Vertices.UseDoublePrecisionVertices=True
+        self.recipe=self.recipe_override if self.recipe_override is not None else source(op['scene']);self.mesh=G.Mesh();mesh=self.mesh;mesh.Vertices.UseDoublePrecisionVertices=True
         for i,p in enumerate(self.recipe['points']):
             mesh.Vertices.Add(G.Point3d(*p))
             if op.get('uv',True):mesh.TextureCoordinates.Add(float(i%5)/4,float(i//5)/3)
         for face in self.recipe['faces']:mesh.Faces.AddFace(*face)
+        for n in self.recipe.get('ngons',[]):mesh.Ngons.AddNgon(G.MeshNgon.Create(S.Array[S.UInt32](n['vertices']),S.Array[S.UInt32](n['faces'])))
         mesh.Normals.ComputeNormals()
         self.geometry=mesh.DuplicateMesh() if op['kind']=='mesh' else subd_source(self.recipe,self.host)
         self.key=doc.Objects.Add(self.geometry)
@@ -37,7 +38,8 @@ class Input:
         viewport.DisplayMode=mode;doc.Views.Redraw()
         self.edges=[];self.native=[]
         xyz=lambda p:(float(p.X),float(p.Y),float(p.Z))
-        points={tuple(p):i for i,p in enumerate(self.recipe['points'])}
+        points={}
+        for i,p in enumerate(self.recipe['points']):points.setdefault(tuple(p),i)
         if op['kind']=='mesh':
             for i in range(self.geometry.TopologyEdges.Count):
                 line=self.geometry.TopologyEdges.EdgeLine(i)
@@ -47,7 +49,7 @@ class Input:
             while vertex is not None:vertices.append(vertex);vertex=vertex.Next
             lookup={int(v.Id):i for i,v in enumerate(vertices)}
             for edge in self.geometry.Edges:
-                self.edges.append([lookup[int(edge.VertexFrom.Id)],lookup[int(edge.VertexTo.Id)]])
+                self.edges.append([points[xyz(edge.VertexFrom.ControlNetPoint)],points[xyz(edge.VertexTo.ControlNetPoint)]])
                 self.native.append(int(edge.ComponentIndex().Index))
         self.seed=next(i for i,pair in enumerate(self.edges) if set(pair)==set(op['pair']))
         a,b=[G.Point3d(*self.recipe['points'][i]) for i in op['pair']]

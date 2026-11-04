@@ -320,7 +320,7 @@ pub(super) fn test_app() -> VibocerosApp {
         direction_mode: viboceros_command::direction::DirectionEdit::Flip,
         refinement_prompt: None,
         select_uv_prompt: None,
-        edge_loop_prompt: None,
+        edge_pattern_prompt: None,
         rebuild_preview: None,
         weight_prompt: None,
         edge_prompt: None,

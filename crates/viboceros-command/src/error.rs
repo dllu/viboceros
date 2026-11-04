@@ -4,11 +4,11 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
-    #[error("select available mesh or SubD edges for SelEdgeLoop")]
+    #[error("select available mesh or SubD edges for loop/ring selection")]
     EdgeLoopUnavailable,
-    #[error("SelEdgeLoop source changed; select the edges again")]
+    #[error("Edge selection source changed; select the edges again")]
     EdgeLoopStale,
-    #[error("SelEdgeLoop exceeds the seed or preview component budget")]
+    #[error("Edge selection exceeds the seed or preview component budget")]
     EdgeLoopResourceLimit,
     #[error("select available whole objects or mesh/SubD edges for ToNURBS")]
     ToNurbsTargetUnavailable,

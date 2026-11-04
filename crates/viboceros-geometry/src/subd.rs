@@ -12,6 +12,7 @@ mod crease;
 mod curvature;
 mod cylinder;
 mod density;
+mod edge_ring;
 mod edges;
 mod ellipsoid;
 mod extrude;
@@ -51,7 +52,7 @@ pub use nurbs_conversion::{
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
-pub use viboceros_opennurbs::SubDFacePack;
+pub use viboceros_opennurbs::{SubDComponentIds, SubDFacePack};
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.
@@ -70,6 +71,20 @@ pub struct SubD {
     bounds: BoundingBox3,
 }
 impl SubD {
+    /// Native IDs in active ordinal order; IDs need not be contiguous.
+    pub fn component_ids(&self) -> Result<SubDComponentIds, GeometryError> {
+        let ids = viboceros_opennurbs::subd_component_ids(self.archive())?;
+        if ids.vertices.len() != self.control_points().len()
+            || ids.edges.len() != self.edges().len()
+            || ids.faces.len() != self.faces().len()
+        {
+            return Err(viboceros_opennurbs::SubDError(
+                "SubD ID count differs from control topology".into(),
+            )
+            .into());
+        }
+        Ok(ids)
+    }
     /// Smooth interior edges, crease boundary edges, and automatically assigned
     /// vertex tags. Faces must have consistent winding and manifold incidence.
     pub fn try_from_polygons(

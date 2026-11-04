@@ -7,6 +7,11 @@
 extern "C" {
 #endif
 typedef struct ViboSubDResult ViboSubDResult;
+typedef struct ViboSubDIdTable ViboSubDIdTable;
+typedef struct { size_t vertex_count,edge_count,face_count;const uint32_t *vertices,*edges,*faces; } ViboSubDIdView;
+int vibo_subd_component_ids(const uint8_t*,size_t,ViboSubDIdTable**,char*,size_t);
+int vibo_subd_component_ids_view(const ViboSubDIdTable*,ViboSubDIdView*);
+void vibo_subd_component_ids_free(ViboSubDIdTable*);
 int vibo_subd_from_mesh(const ViboMeshView*, int, int, ViboSubDResult**, char*, size_t);
 int vibo_subd_box(const double*, const uint32_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_cylinder(const double*, double, double, const uint32_t*, uint32_t, ViboSubDResult**, char*, size_t);

@@ -139,7 +139,7 @@ impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
         self.direction_session.is_none()
             && self.active_command.is_none()
-            && self.edge_loop_prompt.is_none()
+            && self.edge_pattern_prompt.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()
@@ -187,7 +187,7 @@ impl VibocerosApp {
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
-            && self.edge_loop_prompt.is_none()
+            && self.edge_pattern_prompt.is_none()
             && !self.picking_nurbs_edges()
             && !self.picking_extract_points()
             && !self.picking_inset()
@@ -306,7 +306,7 @@ impl VibocerosApp {
         } else {
             click.picks
         };
-        let picks = if self.edge_loop_prompt.is_some() {
+        let picks = if self.edge_pattern_prompt.is_some() {
             picks
                 .into_iter()
                 .filter(|p| {
@@ -386,8 +386,8 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
-        if self.edge_loop_prompt.is_some() {
-            self.pick_edge_loop(picks, action);
+        if self.edge_pattern_prompt.is_some() {
+            self.pick_edge_pattern(picks, action);
             return;
         }
         if self.picking_spin_edge() {
@@ -557,13 +557,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
-        if self.edge_loop_prompt.is_some() {
+        if self.edge_pattern_prompt.is_some() {
             let action = if window.modifiers.ctrl || window.modifiers.command {
                 ComponentAction::Remove
             } else {
                 ComponentAction::Add
             };
-            self.pick_edge_loop(window.picks, action);
+            self.pick_edge_pattern(window.picks, action);
             self.selection_window_override = None;
             return;
         }

@@ -2,6 +2,7 @@
 
 Ctrl+Shift-click edges before `ToNURBS`, or select them during its object prompt.
 Ctrl+Shift-double-click selects an [edge loop or bounded range](component-edge-loops.md).
+[SelEdgeRing](component-edge-rings.md) selects rings before conversion.
 Press Enter to accept prompted input, set `DeleteInputObjects`, then Enter to
 convert. Whole objects and edge components can share one invocation. Edge-only
 input offers no MeshOptions or SubDOptions submenu. Escape clears component

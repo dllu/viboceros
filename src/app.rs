@@ -133,7 +133,7 @@ mod control_polygon;
 mod copy_options;
 mod crease;
 mod curve_extraction_subcurve;
-mod edge_loop_selection;
+mod edge_pattern_selection;
 mod extract_points;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
@@ -420,7 +420,7 @@ pub struct VibocerosApp {
     direction_mode: viboceros_command::direction::DirectionEdit,
     refinement_prompt: Option<refinement::Prompt>,
     select_uv_prompt: Option<select_uv_rows::Prompt>,
-    edge_loop_prompt: Option<edge_loop_selection::Prompt>,
+    edge_pattern_prompt: Option<edge_pattern_selection::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     weight_prompt: Option<weight::Session>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
@@ -590,7 +590,7 @@ impl VibocerosApp {
             direction_mode: viboceros_command::direction::DirectionEdit::Flip,
             refinement_prompt: None,
             select_uv_prompt: None,
-            edge_loop_prompt: None,
+            edge_pattern_prompt: None,
             rebuild_preview: None,
             weight_prompt: None,
             edge_prompt: None,
@@ -838,7 +838,7 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
-        if self.continue_edge_loop(&input) {
+        if self.continue_edge_pattern(&input) {
             return;
         }
         if self.continue_select_uv(&input) {
@@ -992,7 +992,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
-            || self.start_edge_loop(&input)
+            || self.start_edge_pattern(&input)
             || self.start_select_uv(&input)
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)

@@ -242,7 +242,9 @@ use patch_single_face::PatchSingleFaceCommand;
 pub mod triangulate_nonplanar_quads;
 use triangulate_nonplanar_quads::TriangulateNonPlanarQuadsCommand;
 pub mod component_selection;
-pub mod edge_loop_selection;
+pub mod edge_pattern_selection;
+/// Compatibility path for the original loop session API.
+pub use edge_pattern_selection as edge_loop_selection;
 mod mesh_to_nurb;
 mod object_selection;
 pub use component_selection::{
@@ -2290,8 +2292,15 @@ impl CommandRegistry {
             .register(ToNurbsCommand::with_selection(registry.components.clone()))
             .expect("unique built-in command");
         registry
-            .register(edge_loop_selection::SelEdgeLoopCommand::new(
+            .register(edge_pattern_selection::SelEdgePatternCommand::new(
                 registry.components.clone(),
+                edge_pattern_selection::Pattern::Loop,
+            ))
+            .expect("unique built-in command");
+        registry
+            .register(edge_pattern_selection::SelEdgePatternCommand::new(
+                registry.components.clone(),
+                edge_pattern_selection::Pattern::Ring,
             ))
             .expect("unique built-in command");
         registry

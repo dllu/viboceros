@@ -66,6 +66,7 @@ mod curve_connections;
 mod curve_parameter_samples;
 pub mod delete_grips;
 pub mod edge_loop_workflow;
+mod edge_pattern_source;
 mod grip_navigation;
 pub mod grip_visibility;
 pub mod grip_weight;
@@ -359,6 +360,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: grip_visibility::Fixture,
+    },
+    EdgeRingWorkflow {
+        id: String,
+        #[serde(flatten)]
+        fixture: edge_loop_workflow::Fixture,
     },
     EdgeLoopWorkflow {
         id: String,
@@ -2827,6 +2833,7 @@ impl Operation {
             | Self::GripWeight { id, .. }
             | Self::SelectUvRows { id, .. }
             | Self::EdgeLoopWorkflow { id, .. }
+            | Self::EdgeRingWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
@@ -3354,6 +3361,12 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::EdgeRingWorkflow { fixture, .. } => edge_loop_workflow::run_pattern(
+            fixture,
+            iterations,
+            tolerance,
+            viboceros_command::edge_pattern_selection::Pattern::Ring,
+        )?,
         Operation::EdgeLoopWorkflow { fixture, .. } => {
             edge_loop_workflow::run(fixture, iterations, tolerance)?
         }

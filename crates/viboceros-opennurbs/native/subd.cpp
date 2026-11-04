@@ -189,6 +189,7 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
 #include "subd_insert.h"
 #include "subd_soft_crease.h"
 #include "subd_chains.h"
+#include "subd_ids.h"
 #include "subd_sharpness.h"
 extern "C" int vibo_subd_soft_crease(const uint8_t* bytes,size_t count,
     const size_t* edges,const double* weights,size_t edge_count,size_t* changed,

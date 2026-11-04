@@ -1,0 +1,187 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_ring_workflow",
+      "id": "mesh_ngon_strip",
+      "kind": "mesh",
+      "scene": "ngon_strip",
+      "pair": [
+        0,
+        3
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            3
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "mesh_ngon_pentagon",
+      "kind": "mesh",
+      "scene": "ngon_pentagon",
+      "pair": [
+        0,
+        1
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            1
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "mesh_ngon_quad",
+      "kind": "mesh",
+      "scene": "ngon_quad",
+      "pair": [
+        0,
+        1
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            1
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "mesh_ngon_pair",
+      "kind": "mesh",
+      "scene": "ngon_pair",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "subd_ngon_strip",
+      "kind": "subd",
+      "scene": "ngon_strip",
+      "pair": [
+        0,
+        3
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            3
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "subd_ngon_pentagon",
+      "kind": "subd",
+      "scene": "ngon_pentagon",
+      "pair": [
+        0,
+        1
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            1
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "subd_ngon_quad",
+      "kind": "subd",
+      "scene": "ngon_quad",
+      "pair": [
+        0,
+        1
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            0,
+            1
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_ring_workflow",
+      "id": "subd_ngon_pair",
+      "kind": "subd",
+      "scene": "ngon_pair",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    }
+  ]
+}

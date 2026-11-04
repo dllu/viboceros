@@ -28,6 +28,7 @@ mod projection;
 pub use projection::{MeshClosestLocation, MeshProjectionIndex};
 mod edge_collapse;
 mod edge_loop;
+mod edge_ring;
 pub use edge_loop::MeshEdgeLoop;
 mod edge_split;
 mod extrude;
