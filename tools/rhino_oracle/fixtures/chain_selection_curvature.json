@@ -1,0 +1,317 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "arc_0.5_Tangency",
+      "scene": "arc_0.5",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_0.5_Curvature",
+      "scene": "arc_0.5",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.0_Tangency",
+      "scene": "arc_1.0",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.0_Curvature",
+      "scene": "arc_1.0",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.04_Tangency",
+      "scene": "arc_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.04_Curvature",
+      "scene": "arc_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.06_Tangency",
+      "scene": "arc_1.06",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1.06_Curvature",
+      "scene": "arc_1.06",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_2.0_Tangency",
+      "scene": "arc_2.0",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_2.0_Curvature",
+      "scene": "arc_2.0",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_opposite_Tangency",
+      "scene": "arc_opposite",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_opposite_Curvature",
+      "scene": "arc_opposite",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_spatial_1.04_Tangency",
+      "scene": "arc_spatial_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_spatial_1.04_Curvature",
+      "scene": "arc_spatial_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "line_arc_Tangency",
+      "scene": "line_arc",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "line_arc_Curvature",
+      "scene": "line_arc",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "closed_circle_Tangency",
+      "scene": "closed_circle",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "closed_circle_Curvature",
+      "scene": "closed_circle",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    }
+  ]
+}

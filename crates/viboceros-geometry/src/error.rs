@@ -452,6 +452,16 @@ pub enum GeometryError {
     #[error("curve closure tolerance must be finite and non-negative")]
     InvalidCurveClosureTolerance,
 
+    #[error("chain gap and angle tolerances must be finite and nonnegative, with angle at most pi")]
+    InvalidCurveChainOptions,
+    #[error("chain seed or source classes do not match the prepared curves")]
+    InvalidCurveChainSeed,
+    #[error("curve chain selection exceeds the supported {maximum} {resource}")]
+    CurveChainLimit {
+        resource: &'static str,
+        maximum: usize,
+    },
+
     #[error("curve join tolerance must be finite and non-negative")]
     InvalidCurveJoinTolerance,
 

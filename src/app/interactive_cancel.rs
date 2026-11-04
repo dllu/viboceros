@@ -3,6 +3,7 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn cancel_interactive_command(&mut self, announce: bool) {
+        self.finish_chain(false);
         self.finish_edge_pattern(false);
         self.finish_direction(false);
         self.release_arc_extension_pick();

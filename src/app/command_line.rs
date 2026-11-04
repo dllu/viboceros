@@ -53,6 +53,7 @@ impl VibocerosApp {
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
             && self.edge_pattern_prompt.is_none()
+            && self.chain_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
@@ -87,6 +88,9 @@ impl VibocerosApp {
         }
         let name = input.split_whitespace().next().unwrap_or("");
         let command_name = name.trim_start_matches(['\'', '_', '-']);
+        if self.chain_prompt.is_some() && command_name.eq_ignore_ascii_case("Undo") {
+            return;
+        }
         let explicit_command = self.commands.recognizes(command_name)
             || command_name.eq_ignore_ascii_case("CPlane")
             || command_name.eq_ignore_ascii_case("CopyCPlaneToAll")
@@ -191,6 +195,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.chain_prompt.is_some() {
+                        "SelChain"
                     } else if let Some(p)=&self.edge_pattern_prompt {
                         p.command()
                     } else if self.select_uv_prompt.is_some() {
@@ -332,6 +338,8 @@ impl VibocerosApp {
                                 } else {
                                     "Select two surfaces or polysurfaces; Enter previews, Esc cancels"
                                 }
+                            } else if let Some(p)=&self.chain_prompt {
+                                p.hint()
                             } else if self.edge_pattern_prompt.is_some() {
                                 edge_pattern_selection::HINT
                             } else if let Some(prompt) = &self.object_prompt {

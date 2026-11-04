@@ -1,0 +1,62 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "curvature_boundary_0",
+      "scene": "arc_1.000000011",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "curvature_boundary_1",
+      "scene": "arc_1.0000000148",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "curvature_boundary_2",
+      "scene": "arc_1.000000015",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    }
+  ]
+}

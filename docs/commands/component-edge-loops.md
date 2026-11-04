@@ -69,5 +69,5 @@ captured state; UI replays also check the resulting ToNURBS handoff.
 See [SelEdgeRing](component-edge-rings.md) for opposite-edge selection and
 [SelFaceLoop](component-face-loops.md) for crossed face strips. Mixed-preselection
 rules are qualified by [additional native controls](../oracle/face-loops.md).
-Vertex chains, surface tangent chains and nested `SelEdgeLoop`
-inside another command remain separate work.
+For standalone curve and surface tangent chains, use [SelChain](curve-chains.md).
+Vertex chains and nested `SelEdgeLoop` inside another command remain separate work.

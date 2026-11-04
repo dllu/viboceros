@@ -1,0 +1,181 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "branch_Position_Both",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position",
+        "direction": "Both"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Position_Forward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position",
+        "direction": "Forward"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Position_Backward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position",
+        "direction": "Backward"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Tangency_Both",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency",
+        "direction": "Both"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Tangency_Forward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency",
+        "direction": "Forward"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Tangency_Backward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency",
+        "direction": "Backward"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Curvature_Both",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature",
+        "direction": "Both"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Curvature_Forward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature",
+        "direction": "Forward"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "branch_Curvature_Backward",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature",
+        "direction": "Backward"
+      }
+    }
+  ]
+}

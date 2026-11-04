@@ -56,6 +56,7 @@ pub use taper_points::TaperPointFixture;
 mod maelstrom_points;
 pub use maelstrom_points::MaelstromPointFixture;
 mod centroid_command;
+pub mod chain_selection;
 mod connect_command;
 mod construction_plane;
 mod control_point_insertion;
@@ -366,6 +367,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    ChainSelection {
+        id: String,
+        #[serde(flatten)]
+        fixture: chain_selection::Fixture,
     },
     FaceLoopWorkflow {
         id: String,
@@ -2845,6 +2851,7 @@ impl Operation {
             | Self::SelectUvRows { id, .. }
             | Self::EdgeLoopWorkflow { id, .. }
             | Self::EdgeRingWorkflow { id, .. }
+            | Self::ChainSelection { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
             | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
@@ -3384,6 +3391,9 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::ChainSelection { fixture, .. } => {
+            chain_selection::run(fixture, iterations, tolerance)?
+        }
         Operation::FaceLoopWorkflow { fixture, .. } => edge_loop_workflow::run_pattern(
             fixture,
             iterations,

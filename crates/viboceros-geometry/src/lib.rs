@@ -76,9 +76,13 @@ pub use curve_fillet_operations::{
     CurveFilletContact, CurveFilletContactProducer, CurveFilletOperations,
     CurveFilletPairOperations,
 };
+mod curve_chain;
 mod curve_fit;
 mod curve_frame;
 mod curve_join;
+pub use curve_chain::{
+    ChainContinuation, ChainContinuity, ChainDirection, CurveChainIndex, CurveChainOptions,
+};
 mod curve_length_subcurve;
 mod curve_match;
 mod curve_offset;
@@ -90,6 +94,7 @@ mod curve_shortness;
 mod curve_through;
 mod curve_trim;
 mod curve_tween;
+mod point_neighbors;
 mod surface_curve_offset;
 mod surface_geodesic;
 mod surface_interpolation;

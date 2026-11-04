@@ -450,7 +450,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
-        if self.edge_pattern_prompt.is_some() {
+        if self.chain_prompt.is_some() || self.edge_pattern_prompt.is_some() {
             return None;
         }
         if self.picking_draft_pull_curve() {

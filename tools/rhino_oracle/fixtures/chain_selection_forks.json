@@ -1,0 +1,138 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "fork_Next",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Next"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "fork_All",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "All"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "fork_Undo",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "fork_pick_1",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "source": 1
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "fork_pick_2",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "source": 2
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    }
+  ]
+}

@@ -58,3 +58,13 @@ extern "C" int32_t vibo_curve_discontinuities_with_curvature(uint32_t degree, si
   return vibo_curve_discontinuities_impl(degree,count,controls,knot_count,knots,
       continuity_kind,cos_angle_tolerance,curvature_tolerance,found,parameters,error,capacity);
 }
+
+// Public OpenNURBS G2 policy: angular, relative and zero-curvature handling.
+extern "C" int32_t vibo_curvatures_g2(const double* a,const double* b,
+    double cosine,double tolerance) {
+  if(!a || !b || !std::isfinite(cosine) || cosine < -1. || cosine > 1. ||
+     !std::isfinite(tolerance) || tolerance < 0.)return -1;
+  for(int i=0;i<3;++i)if(!std::isfinite(a[i]) || !std::isfinite(b[i]))return -1;
+  return ON_IsG2CurvatureContinuous(ON_3dVector(a[0],a[1],a[2]),
+      ON_3dVector(b[0],b[1],b[2]),cosine,tolerance)?1:0;
+}

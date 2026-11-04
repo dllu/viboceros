@@ -1,0 +1,115 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "empty",
+      "scene": "lines",
+      "seed": null,
+      "pre": [],
+      "steps": [],
+      "finish": "Cancel"
+    },
+    {
+      "op": "chain_selection",
+      "id": "preselected",
+      "scene": "lines",
+      "seed": null,
+      "pre": [
+        1
+      ],
+      "steps": [],
+      "finish": "Cancel"
+    },
+    {
+      "op": "chain_selection",
+      "id": "lines_accept",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "chain_selection",
+      "id": "lines_cancel",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "chain_selection",
+      "id": "corner",
+      "scene": "corner",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "chain_selection",
+      "id": "surface",
+      "scene": "surface",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "chain_selection",
+      "id": "mixed_curve",
+      "scene": "mixed",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "chain_selection",
+      "id": "mixed_edge",
+      "scene": "mixed",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    }
+  ]
+}

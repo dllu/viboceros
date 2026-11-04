@@ -3,6 +3,10 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(picks) = output.chain_click.take() {
+            self.pick_chain(picks);
+            return true;
+        }
         if self.direction_session.is_some()
             && let Some(id) = output.direction_click
         {

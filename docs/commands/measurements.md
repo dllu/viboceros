@@ -167,8 +167,9 @@ changes at either point. The source model must have physical units for a
 conversion, and overflowing or underflowing display results are rejected. The
 unit setting and geometry remain unchanged. Selected lengths are accumulated
 exactly before display scaling, so a converted total can be reported even if
-the unconverted total exceeds binary64's range. Rhino's `SelChain` and
-mesh/SubD edge length inputs remain pending.
+the unconverted total exceeds binary64's range. Nested `SelChain` within Length
+and mesh/SubD edge length inputs remain pending; standalone
+[SelChain](curve-chains.md) is available separately.
 
 Enter `Area` without preselection to pick supported objects, then press Enter.
 `Area Units=Centimeters` reports square centimetres without changing model

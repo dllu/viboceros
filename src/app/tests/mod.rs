@@ -28,6 +28,7 @@ mod boolean_two;
 mod boolean_union;
 mod camera_archive;
 mod catenary;
+mod chain_selection;
 mod chamfer_edge;
 mod circle_around;
 mod circle_deform;
@@ -321,6 +322,7 @@ pub(super) fn test_app() -> VibocerosApp {
         refinement_prompt: None,
         select_uv_prompt: None,
         edge_pattern_prompt: None,
+        chain_prompt: None,
         rebuild_preview: None,
         weight_prompt: None,
         edge_prompt: None,

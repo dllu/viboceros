@@ -1,0 +1,55 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "accept_branch",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      },
+      "inspect": true
+    },
+    {
+      "op": "chain_selection",
+      "id": "accept_prefer_curve",
+      "scene": "prefer_curve",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      },
+      "inspect": true
+    }
+  ]
+}

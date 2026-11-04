@@ -8,6 +8,8 @@ pub enum CommandError {
     EdgeLoopUnavailable,
     #[error("Edge selection source changed; select the edges again")]
     EdgeLoopStale,
+    #[error("Chain sources or tolerance changed; select the chain again")]
+    ChainStale,
     #[error("Edge selection exceeds the seed or preview component budget")]
     EdgeLoopResourceLimit,
     #[error("select available whole objects or mesh/SubD edges for ToNURBS")]

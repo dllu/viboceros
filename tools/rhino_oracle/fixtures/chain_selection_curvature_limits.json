@@ -1,0 +1,165 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "arc_1_0000000001",
+      "scene": "arc_1.0000000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1_00000001",
+      "scene": "arc_1.00000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1_0000001",
+      "scene": "arc_1.0000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1_000001",
+      "scene": "arc_1.000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_1_00001",
+      "scene": "arc_1.00001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_scaled_1000000_1_04",
+      "scene": "arc_scaled_1000000_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_scaled_10000000_1_04",
+      "scene": "arc_scaled_10000000_1.04",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "arc_scaled_0_0001_1_000000001",
+      "scene": "arc_scaled_0.0001_1.000000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "curvature_larger_gap",
+      "scene": "arc_1.0000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Curvature",
+        "gap": "0.0001"
+      }
+    }
+  ]
+}

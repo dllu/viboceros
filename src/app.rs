@@ -127,6 +127,7 @@ impl SelectionMenu {
     }
 }
 
+mod chain_selection;
 mod command_line;
 mod component_selection;
 mod control_polygon;
@@ -421,6 +422,7 @@ pub struct VibocerosApp {
     refinement_prompt: Option<refinement::Prompt>,
     select_uv_prompt: Option<select_uv_rows::Prompt>,
     edge_pattern_prompt: Option<edge_pattern_selection::Prompt>,
+    chain_prompt: Option<chain_selection::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     weight_prompt: Option<weight::Session>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
@@ -591,6 +593,7 @@ impl VibocerosApp {
             refinement_prompt: None,
             select_uv_prompt: None,
             edge_pattern_prompt: None,
+            chain_prompt: None,
             rebuild_preview: None,
             weight_prompt: None,
             edge_prompt: None,
@@ -838,7 +841,7 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
-        if self.continue_edge_pattern(&input) {
+        if self.continue_chain(&input) || self.continue_edge_pattern(&input) {
             return;
         }
         if self.continue_select_uv(&input) {
@@ -992,6 +995,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
+            || self.start_chain(&input)
             || self.start_edge_pattern(&input)
             || self.start_select_uv(&input)
             || self.start_refinement(&input)

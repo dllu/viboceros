@@ -241,6 +241,7 @@ mod patch_single_face;
 use patch_single_face::PatchSingleFaceCommand;
 pub mod triangulate_nonplanar_quads;
 use triangulate_nonplanar_quads::TriangulateNonPlanarQuadsCommand;
+pub mod chain_selection;
 pub mod component_selection;
 pub mod edge_pattern_selection;
 /// Compatibility path for the original loop session API.
@@ -971,6 +972,8 @@ pub trait Command: Send + Sync {
 #[derive(Default)]
 pub struct CommandRegistry {
     components: component_selection::ComponentSelection,
+    chain_options:
+        std::sync::Arc<remembered::Remembered<Option<viboceros_geometry::CurveChainOptions>>>,
     crease_splitting: crease_splitting::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -2290,6 +2293,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ToNurbsCommand::with_selection(registry.components.clone()))
+            .expect("unique built-in command");
+        registry
+            .register(chain_selection::SelChainCommand::new(
+                registry.components.clone(),
+                registry.chain_options.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(edge_pattern_selection::SelEdgePatternCommand::new(

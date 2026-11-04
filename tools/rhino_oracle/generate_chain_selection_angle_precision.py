@@ -1,0 +1,6 @@
+"""Qualify the native angle predicate near cosine rounding at zero."""
+from .capture_family import capture
+from .chain_selection_cases import angle_precision_cases
+if __name__=='__main__':
+    request=dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=angle_precision_cases())
+    capture('chain_selection_angle_precision',request,['generate_chain_selection_angle_precision.py','chain_selection_probe.py','chain_selection_cases.py','chain_selection_input.py','chain_selection_driver.py','shrink_face_input.py','component_picking.py','client.py','rhino_worker.py','structural_sdk.py','merge_edges_probe.py'],'VibocerosOracleChainSelectionAnglePrecision20261104',timeout=180)

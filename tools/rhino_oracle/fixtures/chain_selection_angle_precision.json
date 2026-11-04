@@ -1,0 +1,62 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "angle_precision_0",
+      "scene": "lines",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "0"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "angle_precision_1",
+      "scene": "lines",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "0.000000001"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "angle_precision_2",
+      "scene": "angle_0.000000001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "0.000000002"
+      }
+    }
+  ]
+}

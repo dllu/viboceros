@@ -1,0 +1,130 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "gap_0",
+      "scene": "gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "gap_0_000001",
+      "scene": "gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0.000001"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "gap_0_00001",
+      "scene": "gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0.00001"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "gap_0_0001",
+      "scene": "gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0.0001"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "angle_0_999",
+      "scene": "angle_0.999",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "1"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "angle_1",
+      "scene": "angle_1",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "1"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "angle_1_001",
+      "scene": "angle_1.001",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "1"
+      }
+    }
+  ]
+}

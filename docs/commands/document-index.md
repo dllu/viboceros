@@ -12,6 +12,7 @@
 - [Create shared blocks and insert instances](blocks.md)
 - [Explode instances one level or recursively](explode-blocks.md)
 - [Selection, attributes, layers, and groups](document.md)
+- [Connected curves and surface edges: SelChain](curve-chains.md)
 - [Mesh/SubD edge loops and SelEdgeLoop](component-edge-loops.md)
 - [Mesh/SubD edge rings and SelEdgeRing](component-edge-rings.md)
 - [Mesh/SubD face strips and SelFaceLoop](component-face-loops.md)

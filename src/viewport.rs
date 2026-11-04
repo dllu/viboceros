@@ -104,6 +104,7 @@ pub use parametric_reference::ParametricPick;
 mod control_points;
 mod grip_preview;
 pub use control_points::ControlPointSelection;
+mod chain_picking;
 mod curvature_graph;
 mod curve_sampling;
 mod edge_picking;
@@ -432,6 +433,8 @@ pub struct ViewportInput<'a> {
     pub mesh_boundary_edges: Option<&'a [(usize, [Point3; 2])]>,
     /// Allow ordinary curve selection alongside edge hits in the source getter.
     pub curve_or_edge_pick: bool,
+    pub chain_pick: bool,
+    pub chain_highlights: &'a [viboceros_command::chain_selection::Target],
     pub component_preselection: bool,
     pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
@@ -556,6 +559,8 @@ impl Default for ViewportInput<'_> {
             edge_pick: false,
             mesh_boundary_edges: None,
             curve_or_edge_pick: false,
+            chain_pick: false,
+            chain_highlights: &[],
             component_preselection: false,
             control_point_pick: false,
             component_pick: None,
@@ -601,6 +606,7 @@ pub struct ViewportOutput {
     pub face_click: Option<(ObjectId, usize)>,
     pub face_hit_point: Option<Point3>,
     pub parametric_click: Option<Vec<ParametricPick>>,
+    pub chain_click: Option<Vec<viboceros_command::chain_selection::Target>>,
     pub component_click: Option<ComponentClick>,
     pub component_double_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
@@ -1490,6 +1496,7 @@ impl Viewport {
         let component_input = component_mode.is_some()
             || input.direction.is_some()
             || input.parametric_pick
+            || input.chain_pick
             || input.face_pick.is_some()
             || (input.edge_pick && !input.curve_or_edge_pick)
             || input.edge_curve.is_some()
@@ -2182,6 +2189,17 @@ impl Viewport {
             ),
         );
         self.paint_component_previews(&painter, rect, document, input.component_previews);
+        self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
+        if input.chain_pick
+            && let Some(pointer) = response.hover_pos()
+        {
+            self.paint_chain_targets(
+                &painter,
+                rect,
+                document,
+                &self.pick_chain_targets(pointer, rect, document),
+            );
+        }
         self.paint_component_highlights(
             &painter,
             rect,
@@ -2891,6 +2909,17 @@ impl Viewport {
         })
         .flatten();
         let face_click = face_hit.map(|(object, face, _)| (object, face));
+        let chain_click = (input.chain_pick
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && response.clicked_by(PointerButton::Primary))
+        .then(|| {
+            response
+                .interact_pointer_pos()
+                .map_or_else(Vec::new, |pointer| {
+                    self.pick_chain_targets(pointer, rect, document)
+                })
+        });
         let parametric_click = (input.parametric_pick
             && component_mode.is_none()
             && !input.zoom_window
@@ -3020,6 +3049,7 @@ impl Viewport {
             face_click,
             face_hit_point,
             parametric_click,
+            chain_click,
             direction_click: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(direction_hit.map(|(id, _)| id))
@@ -3031,6 +3061,7 @@ impl Viewport {
             picked_point: (response.clicked_by(PointerButton::Primary)
                 && input.insert_edges.is_none()
                 && !input.parametric_pick
+                && !input.chain_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
@@ -3038,6 +3069,7 @@ impl Viewport {
             picked_snap: (response.clicked_by(PointerButton::Primary)
                 && input.insert_edges.is_none()
                 && !input.parametric_pick
+                && !input.chain_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| {

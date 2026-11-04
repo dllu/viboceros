@@ -405,3 +405,45 @@ mod tests {
         );
     }
 }
+
+unsafe extern "C" {
+    fn vibo_curvatures_g2(a: *const f64, b: *const f64, cosine: f64, tolerance: f64) -> c_int;
+}
+/// Public OpenNURBS G2 curvature policy, including relative and angular tests.
+pub fn curvature_vectors_g2(
+    a: [f64; 3],
+    b: [f64; 3],
+    cosine: f64,
+    tolerance: f64,
+) -> Result<bool, CurveQueryError> {
+    if a.into_iter().chain(b).any(|x| !x.is_finite())
+        || !cosine.is_finite()
+        || !(-1. ..=1.).contains(&cosine)
+        || !tolerance.is_finite()
+        || tolerance < 0.
+    {
+        return Err(CurveQueryError("Invalid curvature continuity input".into()));
+    }
+    // Two live fixed-size input buffers, read synchronously without retention.
+    match unsafe { vibo_curvatures_g2(a.as_ptr(), b.as_ptr(), cosine, tolerance) } {
+        0 => Ok(false),
+        1 => Ok(true),
+        _ => Err(CurveQueryError("Invalid curvature continuity query".into())),
+    }
+}
+
+#[cfg(test)]
+mod curvature_vector_tests {
+    use super::*;
+    #[test]
+    fn g2_policy_keeps_relative_curvature_and_rejects_opposite_bends_and_invalid_inputs() {
+        let cosine = 1_f64.to_radians().cos();
+        let tol = f64::EPSILON.sqrt();
+        assert!(curvature_vectors_g2([0.; 3], [0.; 3], cosine, tol).unwrap());
+        assert!(curvature_vectors_g2([0., 1., 0.], [0., 1.04, 0.], cosine, tol).unwrap());
+        assert!(!curvature_vectors_g2([0., 1., 0.], [0., 2., 0.], cosine, tol).unwrap());
+        assert!(!curvature_vectors_g2([0., 1., 0.], [0., -1., 0.], cosine, tol).unwrap());
+        assert!(curvature_vectors_g2([f64::NAN; 3], [0.; 3], cosine, tol).is_err());
+        assert!(curvature_vectors_g2([0.; 3], [0.; 3], 2., tol).is_err());
+    }
+}

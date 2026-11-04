@@ -31,12 +31,12 @@ def _input_hooks(timer, mouse, handlers):
             raise ValueError('component input cleanup failed: %s; original error: %s' % (failures, original))
 
 
-def drive(operation, points, host, selected, trace, command, script=None, completion=None):
+def drive(operation, points, host, selected, trace, command, script=None, completion=None, timer_factory=None, input_ready=None, accept_last_enter=False):
     Rhino, System = host['Rhino'], host['System']
     import clr
     clr.AddReference('System.Windows.Forms')
     from System.Windows.Forms import Timer, Control
-    timer = Timer(); timer.Interval = 100
+    timer = Timer() if timer_factory is None else timer_factory(Rhino); timer.Interval = 100
     root = os.path.dirname(os.path.abspath(host['__file__']))
     progress = os.path.join(root, 'worker-progress.log')
     acknowledgement = os.path.join(root, 'click-ack.json')
@@ -69,7 +69,10 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
     def begun(sender, event):
         if event.CommandEnglishName == command: active.append(True)
     def ended(sender, event):
-        if event.CommandEnglishName == command: active[:] = []
+        if event.CommandEnglishName == command:
+            if accept_last_enter and len(trace)+1==len(operation['steps']) and operation['steps'][-1]==dict(kind='key',value='Enter') and pending==['@component-key:%s:%d:Enter' % (operation['id'],len(trace))]:
+                trace.append(selected());finished.append(True)
+            active[:] = []
     def emit(name, x=1, y=1):
         with open(progress, 'a') as stream:
             stream.write('PICK %s %d %d\n' % (name, x, y)); stream.flush()
@@ -82,6 +85,9 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
                 clock[0] = System.DateTime.UtcNow
                 return
             if not ready:
+                if input_ready is not None and not input_ready():
+                    clock[0] = System.DateTime.UtcNow
+                    return
                 ready.append(True)
                 clock[0] = System.DateTime.UtcNow
             elapsed = (System.DateTime.UtcNow - clock[0]).TotalSeconds
@@ -142,5 +148,5 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
             trace.append(selected()); finished.append(True)
             if completion is not None:completion.append('None')
         if errors or len(trace) != len(operation['steps']) or not finished:
-            raise ValueError('incomplete component sequence: %s; trace: %s; history: %s' % (errors, trace, Rhino.RhinoApp.CommandHistoryWindowText[len(start):][-2000:]))
+            raise ValueError('incomplete component sequence: %s; trace: %s; final: %s; prompt: %s; history: %s' % (errors, trace, selected(), Rhino.RhinoApp.CommandPrompt, Rhino.RhinoApp.CommandHistoryWindowText[len(start):][-2000:]))
         return result

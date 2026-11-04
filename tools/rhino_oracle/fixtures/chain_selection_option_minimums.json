@@ -1,0 +1,79 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "option_minimum_0",
+      "scene": "subdoc_gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "option_minimum_1",
+      "scene": "subdoc_gap",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "gap": "0.00000001"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "option_minimum_2",
+      "scene": "angle_0.00004",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "0.00002"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "option_minimum_3",
+      "scene": "angle_0.00004",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "angle": "0"
+      }
+    }
+  ]
+}

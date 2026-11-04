@@ -41,6 +41,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_chain();
         self.validate_edge_pattern();
         self.validate_select_uv();
         self.validate_refinement();
@@ -76,6 +77,7 @@ impl eframe::App for VibocerosApp {
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
             && self.edge_pattern_prompt.is_none()
+            && self.chain_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.direction_session.is_none()
             && self.group_prompt.is_none()
@@ -1278,6 +1280,11 @@ impl eframe::App for VibocerosApp {
                             edge_pick,
                             mesh_boundary_edges,
                             curve_or_edge_pick,
+                            chain_pick: self.chain_prompt.is_some() && model_input_active,
+                            chain_highlights: self
+                                .chain_prompt
+                                .as_ref()
+                                .map_or(&[], |p| p.highlights()),
                             point_deviation: deviation_view.as_ref(),
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
