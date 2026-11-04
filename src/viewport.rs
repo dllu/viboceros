@@ -598,6 +598,7 @@ pub struct ViewportOutput {
     pub face_hit_point: Option<Point3>,
     pub parametric_click: Option<Vec<ParametricPick>>,
     pub component_click: Option<ComponentClick>,
+    pub component_double_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
@@ -1547,6 +1548,24 @@ impl Viewport {
             })
         } else {
             None
+        };
+        let loop_double = response.double_clicked_by(PointerButton::Primary)
+            && component_click.as_ref().is_some_and(|c| {
+                c.preselection
+                    && !c.modifiers.alt
+                    && !c.picks.is_empty()
+                    && c.picks.iter().all(|p| {
+                        matches!(
+                            p.kind,
+                            viboceros_command::ComponentSelectionKind::MeshEdge
+                                | viboceros_command::ComponentSelectionKind::SubDEdge
+                        )
+                    })
+            });
+        let (component_click, component_double_click) = if loop_double {
+            (None, component_click)
+        } else {
+            (component_click, None)
         };
         if ui.input(|input| input.pointer.button_released(PointerButton::Primary)) {
             self.component_drag = None;
@@ -2999,6 +3018,7 @@ impl Viewport {
                 .then_some(direction_hit.map(|(id, _)| id))
                 .flatten(),
             component_click,
+            component_double_click,
             component_window,
             control_point_selection,
             picked_point: (response.clicked_by(PointerButton::Primary)

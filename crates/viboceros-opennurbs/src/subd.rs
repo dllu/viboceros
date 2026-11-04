@@ -19,7 +19,7 @@ mod sharpness;
 mod soft_crease;
 mod spin;
 mod vertex_normals;
-pub use chains::subd_edge_chains;
+pub use chains::{SubDEdgeChainType, subd_edge_chains, subd_edge_loop};
 pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;

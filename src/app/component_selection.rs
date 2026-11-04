@@ -4,6 +4,7 @@ use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
 use std::collections::BTreeMap;
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::GeometrySnapshot;
+mod loops;
 
 #[derive(Clone, Copy, Debug, Default)]
 enum ComponentAction {
@@ -20,6 +21,8 @@ pub(super) struct ComponentSelection {
     candidates: Vec<(ComponentPick, GeometrySnapshot)>,
     choice_action: ComponentAction,
     hover: Option<ComponentPick>,
+    loop_click: Option<loops::Click>,
+    loop_choice: Option<ComponentClick>,
 }
 
 impl ComponentSelection {
@@ -139,6 +142,7 @@ impl ComponentSelection {
     pub(super) fn clear(&mut self) {
         self.picks.clear();
         self.order.clear();
+        self.loop_click = None;
         self.clear_choices();
     }
     /// Store fresh witnesses for surviving edge components after a topology edit.
@@ -164,6 +168,7 @@ impl ComponentSelection {
         self.candidates.clear();
         self.choice_action = ComponentAction::Add;
         self.hover = None;
+        self.loop_choice = None;
     }
     fn apply(
         &mut self,
@@ -173,18 +178,24 @@ impl ComponentSelection {
     ) -> Result<(), &'static str> {
         let staged = stage_sources(document, picks)?;
         self.clear_choices();
+        let mut removed = std::collections::BTreeSet::new();
         for (pick, snapshot) in staged {
             if matches!(action, ComponentAction::Remove)
                 || (matches!(action, ComponentAction::Toggle) && self.picks.contains_key(&pick))
             {
                 self.picks.remove(&pick);
-                self.order.retain(|old| *old != pick);
+                removed.insert(pick);
             } else {
                 if !self.picks.contains_key(&pick) {
                     self.order.push(pick);
                 }
                 self.picks.insert(pick, snapshot);
             }
+        }
+        // Loop/window removal can contain thousands of edges. Compact action
+        // order once, rather than scanning the full selection for every edge.
+        if !removed.is_empty() {
+            self.order.retain(|old| !removed.contains(old));
         }
         Ok(())
     }
@@ -616,6 +627,7 @@ impl VibocerosApp {
             }
             return;
         }
+        self.remember_loop_click(&picks, action);
         let grips = picks
             .iter()
             .filter(|p| p.kind == ComponentSelectionKind::SubDVertex)
@@ -786,7 +798,12 @@ impl VibocerosApp {
             .cloned();
         match candidate {
             Some((pick, snapshot)) if current(&self.document, pick, &snapshot) => {
-                self.select_components(vec![pick], self.component_selection.choice_action)
+                if let Some(mut click) = self.component_selection.loop_choice.take() {
+                    click.picks = vec![pick];
+                    self.accept_component_loop_click(click);
+                } else {
+                    self.select_components(vec![pick], self.component_selection.choice_action)
+                }
             }
             Some(_) => {
                 self.component_selection.clear_choices();

@@ -1,0 +1,273 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_boundary",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        1,
+        2
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_corner",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_vertical",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        11
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_boundary",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        1,
+        2
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_corner",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_vertical",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        11
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_no_uv_interior",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "uv": false
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_no_uv_boundary",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        1,
+        2
+      ],
+      "uv": false
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "grid_smooth",
+      "kind": "subd",
+      "scene": "grid_smooth",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "grid_crease",
+      "kind": "subd",
+      "scene": "grid_crease",
+      "pair": [
+        6,
+        7
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "grid_crease_end",
+      "kind": "subd",
+      "scene": "grid_crease_end",
+      "pair": [
+        7,
+        8
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "grid_corner",
+      "kind": "subd",
+      "scene": "grid_corner",
+      "pair": [
+        6,
+        7
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_fan3",
+      "kind": "mesh",
+      "scene": "fan3",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_fan5",
+      "kind": "mesh",
+      "scene": "fan5",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_fan5crease",
+      "kind": "mesh",
+      "scene": "fan5crease",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_fan3",
+      "kind": "subd",
+      "scene": "fan3",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_fan5",
+      "kind": "subd",
+      "scene": "fan5",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_fan5crease",
+      "kind": "subd",
+      "scene": "fan5crease",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_annulus_middle",
+      "kind": "mesh",
+      "scene": "annulus",
+      "pair": [
+        8,
+        9
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_annulus_boundary",
+      "kind": "mesh",
+      "scene": "annulus",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_annulus_radial",
+      "kind": "mesh",
+      "scene": "annulus",
+      "pair": [
+        1,
+        9
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_annulus_middle",
+      "kind": "subd",
+      "scene": "annulus",
+      "pair": [
+        8,
+        9
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_annulus_boundary",
+      "kind": "subd",
+      "scene": "annulus",
+      "pair": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_annulus_radial",
+      "kind": "subd",
+      "scene": "annulus",
+      "pair": [
+        1,
+        9
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "mesh_triangles",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ]
+    },
+    {
+      "op": "edge_loop_command",
+      "id": "subd_triangles",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ]
+    }
+  ]
+}

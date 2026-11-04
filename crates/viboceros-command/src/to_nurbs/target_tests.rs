@@ -23,7 +23,7 @@ fn fixture() -> (Document, ObjectId) {
 #[test]
 fn scripted_edge_selectors_use_explicit_or_unique_selected_owner_and_keep_order() {
     for explicit in [false, true] {
-        for selector in ["Edges=2,0,2", "Edge 2,0,2", "Edges=All"] {
+        for selector in ["Edges=2,0,2", "Edge 2,0,2", "Edges=0,2", "Edges=All"] {
             let (mut doc, id) = fixture();
             let r = CommandRegistry::with_builtins();
             if !explicit {
@@ -49,7 +49,7 @@ fn scripted_edge_selectors_use_explicit_or_unique_selected_owner_and_keep_order(
             };
             let points = m.topology_edge_points();
             let indices = if selector.ends_with("All") {
-                vec![0, 1, 2]
+                vec![2, 1, 0]
             } else {
                 vec![2, 0]
             };

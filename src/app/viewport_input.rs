@@ -219,6 +219,8 @@ impl VibocerosApp {
             } else {
                 self.run_command();
             }
+        } else if let Some(click) = output.component_double_click {
+            self.accept_component_loop_click(click);
         } else if let Some(click) = output.component_click {
             self.accept_component_click(click);
         } else if let Some(window) = output.component_window {

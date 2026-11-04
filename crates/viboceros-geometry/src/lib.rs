@@ -12,10 +12,11 @@ pub use edge_insertion::PolygonEdgePoint;
 mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
-    SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDExtrudeDirection, SubDExtrudeSelection,
-    SubDFaceExtraction, SubDFacePack, SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult,
-    SubDLimitFaceGrid, SubDMeshDensity, SubDNurbsContinuity, SubDNurbsPackedPatch, SubDNurbsPatch,
-    SubDNurbsTile, SubDSphereStyle, SubDVertexInsertion, join_subds, join_subds_seeded,
+    SubDDisplayMesh, SubDEdgeChain, SubDEdgeChainType, SubDEdgeSeamResult, SubDExtrudeDirection,
+    SubDExtrudeSelection, SubDFaceExtraction, SubDFacePack, SubDFromMeshOptions,
+    SubDFromSurfaceMethod, SubDJoinResult, SubDLimitFaceGrid, SubDMeshDensity, SubDNurbsContinuity,
+    SubDNurbsPackedPatch, SubDNurbsPatch, SubDNurbsTile, SubDSphereStyle, SubDVertexInsertion,
+    join_subds, join_subds_seeded,
 };
 mod area_mass_properties;
 mod mass_integration;
@@ -328,7 +329,7 @@ pub use mesh::{
     QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes,
     match_mesh_edges,
 };
-pub use mesh::{MAX_MESH_PATCH_POINTS, MeshPatchOptions};
+pub use mesh::{MAX_MESH_PATCH_POINTS, MeshEdgeLoop, MeshPatchOptions};
 pub use mesh::{MeshChannelSource, MeshClosestLocation, MeshProjectionIndex};
 pub use morph::{
     CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,

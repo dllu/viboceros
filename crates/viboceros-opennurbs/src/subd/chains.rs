@@ -1,6 +1,17 @@
 //! Native chain partitioning on an owned copy; source ordinals stay immutable.
 use super::*;
 
+/// Public OpenNURBS continuation constraints, independent of display density.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum SubDEdgeChainType {
+    Mixed = 1,
+    EqualEdgeTag = 2,
+    EqualEdgeAndVertexTag = 3,
+    EqualEdgeTagAndOrdinary = 4,
+    EqualEdgeAndVertexTagAndOrdinary = 5,
+}
+
 #[repr(C)]
 struct NativeChains {
     _private: [u8; 0],
@@ -24,6 +35,15 @@ unsafe extern "C" {
         capacity: usize,
     ) -> c_int;
     fn vibo_subd_edge_chains_view(value: *const NativeChains, out: *mut ChainsView) -> c_int;
+    fn vibo_subd_edge_loop(
+        bytes: *const u8,
+        count: usize,
+        seed: usize,
+        chain_type: u8,
+        out: *mut *mut NativeChains,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_edge_chains_free(value: *mut NativeChains);
 }
 struct ChainsOwner(NonNull<NativeChains>);
@@ -55,6 +75,43 @@ pub fn subd_edge_chains(
             error.len(),
         )
     };
+    decode_chains(status, out, &error, Some(edges.len()))
+}
+
+/// Grow a seed through the public native chain-neighbor query. Work happens on
+/// a private decoded source; cycles terminate when an edge is encountered twice.
+pub fn subd_edge_loop(
+    bytes: &[u8],
+    seed: usize,
+    chain_type: SubDEdgeChainType,
+) -> Result<Vec<(usize, bool)>, SubDError> {
+    check_archive(bytes)?;
+    let mut out = std::ptr::null_mut();
+    let mut error = [0u8; 1024];
+    let status = unsafe {
+        vibo_subd_edge_loop(
+            bytes.as_ptr(),
+            bytes.len(),
+            seed,
+            chain_type as u8,
+            &mut out,
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    let mut chains = decode_chains(status, out, &error, None)?;
+    if chains.len() != 1 {
+        return Err(SubDError("Invalid native SubD loop count".into()));
+    }
+    Ok(chains.pop().unwrap())
+}
+
+fn decode_chains(
+    status: c_int,
+    out: *mut NativeChains,
+    error: &[u8],
+    expected: Option<usize>,
+) -> Result<Vec<Vec<(usize, bool)>>, SubDError> {
     let owner = NonNull::new(out).map(ChainsOwner);
     if status != 1 {
         let end = error.iter().position(|&b| b == 0).unwrap_or(error.len());
@@ -65,8 +122,9 @@ pub fn subd_edge_chains(
     let owner = owner.ok_or_else(|| SubDError("Missing SubD chains".into()))?;
     let mut view = ChainsView::default();
     if unsafe { vibo_subd_edge_chains_view(owner.0.as_ptr(), &mut view) } != 1
-        || view.chain_count > edges.len()
-        || view.edge_count != edges.len()
+        || view.chain_count > 400_000
+        || view.edge_count > 400_000
+        || expected.is_some_and(|n| view.chain_count > n || view.edge_count != n)
         || view.offsets.is_null()
         || (view.edge_count > 0 && view.directed_edges.is_null())
     {

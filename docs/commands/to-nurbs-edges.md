@@ -1,6 +1,7 @@
 # ToNURBS mesh and SubD edges
 
 Ctrl+Shift-click edges before `ToNURBS`, or select them during its object prompt.
+Ctrl+Shift-double-click selects an [edge loop or bounded range](component-edge-loops.md).
 Press Enter to accept prompted input, set `DeleteInputObjects`, then Enter to
 convert. Whole objects and edge components can share one invocation. Edge-only
 input offers no MeshOptions or SubDOptions submenu. Escape clears component
@@ -9,8 +10,8 @@ picks without editing geometry, accepting preferences, or consuming redo.
 Each edge becomes a separate unselected NURBS curve with its source's name,
 layer, color policy and ordered group memberships. Edge owners remain intact
 with either deletion choice. Whole peers retain their ordinary replacement/copy
-rules. Preselection follows source document order and then component pick order
-within each owner; prompted input follows action order. Conversion is one
+rules. Preselection follows source document order and then descending component
+order within each owner; prompted input retains supplied action order. Conversion is one
 undoable edit; component picks remain cleared through undo/redo.
 
 Mesh edges and flat SubD edges produce degree-one control-net lines, with domain
@@ -46,8 +47,8 @@ sources have verified content hashes. Native capture ran only in private Xvfb.
 
 In-memory UI tests cover prompted picking, removal, windows, mixed action order,
 clearing selection, cancellation, stale inputs and nested display changes.
-Native command-first mouse picking and double-click loop selection are not
-qualified here; loop expansion is not implemented in this UI path. Smooth curves
+Native command-first mouse picking is not qualified here. Loop selection has
+separate [gesture and topology qualification](component-edge-loops.md). Smooth curves
 reuse the finite SubD edge fitter, without a continuous certificate against the
 mathematical limit. It refines the full source net even for a subset, so large
 inputs can reach subdivision budgets; general performance parity is unqualified.

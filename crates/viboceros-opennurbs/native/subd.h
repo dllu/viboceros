@@ -124,6 +124,7 @@ typedef struct {
   const size_t* directed_edges;
 } ViboSubDChainsView;
 int vibo_subd_edge_chains(const uint8_t*,size_t,const size_t*,size_t,ViboSubDChains**,char*,size_t);
+int vibo_subd_edge_loop(const uint8_t*,size_t,size_t,uint8_t,ViboSubDChains**,char*,size_t);
 int vibo_subd_edge_chains_view(const ViboSubDChains*,ViboSubDChainsView*);
 void vibo_subd_edge_chains_free(ViboSubDChains*);
 int vibo_subd_sharpness_from_percent(double,double*,char*,size_t);

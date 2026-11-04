@@ -22,18 +22,19 @@ pub use surface::{
 
 mod subd;
 pub use subd::{
-    SubDControlNetPriority, SubDData, SubDError, SubDExtrudeDirection, SubDFaceGrid, SubDFacePack,
-    SubDPartialPatchStencil, SubDPatchStencil, SubDRegularPatch, SubDSharpnessRefinement,
-    subd_append, subd_box, subd_chain_sharpness, subd_control_mesh,
+    SubDControlNetPriority, SubDData, SubDEdgeChainType, SubDError, SubDExtrudeDirection,
+    SubDFaceGrid, SubDFacePack, SubDPartialPatchStencil, SubDPatchStencil, SubDRegularPatch,
+    SubDSharpnessRefinement, subd_append, subd_box, subd_chain_sharpness, subd_control_mesh,
     subd_control_mesh_with_priority, subd_crease_components, subd_cylinder, subd_edge_chains,
-    subd_edge_samples, subd_edit_points, subd_extrude, subd_face_grids, subd_face_packs,
-    subd_from_archive, subd_from_mesh, subd_from_polygons, subd_insert_face_edge, subd_insert_path,
-    subd_insert_vertex, subd_inset, subd_join_assemble, subd_offset, subd_partial_patch_stencils,
-    subd_patch_stencils, subd_refined_face_grids, subd_regular_patches, subd_remap_vertices,
-    subd_retain_faces, subd_set_face_packs, subd_set_tags, subd_sharpness_from_percent,
-    subd_sharpness_refinement, subd_smooth_vertex_normals, subd_soft_crease, subd_spin_edge,
-    subd_stored_sharpness, subd_subdivide, subd_tessellate, subd_tessellate_with_jets,
-    subd_tessellate_with_normals, subd_transform,
+    subd_edge_loop, subd_edge_samples, subd_edit_points, subd_extrude, subd_face_grids,
+    subd_face_packs, subd_from_archive, subd_from_mesh, subd_from_polygons, subd_insert_face_edge,
+    subd_insert_path, subd_insert_vertex, subd_inset, subd_join_assemble, subd_offset,
+    subd_partial_patch_stencils, subd_patch_stencils, subd_refined_face_grids,
+    subd_regular_patches, subd_remap_vertices, subd_retain_faces, subd_set_face_packs,
+    subd_set_tags, subd_sharpness_from_percent, subd_sharpness_refinement,
+    subd_smooth_vertex_normals, subd_soft_crease, subd_spin_edge, subd_stored_sharpness,
+    subd_subdivide, subd_tessellate, subd_tessellate_with_jets, subd_tessellate_with_normals,
+    subd_transform,
 };
 
 mod subd_interpolation;

@@ -6,6 +6,11 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'edge_loop_gesture': ('edge_loop_gesture_cases', ('edge_loop_probe','edge_loop_cases','subd_join_probe','subd_join_cases')),
+    'edge_loop_filtered_gesture': ('edge_loop_gesture_cases', ('edge_loop_probe','edge_loop_cases','subd_join_probe','subd_join_cases')),
+    'edge_loop_subobject_gesture': ('edge_loop_gesture_cases', ('edge_loop_probe','edge_loop_cases','subd_join_probe','subd_join_cases')),
+    'edge_loop_modified_gesture': ('edge_loop_gesture_cases', ('edge_loop_probe','edge_loop_cases','subd_join_probe','subd_join_cases')),
+    'edge_loop_command': ('edge_loop_probe', ('edge_loop_cases','subd_join_probe','subd_join_cases','shrink_face_input','merge_edges_probe')),
     'nurbs_edge_command': ('nurbs_edge_command_probe', ('subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_nurbs_packs': ('subd_nurbs_packs_probe', ('join_probe','merge_edges_probe')),
     'subd_pack_command': ('subd_pack_command_probe', ('subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),

@@ -35,7 +35,7 @@ mod surface_conversion;
 mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
-pub use chains::{SubDDirectedEdge, SubDEdgeChain};
+pub use chains::{SubDDirectedEdge, SubDEdgeChain, SubDEdgeChainType};
 pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
 pub use density::SubDMeshDensity;

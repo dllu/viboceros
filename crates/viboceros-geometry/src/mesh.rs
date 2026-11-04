@@ -27,6 +27,8 @@ mod closest;
 mod projection;
 pub use projection::{MeshClosestLocation, MeshProjectionIndex};
 mod edge_collapse;
+mod edge_loop;
+pub use edge_loop::MeshEdgeLoop;
 mod edge_split;
 mod extrude;
 #[cfg(test)]

@@ -44,6 +44,7 @@
 - [MeshTrim: remove picked regions with grouped Undo](mesh-trim.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [ToNURBS mesh/SubD edge curves](to-nurbs-edges.md)
+- [Mesh/SubD edge loops and bounded component ranges](component-edge-loops.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)
 

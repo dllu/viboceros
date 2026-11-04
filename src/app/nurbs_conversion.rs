@@ -109,6 +109,23 @@ impl VibocerosApp {
             .order
             .extend(current.into_iter().filter(|t| seen.insert(*t)));
     }
+    pub(super) fn renew_nurbs_edge_order(&mut self, owner: ObjectId) {
+        if !self.picking_nurbs_edges() {
+            return;
+        }
+        let Ok(fresh) = self.nurbs_targets() else {
+            return;
+        };
+        if let Some(session) = self
+            .object_prompt
+            .as_mut()
+            .and_then(|p| p.to_nurbs.as_mut())
+        {
+            let belongs = |t: &ToNurbsTarget| matches!(t,ToNurbsTarget::Edge(id,_) if *id==owner);
+            session.order.retain(|t| !belongs(t));
+            session.order.extend(fresh.into_iter().filter(belongs));
+        }
+    }
     pub(super) fn try_start_nurbs_edges(&mut self, input: &str) -> bool {
         if !input.split_whitespace().next().is_some_and(|n| {
             n.trim_start_matches(['_', '-'])

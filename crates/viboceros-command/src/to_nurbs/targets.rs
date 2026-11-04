@@ -101,7 +101,15 @@ impl Input {
                 .enumerate()
                 .map(|(i, o)| (o.id(), i))
                 .collect::<BTreeMap<_, _>>();
-            order.sort_by_key(|t| rank[&t.object()]);
+            order.sort_by_key(|t| {
+                (
+                    rank[&t.object()],
+                    std::cmp::Reverse(match t {
+                        ToNurbsTarget::Edge(_, i) => *i,
+                        ToNurbsTarget::Whole(_) => 0,
+                    }),
+                )
+            });
         }
         Ok(Self {
             order,

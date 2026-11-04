@@ -72,6 +72,7 @@ mod draft_angle_analysis;
 mod draft_pull;
 mod edge_analysis;
 mod edge_fillet;
+mod edge_loops;
 mod edit_points;
 mod ellipse;
 mod ellipse_around;

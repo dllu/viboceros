@@ -1337,6 +1337,11 @@ class OracleClient:
             if any(op.get("pick") in ("mouse", "sequence") for op in request["operations"]):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
+        if any(op.get('op') == 'edge_loop_command' for op in request.get('operations', [])):
+            if self.settings_scheme is None:
+                raise OracleProtocolError('edge loop picking requires a private settings scheme')
+            from .component_picking import ComponentPicker
+            interaction = ComponentPicker()
         if any(op.get("op") == "extract_srf_command" for op in request.get("operations", [])):
             from .extract_srf_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -1494,6 +1499,15 @@ class OracleClient:
             from .undo_selection import validate_request
             validate_request(request)
             worker_source = Path(__file__).with_name("undo_selection_worker.py")
+        if any(op.get('op') in ('edge_loop_gesture','edge_loop_filtered_gesture','edge_loop_subobject_gesture','edge_loop_modified_gesture') for op in request.get('operations', [])):
+            from .edge_loop_gestures import EdgeLoopGesturePicker, validate
+            if self.settings_scheme is None or type(request.get('iterations')) is not int or request['iterations'] != 1:
+                raise OracleProtocolError('edge loop gestures require a private scheme and one iteration')
+            for operation in request['operations']: validate(operation)
+            worker_source = Path(__file__).with_name('edge_loop_idle_worker.py')
+            if len({op['op'] for op in request['operations']}) != 1:
+                raise OracleProtocolError('edge loop gestures require one input mode')
+            interaction = EdgeLoopGesturePicker(filtered=request['operations'][0]['op']=='edge_loop_filtered_gesture',modifiers_by_id={op['id']:op['modifiers'] for op in request['operations'] if 'modifiers' in op})
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 
