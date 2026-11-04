@@ -11,7 +11,8 @@ odd-valence and chart-dependent quartic even-valence processing.
 
 `G1x` starts with G1 and improves the sampled normal gap near each processed
 edge end. It compares the two incident patches at seven interior eighths of the
-first knot span, using a one-degree cosine threshold. Up to four quarter-step
+first shared source interval, using a one-degree cosine threshold. Unequal first
+spans use their smaller source reach. Up to four quarter-step
 projections move the second edge control inward from the corner and its adjacent
 interior control.
 Both incident patches receive the same displacement, preserving their shared
@@ -63,6 +64,7 @@ the original G0 regressions.
 
 [Packing](subd-nurbs-packing.md) is available after continuity processing.
 The [ToNURBS command](../commands/to-nurbs-subd.md) exposes these choices.
-Soft sharpness remains open. Domains
+[Single uniform soft edges](subd-soft-nurbs.md) are supported with the documented
+continuity restrictions. Domains
 remain normalized, redundant knots may differ from Rhino, and this finite
 conversion has no continuous error certificate against the true SubD limit.

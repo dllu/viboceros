@@ -24,7 +24,7 @@ selection and deletion rules apply. Options are retained after real conversion,
 including partial changes, and survive undo. Cancellation and failures preserve
 the previous choices. Escape cancels from either the submenu or a choice prompt;
 preselection stays selected, while command-first picks are cleared. Geometry is
-staged before one model edit; unsupported soft sharpness rejects the entire mixed
+staged before one model edit; unsupported soft-crease configurations reject the entire mixed
 conversion without consuming redo or changing sources or preferences.
 
 ## Geometry and evidence
@@ -55,6 +55,9 @@ Python checks request/source hashes, native source CRCs, defaults and lifecycle
 records. In-memory GUI tests exercise submenu nesting, invalid atomic edits,
 mixed options, cancellation and history without opening windows.
 
-Soft sharpness, mesh/SubD edge conversion, `ShowFacePacks` and
+[Single uniform soft edges](../geometry/subd-soft-nurbs.md) also convert through
+these options. Their geometry has separate SDK qualification; the actual-command
+families above use smooth and hard creases. Soft chains and variable-end weights,
+mesh/SubD edge conversion, `ShowFacePacks` and
 `ForceUpdateFacePacks` prompt actions remain open. Output B-reps do not yet carry
 Rhino's per-face pack-ID user data. General performance parity is unqualified.

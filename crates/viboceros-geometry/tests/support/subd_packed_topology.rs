@@ -3,6 +3,8 @@ use super::images::Placement;
 use serde_json::Value;
 use std::collections::BTreeSet;
 use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface, Point2, SubDNurbsTile};
+#[path = "subd_edge_correspondence.rs"]
+mod correspondence;
 #[path = "curve_full_image.rs"]
 mod curves;
 
@@ -87,6 +89,13 @@ fn cycle(values: &[usize]) -> Vec<usize> {
         .unwrap()
 }
 pub fn check(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
+    check_impl(actual, value, charts, false)
+}
+#[allow(dead_code)]
+pub fn check_measured_gaps(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
+    check_impl(actual, value, charts, true)
+}
+fn check_impl(actual: &Brep, value: &Value, charts: &[Chart], measured_gaps: bool) -> f64 {
     let target = &value["output"]["geometry"];
     let topology = &target["topology"];
     let mut incidence = vec![BTreeSet::new(); actual.vertices().len()];
@@ -136,6 +145,8 @@ pub fn check(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
     let mut edge_map = vec![None; actual.edges().len()];
     let mut maximum = 0_f64;
     let mut native_bounds = vec![f64::INFINITY; target["edges"].as_array().unwrap().len()];
+    let mut edge_bounds = vec![f64::INFINITY; actual.edges().len()];
+    let mut maximum_gap = 0_f64;
     for (f, face) in actual.faces().iter().enumerate() {
         let chart = &charts[f];
         let native = &target["faces"][chart.target];
@@ -196,11 +207,26 @@ pub fn check(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
                 own = own.reversed().unwrap();
             }
             let own_bound = curves::curve_bound(actual.edges()[edge].curve(), &own);
-            assert!(
-                own_bound < 1e-11,
-                "actual packed edge {edge}, face {f}: {own_bound}"
-            );
-            maximum = maximum.max(own_bound);
+            if measured_gaps {
+                assert!(
+                    own_bound <= actual.edges()[edge].tolerance()
+                        || actual.edges()[edge]
+                            .curve()
+                            .parameter_curve_deviation_bound(&own, actual.edges()[edge].tolerance())
+                            .unwrap()
+                            .is_some(),
+                    "uncertified edge {edge}, face {f}"
+                );
+            } else {
+                assert!(
+                    own_bound < 1e-11,
+                    "actual packed edge {edge}, face {f}: {own_bound}"
+                );
+            }
+            if !measured_gaps {
+                maximum = maximum.max(own_bound);
+            }
+            maximum_gap = maximum_gap.max(own_bound);
             let mut expected = iso(&surface, line(&nc[k]["definition"]));
             if nt[k]["reversed"].as_bool().unwrap() {
                 expected = expected.reversed().unwrap();
@@ -214,6 +240,33 @@ pub fn check(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
             // Full tile bounds certify both images. At least one incident
             // isocurve must certify the complete stored spatial curve.
             native_bounds[ni] = native_bounds[ni].min(native_bound);
+            if measured_gaps && own_bound < 1e-11 && native_bound < 1e-11 {
+                let mut expected = curves::curve(&target["edges"][ni]["curve"]["definition"]);
+                if flip {
+                    expected = expected.reversed().unwrap();
+                }
+                let affine = curves::curve_bound(actual.edges()[edge].curve(), &expected);
+                if affine < 1e-11 {
+                    edge_bounds[edge] = edge_bounds[edge].min(affine);
+                } else {
+                    let pairs = correspondence::pairs(
+                        chart,
+                        [
+                            trim.curve().evaluate(*range.start()).unwrap(),
+                            trim.curve().evaluate(*range.end()).unwrap(),
+                        ],
+                        line(&nc[k]["definition"]),
+                        trim.is_reversed_3d(),
+                    );
+                    if let Some(bound) = actual.edges()[edge]
+                        .curve()
+                        .mapped_curve_deviation_bound(&expected, &pairs, 1e-11)
+                        .unwrap()
+                    {
+                        edge_bounds[edge] = edge_bounds[edge].min(bound);
+                    }
+                }
+            }
         }
         assert_eq!(
             cycle(&mapped),
@@ -225,6 +278,12 @@ pub fn check(actual: &Brep, value: &Value, charts: &[Chart]) -> f64 {
         );
     }
     maximum = maximum.max(native_bounds.into_iter().fold(0_f64, f64::max));
+    if measured_gaps {
+        maximum = maximum.max(edge_bounds.into_iter().fold(0_f64, f64::max));
+        println!(
+            "certified native spatial curve bound {maximum:e}; finite patch gap bound {maximum_gap:e}"
+        );
+    }
     let mut used_edges = BTreeSet::new();
     for (i, mapped) in edge_map.into_iter().enumerate() {
         let (j, flip) = mapped.unwrap();

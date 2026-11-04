@@ -30,6 +30,14 @@ pub struct SubDPatchStencil {
     pub crease_corners: [bool; 4],
 }
 
+/// A refinement level that may still contain sharp source-side intervals.
+/// Unresolved corners cannot be used for a smooth bicubic approximation.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SubDPartialPatchStencil {
+    pub stencil: SubDPatchStencil,
+    pub unresolved_corners: [bool; 4],
+}
+
 #[repr(C)]
 struct NativeGrids {
     _private: [u8; 0],
@@ -75,42 +83,67 @@ impl Drop for GridsOwner {
 /// The input archive is immutable. Linear interpolation between samples does
 /// not provide a bound on the intervening surface approximation error.
 pub fn subd_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, SubDError> {
-    face_grids(bytes, density, 1)
+    read_grids(bytes, density, 1).map(|g| g.into_iter().map(|(g, _)| g).collect())
 }
 
 /// Refined control points in the same charts as `subd_face_grids`, after
 /// `density` global subdivision steps. These are control vertices, not surface
 /// evaluations; density, immutability and resource limits match that query.
 pub fn subd_refined_face_grids(bytes: &[u8], density: u32) -> Result<Vec<SubDFaceGrid>, SubDError> {
-    face_grids(bytes, density, 0)
+    read_grids(bytes, density, 0).map(|g| g.into_iter().map(|(g, _)| g).collect())
 }
 
 /// Bounded bicubic construction stencils, using the same source charts as the
 /// limit query. Outer diagonal controls are intentionally left to the fitter.
 pub fn subd_patch_stencils(bytes: &[u8], density: u32) -> Result<Vec<SubDPatchStencil>, SubDError> {
-    face_grids(bytes, density, 2)?
+    patch_stencils(bytes, density, false).map(|g| g.into_iter().map(|g| g.stencil).collect())
+}
+
+/// Partial control stencils for local corrections across refinement levels.
+/// A full surface must not be inferred where soft sharpness is unresolved;
+/// callers must restrict use to resolved neighborhoods. Sources stay immutable.
+pub fn subd_partial_patch_stencils(
+    bytes: &[u8],
+    density: u32,
+) -> Result<Vec<SubDPartialPatchStencil>, SubDError> {
+    patch_stencils(bytes, density, true)
+}
+
+fn patch_stencils(
+    bytes: &[u8],
+    density: u32,
+    partial: bool,
+) -> Result<Vec<SubDPartialPatchStencil>, SubDError> {
+    read_grids(bytes, density, if partial { 3 } else { 2 })?
         .into_iter()
-        .map(|grid| {
+        .map(|(grid, unresolved_corners)| {
             let stride = grid.side + 1;
             let inner = stride * stride;
-            Ok(SubDPatchStencil {
-                face: grid.face,
-                corner: grid.corner,
-                side: grid.side,
-                crease_corners: grid.crease_corners,
-                controls: grid.points[..inner].to_vec(),
-                halo: std::array::from_fn(|side| {
-                    grid.points[inner + side * stride..inner + (side + 1) * stride].to_vec()
-                }),
-                limit_corners: grid.points[inner + 4 * stride..]
-                    .try_into()
-                    .map_err(|_| SubDError("Invalid stencil corner count".into()))?,
+            Ok(SubDPartialPatchStencil {
+                unresolved_corners,
+                stencil: SubDPatchStencil {
+                    face: grid.face,
+                    corner: grid.corner,
+                    side: grid.side,
+                    crease_corners: grid.crease_corners,
+                    controls: grid.points[..inner].to_vec(),
+                    halo: std::array::from_fn(|side| {
+                        grid.points[inner + side * stride..inner + (side + 1) * stride].to_vec()
+                    }),
+                    limit_corners: grid.points[inner + 4 * stride..]
+                        .try_into()
+                        .map_err(|_| SubDError("Invalid stencil corner count".into()))?,
+                },
             })
         })
         .collect()
 }
 
-fn face_grids(bytes: &[u8], density: u32, kind: c_int) -> Result<Vec<SubDFaceGrid>, SubDError> {
+fn read_grids(
+    bytes: &[u8],
+    density: u32,
+    kind: c_int,
+) -> Result<Vec<(SubDFaceGrid, [bool; 4])>, SubDError> {
     check_archive(bytes)?;
     if !(1..=6).contains(&density) {
         return Err(SubDError("Invalid face sample density".into()));
@@ -163,22 +196,25 @@ fn face_grids(bytes: &[u8], density: u32, kind: c_int) -> Result<Vec<SubDFaceGri
     for grid in grids {
         let corner = (grid.corner != usize::MAX).then_some(grid.corner);
         let side = 1usize << (density - u32::from(corner.is_some()));
-        let count = (side + if kind == 2 { 3 } else { 1 }).pow(2);
+        let count = (side + if kind >= 2 { 3 } else { 1 }).pow(2);
         if grid.side != side
-            || grid.crease_corners > 15
+            || grid.crease_corners > if kind == 3 { 255 } else { 15 }
             || grid.offset != offset
             || offset > points.len()
             || count > points.len() - offset
         {
             return Err(SubDError("Invalid face sample layout".into()));
         }
-        result.push(SubDFaceGrid {
-            face: grid.face,
-            corner,
-            side,
-            points: points[offset..offset + count].to_vec(),
-            crease_corners: std::array::from_fn(|i| grid.crease_corners & (1 << i) != 0),
-        });
+        result.push((
+            SubDFaceGrid {
+                face: grid.face,
+                corner,
+                side,
+                points: points[offset..offset + count].to_vec(),
+                crease_corners: std::array::from_fn(|i| grid.crease_corners & (1 << i) != 0),
+            },
+            std::array::from_fn(|i| grid.crease_corners & (1 << (i + 4)) != 0),
+        ));
         offset += count;
     }
     if offset != points.len() {

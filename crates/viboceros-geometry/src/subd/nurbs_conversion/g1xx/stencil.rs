@@ -18,7 +18,11 @@ pub(super) fn first_harmonic(vectors: &[[f64; 3]]) -> Vec<[f64; 3]> {
         .collect()
 }
 
-pub(super) fn controls(p: [f64; 3], old: &[[[f64; 3]; 3]]) -> Vec<[[f64; 3]; 3]> {
+pub(super) fn controls(
+    p: [f64; 3],
+    old: &[[[f64; 3]; 3]],
+    opposite_third: &[[f64; 3]],
+) -> Vec<[[f64; 3]; 3]> {
     let n = old.len();
     let angle = std::f64::consts::TAU / n as f64;
     let cosine = angle.cos();
@@ -31,14 +35,11 @@ pub(super) fn controls(p: [f64; 3], old: &[[[f64; 3]; 3]]) -> Vec<[[f64; 3]; 3]>
     let mut rhs = Vec::with_capacity(n);
     for (i, &e1) in tangents.iter().enumerate() {
         let e3 = std::array::from_fn::<_, 3, _>(|a| old[i][1][a] - p[a]);
-        result.push([
-            std::array::from_fn(|a| p[a] + e1[a]),
-            std::array::from_fn(|a| p[a] + (6. * e1[a] + e3[a]) / 5.),
-            old[i][2],
-        ]);
+        let second = std::array::from_fn::<_, 3, _>(|a| p[a] + (6. * e1[a] + e3[a]) / 5.);
+        result.push([std::array::from_fn(|a| p[a] + e1[a]), second, old[i][2]]);
         let prev = (i + n - 1) % n;
         rhs.push(std::array::from_fn::<_, 3, _>(|a| {
-            2. * e1[a] + cosine / 15. * (4. * e3[a] - 6. * e1[a])
+            2. * e1[a] + cosine / 3. * (opposite_third[i][a] - second[a])
                 - (old[i][2][a] - p[a])
                 - (old[prev][2][a] - p[a])
         }));

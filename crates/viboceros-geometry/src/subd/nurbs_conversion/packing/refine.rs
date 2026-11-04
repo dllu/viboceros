@@ -2,6 +2,9 @@
 use super::*;
 
 pub(super) fn compact(mut surface: NurbsSurface) -> Result<NurbsSurface, GeometryError> {
+    if surface.control_points().iter().all(|p| p.weight() == 1.) {
+        return super::super::polynomial_cleanup::compact(surface);
+    }
     for axis in 0..2 {
         let knots = if axis == 0 {
             surface.knots_u()

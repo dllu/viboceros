@@ -30,6 +30,12 @@ An alternating recurrence solves this cyclic system in linear work. Odd valence
 has a unique solution. Coordinates relative to the retained corner avoid
 subtracting large absolute positions in the solve.
 
+With unequal soft-crease refinement, the first incident patch owns `E1`, `E2`
+and `E3`. The compatibility right side is
+`2 E1_i + cos(2π/n) (E3_opposite_i - E2_new_i) / 3`;
+the equation above is its shared-boundary specialization. Both incident interior
+controls receive the owner's second-control displacement.
+
 ## Even valences and native charts
 
 Even fans use the same tangent filter but remove the alternating component of
@@ -67,4 +73,5 @@ Output admits at most four million controls, including quartic elevation.
 Nonmanifold, repeated or disconnected smooth face fans and smooth valence below
 three reject. [Packing](subd-nurbs-packing.md) applies after this processing;
 the [ToNURBS command](../commands/to-nurbs-subd.md) exposes this mode.
-Soft sharpness remains open.
+[Single uniform soft edges](subd-soft-nurbs.md) have separate native coverage;
+strong even-valence soft G1xx remains unsupported.

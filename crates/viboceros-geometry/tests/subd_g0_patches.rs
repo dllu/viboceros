@@ -93,13 +93,38 @@ fn smooth_box() {
 }
 
 #[test]
-fn soft_sharpness_is_explicit_and_does_not_change_the_source() {
+fn variable_soft_sharpness_rejects_without_changing_the_source() {
     let source = native::source(&native::case("box")["before"]);
     let (soft, _) = source
         .try_with_soft_crease_weights(&[(0, [20., 80.])])
         .unwrap();
     let archive = soft.archive().to_vec();
     assert!(soft.to_nurbs_patches_g0().is_err());
+    assert_eq!(soft.archive(), archive);
+}
+
+#[test]
+fn partial_stencils_identify_unresolved_soft_corner_neighborhoods() {
+    let source = native::source(&native::case("box")["before"]);
+    let (soft, _) = source
+        .try_with_soft_crease_weights(&[(0, [100.; 2])])
+        .unwrap();
+    let archive = soft.archive().to_vec();
+    assert!(viboceros_opennurbs::subd_patch_stencils(&archive, 3).is_err());
+    let partial = viboceros_opennurbs::subd_partial_patch_stencils(&archive, 3).unwrap();
+    assert_eq!(partial.len(), source.faces().len());
+    let ends = source.edges()[0];
+    for net in partial {
+        assert!(net.stencil.corner.is_none());
+        for (i, &v) in source.faces()[net.stencil.face].iter().enumerate() {
+            let face = &source.faces()[net.stencil.face];
+            let adjacent = [face[(i + 1) % 4], face[(i + 3) % 4]];
+            let expected = ends.contains(&v) && adjacent.iter().any(|n| ends.contains(n));
+            assert_eq!(net.unresolved_corners[i], expected);
+        }
+    }
+    let resolved = viboceros_opennurbs::subd_partial_patch_stencils(&archive, 5).unwrap();
+    assert!(resolved.iter().all(|n| n.unresolved_corners == [false; 4]));
     assert_eq!(soft.archive(), archive);
 }
 

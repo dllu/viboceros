@@ -45,11 +45,13 @@ fn edge_index(
 
 pub(super) fn apply(source: &SubD, patches: &mut [SubDNurbsPatch]) -> Result<(), GeometryError> {
     let valence = super::continuity::valences(source);
+    let enabled = super::soft::continuity_enabled(source);
     let selected = source
         .vertex_tags()
         .iter()
         .zip(&valence)
-        .map(|(&tag, &n)| tag == 1 && n != 4)
+        .enumerate()
+        .map(|(i, (&tag, &n))| tag == 1 && n != 4 && enabled[i])
         .collect::<Vec<_>>();
     if !selected.iter().any(|&v| v) {
         return Ok(());
@@ -163,18 +165,42 @@ pub(super) fn apply(source: &SubD, patches: &mut [SubDNurbsPatch]) -> Result<(),
 }
 
 fn improve(patches: &mut [SubDNurbsPatch], ring: &[Corner]) -> Result<(), GeometryError> {
-    let get = |c: Corner, along, across| {
+    let edge_get = |c: Corner, outgoing: bool, along, across| {
         let surface = &patches[c.patch].surface;
-        surface.control_points()[edge_index(surface, c.local, true, along, across)]
+        surface.control_points()[edge_index(surface, c.local, outgoing, along, across)]
             .point()
             .to_array()
     };
-    let p = get(ring[0], 0, 0);
+    let p = edge_get(ring[0], true, 0, 0);
+    let mut opposite_third = Vec::with_capacity(ring.len());
+    let mut second_owner = Vec::with_capacity(ring.len());
     let old = ring
         .iter()
-        .map(|&c| [get(c, 1, 0), get(c, 3, 0), get(c, 1, 1)])
+        .enumerate()
+        .map(|(i, &c)| {
+            let previous = ring[(i + ring.len() - 1) % ring.len()];
+            // Finite soft-crease charts can have unequal boundary controls.
+            // Native processing retains the first incident patch as owner.
+            let (owner, outgoing) = if previous.patch < c.patch {
+                (previous, false)
+            } else {
+                (c, true)
+            };
+            let (other, other_outgoing) = if outgoing {
+                (previous, false)
+            } else {
+                (c, true)
+            };
+            opposite_third.push(edge_get(other, other_outgoing, 3, 0));
+            second_owner.push(edge_get(owner, outgoing, 2, 0));
+            [
+                edge_get(owner, outgoing, 1, 0),
+                edge_get(owner, outgoing, 3, 0),
+                edge_get(c, true, 1, 1),
+            ]
+        })
         .collect::<Vec<_>>();
-    let updated = stencil::controls(p, &old);
+    let updated = stencil::controls(p, &old, &opposite_third);
     for (i, &corner) in ring.iter().enumerate() {
         let next = (i + 1) % ring.len();
         let surface = &patches[corner.patch].surface;
@@ -187,8 +213,9 @@ fn improve(patches: &mut [SubDNurbsPatch], ring: &[Corner]) -> Result<(), Geomet
             let at = edge_index(surface, corner.local, outgoing, 1, 0);
             controls[at] = Point3::try_from(updated[edge][0])?;
             let at = edge_index(surface, corner.local, outgoing, 2, 0);
-            let old_point = controls[at].to_array();
-            let delta = std::array::from_fn::<_, 3, _>(|a| updated[edge][1][a] - old_point[a]);
+            // The transverse shift is the owner's displacement on both faces.
+            let delta =
+                std::array::from_fn::<_, 3, _>(|a| updated[edge][1][a] - second_owner[edge][a]);
             controls[at] = Point3::try_from(updated[edge][1])?;
             let at = edge_index(surface, corner.local, outgoing, 2, 1);
             let old_point = controls[at].to_array();

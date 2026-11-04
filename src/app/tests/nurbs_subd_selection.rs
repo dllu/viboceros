@@ -8,8 +8,11 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.run_command();
 }
 fn fixture() -> (VibocerosApp, ObjectId) {
+    fixture_with_soft_weights(None)
+}
+fn fixture_with_soft_weights(weights: Option<[f64; 2]>) -> (VibocerosApp, ObjectId) {
     let mut app = test_app();
-    let subd = SubD::try_from_polygons(
+    let mut subd = SubD::try_from_polygons(
         vec![
             point(0., 0., 0.),
             point(2., 0., 1.),
@@ -23,8 +26,49 @@ fn fixture() -> (VibocerosApp, ObjectId) {
     .unwrap()
     .try_with_vertex_tags(&[(0, 3), (2, 3), (3, 3), (5, 3)])
     .unwrap();
+    if let Some(weights) = weights {
+        let edge = subd
+            .edges()
+            .iter()
+            .position(|e| *e == [1, 4] || *e == [4, 1])
+            .unwrap();
+        subd = subd
+            .try_with_soft_crease_weights(&[(edge, weights)])
+            .unwrap()
+            .0;
+    }
     let id = app.document.add_geometry(Geometry::SubD(subd)).unwrap();
     (app, id)
+}
+
+#[test]
+fn soft_subd_menu_conversion_and_unsupported_failure_preserve_history() {
+    for weights in [[100.; 2], [20., 80.]] {
+        let (mut app, id) = fixture_with_soft_weights(Some(weights));
+        select(&mut app, id);
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        let history = app.document.undo_label().map(str::to_owned);
+        enter(&mut app, "ToNURBS");
+        enter(&mut app, "DeleteInputObjects=Yes");
+        enter(&mut app, "SubDOptions");
+        enter(&mut app, "Faces=Unpacked ExtraordinaryVertex=G2");
+        enter(&mut app, "");
+        enter(&mut app, "");
+        if weights[0] != weights[1] {
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            assert_eq!(app.document.undo_label(), history.as_deref());
+        } else {
+            let Geometry::Brep(brep) = app.document.object(id).unwrap().geometry() else {
+                panic!()
+            };
+            assert_eq!(brep.faces().len(), 2);
+            let after = app.document.objects().cloned().collect::<Vec<_>>();
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            enter(&mut app, "Redo");
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
 }
 fn phase(app: &VibocerosApp) -> ObjectPromptPhase {
     app.object_prompt.as_ref().unwrap().phase

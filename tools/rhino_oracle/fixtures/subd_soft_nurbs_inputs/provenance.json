@@ -1,0 +1,26 @@
+{
+  "variable_both_ends": {
+    "family": "soft_crease_numeric_labels",
+    "case": "label_both_ends",
+    "source_sha256": "d6b7f39b8a0a96bc176dabb7a5dd6fa909c823672e0ac58bf752351aad953d13",
+    "archive_sha256": "cc052fdc7b794a2053ef74fee469cc1d2b6d286f85e46baae4fffdf14cb2f2d4"
+  },
+  "variable_chain": {
+    "family": "soft_crease_chains",
+    "case": "chains_seed_50_end",
+    "source_sha256": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
+    "archive_sha256": "0b5d065cff5232928f918dbe66b5433a9a9a7894de49844cbb46cc3f22cedb7f"
+  },
+  "variable_branch": {
+    "family": "soft_crease_numeric_labels",
+    "case": "label_branch",
+    "source_sha256": "d6b7f39b8a0a96bc176dabb7a5dd6fa909c823672e0ac58bf752351aad953d13",
+    "archive_sha256": "53a5b3bfc00dd3756b4e45f81be20b43c66d9ea43c3ae831b74cdd5b8ed37daa"
+  },
+  "hard_soft_chain": {
+    "family": "soft_crease_chains",
+    "case": "chains_partial_hard_middle",
+    "source_sha256": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
+    "archive_sha256": "a38779a5b1af2b9ca7d2e687be01c26289840362587de647f51e49c3906d8f02"
+  }
+}

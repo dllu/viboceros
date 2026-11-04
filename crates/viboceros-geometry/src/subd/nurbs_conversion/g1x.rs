@@ -7,6 +7,7 @@ struct EdgeUse {
     patch: usize,
     corner: usize,
     u: bool,
+    source_scale: f64,
 }
 
 fn index(surface: &NurbsSurface, corner: usize, i: usize, j: usize) -> usize {
@@ -48,6 +49,7 @@ pub(super) fn improve(
                     patch: patch_index,
                     corner,
                     u,
+                    source_scale: if patch.corner.is_some() { 0.5 } else { 1. },
                 });
             }
         }
@@ -184,13 +186,21 @@ fn sampled_g1(
     eb: EdgeUse,
 ) -> Result<bool, GeometryError> {
     const COS_ONE_DEGREE: f64 = 0.9998476951563913;
+    let reach = |s: &NurbsSurface, e: EdgeUse| {
+        let end = uv(s, e, 0.);
+        let next = uv(s, e, 1.);
+        ((next[0] - end[0]).abs() + (next[1] - end[1]).abs()) * e.source_scale
+    };
+    let ra = reach(a, ea);
+    let rb = reach(b, eb);
+    let common = ra.min(rb);
     // Keep the seven interior eighths established by the G1x controls. A denser
     // test changes quarter-step decisions near one degree; this is a sampling
     // convention, not a bound on the continuous normal gap.
     for station in 1..8 {
         let f = station as f64 / 8.;
-        let na = normal(a, uv(a, ea, f))?;
-        let nb = normal(b, uv(b, eb, f))?;
+        let na = normal(a, uv(a, ea, f * common / ra))?;
+        let nb = normal(b, uv(b, eb, f * common / rb))?;
         if (0..3).map(|i| na[i] * nb[i]).sum::<f64>() < COS_ONE_DEGREE {
             return Ok(false);
         }

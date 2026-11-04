@@ -6,6 +6,7 @@ use crate::{
 };
 use std::collections::BTreeMap;
 
+mod deviation;
 mod perimeter;
 mod source;
 use source::{Edge, Side, SourceEdges, Vertex};
@@ -82,8 +83,9 @@ pub(super) fn assemble_packed(
     let mut vertices = Vec::new();
     let mut vertex_map = BTreeMap::new();
     let mut edges: Vec<BrepEdge> = Vec::new();
-    let mut edge_map = BTreeMap::new();
+    let mut edge_map = BTreeMap::<perimeter::Key, usize>::new();
     let mut faces = Vec::with_capacity(packs.len());
+    let soft = source.edge_sharpness().iter().flatten().any(|&s| s > 0.);
     for (face_index, (pack, segments)) in packs.into_iter().zip(perimeters).enumerate() {
         let mut trims = Vec::with_capacity(segments.len());
         for segment in segments {
@@ -114,6 +116,16 @@ pub(super) fn assemble_packed(
                 ends
             };
             let edge = if let Some(&index) = edge_map.get(&segment.key) {
+                if soft {
+                    let mut curve = side_curve(&pack.surface, segment.side, segment.interval)?;
+                    if segment.reversed {
+                        curve = curve.reversed()?;
+                    }
+                    let old = &edges[index];
+                    let allowed = deviation::bound(old.curve(), &curve, tolerance.absolute())?
+                        .max(old.tolerance());
+                    edges[index] = BrepEdge::try_new(old.vertices(), old.curve().clone(), allowed)?;
+                }
                 index
             } else {
                 let mut curve = side_curve(&pack.surface, segment.side, segment.interval)?;

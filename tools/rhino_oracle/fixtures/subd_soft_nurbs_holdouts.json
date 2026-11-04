@@ -1,0 +1,243 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "fraction_box_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_box_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_box_70.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 70.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_box_70.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 70.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_box_80.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 80.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_box_80.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 80.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_box_90.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 90.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_box_90.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "box",
+      "weight": 90.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_five_fan_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_five_fan_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_five_fan_70.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 70.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_five_fan_70.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 70.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_five_fan_80.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 80.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_five_fan_80.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 80.0,
+      "mode": 3
+    },
+    {
+      "id": "fraction_five_fan_90.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 90.0,
+      "mode": 0
+    },
+    {
+      "id": "fraction_five_fan_90.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "weight": 90.0,
+      "mode": 3
+    },
+    {
+      "id": "variable_both_ends_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "mode": 0
+    },
+    {
+      "id": "variable_both_ends_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "mode": 1
+    },
+    {
+      "id": "variable_both_ends_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "mode": 2
+    },
+    {
+      "id": "variable_both_ends_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "mode": 3
+    },
+    {
+      "id": "variable_both_ends_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "mode": 4
+    },
+    {
+      "id": "variable_chain_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "mode": 0
+    },
+    {
+      "id": "variable_chain_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "mode": 1
+    },
+    {
+      "id": "variable_chain_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "mode": 2
+    },
+    {
+      "id": "variable_chain_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "mode": 3
+    },
+    {
+      "id": "variable_chain_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "mode": 4
+    },
+    {
+      "id": "variable_branch_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "mode": 0
+    },
+    {
+      "id": "variable_branch_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "mode": 1
+    },
+    {
+      "id": "variable_branch_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "mode": 2
+    },
+    {
+      "id": "variable_branch_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "mode": 3
+    },
+    {
+      "id": "variable_branch_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "mode": 4
+    },
+    {
+      "id": "hard_soft_chain_0",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "mode": 0
+    },
+    {
+      "id": "hard_soft_chain_1",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "mode": 1
+    },
+    {
+      "id": "hard_soft_chain_2",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "mode": 2
+    },
+    {
+      "id": "hard_soft_chain_3",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "mode": 3
+    },
+    {
+      "id": "hard_soft_chain_4",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "mode": 4
+    }
+  ]
+}

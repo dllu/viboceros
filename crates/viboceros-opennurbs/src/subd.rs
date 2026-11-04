@@ -25,7 +25,8 @@ pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
 pub use extrude::{SubDExtrudeDirection, subd_extrude};
 pub use face_grids::{
-    SubDFaceGrid, SubDPatchStencil, subd_face_grids, subd_patch_stencils, subd_refined_face_grids,
+    SubDFaceGrid, SubDPartialPatchStencil, SubDPatchStencil, subd_face_grids,
+    subd_partial_patch_stencils, subd_patch_stencils, subd_refined_face_grids,
 };
 pub use face_packs::{SubDFacePack, subd_face_packs};
 pub use faces::subd_retain_faces;

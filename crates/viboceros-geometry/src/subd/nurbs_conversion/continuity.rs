@@ -12,11 +12,12 @@ pub(super) fn valences(source: &SubD) -> Vec<usize> {
 
 pub(super) fn extraordinary_vertices(source: &SubD) -> Vec<usize> {
     let valence = valences(source);
+    let enabled = super::soft::continuity_enabled(source);
     source
         .vertex_tags()
         .iter()
         .enumerate()
-        .filter_map(|(i, &tag)| (tag == 1 && valence[i] != 4).then_some(i))
+        .filter_map(|(i, &tag)| (tag == 1 && valence[i] != 4 && enabled[i]).then_some(i))
         .collect()
 }
 

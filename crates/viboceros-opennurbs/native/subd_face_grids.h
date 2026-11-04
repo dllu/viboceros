@@ -73,7 +73,7 @@ inline std::unique_ptr<ViboSubDFaceGrids> face_grids(ON_SubD& subd,unsigned dens
     const size_t side=size_t(1)<<(density-(quad?0:1));
     const size_t count=quad?1:face->EdgeCount();
     require(count*(side+1)*(side+1)<=4000000-point_count,"SubD face sample budget exceeded");
-    if(kind==2) {
+    if(kind>=2) {
       require(count*(side+3)*(side+3)<=4000000-stencil_count,"SubD patch stencil budget exceeded");
       stencil_count+=count*(side+3)*(side+3);
     }
@@ -145,8 +145,8 @@ inline std::unique_ptr<ViboSubDFaceGrids> face_grids(ON_SubD& subd,unsigned dens
       require(!slot || slot==t.vertices[j],"Inconsistent face grid chart");slot=t.vertices[j];
     }
   }
-  if(kind==2) {
-    finish_patch_stencils(*out,tracks,vertices);return out;
+  if(kind>=2) {
+    finish_patch_stencils(*out,tracks,vertices,kind==3);return out;
   }
   out->points.reserve(3*point_count);
   for(const auto* vertex:vertices) {
@@ -159,7 +159,7 @@ inline std::unique_ptr<ViboSubDFaceGrids> face_grids(ON_SubD& subd,unsigned dens
 extern "C" int vibo_subd_face_grids(const uint8_t* bytes,size_t count,unsigned density,int kind,
     ViboSubDFaceGrids** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
-    require(kind>=0 && kind<=2,"Invalid SubD face sample kind");
+    require(kind>=0 && kind<=3,"Invalid SubD face sample kind");
     auto subd=vibo_subd::decode(bytes,count);return vibo_subd::face_grids(*subd,density,kind);
   });
 }

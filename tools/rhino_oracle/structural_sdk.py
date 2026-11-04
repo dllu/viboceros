@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'subd_soft_nurbs': ('subd_soft_nurbs_probe', ('subd_soft_nurbs_cases','subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_nurbs_command': ('subd_nurbs_command_probe', ('subd_nurbs_command_cases','subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_packing': ('subd_packing_probe', ('subd_packing_cases','subd_packing_holdouts','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','merge_edges_probe')),
     'subd_g1xx': ('subd_g1xx_probe', ('subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','merge_edges_probe')),
@@ -293,6 +294,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
+    if 'subd_soft_nurbs_probe' in modules:
+        from .subd_soft_nurbs_cases import ASSETS
+        for name in ASSETS:
+            asset=Path('fixtures/subd_soft_nurbs_inputs')/(name+'.3dm')
+            (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source_directory/asset,destination/asset)
     if 'analysis_profile_probe' in modules:
         from .analysis_profile_probe import ARCHIVES,IDENTITY_ARCHIVES
         for name in ARCHIVES+IDENTITY_ARCHIVES:

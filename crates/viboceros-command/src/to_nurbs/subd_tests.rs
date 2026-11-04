@@ -22,6 +22,62 @@ fn source() -> SubD {
 }
 
 #[test]
+fn uniform_soft_edge_conversion_preserves_attributes_groups_identity_and_history() {
+    for packed in [false, true] {
+        for delete in [false, true] {
+            let registry = CommandRegistry::with_builtins();
+            let mut doc = Document::default();
+            let subd = source();
+            let edge = subd
+                .edges()
+                .iter()
+                .position(|e| *e == [1, 4] || *e == [4, 1])
+                .unwrap();
+            let (soft, _) = subd
+                .try_with_soft_crease_weights(&[(edge, [100.; 2])])
+                .unwrap();
+            let id = doc.add_geometry(Geometry::SubD(soft)).unwrap();
+            let group = doc.add_group(Some("Soft crease".into()), [id]).unwrap();
+            let layer = doc
+                .add_layer("Other current layer", ColorRgb::BLACK)
+                .unwrap();
+            doc.set_current_layer(layer).unwrap();
+            doc.select_objects_direct([id], SelectionMode::Replace)
+                .unwrap();
+            let original = doc.object(id).unwrap().clone();
+            registry
+                .execute(
+                    &mut doc,
+                    &format!(
+                        "ToNURBS Faces={} ExtraordinaryVertex=G2 DeleteInputObjects={}",
+                        if packed { "Packed" } else { "Unpacked" },
+                        if delete { "Yes" } else { "No" }
+                    ),
+                )
+                .unwrap();
+            assert_eq!(doc.objects().len(), if delete { 1 } else { 2 });
+            let output = if delete {
+                doc.object(id).unwrap()
+            } else {
+                doc.objects().find(|o| o.id() != id).unwrap()
+            };
+            let Geometry::Brep(brep) = output.geometry() else {
+                panic!()
+            };
+            assert_eq!(brep.faces().len(), if packed { 1 } else { 2 });
+            assert_eq!(output.attributes(), original.attributes());
+            assert_eq!(output.group_ids(), [group]);
+            assert_eq!(doc.is_selected(output.id()), delete);
+            let after = doc.objects().cloned().collect::<Vec<_>>();
+            registry.execute(&mut doc, "Undo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), [original]);
+            registry.execute(&mut doc, "Redo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+}
+
+#[test]
 fn subd_failure_rolls_back_the_whole_mixed_conversion_and_preserves_redo_and_preferences() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();
@@ -42,7 +98,7 @@ fn subd_failure_rolls_back_the_whole_mixed_conversion_and_preserves_redo_and_pre
         .position(|e| *e == [1, 4] || *e == [4, 1])
         .unwrap();
     let (soft, changed) = subd
-        .try_with_soft_crease_weights(&[(edge, [50., 50.])])
+        .try_with_soft_crease_weights(&[(edge, [20., 80.])])
         .unwrap();
     assert!(changed);
     let id = doc.add_geometry(Geometry::SubD(soft)).unwrap();

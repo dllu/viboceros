@@ -5,7 +5,9 @@ mod continuity;
 mod g1x;
 mod g1xx;
 mod packing;
+mod polynomial_cleanup;
 pub use packing::{SubDNurbsPackedPatch, SubDNurbsTile};
+mod soft;
 mod stencil;
 mod topology;
 
@@ -50,6 +52,7 @@ impl SubD {
         &self,
         mode: SubDNurbsContinuity,
     ) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
+        soft::validate_continuity(self, mode)?;
         let mut patches = self.to_nurbs_patches_g0()?;
         if mode == SubDNurbsContinuity::G1xx {
             g1xx::apply(self, &mut patches)?;
@@ -80,14 +83,13 @@ impl SubD {
     /// Unpacked G0 cubic approximation in normalized source-face charts.
     /// Regular faces retain exact bicubic patches. Other quads use eight spans
     /// per axis; n-gon corner sectors use four. Corners interpolate exact limit
-    /// points. This is a finite SubD approximation, without a continuous error
-    /// certificate. Soft sharpness is not supported by this base constructor.
+    /// points. A single uniform soft edge adds dyadic spans and preserves local
+    /// corner approximation depths. Variable/multiple soft edges reject.
+    /// This finite approximation has no continuous error certificate against
+    /// the mathematical SubD limit.
     pub fn to_nurbs_patches_g0(&self) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
         if self.edge_sharpness().iter().flatten().any(|&v| v != 0.) {
-            return Err(viboceros_opennurbs::SubDError(
-                "Soft-sharp SubD NURBS patches are not implemented".into(),
-            )
-            .into());
+            return soft::build(self);
         }
         let mut exact = self.regular_nurbs_patches()?;
         if exact.iter().all(Option::is_some) {

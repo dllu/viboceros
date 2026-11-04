@@ -76,6 +76,10 @@ pub fn check(
         });
     }
     let value = json!({"output":{"geometry":target,"solid":target["topology"]["solid"]}});
-    let edges = crate::topology::check(actual, &value, &charts);
+    let edges = if source.edge_sharpness().iter().flatten().any(|&s| s > 0.) {
+        crate::topology::check_measured_gaps(actual, &value, &charts)
+    } else {
+        crate::topology::check(actual, &value, &charts)
+    };
     println!("complete command surface bound {maximum:e}, edge bound {edges:e}");
 }
