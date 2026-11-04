@@ -13,7 +13,7 @@ mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
     SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDExtrudeDirection, SubDExtrudeSelection,
-    SubDFaceExtraction, SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult,
+    SubDFaceExtraction, SubDFacePack, SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult,
     SubDLimitFaceGrid, SubDMeshDensity, SubDNurbsContinuity, SubDNurbsPackedPatch, SubDNurbsPatch,
     SubDNurbsTile, SubDSphereStyle, SubDVertexInsertion, join_subds, join_subds_seeded,
 };

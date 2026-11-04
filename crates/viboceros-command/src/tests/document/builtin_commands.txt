@@ -65,6 +65,8 @@ CrvStart
 CullDegenerateMeshFaces
 CullUnusedMeshVertices
 Curvature
+CurvatureAnalysis
+CurvatureAnalysisOff
 CurvatureGraph
 CurvatureGraphOff
 Curve
@@ -82,6 +84,8 @@ Distribute
 Divide
 DivideAlongCreases
 Domain
+DraftAngleAnalysis
+DraftAngleAnalysisOff
 DupBorder
 DupEdge
 DupFaceBorder
@@ -100,6 +104,7 @@ ExportStep
 ExportStl
 Extend
 ExtendSrf
+ExtractAnalysisMesh
 ExtractConnectedMeshFaces
 ExtractControlPolygon
 ExtractCurvatureGraph
@@ -126,6 +131,7 @@ ExtrudeSrf
 ExtrudeSrfAlongCrv
 ExtrudeSrfTapered
 ExtrudeSrfToPoint
+ExtrudeSubD
 Fillet
 FilletCorners
 FilletEdge
@@ -153,6 +159,7 @@ InsertEditPoint
 InsertKink
 InsertKnot
 InsertPoint
+Inset
 InterpCrv
 InterpCrvOnSrf
 Intersect
@@ -217,12 +224,14 @@ OffsetCrvOnSrf
 OffsetMesh
 OffsetMultiple
 OffsetSrf
+OffsetSubD
 Open3dm
 Orient
 Orient3Pt
 OrientCrvToEdge
 OrientOnCrv
 OrientOnSrf
+PackSubDFaces
 Parabola
 Parabola3Pt
 Paraboloid
@@ -339,6 +348,8 @@ Shear
 Shell
 ShortPath
 Show
+ShowDir
+ShowDirOff
 ShowEdges
 ShowEdgesOff
 ShowPt

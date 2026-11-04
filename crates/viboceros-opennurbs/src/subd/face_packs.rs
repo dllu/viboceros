@@ -1,4 +1,4 @@
-//! Read retained face-pack identity and charts through public OpenNURBS APIs.
+//! Retained face-pack identity and charts, with independent metadata assignment.
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -28,6 +28,15 @@ struct View {
     records: *const Record,
 }
 unsafe extern "C" {
+    fn vibo_subd_set_face_packs(
+        bytes: *const u8,
+        count: usize,
+        records: *const Record,
+        record_count: usize,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_face_packs(
         bytes: *const u8,
         count: usize,
@@ -37,6 +46,37 @@ unsafe extern "C" {
     ) -> c_int;
     fn vibo_subd_face_packs_view(result: *const NativePacks, out: *mut View) -> c_int;
     fn vibo_subd_face_packs_free(result: *mut NativePacks);
+}
+
+/// Apply a complete packing supplied by the geometry layer. The native bridge
+/// checks every rectangle and retains all non-packing component properties.
+/// The caller supplies connected rectangular quad groups with consistent chart
+/// uses and separate IDs for non-quads; this expert setter does not infer them.
+pub fn subd_set_face_packs(bytes: &[u8], packs: &[SubDFacePack]) -> Result<SubDData, SubDError> {
+    check_archive(bytes)?;
+    if packs.is_empty() || packs.len() > 100_000 {
+        return Err(SubDError("Invalid SubD face-pack count".into()));
+    }
+    let records = packs
+        .iter()
+        .map(|p| Record {
+            id: p.id,
+            rotation: p.quarter_turns as u32,
+            set: 1,
+            rectangle: [p.origin[0], p.origin[1], p.size[0], p.size[1]],
+        })
+        .collect::<Vec<_>>();
+    call(|out, error, capacity| unsafe {
+        vibo_subd_set_face_packs(
+            bytes.as_ptr(),
+            bytes.len(),
+            records.as_ptr(),
+            records.len(),
+            out,
+            error,
+            capacity,
+        )
+    })
 }
 struct Owner(NonNull<NativePacks>);
 impl Drop for Owner {
@@ -109,4 +149,53 @@ pub fn subd_face_packs(bytes: &[u8]) -> Result<Vec<Option<SubDFacePack>>, SubDEr
             }))
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn face_pack_setter_rejects_incomplete_and_invalid_native_records() {
+        let source = subd_from_polygons(
+            &[[0., 0., 0.], [1., 0., 0.], [1., 1., 0.], [0., 1., 0.]],
+            &[vec![0, 1, 2, 3]],
+        )
+        .unwrap();
+        let valid = SubDFacePack {
+            id: 1,
+            origin: [0.; 2],
+            size: [1.; 2],
+            quarter_turns: 0,
+        };
+        let before = subd_face_packs(&source.archive).unwrap();
+        assert!(subd_set_face_packs(&source.archive, &[]).is_err());
+        assert!(subd_set_face_packs(&source.archive, &[valid; 2]).is_err());
+        for invalid in [
+            SubDFacePack { id: 0, ..valid },
+            SubDFacePack {
+                quarter_turns: 4,
+                ..valid
+            },
+            SubDFacePack {
+                origin: [f64::NAN, 0.],
+                ..valid
+            },
+            SubDFacePack {
+                size: [0., 1.],
+                ..valid
+            },
+            SubDFacePack {
+                size: [2., 1.],
+                ..valid
+            },
+        ] {
+            assert!(subd_set_face_packs(&source.archive, &[invalid]).is_err());
+        }
+        assert_eq!(before, subd_face_packs(&source.archive).unwrap());
+        let packed = subd_set_face_packs(&source.archive, &[valid]).unwrap();
+        assert_eq!(subd_face_packs(&packed.archive).unwrap(), vec![Some(valid)]);
+        assert_eq!(packed.points, source.points);
+        assert_eq!(packed.faces, source.faces);
+    }
 }

@@ -145,6 +145,7 @@ mod orient_edge;
 mod orient_points;
 mod orient_surface;
 mod orient_surface_grips;
+mod pack_subd_faces;
 mod parabola;
 mod planar_boolean;
 mod plane_arrays;

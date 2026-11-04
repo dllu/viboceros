@@ -16,6 +16,7 @@ pub mod contour;
 pub mod crease;
 pub mod extract_control_polygon;
 mod extract_points;
+mod pack_subd_faces;
 mod subd_display;
 pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
@@ -1700,6 +1701,9 @@ impl CommandRegistry {
         registry
             .register(subd_display::SubDDisplayToggle)
             .expect("unique SubDDisplayToggle");
+        registry
+            .register(pack_subd_faces::PackSubDFaces)
+            .expect("unique PackSubDFaces");
         registry
             .register(extract_points::ExtractPtCommand)
             .expect("unique built-in command");

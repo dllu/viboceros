@@ -58,5 +58,7 @@ mixed options, cancellation and history without opening windows.
 [Soft edges and variable profiles](../geometry/subd-soft-nurbs.md) also convert through
 these options. Their geometry has separate SDK qualification; the actual-command
 families above use smooth and hard creases. Mesh/SubD edge conversion, `ShowFacePacks` and
-`ForceUpdateFacePacks` prompt actions remain open. Output B-reps do not yet carry
-Rhino's per-face pack-ID user data. General performance parity is unqualified.
+`ForceUpdateFacePacks` prompt actions remain open; the standalone
+[PackSubDFaces](pack-subd-faces.md) command can reset source packing before conversion.
+Output B-reps do not yet carry Rhino's per-face pack IDs.
+General performance parity is unqualified.

@@ -51,6 +51,7 @@ pub use nurbs_conversion::{
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
+pub use viboceros_opennurbs::SubDFacePack;
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.
@@ -166,6 +167,11 @@ impl SubD {
     }
     pub fn archive(&self) -> &[u8] {
         &self.data.archive
+    }
+    /// Retained face-pack IDs and texture rectangles, in source-face order.
+    /// Unassigned faces have no pack. This query does not update packing.
+    pub fn face_packs(&self) -> Result<Vec<Option<SubDFacePack>>, GeometryError> {
+        Ok(viboceros_opennurbs::subd_face_packs(self.archive())?)
     }
     /// Conservative control-hull bounds, enclosing the limit surface.
     pub fn bounds(&self) -> BoundingBox3 {

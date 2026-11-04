@@ -4,6 +4,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("select available SubD objects for face packing")]
+    FacePackingUnavailable,
+    #[error("SubD face packing exceeds the staged archive budget")]
+    FacePackingResourceLimit,
     #[error("select one editable mesh or SubD for point insertion")]
     InsertPointUnavailable,
     #[error("insertion source, editability or tolerance changed; select again")]

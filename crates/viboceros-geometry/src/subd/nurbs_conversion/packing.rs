@@ -43,6 +43,11 @@ fn plan(source: &SubD) -> Result<Vec<Plan>, GeometryError> {
     if let Some(plans) = layout::stored(&graph, &records) {
         return Ok(plans);
     }
+    automatic_plan(&graph)
+}
+
+fn automatic_plan(graph: &graph::Graph<'_>) -> Result<Vec<Plan>, GeometryError> {
+    let source = graph.source;
     let mut groups = graph.components();
     // Native packing finds two-dimensional regular blocks before strips and
     // singleton faces. Source indices provide deterministic tie breaking.
@@ -81,10 +86,49 @@ fn plan(source: &SubD) -> Result<Vec<Plan>, GeometryError> {
         if group.len() == 1 && source.faces()[group[0]].len() != 4 {
             plans.extend(layout::star(source, group[0]));
         } else {
-            plans.extend(layout::automatic(&graph, &group)?);
+            plans.extend(layout::automatic(graph, &group)?);
         }
     }
     Ok(plans)
+}
+
+impl SubD {
+    /// Reset the retained face packs from current topology, tags and creases.
+    /// A deterministic grid atlas is assigned independently of Rhino's texture
+    /// rectangle allocator. Control geometry and component identities survive.
+    pub fn try_repacked_faces(&self) -> Result<Self, GeometryError> {
+        let graph = graph::Graph::new(self)?;
+        let mut plans = automatic_plan(&graph)?;
+        // An n-gon's NURBS sectors belong to one source-face pack.
+        plans.retain(|p| p.tiles[0].corner.is_none_or(|c| c == 0));
+        let root = plans.len().isqrt();
+        let width = root + usize::from(root * root != plans.len());
+        let height = plans.len().div_ceil(width);
+        let mut records = vec![None; self.faces().len()];
+        for (i, plan) in plans.into_iter().enumerate() {
+            let [w, h] = plan.grid_size;
+            for tile in plan.tiles {
+                let [x, y] = tile.cell;
+                let cell = [(i % width) * w + x, (i / width) * h + y];
+                let extent = [(w * width) as f64, (h * height) as f64];
+                let lower = [cell[0] as f64 / extent[0], cell[1] as f64 / extent[1]];
+                records[tile.face] = Some(viboceros_opennurbs::SubDFacePack {
+                    id: (i + 1) as u32,
+                    origin: lower,
+                    size: std::array::from_fn(|a| (cell[a] + 1) as f64 / extent[a] - lower[a]),
+                    quarter_turns: (4 - tile.quarter_turns) % 4,
+                });
+            }
+        }
+        let records = records
+            .into_iter()
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| failure("Unassigned SubD source face pack"))?;
+        Self::from_native(viboceros_opennurbs::subd_set_face_packs(
+            self.archive(),
+            &records,
+        )?)
+    }
 }
 
 pub(super) fn build(

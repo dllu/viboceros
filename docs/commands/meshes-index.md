@@ -14,6 +14,7 @@
 - [OffsetSubD: signed skins, solid shells and side previews](offset-subd.md)
 - [ExtractSrf: editable SubD regions and remainders](extract-srf-subd.md)
 - [SubDivide: whole objects, selected faces and SubD selection](subdivide.md)
+- [PackSubDFaces: recompute retained rectangular face groups](pack-subd-faces.md)
 - [Crease and RemoveCrease: SubD corners/edges and mesh seams](crease.md)
 - [WeldEdge and UnweldEdge: SubD cuts and coincident boundary joins](subd-edge-seams.md)
 - [SubDSpinEdge: edge rotation, repeats and local Undo](subd-spin-edge.md)

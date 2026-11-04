@@ -1,0 +1,104 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "grid",
+      "scene": "grid",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "grid_rotated",
+      "scene": "grid_rotated",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "grid_shuffled",
+      "scene": "grid_shuffled",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "grid_L",
+      "scene": "grid_L",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "grid_hole",
+      "scene": "grid_hole",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "grid_T",
+      "scene": "grid_T",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "cylinder",
+      "scene": "cylinder",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "torus",
+      "scene": "torus",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "box",
+      "scene": "box",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "subdivided_box",
+      "scene": "subdivided_box",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "pentagonal_prism",
+      "scene": "pentagonal_prism",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "five_fan",
+      "scene": "five_fan",
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "stale_False",
+      "scene": "grid",
+      "stale": true,
+      "postselect": false,
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "stale_True",
+      "scene": "grid",
+      "stale": true,
+      "postselect": true,
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "mixed_False",
+      "scene": "mixed",
+      "postselect": false,
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "mixed_True",
+      "scene": "mixed",
+      "postselect": true,
+      "op": "subd_pack_command"
+    },
+    {
+      "id": "cancel",
+      "scene": "grid",
+      "postselect": true,
+      "cancel": true,
+      "op": "subd_pack_command"
+    }
+  ]
+}

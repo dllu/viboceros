@@ -28,7 +28,7 @@ pub use face_grids::{
     SubDFaceGrid, SubDPartialPatchStencil, SubDPatchStencil, subd_face_grids,
     subd_partial_patch_stencils, subd_patch_stencils, subd_refined_face_grids,
 };
-pub use face_packs::{SubDFacePack, subd_face_packs};
+pub use face_packs::{SubDFacePack, subd_face_packs, subd_set_face_packs};
 pub use faces::subd_retain_faces;
 pub use insert::{subd_insert_face_edge, subd_insert_path, subd_insert_vertex};
 pub use inset::subd_inset;

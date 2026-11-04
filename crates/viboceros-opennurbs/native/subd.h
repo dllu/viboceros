@@ -109,6 +109,7 @@ typedef struct ViboSubDVertexNormals ViboSubDVertexNormals;
 typedef struct ViboSubDFacePacks ViboSubDFacePacks;
 typedef struct {uint32_t id,rotation,set;double rectangle[4];} ViboSubDFacePack;
 typedef struct {size_t count;const ViboSubDFacePack* records;} ViboSubDFacePacksView;
+int vibo_subd_set_face_packs(const uint8_t*,size_t,const ViboSubDFacePack*,size_t,ViboSubDResult**,char*,size_t);
 int vibo_subd_face_packs(const uint8_t*,size_t,ViboSubDFacePacks**,char*,size_t);
 int vibo_subd_face_packs_view(const ViboSubDFacePacks*,ViboSubDFacePacksView*);
 void vibo_subd_face_packs_free(ViboSubDFacePacks*);
