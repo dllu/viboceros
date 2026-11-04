@@ -1,8 +1,8 @@
-//! Standalone loop/ring selection: bright seeds, dim loop previews, no model history.
+//! Standalone edge/face patterns: bright seeds, dim loop previews, no model history.
 use super::*;
 use crate::viewport::ComponentPick;
 use viboceros_command::{
-    CommandError,
+    CommandError, ComponentSelectionKind,
     component_selection::ComponentAction,
     edge_pattern_selection::{Pattern, Session, eligible},
 };
@@ -24,31 +24,40 @@ impl Prompt {
 impl VibocerosApp {
     pub(super) fn start_edge_pattern(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
-        let pattern = match words.next().map(|s| s.trim_start_matches(['_', '-'])) {
-            Some(s) if s.eq_ignore_ascii_case("SelEdgeLoop") => Pattern::Loop,
-            Some(s) if s.eq_ignore_ascii_case("SelEdgeRing") => Pattern::Ring,
-            _ => return false,
+        let Some(pattern) = words.next().and_then(Pattern::from_command) else {
+            return false;
         };
         if words.next().is_some() {
             return false;
         }
         // Preserve eligible preselection across cancellation of another getter.
         let picks = match self.component_selection.checked_picks(&self.document) {
-            Ok(p) => p.into_iter().filter(|p| eligible(*p)).collect::<Vec<_>>(),
+            Ok(p) => p,
             Err(e) => {
                 self.push_log(format!("Error: {e}"));
                 return true;
             }
         };
+        let preselected = picks.iter().any(|p| eligible(*p));
+        let raw = self.component_selection.raw_face_picks(&self.document);
+        let logical = picks
+            .iter()
+            .copied()
+            .filter(|p| p.kind == ComponentSelectionKind::MeshFace && !raw.contains(p))
+            .collect();
         self.cancel_interactive_command(false);
         self.command_input.clear();
-        if !picks.is_empty() {
+        if preselected {
             let result = self
                 .commands
                 .component_selection()
                 .replace(&self.document, picks);
             match result {
-                Ok(()) => self.execute_command(pattern.command()),
+                Ok(()) => {
+                    self.component_selection
+                        .mark_raw_pattern_faces(&self.document, &logical);
+                    self.execute_command(pattern.command());
+                }
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
         } else {
@@ -90,13 +99,19 @@ impl VibocerosApp {
         if accept {
             match p.session.finish(&self.document) {
                 Ok(picks) => {
-                    let n = picks.len();
+                    let message = p.session.pattern().completed_message(&picks);
                     match self
                         .commands
                         .component_selection()
                         .replace(&self.document, picks)
                     {
-                        Ok(()) => self.push_log(format!("Selected {n} edge(s)")),
+                        Ok(()) => {
+                            if p.session.pattern() == Pattern::FaceLoop {
+                                self.component_selection
+                                    .mark_raw_pattern_faces(&self.document, &Default::default());
+                            }
+                            self.push_log(message)
+                        }
                         Err(e) => self.push_log(format!("Error: {e}")),
                     }
                 }

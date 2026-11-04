@@ -8,7 +8,7 @@ mod analysis_mesh;
 mod edge_insertion;
 mod edge_ring;
 pub use analysis_mesh::{AnalysisMeshSettings, NurbsMeshDensity};
-pub use edge_ring::{PolygonEdgeRing, PolygonEdgeRingIndex};
+pub use edge_ring::{PolygonEdgeRing, PolygonEdgeRingIndex, PolygonFaceLoop};
 pub mod interop;
 pub use edge_insertion::PolygonEdgePoint;
 mod subd;

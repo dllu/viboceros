@@ -529,6 +529,7 @@ impl eframe::App for VibocerosApp {
         {
             self.component_selection.valid_picks(&self.document);
         }
+        let raw_mesh_face_highlights = self.component_selection.raw_face_picks(&self.document);
         let mut component_highlights = self.component_selection.highlights(&self.document);
         if let Some(p) = &self.fillet_surface_prompt {
             component_highlights.extend(p.highlights());
@@ -1272,6 +1273,7 @@ impl eframe::App for VibocerosApp {
                                 .as_ref()
                                 .map_or(&[], |p| p.preview()),
                             component_highlights: &component_highlights,
+                            raw_mesh_face_highlights: Some(&raw_mesh_face_highlights),
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
                             mesh_boundary_edges,

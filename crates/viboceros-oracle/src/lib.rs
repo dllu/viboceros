@@ -361,6 +361,17 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: grip_visibility::Fixture,
     },
+    ComponentPatternWorkflow {
+        id: String,
+        command: String,
+        #[serde(flatten)]
+        fixture: edge_loop_workflow::Fixture,
+    },
+    FaceLoopWorkflow {
+        id: String,
+        #[serde(flatten)]
+        fixture: edge_loop_workflow::Fixture,
+    },
     EdgeRingWorkflow {
         id: String,
         #[serde(flatten)]
@@ -2834,6 +2845,8 @@ impl Operation {
             | Self::SelectUvRows { id, .. }
             | Self::EdgeLoopWorkflow { id, .. }
             | Self::EdgeRingWorkflow { id, .. }
+            | Self::FaceLoopWorkflow { id, .. }
+            | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
@@ -3361,6 +3374,22 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::ComponentPatternWorkflow {
+            command, fixture, ..
+        } => edge_loop_workflow::run_pattern(
+            fixture,
+            iterations,
+            tolerance,
+            viboceros_command::edge_pattern_selection::Pattern::from_command(command).ok_or(
+                ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
+            )?,
+        )?,
+        Operation::FaceLoopWorkflow { fixture, .. } => edge_loop_workflow::run_pattern(
+            fixture,
+            iterations,
+            tolerance,
+            viboceros_command::edge_pattern_selection::Pattern::FaceLoop,
+        )?,
         Operation::EdgeRingWorkflow { fixture, .. } => edge_loop_workflow::run_pattern(
             fixture,
             iterations,

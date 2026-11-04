@@ -16,6 +16,21 @@ impl PolygonEdgeRing {
     }
 }
 
+/// Faces crossed by an opposite-edge walk, with equivalent seed candidates.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PolygonFaceLoop {
+    /// Source edges along the strip, including unpicked candidate seeds.
+    pub edges: Vec<usize>,
+    /// Source faces crossed between successive candidate seeds.
+    pub faces: Vec<usize>,
+    closed: bool,
+}
+impl PolygonFaceLoop {
+    pub fn is_closed(&self) -> bool {
+        self.closed
+    }
+}
+
 /// Prepared incidence reused for many seeds on the same immutable source.
 #[derive(Clone, Debug)]
 pub struct PolygonEdgeRingIndex {
@@ -23,6 +38,14 @@ pub struct PolygonEdgeRingIndex {
     incident: Vec<Vec<usize>>,
 }
 impl PolygonEdgeRingIndex {
+    pub fn try_face_loop(&self, seed: usize) -> Result<PolygonFaceLoop, GeometryError> {
+        let ring = self.try_ring(seed)?;
+        Ok(PolygonFaceLoop {
+            edges: ring.edges,
+            faces: ring.faces,
+            closed: ring.closed,
+        })
+    }
     pub(crate) fn new(edges: &[[usize; 2]], faces: impl IntoIterator<Item = Vec<usize>>) -> Self {
         let key = |[a, b]: [usize; 2]| if a < b { (a, b) } else { (b, a) };
         let ordinals = edges

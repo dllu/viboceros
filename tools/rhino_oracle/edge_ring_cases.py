@@ -20,7 +20,7 @@ def ngon_cases():
     return [dict(op='edge_ring_workflow',id=kind+'_'+scene,kind=kind,scene=scene,pair=pair,initial=[],steps=[dict(kind='click',modifiers='plain',pair=pair)],finish='Enter') for kind in ('mesh','subd') for scene,pair in [('ngon_strip',[0,3]),('ngon_pentagon',[0,1]),('ngon_quad',[0,1]),('ngon_pair',[6,7])]]
 
 def source(scene):
-    if scene.startswith('ngon_'):
+    if scene.startswith('ngon_') and scene!='ngon_grid':
         if scene=='ngon_pentagon':
             import math
             return dict(points=[[4.*math.cos(2.*math.pi*i/5),4.*math.sin(2.*math.pi*i/5),0.] for i in range(5)],faces=[[0,1,2],[0,2,3],[0,3,4]],ngons=[dict(vertices=list(range(5)),faces=[0,1,2])])
@@ -34,6 +34,8 @@ def source(scene):
         from .edge_loop_cases import source as base
     else:
         from edge_loop_cases import source as base
+    if scene=='ngon_grid':
+        r=base('grid');r['corners']=[];r['ngons']=[dict(vertices=[0,1,2,7,12,11,10,5],faces=[0,1,4,5])];return r
     if scene not in ('nonmanifold','quad_triangle','collapsed','unwelded'):return base(scene)
     r=base('grid')
     if scene=='nonmanifold':

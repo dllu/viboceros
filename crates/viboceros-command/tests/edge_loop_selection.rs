@@ -112,7 +112,7 @@ fn headless_selection_feeds_nurbs_and_preserves_redo_until_geometry_changes() {
 
 #[test]
 fn session_validates_atomically_and_owns_source_witnesses() {
-    for pattern in [Pattern::Loop, Pattern::Ring] {
+    for pattern in [Pattern::Loop, Pattern::Ring, Pattern::FaceLoop] {
         let same = if pattern == Pattern::Loop { 13 } else { 20 };
         let (mut doc, id) = fixture();
         let edge = |index| ComponentPick {

@@ -1,0 +1,163 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_interior",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_boundary",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        1,
+        2
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            1,
+            2
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_pre_edge",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_pre_face",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_interior",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_boundary",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        1,
+        2
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            1,
+            2
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_pre_edge",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_pre_face",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face"
+    }
+  ]
+}

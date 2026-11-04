@@ -28,10 +28,11 @@ impl VibocerosApp {
     }
     pub(super) fn extract_point_component_arguments(&self) -> Result<String, &'static str> {
         let picks = self.component_selection.checked_picks(&self.document)?;
+        let raw = self.component_selection.raw_face_picks(&self.document);
         let mut regions = std::collections::BTreeMap::new();
         for pick in picks
             .iter()
-            .filter(|p| p.kind == ComponentSelectionKind::MeshFace)
+            .filter(|p| p.kind == ComponentSelectionKind::MeshFace && !raw.contains(p))
         {
             if regions.contains_key(&pick.object) {
                 continue;
@@ -58,6 +59,7 @@ impl VibocerosApp {
         for pick in picks {
             if let Some(kind) = component_kind(pick.kind) {
                 if pick.kind == ComponentSelectionKind::MeshFace
+                    && !raw.contains(&pick)
                     && let Some((mesh, faces)) = regions.get(&pick.object)
                     && let Some(&region) = faces.get(&pick.index)
                 {

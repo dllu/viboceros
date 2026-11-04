@@ -1,6 +1,7 @@
 //! Transient UI components retain exact source identities, outside Undo.
 use super::*;
 use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
+use std::collections::{BTreeMap, BTreeSet};
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::GeometrySnapshot;
 mod loops;
@@ -11,6 +12,8 @@ use viboceros_command::component_selection::{
 #[derive(Debug, Default)]
 pub(super) struct ComponentSelection {
     shared: SharedSelection,
+    // Pattern results can select individual stored faces within a logical n-gon.
+    raw_mesh_faces: BTreeMap<ComponentPick, GeometrySnapshot>,
     candidates: Vec<(ComponentPick, GeometrySnapshot)>,
     choice_action: ComponentAction,
     hover: Option<ComponentPick>,
@@ -26,6 +29,11 @@ impl ComponentSelection {
         }
     }
     pub(super) fn release_objects(&mut self, ids: &[ObjectId]) {
+        if !self.raw_mesh_faces.is_empty() {
+            let owners = ids.iter().copied().collect::<BTreeSet<_>>();
+            self.raw_mesh_faces
+                .retain(|p, _| !owners.contains(&p.object));
+        }
         self.shared.release_objects(ids);
         self.clear_choices();
     }
@@ -36,7 +44,12 @@ impl ComponentSelection {
         !self.candidates.is_empty()
     }
     pub(super) fn valid_picks(&mut self, doc: &Document) -> Vec<ComponentPick> {
-        self.shared.valid_picks(doc)
+        let picks = self.shared.valid_picks(doc);
+        if !self.raw_mesh_faces.is_empty() {
+            let selected = picks.iter().copied().collect::<BTreeSet<_>>();
+            self.raw_mesh_faces.retain(|p, _| selected.contains(p));
+        }
+        picks
     }
     pub(super) fn highlights(&mut self, doc: &Document) -> Vec<ComponentPick> {
         let mut picks = self.shared.live_picks(doc);
@@ -57,6 +70,37 @@ impl ComponentSelection {
         picks.sort();
         picks.dedup();
         picks
+    }
+    pub(super) fn mesh_face_picks(&self, doc: &Document) -> BTreeSet<ComponentPick> {
+        self.shared
+            .live_picks(doc)
+            .into_iter()
+            .filter(|p| p.kind == ComponentSelectionKind::MeshFace)
+            .collect()
+    }
+    pub(super) fn mark_raw_pattern_faces(
+        &mut self,
+        doc: &Document,
+        before: &BTreeSet<ComponentPick>,
+    ) {
+        let previous = self.raw_mesh_faces.keys().copied().collect::<BTreeSet<_>>();
+        self.raw_mesh_faces = self
+            .shared
+            .live_picks(doc)
+            .into_iter()
+            .filter(|p| {
+                p.kind == ComponentSelectionKind::MeshFace
+                    && (!before.contains(p) || previous.contains(p))
+            })
+            .map(|p| (p, doc.object(p.object).unwrap().geometry_snapshot().clone()))
+            .collect();
+    }
+    pub(super) fn raw_face_picks(&self, doc: &Document) -> BTreeSet<ComponentPick> {
+        self.raw_mesh_faces
+            .iter()
+            .filter(|(p, w)| self.shared.contains(p) && current(doc, **p, w))
+            .map(|(p, _)| *p)
+            .collect()
     }
     pub(super) fn checked_picks(&self, doc: &Document) -> Result<Vec<ComponentPick>, &'static str> {
         self.shared.checked_picks(doc)
@@ -94,6 +138,7 @@ impl ComponentSelection {
         self.apply(document, picks, ComponentAction::Add)
     }
     pub(super) fn clear(&mut self) {
+        self.raw_mesh_faces.clear();
         self.shared.clear();
         self.loop_click = None;
         self.clear_choices();
@@ -129,7 +174,13 @@ impl ComponentSelection {
         picks: Vec<ComponentPick>,
         action: ComponentAction,
     ) -> Result<(), &'static str> {
+        let logical = (!self.raw_mesh_faces.is_empty()).then(|| picks.clone());
         self.shared.apply(document, picks, action)?;
+        if let Some(logical) = logical {
+            for p in logical {
+                self.raw_mesh_faces.remove(&p);
+            }
+        }
         self.clear_choices();
         Ok(())
     }

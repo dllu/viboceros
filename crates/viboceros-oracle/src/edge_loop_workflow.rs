@@ -15,6 +15,8 @@ pub struct Fixture {
     finish: String,
     #[serde(default)]
     whole: bool,
+    #[serde(default)]
+    face_metadata: bool,
     component: Option<String>,
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -28,12 +30,23 @@ fn snapshot(
     registry: &CommandRegistry,
     id: ObjectId,
     ids: Option<&viboceros_geometry::SubDComponentIds>,
+    face_metadata: bool,
 ) -> Result<Value, ProbeError> {
     let mut picks = registry
         .component_selection()
         .checked_picks(doc)
         .map_err(ProbeError::FixtureInvariant)?;
-    picks.sort();
+    picks.sort_by_key(|p| {
+        (
+            match p.kind {
+                Kind::MeshVertex | Kind::SubDVertex => 0,
+                Kind::MeshEdge | Kind::SubDEdge => 1,
+                Kind::MeshFace | Kind::SubDFace => 2,
+                _ => 3,
+            },
+            p.index,
+        )
+    });
     let ordinals = picks
         .iter()
         .filter(|p| matches!(p.kind, Kind::MeshEdge | Kind::SubDEdge))
@@ -54,9 +67,17 @@ fn snapshot(
             json!({"kind":kind,"index":index})
         })
         .collect::<Vec<_>>();
-    Ok(
-        json!({"whole":doc.is_selected(id),"components":components,"ordinals":ordinals,"objects":doc.objects().len()}),
-    )
+    let mut state = json!({"whole":doc.is_selected(id),"components":components,"ordinals":ordinals,"objects":doc.objects().len()});
+    if face_metadata {
+        state["face_ordinals"] = json!(
+            picks
+                .iter()
+                .filter(|p| matches!(p.kind, Kind::MeshFace | Kind::SubDFace))
+                .map(|p| p.index)
+                .collect::<Vec<_>>()
+        );
+    }
+    Ok(state)
 }
 pub(super) fn run(
     f: &Fixture,
@@ -86,6 +107,7 @@ pub(super) fn run_pattern(
             "owned edge selection workflow required",
         ));
     }
+    let face_metadata = f.face_metadata || pattern == Pattern::FaceLoop;
     measure_probe(iterations, || {
         let mesh = f.kind == "mesh";
         let (geometry, source_points) =
@@ -158,7 +180,7 @@ pub(super) fn run_pattern(
             .component_selection()
             .replace(&doc, initial)
             .map_err(ProbeError::FixtureInvariant)?;
-        let before = snapshot(&doc, &registry, id, ids.as_ref())?;
+        let before = snapshot(&doc, &registry, id, ids.as_ref(), face_metadata)?;
         let mut trace = Vec::new();
         if !f.initial.is_empty() {
             if !f.steps.is_empty() {
@@ -187,7 +209,7 @@ pub(super) fn run_pattern(
                     .component_selection()
                     .replace(&doc, session.seeds())
                     .map_err(ProbeError::FixtureInvariant)?;
-                trace.push(snapshot(&doc, &registry, id, ids.as_ref())?);
+                trace.push(snapshot(&doc, &registry, id, ids.as_ref(), face_metadata)?);
             }
             let selected = if f.finish == "Enter" {
                 session.finish(&doc)?
@@ -199,11 +221,11 @@ pub(super) fn run_pattern(
                 .replace(&doc, selected)
                 .map_err(ProbeError::FixtureInvariant)?;
         }
-        let after = snapshot(&doc, &registry, id, ids.as_ref())?;
+        let after = snapshot(&doc, &registry, id, ids.as_ref(), face_metadata)?;
         registry.execute(&mut doc, "Redo")?;
-        let redo = snapshot(&doc, &registry, id, ids.as_ref())?;
+        let redo = snapshot(&doc, &registry, id, ids.as_ref(), face_metadata)?;
         registry.execute(&mut doc, "Undo")?;
-        let undo = snapshot(&doc, &registry, id, ids.as_ref())?;
+        let undo = snapshot(&doc, &registry, id, ids.as_ref(), face_metadata)?;
         Ok(
             json!({"before":before,"trace":trace,"after":after,"redo":redo,"undo":undo,"success":f.finish=="Enter","source_unchanged":doc.object(id).unwrap().geometry_snapshot()==&original}),
         )

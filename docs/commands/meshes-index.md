@@ -46,6 +46,7 @@
 - [ToNURBS mesh/SubD edge curves](to-nurbs-edges.md)
 - [Mesh/SubD edge loops and bounded component ranges](component-edge-loops.md)
 - [SelEdgeRing and opposite-edge selection](component-edge-rings.md)
+- [Mesh/SubD face strips and SelFaceLoop](component-face-loops.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)
 

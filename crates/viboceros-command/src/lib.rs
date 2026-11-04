@@ -2304,6 +2304,12 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
+            .register(edge_pattern_selection::SelEdgePatternCommand::new(
+                registry.components.clone(),
+                edge_pattern_selection::Pattern::FaceLoop,
+            ))
+            .expect("unique built-in command");
+        registry
             .register(ClearCommand)
             .expect("unique built-in command");
         registry

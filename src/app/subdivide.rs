@@ -52,6 +52,8 @@ impl VibocerosApp {
             .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
             .map(|o| SubdivisionTarget::Whole(o.id()))
             .collect::<Vec<_>>();
+        let raw = self.component_selection.raw_face_picks(&self.document);
+        let mut logical = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
         let mut selected = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
         for p in picks {
             if matches!(
@@ -59,14 +61,22 @@ impl VibocerosApp {
                 ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
             ) {
                 selected.entry(p.object).or_default().insert(p.index);
+                if p.kind == ComponentSelectionKind::MeshFace && !raw.contains(&p) {
+                    logical.entry(p.object).or_default().insert(p.index);
+                }
             }
         }
         for (id, mut faces) in selected {
-            // Viewport mesh picks use logical n-gons. Expand all members once
-            // per object, without rescanning the n-gon table per picked face.
+            // Direct viewport picks use logical n-gons; pattern faces stay raw.
+            // Expand logical members once per object, without rescanning the
+            // n-gon table per picked face.
             if let Some(Geometry::Mesh(mesh)) = self.document.object(id).map(|o| o.geometry()) {
                 for ngon in mesh.ngons() {
-                    if ngon.faces().iter().any(|f| faces.contains(&(*f as usize))) {
+                    if ngon.faces().iter().any(|f| {
+                        logical
+                            .get(&id)
+                            .is_some_and(|set| set.contains(&(*f as usize)))
+                    }) {
                         faces.extend(ngon.faces().iter().map(|&f| f as usize));
                     }
                 }

@@ -9,18 +9,60 @@ pub enum Pattern {
     #[default]
     Loop,
     Ring,
+    FaceLoop,
 }
 impl Pattern {
+    pub fn from_command(name: &str) -> Option<Self> {
+        [Self::Loop, Self::Ring, Self::FaceLoop]
+            .into_iter()
+            .find(|p| {
+                p.command()
+                    .eq_ignore_ascii_case(name.trim_start_matches(['_', '-']))
+            })
+    }
     pub fn command(self) -> &'static str {
         match self {
             Self::Loop => "SelEdgeLoop",
             Self::Ring => "SelEdgeRing",
+            Self::FaceLoop => "SelFaceLoop",
+        }
+    }
+    pub fn completed_message(self, picks: &[ComponentPick]) -> String {
+        if self == Self::FaceLoop {
+            let edges = picks.iter().filter(|p| eligible(**p)).count();
+            format!(
+                "Selected {} face(s) and {edges} seed edge(s)",
+                picks
+                    .iter()
+                    .filter(|p| matches!(
+                        p.kind,
+                        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
+                    ))
+                    .count()
+            )
+        } else {
+            format!(
+                "Selected {} edge(s)",
+                picks.iter().filter(|p| eligible(**p)).count()
+            )
+        }
+    }
+    fn output_kind(self, seed: ComponentPick) -> ComponentSelectionKind {
+        if self == Self::FaceLoop {
+            match seed.kind {
+                ComponentSelectionKind::MeshEdge => ComponentSelectionKind::MeshFace,
+                ComponentSelectionKind::SubDEdge => ComponentSelectionKind::SubDFace,
+                _ => unreachable!(),
+            }
+        } else {
+            seed.kind
         }
     }
     fn usage(self) -> &'static str {
         match self {
             Self::Loop => "SelEdgeLoop [Edges=0,1,...|All Object=uuid]",
             Self::Ring => "SelEdgeRing [Edges=0,1,...|All Object=uuid]",
+            Self::FaceLoop => "SelFaceLoop [Edges=0,1,...|All Object=uuid]",
         }
     }
     fn path(self, geometry: &Geometry, seed: usize) -> Result<Vec<usize>, CommandError> {
@@ -37,6 +79,8 @@ impl Pattern {
                 .collect(),
             (Self::Ring, Geometry::Mesh(m)) => m.try_edge_ring(seed)?.edges,
             (Self::Ring, Geometry::SubD(s)) => s.try_edge_ring(seed)?.edges,
+            (Self::FaceLoop, Geometry::Mesh(m)) => m.try_face_loop(seed)?.faces,
+            (Self::FaceLoop, Geometry::SubD(s)) => s.try_face_loop(seed)?.faces,
             _ => return Err(CommandError::EdgeLoopUnavailable),
         })
     }
@@ -108,7 +152,7 @@ impl Session {
             }
             if !self.paths.contains_key(&p) && !paths.contains_key(&p) {
                 let geometry = doc.object(p.object).unwrap().geometry();
-                let indices = if self.pattern == Pattern::Ring {
+                let (indices, aliases) = if self.pattern != Pattern::Loop {
                     let index = if let Some(i) = self.ring_indices.get(&p.object) {
                         i
                     } else {
@@ -120,9 +164,16 @@ impl Session {
                             })
                         })
                     };
-                    index.try_ring(p.index)?.edges
+                    if self.pattern == Pattern::FaceLoop {
+                        let path = index.try_face_loop(p.index)?;
+                        (path.faces, path.edges)
+                    } else {
+                        let path = index.try_ring(p.index)?;
+                        (path.edges.clone(), path.edges)
+                    }
                 } else {
-                    self.pattern.path(geometry, p.index)?
+                    let edges = self.pattern.path(geometry, p.index)?;
+                    (edges.clone(), edges)
                 };
                 if indices
                     .len()
@@ -134,12 +185,16 @@ impl Session {
                 }
                 let path: Arc<[ComponentPick]> = indices
                     .into_iter()
-                    .map(|index| ComponentPick { index, ..p })
+                    .map(|index| ComponentPick {
+                        index,
+                        kind: self.pattern.output_kind(p),
+                        ..p
+                    })
                     .collect::<Vec<_>>()
                     .into();
                 paths.insert(p, path.clone());
-                for &edge in path.iter() {
-                    paths.insert(edge, path.clone());
+                for index in aliases {
+                    paths.insert(ComponentPick { index, ..p }, path.clone());
                 }
                 sources.insert(p.object, w);
             }
@@ -177,128 +232,27 @@ impl Session {
         if !self.current(doc) {
             return Err(CommandError::EdgeLoopStale);
         }
-        Ok(self.preview.clone())
+        let mut selected = self.preview.clone();
+        if self.pattern == Pattern::FaceLoop {
+            selected.extend(
+                self.seeds
+                    .iter()
+                    .filter(|p| !self.paths[*p].is_empty())
+                    .copied(),
+            );
+            if selected.len() > MAX_COMPONENTS {
+                return Err(CommandError::EdgeLoopResourceLimit);
+            }
+            let rank = doc
+                .objects()
+                .enumerate()
+                .map(|(i, o)| (o.id(), i))
+                .collect::<BTreeMap<_, _>>();
+            selected.sort_by_key(|p| (rank[&p.object], !eligible(*p), std::cmp::Reverse(p.index)));
+        }
+        Ok(selected)
     }
 }
 
-pub(super) struct SelEdgePatternCommand {
-    pattern: Pattern,
-    selection: ComponentSelection,
-}
-impl SelEdgePatternCommand {
-    pub fn new(selection: ComponentSelection, pattern: Pattern) -> Self {
-        Self { selection, pattern }
-    }
-}
-impl Command for SelEdgePatternCommand {
-    fn name(&self) -> &'static str {
-        self.pattern.command()
-    }
-    fn records_history(&self) -> bool {
-        false
-    }
-    fn component_selection_prompt(
-        &self,
-        args: &[&str],
-    ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
-        if !args.is_empty() {
-            return Err(CommandError::Usage(self.pattern.usage()));
-        }
-        Ok(Some(ComponentSelectionPrompt {
-            command: self.pattern.command(),
-            kind: ComponentSelectionKind::MeshEdge,
-            options: Vec::new(),
-            numbers: Vec::new(),
-        }))
-    }
-    fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let targets = if args.is_empty() {
-            self.selection
-                .checked_picks(doc)
-                .map_err(|_| CommandError::EdgeLoopStale)?
-                .into_iter()
-                .filter(|p| eligible(*p))
-                .collect()
-        } else {
-            selectors(doc, args, self.pattern.usage())?
-        };
-        let mut session = Session::new(self.pattern);
-        session.pick(doc, &targets, ComponentAction::Add)?;
-        let selected = session.finish(doc)?;
-        let count = selected.len();
-        let owners = selected.iter().map(|p| p.object).collect::<BTreeSet<_>>();
-        self.selection
-            .replace(doc, selected)
-            .map_err(|_| CommandError::EdgeLoopStale)?;
-        doc.select_objects_direct(owners, viboceros_document::SelectionMode::Remove)?;
-        Ok(format!("Selected {count} edge(s)"))
-    }
-}
-fn selectors(
-    doc: &Document,
-    args: &[&str],
-    usage: &'static str,
-) -> Result<Vec<ComponentPick>, CommandError> {
-    let (mut edges, mut object) = (None, None);
-    let mut i = 0;
-    while i < args.len() {
-        let (name, value, n) = orient_option(args, i, usage)?;
-        let slot = if option_name_eq(name, "Edges") || option_name_eq(name, "Edge") {
-            &mut edges
-        } else if option_name_eq(name, "Object") {
-            &mut object
-        } else {
-            return Err(CommandError::Usage(usage));
-        };
-        if slot.replace(value).is_some() {
-            return Err(CommandError::Usage(usage));
-        }
-        i += n;
-    }
-    let edges = edges.ok_or(CommandError::Usage(usage))?;
-    let id = if let Some(id) = object {
-        id.parse::<ObjectId>()
-            .map_err(|_| CommandError::EdgeLoopUnavailable)?
-    } else {
-        let mut objects = doc.selected_object_ids();
-        let id = objects.next().ok_or(CommandError::NoObjectsSelected)?;
-        if objects.next().is_some() {
-            return Err(CommandError::EdgeLoopUnavailable);
-        }
-        id
-    };
-    let obj = doc
-        .object(id)
-        .filter(|_| doc.is_object_selectable(id))
-        .ok_or(CommandError::EdgeLoopUnavailable)?;
-    let (kind, count) = match obj.geometry() {
-        Geometry::Mesh(m) => (ComponentSelectionKind::MeshEdge, m.topology().edge_count()),
-        Geometry::SubD(s) => (ComponentSelectionKind::SubDEdge, s.edges().len()),
-        _ => return Err(CommandError::EdgeLoopUnavailable),
-    };
-    let indices = if option_name_eq(edges, "All") {
-        if count > MAX_SEEDS {
-            return Err(CommandError::EdgeLoopResourceLimit);
-        }
-        (0..count).collect::<Vec<_>>()
-    } else {
-        if edges.split(',').count() > MAX_SEEDS {
-            return Err(CommandError::EdgeLoopResourceLimit);
-        }
-        edges
-            .split(',')
-            .map(|s| {
-                s.parse::<usize>()
-                    .map_err(|_| CommandError::EdgeLoopUnavailable)
-            })
-            .collect::<Result<Vec<_>, _>>()?
-    };
-    Ok(indices
-        .into_iter()
-        .map(|index| ComponentPick {
-            object: id,
-            kind,
-            index,
-        })
-        .collect())
-}
+mod command;
+pub(super) use command::SelEdgePatternCommand;

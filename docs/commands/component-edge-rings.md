@@ -5,7 +5,9 @@ preselection, pick seed edges and press Enter to accept the previewed rings.
 Seeds are bright; other ring edges are dimmer. Ctrl removes a seed, and Escape
 clears newly picked seeds. Multiple seeds can contribute separate rings or
 share the same ring. Whole-object preselection remains selected and is ignored
-by the edge getter; preselected faces and vertices are cleared.
+by the edge getter. Other preselected faces and vertices survive successful
+expansion; no eligible preselected edges or an empty expansion clears component
+preselection. [Mixed native controls](../oracle/face-loops.md) qualify these rules.
 
 Rings cross opposite sides of quads. They can be open or closed and stop at
 triangles and nonmanifold continuations. A mesh seed used by more than two faces
@@ -46,6 +48,7 @@ imported native archives agree on complete component sets. In-memory viewport
 events cover ordinary grids and n-gons in every display mode without opening
 windows. Captures use private Xvfb.
 
-Nested selection inside another command, ring double-click gestures, face loops
-and vertex chains remain separate work. Ctrl+Shift-double-click continues to
+See [SelFaceLoop](component-face-loops.md) for crossed face strips.
+Nested selection inside another command, ring double-click gestures and vertex
+chains remain separate work. Ctrl+Shift-double-click continues to
 select an [edge loop](component-edge-loops.md).

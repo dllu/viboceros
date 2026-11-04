@@ -63,7 +63,11 @@ def run_owned(op,host,iterations,tolerance,command,input_factory=Input):
             obj=doc.Objects.FindId(value.key)
             components=[dict(kind=str(c.ComponentIndexType),index=int(c.Index)) for c in (obj.GetSelectedSubObjects() or [])]
             edge_kind='MeshTopologyEdge' if op['kind']=='mesh' else 'SubdEdge'
-            return dict(whole=bool(obj.IsSelected(False)),components=components,ordinals=[value.native.index(c['index']) for c in components if c['kind']==edge_kind],objects=len(list(doc.Objects)))
+            state=dict(whole=bool(obj.IsSelected(False)),components=components,ordinals=[value.native.index(c['index']) for c in components if c['kind']==edge_kind],objects=len(list(doc.Objects)))
+            if command=='SelFaceLoop' or op.get('face_metadata'):
+                face_kind='MeshFace' if op['kind']=='mesh' else 'SubdFace'
+                state['face_ordinals']=[value.face_native.index(c['index']) for c in components if c['kind']==face_kind]
+            return state
         before=snapshot();trace=[];events=[]
         marker='Owned loop workflow '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         def ended(sender,event):
@@ -83,6 +87,9 @@ def run_owned(op,host,iterations,tolerance,command,input_factory=Input):
         after=snapshot();history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         R.RhinoApp.RunScript('_Redo',False);redo=snapshot()
         R.RhinoApp.RunScript('_Undo',False);undo=snapshot()
-        return dict(input=value.recipe,archive=value.archive,edges=value.edges,native=value.native,
+        result=dict(input=value.recipe,archive=value.archive,edges=value.edges,native=value.native,
                     before=before,trace=trace,events=events,after=after,redo=redo,undo=undo,history=history,success=success,
-                    source_unchanged=int(doc.Objects.FindId(value.key).Geometry.DataCRC(0))==value.crc),0
+                    source_unchanged=int(doc.Objects.FindId(value.key).Geometry.DataCRC(0))==value.crc)
+
+        if command=='SelFaceLoop' or op.get('face_metadata'):result.update(face_native=value.face_native,faces=value.faces)
+        return result,0

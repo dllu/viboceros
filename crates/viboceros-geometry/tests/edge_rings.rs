@@ -30,6 +30,23 @@ fn cyclic_rings_visit_every_opposite_edge_once_and_leave_sources_unchanged() {
     let edges = mesh.topology_edge_points();
     let seed = edges.iter().position(|[a, b]| a.z() != b.z()).unwrap();
     let ring = mesh.try_edge_ring(seed).unwrap();
+    let faces = mesh.try_face_loop(seed).unwrap();
+    assert_eq!(faces.edges, ring.edges);
+    assert_eq!(faces.faces, ring.faces);
+    assert!(faces.is_closed());
+    let index = mesh.edge_ring_index();
+    for &edge in &faces.edges {
+        assert_eq!(
+            index
+                .try_face_loop(edge)
+                .unwrap()
+                .faces
+                .into_iter()
+                .collect::<std::collections::BTreeSet<_>>(),
+            faces.faces.iter().copied().collect()
+        );
+    }
+    assert!(index.try_face_loop(usize::MAX).is_err());
     assert!(ring.is_closed());
     assert_eq!(ring.edges.len(), 4);
     assert_eq!(ring.faces.len(), 4);
@@ -64,6 +81,11 @@ fn cyclic_rings_visit_every_opposite_edge_once_and_leave_sources_unchanged() {
         })
         .unwrap();
     let ring = subd.try_edge_ring(seed).unwrap();
+    let faces = subd.try_face_loop(seed).unwrap();
+    assert_eq!(faces.edges, ring.edges);
+    assert_eq!(faces.faces, ring.faces);
+    assert!(faces.is_closed());
+    assert!(subd.try_face_loop(usize::MAX).is_err());
     assert!(ring.is_closed());
     assert_eq!(ring.edges.len(), 4);
     assert_eq!(ring.faces.len(), 4);

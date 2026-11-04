@@ -51,6 +51,14 @@ class Input:
             for edge in self.geometry.Edges:
                 self.edges.append([points[xyz(edge.VertexFrom.ControlNetPoint)],points[xyz(edge.VertexTo.ControlNetPoint)]])
                 self.native.append(int(edge.ComponentIndex().Index))
+        if op.get('op')=='face_loop_workflow' or op.get('face_metadata'):
+            if op['kind']=='mesh':
+                self.face_native=list(range(self.geometry.Faces.Count))
+                self.faces=[[points[xyz(self.geometry.Vertices.Point3dAt(i))] for i in ([f.A,f.B,f.C] if f.IsTriangle else [f.A,f.B,f.C,f.D])] for f in self.geometry.Faces]
+            else:
+                faces=sorted(list(self.geometry.Faces),key=lambda f:int(f.Id))
+                self.face_native=[int(f.Id) for f in faces]
+                self.faces=[[points[xyz(f.VertexAt(i).ControlNetPoint)] for i in range(f.EdgeCount)] for f in faces]
         self.seed=next(i for i,pair in enumerate(self.edges) if set(pair)==set(op['pair']))
         a,b=[G.Point3d(*self.recipe['points'][i]) for i in op['pair']]
         self.point=G.Point3d((a.X+b.X)*.5,(a.Y+b.Y)*.5,(a.Z+b.Z)*.5)

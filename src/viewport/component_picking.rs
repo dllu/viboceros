@@ -45,6 +45,12 @@ pub(super) struct ComponentDrag {
     pub modifiers: egui::Modifiers,
 }
 
+struct ComponentStyle<'a> {
+    stroke: Stroke,
+    stored_mesh_faces: bool,
+    raw_mesh_faces: Option<&'a std::collections::BTreeSet<ComponentPick>>,
+}
+
 impl From<EdgePick> for ComponentPick {
     fn from(pick: EdgePick) -> Self {
         Self {
@@ -468,7 +474,52 @@ impl Viewport {
         document: &Document,
         picks: &[ComponentPick],
         stored_mesh_faces: bool,
+        raw_mesh_faces: Option<&std::collections::BTreeSet<ComponentPick>>,
     ) {
+        self.paint_component_overlay(
+            painter,
+            rect,
+            document,
+            picks,
+            ComponentStyle {
+                stored_mesh_faces,
+                raw_mesh_faces,
+                stroke: Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+            },
+        );
+    }
+    pub(super) fn paint_component_previews(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        document: &Document,
+        picks: &[ComponentPick],
+    ) {
+        self.paint_component_overlay(
+            painter,
+            rect,
+            document,
+            picks,
+            ComponentStyle {
+                stored_mesh_faces: true,
+                raw_mesh_faces: None,
+                stroke: Stroke::new(1.8, Color32::from_rgb(165, 120, 35)),
+            },
+        );
+    }
+    fn paint_component_overlay(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        document: &Document,
+        picks: &[ComponentPick],
+        style: ComponentStyle<'_>,
+    ) {
+        let ComponentStyle {
+            stroke,
+            stored_mesh_faces,
+            raw_mesh_faces,
+        } = style;
         let mut edges = Vec::new();
         let mut polygon_regions = std::collections::BTreeSet::new();
         for pick in picks {
@@ -486,12 +537,7 @@ impl Viewport {
                             | (ComponentSelectionKind::SubDEdge, Geometry::SubD(_))
                     ) {
                         self.paint_polygon_edge(
-                            painter,
-                            rect,
-                            document,
-                            object,
-                            pick.index,
-                            Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+                            painter, rect, document, object, pick.index, stroke,
                         );
                     }
                 }
@@ -510,7 +556,7 @@ impl Viewport {
                         }) != Some(true)
                         && let Some(p) = self.project_selection_point(*point, rect)
                     {
-                        painter.circle_filled(p, 5., Color32::from_rgb(245, 160, 20));
+                        painter.circle_filled(p, 5., stroke.color);
                     }
                 }
                 ComponentSelectionKind::BrepEdge => edges.push(EdgePick {
@@ -518,7 +564,7 @@ impl Viewport {
                     edge: pick.index,
                 }),
                 ComponentSelectionKind::SubDFace | ComponentSelectionKind::MeshFace => {
-                    if stored_mesh_faces
+                    if (stored_mesh_faces || raw_mesh_faces.is_some_and(|set| set.contains(pick)))
                         && pick.kind == ComponentSelectionKind::MeshFace
                         && let Geometry::Mesh(mesh) = object.geometry()
                     {
@@ -530,10 +576,7 @@ impl Viewport {
                                     mesh.vertices()[v[(j + 1) % v.len()] as usize],
                                     rect,
                                 ) {
-                                    painter.line_segment(
-                                        [a, b],
-                                        Stroke::new(3., Color32::from_rgb(245, 160, 20)),
-                                    );
+                                    painter.line_segment([a, b], stroke);
                                 }
                             }
                         }
@@ -559,10 +602,7 @@ impl Viewport {
                     }
                     for &[a, b] in display.component_face_outline(pick.index) {
                         if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
-                            painter.line_segment(
-                                [a, b],
-                                Stroke::new(3., Color32::from_rgb(245, 160, 20)),
-                            );
+                            painter.line_segment([a, b], stroke);
                         }
                     }
                 }

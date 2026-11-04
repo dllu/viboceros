@@ -12,7 +12,7 @@ pub(super) fn geometry(
     if scene.starts_with("grid")
         || matches!(
             scene,
-            "triangles" | "nonmanifold" | "quad_triangle" | "collapsed" | "unwelded"
+            "ngon_grid" | "triangles" | "nonmanifold" | "quad_triangle" | "collapsed" | "unwelded"
         )
     {
         points = (0..4)
@@ -29,6 +29,13 @@ pub(super) fn geometry(
         corners = vec![0, 4, 15, 19];
         match scene {
             "grid" => {}
+            "ngon_grid" => {
+                corners.clear();
+                ngons.push(MeshNgon::from_parts(
+                    vec![0, 1, 2, 7, 12, 11, 10, 5],
+                    vec![0, 1, 4, 5],
+                ));
+            }
             "grid_smooth" => corners.clear(),
             "grid_corner" => corners.push(7),
             "grid_crease" => creases = (5..9).map(|i| [i, i + 1]).collect(),

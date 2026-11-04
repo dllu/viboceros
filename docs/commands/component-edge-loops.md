@@ -5,7 +5,9 @@ preselection, pick seed edges: seeds are bright and the loop preview is dimmer.
 Enter commits all previewed loops; Escape clears the newly picked seeds. Ctrl
 removes a picked seed, while Ctrl on another edge of its preview has no effect.
 Multiple seeds may share a loop. Whole-object preselection remains selected and
-its edges are ignored by the getter; preselected faces and vertices are cleared.
+its edges are ignored by the getter. Other preselected faces and vertices survive
+successful edge expansion. With no eligible preselected edges, or an empty
+expansion, component preselection is cleared.
 Selection does not add an Undo record or consume redo.
 
 Headless commands use the same component-selection backend as the UI. Structured
@@ -64,6 +66,8 @@ qualify seed accumulation/removal, preselection, acceptance, cancellation and
 selection through redo/undo. Independent Rust grid recipes reproduce every
 captured state; UI replays also check the resulting ToNURBS handoff.
 
-See [SelEdgeRing](component-edge-rings.md) for opposite-edge selection.
-Face/vertex chains, surface tangent chains and nested `SelEdgeLoop`
+See [SelEdgeRing](component-edge-rings.md) for opposite-edge selection and
+[SelFaceLoop](component-face-loops.md) for crossed face strips. Mixed-preselection
+rules are qualified by [additional native controls](../oracle/face-loops.md).
+Vertex chains, surface tangent chains and nested `SelEdgeLoop`
 inside another command remain separate work.

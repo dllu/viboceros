@@ -1143,6 +1143,18 @@ impl VibocerosApp {
                 name.trim_start_matches(['_', '-'])
                     .eq_ignore_ascii_case("SelNone")
             });
+        let face_loop_input = input
+            .split_whitespace()
+            .next()
+            .and_then(viboceros_command::edge_pattern_selection::Pattern::from_command)
+            == Some(viboceros_command::edge_pattern_selection::Pattern::FaceLoop);
+        let previous_faces = face_loop_input.then(|| {
+            if input.split_whitespace().count() > 1 {
+                Default::default()
+            } else {
+                self.component_selection.mesh_face_picks(&self.document)
+            }
+        });
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
             let context = viboceros_command::CommandContext { construction_plane };
@@ -1161,6 +1173,10 @@ impl VibocerosApp {
         });
         match result {
             Ok(message) => {
+                if let Some(before) = previous_faces {
+                    self.component_selection
+                        .mark_raw_pattern_faces(&self.document, &before);
+                }
                 self.push_log(message);
                 self.start_edge_zoom_options(input);
                 if release_components {

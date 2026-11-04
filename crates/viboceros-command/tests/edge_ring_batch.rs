@@ -27,6 +27,10 @@ fn many_isolated_seed_rings_reuse_source_topology_and_keep_pending_redo() {
         .execute(&mut doc, &format!("SelEdgeRing Edges=All Object={id}"))
         .unwrap();
     assert_eq!(registry.component_selection().len(), 6000);
+    registry
+        .execute(&mut doc, &format!("SelFaceLoop Edges=All Object={id}"))
+        .unwrap();
+    assert!(registry.component_selection().is_empty());
     assert_eq!(doc.object(id).unwrap(), &source);
     assert!(doc.can_redo());
 }

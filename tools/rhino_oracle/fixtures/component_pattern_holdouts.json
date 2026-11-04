@@ -1,0 +1,269 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_ngon_grid_0",
+      "kind": "mesh",
+      "scene": "ngon_grid",
+      "pair": [
+        2,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            2,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_ngon_grid_1",
+      "kind": "mesh",
+      "scene": "ngon_grid",
+      "pair": [
+        10,
+        11
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            10,
+            11
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "mesh_ngon_grid_2",
+      "kind": "mesh",
+      "scene": "ngon_grid",
+      "pair": [
+        7,
+        12
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            12
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_ngon_grid_0",
+      "kind": "subd",
+      "scene": "ngon_grid",
+      "pair": [
+        2,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            2,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_ngon_grid_1",
+      "kind": "subd",
+      "scene": "ngon_grid",
+      "pair": [
+        10,
+        11
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            10,
+            11
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "face_loop_workflow",
+      "id": "subd_ngon_grid_2",
+      "kind": "subd",
+      "scene": "ngon_grid",
+      "pair": [
+        7,
+        12
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            12
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelEdgeLoop_face",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelEdgeLoop_vertex",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelEdgeRing_face",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelEdgeRing_vertex",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelFaceLoop_face",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_nonmanifold_SelFaceLoop_vertex",
+      "kind": "mesh",
+      "scene": "nonmanifold",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    }
+  ]
+}

@@ -4,6 +4,9 @@ use serde_json::Value;
 use std::io::Read;
 use viboceros_command::ComponentSelectionKind as Kind;
 mod command;
+mod face_handoff;
+mod face_viewport;
+mod faces;
 mod viewport;
 
 fn enter(app: &mut VibocerosApp, input: &str) {

@@ -437,6 +437,7 @@ pub struct ViewportInput<'a> {
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
     pub component_previews: &'a [ComponentPick],
+    pub raw_mesh_face_highlights: Option<&'a std::collections::BTreeSet<ComponentPick>>,
     pub component_highlight_segments: &'a [[Point3; 2]],
     pub point_deviation: Option<&'a viboceros_command::point_deviation::View>,
     pub curve_deviation: Option<&'a viboceros_command::curve_deviation::View>,
@@ -560,6 +561,7 @@ impl Default for ViewportInput<'_> {
             component_pick: None,
             component_highlights: &[],
             component_previews: &[],
+            raw_mesh_face_highlights: None,
             component_highlight_segments: &[],
             point_deviation: None,
             curve_deviation: None,
@@ -2179,21 +2181,7 @@ impl Viewport {
                 },
             ),
         );
-        for pick in input.component_previews {
-            if let Some(object) = document
-                .object(pick.object)
-                .filter(|_| document.is_object_selectable(pick.object))
-            {
-                self.paint_polygon_edge(
-                    &painter,
-                    rect,
-                    document,
-                    object,
-                    pick.index,
-                    Stroke::new(1.8, Color32::from_rgb(165, 120, 35)),
-                );
-            }
-        }
+        self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_component_highlights(
             &painter,
             rect,
@@ -2201,6 +2189,7 @@ impl Viewport {
             input.component_highlights,
             input.component_pick == Some(ComponentPickFilter::InsetFaces)
                 || input.inset_edges.is_some(),
+            input.raw_mesh_face_highlights,
         );
         self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);
         if let Some(view) = input.direction_analysis {
@@ -2280,6 +2269,7 @@ impl Viewport {
                 &hover,
                 input.component_pick == Some(ComponentPickFilter::InsetFaces)
                     || input.inset_edges.is_some(),
+                None,
             );
         }
         for (index, marker) in input.end_markers.iter().enumerate() {

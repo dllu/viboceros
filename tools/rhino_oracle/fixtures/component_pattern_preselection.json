@@ -1,0 +1,515 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelEdgeLoop_face",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelEdgeLoop_vertex",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelEdgeRing_face",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelEdgeRing_vertex",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelFaceLoop_face",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_grid_SelFaceLoop_vertex",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelEdgeLoop_face",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelEdgeLoop_vertex",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelEdgeRing_face",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelEdgeRing_vertex",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelFaceLoop_face",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "mesh_triangles_SelFaceLoop_vertex",
+      "kind": "mesh",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelEdgeLoop_face",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelEdgeLoop_vertex",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelEdgeRing_face",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelEdgeRing_vertex",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelFaceLoop_face",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_grid_SelFaceLoop_vertex",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelEdgeLoop_face",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelEdgeLoop_vertex",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelEdgeRing_face",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelEdgeRing_vertex",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelEdgeRing",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelFaceLoop_face",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    },
+    {
+      "op": "component_pattern_workflow",
+      "id": "subd_triangles_SelFaceLoop_vertex",
+      "kind": "subd",
+      "scene": "triangles",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex",
+      "command": "SelFaceLoop",
+      "face_metadata": true
+    }
+  ]
+}

@@ -29,6 +29,7 @@ For current command support, use the [command reference](../commands/README.md).
 - [Document workflows](document-workflows.md): groups, conversions, picking and grips.
 - [Edge-loop selection workflows](edge-loop-workflows.md): standalone seeds, cancellation and redo.
 - [Edge-ring selection](edge-rings.md): topology, n-gons, native component IDs and seed lifecycle.
+- [Face loops and mixed component preselection](face-loops.md)
 - [Construction planes](construction-planes.md): frame and option captures.
 - [Cameras and views](cameras.md): SetView, named views, Plan and Zoom.
 - [Clipping and visibility](visibility.md): depth planes, selection and snapping.
