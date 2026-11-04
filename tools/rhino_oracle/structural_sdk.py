@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'nurbs_edge_command': ('nurbs_edge_command_probe', ('subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_nurbs_packs': ('subd_nurbs_packs_probe', ('join_probe','merge_edges_probe')),
     'subd_pack_command': ('subd_pack_command_probe', ('subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_soft_nurbs': ('subd_soft_nurbs_probe', ('subd_soft_nurbs_cases','subd_packing_cases','subd_g1x_probe','subd_continuity_probe','subd_g0_probe','subd_to_nurbs_probe','subd_join_probe','subd_join_cases','subd_box_probe','join_probe','merge_edges_probe')),
@@ -296,6 +297,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         asset = Path('fixtures/soft_crease_followup_assets.json')
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
+    if 'nurbs_edge_command_probe' in modules:
+        from .nurbs_edge_command_probe import ASSETS
+        for name in ASSETS:
+            asset=Path('fixtures/subd_soft_nurbs_inputs')/(name+'.3dm')
+            (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source_directory/asset,destination/asset)
     if 'subd_soft_nurbs_probe' in modules:
         from .subd_soft_nurbs_cases import ASSETS,CHAIN_ASSETS
         for name in ASSETS+CHAIN_ASSETS:

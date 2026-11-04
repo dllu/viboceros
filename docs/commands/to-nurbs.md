@@ -19,6 +19,8 @@ selection is an error; the GUI instead starts an object-selection prompt.
 Whole SubDs support packed/unpacked faces and all five extraordinary-vertex
 continuity choices through `SubDOptions`. Their conversion is a finite approximation.
 See [SubD options and native command evidence](to-nurbs-subd.md).
+Mesh and SubD edges also convert to individual curves; see
+[edge selection, scripting and qualification](to-nurbs-edges.md).
 
 With preselection, `DeleteInputObjects=No` creates unselected copies with the source's attributes,
 layer, name, color policy, and ordered group memberships. Sources and selection
@@ -128,7 +130,7 @@ cancellation, remembered choices, no-ops, and undo/redo. Exact source and output
 geometry, native polyline parameters, triangle trims, attributes, and group tables
 match the expected models. Display and CPlane changes preserve confirmation state.
 
-Mesh/SubD edge subobject conversion is not implemented. Meshes currently contain triangle/quad faces, not
+Meshes currently contain triangle/quad faces, not
 Rhino n-gon regions. General performance parity is not established. These are
 explicit gaps relative to the [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/tonurbs.htm),
 not alternative definitions of the command. Runtime attribute/order policies

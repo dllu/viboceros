@@ -841,6 +841,24 @@ pub trait Command: Send + Sync {
         self.run_in_context(document, arguments, context)
     }
 
+    fn to_nurbs_target_confirmation(
+        &self,
+        _document: &Document,
+        _arguments: &[&str],
+        _targets: &[to_nurbs::ToNurbsTarget],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Err(CommandError::ToNurbsTargetUnavailable)
+    }
+    fn run_to_nurbs_targets(
+        &self,
+        _document: &mut Document,
+        _arguments: &[&str],
+        _targets: &[to_nurbs::ToNurbsTarget],
+        _context: to_nurbs::ToNurbsContext,
+    ) -> Result<String, CommandError> {
+        Err(CommandError::ToNurbsTargetUnavailable)
+    }
+
     /// Whether successful mutations should be grouped into one undo step.
     fn records_history(&self) -> bool {
         true

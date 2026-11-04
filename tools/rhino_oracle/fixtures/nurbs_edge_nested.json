@@ -1,0 +1,27 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nurbs_edge_command",
+      "id": "nested_False",
+      "kind": "box",
+      "delete": false,
+      "flat": false,
+      "nested": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "nested_True",
+      "kind": "box",
+      "delete": false,
+      "flat": true,
+      "nested": true
+    }
+  ]
+}

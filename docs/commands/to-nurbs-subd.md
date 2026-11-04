@@ -59,7 +59,7 @@ mixed options, cancellation and history without opening windows.
 these options. Their geometry has separate SDK qualification; the actual-command
 families above use smooth and hard creases. `ShowFacePacks` and
 `ForceUpdateFacePacks` have separate [face-pack control qualification](to-nurbs-packs.md).
-Mesh/SubD edge conversion remains open. The standalone [PackSubDFaces](pack-subd-faces.md)
+[Mesh/SubD edges](to-nurbs-edges.md) convert separately to curves. The standalone [PackSubDFaces](pack-subd-faces.md)
 command can also reset source packing before conversion.
 Output B-reps do not yet carry Rhino's per-face pack IDs.
 General performance parity is unqualified.

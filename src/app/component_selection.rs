@@ -285,6 +285,7 @@ impl VibocerosApp {
             && (self.object_prompt.is_none()
                 || self.picking_extract_points()
                 || self.picking_to_subd()
+                || self.picking_nurbs_edges()
                 || self.picking_subdivide()
                 || self.shrink_prompt_mode()
                     == Some(viboceros_geometry::BrepSurfaceShrinkMode::Standard))
@@ -316,6 +317,7 @@ impl VibocerosApp {
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
+            && !self.picking_nurbs_edges()
             && !self.picking_extract_points()
             && !self.picking_inset()
             && !self.picking_extrude_subd()
@@ -437,6 +439,11 @@ impl VibocerosApp {
             picks
                 .into_iter()
                 .filter(|p| super::extract_points::component_kind(p.kind).is_some())
+                .collect()
+        } else if self.picking_nurbs_edges() {
+            picks
+                .into_iter()
+                .filter(|p| super::nurbs_conversion::eligible(p.kind))
                 .collect()
         } else if self.picking_to_subd() {
             picks
@@ -655,6 +662,7 @@ impl VibocerosApp {
                 let _ = self
                     .document
                     .select_objects_direct(parents, viboceros_document::SelectionMode::Remove);
+                self.record_nurbs_targets();
                 self.push_log(format!(
                     "{} component(s) selected",
                     self.component_selection.picks.len()
@@ -669,6 +677,11 @@ impl VibocerosApp {
             window
                 .picks
                 .retain(|p| super::extract_points::component_kind(p.kind).is_some());
+        }
+        if self.picking_nurbs_edges() {
+            window
+                .picks
+                .retain(|p| super::nurbs_conversion::eligible(p.kind));
         }
         if self.picking_to_subd() {
             window
@@ -708,6 +721,7 @@ impl VibocerosApp {
         } else if self.crease_prompt.is_some()
             || self.picking_soft_crease_edges()
             || self.picking_extract_points()
+            || self.picking_nurbs_edges()
             || self.picking_extrude_subd()
             || self.picking_inset()
         {

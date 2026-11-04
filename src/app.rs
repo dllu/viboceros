@@ -139,6 +139,7 @@ pub(crate) use extract_points::native as extract_points_native;
 mod extract_surface;
 mod insert_point;
 mod merge_coplanar_face;
+mod nurbs_conversion;
 mod shell;
 mod shrink_trimmed;
 mod soft_crease;
@@ -993,6 +994,7 @@ impl VibocerosApp {
             || self.try_start_remember_copy_options(&input)
             || self.try_start_extract_point_components(&input)
             || self.try_start_control_polygon_components(&input)
+            || self.try_start_nurbs_edges(&input)
             || self.try_start_to_subd(&input)
             || self.try_start_soft_crease(&input)
             || self.try_start_crease(&input)

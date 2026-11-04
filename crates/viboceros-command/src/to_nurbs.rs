@@ -1,11 +1,16 @@
 //! Object representation conversion, including finite SubD approximation.
 use super::*;
 
+mod edges;
 mod options;
 mod packs;
+mod targets;
 pub use packs::{FacePackPreview, FacePackView};
+pub use targets::{ToNurbsContext, ToNurbsTarget};
 #[cfg(test)]
 mod subd_tests;
+#[cfg(test)]
+mod target_tests;
 #[cfg(test)]
 mod tests;
 use options::{Kinds, Options, parse, prompt};
@@ -26,7 +31,11 @@ impl Command for ToNurbsCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let (options, kinds) = parse(arguments, self.options.get())?;
+        let (arguments, selectors) = targets::split(arguments)?;
+        let (options, kinds) = parse(&arguments, self.options.get())?;
+        if selectors.is_some() {
+            return Ok(None);
+        }
         Ok(Some(prompt(options, kinds)))
     }
 
@@ -56,6 +65,52 @@ impl Command for ToNurbsCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         self.convert(document, arguments, false)
     }
+    fn to_nurbs_target_confirmation(
+        &self,
+        document: &Document,
+        arguments: &[&str],
+        targets: &[ToNurbsTarget],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let (options, required) = parse(arguments, self.options.get())?;
+        let input = targets::Input::prepare(document, Some(targets), false)?;
+        required.require(&input.kinds)?;
+        let real = input.order.iter().any(|t| match t {
+            ToNurbsTarget::Edge(..) => true,
+            ToNurbsTarget::Whole(id) => {
+                let geometry = document.object(*id).unwrap().geometry();
+                matches!(
+                    geometry,
+                    Geometry::Line(_)
+                        | Geometry::Circle(_)
+                        | Geometry::Arc(_)
+                        | Geometry::Polyline(_)
+                        | Geometry::PolyCurve(_)
+                        | Geometry::Mesh(_)
+                        | Geometry::SubD(_)
+                ) || matches!(geometry,Geometry::Brep(b) if b.is_extrusion())
+            }
+        });
+        Ok(real.then(|| prompt(options, input.kinds)))
+    }
+    fn run_to_nurbs_targets(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        targets: &[ToNurbsTarget],
+        context: ToNurbsContext,
+    ) -> Result<String, CommandError> {
+        let message = self.convert_targets(
+            document,
+            arguments,
+            context.postselected,
+            Some(targets),
+            context.control_net,
+        )?;
+        if context.postselected {
+            document.clear_selection();
+        }
+        Ok(message)
+    }
 
     fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
         // ToNURBS commits choices only after a real conversion, not on prompt
@@ -82,17 +137,39 @@ impl ToNurbsCommand {
         arguments: &[&str],
         postselected: bool,
     ) -> Result<String, CommandError> {
+        let (arguments, selectors) = targets::split(arguments)?;
+        let targets = selectors.map(|s| s.resolve(document)).transpose()?;
+        let control_net = document.subd_control_net();
+        self.convert_targets(
+            document,
+            &arguments,
+            postselected,
+            targets.as_deref(),
+            control_net,
+        )
+    }
+    fn convert_targets(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        postselected: bool,
+        targets: Option<&[ToNurbsTarget]>,
+        control_net: bool,
+    ) -> Result<String, CommandError> {
         let (options, required) = parse(arguments, self.options.get())?;
-        if document.selected_object_count() == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        required.require(&Kinds::selected(document))?;
-        let mut eligible = 0;
+        let input = targets::Input::prepare(document, targets, postselected)?;
+        required.require(&input.kinds)?;
+        let mut conversions = edges::prepare(document, &input, control_net)?;
+        let mut eligible = conversions.len();
         let mut controls = 0usize;
-        let mut conversions = Vec::new();
+        for (_, geometry) in &conversions {
+            if let Geometry::NurbsCurve(c) = geometry {
+                charge(&mut controls, c.control_points().len())?;
+            }
+        }
         let mut repacked_sources = Vec::new();
         let mut pack_bytes = 0usize;
-        for object in document.objects().filter(|o| document.is_selected(o.id())) {
+        for object in document.objects().filter(|o| input.whole.contains(&o.id())) {
             let geometry = match object.geometry() {
                 Geometry::Brep(brep) if brep.is_extrusion() => {
                     charge(
@@ -161,20 +238,21 @@ impl ToNurbsCommand {
                 }
             };
             eligible += 1;
-            conversions.push((object.id(), geometry));
+            conversions.push((ToNurbsTarget::Whole(object.id()), geometry));
         }
         if eligible == 0 {
             return Err(CommandError::UnsupportedToNurbsGeometry);
         }
         let converted = conversions.len();
+        let ranks = input
+            .order
+            .iter()
+            .enumerate()
+            .map(|(i, &t)| (t, i))
+            .collect::<BTreeMap<_, _>>();
+        conversions.sort_unstable_by_key(|(t, _)| ranks[t]);
         if postselected {
-            let ranks = document
-                .selected_object_ids()
-                .enumerate()
-                .map(|(i, id)| (id, i))
-                .collect::<BTreeMap<_, _>>();
-            conversions.sort_unstable_by_key(|(id, _)| ranks[id]);
-            repacked_sources.sort_unstable_by_key(|(id, _)| ranks[id]);
+            repacked_sources.sort_unstable_by_key(|(id, _)| ranks[&ToNurbsTarget::Whole(*id)]);
             if converted > 0 {
                 // Prompted picks are transient, including no-op peers. Clear
                 // them before replacement captures selection in history.
@@ -192,17 +270,31 @@ impl ToNurbsCommand {
             viboceros_document::ReplacementHistory::EveryReplacement,
         )?;
         document.move_objects_to_end_in_order(repacked_ids)?;
-        if options.delete_input {
-            let ids = conversions.iter().map(|(id, _)| *id).collect::<Vec<_>>();
-            document.replace_object_geometries(conversions)?;
-            if postselected {
-                document.move_objects_to_end_in_order(ids)?;
+        let order = conversions.iter().map(|(t, _)| *t).collect::<Vec<_>>();
+        let has_edges = order.iter().any(|t| matches!(t, ToNurbsTarget::Edge(..)));
+        let (mut replacements, mut copies) = (Vec::new(), Vec::new());
+        for (target, geometry) in conversions {
+            if matches!(target, ToNurbsTarget::Whole(_)) && options.delete_input {
+                replacements.push((target.object(), geometry));
             } else {
-                document.move_objects_to_end(ids)?;
+                copies.push((target.object(), geometry));
             }
-        } else {
-            document.copy_object_geometries_into_source_groups_in_order(conversions)?;
         }
+        document.replace_object_geometries(replacements)?;
+        let mut copied = document
+            .copy_object_pieces_into_source_groups(copies)?
+            .into_iter();
+        let outputs = order
+            .into_iter()
+            .map(|t| {
+                if matches!(t, ToNurbsTarget::Whole(_)) && options.delete_input {
+                    t.object()
+                } else {
+                    copied.next().unwrap()
+                }
+            })
+            .collect::<Vec<_>>();
+        document.move_objects_to_end_in_order(outputs)?;
         // Rhino's ToNURBS no-op does not accept new choices, unlike
         // ConvertToSingleSpans. Only a real conversion updates option memory.
         if converted > 0 {
@@ -211,7 +303,9 @@ impl ToNurbsCommand {
         Ok(format!(
             "Converted {converted} object(s) to NURBS geometry; {} unchanged{}",
             eligible - converted,
-            if options.delete_input {
+            if options.delete_input && has_edges && !input.whole.is_empty() {
+                "; whole inputs replaced; edge owners retained"
+            } else if options.delete_input && !has_edges {
                 "; inputs replaced"
             } else {
                 "; inputs retained"

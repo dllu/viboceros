@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_geometry::SubDNurbsContinuity;
 
-pub(super) const USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No] [MeshOptions TrimTriangularFaces=Yes|No] [SubDOptions Faces=Packed|Unpacked ShowFacePacks=Yes|No ForceUpdateFacePacks=Yes|No ExtraordinaryVertex=G0|G1|G1x|G1xx|G2]";
+pub(super) const USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No] [MeshOptions TrimTriangularFaces=Yes|No] [SubDOptions Faces=Packed|Unpacked ShowFacePacks=Yes|No ForceUpdateFacePacks=Yes|No ExtraordinaryVertex=G0|G1|G1x|G1xx|G2] [Edges=All|0,1,... Object=uuid]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct Options {

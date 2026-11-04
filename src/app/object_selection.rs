@@ -78,6 +78,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) mesh_patch: Option<mesh_patch::Session>,
     pub(super) mesh_from_lines: Option<mesh_from_lines::Session>,
     pub(super) to_subd: Option<super::to_subd::Session>,
+    pub(super) to_nurbs: Option<super::nurbs_conversion::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -108,6 +109,7 @@ impl PendingObjectCommand {
             mesh_patch: None,
             mesh_from_lines: None,
             to_subd: None,
+            to_nurbs: None,
         }
     }
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
@@ -684,6 +686,7 @@ impl VibocerosApp {
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
+                to_nurbs: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -737,6 +740,7 @@ impl VibocerosApp {
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
+                to_nurbs: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -775,6 +779,7 @@ impl VibocerosApp {
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
+                to_nurbs: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -818,6 +823,7 @@ impl VibocerosApp {
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
+                to_nurbs: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -971,6 +977,7 @@ impl VibocerosApp {
                         mesh_patch: None,
                         mesh_from_lines: None,
                         to_subd: None,
+                        to_nurbs: None,
                     });
                 }
                 Ok(None) => return false,
@@ -1061,6 +1068,7 @@ impl VibocerosApp {
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
+                to_nurbs: None,
             });
         }
         self.command_input.clear();
@@ -1254,6 +1262,9 @@ impl VibocerosApp {
         }
         if input.is_empty() {
             if self.finish_extract_point_components() {
+                return true;
+            }
+            if self.finish_nurbs_edges() {
                 return true;
             }
             if self.finish_to_subd() {
@@ -1599,9 +1610,13 @@ impl VibocerosApp {
             }
             if normalized == "selnone" {
                 self.document.clear_selection();
-                if self.shrink_prompt_mode().is_some() || self.picking_subdivide() {
+                if self.shrink_prompt_mode().is_some()
+                    || self.picking_subdivide()
+                    || self.picking_nurbs_edges()
+                {
                     self.component_selection.clear();
                 }
+                self.record_nurbs_targets();
             } else {
                 let ids = self
                     .document
@@ -1948,6 +1963,7 @@ impl VibocerosApp {
                     | "ShrinkTrimmedSrfToEdge"
                     | "SubDivide"
                     | "ToSubD"
+                    | "ToNURBS"
                     | "ExtractControlPolygon"
                     | "ExtractPt"
             ) {
@@ -2119,6 +2135,11 @@ impl VibocerosApp {
         match result {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        if self.picking_nurbs_edges() {
+            let whole = self.document.selected_object_ids().collect::<Vec<_>>();
+            self.component_selection.release_objects(&whole);
+            self.record_nurbs_targets();
         }
         if let Some(pending) = &self.object_prompt {
             match self

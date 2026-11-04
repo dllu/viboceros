@@ -1,0 +1,162 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nurbs_edge_command",
+      "id": "grid_all",
+      "kind": "grid",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "grid_smooth_all",
+      "kind": "grid_smooth",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "subdivided_box_all",
+      "kind": "subdivided_box",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "pentagonal_prism_all",
+      "kind": "pentagonal_prism",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "five_fan_all",
+      "kind": "five_fan",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "fan6_all",
+      "kind": "fan6",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mesh_all",
+      "kind": "mesh",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "box_flat_False",
+      "kind": "box",
+      "delete": false,
+      "all": true,
+      "flat": false
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "box_flat_True",
+      "kind": "box",
+      "delete": false,
+      "all": true,
+      "flat": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "grid_smooth_flat_False",
+      "kind": "grid_smooth",
+      "delete": false,
+      "all": true,
+      "flat": false
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "grid_smooth_flat_True",
+      "kind": "grid_smooth",
+      "delete": false,
+      "all": true,
+      "flat": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mixed_False_False",
+      "kind": "box",
+      "delete": false,
+      "whole": true,
+      "whole_first": false
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mixed_False_True",
+      "kind": "box",
+      "delete": false,
+      "whole": true,
+      "whole_first": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mixed_True_False",
+      "kind": "box",
+      "delete": true,
+      "whole": true,
+      "whole_first": false
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mixed_True_True",
+      "kind": "box",
+      "delete": true,
+      "whole": true,
+      "whole_first": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "mesh_cancel",
+      "kind": "mesh",
+      "delete": true,
+      "cancel": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "box_cancel",
+      "kind": "box",
+      "delete": true,
+      "cancel": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "soft_variable_both_ends",
+      "kind": "soft",
+      "asset": "variable_both_ends",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "soft_constant_chain",
+      "kind": "soft",
+      "asset": "constant_chain",
+      "delete": false,
+      "all": true
+    },
+    {
+      "op": "nurbs_edge_command",
+      "id": "soft_variable_loop",
+      "kind": "soft",
+      "asset": "variable_loop",
+      "delete": false,
+      "all": true
+    }
+  ]
+}
