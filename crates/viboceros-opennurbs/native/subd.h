@@ -127,6 +127,8 @@ int vibo_subd_edge_chains_view(const ViboSubDChains*,ViboSubDChainsView*);
 void vibo_subd_edge_chains_free(ViboSubDChains*);
 int vibo_subd_sharpness_from_percent(double,double*,char*,size_t);
 int vibo_subd_chain_sharpness(const double*,size_t,double*,char*,size_t);
+// Per interval: two endpoint subdivision counts, then k/32 break bits (1<=k<32).
+int vibo_subd_sharpness_refinement(const double*,size_t,uint32_t*,char*,size_t);
 int vibo_subd_stored_sharpness(const uint8_t*,size_t,const size_t*,const double*,size_t,
   size_t*,ViboSubDResult**,char*,size_t);
 int vibo_subd_offset(const uint8_t*,size_t,double,int,ViboSubDResult**,char*,size_t);

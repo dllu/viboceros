@@ -29,17 +29,8 @@ fn refined(mut surface: NurbsSurface, side: usize) -> Result<NurbsSurface, Geome
 }
 
 pub(super) fn build(source: &SubD) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
-    let sharp = source
-        .edge_sharpness()
-        .iter()
-        .filter(|ends| ends.iter().any(|&s| s > 0.))
-        .collect::<Vec<_>>();
-    if sharp.len() != 1 || sharp[0][0] != sharp[0][1] {
-        return Err(failure(
-            "Multiple or variable-end soft creases require further NURBS qualification",
-        ));
-    }
-    let levels = levels::corners(source)?;
+    let plan = levels::plan(source)?;
+    let levels = &plan.corners;
     let highest = *levels.iter().flatten().max().unwrap_or(&3);
     let mut exact = source.regular_nurbs_patches()?;
     let mut fine = viboceros_opennurbs::subd_patch_stencils(source.archive(), highest)?;
@@ -129,7 +120,9 @@ pub(super) fn build(source: &SubD) -> Result<Vec<SubDNurbsPatch>, GeometryError>
             let baseline = (1..base)
                 .map(|i| i as f64 / base as f64)
                 .collect::<Vec<_>>();
-            let mut protected = [baseline.clone(), baseline];
+            let mut protected = plan.protected_breaks(source, net.face, net.corner);
+            protected[0].extend_from_slice(&baseline);
+            protected[1].extend(baseline);
             let desired = if let Some(corner) = net.corner {
                 [levels[net.face][corner], highest, 3, highest]
             } else {

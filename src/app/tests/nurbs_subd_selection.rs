@@ -42,32 +42,26 @@ fn fixture_with_soft_weights(weights: Option<[f64; 2]>) -> (VibocerosApp, Object
 }
 
 #[test]
-fn soft_subd_menu_conversion_and_unsupported_failure_preserve_history() {
+fn uniform_and_variable_soft_subd_menu_conversion_preserve_history() {
     for weights in [[100.; 2], [20., 80.]] {
         let (mut app, id) = fixture_with_soft_weights(Some(weights));
         select(&mut app, id);
         let before = app.document.objects().cloned().collect::<Vec<_>>();
-        let history = app.document.undo_label().map(str::to_owned);
         enter(&mut app, "ToNURBS");
         enter(&mut app, "DeleteInputObjects=Yes");
         enter(&mut app, "SubDOptions");
         enter(&mut app, "Faces=Unpacked ExtraordinaryVertex=G2");
         enter(&mut app, "");
         enter(&mut app, "");
-        if weights[0] != weights[1] {
-            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-            assert_eq!(app.document.undo_label(), history.as_deref());
-        } else {
-            let Geometry::Brep(brep) = app.document.object(id).unwrap().geometry() else {
-                panic!()
-            };
-            assert_eq!(brep.faces().len(), 2);
-            let after = app.document.objects().cloned().collect::<Vec<_>>();
-            enter(&mut app, "Undo");
-            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-            enter(&mut app, "Redo");
-            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
-        }
+        let Geometry::Brep(brep) = app.document.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(brep.faces().len(), 2);
+        let after = app.document.objects().cloned().collect::<Vec<_>>();
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
     }
 }
 fn phase(app: &VibocerosApp) -> ObjectPromptPhase {

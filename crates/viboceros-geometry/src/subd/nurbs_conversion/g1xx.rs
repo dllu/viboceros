@@ -45,7 +45,7 @@ fn edge_index(
 
 pub(super) fn apply(source: &SubD, patches: &mut [SubDNurbsPatch]) -> Result<(), GeometryError> {
     let valence = super::continuity::valences(source);
-    let enabled = super::soft::continuity_enabled(source);
+    let enabled = super::soft::continuity_enabled(source)?;
     let selected = source
         .vertex_tags()
         .iter()

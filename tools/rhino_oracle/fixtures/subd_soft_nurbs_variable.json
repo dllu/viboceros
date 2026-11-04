@@ -1,0 +1,291 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "derived_variable_both_ends_affine_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "affine",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_both_ends_affine_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "affine",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_both_ends_affine_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "affine",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_both_ends_affine_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "affine",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_both_ends_affine_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "affine",
+      "mode": 4
+    },
+    {
+      "id": "derived_variable_both_ends_subdivide_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "subdivide",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_both_ends_subdivide_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "subdivide",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_both_ends_subdivide_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "subdivide",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_both_ends_subdivide_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "subdivide",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_both_ends_subdivide_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_both_ends",
+      "preparation": "subdivide",
+      "mode": 4
+    },
+    {
+      "id": "derived_variable_chain_affine_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "affine",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_chain_affine_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "affine",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_chain_affine_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "affine",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_chain_affine_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "affine",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_chain_affine_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "affine",
+      "mode": 4
+    },
+    {
+      "id": "derived_variable_chain_subdivide_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "subdivide",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_chain_subdivide_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "subdivide",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_chain_subdivide_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "subdivide",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_chain_subdivide_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "subdivide",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_chain_subdivide_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_chain",
+      "preparation": "subdivide",
+      "mode": 4
+    },
+    {
+      "id": "derived_variable_branch_affine_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "affine",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_branch_affine_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "affine",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_branch_affine_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "affine",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_branch_affine_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "affine",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_branch_affine_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "affine",
+      "mode": 4
+    },
+    {
+      "id": "derived_variable_branch_subdivide_0",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "subdivide",
+      "mode": 0
+    },
+    {
+      "id": "derived_variable_branch_subdivide_1",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "subdivide",
+      "mode": 1
+    },
+    {
+      "id": "derived_variable_branch_subdivide_2",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "subdivide",
+      "mode": 2
+    },
+    {
+      "id": "derived_variable_branch_subdivide_3",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "subdivide",
+      "mode": 3
+    },
+    {
+      "id": "derived_variable_branch_subdivide_4",
+      "op": "subd_soft_nurbs",
+      "asset": "variable_branch",
+      "preparation": "subdivide",
+      "mode": 4
+    },
+    {
+      "id": "derived_hard_soft_chain_affine_0",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "affine",
+      "mode": 0
+    },
+    {
+      "id": "derived_hard_soft_chain_affine_1",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "affine",
+      "mode": 1
+    },
+    {
+      "id": "derived_hard_soft_chain_affine_2",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "affine",
+      "mode": 2
+    },
+    {
+      "id": "derived_hard_soft_chain_affine_3",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "affine",
+      "mode": 3
+    },
+    {
+      "id": "derived_hard_soft_chain_affine_4",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "affine",
+      "mode": 4
+    },
+    {
+      "id": "derived_hard_soft_chain_subdivide_0",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "subdivide",
+      "mode": 0
+    },
+    {
+      "id": "derived_hard_soft_chain_subdivide_1",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "subdivide",
+      "mode": 1
+    },
+    {
+      "id": "derived_hard_soft_chain_subdivide_2",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "subdivide",
+      "mode": 2
+    },
+    {
+      "id": "derived_hard_soft_chain_subdivide_3",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "subdivide",
+      "mode": 3
+    },
+    {
+      "id": "derived_hard_soft_chain_subdivide_4",
+      "op": "subd_soft_nurbs",
+      "asset": "hard_soft_chain",
+      "preparation": "subdivide",
+      "mode": 4
+    }
+  ]
+}

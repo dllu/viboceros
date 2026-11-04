@@ -82,8 +82,8 @@ impl SubD {
     /// Unpacked G0 cubic approximation in normalized source-face charts.
     /// Regular faces retain exact bicubic patches. Other quads use eight spans
     /// per axis; n-gon corner sectors use four. Corners interpolate exact limit
-    /// points. A single uniform soft edge adds dyadic spans and preserves local
-    /// corner approximation depths. Variable/multiple soft edges reject.
+    /// points. Soft edges and variable endpoint profiles add dyadic spans while
+    /// preserving local corner approximation depths.
     /// This finite approximation has no continuous error certificate against
     /// the mathematical SubD limit.
     pub fn to_nurbs_patches_g0(&self) -> Result<Vec<SubDNurbsPatch>, GeometryError> {

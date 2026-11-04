@@ -64,7 +64,7 @@ the original G0 regressions.
 
 [Packing](subd-nurbs-packing.md) is available after continuity processing.
 The [ToNURBS command](../commands/to-nurbs-subd.md) exposes these choices.
-[Single uniform soft edges](subd-soft-nurbs.md) are supported with the documented
-continuity restrictions. Domains
+[Soft edges and variable profiles](subd-soft-nurbs.md) have separate native coverage.
+Domains
 remain normalized, redundant knots may differ from Rhino, and this finite
 conversion has no continuous error certificate against the true SubD limit.

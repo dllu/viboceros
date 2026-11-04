@@ -42,12 +42,12 @@ common positive tensor basis. Maximum observed bound is about `1.6e-13`, against
 an asserted `1e-11` limit. Spatial edge curves receive the same control-basis
 comparison. Vertex/edge counts, oriented face cycles, trim incidence and solidity
 are compared to native outputs. Further tests cover coincident shells, mixed
-trim splits, resource admission and immutable variable-sharpness rejection.
+trim splits, resource admission and immutable soft-sharpness conversion.
 
 Surface domains are normalized to [0,1], and redundant knots can differ from
 Rhino. [G1, G1x, G1xx and G2 processing](subd-nurbs-continuity.md) is available through the
 mode-based API; [rectangular packing](subd-nurbs-packing.md) combines the patches
-and assembles periodic seams. [Single uniform soft edges](subd-soft-nurbs.md)
+and assembles periodic seams. [Soft edges and variable profiles](subd-soft-nurbs.md)
 add local dyadic spans. The finite G0
 approximation has no continuous error certificate against the mathematical SubD
 limit. Arbitrary nonmanifold

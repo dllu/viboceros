@@ -29,23 +29,40 @@ fn mode(id: &str) -> SubDNurbsContinuity {
         _ => unreachable!(),
     }
 }
-fn supported(id: &str) -> bool {
-    !(id.starts_with("variable_") || id.starts_with("hard_soft_"))
-}
-fn for_cases(mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
+fn for_cases(chains: bool, mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
     let temp = tempfile::tempdir().unwrap();
-    for bytes in [
-        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs.json.gz")
+    let families: &[&[u8]] = if chains {
+        &[
+            include_bytes!(
+                "../../../tools/rhino_oracle/observations/subd_soft_nurbs_chains.json.gz"
+            )
             .as_slice(),
-        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_holdouts.json.gz")
+        ]
+    } else {
+        &[
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs.json.gz")
+                .as_slice(),
+            include_bytes!(
+                "../../../tools/rhino_oracle/observations/subd_soft_nurbs_holdouts.json.gz"
+            )
             .as_slice(),
-        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_even.json.gz")
+            include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_even.json.gz")
+                .as_slice(),
+            include_bytes!(
+                "../../../tools/rhino_oracle/observations/subd_soft_nurbs_charts.json.gz"
+            )
             .as_slice(),
-        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_charts.json.gz")
+            include_bytes!(
+                "../../../tools/rhino_oracle/observations/subd_soft_nurbs_offsets.json.gz"
+            )
             .as_slice(),
-        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_offsets.json.gz")
+            include_bytes!(
+                "../../../tools/rhino_oracle/observations/subd_soft_nurbs_variable.json.gz"
+            )
             .as_slice(),
-    ] {
+        ]
+    };
+    for &bytes in families {
         let mut raw = Vec::new();
         flate2::read::GzDecoder::new(bytes)
             .read_to_end(&mut raw)
@@ -83,40 +100,45 @@ fn for_cases(mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
 
 #[test]
 fn native_soft_surface_images() {
-    let (mut accepted, mut rejected) = (0, 0);
+    let mut checked = 0;
     let mut failures = Vec::new();
-    for_cases(|id, value, source| {
-        if !supported(id) {
-            assert!(source.to_nurbs_patches(mode(id)).is_err(), "{id}");
-            rejected += 1;
-            return;
-        }
-        accepted += 1;
-        let patches = source.to_nurbs_patches(mode(id)).unwrap();
-        let target = value["unpacked"]["geometry"]["faces"].as_array().unwrap();
-        assert_eq!(patches.len(), target.len());
-        let mut max = 0_f64;
-        for (p, t) in patches.iter().zip(target) {
-            let mut expected = surface::from_definition(&t["definition"]);
-            if p.corner.is_some() {
-                expected = expected.try_reversed_u().unwrap().try_reversed_v().unwrap();
+    for chains in [false, true] {
+        for_cases(chains, |id, value, source| {
+            checked += 1;
+            let patches = source.to_nurbs_patches(mode(id)).unwrap();
+            let target = value["unpacked"]["geometry"]["faces"].as_array().unwrap();
+            assert_eq!(patches.len(), target.len());
+            let mut max = 0_f64;
+            for (p, t) in patches.iter().zip(target) {
+                let mut expected = surface::from_definition(&t["definition"]);
+                if p.corner.is_some() {
+                    expected = expected.try_reversed_u().unwrap().try_reversed_v().unwrap();
+                }
+                let (a, b) = basis::common_basis(&p.surface, &expected);
+                let error = bound::complete_bound(&a, &b);
+                assert!(error.is_finite(), "{id}: non-finite surface bound");
+                max = max.max(error);
             }
-            let (a, b) = basis::common_basis(&p.surface, &expected);
-            let error = bound::complete_bound(&a, &b);
-            max = max.max(error);
-        }
-        println!("SOFT_IMAGE {id} {max:e}");
-        if max >= 1e-11 {
-            failures.push((id.to_owned(), max));
-        }
-    });
-    assert_eq!((accepted, rejected), (155, 20));
+            println!("SOFT_IMAGE {id} {max:e}");
+            if max >= 1e-11 {
+                failures.push((id.to_owned(), max));
+            }
+        });
+    }
+    assert_eq!(checked, 230);
     assert!(failures.is_empty(), "{failures:?}");
 }
 
 #[test]
 fn native_soft_crease_archives_preserve_complete_nurbs_images_and_topology() {
-    for_cases(|id, value, source| {
+    check_breps(false);
+}
+#[test]
+fn native_soft_chain_archives_preserve_complete_nurbs_images_and_topology() {
+    check_breps(true);
+}
+fn check_breps(chains: bool) {
+    for_cases(chains, |id, value, source| {
         println!("SOFT_BREP {id}");
         for packed in [false, true] {
             let brep = if packed {
@@ -124,10 +146,6 @@ fn native_soft_crease_archives_preserve_complete_nurbs_images_and_topology() {
             } else {
                 source.to_nurbs_brep(mode(id), Tolerance::DEFAULT)
             };
-            if !supported(id) {
-                assert!(brep.is_err(), "{id} packed={packed}");
-                continue;
-            }
             let brep = brep.unwrap_or_else(|e| panic!("{id} packed={packed}: {e}"));
             complete::check(
                 &brep,

@@ -1,4 +1,52 @@
 use viboceros_geometry::{AffineTransform3, Point3, SubD, Vector3};
+
+#[test]
+fn resolution_counts_follow_the_native_endpoint_decay_and_interpolation() {
+    let f = |v: f64| v as f32 as f64;
+    let profiles = viboceros_opennurbs::subd_sharpness_refinement(&[
+        [0., 0.],
+        [1., 1.],
+        [2., 2.],
+        [3., 3.],
+        [4., 4.],
+        [0., f(3.2)],
+        [f(3.2), 0.],
+        [f(1.7333333), f(2.6666667)],
+        [f(2.6666667), f(3.6)],
+    ])
+    .unwrap();
+    let counts = profiles
+        .iter()
+        .map(|p| p.subdivision_counts)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        counts,
+        [
+            [0, 0],
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [4, 4],
+            [3, 4],
+            [4, 3],
+            [3, 3],
+            [3, 4]
+        ]
+    );
+    assert_eq!(
+        profiles[8].required_breaks().take(3).collect::<Vec<_>>(),
+        [0.0625, 0.125, 0.15625]
+    );
+    assert!(
+        viboceros_opennurbs::subd_sharpness_refinement(&[])
+            .unwrap()
+            .is_empty()
+    );
+    for ends in [[-1., 0.], [4.1, 0.], [0., f64::NAN], [f64::INFINITY, 0.]] {
+        assert!(viboceros_opennurbs::subd_sharpness_refinement(&[ends]).is_err());
+    }
+}
+
 fn cube() -> SubD {
     let points = [
         [0., 0., 0.],

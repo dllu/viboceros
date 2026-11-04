@@ -295,8 +295,8 @@ def stage_helpers(request, source_directory: Path, destination: Path):
         (destination/asset.parent).mkdir(exist_ok=True)
         shutil.copyfile(source_directory/asset, destination/asset)
     if 'subd_soft_nurbs_probe' in modules:
-        from .subd_soft_nurbs_cases import ASSETS
-        for name in ASSETS:
+        from .subd_soft_nurbs_cases import ASSETS,CHAIN_ASSETS
+        for name in ASSETS+CHAIN_ASSETS:
             asset=Path('fixtures/subd_soft_nurbs_inputs')/(name+'.3dm')
             (destination/asset.parent).mkdir(parents=True,exist_ok=True)
             shutil.copyfile(source_directory/asset,destination/asset)

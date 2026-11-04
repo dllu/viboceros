@@ -93,13 +93,13 @@ fn smooth_box() {
 }
 
 #[test]
-fn variable_soft_sharpness_rejects_without_changing_the_source() {
+fn variable_soft_sharpness_converts_without_changing_the_source() {
     let source = native::source(&native::case("box")["before"]);
     let (soft, _) = source
         .try_with_soft_crease_weights(&[(0, [20., 80.])])
         .unwrap();
     let archive = soft.archive().to_vec();
-    assert!(soft.to_nurbs_patches_g0().is_err());
+    assert_eq!(soft.to_nurbs_patches_g0().unwrap().len(), 6);
     assert_eq!(soft.archive(), archive);
 }
 

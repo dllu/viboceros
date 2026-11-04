@@ -2,23 +2,69 @@
 use super::*;
 use std::collections::HashMap;
 
-pub(in super::super) fn continuity_enabled(source: &SubD) -> Vec<bool> {
-    let mut sharp = vec![0_f64; source.control_points().len()];
-    for (edge, ends) in source.edges().iter().zip(source.edge_sharpness()) {
-        for (&v, &s) in edge.iter().zip(ends) {
-            sharp[v as usize] = sharp[v as usize].max(s);
+pub(in super::super) fn continuity_enabled(source: &SubD) -> Result<Vec<bool>, GeometryError> {
+    let counts = viboceros_opennurbs::subd_sharpness_refinement(source.edge_sharpness())?;
+    let mut resolution = vec![0_u32; source.control_points().len()];
+    for (edge, ends) in source.edges().iter().zip(&counts) {
+        for (&v, &s) in edge.iter().zip(&ends.subdivision_counts) {
+            resolution[v as usize] = resolution[v as usize].max(s);
         }
     }
-    let mut enabled = vec![true; sharp.len()];
+    let mut enabled = vec![true; resolution.len()];
     for &[a, b] in source.edges() {
         let (a, b) = (a as usize, b as usize);
-        enabled[a] &= sharp[b] <= 3.max(sharp[a].ceil() as u32 + 1) as f64 - 1.;
-        enabled[b] &= sharp[a] <= 3.max(sharp[b].ceil() as u32 + 1) as f64 - 1.;
+        enabled[a] &= resolution[b] <= resolution[a].max(2);
+        enabled[b] &= resolution[a] <= resolution[b].max(2);
     }
-    enabled
+    Ok(enabled)
 }
 
-pub(super) fn corners(source: &SubD) -> Result<Vec<Vec<u32>>, GeometryError> {
+pub(super) struct Plan {
+    pub corners: Vec<Vec<u32>>,
+    face_edges: Vec<Vec<usize>>,
+    profiles: Vec<viboceros_opennurbs::SubDSharpnessRefinement>,
+}
+impl Plan {
+    pub fn protected_breaks(
+        &self,
+        source: &SubD,
+        face: usize,
+        corner: Option<usize>,
+    ) -> [Vec<f64>; 2] {
+        let mut out = [Vec::new(), Vec::new()];
+        if let Some(corner) = corner {
+            let f = &source.faces()[face];
+            let v = f[corner];
+            for (axis, side) in [corner, (corner + f.len() - 1) % f.len()]
+                .into_iter()
+                .enumerate()
+            {
+                let e = self.face_edges[face][side];
+                for t in self.profiles[e].required_breaks() {
+                    let t = if source.edges()[e][0] == v { t } else { 1. - t };
+                    if t < 0.5 {
+                        out[axis].push(2. * t);
+                    }
+                }
+            }
+        } else {
+            for side in 0..4 {
+                let e = self.face_edges[face][side];
+                for t in self.profiles[e].required_breaks() {
+                    let clockwise = if source.edges()[e][0] == source.faces()[face][side] {
+                        t
+                    } else {
+                        1. - t
+                    };
+                    out[side % 2].push(if side < 2 { clockwise } else { 1. - clockwise });
+                }
+            }
+        }
+        out
+    }
+}
+
+pub(super) fn plan(source: &SubD) -> Result<Plan, GeometryError> {
     let key = |a: u32, b: u32| (a.min(b), a.max(b));
     let mut lookup = HashMap::with_capacity(source.edges().len());
     for (i, &[a, b]) in source.edges().iter().enumerate() {
@@ -42,9 +88,11 @@ pub(super) fn corners(source: &SubD) -> Result<Vec<Vec<u32>>, GeometryError> {
         }
         face_edges.push(edges);
     }
-    let sharpness =
-        |e: usize, v: u32| source.edge_sharpness()[e][usize::from(source.edges()[e][0] != v)];
-    source
+    let profiles = viboceros_opennurbs::subd_sharpness_refinement(source.edge_sharpness())?;
+    let depth = |e: usize, v: u32| {
+        3.max(profiles[e].subdivision_counts[usize::from(source.edges()[e][0] != v)] + 1)
+    };
+    let corners = source
         .faces()
         .iter()
         .enumerate()
@@ -52,12 +100,12 @@ pub(super) fn corners(source: &SubD) -> Result<Vec<Vec<u32>>, GeometryError> {
             face.iter()
                 .enumerate()
                 .map(|(corner, &vertex)| {
-                    let mut value = 0_f64;
+                    let mut level = 3;
                     for e in [
                         face_edges[i][corner],
                         face_edges[i][(corner + face.len() - 1) % face.len()],
                     ] {
-                        value = value.max(sharpness(e, vertex));
+                        level = level.max(depth(e, vertex));
                         if source.edge_tags()[e] == 2 {
                             continue;
                         }
@@ -71,12 +119,17 @@ pub(super) fn corners(source: &SubD) -> Result<Vec<Vec<u32>>, GeometryError> {
                             } else {
                                 (side + 1) % f.len()
                             };
-                            value = value.max(sharpness(face_edges[other][adjacent], vertex));
+                            level = level.max(depth(face_edges[other][adjacent], vertex));
                         }
                     }
-                    Ok(3.max(value.ceil() as u32 + 1))
+                    Ok(level)
                 })
                 .collect()
         })
-        .collect()
+        .collect::<Result<_, GeometryError>>()?;
+    Ok(Plan {
+        corners,
+        face_edges,
+        profiles,
+    })
 }

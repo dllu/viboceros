@@ -1,0 +1,20 @@
+{
+  "constant_chain": {
+    "family": "soft_crease_chains",
+    "case": "chains_multiple_constant",
+    "source_sha256": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
+    "archive_sha256": "d43687a35f39eaacd21e2d869ad1878b12a3b53bebe9d3d33d32eb090adcbdfb"
+  },
+  "variable_loop": {
+    "family": "soft_crease_numeric_labels",
+    "case": "label_loop",
+    "source_sha256": "d6b7f39b8a0a96bc176dabb7a5dd6fa909c823672e0ac58bf752351aad953d13",
+    "archive_sha256": "34daa2dc264f9b5982607197d9890f89bc5a8ef4aac87c456e54c92d25a11c0d"
+  },
+  "variable_ngon_loop": {
+    "family": "soft_crease_chains",
+    "case": "chains_odd_loop_50_vertex_0",
+    "source_sha256": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
+    "archive_sha256": "4c93143dac2799921e7587a84c7b1fbb7ae35a0a88949820d4d937315e564942"
+  }
+}

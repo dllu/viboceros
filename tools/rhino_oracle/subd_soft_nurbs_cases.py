@@ -10,12 +10,20 @@ def cases():
     return rows
 
 def validate(op):
-    if (not isinstance(op,dict) or op not in cases()+holdout_cases()+even_cases()+chart_cases()+offset_cases() or type(op.get('mode')) is not int
+    if (not isinstance(op,dict) or op not in cases()+holdout_cases()+even_cases()+chart_cases()+offset_cases()+variable_cases()+chain_cases() or type(op.get('mode')) is not int
             or ('weight' in op and type(op['weight']) is not float)
             or ('edge' in op and (type(op['edge']) is not list or any(type(v) is not int for v in op['edge'])))):
         raise ValueError('fixed owned soft-SubD NURBS recipe required')
 
 ASSETS=('variable_both_ends','variable_chain','variable_branch','hard_soft_chain')
+CHAIN_ASSETS=('constant_chain','variable_loop','variable_ngon_loop')
+def chain_cases():
+    return [dict(id='chain_'+asset+'_'+str(mode),op='subd_soft_nurbs',asset=asset,mode=mode)
+            for asset in CHAIN_ASSETS for mode in range(5)]
+def variable_cases():
+    return [dict(id='derived_'+asset+'_'+preparation+'_'+str(mode),op='subd_soft_nurbs',
+                 asset=asset,preparation=preparation,mode=mode)
+            for asset in ASSETS for preparation in ('affine','subdivide') for mode in range(5)]
 def even_cases():
     return [dict(id='even_'+scene+'_'+str(weight)+'_'+str(mode),op='subd_soft_nurbs',scene=scene,weight=weight,mode=mode)
         for scene in ('fan6','fan8') for weight in (50.,90.,100.) for mode in range(5)]

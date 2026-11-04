@@ -65,8 +65,8 @@ Separate 3DM-import tests verify retained IDs/charts, packed topology, source
 immutability and invalidation after a crease edit. Output is limited to four
 million controls, with tensor admission before common-basis refinement; existing
 SubD refinement budgets also apply. The [ToNURBS command](../commands/to-nurbs-subd.md)
-exposes packing. [Single uniform soft edges](subd-soft-nurbs.md) also support
-packing; other soft configurations and general performance parity remain open.
+exposes packing. [Soft edges, chains and variable profiles](subd-soft-nurbs.md)
+also support packing. General performance parity remains open.
 The finite approximation still has no
 continuous error certificate against the mathematical SubD limit. B-rep output
 does not yet carry Rhino's per-face pack-ID user data.

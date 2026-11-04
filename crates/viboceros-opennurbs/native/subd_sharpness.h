@@ -33,4 +33,39 @@ extern "C" int vibo_subd_chain_sharpness(const double* ends,size_t count,double*
     for(size_t i=0;i<count;++i)for(unsigned k=0;k<2;++k)out[2*i+k]=values[static_cast<int>(i)].EndSharpness(k);
   });
 }
+extern "C" int vibo_subd_sharpness_refinement(const double* values,size_t count,uint32_t* out,char* error,size_t capacity) {
+  return vibo_subd::sharpness_guard(error,capacity,[&] {
+    vibo_subd::require(count<=4*vibo_subd::component_limit && (count==0 || (values && out)),
+      "Invalid SubD sharpness subdivision input");
+    for(size_t i=0;i<count;++i) {
+      for(unsigned end=0;end<2;++end)
+        vibo_subd::require(std::isfinite(values[2*i+end]) && values[2*i+end]>=0. && values[2*i+end]<=4.,
+          "Invalid SubD sharpness interval");
+      const auto original=ON_SubDEdgeSharpness::FromInterval(values[2*i],values[2*i+1]);
+      for(unsigned end=0;end<2;++end) {
+        auto value=original;uint32_t level=0;
+        while(!value.IsZero() && level<4) {value=value.Subdivided(end);++level;}
+        vibo_subd::require(value.IsZero(),"Unresolved SubD sharpness interval");
+        out[3*i+end]=level;
+      }
+      uint32_t breaks=0;
+      if(!original.IsZero()) {
+        std::array<ON_SubDEdgeSharpness,8> current{},next{};current[0]=original;
+        for(unsigned level=0;level<4;++level) {
+          const unsigned size=1u<<level;
+          if(level>=2)for(unsigned j=0;j<size;++j)if(!current[j].IsZero()) {
+            const int width=32/static_cast<int>(size),step=width/4;
+            const int a=std::max(0,(static_cast<int>(j)-1)*width);
+            const int b=std::min(32,(static_cast<int>(j)+2)*width);
+            for(int k=a;k<=b;k+=step)if(k>0 && k<32)breaks|=uint32_t(1)<<k;
+          }
+          if(level==3)break;
+          for(unsigned j=0;j<size;++j) {next[2*j]=current[j].Subdivided(0);next[2*j+1]=current[j].Subdivided(1);}
+          current=next;
+        }
+      }
+      out[3*i+2]=breaks;
+    }
+  });
+}
 #endif

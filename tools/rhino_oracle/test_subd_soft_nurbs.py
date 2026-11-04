@@ -9,13 +9,13 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from .subd_soft_nurbs_cases import cases,holdout_cases,even_cases,chart_cases,offset_cases,source as recipe_source,ASSETS
+from .subd_soft_nurbs_cases import cases,holdout_cases,even_cases,chart_cases,offset_cases,variable_cases,chain_cases,source as recipe_source,ASSETS,CHAIN_ASSETS
 from .structural_sdk import stage_helpers,validate_operations
 
 HERE=Path(__file__).resolve().parent
 class SubDSoftNurbsTests(unittest.TestCase):
     def test_frozen_inputs_sources_valid_outputs_and_immutable_native_queries(self):
-        for name,recipes,count in [('subd_soft_nurbs',cases(),41),('subd_soft_nurbs_holdouts',holdout_cases(),36),('subd_soft_nurbs_even',even_cases(),30),('subd_soft_nurbs_charts',chart_cases(),50),('subd_soft_nurbs_offsets',offset_cases(),18)]:
+        for name,recipes,count in [('subd_soft_nurbs',cases(),41),('subd_soft_nurbs_holdouts',holdout_cases(),36),('subd_soft_nurbs_even',even_cases(),30),('subd_soft_nurbs_charts',chart_cases(),50),('subd_soft_nurbs_offsets',offset_cases(),18),('subd_soft_nurbs_variable',variable_cases(),40),('subd_soft_nurbs_chains',chain_cases(),15)]:
             path=HERE/'fixtures'/(name+'.json');query=json.loads(path.read_bytes())
             data=json.loads(gzip.decompress((HERE/'observations'/(name+'.json.gz')).read_bytes()))
             self.assertEqual(query['operations'],recipes);validate_operations(query)
@@ -43,18 +43,26 @@ class SubDSoftNurbsTests(unittest.TestCase):
                     # Native and local Python coordinates can differ by roundoff.
                     self.assertTrue(all(abs(a-b)<1e-14 for p,q in zip(actual['points'],expected['points']) for a,b in zip(p,q)))
                     self.assertEqual(row['value']['soft_edge'],op.get('edge',[0,1]))
+            if name=='subd_soft_nurbs_variable':
+                for op,row in zip(recipes,data['results']):
+                    self.assertEqual(row['value']['input'],dict(native_asset=op['asset'],preparation=op['preparation']))
+                    if op['preparation']=='subdivide':
+                        self.assertEqual(len(row['value']['before']['faces']),24)
+                        self.assertEqual(len(row['value']['before']['points']),26)
 
     def test_variable_inputs_are_exact_archives_from_successful_native_commands(self):
-        folder=HERE/'fixtures/subd_soft_nurbs_inputs';manifest=json.loads((folder/'provenance.json').read_bytes())
-        self.assertEqual(set(manifest),set(ASSETS))
-        for name,entry in manifest.items():
-            path=HERE/'observations'/(entry['family']+'.json');raw=path.read_bytes()
-            self.assertEqual(hashlib.sha256(raw).hexdigest(),entry['source_sha256'])
-            row=next(r for r in json.loads(raw)['results'] if r['id']==entry['case'])
-            self.assertIs(row['value']['success'],True)
-            archive=base64.b64decode(row['value']['result_3dm'])
-            self.assertEqual((folder/(name+'.3dm')).read_bytes(),archive)
-            self.assertEqual(hashlib.sha256(archive).hexdigest(),entry['archive_sha256'])
+        folder=HERE/'fixtures/subd_soft_nurbs_inputs'
+        for filename,assets in [('provenance.json',ASSETS),('chain_provenance.json',CHAIN_ASSETS)]:
+            manifest=json.loads((folder/filename).read_bytes())
+            self.assertEqual(set(manifest),set(assets))
+            for name,entry in manifest.items():
+                path=HERE/'observations'/(entry['family']+'.json');raw=path.read_bytes()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(),entry['source_sha256'])
+                row=next(r for r in json.loads(raw)['results'] if r['id']==entry['case'])
+                self.assertIs(row['value']['success'],True)
+                archive=base64.b64decode(row['value']['result_3dm'])
+                self.assertEqual((folder/(name+'.3dm')).read_bytes(),archive)
+                self.assertEqual(hashlib.sha256(archive).hexdigest(),entry['archive_sha256'])
 
     def test_fixed_dispatch_types_and_standalone_worker_import(self):
         query=json.loads((HERE/'fixtures/subd_soft_nurbs.json').read_bytes())

@@ -10,15 +10,15 @@ pub(super) fn valences(source: &SubD) -> Vec<usize> {
     valence
 }
 
-pub(super) fn extraordinary_vertices(source: &SubD) -> Vec<usize> {
+pub(super) fn extraordinary_vertices(source: &SubD) -> Result<Vec<usize>, GeometryError> {
     let valence = valences(source);
-    let enabled = super::soft::continuity_enabled(source);
-    source
+    let enabled = super::soft::continuity_enabled(source)?;
+    Ok(source
         .vertex_tags()
         .iter()
         .enumerate()
         .filter_map(|(i, &tag)| (tag == 1 && valence[i] != 4 && enabled[i]).then_some(i))
-        .collect()
+        .collect())
 }
 
 pub(super) fn apply(
@@ -29,7 +29,7 @@ pub(super) fn apply(
     if mode == SubDNurbsContinuity::G0 {
         return Ok(());
     }
-    let selected = extraordinary_vertices(source);
+    let selected = extraordinary_vertices(source)?;
     if selected.is_empty() {
         return Ok(());
     }

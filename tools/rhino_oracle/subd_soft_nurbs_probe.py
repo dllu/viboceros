@@ -23,7 +23,19 @@ def run(op,host,iterations,tolerance):
             if len(inputs)!=1:raise ValueError('ambiguous fixed native soft-crease input')
             owned=inputs[0].Duplicate()
         finally:model.Dispose()
-        try:return convert(owned,op,host,dict(native_asset=op['asset']),None,None,None),0
+        try:
+            recipe=dict(native_asset=op['asset'])
+            if 'preparation' in op:
+                recipe['preparation']=op['preparation']
+                if op['preparation']=='subdivide':
+                    if not owned.Subdivide(1):raise ValueError('cannot subdivide owned variable-crease source')
+                else:
+                    transform=G.Transform.Identity
+                    transform.M00=1.5;transform.M02=0.2;transform.M03=1.
+                    transform.M11=0.8;transform.M13=-3.
+                    transform.M20=0.1;transform.M22=2.
+                    if not owned.Transform(transform):raise ValueError('cannot transform owned variable-crease source')
+            return convert(owned,op,host,recipe,None,None,None),0
         finally:owned.Dispose()
     recipe=source(op);subd=make_source(recipe,host);owned=None;key=None
     try:

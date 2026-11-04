@@ -36,7 +36,10 @@ pub use join::subd_join_assemble;
 pub use offset::subd_offset;
 pub use regular_patches::{SubDRegularPatch, subd_regular_patches};
 pub use remap::subd_remap_vertices;
-pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
+pub use sharpness::{
+    SubDSharpnessRefinement, subd_chain_sharpness, subd_sharpness_from_percent,
+    subd_sharpness_refinement,
+};
 pub use soft_crease::subd_soft_crease;
 pub use soft_crease::subd_stored_sharpness;
 pub use spin::subd_spin_edge;

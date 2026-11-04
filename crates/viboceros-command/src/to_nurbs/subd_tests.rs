@@ -91,14 +91,10 @@ fn subd_failure_rolls_back_the_whole_mixed_conversion_and_preserves_redo_and_pre
             .unwrap(),
         ))
         .unwrap();
-    let subd = source();
-    let edge = subd
-        .edges()
-        .iter()
-        .position(|e| *e == [1, 4] || *e == [4, 1])
-        .unwrap();
+    let subd = source().subdivided(5).unwrap();
+    let edge = subd.edge_tags().iter().position(|&tag| tag == 1).unwrap();
     let (soft, changed) = subd
-        .try_with_soft_crease_weights(&[(edge, [20., 80.])])
+        .try_with_soft_crease_weights(&[(edge, [100.; 2])])
         .unwrap();
     assert!(changed);
     let id = doc.add_geometry(Geometry::SubD(soft)).unwrap();
@@ -112,14 +108,13 @@ fn subd_failure_rolls_back_the_whole_mixed_conversion_and_preserves_redo_and_pre
     let groups = doc.groups().cloned().collect::<Vec<_>>();
     let history = doc.undo_label().map(str::to_owned);
     assert!(doc.can_redo());
-    assert!(
-        registry
-            .execute(
-                &mut doc,
-                "ToNURBS DeleteInputObjects=Yes Faces=Unpacked ExtraordinaryVertex=G2"
-            )
-            .is_err()
-    );
+    let error = registry
+        .execute(
+            &mut doc,
+            "ToNURBS DeleteInputObjects=Yes Faces=Unpacked ExtraordinaryVertex=G2",
+        )
+        .unwrap_err();
+    assert!(error.to_string().contains("budget"), "{error}");
     assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(doc.groups().cloned().collect::<Vec<_>>(), groups);
     assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), [line, id]);

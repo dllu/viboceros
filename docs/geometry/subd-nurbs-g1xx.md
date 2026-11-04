@@ -81,5 +81,5 @@ Output admits at most four million controls, including quartic elevation.
 Nonmanifold, repeated or disconnected smooth face fans and smooth valence below
 three reject. [Packing](subd-nurbs-packing.md) applies after this processing;
 the [ToNURBS command](../commands/to-nurbs-subd.md) exposes this mode.
-[Single uniform soft edges](subd-soft-nurbs.md) have separate native coverage,
+[Soft edges and variable profiles](subd-soft-nurbs.md) have separate native coverage,
 including strong even-valence creases, reordered faces and offset sharp edges.
