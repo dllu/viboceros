@@ -1,6 +1,7 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
 mod curvature;
+mod face_packs;
 mod faces;
 use super::display_cache::DisplayGeometry;
 use super::object_preview::ObjectPreview;
@@ -17,6 +18,7 @@ use viboceros_geometry::{AffineNormalTransform3, AffineTransform3};
 
 #[derive(Default)]
 pub(super) struct SurfaceAnalyses<'a> {
+    pub face_packs: Option<&'a viboceros_command::to_nurbs::FacePackView>,
     pub draft: Option<&'a viboceros_command::draft_angle_analysis::View>,
     pub curvature: Option<&'a viboceros_command::curvature_analysis::View>,
 }
@@ -81,6 +83,7 @@ struct DisplayObject {
     draft: Option<viboceros_command::draft_angle_analysis::Options>,
     draft_mesh: Option<Arc<viboceros_geometry::CurvatureMesh>>,
     curvature: Option<CurvatureFaces>,
+    face_packs: Option<Arc<[[u8; 3]]>>,
     width: f32,
     point_radius: f32,
     transform: Option<AffineTransform3>,
@@ -99,6 +102,11 @@ impl PartialEq for DisplayObject {
             && self.face_member_colors_enabled == other.face_member_colors_enabled
             && self.draft == other.draft
             && match (&self.draft_mesh, &other.draft_mesh) {
+                (Some(a), Some(b)) => Arc::ptr_eq(a, b),
+                (None, None) => true,
+                _ => false,
+            }
+            && match (&self.face_packs, &other.face_packs) {
                 (Some(a), Some(b)) => Arc::ptr_eq(a, b),
                 (None, None) => true,
                 _ => false,
@@ -363,6 +371,7 @@ impl Viewport {
             SurfaceAnalyses {
                 draft: analysis,
                 curvature: None,
+                face_packs: None,
             },
         )
     }
@@ -470,6 +479,7 @@ impl Viewport {
                     .draft
                     .filter(|v| v.objects.contains(&object.id()))
                     .and_then(|v| v.mesh(object, document)),
+                face_packs: analyses.face_packs.and_then(|v| v.colors(object)),
                 curvature: analyses
                     .curvature
                     .filter(|v| v.objects.contains(&object.id()))
@@ -512,6 +522,7 @@ impl Viewport {
                 push_display_object(
                     &mut objects,
                     DisplayObject {
+                        face_packs: None,
                         curvature: display.curvature.as_ref().map(|c| CurvatureFaces {
                             options: c.options,
                             mesh: if partial {
@@ -572,6 +583,7 @@ impl Viewport {
                         draft: None,
                         draft_mesh: None,
                         curvature: None,
+                        face_packs: None,
                         width: match self.display_mode {
                             DisplayMode::Wireframe => 1.5,
                             DisplayMode::Shaded => 2.25,
@@ -686,10 +698,19 @@ impl Viewport {
                 _ => {
                     if (self.display_mode != DisplayMode::Wireframe
                         || object.draft.is_some()
-                        || object.curvature.is_some())
+                        || object.curvature.is_some()
+                        || object.face_packs.is_some())
                         && object.draw_faces
                     {
-                        if let Some(curvature) = &object.curvature {
+                        if let Some(colors) = &object.face_packs {
+                            self.add_face_pack_faces(
+                                &mut scene,
+                                object,
+                                display,
+                                colors,
+                                normal_transform,
+                            );
+                        } else if let Some(curvature) = &object.curvature {
                             self.add_curvature_faces(
                                 &mut scene,
                                 object,

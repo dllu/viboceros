@@ -134,6 +134,8 @@ fn choice_options_and_toggle_actions_are_canonical_bounded_and_atomic() {
     assert_eq!(prompt.choices[0].value, "V");
     prompt.menus.push(SelectionOptionMenu {
         name: "MeshOptions",
+        toggles: &[],
+        boolean_condition: None,
         choices: vec![],
         options: vec![BooleanSelectionOption {
             name: "TrimTriangularFaces",

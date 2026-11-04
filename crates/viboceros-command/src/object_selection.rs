@@ -237,6 +237,19 @@ pub struct SelectionOptionMenu {
     pub name: &'static str,
     pub options: Vec<BooleanSelectionOption>,
     pub choices: Vec<ChoiceSelectionOption>,
+    /// Boolean properties whose bare name toggles immediately in this menu.
+    pub toggles: &'static [&'static str],
+    /// Hidden boolean values remain in the invocation, but cannot be edited.
+    pub boolean_condition: Option<(&'static str, &'static str)>,
+}
+impl SelectionOptionMenu {
+    pub fn boolean_options_available(&self) -> bool {
+        self.boolean_condition.is_none_or(|(name, value)| {
+            self.choices
+                .iter()
+                .any(|c| c.name == name && c.value == value)
+        })
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -320,6 +333,28 @@ impl ObjectSelectionPrompt {
         let mut changed = false;
         let mut i = 0;
         while i < arguments.len() {
+            if arguments
+                .get(i + 1)
+                .is_none_or(|v| parse_yes_no(v).is_none())
+                && let Some(menu) = staged
+                    .menus
+                    .iter_mut()
+                    .filter(|m| m.boolean_options_available())
+                    .find(|m| m.toggles.iter().any(|n| option_name_eq(arguments[i], n)))
+            {
+                let option = menu
+                    .options
+                    .iter_mut()
+                    .find(|o| option_name_eq(arguments[i], o.name))
+                    .ok_or(CommandError::Usage(USAGE))?;
+                if !seen.insert(option.name) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                option.value = !option.value;
+                changed = true;
+                i += 1;
+                continue;
+            }
             if let Some(choice) = staged
                 .choices
                 .iter_mut()
@@ -364,7 +399,13 @@ impl ObjectSelectionPrompt {
             let option = staged
                 .options
                 .iter_mut()
-                .chain(staged.menus.iter_mut().flat_map(|m| &mut m.options))
+                .chain(
+                    staged
+                        .menus
+                        .iter_mut()
+                        .filter(|m| m.boolean_options_available())
+                        .flat_map(|m| &mut m.options),
+                )
                 .find(|o| {
                     option_name_eq(name, o.name)
                         || o.aliases.iter().any(|alias| option_name_eq(name, alias))
@@ -391,14 +432,13 @@ impl ObjectSelectionPrompt {
             .ok_or(CommandError::Usage("known option submenu"))?
             .clone();
         let mut scoped = Self {
-            options: selected.options,
-            menus: vec![],
-            choices: selected.choices,
+            options: vec![],
+            menus: vec![selected],
+            choices: vec![],
             ..self.clone()
         };
         scoped.update_options(input)?;
-        self.menus[menu].options = scoped.options;
-        self.menus[menu].choices = scoped.choices;
+        self.menus[menu] = scoped.menus.pop().unwrap();
         Ok(())
     }
 
@@ -428,6 +468,16 @@ impl ObjectSelectionPrompt {
             }
         }
         input
+    }
+    /// Display only available controls while retaining dormant invocation values.
+    pub fn display_command_line(&self) -> String {
+        let mut visible = self.clone();
+        for menu in &mut visible.menus {
+            if !menu.boolean_options_available() {
+                menu.options.clear();
+            }
+        }
+        visible.command_line()
     }
 }
 

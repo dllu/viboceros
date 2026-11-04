@@ -1,0 +1,74 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_nurbs_packs",
+      "id": "mixed_False_False",
+      "case": "mixed",
+      "delete": false,
+      "postselect": false
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "mixed_False_True",
+      "case": "mixed",
+      "delete": false,
+      "postselect": true
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "mixed_True_False",
+      "case": "mixed",
+      "delete": true,
+      "postselect": false
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "mixed_True_True",
+      "case": "mixed",
+      "delete": true,
+      "postselect": true
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "force_off",
+      "case": "force_off"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "force_twice",
+      "case": "force_twice"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "force_unpacked",
+      "case": "force_unpacked"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "show_accept",
+      "case": "show_accept"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "baseline_after_flags",
+      "case": "baseline_after_flags"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "force_options_cancel",
+      "case": "force_options_cancel"
+    },
+    {
+      "op": "subd_nurbs_packs",
+      "id": "post_force_cancel",
+      "case": "post_force_cancel"
+    }
+  ]
+}

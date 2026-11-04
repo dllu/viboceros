@@ -133,6 +133,7 @@ mod named_view;
 mod native_curve_comparison;
 #[path = "../../../crates/viboceros-command/tests/support/modify_radius.rs"]
 mod native_object_comparison;
+mod nurbs_pack_actions;
 mod nurbs_selection;
 mod nurbs_subd_selection;
 mod object_selection;
@@ -294,6 +295,7 @@ pub(super) fn test_app() -> VibocerosApp {
         copy_cplane_source: None,
         cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
         object_prompt: None,
+        face_pack_preview: Default::default(),
         curve_points: Vec::new(),
         group_prompt: None,
         intersection_prompt: None,

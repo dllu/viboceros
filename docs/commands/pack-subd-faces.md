@@ -29,6 +29,6 @@ captures. Independent SDK captures cover 36 source profiles, including irregular
 and wrapped nets. Rust tests also check stale crease repair, archive round trips
 and retained packs after subdivision; UI tests run without opening windows.
 
-ToNURBS edge picks and its `ShowFacePacks`/`ForceUpdateFacePacks` prompt
-actions remain separate work. See the
+ToNURBS also provides [temporary face-pack colors and forced packing](to-nurbs-packs.md)
+during its conversion prompt. Edge picks remain separate work. See the
 [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/packsubdfaces.htm).

@@ -93,6 +93,33 @@ fn automatic_plan(graph: &graph::Graph<'_>) -> Result<Vec<Plan>, GeometryError> 
 }
 
 impl SubD {
+    /// Face groups used by conversion and its preview. Valid retained IDs are
+    /// kept unless forced; missing or stale packing is rebuilt from topology.
+    pub fn nurbs_face_pack_ids(&self, force_update: bool) -> Result<Vec<u32>, GeometryError> {
+        let graph = graph::Graph::new(self)?;
+        if !force_update {
+            let records = self.face_packs()?;
+            if layout::stored(&graph, &records).is_some() {
+                return Ok(records.into_iter().map(|p| p.unwrap().id).collect());
+            }
+        }
+        let mut ids = vec![0; self.faces().len()];
+        let mut id = 0;
+        for plan in automatic_plan(&graph)? {
+            if plan.tiles[0].corner.is_some_and(|c| c != 0) {
+                continue;
+            }
+            id += 1;
+            for tile in plan.tiles {
+                ids[tile.face] = id;
+            }
+        }
+        if ids.contains(&0) {
+            return Err(failure("Unassigned SubD face pack"));
+        }
+        Ok(ids)
+    }
+
     /// Reset the retained face packs from current topology, tags and creases.
     /// A deterministic grid atlas is assigned independently of Rhino's texture
     /// rectangle allocator. Control geometry and component identities survive.

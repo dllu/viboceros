@@ -2,6 +2,8 @@
 use super::*;
 
 mod options;
+mod packs;
+pub use packs::{FacePackPreview, FacePackView};
 #[cfg(test)]
 mod subd_tests;
 #[cfg(test)]
@@ -88,6 +90,8 @@ impl ToNurbsCommand {
         let mut eligible = 0;
         let mut controls = 0usize;
         let mut conversions = Vec::new();
+        let mut repacked_sources = Vec::new();
+        let mut pack_bytes = 0usize;
         for object in document.objects().filter(|o| document.is_selected(o.id())) {
             let geometry = match object.geometry() {
                 Geometry::Brep(brep) if brep.is_extrusion() => {
@@ -119,6 +123,17 @@ impl ToNurbsCommand {
                     )?)
                 }
                 Geometry::SubD(subd) => {
+                    let repacked = options
+                        .force_packs
+                        .then(|| subd.try_repacked_faces())
+                        .transpose()?;
+                    if let Some(source) = &repacked {
+                        pack_bytes = pack_bytes.saturating_add(source.archive().len());
+                        if pack_bytes > 64 * 1024 * 1024 {
+                            return Err(CommandError::FacePackingResourceLimit);
+                        }
+                    }
+                    let subd = repacked.as_ref().unwrap_or(subd);
                     let brep = if options.packed {
                         subd.to_packed_nurbs_brep(options.continuity, document.tolerance())?
                     } else {
@@ -130,6 +145,11 @@ impl ToNurbsCommand {
                             n.saturating_add(f.surface().control_points().len())
                         }),
                     )?;
+                    if let Some(repacked) = repacked
+                        && !options.delete_input
+                    {
+                        repacked_sources.push((object.id(), Geometry::SubD(repacked)));
+                    }
                     Geometry::Brep(brep)
                 }
                 source => {
@@ -154,6 +174,7 @@ impl ToNurbsCommand {
                 .map(|(i, id)| (id, i))
                 .collect::<BTreeMap<_, _>>();
             conversions.sort_unstable_by_key(|(id, _)| ranks[id]);
+            repacked_sources.sort_unstable_by_key(|(id, _)| ranks[id]);
             if converted > 0 {
                 // Prompted picks are transient, including no-op peers. Clear
                 // them before replacement captures selection in history.
@@ -162,6 +183,15 @@ impl ToNurbsCommand {
                 document.clear_selection();
             }
         }
+        let repacked_ids = repacked_sources
+            .iter()
+            .map(|(id, _)| *id)
+            .collect::<Vec<_>>();
+        document.replace_object_geometries_with_history(
+            repacked_sources,
+            viboceros_document::ReplacementHistory::EveryReplacement,
+        )?;
+        document.move_objects_to_end_in_order(repacked_ids)?;
         if options.delete_input {
             let ids = conversions.iter().map(|(id, _)| *id).collect::<Vec<_>>();
             document.replace_object_geometries(conversions)?;
@@ -170,15 +200,13 @@ impl ToNurbsCommand {
             } else {
                 document.move_objects_to_end(ids)?;
             }
-        } else if postselected {
-            document.copy_object_geometries_into_source_groups_in_order(conversions)?;
         } else {
-            document.copy_object_geometries_into_source_groups(conversions)?;
+            document.copy_object_geometries_into_source_groups_in_order(conversions)?;
         }
         // Rhino's ToNURBS no-op does not accept new choices, unlike
         // ConvertToSingleSpans. Only a real conversion updates option memory.
         if converted > 0 {
-            self.options.set(options);
+            self.options.set(options.remembered());
         }
         Ok(format!(
             "Converted {converted} object(s) to NURBS geometry; {} unchanged{}",

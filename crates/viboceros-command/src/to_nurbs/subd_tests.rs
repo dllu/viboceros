@@ -163,7 +163,7 @@ fn subd_options_require_a_selected_subd_and_invalid_edits_are_atomic() {
         .unwrap();
     assert!(
         prompt
-            .command_line()
+            .display_command_line()
             .contains("SubDOptions Faces=Unpacked ExtraordinaryVertex=G1xx")
     );
     doc.clear_selection();
@@ -186,4 +186,80 @@ fn subd_options_require_a_selected_subd_and_invalid_edits_are_atomic() {
     ] {
         assert!(registry.execute(&mut doc, invalid).is_err());
     }
+}
+
+#[test]
+fn pack_menu_toggles_retain_hidden_values_and_preview_repairs_stale_packs() {
+    let mut doc = Document::default();
+    let commands = CommandRegistry::with_builtins();
+    let packed = source().try_repacked_faces().unwrap();
+    let edge = packed
+        .edges()
+        .iter()
+        .position(|e| [e[0].min(e[1]), e[0].max(e[1])] == [1, 4])
+        .unwrap();
+    let stale = packed.try_with_edge_tags(&[(edge, 2)]).unwrap();
+    assert_eq!(
+        stale
+            .face_packs()
+            .unwrap()
+            .iter()
+            .map(|p| p.unwrap().id)
+            .collect::<Vec<_>>(),
+        vec![1, 1]
+    );
+    let id = doc.add_geometry(Geometry::SubD(stale)).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let initial = commands
+        .object_selection_prompt("ToNURBS")
+        .unwrap()
+        .unwrap();
+    let mut prompt = commands
+        .object_selection_confirmation(&doc, &initial)
+        .unwrap()
+        .unwrap();
+    prompt
+        .update_menu_options(0, "_ShowFacePacks _Yes")
+        .unwrap();
+    let mut cache = FacePackPreview::default();
+    let view = cache.view(&doc, Some(&prompt)).unwrap().unwrap();
+    assert_eq!(
+        view.colors(doc.object(id).unwrap())
+            .unwrap()
+            .iter()
+            .collect::<BTreeSet<_>>()
+            .len(),
+        2
+    );
+    prompt
+        .update_menu_options(0, "_ForceUpdateFacePacks")
+        .unwrap();
+    prompt.update_menu_options(0, "Faces=Unpacked").unwrap();
+    let before = prompt.clone();
+    assert!(
+        prompt
+            .update_menu_options(0, "ForceUpdateFacePacks=No")
+            .is_err()
+    );
+    assert_eq!(prompt, before);
+    assert!(cache.view(&doc, Some(&prompt)).unwrap().is_none());
+    assert!(prompt.command_line().contains("ForceUpdateFacePacks=Yes"));
+    assert!(
+        !prompt
+            .display_command_line()
+            .contains("ForceUpdateFacePacks")
+    );
+    prompt.update_menu_options(0, "Faces=Packed").unwrap();
+    assert!(
+        prompt
+            .display_command_line()
+            .contains("ForceUpdateFacePacks=Yes")
+    );
+    assert!(
+        prompt
+            .update_menu_options(0, "ForceUpdateFacePacks=No Faces=Unpacked ShowFacePacks")
+            .is_err()
+    );
+    assert!(prompt.command_line().contains("ForceUpdateFacePacks=Yes"));
 }

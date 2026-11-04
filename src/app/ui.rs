@@ -484,6 +484,17 @@ impl eframe::App for VibocerosApp {
         let direction_analysis_view = self.commands.direction_analysis_view(&self.document);
         let draft_angle_analysis_view = self.commands.draft_angle_analysis_view(&self.document);
         let curvature_analysis_view = self.commands.curvature_analysis_view(&self.document);
+        let face_pack_view = self
+            .face_pack_preview
+            .view(
+                &self.document,
+                self.object_prompt
+                    .as_ref()
+                    .filter(|p| p.phase != object_selection::ObjectPromptPhase::Selecting)
+                    .map(|p| &p.description),
+            )
+            .ok()
+            .flatten();
         let deviation_view = self
             .commands
             .point_deviation_view(&self.document)
@@ -1258,6 +1269,7 @@ impl eframe::App for VibocerosApp {
                             direction_analysis: direction_analysis_view.as_ref(),
                             draft_angle_analysis: draft_angle_analysis_view.as_ref(),
                             curvature_analysis: curvature_analysis_view.as_ref(),
+                            face_packs: face_pack_view.as_ref(),
                             edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
                             edge_endpoints,

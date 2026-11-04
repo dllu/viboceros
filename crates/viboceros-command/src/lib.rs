@@ -286,7 +286,7 @@ mod split_disjoint_mesh;
 pub mod surface_rebuild;
 use explode::ExplodeCommand;
 use extract_subcurve::ExtractSubcurveCommand;
-mod to_nurbs;
+pub mod to_nurbs;
 use bezier::ConvertToBeziersCommand;
 use mesh_ngon_commands::{AddNgonsToMeshCommand, DeleteMeshNgonsCommand};
 use mesh_to_nurb::MeshToNurbCommand;

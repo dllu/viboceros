@@ -1082,7 +1082,7 @@ impl VibocerosApp {
             let command = pending
                 .command_override
                 .clone()
-                .unwrap_or_else(|| pending.description.command_line());
+                .unwrap_or_else(|| pending.description.display_command_line());
             let mut message = format!("{}. {}", pending.hint(), command);
             let (choices, selected) = match pending.phase {
                 ObjectPromptPhase::Menu(menu) => (&pending.description.menus[menu].choices, None),

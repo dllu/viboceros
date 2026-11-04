@@ -88,6 +88,8 @@ mod curvature_analysis_tests;
 #[cfg(test)]
 mod draft_angle_tests;
 #[cfg(test)]
+mod face_pack_tests;
+#[cfg(test)]
 mod imported_shading_tests;
 #[cfg(test)]
 mod raster_tests;
@@ -349,6 +351,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub(crate) face_packs: Option<&'a viboceros_command::to_nurbs::FacePackView>,
     pub(crate) curvature_analysis: Option<&'a viboceros_command::curvature_analysis::View>,
     pub(crate) draft_angle_analysis: Option<&'a viboceros_command::draft_angle_analysis::View>,
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
@@ -481,6 +484,7 @@ impl Default for ViewportInput<'_> {
             direction_analysis: None,
             draft_angle_analysis: None,
             curvature_analysis: None,
+            face_packs: None,
             direction: None,
             insert_edges: None,
             insert_mesh: None,
@@ -2150,6 +2154,7 @@ impl Viewport {
                 scene::SurfaceAnalyses {
                     draft: input.draft_angle_analysis,
                     curvature: input.curvature_analysis,
+                    face_packs: input.face_packs,
                 },
             ),
         );

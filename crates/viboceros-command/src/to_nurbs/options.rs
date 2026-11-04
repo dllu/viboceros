@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_geometry::SubDNurbsContinuity;
 
-pub(super) const USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No] [MeshOptions TrimTriangularFaces=Yes|No] [SubDOptions Faces=Packed|Unpacked ExtraordinaryVertex=G0|G1|G1x|G1xx|G2]";
+pub(super) const USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No] [MeshOptions TrimTriangularFaces=Yes|No] [SubDOptions Faces=Packed|Unpacked ShowFacePacks=Yes|No ForceUpdateFacePacks=Yes|No ExtraordinaryVertex=G0|G1|G1x|G1xx|G2]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct Options {
@@ -10,6 +10,8 @@ pub(super) struct Options {
     pub trim_triangles: bool,
     pub packed: bool,
     pub continuity: SubDNurbsContinuity,
+    pub show_packs: bool,
+    pub force_packs: bool,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -18,6 +20,17 @@ impl Default for Options {
             trim_triangles: true,
             packed: true,
             continuity: SubDNurbsContinuity::G1x,
+            show_packs: false,
+            force_packs: false,
+        }
+    }
+}
+impl Options {
+    pub fn remembered(self) -> Self {
+        Self {
+            show_packs: false,
+            force_packs: false,
+            ..self
         }
     }
 }
@@ -63,12 +76,27 @@ pub(super) fn prompt(options: Options, kinds: Kinds) -> ObjectSelectionPrompt {
                 aliases: &[],
             }],
             choices: vec![],
+            toggles: &[],
+            boolean_condition: None,
         });
     }
     if kinds.subd {
         menus.push(SelectionOptionMenu {
             name: "SubDOptions",
-            options: vec![],
+            options: vec![
+                BooleanSelectionOption {
+                    name: "ShowFacePacks",
+                    value: options.show_packs,
+                    aliases: &[],
+                },
+                BooleanSelectionOption {
+                    name: "ForceUpdateFacePacks",
+                    value: options.force_packs,
+                    aliases: &[],
+                },
+            ],
+            toggles: &["ShowFacePacks", "ForceUpdateFacePacks"],
+            boolean_condition: Some(("Faces", "Packed")),
             choices: vec![
                 ChoiceSelectionOption {
                     name: "Faces",
@@ -119,6 +147,25 @@ pub(super) fn parse(
             i += 1;
             continue;
         }
+        if let Some(name) = ["ShowFacePacks", "ForceUpdateFacePacks"]
+            .into_iter()
+            .find(|n| option_name_eq(arguments[i], n))
+            && arguments
+                .get(i + 1)
+                .is_none_or(|v| parse_yes_no(v).is_none())
+        {
+            if !seen.insert(name) {
+                return Err(CommandError::Usage(USAGE));
+            }
+            kinds.subd = true;
+            if name == "ShowFacePacks" {
+                options.show_packs = !options.show_packs;
+            } else {
+                options.force_packs = !options.force_packs;
+            }
+            i += 1;
+            continue;
+        }
         let (name, value, consumed) = orient_option(arguments, i, USAGE)?;
         let canonical =
             if option_name_eq(name, "DeleteInputObjects") || option_name_eq(name, "DeleteInput") {
@@ -138,6 +185,14 @@ pub(super) fn parse(
                     return Err(CommandError::Usage(USAGE));
                 };
                 "Faces"
+            } else if option_name_eq(name, "ShowFacePacks") {
+                kinds.subd = true;
+                options.show_packs = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+                "ShowFacePacks"
+            } else if option_name_eq(name, "ForceUpdateFacePacks") {
+                kinds.subd = true;
+                options.force_packs = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+                "ForceUpdateFacePacks"
             } else if option_name_eq(name, "ExtraordinaryVertex") {
                 kinds.subd = true;
                 options.continuity = MODES

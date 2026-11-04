@@ -52,6 +52,7 @@ fn curvature_faces_pick_in_wireframe_cache_colors_and_keep_model_unchanged() {
                     scene::SurfaceAnalyses {
                         draft: None,
                         curvature: Some(&analysis),
+                        face_packs: None,
                     },
                 )
             };

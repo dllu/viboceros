@@ -157,7 +157,7 @@ fn escaping_subd_choice_keeps_preselection_or_clears_prompted_picks_without_acce
         let prompt = &app.object_prompt.as_ref().unwrap().description;
         assert_eq!(
             prompt.command_line(),
-            "ToNURBS DeleteInputObjects=No SubDOptions Faces=Packed ExtraordinaryVertex=G1x"
+            "ToNURBS DeleteInputObjects=No SubDOptions ShowFacePacks=No ForceUpdateFacePacks=No Faces=Packed ExtraordinaryVertex=G1x"
         );
         enter(&mut app, "SubDOptions");
         enter(&mut app, "Faces");
