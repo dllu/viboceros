@@ -1,0 +1,971 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_whole_accept",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "whole": true
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_whole_cancel",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Cancel",
+      "whole": true
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_two_loops",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_two_same",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            8
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_remove_seed",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_remove_nonseed",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            7,
+            8
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_remove_cross",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_remove_one_same",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            8
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_cross_cancel",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_pre_cross",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          11
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_pre_same",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_pre_face",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_face_picked",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "component": "face"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_pre_vertex",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_vertex_picked",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "component": "vertex"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_remove_readd",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_repeat_seed",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "mesh_ctrl_unselected",
+      "kind": "mesh",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_whole_accept",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "whole": true
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_whole_cancel",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Cancel",
+      "whole": true
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_two_loops",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_two_same",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            8
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_remove_seed",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_remove_nonseed",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            7,
+            8
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_remove_cross",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_remove_one_same",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            7,
+            8
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_cross_cancel",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            11
+          ]
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_pre_cross",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          11
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_pre_same",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "steps": [],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_pre_face",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "face"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_face_picked",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "component": "face"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_pre_vertex",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [],
+      "finish": "Enter",
+      "component": "vertex"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_vertex_picked",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter",
+      "component": "vertex"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_remove_readd",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_repeat_seed",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "edge_loop_workflow",
+      "id": "subd_ctrl_unselected",
+      "kind": "subd",
+      "scene": "grid",
+      "pair": [
+        6,
+        7
+      ],
+      "initial": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "ctrl",
+          "pair": [
+            6,
+            7
+          ]
+        }
+      ],
+      "finish": "Enter"
+    }
+  ]
+}

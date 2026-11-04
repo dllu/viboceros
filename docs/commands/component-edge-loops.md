@@ -1,5 +1,21 @@
 # Mesh and SubD edge-loop selection
 
+`SelEdgeLoop` immediately expands preselected mesh/SubD edges. With no eligible
+preselection, pick seed edges: seeds are bright and the loop preview is dimmer.
+Enter commits all previewed loops; Escape clears the newly picked seeds. Ctrl
+removes a picked seed, while Ctrl on another edge of its preview has no effect.
+Multiple seeds may share a loop. Whole-object preselection remains selected and
+its edges are ignored by the getter; preselected faces and vertices are cleared.
+Selection does not add an Undo record or consume redo.
+
+Headless commands use the same component-selection backend as the UI. Structured
+selectors also support `SelEdgeLoop Edges=0,1 Object=uuid` and `Edges=All`; these
+are Viboceros scripting extensions with zero-based component ordinals. The
+result feeds `ToNURBS` directly. `SelNone` clears component selection. Structured
+selector failures preserve existing selection; stale getters require picking again.
+
+## Double-click selection
+
 Ctrl+Shift-double-click an edge to select its loop. The same gesture removes a
 selected connected run. Unselected gaps separate runs, so removing one fragment
 leaves another fragment selected. Selection remains outside model history and
@@ -30,6 +46,8 @@ private decoded source, with explicit continuation constraints. Mesh traversal
 builds exact-location topology once and visits each path edge at most once.
 Texture UV coordinates are not required in the measured mesh cases.
 
+## Qualification
+
 Qualification includes 28 actual Rhino `SelEdgeLoop` command workflows on open
 grids, boundaries, creases, corner tags, extraordinary fans, triangles and cyclic
 annuli. Rust imports every captured 3DM source and matches the complete component
@@ -41,5 +59,10 @@ qualified by them. Failed ambiguous captures are not qualification evidence.
 
 In-memory viewport events and UI replays check selection sets, output curves and
 ordering, undo/redo, stale sources and ambiguity handling without opening windows.
-Native captures use private Xvfb. Edge rings, face/vertex chains, surface tangent
-chains and the standalone SelEdgeLoop command are separate remaining work.
+Native captures use private Xvfb. A further [44 standalone workflows](../oracle/edge-loop-workflows.md)
+qualify seed accumulation/removal, preselection, acceptance, cancellation and
+selection through redo/undo. Independent Rust grid recipes reproduce every
+captured state; UI replays also check the resulting ToNURBS handoff.
+
+Edge rings, face/vertex chains, surface tangent chains and nested `SelEdgeLoop`
+inside another command remain separate work.

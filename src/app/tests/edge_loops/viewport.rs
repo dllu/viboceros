@@ -3,6 +3,121 @@ use crate::viewport::{DisplayMode, ViewKind, ViewportInput, ViewportOutput};
 use egui::{Context, Event, PointerButton, Pos2, Rect, Vec2};
 
 #[test]
+fn standalone_plain_and_ctrl_pointer_picks_preview_loops_in_all_display_modes() {
+    let data = capture();
+    for mesh in [false, true] {
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            let row = data["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == if mesh { "mesh_add" } else { "subd_add" })
+                .unwrap();
+            let (mut app, id) = fixture(&row["value"]);
+            enter(&mut app, "SelEdgeLoop");
+            let context = Context::default();
+            let mut view = Viewport::new(ViewKind::Top);
+            view.display_mode = mode;
+            let mut time = 0.;
+            let mut frame = |events: Vec<Event>, app: &VibocerosApp| {
+                time += 0.4;
+                let mut area = Rect::NOTHING;
+                let mut output = ViewportOutput::default();
+                let highlights = app.commands.component_selection().live_picks(&app.document);
+                let drawn = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        time: Some(time),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        area = ui.available_rect_before_wrap();
+                        output = view.show(
+                            ui,
+                            &app.document,
+                            ViewportInput {
+                                object_filter: app.viewport_object_filter(),
+                                component_pick: Some(
+                                    crate::viewport::ComponentPickFilter::MeshAndSubDEdges,
+                                ),
+                                component_highlights: &highlights,
+                                component_previews: app
+                                    .edge_loop_prompt
+                                    .as_ref()
+                                    .unwrap()
+                                    .preview(),
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                );
+                let dim = drawn.shapes.iter().any(
+                    |s| matches!(&s.shape,egui::Shape::LineSegment{stroke,..}if stroke.width==1.8),
+                );
+                let bright = drawn.shapes.iter().any(
+                    |s| matches!(&s.shape,egui::Shape::LineSegment{stroke,..}if stroke.width==3.),
+                );
+                drawn.drop_without_applying_deltas();
+                (output, area, dim, bright)
+            };
+            let (_, area, _, _) = frame(Vec::new(), &app);
+            let pointer = Viewport::new(ViewKind::Top)
+                .project(Point3::try_new(4.5, 3., 0.).unwrap(), area)
+                .unwrap();
+            for modifiers in [egui::Modifiers::NONE, egui::Modifiers::CTRL] {
+                frame(
+                    vec![
+                        Event::ModifiersChanged(modifiers),
+                        Event::PointerMoved(pointer),
+                        Event::PointerButton {
+                            pos: pointer,
+                            button: PointerButton::Primary,
+                            pressed: true,
+                            modifiers,
+                        },
+                    ],
+                    &app,
+                );
+                let (output, _, _, _) = frame(
+                    vec![Event::PointerButton {
+                        pos: pointer,
+                        button: PointerButton::Primary,
+                        pressed: false,
+                        modifiers,
+                    }],
+                    &app,
+                );
+                assert_eq!(
+                    output.component_click.as_ref().unwrap().picks,
+                    [pick(id, mesh, 11)]
+                );
+                app.handle_viewport_action(output);
+                if modifiers.ctrl {
+                    assert!(selected(&app).is_empty());
+                    assert!(app.edge_loop_prompt.as_ref().unwrap().preview().is_empty());
+                } else {
+                    assert_eq!(selected(&app), [11]);
+                    assert_eq!(app.edge_loop_prompt.as_ref().unwrap().preview().len(), 4);
+                    let (_, _, dim, bright) = frame(Vec::new(), &app);
+                    assert!(dim && bright);
+                }
+            }
+            app.cancel_current_prompt_or_selection();
+            assert!(selected(&app).is_empty());
+            assert!(!app.document.can_undo());
+        }
+    }
+}
+
+#[test]
 fn genuine_double_click_events_select_and_deselect_a_loop_in_every_display_mode() {
     let data = capture();
     for mesh in [false, true] {

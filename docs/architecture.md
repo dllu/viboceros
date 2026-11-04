@@ -45,9 +45,11 @@ rectangle, circle, ellipse and axis getters with independent remembered settings
 Camera projection, extents, clipping, picking, display and drafting live in
 separate viewport modules. Drafting resolves typed or picked input against a
 viewport's construction plane without changing its camera. Object and component
-selection share geometry snapshots and visibility rules; temporary component
-choices stay outside model history. Display meshes and prepared queries are
-derived caches, invalidated when their source geometry or tolerance changes.
+selection share geometry snapshots and visibility rules. The command registry
+owns a shared component-selection handle for GUI and headless commands; hover
+and ambiguity choices remain in the app. Component selection stays outside model
+history. Display meshes and prepared queries are derived caches, invalidated
+when their source geometry or tolerance changes.
 
 See [application input](architecture/application.md) for command state and UI
 ownership, [viewport boundaries](architecture/viewport.md) for the viewport module map, and

@@ -11,6 +11,7 @@ import unittest
 from unittest.mock import patch
 from .edge_loop_cases import cases, discovery_cases
 from .edge_loop_gesture_cases import cases as gestures, filtered_cases, subobject_cases, modified_cases
+from .edge_loop_workflow_probe import discovery_cases as workflow_discovery, cases as workflows
 from .edge_loop_gestures import EdgeLoopGesturePicker
 from .structural_sdk import stage_helpers, validate_operations
 
@@ -41,6 +42,31 @@ class EdgeLoopsTests(unittest.TestCase):
                         self.assertEqual(v['after'],v['before'])
                     if family=='edge_loop_filtered_gestures':self.assertGreater(len(v['after']['ordinals']),len(v['before']['ordinals']) if row['id'].endswith('add') else 0)
         self.assertEqual(count,92)
+
+    def test_standalone_workflow_provenance_and_selection_history(self):
+        count=0
+        for family,recipes in [('edge_loop_workflow_discovery',workflow_discovery()),('edge_loop_workflows',workflows())]:
+            fixture=HERE/'fixtures'/(family+'.json');query=json.loads(fixture.read_bytes());validate_operations(query)
+            self.assertEqual(query['operations'],recipes)
+            data=json.loads(gzip.decompress((HERE/'observations'/(family+'.json.gz')).read_bytes()))
+            self.assertEqual([r['id'] for r in data['results']],[o['id'] for o in recipes])
+            self.assertEqual(data['provenance']['request_sha256'],hashlib.sha256(fixture.read_bytes()).hexdigest())
+            for name,digest in data['provenance']['sources'].items():
+                raw=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
+                self.assertEqual(hashlib.sha256(raw).hexdigest(),digest,name)
+            for row,op in zip(data['results'],recipes):
+                count+=1;v=row['value'];self.assertIs(v['source_unchanged'],True)
+                self.assertEqual(len(v['trace']),len(op['steps']))
+                self.assertEqual(v['success'],op['finish']=='Enter')
+                for stage,objects in [('after',1),('redo',2),('undo',1)]:
+                    self.assertEqual(v[stage]['objects'],objects)
+                    for key in ['whole','components','ordinals']:self.assertEqual(v[stage][key],v['after'][key])
+                for bad in [dict(whole=1),dict(pair=[6.,7.]),dict(unknown=True)]:
+                    with self.assertRaises(ValueError):validate_operations(dict(query,operations=[dict(op,**bad)]))
+            with tempfile.TemporaryDirectory() as folder:
+                stage_helpers(query,HERE,Path(folder))
+                subprocess.run([sys.executable,'-I','-c','import sys;sys.path.insert(0,sys.argv[1]);import edge_loop_workflow_probe',folder],check=True,capture_output=True)
+        self.assertEqual(count,44)
 
     def test_strict_recipes_and_standalone_worker_import(self):
         for family,recipes in FAMILIES:

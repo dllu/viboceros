@@ -1,23 +1,16 @@
 //! Transient UI components retain exact source identities, outside Undo.
 use super::*;
 use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
-use std::collections::BTreeMap;
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::GeometrySnapshot;
 mod loops;
-
-#[derive(Clone, Copy, Debug, Default)]
-enum ComponentAction {
-    #[default]
-    Add,
-    Remove,
-    Toggle,
-}
+use viboceros_command::component_selection::{
+    ComponentAction, ComponentSelection as SharedSelection, current, stage_sources,
+};
 
 #[derive(Debug, Default)]
 pub(super) struct ComponentSelection {
-    picks: BTreeMap<ComponentPick, GeometrySnapshot>,
-    order: Vec<ComponentPick>,
+    shared: SharedSelection,
     candidates: Vec<(ComponentPick, GeometrySnapshot)>,
     choice_action: ComponentAction,
     hover: Option<ComponentPick>,
@@ -26,86 +19,47 @@ pub(super) struct ComponentSelection {
 }
 
 impl ComponentSelection {
+    pub(super) fn with_shared(shared: SharedSelection) -> Self {
+        Self {
+            shared,
+            ..Default::default()
+        }
+    }
     pub(super) fn release_objects(&mut self, ids: &[ObjectId]) {
-        let ids = ids
-            .iter()
-            .copied()
-            .collect::<std::collections::BTreeSet<_>>();
-        self.picks.retain(|p, _| !ids.contains(&p.object));
-        self.order.retain(|p| !ids.contains(&p.object));
+        self.shared.release_objects(ids);
         self.clear_choices();
     }
-    pub(super) fn release_grip_vertices(&mut self, document: &Document) {
-        let owners = document
-            .all_control_points()
-            .map(|(g, _, _)| g.object)
-            .collect::<std::collections::BTreeSet<_>>();
-        self.picks.retain(|p, _| {
-            !matches!(
-                p.kind,
-                ComponentSelectionKind::SubDVertex | ComponentSelectionKind::MeshVertex
-            ) || !owners.contains(&p.object)
-        });
-        self.order.retain(|p| self.picks.contains_key(p));
+    pub(super) fn release_grip_vertices(&mut self, doc: &Document) {
+        self.shared.release_grip_vertices(doc);
     }
     pub(super) fn has_choices(&self) -> bool {
         !self.candidates.is_empty()
     }
-    pub(super) fn valid_picks(&mut self, document: &Document) -> Vec<ComponentPick> {
-        if self.picks.is_empty() {
-            return Vec::new();
-        }
-        let snapshots = selectable_snapshots(document);
-        self.picks
-            .retain(|pick, snapshot| snapshots.get(&pick.object) == Some(snapshot));
-        self.order.retain(|pick| self.picks.contains_key(pick));
-        self.picks.keys().copied().collect()
+    pub(super) fn valid_picks(&mut self, doc: &Document) -> Vec<ComponentPick> {
+        self.shared.valid_picks(doc)
     }
-    pub(super) fn highlights(&mut self, document: &Document) -> Vec<ComponentPick> {
-        if self.picks.is_empty() && self.candidates.is_empty() {
-            return Vec::new();
-        }
-        let snapshots = selectable_snapshots(document);
-        let mut picks = self
-            .picks
-            .iter()
-            .filter(|(pick, snapshot)| snapshots.get(&pick.object) == Some(*snapshot))
-            .map(|(pick, _)| *pick)
-            .collect::<Vec<_>>();
-        if let Some(hover) = self.hover.filter(|hover| {
-            self.candidates.iter().any(|(pick, snapshot)| {
-                pick == hover && snapshots.get(&pick.object) == Some(snapshot)
-            })
+    pub(super) fn highlights(&mut self, doc: &Document) -> Vec<ComponentPick> {
+        let mut picks = self.shared.live_picks(doc);
+        if let Some(hover) = self.hover.filter(|h| {
+            self.candidates
+                .iter()
+                .any(|(p, w)| p == h && current(doc, *p, w))
         }) {
             picks.push(hover);
         } else {
             picks.extend(
                 self.candidates
                     .iter()
-                    .filter(|(pick, snapshot)| snapshots.get(&pick.object) == Some(snapshot))
-                    .map(|(pick, _)| *pick),
+                    .filter(|(p, w)| current(doc, *p, w))
+                    .map(|(p, _)| *p),
             );
         }
         picks.sort();
         picks.dedup();
         picks
     }
-    pub(super) fn checked_picks(
-        &self,
-        document: &Document,
-    ) -> Result<Vec<ComponentPick>, &'static str> {
-        if self.picks.is_empty() {
-            return Ok(Vec::new());
-        }
-        let snapshots = selectable_snapshots(document);
-        if self
-            .picks
-            .iter()
-            .any(|(pick, snapshot)| snapshots.get(&pick.object) != Some(snapshot))
-        {
-            return Err("component source changed; select the components again");
-        }
-        Ok(self.order.clone())
+    pub(super) fn checked_picks(&self, doc: &Document) -> Result<Vec<ComponentPick>, &'static str> {
+        self.shared.checked_picks(doc)
     }
     pub(super) fn replace_faces(
         &mut self,
@@ -140,8 +94,7 @@ impl ComponentSelection {
         self.apply(document, picks, ComponentAction::Add)
     }
     pub(super) fn clear(&mut self) {
-        self.picks.clear();
-        self.order.clear();
+        self.shared.clear();
         self.loop_click = None;
         self.clear_choices();
     }
@@ -176,111 +129,17 @@ impl ComponentSelection {
         picks: Vec<ComponentPick>,
         action: ComponentAction,
     ) -> Result<(), &'static str> {
-        let staged = stage_sources(document, picks)?;
+        self.shared.apply(document, picks, action)?;
         self.clear_choices();
-        let mut removed = std::collections::BTreeSet::new();
-        for (pick, snapshot) in staged {
-            if matches!(action, ComponentAction::Remove)
-                || (matches!(action, ComponentAction::Toggle) && self.picks.contains_key(&pick))
-            {
-                self.picks.remove(&pick);
-                removed.insert(pick);
-            } else {
-                if !self.picks.contains_key(&pick) {
-                    self.order.push(pick);
-                }
-                self.picks.insert(pick, snapshot);
-            }
-        }
-        // Loop/window removal can contain thousands of edges. Compact action
-        // order once, rather than scanning the full selection for every edge.
-        if !removed.is_empty() {
-            self.order.retain(|old| !removed.contains(old));
-        }
         Ok(())
     }
-}
-
-fn selectable_snapshots(document: &Document) -> BTreeMap<ObjectId, GeometrySnapshot> {
-    document
-        .selectable_objects()
-        .map(|o| (o.id(), o.geometry_snapshot().clone()))
-        .collect()
-}
-
-fn current(document: &Document, pick: ComponentPick, snapshot: &GeometrySnapshot) -> bool {
-    document.is_object_selectable(pick.object)
-        && document
-            .object(pick.object)
-            .is_some_and(|object| object.geometry_snapshot() == snapshot)
-}
-
-fn stage_sources(
-    document: &Document,
-    picks: Vec<ComponentPick>,
-) -> Result<Vec<(ComponentPick, GeometrySnapshot)>, &'static str> {
-    if picks.is_empty() {
-        return Ok(Vec::new());
-    }
-    let objects = document
-        .selectable_objects()
-        .map(|o| (o.id(), o))
-        .collect::<BTreeMap<_, _>>();
-    let mut counts = BTreeMap::new();
-    let mut seen = std::collections::BTreeSet::new();
-    let mut staged = Vec::new();
-    for pick in picks.into_iter().filter(|p| seen.insert(*p)) {
-        let object = objects
-            .get(&pick.object)
-            .ok_or("component source is unavailable")?;
-        let count = if let Some(&count) = counts.get(&(pick.object, pick.kind)) {
-            count
-        } else {
-            let count = match (pick.kind, object.geometry()) {
-                (ComponentSelectionKind::MeshFace, Geometry::Mesh(m)) => m.face_count(),
-                (ComponentSelectionKind::MeshVertex, Geometry::Mesh(m)) => {
-                    m.topology_vertex_points().len()
-                }
-                (ComponentSelectionKind::MeshEdge, Geometry::Mesh(m)) => {
-                    m.topology_edge_points().len()
-                }
-                (ComponentSelectionKind::SubDFace, Geometry::SubD(s)) => s.faces().len(),
-                (ComponentSelectionKind::SubDEdge, Geometry::SubD(s)) => s.edges().len(),
-                (ComponentSelectionKind::SubDVertex, Geometry::SubD(s)) => s.control_points().len(),
-                (ComponentSelectionKind::BrepEdge, Geometry::Brep(b)) => b.edges().len(),
-                (ComponentSelectionKind::BrepFace, Geometry::Brep(b)) => b.faces().len(),
-                (ComponentSelectionKind::BrepEdge, Geometry::NurbsSurface(s)) => {
-                    viboceros_geometry::Brep::try_surface_face(s.clone(), document.tolerance())
-                        .map_err(|_| "invalid component surface")?
-                        .edges()
-                        .len()
-                }
-                (ComponentSelectionKind::BrepFace, Geometry::NurbsSurface(surface)) => {
-                    viboceros_geometry::Brep::try_surface_face(
-                        surface.clone(),
-                        document.tolerance(),
-                    )
-                    .map_err(|_| "invalid component surface")?
-                    .faces()
-                    .len()
-                }
-                _ => return Err("component kind does not match its source"),
-            };
-            counts.insert((pick.object, pick.kind), count);
-            count
-        };
-        if pick.index >= count {
-            return Err("component index is outside its source");
-        }
-        staged.push((pick, object.geometry_snapshot().clone()));
-    }
-    Ok(staged)
 }
 
 impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
         self.direction_session.is_none()
             && self.active_command.is_none()
+            && self.edge_loop_prompt.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()
@@ -328,6 +187,7 @@ impl VibocerosApp {
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
+            && self.edge_loop_prompt.is_none()
             && !self.picking_nurbs_edges()
             && !self.picking_extract_points()
             && !self.picking_inset()
@@ -446,7 +306,15 @@ impl VibocerosApp {
         } else {
             click.picks
         };
-        let picks = if self.picking_extract_points() {
+        let picks = if self.edge_loop_prompt.is_some() {
+            picks
+                .into_iter()
+                .filter(|p| {
+                    viboceros_command::edge_loop_selection::eligible(*p)
+                        && !self.document.is_selected(p.object)
+                })
+                .collect()
+        } else if self.picking_extract_points() {
             picks
                 .into_iter()
                 .filter(|p| super::extract_points::component_kind(p.kind).is_some())
@@ -518,6 +386,10 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.edge_loop_prompt.is_some() {
+            self.pick_edge_loop(picks, action);
+            return;
+        }
         if self.picking_spin_edge() {
             self.pick_spin_edge(&picks);
             return;
@@ -662,7 +534,7 @@ impl VibocerosApp {
                     let selected = mode == SelectionMode::Add;
                     let ids = grips
                         .iter()
-                        .filter(|(p, _)| self.component_selection.picks.contains_key(p) == selected)
+                        .filter(|(p, _)| self.component_selection.shared.contains(p) == selected)
                         .map(|(_, g)| *g)
                         .collect::<Vec<_>>();
                     if !ids.is_empty()
@@ -677,7 +549,7 @@ impl VibocerosApp {
                 self.record_nurbs_targets();
                 self.push_log(format!(
                     "{} component(s) selected",
-                    self.component_selection.picks.len()
+                    self.component_selection.shared.len()
                 ));
             }
             Err(error) => self.push_log(format!("Error: {error}")),
@@ -685,6 +557,16 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.edge_loop_prompt.is_some() {
+            let action = if window.modifiers.ctrl || window.modifiers.command {
+                ComponentAction::Remove
+            } else {
+                ComponentAction::Add
+            };
+            self.pick_edge_loop(window.picks, action);
+            self.selection_window_override = None;
+            return;
+        }
         if self.picking_extract_points() {
             window
                 .picks

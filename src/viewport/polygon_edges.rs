@@ -227,6 +227,7 @@ impl Viewport {
         document: &Document,
         object: &Object,
         index: usize,
+        stroke: Stroke,
     ) {
         // Use the same curve/cage representation as the picker.
         if let Geometry::SubD(subd) = object.geometry()
@@ -236,7 +237,7 @@ impl Viewport {
                 && let (Some(&a), Some(&b)) = (points.get(a as usize), points.get(b as usize))
                 && let Some(segment) = self.project_selection_segment(a, b, rect)
             {
-                painter.line_segment(segment, Stroke::new(3., Color32::from_rgb(245, 160, 20)));
+                painter.line_segment(segment, stroke);
             }
             return;
         }
@@ -248,7 +249,7 @@ impl Viewport {
         if let Some(segments) = display.edges().get(index) {
             for &[a, b] in segments {
                 if let Some(segment) = self.project_selection_segment(a, b, rect) {
-                    painter.line_segment(segment, Stroke::new(3., Color32::from_rgb(245, 160, 20)));
+                    painter.line_segment(segment, stroke);
                 }
             }
         }

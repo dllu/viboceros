@@ -52,6 +52,7 @@ impl VibocerosApp {
             && self.fillet_surface_prompt.is_none()
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
+            && self.edge_loop_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
@@ -190,6 +191,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.edge_loop_prompt.is_some() {
+                        "SelEdgeLoop"
                     } else if self.select_uv_prompt.is_some() {
                         "SelUV"
                     } else if let Some(prompt)=&self.refinement_prompt {
@@ -329,6 +332,8 @@ impl VibocerosApp {
                                 } else {
                                     "Select two surfaces or polysurfaces; Enter previews, Esc cancels"
                                 }
+                            } else if self.edge_loop_prompt.is_some() {
+                                edge_loop_selection::HINT
                             } else if let Some(prompt) = &self.object_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.group_prompt {

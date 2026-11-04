@@ -12,6 +12,7 @@
 - [Create shared blocks and insert instances](blocks.md)
 - [Explode instances one level or recursively](explode-blocks.md)
 - [Selection, attributes, layers, and groups](document.md)
+- [Mesh/SubD edge loops and SelEdgeLoop](component-edge-loops.md)
 - [Volume selection](volume-selection.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)

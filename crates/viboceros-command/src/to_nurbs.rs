@@ -20,6 +20,7 @@ const MAX_OUTPUT_CONTROLS: usize = 1_048_576;
 #[derive(Default)]
 pub(super) struct ToNurbsCommand {
     options: remembered::Remembered<Options>,
+    selection: component_selection::ComponentSelection,
 }
 
 impl Command for ToNurbsCommand {
@@ -131,6 +132,12 @@ impl Command for ToNurbsCommand {
 }
 
 impl ToNurbsCommand {
+    pub fn with_selection(selection: component_selection::ComponentSelection) -> Self {
+        Self {
+            selection,
+            ..Default::default()
+        }
+    }
     fn convert(
         &self,
         document: &mut Document,
@@ -138,7 +145,26 @@ impl ToNurbsCommand {
         postselected: bool,
     ) -> Result<String, CommandError> {
         let (arguments, selectors) = targets::split(arguments)?;
-        let targets = selectors.map(|s| s.resolve(document)).transpose()?;
+        let mut targets = selectors.map(|s| s.resolve(document)).transpose()?;
+        if targets.is_none() {
+            let picks = self
+                .selection
+                .checked_picks(document)
+                .map_err(|_| CommandError::ToNurbsTargetUnavailable)?;
+            if picks.iter().any(|p| edge_loop_selection::eligible(*p)) {
+                let mut all = document
+                    .selected_object_ids()
+                    .map(ToNurbsTarget::Whole)
+                    .collect::<Vec<_>>();
+                all.extend(
+                    picks
+                        .into_iter()
+                        .filter(|p| edge_loop_selection::eligible(*p))
+                        .map(|p| ToNurbsTarget::Edge(p.object, p.index)),
+                );
+                targets = Some(all);
+            }
+        }
         let control_net = document.subd_control_net();
         self.convert_targets(
             document,

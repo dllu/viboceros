@@ -65,6 +65,7 @@ mod curve_conic_centers;
 mod curve_connections;
 mod curve_parameter_samples;
 pub mod delete_grips;
+pub mod edge_loop_workflow;
 mod grip_navigation;
 pub mod grip_visibility;
 pub mod grip_weight;
@@ -358,6 +359,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: grip_visibility::Fixture,
+    },
+    EdgeLoopWorkflow {
+        id: String,
+        #[serde(flatten)]
+        fixture: edge_loop_workflow::Fixture,
     },
     SelectUvRows {
         id: String,
@@ -2820,6 +2826,7 @@ impl Operation {
             | Self::DeleteGrips { id, .. }
             | Self::GripWeight { id, .. }
             | Self::SelectUvRows { id, .. }
+            | Self::EdgeLoopWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
@@ -3347,6 +3354,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::EdgeLoopWorkflow { fixture, .. } => {
+            edge_loop_workflow::run(fixture, iterations, tolerance)?
+        }
         Operation::SelectUvRows { fixture, .. } => select_uv_rows::run(fixture, iterations)?,
         Operation::GripVisibility { fixture, .. } => grip_visibility::run(fixture, iterations)?,
         Operation::DeleteGrips { fixture, .. } => delete_grips::run(fixture, iterations)?,

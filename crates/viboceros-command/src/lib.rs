@@ -241,11 +241,12 @@ mod patch_single_face;
 use patch_single_face::PatchSingleFaceCommand;
 pub mod triangulate_nonplanar_quads;
 use triangulate_nonplanar_quads::TriangulateNonPlanarQuadsCommand;
-mod component_selection;
+pub mod component_selection;
+pub mod edge_loop_selection;
 mod mesh_to_nurb;
 mod object_selection;
 pub use component_selection::{
-    ComponentSelectionKind, ComponentSelectionPrompt, NumberSelectionOption,
+    ComponentPick, ComponentSelectionKind, ComponentSelectionPrompt, NumberSelectionOption,
 };
 pub mod quadrangulate_mesh;
 pub use object_selection::{
@@ -967,6 +968,7 @@ pub trait Command: Send + Sync {
 
 #[derive(Default)]
 pub struct CommandRegistry {
+    components: component_selection::ComponentSelection,
     crease_splitting: crease_splitting::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -1001,6 +1003,9 @@ pub struct CommandRegistry {
 }
 
 impl CommandRegistry {
+    pub fn component_selection(&self) -> &component_selection::ComponentSelection {
+        &self.components
+    }
     /// Current application policy; independent registries retain independent settings.
     pub fn crease_splitting(&self) -> bool {
         self.crease_splitting.get().0
@@ -2282,7 +2287,12 @@ impl CommandRegistry {
             .register(SetPointCommand)
             .expect("unique built-in command");
         registry
-            .register(ToNurbsCommand::default())
+            .register(ToNurbsCommand::with_selection(registry.components.clone()))
+            .expect("unique built-in command");
+        registry
+            .register(edge_loop_selection::SelEdgeLoopCommand::new(
+                registry.components.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -2503,6 +2513,9 @@ impl CommandRegistry {
             command.cleanup_failed_selection(document, error, postselected);
         } else if let Some(copy) = copy {
             self.copy_preferences.complete(command.name(), copy);
+        }
+        if result.is_ok() && matches!(command.name(), "SelNone" | "Clear" | "ToNURBS") {
+            self.components.clear();
         }
         result
     }

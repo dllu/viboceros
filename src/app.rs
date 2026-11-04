@@ -133,6 +133,7 @@ mod control_polygon;
 mod copy_options;
 mod crease;
 mod curve_extraction_subcurve;
+mod edge_loop_selection;
 mod extract_points;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
@@ -419,6 +420,7 @@ pub struct VibocerosApp {
     direction_mode: viboceros_command::direction::DirectionEdit,
     refinement_prompt: Option<refinement::Prompt>,
     select_uv_prompt: Option<select_uv_rows::Prompt>,
+    edge_loop_prompt: Option<edge_loop_selection::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     weight_prompt: Option<weight::Session>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
@@ -508,11 +510,15 @@ impl VibocerosApp {
         let viewport_tab_alignment =
             preferences::load_viewport_tab_alignment(creation_context.storage);
         let four_view_projection = preferences::load_four_view_projection(creation_context.storage);
+        let commands = CommandRegistry::with_builtins();
+        let component_selection = component_selection::ComponentSelection::with_shared(
+            commands.component_selection().clone(),
+        );
         Self {
             command_line,
             document: Document::default(),
             document_path: None,
-            commands: CommandRegistry::with_builtins(),
+            commands,
             draft_pull_source: Default::default(),
             command_input: String::new(),
             command_log,
@@ -584,6 +590,7 @@ impl VibocerosApp {
             direction_mode: viboceros_command::direction::DirectionEdit::Flip,
             refinement_prompt: None,
             select_uv_prompt: None,
+            edge_loop_prompt: None,
             rebuild_preview: None,
             weight_prompt: None,
             edge_prompt: None,
@@ -594,7 +601,7 @@ impl VibocerosApp {
             edge_fillet_prompt: None,
             crease_prompt: None,
             soft_crease_prompt: None,
-            component_selection: Default::default(),
+            component_selection,
             curve_points: Vec::new(),
             points_session: None,
             transform_session: None,
@@ -831,6 +838,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_edge_loop(&input) {
+            return;
+        }
         if self.continue_select_uv(&input) {
             return;
         }
@@ -982,6 +992,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
+            || self.start_edge_loop(&input)
             || self.start_select_uv(&input)
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)

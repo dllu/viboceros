@@ -2,12 +2,7 @@
 use super::*;
 use viboceros_command::ComponentSelectionKind;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct ComponentPick {
-    pub object: ObjectId,
-    pub kind: ComponentSelectionKind,
-    pub index: usize,
-}
+pub use viboceros_command::ComponentPick;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ComponentPickFilter {
@@ -20,6 +15,7 @@ pub enum ComponentPickFilter {
     /// SubD naked edges take priority over faces; excludes other geometry.
     SubDExtrude,
     MeshAndSubDFaces,
+    MeshAndSubDEdges,
     /// Individual stored mesh faces, including faces inside logical n-gons.
     RawMeshFaces,
     Crease,
@@ -69,6 +65,18 @@ impl Viewport {
     ) -> Vec<ComponentPick> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::MeshAndSubDEdges {
+            return self
+                .pick_component_edges(pointer, rect, document, false)
+                .into_iter()
+                .filter(|p| {
+                    matches!(
+                        p.kind,
+                        ComponentSelectionKind::MeshEdge | ComponentSelectionKind::SubDEdge
+                    )
+                })
+                .collect();
         }
         if filter == ComponentPickFilter::SubDExtrude {
             let mut edges = self.pick_component_edges(pointer, rect, document, false);
@@ -318,7 +326,9 @@ impl Viewport {
                 }
                 if matches!(
                     filter,
-                    ComponentPickFilter::Any | ComponentPickFilter::Crease
+                    ComponentPickFilter::Any
+                        | ComponentPickFilter::Crease
+                        | ComponentPickFilter::MeshAndSubDEdges
                 ) {
                     result.extend(
                         self.polygon_edges_in_rectangle(
@@ -326,8 +336,16 @@ impl Viewport {
                         )
                         .into_iter()
                         .filter(|p| {
-                            filter == ComponentPickFilter::Any
-                                || p.kind != ComponentSelectionKind::MeshVertex
+                            if filter == ComponentPickFilter::MeshAndSubDEdges {
+                                matches!(
+                                    p.kind,
+                                    ComponentSelectionKind::MeshEdge
+                                        | ComponentSelectionKind::SubDEdge
+                                )
+                            } else {
+                                filter == ComponentPickFilter::Any
+                                    || p.kind != ComponentSelectionKind::MeshVertex
+                            }
                         }),
                     );
                 }
@@ -345,7 +363,9 @@ impl Viewport {
             }
             if matches!(
                 filter,
-                ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::Crease
+                ComponentPickFilter::MeshAndSubDFaces
+                    | ComponentPickFilter::Crease
+                    | ComponentPickFilter::MeshAndSubDEdges
             ) {
                 continue;
             }
@@ -465,7 +485,14 @@ impl Viewport {
                         (ComponentSelectionKind::MeshEdge, Geometry::Mesh(_))
                             | (ComponentSelectionKind::SubDEdge, Geometry::SubD(_))
                     ) {
-                        self.paint_polygon_edge(painter, rect, document, object, pick.index);
+                        self.paint_polygon_edge(
+                            painter,
+                            rect,
+                            document,
+                            object,
+                            pick.index,
+                            Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+                        );
                     }
                 }
                 ComponentSelectionKind::MeshVertex | ComponentSelectionKind::SubDVertex => {

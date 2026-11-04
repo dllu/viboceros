@@ -239,10 +239,14 @@ use viboceros_document::{ColorRgb, Geometry};
 use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
 
 pub(super) fn test_app() -> VibocerosApp {
+    let commands = CommandRegistry::with_builtins();
+    let component_selection = component_selection::ComponentSelection::with_shared(
+        commands.component_selection().clone(),
+    );
     VibocerosApp {
         document: Document::default(),
         document_path: None,
-        commands: CommandRegistry::with_builtins(),
+        commands,
         draft_pull_source: Default::default(),
         command_input: String::new(),
         command_log: VecDeque::new(),
@@ -316,6 +320,7 @@ pub(super) fn test_app() -> VibocerosApp {
         direction_mode: viboceros_command::direction::DirectionEdit::Flip,
         refinement_prompt: None,
         select_uv_prompt: None,
+        edge_loop_prompt: None,
         rebuild_preview: None,
         weight_prompt: None,
         edge_prompt: None,
@@ -326,7 +331,7 @@ pub(super) fn test_app() -> VibocerosApp {
         edge_fillet_prompt: None,
         crease_prompt: None,
         soft_crease_prompt: None,
-        component_selection: Default::default(),
+        component_selection,
         points_session: None,
         transform_session: None,
         twist_session: None,

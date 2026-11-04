@@ -170,9 +170,13 @@ impl CommandRegistry {
             .ok_or(CommandError::ToNurbsTargetUnavailable)?;
         let command = &self.commands[*index];
         let args = args.collect::<Vec<_>>();
-        run_command_transaction(doc, "ToNURBS", |doc| {
+        let result = run_command_transaction(doc, "ToNURBS", |doc| {
             command.run_to_nurbs_targets(doc, &args, targets, context)
-        })
+        });
+        if result.is_ok() {
+            self.components.clear();
+        }
+        result
     }
 }
 

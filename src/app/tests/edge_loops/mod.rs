@@ -3,6 +3,7 @@ use crate::viewport::{ComponentClick, ComponentPick, ComponentWindow};
 use serde_json::Value;
 use std::io::Read;
 use viboceros_command::ComponentSelectionKind as Kind;
+mod command;
 mod viewport;
 
 fn enter(app: &mut VibocerosApp, input: &str) {

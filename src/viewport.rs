@@ -436,6 +436,7 @@ pub struct ViewportInput<'a> {
     pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
+    pub component_previews: &'a [ComponentPick],
     pub component_highlight_segments: &'a [[Point3; 2]],
     pub point_deviation: Option<&'a viboceros_command::point_deviation::View>,
     pub curve_deviation: Option<&'a viboceros_command::curve_deviation::View>,
@@ -558,6 +559,7 @@ impl Default for ViewportInput<'_> {
             control_point_pick: false,
             component_pick: None,
             component_highlights: &[],
+            component_previews: &[],
             component_highlight_segments: &[],
             point_deviation: None,
             curve_deviation: None,
@@ -2177,6 +2179,21 @@ impl Viewport {
                 },
             ),
         );
+        for pick in input.component_previews {
+            if let Some(object) = document
+                .object(pick.object)
+                .filter(|_| document.is_object_selectable(pick.object))
+            {
+                self.paint_polygon_edge(
+                    &painter,
+                    rect,
+                    document,
+                    object,
+                    pick.index,
+                    Stroke::new(1.8, Color32::from_rgb(165, 120, 35)),
+                );
+            }
+        }
         self.paint_component_highlights(
             &painter,
             rect,

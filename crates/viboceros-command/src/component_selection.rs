@@ -1,5 +1,7 @@
 //! Command-owned options for component picking, shared by GUI and typed input.
 use super::*;
+mod state;
+pub use state::{ComponentAction, ComponentPick, ComponentSelection, current, stage_sources};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ComponentSelectionKind {

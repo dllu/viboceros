@@ -41,6 +41,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_edge_loop();
         self.validate_select_uv();
         self.validate_refinement();
         self.validate_reparameterize();
@@ -74,6 +75,7 @@ impl eframe::App for VibocerosApp {
             && self.fillet_surface_prompt.is_none()
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
+            && self.edge_loop_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.direction_session.is_none()
             && self.group_prompt.is_none()
@@ -552,28 +554,36 @@ impl eframe::App for VibocerosApp {
             .unwrap_or_default();
         let component_highlight_segments = self.merge_face_mesh_wires();
         let component_preselection = self.component_preselection_available();
-        let control_point_pick = model_input_active && self.control_point_picking_available();
-        let component_pick = self
-            .hole_prompt
-            .as_ref()
-            .and_then(|prompt| {
-                if !model_input_active || self.plane_prompt.is_some() || end_analysis_picking {
-                    None
-                } else if prompt.picking_edges() {
-                    Some(crate::viewport::ComponentPickFilter::Edges)
-                } else if prompt.picking_faces() {
-                    Some(crate::viewport::ComponentPickFilter::Faces)
-                } else {
-                    None
-                }
-            })
-            .or_else(|| {
-                ((self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
-                    && model_input_active
-                    && self.plane_prompt.is_none()
-                    && !end_analysis_picking)
-                    .then_some(crate::viewport::ComponentPickFilter::Edges)
-            });
+        let control_point_pick = model_input_active
+            && self.edge_loop_prompt.is_none()
+            && self.control_point_picking_available();
+        let loop_pick = (model_input_active
+            && self.edge_loop_prompt.is_some()
+            && self.plane_prompt.is_none()
+            && !end_analysis_picking)
+            .then_some(crate::viewport::ComponentPickFilter::MeshAndSubDEdges);
+        let component_pick = loop_pick.or_else(|| {
+            self.hole_prompt
+                .as_ref()
+                .and_then(|prompt| {
+                    if !model_input_active || self.plane_prompt.is_some() || end_analysis_picking {
+                        None
+                    } else if prompt.picking_edges() {
+                        Some(crate::viewport::ComponentPickFilter::Edges)
+                    } else if prompt.picking_faces() {
+                        Some(crate::viewport::ComponentPickFilter::Faces)
+                    } else {
+                        None
+                    }
+                })
+                .or_else(|| {
+                    ((self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
+                        && model_input_active
+                        && self.plane_prompt.is_none()
+                        && !end_analysis_picking)
+                        .then_some(crate::viewport::ComponentPickFilter::Edges)
+                })
+        });
         let component_pick = component_pick.or_else(|| {
             (((self.crease_prompt.is_some() && self.insert_prompt().is_none())
                 || self.picking_soft_crease_edges())
@@ -1257,6 +1267,10 @@ impl eframe::App for VibocerosApp {
                             component_preselection,
                             control_point_pick,
                             component_pick,
+                            component_previews: self
+                                .edge_loop_prompt
+                                .as_ref()
+                                .map_or(&[], |p| p.preview()),
                             component_highlights: &component_highlights,
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,

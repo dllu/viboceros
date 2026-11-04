@@ -136,21 +136,9 @@ impl VibocerosApp {
                     },
                 );
                 self.component_selection.loop_click = None;
-                let belongs = |p: &&ComponentPick| p.object == pick.object && p.kind == pick.kind;
-                let mut owner = self
-                    .component_selection
-                    .order
-                    .iter()
-                    .filter(belongs)
-                    .copied()
-                    .collect::<Vec<_>>();
-                owner.sort_unstable_by_key(|p| std::cmp::Reverse(p.index));
-                let mut owner = owner.into_iter();
-                for p in &mut self.component_selection.order {
-                    if p.object == pick.object && p.kind == pick.kind {
-                        *p = owner.next().unwrap();
-                    }
-                }
+                self.component_selection
+                    .shared
+                    .order_edges(pick.object, pick.kind);
                 self.renew_nurbs_edge_order(pick.object);
             }
             Err(e) => self.push_log(format!("Error: {e}")),

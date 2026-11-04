@@ -1337,7 +1337,7 @@ class OracleClient:
             if any(op.get("pick") in ("mouse", "sequence") for op in request["operations"]):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
-        if any(op.get('op') == 'edge_loop_command' for op in request.get('operations', [])):
+        if any(op.get('op') in ('edge_loop_command','edge_loop_workflow') for op in request.get('operations', [])):
             if self.settings_scheme is None:
                 raise OracleProtocolError('edge loop picking requires a private settings scheme')
             from .component_picking import ComponentPicker
