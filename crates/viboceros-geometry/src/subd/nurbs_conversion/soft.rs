@@ -3,27 +3,6 @@ use super::*;
 mod levels;
 pub(super) use levels::continuity_enabled;
 
-pub(super) fn validate_continuity(
-    source: &SubD,
-    mode: SubDNurbsContinuity,
-) -> Result<(), GeometryError> {
-    if matches!(mode, SubDNurbsContinuity::G1x | SubDNurbsContinuity::G1xx) {
-        let valence = continuity::valences(source);
-        for (edge, sharpness) in source.edges().iter().zip(source.edge_sharpness()) {
-            if sharpness.iter().any(|&s| s > 2.)
-                && edge
-                    .iter()
-                    .any(|&v| valence[v as usize] != 4 && valence[v as usize].is_multiple_of(2))
-            {
-                return Err(failure(
-                    "Strong soft creases at even extraordinary vertices require further G1x/G1xx qualification",
-                ));
-            }
-        }
-    }
-    Ok(())
-}
-
 fn failure(context: &'static str) -> GeometryError {
     GeometryError::InvalidBrepTopology { context }
 }

@@ -1,0 +1,411 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "id": "charts_five_shifted_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_five_shifted_60.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 60.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_five_shifted_60.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 60.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_five_shifted_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_five_shifted_60.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 60.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_five_shifted_100.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 100.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_five_shifted_100.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 100.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_five_shifted_100.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 100.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_five_shifted_100.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 100.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_five_shifted_100.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "five_fan",
+      "profile": "five_shifted",
+      "weight": 100.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_six_shifted_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_six_shifted_60.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 60.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_six_shifted_60.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 60.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_six_shifted_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_six_shifted_60.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 60.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_six_shifted_100.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 100.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_six_shifted_100.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 100.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_six_shifted_100.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 100.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_six_shifted_100.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 100.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_six_shifted_100.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_shifted",
+      "weight": 100.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_eight_rotated_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_eight_rotated_60.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 60.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_eight_rotated_60.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 60.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_eight_rotated_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_eight_rotated_60.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 60.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_eight_rotated_100.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 100.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_eight_rotated_100.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 100.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_eight_rotated_100.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 100.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_eight_rotated_100.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 100.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_eight_rotated_100.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_rotated",
+      "weight": 100.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_six_affine_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_six_affine_60.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 60.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_six_affine_60.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 60.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_six_affine_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_six_affine_60.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 60.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_six_affine_100.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 100.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_six_affine_100.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 100.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_six_affine_100.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 100.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_six_affine_100.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 100.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_six_affine_100.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan6",
+      "profile": "six_affine",
+      "weight": 100.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_eight_asymmetric_60.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 60.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_eight_asymmetric_60.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 60.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_eight_asymmetric_60.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 60.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_eight_asymmetric_60.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 60.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_eight_asymmetric_60.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 60.0,
+      "mode": 4
+    },
+    {
+      "id": "charts_eight_asymmetric_100.0_0",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 100.0,
+      "mode": 0
+    },
+    {
+      "id": "charts_eight_asymmetric_100.0_1",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 100.0,
+      "mode": 1
+    },
+    {
+      "id": "charts_eight_asymmetric_100.0_2",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 100.0,
+      "mode": 2
+    },
+    {
+      "id": "charts_eight_asymmetric_100.0_3",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 100.0,
+      "mode": 3
+    },
+    {
+      "id": "charts_eight_asymmetric_100.0_4",
+      "op": "subd_soft_nurbs",
+      "scene": "fan8",
+      "profile": "eight_asymmetric",
+      "weight": 100.0,
+      "mode": 4
+    }
+  ]
+}

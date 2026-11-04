@@ -11,8 +11,8 @@ odd-valence and chart-dependent quartic even-valence processing.
 
 `G1x` starts with G1 and improves the sampled normal gap near each processed
 edge end. It compares the two incident patches at seven interior eighths of the
-first shared source interval, using a one-degree cosine threshold. Unequal first
-spans use their smaller source reach. Up to four quarter-step
+first shared source interval, using a one-degree cosine threshold. It leaves
+unequal first source intervals unchanged. Up to four quarter-step
 projections move the second edge control inward from the corner and its adjacent
 interior control.
 Both incident patches receive the same displacement, preserving their shared

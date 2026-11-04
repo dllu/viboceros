@@ -30,8 +30,9 @@ An alternating recurrence solves this cyclic system in linear work. Odd valence
 has a unique solution. Coordinates relative to the retained corner avoid
 subtracting large absolute positions in the solve.
 
-With unequal soft-crease refinement, the first incident patch owns `E1`, `E2`
-and `E3`. The compatibility right side is
+With unequal soft-crease refinement, the preceding face's incoming edge use
+owns `E1`, `E2` and `E3` in the oriented fan. This choice is independent of face
+list order and the fan's initial edge. The compatibility right side is
 `2 E1_i + cos(2π/n) (E3_opposite_i - E2_new_i) / 3`;
 the equation above is its shared-boundary specialization. Both incident interior
 controls receive the owner's second-control displacement.
@@ -61,6 +62,13 @@ The cyclic solve selects zero alternating component. Boundary curves remain
 shared, including mixed quad/triangle seams and different parameter scales.
 Odd corrections run before elevation so adjacent odd/even corners compose.
 
+After elevation, the next interior controls on each incident face satisfy
+`T21_i + T12_(i-1) = E1_i + E2_i + cos(2π/n) (E3_opposite_i - E2_i) / 8`.
+Both faces receive half the residual of this equation. It covers unequal local
+refinement without assuming that the two original boundaries coincide. Cubic
+charts supply their virtual quartic control through the local tensor elevation
+mask, avoiding temporary elevated surfaces.
+
 The frozen `subd_g1xx`, `subd_g1xx_even`, `subd_g1xx_charts`,
 `subd_g1xx_creases` and `subd_g1xx_degree` families contain 43 additional native
 workflows. They cover valences six through nine, affine and scale controls,
@@ -73,5 +81,5 @@ Output admits at most four million controls, including quartic elevation.
 Nonmanifold, repeated or disconnected smooth face fans and smooth valence below
 three reject. [Packing](subd-nurbs-packing.md) applies after this processing;
 the [ToNURBS command](../commands/to-nurbs-subd.md) exposes this mode.
-[Single uniform soft edges](subd-soft-nurbs.md) have separate native coverage;
-strong even-valence soft G1xx remains unsupported.
+[Single uniform soft edges](subd-soft-nurbs.md) have separate native coverage,
+including strong even-valence creases, reordered faces and offset sharp edges.

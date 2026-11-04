@@ -179,23 +179,13 @@ fn improve(patches: &mut [SubDNurbsPatch], ring: &[Corner]) -> Result<(), Geomet
         .enumerate()
         .map(|(i, &c)| {
             let previous = ring[(i + ring.len() - 1) % ring.len()];
+            // The preceding face's incoming use owns the shared stencil.
             // Finite soft-crease charts can have unequal boundary controls.
-            // Native processing retains the first incident patch as owner.
-            let (owner, outgoing) = if previous.patch < c.patch {
-                (previous, false)
-            } else {
-                (c, true)
-            };
-            let (other, other_outgoing) = if outgoing {
-                (previous, false)
-            } else {
-                (c, true)
-            };
-            opposite_third.push(edge_get(other, other_outgoing, 3, 0));
-            second_owner.push(edge_get(owner, outgoing, 2, 0));
+            opposite_third.push(edge_get(c, true, 3, 0));
+            second_owner.push(edge_get(previous, false, 2, 0));
             [
-                edge_get(owner, outgoing, 1, 0),
-                edge_get(owner, outgoing, 3, 0),
+                edge_get(previous, false, 1, 0),
+                edge_get(previous, false, 3, 0),
                 edge_get(c, true, 1, 1),
             ]
         })

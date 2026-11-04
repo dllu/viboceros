@@ -30,14 +30,7 @@ fn mode(id: &str) -> SubDNurbsContinuity {
     }
 }
 fn supported(id: &str) -> bool {
-    !(id.starts_with("variable_")
-        || id.starts_with("hard_soft_")
-        || id.starts_with("even_")
-            && (id.contains("_90.0_") || id.contains("_100.0_"))
-            && matches!(
-                mode(id),
-                SubDNurbsContinuity::G1x | SubDNurbsContinuity::G1xx
-            ))
+    !(id.starts_with("variable_") || id.starts_with("hard_soft_"))
 }
 fn for_cases(mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
     let temp = tempfile::tempdir().unwrap();
@@ -47,6 +40,10 @@ fn for_cases(mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
         include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_holdouts.json.gz")
             .as_slice(),
         include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_even.json.gz")
+            .as_slice(),
+        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_charts.json.gz")
+            .as_slice(),
+        include_bytes!("../../../tools/rhino_oracle/observations/subd_soft_nurbs_offsets.json.gz")
             .as_slice(),
     ] {
         let mut raw = Vec::new();
@@ -87,6 +84,7 @@ fn for_cases(mut check: impl FnMut(&str, &Value, &viboceros_geometry::SubD)) {
 #[test]
 fn native_soft_surface_images() {
     let (mut accepted, mut rejected) = (0, 0);
+    let mut failures = Vec::new();
     for_cases(|id, value, source| {
         if !supported(id) {
             assert!(source.to_nurbs_patches(mode(id)).is_err(), "{id}");
@@ -108,9 +106,12 @@ fn native_soft_surface_images() {
             max = max.max(error);
         }
         println!("SOFT_IMAGE {id} {max:e}");
-        assert!(max < 1e-11, "{id}: {max}");
+        if max >= 1e-11 {
+            failures.push((id.to_owned(), max));
+        }
     });
-    assert_eq!((accepted, rejected), (79, 28));
+    assert_eq!((accepted, rejected), (155, 20));
+    assert!(failures.is_empty(), "{failures:?}");
 }
 
 #[test]

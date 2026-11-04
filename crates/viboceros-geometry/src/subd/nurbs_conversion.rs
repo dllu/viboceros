@@ -52,7 +52,6 @@ impl SubD {
         &self,
         mode: SubDNurbsContinuity,
     ) -> Result<Vec<SubDNurbsPatch>, GeometryError> {
-        soft::validate_continuity(self, mode)?;
         let mut patches = self.to_nurbs_patches_g0()?;
         if mode == SubDNurbsContinuity::G1xx {
             g1xx::apply(self, &mut patches)?;

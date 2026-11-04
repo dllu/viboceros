@@ -193,14 +193,17 @@ fn sampled_g1(
     };
     let ra = reach(a, ea);
     let rb = reach(b, eb);
-    let common = ra.min(rb);
+    // Native G1x leaves unequal first source intervals unchanged.
+    if ra != rb {
+        return Ok(true);
+    }
     // Keep the seven interior eighths established by the G1x controls. A denser
     // test changes quarter-step decisions near one degree; this is a sampling
     // convention, not a bound on the continuous normal gap.
     for station in 1..8 {
         let f = station as f64 / 8.;
-        let na = normal(a, uv(a, ea, f * common / ra))?;
-        let nb = normal(b, uv(b, eb, f * common / rb))?;
+        let na = normal(a, uv(a, ea, f))?;
+        let nb = normal(b, uv(b, eb, f))?;
         if (0..3).map(|i| na[i] * nb[i]).sum::<f64>() < COS_ONE_DEGREE {
             return Ok(false);
         }

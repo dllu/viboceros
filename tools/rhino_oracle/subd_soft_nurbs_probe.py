@@ -1,13 +1,11 @@
 """Native SubDCrease inputs followed by immutable public ToBrep queries."""
 if __package__:
-    from .subd_soft_nurbs_cases import validate
-    from .subd_packing_cases import source
+    from .subd_soft_nurbs_cases import validate,source
     from .subd_to_nurbs_probe import make_source
     from .subd_box_probe import subd_value
     from .join_probe import observe_command
 else:
-    from subd_soft_nurbs_cases import validate
-    from subd_packing_cases import source
+    from subd_soft_nurbs_cases import validate,source
     from subd_to_nurbs_probe import make_source
     from subd_box_probe import subd_value
     from join_probe import observe_command
@@ -27,14 +25,14 @@ def run(op,host,iterations,tolerance):
         finally:model.Dispose()
         try:return convert(owned,op,host,dict(native_asset=op['asset']),None,None,None),0
         finally:owned.Dispose()
-    recipe=source(op['scene']);subd=make_source(recipe,host);owned=None;key=None
+    recipe=source(op);subd=make_source(recipe,host);owned=None;key=None
     try:
         key=doc.Objects.AddSubD(subd)
         if key==S.Guid.Empty:raise ValueError('cannot insert owned soft-crease source')
         obj=doc.Objects.FindId(key);vertices=[];v=obj.Geometry.Vertices.First
         while v is not None:vertices.append(v);v=v.Next
         indices={int(v.Id):i for i,v in enumerate(vertices)}
-        wanted=[7,12] if op['scene']=='grid' else [0,1]
+        wanted=op.get('edge',[7,12] if op['scene']=='grid' else [0,1])
         selected=0
         for edge in obj.Geometry.Edges:
             pair=sorted([indices[int(edge.VertexFrom.Id)],indices[int(edge.VertexTo.Id)]])
