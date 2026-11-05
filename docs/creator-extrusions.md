@@ -2,9 +2,11 @@
 
 [Geometry guides](geometry/README.md) · [Extrusion storage and interchange](extrusions.md)
 
-`Box`, `Cylinder` and eligible `ExtrudeCrv` results now retain native extrusion
+`Box`, `Cylinder`, eligible `ExtrudeCrv`, `Tube` and straight constant-radius
+`Pipe` results retain native extrusion
 geometry alongside its canonical B-rep view. They can be saved to 3DM as extrusion
 objects and converted whole with [ToSubD](commands/to-subd.md).
+Their output follows the [UseExtrusions application preference](commands/use-extrusions.md).
 
 - Box creates a closed rectangular extrusion in the active construction plane.
 - Cylinder creates a circular extrusion. Its default is `Solid=Yes`;

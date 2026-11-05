@@ -137,6 +137,7 @@ mod curve_extraction_subcurve;
 mod edge_pattern_selection;
 mod extract_points;
 mod length_measurement;
+mod use_extrusions;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
 mod extract_surface;
@@ -400,6 +401,7 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     set_view_prompt: Option<set_view::SetViewSession>,
     remember_copy_prompt: bool,
+    use_extrusions_prompt: bool,
     edge_zoom_prompt: Option<edge_analysis::ZoomPrompt>,
     copy_cplane_source: Option<construction_plane::CopyCPlaneKind>,
     cplane_options: viboceros_command::construction_plane::PlaneOptions,
@@ -573,6 +575,7 @@ impl VibocerosApp {
             plane_prompt: None,
             set_view_prompt: None,
             remember_copy_prompt: false,
+            use_extrusions_prompt: false,
             edge_zoom_prompt: None,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
@@ -680,6 +683,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_curve_deviation(&input) {
+            return;
+        }
+        if self.try_continue_use_extrusions(&input) {
             return;
         }
         if self.try_continue_remember_copy_options(&input) {
@@ -1011,6 +1017,7 @@ impl VibocerosApp {
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
+            || self.try_start_use_extrusions(&input)
             || self.try_start_remember_copy_options(&input)
             || self.try_start_extract_point_components(&input)
             || self.try_start_control_polygon_components(&input)

@@ -1,0 +1,35 @@
+{
+  "scope": "UseExtrusions application policy; typed Tube and straight Pipe construction",
+  "native_cases": {
+    "preference": 8,
+    "creators": 172,
+    "pilot": 16
+  },
+  "geometry_epsilon": 1e-06,
+  "limits": [
+    "Geometric face matching allows native face permutations, reversed parameter axes, degree changes and cap support rectangles. Exact explicit parameterization and continuous error bounds are unqualified."
+  ],
+  "existing_regression": {
+    "test": "curve_extrusion_replay_tests::short_span_extrusion_matches_recorded_rhino_basis_and_direction",
+    "feature": "native-smlib",
+    "baseline_revision": "0f060e9f0ae023570264bfa14c8af069d3b2cf28",
+    "baseline_result": "failed",
+    "current_result": "failed",
+    "error": "InvalidBrepTopology: a model-space edge interior leaves its lifted p-curve",
+    "reproduce": "cargo test -p viboceros-oracle --features native-smlib --lib curve_extrusion_replay_tests::short_span_extrusion_matches_recorded_rhino_basis_and_direction -- --exact"
+  },
+  "passed_checks": {
+    "release_commands_native_creator_workflows": 172,
+    "release_commands_default_creator_workflows": 170,
+    "default_native_kernel_rejections": 2,
+    "headless_application_both_builds": true,
+    "preference_native_cases": 8,
+    "legacy_creator_cases_per_build": 42,
+    "geometry_tests": 11,
+    "pipe_unit_tests_including_selection": 34,
+    "solid_primitive_tests": 9,
+    "surface_extrusion_native_tests": 6,
+    "workspace_clippy_all_targets": true,
+    "formatting": true
+  }
+}

@@ -1,5 +1,8 @@
 # Surfaces and solids
 
+Eligible planar creators follow [UseExtrusions](use-extrusions.md). The typed
+outputs below describe its default `Extrusion` mode.
+
 [Command reference](README.md) · [Project overview](../../README.md)
 
 ## Planar surfaces
@@ -181,7 +184,7 @@ Rhino-compatible vertex, edge, face, trim, and planar-surface parameterization.
 They accept a side count, numeric or picked base radius, signed height,
 arbitrary `Axis=`, and optional exact planar caps through `Solid=Yes`.
 
-`Tube` creates a closed exact B-rep with concentric rational cylinder walls and
+`Tube` creates a closed typed extrusion with concentric rational cylinder walls and
 annular planar caps. The two radii may be entered in either order;
 `WallThickness=` expands outward from the first radius, and `BothSides=Yes`
 centers the full doubled height on the starting point.

@@ -8,7 +8,7 @@ mod tests;
 
 const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No]";
 
-pub(super) struct ExtrudeCurveCommand;
+pub(super) struct ExtrudeCurveCommand(pub use_extrusions::Preference);
 
 impl Command for ExtrudeCurveCommand {
     fn name(&self) -> &'static str {
@@ -102,6 +102,9 @@ impl Command for ExtrudeCurveCommand {
                 solid,
                 document.tolerance(),
             )?;
+            let typed = typed
+                .map(|brep| use_extrusions::output(brep, &self.0, document.tolerance()))
+                .transpose()?;
             #[cfg(not(feature = "native-smlib"))]
             let geometry = if let Some(extrusion) = typed {
                 Geometry::Brep(extrusion)

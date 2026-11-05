@@ -26,6 +26,27 @@ template<class F> int extrusion_guard(ViboExtrusionResult** out,char* error,size
 extern "C" int vibo_extrusion_read(const uint8_t* bytes,size_t count,ViboExtrusionResult** out,char* error,size_t capacity) {
   return extrusion_guard(out,error,capacity,[&]{return vibo_extrusion::decode(bytes,count);});
 }
+extern "C" int vibo_extrusion_path_domain(const uint8_t* bytes,size_t count,const double* domain,
+    ViboExtrusionResult** out,char* error,size_t capacity) {
+  return extrusion_guard(out,error,capacity,[&]{
+    vibo_extrusion::require(domain && ON_IsValid(domain[0]) && ON_IsValid(domain[1]) && domain[0]<domain[1],"Invalid extrusion path domain");
+    auto extrusion=vibo_extrusion::decode(bytes,count);
+    vibo_extrusion::require(extrusion->SetDomain(extrusion->PathParameter(),domain[0],domain[1]),"Cannot set extrusion path domain");
+    return extrusion;
+  });
+}
+extern "C" int vibo_extrusion_pipe(const double* frame,const double* radii,double height,int cap,
+    ViboExtrusionResult** out,char* error,size_t capacity) {
+  return extrusion_guard(out,error,capacity,[&]{
+    vibo_extrusion::require(frame && radii && ON_IsValid(height) && height>0. && (cap==0 || cap==1),"Invalid pipe extrusion input");
+    for(int i=0;i<9;++i)vibo_extrusion::require(ON_IsValid(frame[i]),"Invalid pipe extrusion plane");
+    vibo_extrusion::require(ON_IsValid(radii[0]) && ON_IsValid(radii[1]) && radii[0]>0. && radii[1]>0. && radii[0]!=radii[1],"Invalid pipe extrusion radii");
+    ON_Plane plane(ON_3dPoint(frame[0],frame[1],frame[2]),ON_3dVector(frame[3],frame[4],frame[5]),ON_3dVector(frame[6],frame[7],frame[8]));
+    vibo_extrusion::require(plane.IsValid(),"Invalid pipe extrusion plane");
+    const ON_Cylinder cylinder(ON_Circle(plane,radii[0]),height);
+    return std::unique_ptr<ON_Extrusion>(ON_Extrusion::Pipe(cylinder,radii[1],cap!=0,cap!=0,nullptr));
+  });
+}
 extern "C" int vibo_extrusion_transform(const uint8_t* bytes,size_t count,const double* matrix,ViboExtrusionResult** out,char* error,size_t capacity) {
   return extrusion_guard(out,error,capacity,[&]{
     vibo_extrusion::require(matrix,"Missing extrusion transform");auto extrusion=vibo_extrusion::decode(bytes,count);

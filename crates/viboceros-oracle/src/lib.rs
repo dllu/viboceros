@@ -119,6 +119,7 @@ mod projection_loose_tests;
 mod section_command;
 mod surface_pull;
 pub mod type_selection;
+pub mod use_extrusions;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
 mod curve_length_subcurve;
@@ -356,6 +357,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    UseExtrusions {
+        id: String,
+        #[serde(flatten)]
+        fixture: use_extrusions::Fixture,
+    },
     ConvertExtrusion {
         id: String,
         #[serde(flatten)]
@@ -2918,6 +2924,7 @@ impl Operation {
             | Self::EdgeAnalysisLifetime { id, .. }
             | Self::TypeSelection { id, .. }
             | Self::ConvertExtrusion { id, .. }
+            | Self::UseExtrusions { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3469,6 +3476,9 @@ fn execute(
         }
         Operation::ConvertExtrusion { fixture, .. } => {
             convert_extrusion::run(fixture, iterations, tolerance)?
+        }
+        Operation::UseExtrusions { fixture, .. } => {
+            use_extrusions::run(fixture, iterations, tolerance)?
         }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?

@@ -20,6 +20,23 @@ struct NativeResult {
     _opaque: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_extrusion_path_domain(
+        bytes: *const u8,
+        count: usize,
+        domain: *const f64,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vibo_extrusion_pipe(
+        frame: *const f64,
+        radii: *const f64,
+        height: f64,
+        cap: c_int,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_extrusion_read(
         bytes: *const u8,
         count: usize,
@@ -113,6 +130,42 @@ pub fn extrusion_read(bytes: &[u8]) -> Result<ExtrusionData, ExtrusionError> {
     check_archive(bytes)?;
     call(|out, error, capacity| unsafe {
         vibo_extrusion_read(bytes.as_ptr(), bytes.len(), out, error, capacity)
+    })
+}
+/// Changes only the path parameter interval, retaining both native views.
+pub fn extrusion_path_domain(
+    bytes: &[u8],
+    domain: [f64; 2],
+) -> Result<ExtrusionData, ExtrusionError> {
+    check_archive(bytes)?;
+    call(|out, error, capacity| unsafe {
+        vibo_extrusion_path_domain(
+            bytes.as_ptr(),
+            bytes.len(),
+            domain.as_ptr(),
+            out,
+            error,
+            capacity,
+        )
+    })
+}
+/// Hollow circular extrusion from the public OpenNURBS pipe factory.
+pub fn extrusion_pipe(
+    frame: [f64; 9],
+    radii: [f64; 2],
+    height: f64,
+    cap: bool,
+) -> Result<ExtrusionData, ExtrusionError> {
+    call(|out, error, capacity| unsafe {
+        vibo_extrusion_pipe(
+            frame.as_ptr(),
+            radii.as_ptr(),
+            height,
+            c_int::from(cap),
+            out,
+            error,
+            capacity,
+        )
     })
 }
 pub fn extrusion_transform(

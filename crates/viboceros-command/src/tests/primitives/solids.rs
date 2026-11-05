@@ -467,7 +467,7 @@ fn tube_creates_exact_concentric_walls_and_annular_caps() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
     let result = registry.execute(&mut document, "Tube 0,0,0 3 1 5").unwrap();
-    assert!(result.contains("closed B-rep tube"));
+    assert!(result.contains("closed extrusion tube"));
     let tube_id = document.objects().next().unwrap().id();
     assert!(!document.is_selected(tube_id));
     let Geometry::Brep(tube) = document.object(tube_id).unwrap().geometry() else {
@@ -476,13 +476,19 @@ fn tube_creates_exact_concentric_walls_and_annular_caps() {
     assert_eq!(tube.faces().len(), 4);
     assert_eq!(tube.edges().len(), 6);
     assert!(tube.is_solid());
-    assert_eq!(
-        tube.vertices()[0].point(),
-        Point3::try_new(3.0, 0.0, 0.0).unwrap()
+    assert!(
+        tube.vertices()[0]
+            .point()
+            .distance_to(Point3::try_new(3.0, 0.0, 0.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(
-        tube.vertices()[2].point(),
-        Point3::try_new(1.0, 0.0, 0.0).unwrap()
+    assert!(
+        tube.vertices()[2]
+            .point()
+            .distance_to(Point3::try_new(1.0, 0.0, 0.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
     assert_eq!(document.undo_label(), Some("Tube"));
 
@@ -493,17 +499,26 @@ fn tube_creates_exact_concentric_walls_and_annular_caps() {
     let Geometry::Brep(negative) = document.objects().next().unwrap().geometry() else {
         panic!("Tube must support a picked radius and signed arbitrary axis")
     };
-    assert_eq!(
-        negative.vertices()[0].point(),
-        Point3::try_new(4.0, 2.0, 3.0).unwrap()
+    assert!(
+        negative.vertices()[0]
+            .point()
+            .distance_to(Point3::try_new(4.0, 2.0, 3.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(
-        negative.vertices()[1].point(),
-        Point3::try_new(4.0, -2.0, 3.0).unwrap()
+    assert!(
+        negative.vertices()[1]
+            .point()
+            .distance_to(Point3::try_new(4.0, -2.0, 3.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(
-        negative.vertices()[2].point(),
-        Point3::try_new(2.0, 2.0, 3.0).unwrap()
+    assert!(
+        negative.vertices()[2]
+            .point()
+            .distance_to(Point3::try_new(2.0, 2.0, 3.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
 
     registry.execute(&mut document, "Undo").unwrap();
@@ -516,17 +531,26 @@ fn tube_creates_exact_concentric_walls_and_annular_caps() {
     let Geometry::Brep(both_sides) = document.objects().next().unwrap().geometry() else {
         panic!("Tube WallThickness and BothSides must create a B-rep")
     };
-    assert_eq!(
-        both_sides.vertices()[0].point(),
-        Point3::try_new(4.0, 0.0, -5.0).unwrap()
+    assert!(
+        both_sides.vertices()[0]
+            .point()
+            .distance_to(Point3::try_new(4.0, 0.0, -5.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(
-        both_sides.vertices()[1].point(),
-        Point3::try_new(4.0, 0.0, 5.0).unwrap()
+    assert!(
+        both_sides.vertices()[1]
+            .point()
+            .distance_to(Point3::try_new(4.0, 0.0, 5.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(
-        both_sides.vertices()[2].point(),
-        Point3::try_new(3.0, 0.0, -5.0).unwrap()
+    assert!(
+        both_sides.vertices()[2]
+            .point()
+            .distance_to(Point3::try_new(3.0, 0.0, -5.0).unwrap())
+            .unwrap()
+            < 1e-12
     );
     let mesh = both_sides.tessellate(12, document.tolerance()).unwrap();
     let expected_volume = std::f64::consts::PI * (4.0_f64.powi(2) - 3.0_f64.powi(2)) * 10.0;

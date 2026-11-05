@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "use_extrusions_creators",
+      "id": "Extrusion_pipe_uniform_station",
+      "mode": "Extrusion",
+      "recipe": "pipe_uniform_station"
+    },
+    {
+      "op": "use_extrusions_creators",
+      "id": "Polysurface_pipe_uniform_station",
+      "mode": "Polysurface",
+      "recipe": "pipe_uniform_station"
+    },
+    {
+      "op": "use_extrusions_creators",
+      "id": "Extrusion_pipe_varying_station",
+      "mode": "Extrusion",
+      "recipe": "pipe_varying_station"
+    },
+    {
+      "op": "use_extrusions_creators",
+      "id": "Polysurface_pipe_varying_station",
+      "mode": "Polysurface",
+      "recipe": "pipe_varying_station"
+    },
+    {
+      "op": "use_extrusions_creators",
+      "id": "Extrusion_pipe_tapered",
+      "mode": "Extrusion",
+      "recipe": "pipe_tapered"
+    },
+    {
+      "op": "use_extrusions_creators",
+      "id": "Polysurface_pipe_tapered",
+      "mode": "Polysurface",
+      "recipe": "pipe_tapered"
+    }
+  ]
+}

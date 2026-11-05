@@ -261,3 +261,67 @@ fn large_tilted_cylinder_caps_bound_roundoff_without_changing_geometry() {
 
 #[path = "extrusion/rational_caps.rs"]
 mod rational_caps;
+
+#[test]
+fn hollow_extrusion_and_path_domain_preserve_both_native_views() {
+    let tolerance = Tolerance::DEFAULT;
+    for radii in [[1., 2.], [2., 1.]] {
+        for capped in [false, true] {
+            let source = Brep::try_tube_extrusion(frame(), radii, 5., capped, tolerance).unwrap();
+            assert!(source.is_extrusion());
+            assert_eq!(source.is_closed(), capped);
+            assert_eq!(source.faces().len(), if capped { 4 } else { 2 });
+            let archive = source.extrusion().unwrap().archive().to_vec();
+            let original = source.extrusion().unwrap().nurbs_form().unwrap();
+            for domain in [[2., 9.], [-5., -2.]] {
+                let changed = source
+                    .try_with_extrusion_path_domain(domain, tolerance)
+                    .unwrap();
+                let form = changed.extrusion().unwrap().nurbs_form().unwrap();
+                assert_eq!(form.surface.domain_v(), domain[0]..=domain[1]);
+                for fraction in [0., 0.13, 0.5, 0.79, 1.] {
+                    for u in [0., 0.17, 0.5, 0.83, 1.] {
+                        let interval = original.surface.domain_u();
+                        let parameter = interval.start() + (interval.end() - interval.start()) * u;
+                        let a = original.surface.evaluate(parameter, 5. * fraction).unwrap();
+                        let b = form
+                            .surface
+                            .evaluate(parameter, domain[0] + (domain[1] - domain[0]) * fraction)
+                            .unwrap();
+                        assert!(a.distance_to(b).unwrap() < 1e-12);
+                    }
+                }
+                let decoded = Brep::try_from_extrusion_archive(
+                    changed.extrusion().unwrap().archive(),
+                    tolerance,
+                )
+                .unwrap();
+                assert_eq!(decoded, changed);
+            }
+            assert_eq!(source.extrusion().unwrap().archive(), archive);
+            for domain in [[0., 0.], [2., 1.], [f64::NAN, 1.], [0., f64::INFINITY]] {
+                assert!(
+                    source
+                        .try_with_extrusion_path_domain(domain, tolerance)
+                        .is_err()
+                );
+            }
+            assert!(
+                source
+                    .explicit_brep()
+                    .try_with_extrusion_path_domain([0., 1.], tolerance)
+                    .is_err()
+            );
+        }
+    }
+    for (radii, height) in [
+        ([0., 1.], 5.),
+        ([-1., 2.], 5.),
+        ([1., 1.], 5.),
+        ([f64::NAN, 2.], 5.),
+        ([1., 2.], 0.),
+        ([1., 2.], -5.),
+    ] {
+        assert!(Brep::try_tube_extrusion(frame(), radii, height, true, tolerance).is_err());
+    }
+}

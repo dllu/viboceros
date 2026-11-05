@@ -225,7 +225,8 @@ fn surface_extrusion_numeric_distance_uses_native_plane_normal_independently_of_
             },
         )
         .unwrap();
-    let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
+    assert!(doc.is_selected(id));
+    let Geometry::Brep(b) = doc.objects().find(|o| o.id() != id).unwrap().geometry() else {
         panic!()
     };
     assert!(b.is_solid());

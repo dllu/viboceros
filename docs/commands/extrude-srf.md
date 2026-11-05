@@ -44,7 +44,8 @@ Sources remain unchanged unless `DeleteInput=Yes`: whole selected surface
 objects are deleted, while selected faces are removed from a polysurface and
 its remaining faces retain the original object identity, attributes and groups.
 All geometry and remainders stage before document edits. Results use the current
-layer, become selected, and form one Undo/Redo operation.
+layer and form one Undo/Redo operation. Whole-object preselection stays on
+retained inputs; explicit face targets and deleted-input workflows select results.
 
 The adapter uses `SmTopologySweep` with `SmTranslationalSweepGeometry`, sweeps
 only lamina boundary edges higher, and copies caps to their translated positions.

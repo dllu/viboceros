@@ -1,5 +1,9 @@
 # Pipe
 
+Straight constant-radius results follow [UseExtrusions](use-extrusions.md).
+Open thick pipes create two separate walls; flat-capped thick pipes create one
+hollow extrusion when that output mode is enabled.
+
 Linux `native-smlib` builds use the shared [native sweep fitting and interpolation](../smlib-sweep-interpolation.md)
 for retained/refitted rails and continuous-model wall construction.
 

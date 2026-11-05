@@ -90,6 +90,9 @@ impl VibocerosApp {
         self.finish_stretch_session(false);
         self.finish_taper_session(false);
         self.set_view_prompt = None;
+        if std::mem::take(&mut self.use_extrusions_prompt) && announce {
+            self.push_log("UseExtrusions canceled".into());
+        }
         if std::mem::take(&mut self.remember_copy_prompt) && announce {
             self.push_log("Cancelled RememberCopyOptions".into());
         }

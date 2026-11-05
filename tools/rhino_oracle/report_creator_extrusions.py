@@ -10,6 +10,14 @@ from .report_subdivide import subd_check
 from .report_subd_box import error
 HERE=Path(__file__).resolve().parent
 SOURCES=list(dict.fromkeys(COMMAND_SOURCES+[
+    'crates/viboceros-command/src/extrude_surface.rs',
+    'crates/viboceros-command/src/extrude_surface/tests.rs',
+    'crates/viboceros-command/src/use_extrusions.rs',
+    'crates/viboceros-command/src/use_extrusions/tests.rs',
+    'crates/viboceros-command/src/tube.rs',
+    'crates/viboceros-command/src/pipe/extrusion.rs',
+    'src/app/use_extrusions.rs',
+    'src/app/prompt_cancel.rs',
     'crates/viboceros-command/src/cylinder.rs',
     'crates/viboceros-command/src/cylinder/tests.rs',
     'crates/viboceros-command/src/plane_primitives.rs',

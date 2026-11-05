@@ -181,6 +181,9 @@ mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod crease_splitting;
+mod tube;
+mod use_extrusions;
+use tube::TubeCommand;
 mod curve_connections;
 mod curve_segments;
 mod extension_backend;
@@ -977,6 +980,7 @@ pub struct CommandRegistry {
     chain_options:
         std::sync::Arc<remembered::Remembered<Option<viboceros_geometry::CurveChainOptions>>>,
     crease_splitting: crease_splitting::Preference,
+    use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
@@ -1013,6 +1017,11 @@ impl CommandRegistry {
     pub fn component_selection(&self) -> &component_selection::ComponentSelection {
         &self.components
     }
+    /// Application output mode, shared across documents using this registry.
+    pub fn use_extrusions(&self) -> bool {
+        self.use_extrusions.get().0
+    }
+
     /// Current application policy; independent registries retain independent settings.
     pub fn crease_splitting(&self) -> bool {
         self.crease_splitting.get().0
@@ -1279,7 +1288,7 @@ impl CommandRegistry {
             .register(PlanarSurfaceCommand)
             .expect("unique built-in command");
         registry
-            .register(PipeCommand)
+            .register(PipeCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
             .register(OffsetSurfaceCommand)
@@ -1360,7 +1369,7 @@ impl CommandRegistry {
             .register(subd_box::SubDBoxCommand::default())
             .expect("unique built-in command");
         registry
-            .register(BoxCommand)
+            .register(BoxCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
             .register(BoundingBoxCommand)
@@ -1390,7 +1399,7 @@ impl CommandRegistry {
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
-            .register(CylinderCommand)
+            .register(CylinderCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
             .register(ConeCommand)
@@ -1426,13 +1435,13 @@ impl CommandRegistry {
             .register(TruncatedPyramidCommand)
             .expect("unique built-in command");
         registry
-            .register(TubeCommand)
+            .register(TubeCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
             .register(TorusCommand)
             .expect("unique built-in command");
         registry
-            .register(ExtrudeCurveCommand)
+            .register(ExtrudeCurveCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
             .register(extrude_tapered::ExtrudeTaperedCommand)
@@ -1451,6 +1460,11 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(extrude_surface_path::ExtrudeSurfacePathCommand)
+            .expect("unique built-in command");
+        registry
+            .register(use_extrusions::UseExtrusionsCommand(
+                registry.use_extrusions.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(crease_splitting::CreaseSplittingCommand(
@@ -7999,65 +8013,6 @@ impl Command for TruncatedPyramidCommand {
             if options.solid { "closed" } else { "open" },
             options.top_radius,
             options.height
-        ))
-    }
-}
-
-struct TubeCommand;
-
-impl Command for TubeCommand {
-    fn name(&self) -> &'static str {
-        "Tube"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_tube_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (base_frame, first_radius) = axial_primitive_frame(
-            options.center,
-            options.first_radius,
-            options.axis,
-            tolerance,
-        )?;
-        let second_radius = if let Some(radius) = options.second_radius {
-            axial_primitive_radius_value(options.center, radius, base_frame)?
-        } else {
-            first_radius + options.wall_thickness.expect("validated thickness form")
-        };
-        let (frame, height) = if options.both_sides {
-            let magnitude = options.height.abs();
-            let start = options
-                .center
-                .translated(base_frame.z_axis().as_vector().scaled(-magnitude)?)?;
-            (base_frame.with_origin(start), 2.0 * magnitude)
-        } else {
-            let direction = if options.height > 0.0 {
-                base_frame.z_axis()
-            } else {
-                base_frame.z_axis().opposite()
-            };
-            (
-                Frame3::try_from_unit_x_and_normal(
-                    options.center,
-                    base_frame.x_axis(),
-                    direction,
-                    tolerance,
-                )?,
-                options.height.abs(),
-            )
-        };
-        let tube = Brep::try_tube(frame, [first_radius, second_radius], height, tolerance)?;
-        let inner_radius = first_radius.min(second_radius);
-        let outer_radius = first_radius.max(second_radius);
-        let id = document.add_geometry(Geometry::Brep(tube))?;
-        Ok(format!(
-            "Added closed B-rep tube {id} (inner radius {inner_radius:.6}, outer radius {outer_radius:.6}, height {:.6}{})",
-            options.height,
-            if options.both_sides {
-                ", both sides"
-            } else {
-                ""
-            }
         ))
     }
 }

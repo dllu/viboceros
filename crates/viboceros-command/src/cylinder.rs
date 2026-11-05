@@ -1,7 +1,7 @@
 //! Cylinder construction and its typed extrusion representation.
 use super::*;
 
-pub(super) struct CylinderCommand;
+pub(super) struct CylinderCommand(pub use_extrusions::Preference);
 
 impl Command for CylinderCommand {
     fn name(&self) -> &'static str {
@@ -29,9 +29,15 @@ impl Command for CylinderCommand {
             [0., options.height]
         };
         let brep = Brep::try_cylinder_extrusion(frame, radius, heights, options.solid, tolerance)?;
+        let brep = use_extrusions::output(brep, &self.0, tolerance)?;
+        let representation = if brep.is_extrusion() {
+            "extrusion"
+        } else {
+            "B-rep"
+        };
         let id = document.add_geometry(Geometry::Brep(brep))?;
         Ok(format!(
-            "Added {} extrusion cylinder {id} (radius {radius:.6}, heights {:.6} to {:.6})",
+            "Added {} {representation} cylinder {id} (radius {radius:.6}, heights {:.6} to {:.6})",
             if options.solid { "closed" } else { "open" },
             heights[0],
             heights[1]

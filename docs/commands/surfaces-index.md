@@ -1,5 +1,8 @@
 # Surfaces, solids and B-reps
 
+[UseExtrusions](use-extrusions.md) selects lightweight extrusion or explicit
+B-rep output for eligible creators.
+
 [All commands](README.md) · [Command input](../command-line.md)
 
 - [ShortPath surface geodesics](short-path.md)

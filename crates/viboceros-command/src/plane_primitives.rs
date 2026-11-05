@@ -674,7 +674,7 @@ impl Command for MeshBoxCommand {
     }
 }
 
-pub(super) struct BoxCommand;
+pub(super) struct BoxCommand(pub use_extrusions::Preference);
 
 impl Command for BoxCommand {
     fn name(&self) -> &'static str {
@@ -717,7 +717,11 @@ impl Command for BoxCommand {
             height,
             document.tolerance(),
         )?;
+        let brep = use_extrusions::output(brep, &self.0, document.tolerance())?;
         let id = document.add_geometry(Geometry::Brep(brep))?;
-        Ok(format!("Added closed extrusion box {id}"))
+        Ok(format!(
+            "Added closed {} box {id}",
+            if self.0.get().0 { "extrusion" } else { "B-rep" }
+        ))
     }
 }

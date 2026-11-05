@@ -53,6 +53,21 @@ impl Brep {
     ) -> Result<Self, GeometryError> {
         Self::from_extrusion_data(viboceros_opennurbs::extrusion_read(bytes)?, tolerance)
     }
+    /// Reparameterize the extrusion path while preserving its geometry and
+    /// archive. Explicit B-reps have no extrusion path and are rejected.
+    pub fn try_with_extrusion_path_domain(
+        &self,
+        domain: [Real; 2],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let extrusion = self.extrusion().ok_or_else(|| {
+            viboceros_opennurbs::ExtrusionError("An extrusion is required".into())
+        })?;
+        Self::from_extrusion_data(
+            viboceros_opennurbs::extrusion_path_domain(extrusion.archive(), domain)?,
+            tolerance,
+        )
+    }
     /// Create the public extrusion form of a planar profile, projected onto
     /// the given frame, with optional caps on a closed profile.
     pub fn try_planar_profile_extrusion(
@@ -254,5 +269,23 @@ impl Brep {
             archive: data.archive.into(),
         });
         Ok(brep)
+    }
+
+    /// A hollow circular extrusion with a native inner profile and optional caps.
+    pub fn try_tube_extrusion(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        cap: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut plane = [0.; 9];
+        plane[..3].copy_from_slice(&frame.origin().to_array());
+        plane[3..6].copy_from_slice(&frame.x_axis().as_vector().to_array());
+        plane[6..].copy_from_slice(&frame.y_axis().as_vector().to_array());
+        Self::from_extrusion_data(
+            viboceros_opennurbs::extrusion_pipe(plane, radii, height, cap)?,
+            tolerance,
+        )
     }
 }

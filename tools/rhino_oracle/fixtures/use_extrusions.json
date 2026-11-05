@@ -1,0 +1,59 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "use_extrusions",
+      "id": "Extrusion_Extrusion",
+      "initial": "Extrusion",
+      "answer": "Extrusion"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Extrusion_Polysurface",
+      "initial": "Extrusion",
+      "answer": "Polysurface"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Extrusion_Enter",
+      "initial": "Extrusion",
+      "answer": "Enter"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Extrusion_Cancel",
+      "initial": "Extrusion",
+      "answer": "Cancel"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Polysurface_Extrusion",
+      "initial": "Polysurface",
+      "answer": "Extrusion"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Polysurface_Polysurface",
+      "initial": "Polysurface",
+      "answer": "Polysurface"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Polysurface_Enter",
+      "initial": "Polysurface",
+      "answer": "Enter"
+    },
+    {
+      "op": "use_extrusions",
+      "id": "Polysurface_Cancel",
+      "initial": "Polysurface",
+      "answer": "Cancel"
+    }
+  ]
+}

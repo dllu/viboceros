@@ -66,6 +66,7 @@ impl VibocerosApp {
             && self.soft_crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
+            && !self.use_extrusions_prompt
             && !self.remember_copy_prompt
             && self.edge_zoom_prompt.is_none()
             && !self.component_selection.has_choices()
@@ -190,7 +191,9 @@ impl VibocerosApp {
                     .completion
                     .refresh(&self.commands, &self.command_input, idle);
                 ui.horizontal(|ui| {
-                    let label = if self.remember_copy_prompt {
+                    let label = if self.use_extrusions_prompt {
+                        "UseExtrusions"
+                    } else if self.remember_copy_prompt {
                         "RememberCopyOptions"
                     } else if let Some(prompt) = &self.edge_zoom_prompt {
                         prompt.command
@@ -309,6 +312,8 @@ impl VibocerosApp {
                                 "Enter a positive factor; Enter or Esc cancels"
                             } else if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
+                            } else if self.use_extrusions_prompt {
+                                "Extrusion or Polysurface; Enter accepts, Esc cancels"
                             } else if self.remember_copy_prompt {
                                 "Yes or No; Enter accepts, Esc cancels"
                             } else if self.edge_zoom_prompt.is_some() {

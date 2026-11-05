@@ -67,7 +67,10 @@ impl VibocerosApp {
         } else if self.commands.curve_deviation_view(&self.document).is_some() {
             self.commands.clear_curve_deviation();
             self.push_log("CrvDeviation canceled".into());
-        } else if self.remember_copy_prompt || self.edge_zoom_prompt.is_some() {
+        } else if self.use_extrusions_prompt
+            || self.remember_copy_prompt
+            || self.edge_zoom_prompt.is_some()
+        {
             self.cancel_interactive_command(true);
         } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
             self.cancel_end_analysis_pick(true);

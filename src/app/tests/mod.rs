@@ -188,6 +188,7 @@ mod surface_apex_support;
 mod transform_input;
 mod trim_split_input;
 mod type_selection;
+mod use_extrusions;
 
 mod project;
 mod radius;
@@ -314,6 +315,7 @@ pub(super) fn test_app() -> VibocerosApp {
         plane_prompt: None,
         set_view_prompt: None,
         remember_copy_prompt: false,
+        use_extrusions_prompt: false,
         edge_zoom_prompt: None,
         copy_cplane_source: None,
         cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),

@@ -238,6 +238,11 @@ impl Command for ExtrudeSurfaceCommand {
         let input = SurfaceExtrusionInput::parse(&words)?;
         let distance =
             parse_face_extrusion_distance(&positional, input.options.direction.is_some(), USAGE)?;
+        // Whole-object preselection stays on retained inputs. Explicit face
+        // targeting keeps the existing component-result selection policy.
+        let retained_selection = (!input.options.delete_input
+            && matches!(input.faces, SurfaceFaces::Single))
+        .then(|| doc.selected_object_ids().collect::<Vec<_>>());
         let count = apply_face_extrusions(
             doc,
             &input.faces,
@@ -252,6 +257,9 @@ impl Command for ExtrudeSurfaceCommand {
                 )
             },
         )?;
+        if let Some(selection) = retained_selection {
+            doc.select_command_results(selection)?;
+        }
         Ok(format!("Extruded {count} surface face(s)"))
     }
 }
