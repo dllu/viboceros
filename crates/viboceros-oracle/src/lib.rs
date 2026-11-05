@@ -117,6 +117,7 @@ mod mesh_pull;
 mod projection_loose_tests;
 mod section_command;
 mod surface_pull;
+pub mod type_selection;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
 mod curve_length_subcurve;
@@ -354,6 +355,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    TypeSelection {
+        id: String,
+        #[serde(flatten)]
+        fixture: type_selection::Fixture,
+    },
     #[serde(alias = "grip_weight_nurbs")]
     GripWeight {
         id: String,
@@ -2904,6 +2910,7 @@ impl Operation {
             | Self::ComponentLength { id, .. }
             | Self::SubdArea { id, .. }
             | Self::EdgeAnalysisLifetime { id, .. }
+            | Self::TypeSelection { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3449,6 +3456,9 @@ fn execute(
         )?,
         Operation::EdgeAnalysisLifetime { fixture, .. } => {
             edge_analysis_lifetime::run(fixture, iterations, tolerance)?
+        }
+        Operation::TypeSelection { fixture, .. } => {
+            type_selection::run(fixture, iterations, tolerance)?
         }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?

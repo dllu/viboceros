@@ -34,6 +34,9 @@ trimmed B-reps while excluding multi-face B-reps. `SelPolysrf` (alias
 `SelPolysurface`) and its open/closed variants classify only multi-face B-reps
 by shared-edge topology.
 
+Block instance, definition-name, mirrored-block and lightweight extrusion filters
+are described in [block and extrusion selection](block-type-selection.md).
+
 `SelOpenSrf` and `SelClosedSrf` classify single surfaces by their natural
 boundary or single-face B-rep topology. `SelPlanarSrf` tests the underlying
 surface against document tolerance. `SelTrimmedSrf` selects single-face B-reps

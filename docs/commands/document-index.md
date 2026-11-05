@@ -12,6 +12,7 @@
 - [Create shared blocks and insert instances](blocks.md)
 - [Explode instances one level or recursively](explode-blocks.md)
 - [Selection, attributes, layers, and groups](document.md)
+- [Block instance, mirrored block and extrusion selection](block-type-selection.md)
 - [Connected curves and surface edges: SelChain](curve-chains.md)
 - [Mesh/SubD edge loops and SelEdgeLoop](component-edge-loops.md)
 - [Mesh/SubD edge rings and SelEdgeRing](component-edge-rings.md)
@@ -74,6 +75,10 @@ SelShortCrv 1.0
 SelSmall 5.0
 SelPt
 SelPtCloud
+SelBlockInstance
+SelBlockInstanceNamed "Bolt *"
+SelMirroredBlocks
+SelExtrusion
 SelSrf
 SelOpenSrf
 SelClosedSrf

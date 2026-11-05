@@ -186,6 +186,7 @@ mod subd_volume;
 mod surface_apex_support;
 mod transform_input;
 mod trim_split_input;
+mod type_selection;
 
 mod project;
 mod radius;

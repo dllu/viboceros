@@ -1,0 +1,235 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_plain",
+      "command": "SelBlockInstance",
+      "variant": "plain"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_grouped",
+      "command": "SelBlockInstance",
+      "variant": "grouped"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_preselected",
+      "command": "SelBlockInstance",
+      "variant": "preselected"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_restricted",
+      "command": "SelBlockInstance",
+      "variant": "restricted"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_hidden_layer",
+      "command": "SelBlockInstance",
+      "variant": "hidden_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_locked_layer",
+      "command": "SelBlockInstance",
+      "variant": "locked_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelBlockInstance_no_matches",
+      "command": "SelBlockInstance",
+      "variant": "no_matches"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_plain",
+      "command": "SelMirroredBlocks",
+      "variant": "plain"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_grouped",
+      "command": "SelMirroredBlocks",
+      "variant": "grouped"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_preselected",
+      "command": "SelMirroredBlocks",
+      "variant": "preselected"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_restricted",
+      "command": "SelMirroredBlocks",
+      "variant": "restricted"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_hidden_layer",
+      "command": "SelMirroredBlocks",
+      "variant": "hidden_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_locked_layer",
+      "command": "SelMirroredBlocks",
+      "variant": "locked_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelMirroredBlocks_no_matches",
+      "command": "SelMirroredBlocks",
+      "variant": "no_matches"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_plain",
+      "command": "SelExtrusion",
+      "variant": "plain"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_grouped",
+      "command": "SelExtrusion",
+      "variant": "grouped"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_preselected",
+      "command": "SelExtrusion",
+      "variant": "preselected"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_restricted",
+      "command": "SelExtrusion",
+      "variant": "restricted"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_hidden_layer",
+      "command": "SelExtrusion",
+      "variant": "hidden_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_locked_layer",
+      "command": "SelExtrusion",
+      "variant": "locked_layer"
+    },
+    {
+      "op": "type_selection",
+      "id": "SelExtrusion_no_matches",
+      "command": "SelExtrusion",
+      "variant": "no_matches"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_21",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_22",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "bolt a"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_23",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Bolt *"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_24",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Bolt ?"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_25",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Nested"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_26",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Other"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_27",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "\u90e8\u54c1 A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_28",
+      "command": "SelBlockInstanceNamed",
+      "variant": "plain",
+      "name": "Missing"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_grouped",
+      "command": "SelBlockInstanceNamed",
+      "variant": "grouped",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_preselected",
+      "command": "SelBlockInstanceNamed",
+      "variant": "preselected",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_restricted",
+      "command": "SelBlockInstanceNamed",
+      "variant": "restricted",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_hidden_layer",
+      "command": "SelBlockInstanceNamed",
+      "variant": "hidden_layer",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_locked_layer",
+      "command": "SelBlockInstanceNamed",
+      "variant": "locked_layer",
+      "name": "Bolt A"
+    },
+    {
+      "op": "type_selection",
+      "id": "named_no_matches",
+      "command": "SelBlockInstanceNamed",
+      "variant": "no_matches",
+      "name": "Bolt A"
+    }
+  ]
+}

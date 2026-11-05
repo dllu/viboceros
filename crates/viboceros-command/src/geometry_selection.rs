@@ -24,9 +24,15 @@ impl Command for SelectGeometryCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, self.name)?;
         let tolerance = document.tolerance();
-        select_matching_geometry(document, |geometry| {
-            self.filter.matches(geometry, tolerance)
-        })
+        select_matching_geometry_with_mode(
+            document,
+            if matches!(self.filter, GeometrySelectionFilter::MirroredBlock) {
+                SelectionMode::Replace
+            } else {
+                SelectionMode::Add
+            },
+            |geometry| self.filter.matches(geometry, tolerance),
+        )
     }
 }
 
@@ -34,6 +40,14 @@ impl Command for SelectGeometryCommand {
 /// predicates succeed. Hidden/locked objects never reach the predicate.
 fn select_matching_geometry(
     document: &mut Document,
+    predicate: impl FnMut(&Geometry) -> Result<bool, GeometryError>,
+) -> Result<String, CommandError> {
+    select_matching_geometry_with_mode(document, SelectionMode::Add, predicate)
+}
+
+fn select_matching_geometry_with_mode(
+    document: &mut Document,
+    mode: SelectionMode,
     mut predicate: impl FnMut(&Geometry) -> Result<bool, GeometryError>,
 ) -> Result<String, CommandError> {
     let mut matches = Vec::new();
@@ -42,7 +56,7 @@ fn select_matching_geometry(
             matches.push(object.id());
         }
     }
-    document.select_objects_direct(matches, SelectionMode::Add)?;
+    document.select_objects_direct(matches, mode)?;
     Ok(format!(
         "Selected {} object(s)",
         document.selected_object_count()
@@ -58,6 +72,9 @@ pub(super) enum GeometrySelectionFilter {
     Line,
     Polyline,
     PointCloud,
+    BlockInstance,
+    MirroredBlock,
+    Extrusion,
     Surface,
     OpenSurface,
     ClosedSurface,
@@ -107,6 +124,14 @@ impl GeometrySelectionFilter {
                 _ => false,
             },
             Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
+            Self::BlockInstance => matches!(geometry, Geometry::BlockInstance(_)),
+            Self::MirroredBlock => match geometry {
+                Geometry::BlockInstance(instance) => {
+                    instance.reference().transform().orientation_reversing()?
+                }
+                _ => false,
+            },
+            Self::Extrusion => matches!(geometry, Geometry::Brep(brep) if brep.is_extrusion()),
             Self::Surface => match geometry {
                 Geometry::NurbsSurface(_) => true,
                 Geometry::Brep(brep) => brep.faces().len() == 1,

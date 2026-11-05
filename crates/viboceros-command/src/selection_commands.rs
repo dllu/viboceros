@@ -581,7 +581,7 @@ impl Command for SelectDuplicateCommand {
 
 // These commands take one name/pattern, not a sequence of whitespace-delimited
 // options. Keep its internal whitespace so imported names remain addressable.
-fn attribute_pattern_arguments(input: &str) -> Vec<&str> {
+pub(super) fn attribute_pattern_arguments(input: &str) -> Vec<&str> {
     let input = input.trim();
     if input.is_empty() {
         Vec::new()
@@ -590,7 +590,7 @@ fn attribute_pattern_arguments(input: &str) -> Vec<&str> {
     }
 }
 
-fn parse_attribute_pattern(
+pub(super) fn parse_attribute_pattern(
     arguments: &[&str],
     usage: &'static str,
 ) -> Result<String, CommandError> {

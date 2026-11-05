@@ -301,6 +301,7 @@ use split_disjoint_mesh::SplitDisjointMeshCommand;
 use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 pub use bounding_box::selected_bounding_box_center;
+mod block_selection;
 mod distribute;
 mod geometry_selection;
 pub mod infinite_plane;
@@ -1564,6 +1565,9 @@ impl CommandRegistry {
             .register(SelNameCommand)
             .expect("unique built-in command");
         registry
+            .register(block_selection::SelBlockInstanceNamedCommand)
+            .expect("unique built-in command");
+        registry
             .register(SelIdCommand)
             .expect("unique built-in command");
         registry
@@ -1611,6 +1615,17 @@ impl CommandRegistry {
             ("SelLine", &[][..], GeometrySelectionFilter::Line),
             ("SelPolyline", &[][..], GeometrySelectionFilter::Polyline),
             ("SelPtCloud", &[][..], GeometrySelectionFilter::PointCloud),
+            (
+                "SelBlockInstance",
+                &[][..],
+                GeometrySelectionFilter::BlockInstance,
+            ),
+            (
+                "SelMirroredBlocks",
+                &[][..],
+                GeometrySelectionFilter::MirroredBlock,
+            ),
+            ("SelExtrusion", &[][..], GeometrySelectionFilter::Extrusion),
             ("SelSrf", &[][..], GeometrySelectionFilter::Surface),
             ("SelOpenSrf", &[][..], GeometrySelectionFilter::OpenSurface),
             (

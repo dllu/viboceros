@@ -33,6 +33,7 @@ mod object_copy;
 mod object_deletion;
 mod object_geometry;
 pub use object_geometry::ReplacementHistory;
+mod block_selection;
 mod object_layer;
 mod object_lookup;
 mod object_order;
