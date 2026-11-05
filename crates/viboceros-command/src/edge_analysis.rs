@@ -37,7 +37,8 @@ pub struct Edge {
     pub all: bool,
     pub naked: bool,
     pub non_manifold: bool,
-    pub is_mesh: bool,
+    /// Mesh edges and flat SubD control edges share the polygonal marking batch.
+    pub is_polygonal: bool,
 }
 #[derive(Clone, Debug)]
 pub struct View {
@@ -57,7 +58,7 @@ impl View {
         let mut edges = self.displayed().collect::<Vec<_>>();
         if self.focus_all {
             if self.mode != Mode::All {
-                edges.sort_by_key(|edge| edge.is_mesh);
+                edges.sort_by_key(|edge| edge.is_polygonal);
             }
             edges
         } else {
@@ -93,6 +94,7 @@ struct State {
     current: Option<usize>,
     focus_all: bool,
     zoom_requested: bool,
+    reverse_sources: bool,
 }
 impl Default for State {
     fn default() -> Self {
@@ -107,6 +109,7 @@ impl Default for State {
             current: None,
             focus_all: true,
             zoom_requested: false,
+            reverse_sources: false,
         }
     }
 }
@@ -140,7 +143,7 @@ fn gather(
                     all: e.face_count == 1 || e.unwelded,
                     naked: e.face_count == 1,
                     non_manifold: e.face_count > 2,
-                    is_mesh: true,
+                    is_polygonal: true,
                 })
             })
             .collect(),
@@ -173,7 +176,7 @@ fn gather(
                         all: true,
                         naked: counts[index] == 1,
                         non_manifold: counts[index] > 2,
-                        is_mesh: false,
+                        is_polygonal: false,
                     })
                 })
                 .collect()
@@ -184,6 +187,28 @@ fn gather(
     }
 }
 impl Session {
+    pub(super) fn begin_zoom_from(
+        &self,
+        analysis: &Self,
+        doc: &mut Document,
+    ) -> Result<Option<Mode>, CommandError> {
+        let mut proposed = analysis.0.lock().expect("edge analysis state").clone();
+        if !proposed.enabled || proposed.mode == Mode::All {
+            return Ok(None);
+        }
+        proposed.focus_all = true;
+        proposed.current = Some(0);
+        proposed.zoom_requested = true;
+        proposed.reverse_sources = true;
+        if Self::resolve(&mut proposed, doc)?.current.is_none() {
+            return Ok(None);
+        }
+        release_diagnostic_selection(doc)?;
+        let mode = proposed.mode;
+        *self.0.lock().expect("edge zoom state") = proposed;
+        Ok(Some(mode))
+    }
+
     pub(super) fn clear(&self) {
         let mut state = self.0.lock().expect("edge analysis state");
         *state = State {
@@ -219,6 +244,9 @@ impl Session {
                     },
                 );
             }
+        }
+        if state.reverse_sources {
+            ids.reverse();
         }
         if dirty || state.flat_sources != ids {
             let mut edges = Vec::new();
@@ -323,11 +351,13 @@ impl AnalysisCommand {
             return Ok("Edge display off".into());
         }
         if self.name == "ZoomNaked" {
+            proposed.reverse_sources = false;
             proposed.mode = Mode::Naked;
             proposed.focus_all = false;
             proposed.current = Some(0);
         }
         if self.name == "ZoomNonManifold" {
+            proposed.reverse_sources = false;
             proposed.mode = Mode::NonManifold;
             proposed.focus_all = false;
             proposed.current = Some(0);
@@ -390,8 +420,9 @@ impl AnalysisCommand {
                 }
             }
         }
-        let release_subd_picks = self.name == "ShowEdges"
-            && (!proposed.enabled || args.is_empty() || action != "replace");
+        let release_source_picks = self.name == "ShowEdges"
+            && action == "replace"
+            && (!proposed.enabled || args.is_empty());
         let selected = doc
             .selected_objects()
             .filter(|o| ObjectSelectionFilter::DiagnosticEdges.accepts_object(o))
@@ -419,7 +450,7 @@ impl AnalysisCommand {
         let mut view = Session::resolve(&mut proposed, doc)?;
         let count = view.displayed().count();
         if postselected && self.name.starts_with("Zoom") {
-            release_subd_selection(doc)?;
+            release_diagnostic_selection(doc)?;
         }
         for action in actions {
             match action.as_str() {
@@ -449,8 +480,8 @@ impl AnalysisCommand {
             };
             view = Session::resolve(&mut proposed, doc)?;
         }
-        if release_subd_picks {
-            release_subd_selection(doc)?;
+        if release_source_picks {
+            release_diagnostic_selection(doc)?;
         }
         *self.session.0.lock().expect("edge analysis state") = proposed;
         if canceled {
@@ -465,10 +496,10 @@ impl AnalysisCommand {
     }
 }
 
-fn release_subd_selection(doc: &mut Document) -> Result<(), CommandError> {
+fn release_diagnostic_selection(doc: &mut Document) -> Result<(), CommandError> {
     let retained = doc
         .selected_objects()
-        .filter(|o| !matches!(o.geometry(), Geometry::SubD(_)))
+        .filter(|o| !ObjectSelectionFilter::DiagnosticEdges.accepts_object(o))
         .map(|o| o.id())
         .collect::<Vec<_>>();
     doc.set_transient_selection(retained)?;

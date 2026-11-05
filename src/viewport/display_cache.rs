@@ -39,6 +39,7 @@ mod edge_analysis_tests {
         registry.execute(&mut doc, "SelAll").unwrap();
         registry.execute(&mut doc, "ShowEdges").unwrap();
         let panel = registry.edge_analysis_view(&doc).unwrap().unwrap();
+        registry.execute(&mut doc, "SelAll").unwrap();
         registry.execute(&mut doc, "ZoomNaked").unwrap();
         let zoom = registry.edge_zoom_view(&doc).unwrap().unwrap();
         let key = (panel.edges[0].object, panel.edges[0].index);

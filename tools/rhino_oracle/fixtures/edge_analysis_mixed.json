@@ -1,0 +1,1427 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_0_0_0",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_0_0_1",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_0_1_0",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_0_1_1",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_show_0",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_1_0_0",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_1_0_1",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_1_1_0",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_1_1_1",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_mesh_subd_show_1",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_0_0_0",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_0_0_1",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_0_1_0",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_0_1_1",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_show_0",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_1_0_0",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_1_0_1",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_1_1_0",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_1_1_1",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "brep_subd_mesh_show_1",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_0_0_0",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_0_0_1",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_0_1_0",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_0_1_1",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_show_0",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_1_0_0",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_1_0_1",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_1_1_0",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_1_1_1",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_brep_subd_show_1",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_0_0_0",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_0_0_1",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_0_1_0",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_0_1_1",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_show_0",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_1_0_0",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_1_0_1",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_1_1_0",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_1_1_1",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "mesh_subd_brep_show_1",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_0_0_0",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_0_0_1",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_0_1_0",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_0_1_1",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_show_0",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_1_0_0",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_1_0_1",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_1_1_0",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_1_1_1",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_brep_mesh_show_1",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_0_0_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_0_0_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_0_1_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_0_1_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_show_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_1_0_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_1_0_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_1_1_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_1_1_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "subd_mesh_brep_show_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_0_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_0_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_0_2",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_1_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_1_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_0_1_2",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": false,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_0_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_0_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_0_2",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": false,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_1_0",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ShowEdges",
+      "actions": []
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_1_1",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ZoomNaked",
+      "actions": [
+        "All",
+        "Mark"
+      ]
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "group_1_1_2",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": true,
+      "grouped": true,
+      "extra_point": true,
+      "command": "ZoomNaked",
+      "actions": [
+        "Mark",
+        "Next",
+        "Next",
+        "Next",
+        "Next",
+        "Mark",
+        "Previous",
+        "Mark"
+      ]
+    }
+  ]
+}

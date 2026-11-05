@@ -2989,6 +2989,20 @@ impl CommandRegistry {
     pub fn clear_edge_zoom(&self) {
         self.edge_zoom.clear();
     }
+    /// Start the panel's temporary Zoom input using its analyzed sources.
+    pub fn begin_edge_analysis_zoom(
+        &self,
+        doc: &mut Document,
+    ) -> Result<Option<&'static str>, CommandError> {
+        Ok(self
+            .edge_zoom
+            .begin_zoom_from(&self.edge_analysis, doc)?
+            .map(|mode| match mode {
+                edge_analysis::Mode::Naked => "ZoomNaked",
+                edge_analysis::Mode::NonManifold => "ZoomNonManifold",
+                edge_analysis::Mode::All => unreachable!(),
+            }))
+    }
     pub fn execute_edge_zoom_actions(
         &self,
         doc: &mut Document,

@@ -28,8 +28,11 @@ edges used by more than two faces. Closed boxes and spheres have no naked edges.
 These classifications follow the [Rhino 8 command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/showedges.htm).
 
 Mode and RGB color edits retain the current sources. `Add` and `Remove` use the
-eligible selected objects. Bare `ShowEdges` replaces the sources when eligible
-objects are selected. `ShowEdgesOff`, or closing the window, clears the display;
+eligible selected objects and retain their preselection. Bare `ShowEdges` replaces
+the sources when eligible objects are selected and clears supported input selection.
+Unsupported selected group peers remain selected. The panel's Zoom button starts
+interactive Zoom on the analyzed sources with All focus; it is disabled in All
+display mode. `ShowEdgesOff`, or closing the window, clears the display;
 the session remembers its mode and color. `ZoomNaked` and `ZoomNonManifold`
 start temporary command input in the corresponding mode and request a fit of
 the current edge in the active viewport. Bare commands continue with navigation
@@ -56,8 +59,7 @@ viewport sampler.
 The [validation record](../edge-analysis-provenance.json) records five command,
 two application and one viewport regression in a full 5,610-test Rust run.
 Ten [live Rhino SDK captures](../edge-analysis-native.md) also match edge order,
-domains, classifications and curve samples without exclusions. Native dialog
-behavior, zoom framing and curved display accuracy still need qualification.
+domains, classifications and curve samples without exclusions. Exact zoom framing and curved display accuracy still need qualification.
 SubD overlays and `ZoomNaked` marking follow smooth/flat appearance; see
 [SubD edge-analysis evidence](subd-edge-analysis.md). Standalone extrusion
 types are not supported. Deleted
@@ -67,4 +69,7 @@ again. Analysis settings are transient and are not saved in model files.
 Fifty [native command workflows](../edge-mark.md) qualify endpoint duplicates,
 point creation order, navigation wraparound and Undo/Redo for the recorded
 surface, trimmed-hole, mesh and mixed-object cases. In naked/non-manifold All
-focus, B-reps are marked before meshes; current navigation retains source order.
+focus, curved sources are marked before polygonal edges. Smooth SubDs retain
+source order with B-reps; flat SubDs retain source order with meshes. Current
+navigation retains the full source order. Another [86 mixed-source workflows](mixed-edge-analysis.md)
+qualify both appearances, selection routes, groups and panel membership.

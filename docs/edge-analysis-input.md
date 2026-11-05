@@ -10,7 +10,13 @@ another modeling command ends the current Zoom input.
 Complete lines such as `ZoomNaked All Mark` and
 `ShowEdges Show=All Color=20,40,60` retain their arguments when object selection
 is needed. ShowEdges Add/Remove also support command-first selection. Eligible
-sources remain NURBS surfaces, B-reps and meshes.
+sources include NURBS surfaces, B-reps, meshes and SubDs.
+
+The panel's Zoom button starts temporary input on its analyzed sources, beginning
+in All focus. It is disabled in All display mode. Add/Remove retain preselection;
+starting ShowEdges clears supported inputs while leaving unsupported grouped
+peers selected. Preselected Zoom inputs stay selected; command-first Zoom picks
+are released. See the [mixed-source evidence](commands/mixed-edge-analysis.md).
 
 The persistent ShowEdges panel and temporary Zoom input use independent
 registry sessions. A Zoom command does not open the Edge Analysis panel and
@@ -46,7 +52,7 @@ cargo test -p viboceros-oracle --release --test edge_analysis
 ```
 
 [Provenance](edge-input-provenance.json) records the final tests and exact source
-hashes. Native panel widgets, highlight styling during input, precise camera
-framing, selection-order variants and broader curved/multi-face geometry remain
+hashes. Highlight styling during input, precise camera framing and broader
+curved/multi-face geometry remain
 qualification work. README remains concise; this page documents the detailed
 input behavior.

@@ -7,6 +7,15 @@ pub(super) struct ZoomPrompt {
 }
 
 impl VibocerosApp {
+    pub(super) fn start_edge_analysis_zoom(&mut self) {
+        self.finish_edge_zoom_options(false);
+        match self.commands.begin_edge_analysis_zoom(&mut self.document) {
+            Ok(Some(command)) => self.start_edge_zoom_options(command),
+            Ok(None) => {}
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+    }
+
     pub(super) fn start_edge_zoom_options(&mut self, input: &str) {
         let mut words = input.split_whitespace();
         let Some(name) = words.next() else { return };
@@ -137,6 +146,7 @@ impl VibocerosApp {
         }
         let mut open = true;
         let mut action = None;
+        let mut zoom = false;
         let mut color = view.color;
         egui::Window::new("Edge Analysis")
             .open(&mut open)
@@ -167,6 +177,12 @@ impl VibocerosApp {
                     ));
                 }
                 ui.horizontal(|ui| {
+                    zoom = ui
+                        .add_enabled(
+                            view.mode != viboceros_command::edge_analysis::Mode::All,
+                            egui::Button::new("Zoom"),
+                        )
+                        .clicked();
                     for (label, command) in [
                         ("All", "All"),
                         ("Current", "Current"),
@@ -195,6 +211,8 @@ impl VibocerosApp {
         }
         if let Some(action) = action {
             self.execute_command(&action);
+        } else if zoom {
+            self.start_edge_analysis_zoom();
         }
     }
 }

@@ -1,0 +1,30 @@
+{
+  "brep_mesh_subd": {
+    "case": "brep_mesh_subd_0_0_0",
+    "sha256": "00114877ed7024c62bdd6a4b68e4e580e9f65adb48c78116c6ad7e3a34014e2f"
+  },
+  "brep_subd_mesh": {
+    "case": "brep_subd_mesh_0_0_0",
+    "sha256": "def0bf8a8a40ac824b6f293e18c84818d781bd96f1d1515d024484e8505efaf2"
+  },
+  "mesh_brep_subd": {
+    "case": "mesh_brep_subd_0_0_0",
+    "sha256": "fe52d57c0d44b9d889f2a03d711d3409be6c72f28541f957bdcac06038ef8a53"
+  },
+  "mesh_subd_brep": {
+    "case": "mesh_subd_brep_0_0_0",
+    "sha256": "f0679af3e4120f1cafa8a7c12ea29d110e344d7bee3820f8dd843140ad436dd3"
+  },
+  "subd_brep_mesh": {
+    "case": "subd_brep_mesh_0_0_0",
+    "sha256": "093d7295509e478f5d2707e1cdb557a6f75b7402745b677985dbf21e92a4f87c"
+  },
+  "subd_mesh_brep": {
+    "case": "subd_mesh_brep_0_0_0",
+    "sha256": "76fb2cfada8fe48c8813c7dc77496773afd662d7d8fd96e384c8ba2d7f782120"
+  },
+  "subd_mesh_brep_point": {
+    "case": "group_1_0_0",
+    "sha256": "c93f2b9027edf89de0bb8c74b96c2ee8e0d0f54de90806bcb4ebda423b00ba26"
+  }
+}

@@ -80,7 +80,7 @@ pub(super) fn gather(subd: &SubD, object: ObjectId, flat: bool) -> Result<Vec<Ed
                     || subd.edge_sharpness()[index].iter().any(|&s| s > 0.),
                 naked: count == 1,
                 non_manifold: count > 2,
-                is_mesh: false,
+                is_polygonal: flat,
             })
         })
         .collect()

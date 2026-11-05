@@ -117,6 +117,9 @@ fn cache_survives_options_and_rebuilds_after_geometry_edits_and_undo() {
     let recolored = registry.edge_analysis_view(&doc).unwrap().unwrap();
     assert!(Arc::ptr_eq(&original.edges, &recolored.edges));
     assert_eq!(recolored.color, [12, 34, 56]);
+    let source = doc.objects().next().unwrap().id();
+    doc.select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
     registry.execute(&mut doc, "Move 0,0,0 5,0,0").unwrap();
     let moved = registry.edge_analysis_view(&doc).unwrap().unwrap();
     assert!(!Arc::ptr_eq(&original.edges, &moved.edges));
