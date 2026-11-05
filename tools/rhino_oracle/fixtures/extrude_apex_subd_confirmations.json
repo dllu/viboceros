@@ -1,0 +1,870 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "extrude_apex_subd",
+      "id": "line_definition_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          5.0,
+          5.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "line_definition_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          5.0,
+          5.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "polyline_definition_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "polyline_definition_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "closed_definition_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "closed_definition_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "poles_definition_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "poles_definition_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        1.0,
+        -4.0,
+        3.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "small_kink_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0008,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "small_kink_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "small_kink_2",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0157,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "small_kink_3",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0192,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "line_spatial_plane",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          5.0,
+          5.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.495093791412856,
+              -27.373773447853214,
+              22.626226552146786
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        10.666666666666666,
+        -26.545346323107026,
+        19.21201298977369
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "closed_spatial_plane",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.495093791412856,
+              -29.373773447853214,
+              20.626226552146786
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.218951416497461,
+              -29.804737854124365,
+              20.195262145875635
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        10.666666666666666,
+        -26.545346323107026,
+        19.21201298977369
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "cubic_spatial_plane",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.885618083164127,
+              -28.471404520791033,
+              21.528595479208967
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.495093791412856,
+              -27.373773447853214,
+              22.626226552146786
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        10.666666666666666,
+        -26.545346323107026,
+        19.21201298977369
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    },
+    {
+      "op": "extrude_apex_subd",
+      "id": "rational_spatial_plane",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              12.885618083164127,
+              -28.471404520791033,
+              21.528595479208967
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              16.04737854124365,
+              -28.51184463531091,
+              21.48815536468909
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              14.82842712474619,
+              -26.707106781186546,
+              23.292893218813454
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        10.666666666666666,
+        -26.545346323107026,
+        19.21201298977369
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "record_brep": true
+    }
+  ]
+}

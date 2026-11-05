@@ -923,8 +923,16 @@ impl InteractiveCommand {
             Self::ExtrudeSurfaceToPoint { .. } => {
                 "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput, SplitAtTangents; Esc to cancel)"
             }
+            Self::ExtrudeCurveToPoint { options }
+                if matches!(
+                    options.output,
+                    viboceros_command::CurveExtrusionOutput::SubD
+                ) =>
+            {
+                "ExtrudeCrvToPoint: pick the apex (Output=SubD, DeleteInput; Esc cancels)"
+            }
             Self::ExtrudeCurveToPoint { .. } => {
-                "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
+                "ExtrudeCrvToPoint: pick the apex (Output, Solid, DeleteInput; Esc cancels)"
             }
             Self::Revolve {
                 axis_start: None,

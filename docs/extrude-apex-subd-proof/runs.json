@@ -1,0 +1,336 @@
+{
+  "default": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "extrude_curve_to_point"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-command-unit.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-command-policy.log.gz"
+    },
+    {
+      "label": "conversion",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "tosubd",
+        "--test",
+        "tosubd_kernel_native",
+        "--test",
+        "tosubd_native",
+        "--test",
+        "tosubd_extrusions_native"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-conversion.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive",
+        "--test",
+        "revolve_splitting",
+        "--test",
+        "revolve_deformable"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-app.log.gz"
+    },
+    {
+      "label": "app-straight",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrude_curve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-app-straight.log.gz"
+    },
+    {
+      "label": "app-revolve",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "revolve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-app-revolve.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/default-point-input.log.gz"
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "extrude_curve_to_point"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-command-unit.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-command-policy.log.gz"
+    },
+    {
+      "label": "conversion",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "tosubd",
+        "--test",
+        "tosubd_kernel_native",
+        "--test",
+        "tosubd_native",
+        "--test",
+        "tosubd_extrusions_native"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-conversion.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive",
+        "--test",
+        "revolve_splitting",
+        "--test",
+        "revolve_deformable"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-app.log.gz"
+    },
+    {
+      "label": "app-straight",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrude_curve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-app-straight.log.gz"
+    },
+    {
+      "label": "app-revolve",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "revolve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-app-revolve.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/native-point-input.log.gz"
+    }
+  ],
+  "quality": [
+    {
+      "label": "kernel-face-split",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::face_split"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/kernel-face-split.log.gz"
+    },
+    {
+      "label": "kernel-surface-partition",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::surface_partition"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/kernel-surface-partition.log.gz"
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/fmt.log.gz"
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/clippy-default.log.gz"
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/clippy-all-features.log.gz"
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_extrude_apex_subd",
+        "tools.rhino_oracle.test_extrude_curve_subd",
+        "tools.rhino_oracle.test_revolve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrude-apex-subd-proof/python.log.gz"
+    }
+  ]
+}

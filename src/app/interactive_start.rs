@@ -998,45 +998,10 @@ impl VibocerosApp {
                 options,
             }
         } else if normalized == "extrudecrvtopoint" {
-            let mut delete_input = false;
-            let mut solid = false;
-            let mut delete_input_seen = false;
-            let mut solid_seen = false;
-            let mut output_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let yes_no = if value.eq_ignore_ascii_case("Yes") {
-                    true
-                } else if value.eq_ignore_ascii_case("No") {
-                    false
-                } else {
-                    if name.eq_ignore_ascii_case("Output")
-                        && !output_seen
-                        && value.eq_ignore_ascii_case("Surface")
-                    {
-                        output_seen = true;
-                        continue;
-                    }
-                    return false;
-                };
-                if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
-                    delete_input = yes_no;
-                    delete_input_seen = true;
-                } else if name.eq_ignore_ascii_case("Solid") && !solid_seen {
-                    solid = yes_no;
-                    solid_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            InteractiveCommand::ExtrudeCurveToPoint {
-                delete_input,
-                solid,
-            }
+            let Some(command) = super::curve_apex::start(&arguments) else {
+                return false;
+            };
+            command
         } else if normalized == "railrevolve" {
             let options = match self.commands.object_selection_prompt(input) {
                 Ok(Some(p)) => viboceros_command::rail_revolve::RailRevolveOptions::from_prompt(&p),

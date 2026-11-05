@@ -90,6 +90,7 @@ mod extract_analysis_mesh;
 mod extract_curvature_graph;
 mod extract_points;
 mod extract_surface;
+mod extrude_apex_subd;
 #[cfg(feature = "native-smlib")]
 mod extrude_curve_path_native;
 mod extrude_curve_subd;
@@ -495,3 +496,9 @@ mod inset;
 
 #[path = "../../../crates/viboceros-oracle/tests/support/revolve_subd.rs"]
 mod subd_profile_comparison;
+
+#[path = "../../../crates/viboceros-oracle/tests/support/extrude_curve_subd.rs"]
+mod subd_face_comparison;
+
+#[path = "../../../crates/viboceros-oracle/tests/support/extrude_apex_subd.rs"]
+mod subd_apex_comparison;

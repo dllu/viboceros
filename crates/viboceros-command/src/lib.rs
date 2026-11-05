@@ -178,7 +178,7 @@ use interchange::{document_geometry_from_3dm, geometry_to_3dm};
 use viboceros_document::ObjectColorSource;
 mod bezier;
 mod extrude_along_curve;
-mod extrude_apex;
+pub mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod crease_splitting;
 mod tube;
@@ -1478,7 +1478,9 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(ExtrudeCurveToPointCommand)
+            .register(ExtrudeCurveToPointCommand(
+                registry.crease_splitting.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(RevolveCommand(registry.crease_splitting.clone()))

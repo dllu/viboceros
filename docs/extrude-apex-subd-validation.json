@@ -1,0 +1,63 @@
+{
+  "scope": "ExtrudeCrvToPoint Output=SubD, exact degree-one fallback, crease policy, apex profile fitting, exact linear UV crossing proposals and interactive option editing.",
+  "baseline_revision": "ed951388e0bffe3db97f65d76ab76334e880d9a6",
+  "passed": {
+    "new_native_command_workflows": 60,
+    "independent_sdk_factory_cases": 11,
+    "sdk_subd_fits": 9,
+    "sdk_null_results": 2,
+    "full_brep_definition_workflows": 14,
+    "app_new_fixture_replays_per_build": 60,
+    "new_archive_roundtrips_per_build": 60,
+    "test_counts": {
+      "default": {
+        "command-unit": 2,
+        "command-policy": 2,
+        "conversion": 9,
+        "oracle": 11,
+        "app": 2,
+        "app-straight": 2,
+        "app-revolve": 2,
+        "point-input": 5
+      },
+      "native": {
+        "command-unit": 2,
+        "command-policy": 2,
+        "conversion": 9,
+        "oracle": 11,
+        "app": 2,
+        "app-straight": 2,
+        "app-revolve": 2,
+        "point-input": 5
+      }
+    }
+  },
+  "comparisons": {
+    "absolute_epsilon": 1e-12,
+    "subd": "Geometric control correspondence, tagged oriented face sets, every density-2 limit quad",
+    "fallback_brep": "Every surface definition; complete curves, knots, weights, trims, tolerances, face sense and oriented incidence in 14 workflows, allowing edge-slot permutation",
+    "history": [
+      "before",
+      "after",
+      "undo",
+      "redo"
+    ],
+    "sdk": "Public Surface.CreateExtrusionToPoint and SubD.CreateFromSurface results, including null bilinear-pole results"
+  },
+  "headless": {
+    "native_captures": "Private Xvfb/i3 through tools/rhino_oracle/run_headless.sh; private runtime directory, Wayland/compositor sockets unset; only owned Rhino closed",
+    "application_tests": "Unit-test application state with DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK and I3SOCK removed; no GUI event loop"
+  },
+  "limits": [
+    "Sampled approximation; no general continuous error certificate",
+    "Native component numbering and SubD face insertion order are not reproduced",
+    "Output options reset per invocation",
+    "Shared conversion and exact face-partition budgets apply",
+    "Comparative performance unqualified"
+  ],
+  "evidence": {
+    "captures": "extrude-apex-subd-proof/captures.json",
+    "runs": "extrude-apex-subd-proof/runs.json",
+    "sha256": "extrude-apex-subd-proof/sha256.json"
+  }
+}

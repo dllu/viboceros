@@ -473,7 +473,7 @@ fn extrude_curve_to_point_matches_rhino_nurbs_form_and_document_behavior() {
         "ExtrudeCrvToPoint 0,0,0",
         "ExtrudeCrvToPoint 1,2,5 DeleteInput=Maybe",
         "ExtrudeCrvToPoint 1,2,5 DeleteInput=Yes DeleteInput=No",
-        "ExtrudeCrvToPoint 1,2,5 Output=SubD",
+        "ExtrudeCrvToPoint 1,2,5 Output=Mesh",
         "ExtrudeCrvToPoint 1,2,5 Solid=Yes Solid=No",
         "ExtrudeCrvToPoint 1,2,5 extra",
     ] {

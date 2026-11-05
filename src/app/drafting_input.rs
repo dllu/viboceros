@@ -2686,16 +2686,12 @@ impl VibocerosApp {
                     options.command_options()
                 ));
             }
-            InteractiveCommand::ExtrudeCurveToPoint {
-                delete_input,
-                solid,
-            } => {
+            InteractiveCommand::ExtrudeCurveToPoint { options } => {
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "ExtrudeCrvToPoint {} DeleteInput={} Solid={}",
+                    "ExtrudeCrvToPoint {} {}",
                     format_model_point(point),
-                    if delete_input { "Yes" } else { "No" },
-                    if solid { "Yes" } else { "No" }
+                    options.command_options()
                 ));
             }
             InteractiveCommand::Revolve {

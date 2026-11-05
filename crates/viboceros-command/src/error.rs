@@ -1052,7 +1052,7 @@ pub enum CommandError {
     #[error("ExtrudeCrv supports Output=Surface or Output=SubD")]
     UnsupportedCurveExtrusionOutput,
 
-    #[error("ExtrudeCrvToPoint currently supports Output=Surface only")]
+    #[error("ExtrudeCrvToPoint supports Output=Surface or Output=SubD")]
     UnsupportedCurveToPointExtrusionOutput,
 
     #[error("the two Box base corners must lie on the same World XY plane")]

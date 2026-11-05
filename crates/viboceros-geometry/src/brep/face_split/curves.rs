@@ -142,6 +142,19 @@ fn roots_in_span(
     if bernstein_sign_changes(coefficients) == 0 {
         return Ok(());
     }
+    if coefficients.len() == 2 {
+        // Direct inversion avoids rounding a linear crossing to the wrong
+        // side after 64 bisections. This is only a proposal: the caller still
+        // requires exact UV evaluation and every partition certificate.
+        let scale = coefficients[0].abs().max(coefficients[1].abs());
+        let a = coefficients[0] / scale;
+        let b = coefficients[1] / scale;
+        let fraction = a / (a - b);
+        if fraction > 0. && fraction < 1. {
+            roots.push(parameter[0] * (1. - fraction) + parameter[1] * fraction);
+            return Ok(());
+        }
+    }
     let middle = parameter[0].midpoint(parameter[1]);
     if depth == 64 || middle <= parameter[0] || middle >= parameter[1] {
         roots.push(middle);

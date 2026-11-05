@@ -131,6 +131,15 @@ pub(super) fn convert_with_mesh(
     tolerance: Tolerance,
 ) -> Result<(SubD, TriangleMesh), GeometryError> {
     use std::borrow::Cow;
+    // A bilinear surface with a collapsed side has no native friendly-SubD
+    // representation. Apex commands retain its exact B-rep instead.
+    if method == SubDFromSurfaceMethod::Location
+        && surface.degree_u() == 1
+        && surface.degree_v() == 1
+        && singular_sides(surface).into_iter().any(|s| s)
+    {
+        return Err(GeometryError::SubDInterpolationFailed);
+    }
     let (net, creases) = match method {
         SubDFromSurfaceMethod::ControlPoints => (Cow::Borrowed(surface), Vec::new()),
         SubDFromSurfaceMethod::Location => {

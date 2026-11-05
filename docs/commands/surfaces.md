@@ -224,7 +224,8 @@ by default; `DeleteInput=Yes` removes them. `Solid=Yes` turns each closed planar
 profile into an exact closed B-rep with a singular-apex ruled wall, planar
 trimmed cap, shared rational rim, and one twice-used wall seam; open and
 nonplanar profiles remain surfaces. `Output=Surface` and `Solid=No` are accepted
-explicitly; SubD output is not yet represented.
+explicitly. `Output=SubD` adds fitted SubDs and Rhino-compatible degree-one
+B-rep fallback; see [apex fitting, output switching and qualification](extrude-crv-to-point-subd.md).
 
 `ExtrudeCrvAlongCrv` creates exact fixed-orientation sum surfaces from selected
 profiles and a path named with `PathName=`, or selected last. `SplitAtTangents`

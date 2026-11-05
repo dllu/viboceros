@@ -1,0 +1,26 @@
+{
+  "extrude_apex_subd_pilot": {
+    "results": 6,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "60e447b1a809f13a781f54e2db589aba2703aa41aa4c1f3c8ad23b5564feb11d",
+    "gzip_sha256": "5d0943177b8646f1d42791a56be44a1f3c5b7bf6fd78002fd03a731b51ca155e",
+    "raw_bytes": 734957,
+    "gzip_bytes": 62512
+  },
+  "extrude_apex_subd_holdouts": {
+    "results": 49,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "63e9aa6ea73863ebbb44b12e6f1f0962c21021c80173516f6c62b17672c32b68",
+    "gzip_sha256": "243ca0525e01682436a2369b609f8699c139d77087a906cbb393d1c0082b7335",
+    "raw_bytes": 6530149,
+    "gzip_bytes": 536023
+  },
+  "extrude_apex_subd_confirmations": {
+    "results": 16,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "10f51ca972552401f56e140cab4e21c617e52c3d3055ac36678b437e2296bae0",
+    "gzip_sha256": "70e5130cd162da02321b5035d31243dd90da1e1cca5cef9506d18a2c1aaebfc2",
+    "raw_bytes": 2010105,
+    "gzip_bytes": 91520
+  }
+}

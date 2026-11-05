@@ -81,8 +81,7 @@ fn interactive_curve_to_point_extrusion_uses_one_apex_pick() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::ExtrudeCurveToPoint {
-            delete_input: false,
-            solid: false,
+            options: Default::default()
         })
     );
     app.accept_drafting_point(point(1.0, 2.0, 5.0));
@@ -134,8 +133,10 @@ fn interactive_curve_to_point_preserves_solid_option_through_apex_pick() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::ExtrudeCurveToPoint {
-            delete_input: false,
-            solid: true,
+            options: viboceros_command::extrude_apex::Options {
+                solid: true,
+                ..Default::default()
+            }
         })
     );
     app.accept_drafting_point(point(1.0, 2.0, 6.0));
@@ -148,7 +149,7 @@ fn interactive_curve_to_point_preserves_solid_option_through_apex_pick() {
     assert!((brep.signed_volume(app.document.tolerance()).unwrap() - 12.0).abs() < 1.0e-11);
     assert_eq!(app.document.undo_label(), Some("ExtrudeCrvToPoint"));
     assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint Solid=Yes Solid=No"));
-    assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint Output=SubD"));
+    assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint Output=Mesh"));
 }
 
 #[test]

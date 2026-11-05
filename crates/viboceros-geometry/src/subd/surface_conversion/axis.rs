@@ -63,7 +63,12 @@ pub(super) fn parameters(
                 .collect());
         }
     }
-    if !closed && n == degree + 1 && n > 2 && linear_axis(surface, axis, &values) {
+    if !closed
+        && n == degree + 1
+        && n > 2
+        && !super::singular_sides(surface).into_iter().any(|s| s)
+        && linear_axis(surface, axis, &values)
+    {
         return Ok(vec![values[0], *values.last().unwrap()]);
     }
     Ok(values)

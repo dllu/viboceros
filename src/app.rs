@@ -184,6 +184,7 @@ mod construction_plane;
 mod contour;
 mod curvature_analysis;
 mod curvature_graph;
+mod curve_apex;
 mod curve_array;
 mod curve_deviation;
 mod curve_extrusion;
@@ -687,7 +688,8 @@ impl VibocerosApp {
         if self.continue_curve_deviation(&input) {
             return;
         }
-        if self.continue_curve_extrusion_options(&input) {
+        if self.continue_curve_extrusion_options(&input) || self.continue_curve_apex_options(&input)
+        {
             return;
         }
         if self.continue_revolve_options(&input) {

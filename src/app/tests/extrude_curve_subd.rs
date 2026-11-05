@@ -1,8 +1,6 @@
-use super::subd_profile_comparison;
+use super::subd_face_comparison as topology;
 use super::*;
 use viboceros_oracle::extrude_curve_subd::{Fixture, setup, snapshot};
-#[path = "../../../crates/viboceros-oracle/tests/support/extrude_curve_subd.rs"]
-mod topology;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

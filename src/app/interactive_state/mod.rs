@@ -629,8 +629,7 @@ pub(super) enum InteractiveCommand {
         options: viboceros_command::extrude_surface_apex::SurfaceApexOptions,
     },
     ExtrudeCurveToPoint {
-        delete_input: bool,
-        solid: bool,
+        options: viboceros_command::extrude_apex::Options,
     },
     Revolve {
         axis_start: Option<Point3>,

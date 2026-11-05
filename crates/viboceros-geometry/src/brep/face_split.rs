@@ -3,6 +3,8 @@ use super::join_edges::certificate;
 use super::*;
 use crate::SurfaceKnotDirection;
 
+#[cfg(test)]
+mod apex_tests;
 mod curves;
 mod rings;
 mod singular;
