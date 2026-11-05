@@ -1,12 +1,16 @@
 //! Curve extrusion parsing, geometry staging, and document policy.
 use super::*;
+mod options;
+mod subd;
+pub use options::Output;
+use options::{Direction, parse_curve_extrusion};
 
 #[cfg(feature = "native-smlib")]
 mod native;
 #[cfg(test)]
 mod tests;
 
-const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No]";
+const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No]";
 
 pub(super) struct ExtrudeCurveCommand(pub use_extrusions::Preference);
 
@@ -43,10 +47,16 @@ impl Command for ExtrudeCurveCommand {
             return Err(CommandError::NoExtrudableCurves);
         }
         #[cfg(feature = "native-smlib")]
-        let profiles = curves
-            .iter()
-            .map(|(_, curve)| viboceros_smlib::KernelCurve::from_nurbs_for_modeling(curve))
-            .collect::<Result<Vec<_>, _>>()?;
+        let profiles = if options.output == Output::Surface
+            || matches!(&options.direction, Direction::Numeric(_))
+        {
+            curves
+                .iter()
+                .map(|(_, curve)| viboceros_smlib::KernelCurve::from_nurbs_for_modeling(curve))
+                .collect::<Result<Vec<_>, _>>()?
+        } else {
+            Vec::new()
+        };
         let direction = match options.direction {
             Direction::Explicit(direction) => direction,
             Direction::Numeric(distance) => {
@@ -94,6 +104,18 @@ impl Command for ExtrudeCurveCommand {
                 {
                     continue;
                 }
+            }
+            if options.output == Output::SubD {
+                extrusions.push((
+                    id,
+                    Geometry::SubD(subd::extrude(
+                        &curve,
+                        start_offset,
+                        end_offset,
+                        document.tolerance(),
+                    )?),
+                ));
+                continue;
             }
             let typed = Brep::try_command_curve_extrusion(
                 &curve,
@@ -171,6 +193,17 @@ impl Command for ExtrudeCurveCommand {
                 document.delete_object(*id)?;
             }
         }
+        if options.output == Output::SubD {
+            return Ok(format!(
+                "Extruded {output_count} curve object(s) into SubD object(s){}{}",
+                if both_sides { " on both sides" } else { "" },
+                if delete_input {
+                    ", deleting the input curves"
+                } else {
+                    ""
+                }
+            ));
+        }
         let surface_count = output_count - solid_count;
         Ok(format!(
             "Extruded {output_count} curve object(s) into {solid_count} exact capped solid(s) and {surface_count} exact surface(s){}{}",
@@ -182,17 +215,6 @@ impl Command for ExtrudeCurveCommand {
             }
         ))
     }
-}
-
-enum Direction {
-    Numeric(Real),
-    Explicit(Vector3),
-}
-struct Options {
-    direction: Direction,
-    delete_input: bool,
-    both_sides: bool,
-    solid: bool,
 }
 
 fn positive_normal(normal: Vector3) -> Result<Vector3, CommandError> {
@@ -236,67 +258,4 @@ fn portable_parallel_normal(
         viboceros_geometry::try_control_polygon_plane(&positions, tolerance)?
             .map(|p| p.normal().as_vector()),
     )
-}
-
-fn parse_curve_extrusion(
-    arguments: &[&str],
-    tolerance: Tolerance,
-) -> Result<Options, CommandError> {
-    let mut positional = Vec::new();
-    let mut both_sides = None;
-    let mut delete_input = None;
-    let mut output_seen = false;
-    let mut solid = None;
-    for argument in arguments {
-        let Some((name, value)) = argument.split_once('=') else {
-            positional.push(*argument);
-            continue;
-        };
-        if option_name_eq(name, "BothSides") && both_sides.is_none() {
-            both_sides = parse_yes_no(value);
-            if both_sides.is_none() {
-                return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
-            }
-        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
-            delete_input = parse_yes_no(value);
-            if delete_input.is_none() {
-                return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
-            }
-        } else if option_name_eq(name, "Output") && !output_seen {
-            if !value
-                .trim_start_matches('_')
-                .eq_ignore_ascii_case("Surface")
-            {
-                return Err(CommandError::UnsupportedCurveExtrusionOutput);
-            }
-            output_seen = true;
-        } else if option_name_eq(name, "Solid") && solid.is_none() {
-            solid = Some(parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_USAGE))?);
-        } else {
-            return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
-        }
-    }
-
-    let direction = if positional.len() == 1 && !positional[0].contains(',') {
-        let distance = parse_finite_real(positional[0])?;
-        Vector3::try_new(0., 0., distance)?.normalized(tolerance)?;
-        Direction::Numeric(distance)
-    } else {
-        let (base, base_consumed) = parse_point(&positional)?;
-        let (target, target_consumed) = parse_point(&positional[base_consumed..])?;
-        require_consumed(
-            &positional,
-            base_consumed + target_consumed,
-            EXTRUDE_CURVE_USAGE,
-        )?;
-        let direction = base.vector_to(target)?;
-        direction.normalized(tolerance)?;
-        Direction::Explicit(direction)
-    };
-    Ok(Options {
-        direction,
-        delete_input: delete_input.unwrap_or(false),
-        both_sides: both_sides.unwrap_or(false),
-        solid: solid.unwrap_or(false),
-    })
 }

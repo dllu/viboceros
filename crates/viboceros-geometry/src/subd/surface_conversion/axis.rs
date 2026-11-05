@@ -31,14 +31,37 @@ pub(super) fn parameters(
     let values = (start..end)
         .map(|i| stable_knot_mean(&knots[i + 1..=i + degree]))
         .collect::<Result<Vec<_>, _>>()?;
-    if !closed && natural_axis(surface, axis, degree, knots) {
-        return Ok(values
-            .into_iter()
-            .enumerate()
-            .filter_map(|(i, p)| {
-                ((singular[1] || i != n - 2) && (singular[0] || i != 1)).then_some(p)
-            })
-            .collect());
+    if !closed && degree == 3 {
+        // Full-multiplicity joins are independent natural end conditions.
+        // Keep their shared station, omitting only each natural piece's handles.
+        let mut boundaries = vec![0];
+        let mut i = degree + 1;
+        while i < n {
+            let first = i;
+            let knot = knots[i];
+            while i < knots.len() && knots[i] == knot {
+                i += 1;
+            }
+            if i - first == degree {
+                boundaries.push(first - 1);
+            }
+        }
+        boundaries.push(n - 1);
+        let mut omit = vec![false; n];
+        for piece in boundaries.windows(2) {
+            let [first, last] = [piece[0], piece[1]];
+            if natural_piece(surface, axis, knots, first, last) {
+                omit[first + 1] = first > 0 || !singular[0];
+                omit[last - 1] = last + 1 < n || !singular[1];
+            }
+        }
+        if omit.iter().any(|&v| v) {
+            return Ok(values
+                .into_iter()
+                .enumerate()
+                .filter_map(|(i, p)| (!omit[start + i]).then_some(p))
+                .collect());
+        }
     }
     if !closed && n == degree + 1 && n > 2 && linear_axis(surface, axis, &values) {
         return Ok(vec![values[0], *values.last().unwrap()]);
@@ -47,14 +70,18 @@ pub(super) fn parameters(
 }
 // ON_ZERO_TOLERANCE, used for geometric simplification independently of document tolerance.
 const ZERO_TOLERANCE: f64 = 1. / 4_294_967_296.;
-fn natural_axis(surface: &NurbsSurface, axis: usize, degree: usize, knots: &[f64]) -> bool {
-    if degree != 3 {
+fn natural_piece(
+    surface: &NurbsSurface,
+    axis: usize,
+    knots: &[f64],
+    first: usize,
+    last: usize,
+) -> bool {
+    let n = last - first + 1;
+    if n < 4 {
         return false;
     }
-    let u = surface.control_point_count_u();
-    let v = surface.control_point_count_v();
-    let n = if axis == 0 { u } else { v };
-    let spans = &knots[degree..=n];
+    let spans = &knots[first + 3..=last + 1];
     let step = spans[1] - spans[0];
     if step <= 0.
         || spans
@@ -63,7 +90,12 @@ fn natural_axis(surface: &NurbsSurface, axis: usize, degree: usize, knots: &[f64
     {
         return false;
     }
-    let index = |i, j| if axis == 0 { j * u + i } else { i * u + j };
+    let u = surface.control_point_count_u();
+    let v = surface.control_point_count_v();
+    let index = |i, j| {
+        let i = i + first;
+        if axis == 0 { j * u + i } else { i * u + j }
+    };
     let rows = if axis == 0 { v } else { u };
     let controls = surface.control_points();
     for j in 0..rows {

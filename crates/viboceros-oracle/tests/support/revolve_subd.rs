@@ -4,6 +4,7 @@ mod mesh;
 #[path = "revolve_subd/values.rs"]
 mod values;
 
+#[allow(dead_code)]
 pub fn epsilon(id: &str) -> f64 {
     // Native fitting near a 3e6 world origin differs by up to 1.2e-9.
     // Every other fixed case retains the strict absolute 1e-12 threshold.

@@ -1,0 +1,61 @@
+{
+  "scope": "ExtrudeCrv Output=SubD, natural cubic joined-piece fitting, oblique profile orientation and interactive output switching.",
+  "baseline_revision": "72519586434f87b25ae7addf55ba61fffc86d72b",
+  "passed": {
+    "new_native_command_workflows": 62,
+    "independent_sdk_surface_fits": 10,
+    "command_geometry_workflows_per_build": 142,
+    "app_new_fixture_replays_per_build": 62,
+    "archive_roundtrips_per_build": 142,
+    "test_counts": {
+      "default": {
+        "command-unit": 9,
+        "command-policy": 4,
+        "conversion": 9,
+        "oracle": 6,
+        "app": 2,
+        "app-revolve": 2,
+        "point-input": 5,
+        "short-spans": 3
+      },
+      "native": {
+        "command-unit": 11,
+        "command-policy": 4,
+        "conversion": 9,
+        "oracle": 6,
+        "app": 2,
+        "app-revolve": 2,
+        "point-input": 5,
+        "short-spans": 3
+      }
+    }
+  },
+  "comparisons": {
+    "absolute_epsilon": 1e-12,
+    "control_vertices": "geometric correspondence",
+    "topology": "tagged oriented face sets; native face insertion order and component IDs excluded",
+    "limit_mesh": "every oriented density-2 limit quad by joint geometric correspondence",
+    "history": [
+      "before",
+      "after",
+      "undo",
+      "redo"
+    ],
+    "sdk": "Original public Surface.CreateExtrusion and SubD.CreateFromSurface output; simplified variants retained only as diagnostics"
+  },
+  "headless": {
+    "native_captures": "Private Xvfb/i3 through tools/rhino_oracle/run_headless.sh; private runtime directory, Wayland/compositor sockets unset; only owned Rhino closed",
+    "application_tests": "Unit-test application state with DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK and I3SOCK removed; no GUI event loop"
+  },
+  "limits": [
+    "Sampled approximation; no general continuous error certificate",
+    "Native component IDs, face insertion order and display-buffer numbering are not reproduced",
+    "Output options reset per invocation",
+    "Comparative performance unqualified"
+  ],
+  "evidence": {
+    "captures": "extrude-curve-subd-proof/captures.json",
+    "runs": "extrude-curve-subd-proof/runs.json",
+    "sha256": "extrude-curve-subd-proof/sha256.json"
+  }
+}

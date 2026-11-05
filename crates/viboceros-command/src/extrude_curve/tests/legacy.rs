@@ -184,7 +184,7 @@ fn extrude_curve_matches_rhino_domains_attributes_groups_and_delete_input() {
         "ExtrudeCrv 0,0,0 0,0,0",
         "ExtrudeCrv 5 BothSides=Yes BothSides=No",
         "ExtrudeCrv 5 DeleteInput=Maybe",
-        "ExtrudeCrv 5 Output=SubD",
+        "ExtrudeCrv 5 Output=Mesh",
         "ExtrudeCrv 5 Solid=Yes Solid=No",
         "ExtrudeCrv 5 extra",
     ] {

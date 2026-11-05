@@ -92,6 +92,7 @@ mod extract_points;
 mod extract_surface;
 #[cfg(feature = "native-smlib")]
 mod extrude_curve_path_native;
+mod extrude_curve_subd;
 mod extrude_surface;
 mod extrude_surface_apex;
 #[cfg(feature = "native-smlib")]
@@ -491,3 +492,6 @@ mod source_archives;
 mod subd_extrude;
 
 mod inset;
+
+#[path = "../../../crates/viboceros-oracle/tests/support/revolve_subd.rs"]
+mod subd_profile_comparison;

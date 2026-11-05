@@ -1,7 +1,6 @@
+use super::subd_profile_comparison as topology;
 use super::*;
 use viboceros_oracle::revolve_subd::{Fixture, setup, snapshot};
-#[path = "../../../crates/viboceros-oracle/tests/support/revolve_subd.rs"]
-mod topology;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

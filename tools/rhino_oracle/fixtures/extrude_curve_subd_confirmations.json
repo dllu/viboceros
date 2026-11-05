@@ -1,0 +1,869 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "extrude_curve_subd",
+      "id": "smooth_reversed_negative",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "smooth_reversed_oblique",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        2.0,
+        1.0,
+        -1.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "corner_reversed_negative",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "corner_reversed_oblique",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        2.0,
+        1.0,
+        -1.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "closed_reversed_negative",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "closed_reversed_oblique",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        2.0,
+        1.0,
+        -1.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "cubic_corner_reversed_negative",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.6666666666666665,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.3333333333333335,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.6666666666666666
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.3333333333333333
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "cubic_corner_reversed_oblique",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.6666666666666665,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.3333333333333335,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.6666666666666666
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.3333333333333333
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        2.0,
+        1.0,
+        -1.0
+      ],
+      "solid": false,
+      "both_sides": false,
+      "delete_input": false
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "smooth_spatial_plane",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.633164978870555,
+              -30.15829124471764,
+              19.84170875528236
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.673605093390435,
+              -29.66840127334761,
+              20.33159872665239
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.714045207910317,
+              -29.17851130197758,
+              20.82148869802242
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              16.990187582825712,
+              -28.747546895706428,
+              21.252453104293572
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": true,
+      "delete_input": true
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "closed_spatial_plane",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.495093791412856,
+              -29.373773447853214,
+              20.626226552146786
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.218951416497461,
+              -29.804737854124365,
+              20.195262145875635
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": true,
+      "delete_input": true
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "rational_spatial_plane",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              12.885618083164127,
+              -28.471404520791033,
+              21.528595479208967
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              16.04737854124365,
+              -28.51184463531091,
+              21.48815536468909
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              14.82842712474619,
+              -26.707106781186546,
+              23.292893218813454
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": true,
+      "delete_input": true
+    },
+    {
+      "op": "extrude_curve_subd",
+      "id": "cubic_corner_spatial_plane",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              12.82842712474619,
+              -30.707106781186546,
+              19.292893218813454
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.9395382358573,
+              -30.484884558964325,
+              19.515115441035675
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.050649346968413,
+              -30.262662336742103,
+              19.737337663257897
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.161760458079524,
+              -30.040440114519882,
+              19.959559885480118
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.476030138606879,
+              -30.11900753465172,
+              19.88099246534828
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.790299819134233,
+              -30.19757495478356,
+              19.80242504521644
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              14.104569499661586,
+              -30.2761423749154,
+              19.7238576250846
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": true,
+      "delete_input": true
+    }
+  ]
+}

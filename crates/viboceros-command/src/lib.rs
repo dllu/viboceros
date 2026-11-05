@@ -204,6 +204,7 @@ use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
 mod extrude_mesh;
 use extrude_curve::ExtrudeCurveCommand;
+pub use extrude_curve::Output as CurveExtrusionOutput;
 mod geometric_continuity;
 pub mod insert_control_point;
 pub mod insert_edit_point;

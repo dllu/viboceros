@@ -1,11 +1,13 @@
 //! Curve-extrusion options shared by the command start and direction getters.
 use super::*;
+use viboceros_command::CurveExtrusionOutput as Output;
 
 #[derive(Clone, Copy, Default)]
 struct Options {
     both_sides: bool,
     delete_input: bool,
     solid: bool,
+    output: Output,
 }
 
 impl Options {
@@ -19,9 +21,7 @@ impl Options {
                 return None;
             }
             if name == "output" {
-                if !value.eq_ignore_ascii_case("Surface") {
-                    return None;
-                }
+                self.output = Output::parse(value)?;
                 continue;
             }
             let enabled = if value.eq_ignore_ascii_case("Yes") {
@@ -46,6 +46,7 @@ impl Options {
             both_sides: self.both_sides,
             delete_input: self.delete_input,
             solid: self.solid,
+            output: self.output,
         }
     }
 }
@@ -61,6 +62,7 @@ impl VibocerosApp {
             both_sides,
             delete_input,
             solid,
+            output,
         }) = self.active_command
         else {
             return false;
@@ -79,19 +81,22 @@ impl VibocerosApp {
             both_sides,
             delete_input,
             solid,
+            output,
         })
         .parse(&args)
         {
             self.active_command = Some(options.command(base));
             self.push_log(format!(
-                "Solid={} BothSides={} DeleteInput={}",
+                "Output={} Solid={} BothSides={} DeleteInput={}",
+                options.output.name(),
                 if options.solid { "Yes" } else { "No" },
                 if options.both_sides { "Yes" } else { "No" },
                 if options.delete_input { "Yes" } else { "No" }
             ));
         } else {
             self.push_log(
-                "Enter Solid=Yes|No, BothSides=Yes|No, DeleteInput=Yes|No or Output=Surface".into(),
+                "Enter Solid=Yes|No, BothSides=Yes|No, DeleteInput=Yes|No or Output=Surface|SubD"
+                    .into(),
             );
         }
         self.command_input.clear();

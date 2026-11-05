@@ -213,6 +213,8 @@ Profile parameters are retained, including native polyline vertex intervals;
 extrusion does not assign a new chord-length parameterization. Closed profiles
 may reverse with the path; [typed creator qualification](../creator-extrusions.md)
 records the signed-interval and cap behavior.
+`Output=SubD` creates an uncapped editable SubD; see [profile fitting, interactive
+output switching and qualification](extrude-crv-subd.md).
 
 `ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
 curves to one apex. Its U direction runs from the profile to the apex while V

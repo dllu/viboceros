@@ -112,6 +112,7 @@ mod edge_analysis;
 pub mod edge_analysis_lifetime;
 pub mod edge_analysis_mixed;
 mod extract_surface;
+pub mod extrude_curve_subd;
 mod iplane;
 mod mesh_pull;
 #[cfg(test)]
@@ -361,6 +362,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ExtrudeCurveSubd {
+        id: String,
+        #[serde(flatten)]
+        fixture: extrude_curve_subd::Fixture,
+    },
     RevolveSubd {
         id: String,
         #[serde(flatten)]
@@ -2957,6 +2963,7 @@ impl Operation {
             | Self::RevolveDeformable { id, .. }
             | Self::RevolveSplitting { id, .. }
             | Self::RevolveSubd { id, .. }
+            | Self::ExtrudeCurveSubd { id, .. }
             | Self::RevolveSubdProfile { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
@@ -3518,6 +3525,9 @@ fn execute(
         }
         Operation::RevolveDeformable { fixture, .. } => {
             revolve_deformable::run(fixture, iterations, tolerance)?
+        }
+        Operation::ExtrudeCurveSubd { fixture, .. } => {
+            extrude_curve_subd::run(fixture, iterations, tolerance)?
         }
         Operation::RevolveSubd { fixture, .. } => {
             revolve_subd::run(fixture, iterations, tolerance)?

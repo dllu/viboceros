@@ -1,0 +1,34 @@
+{
+  "extrude_curve_subd_pilot": {
+    "results": 6,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "1a829f25c3f1bf2ed323a4e039abd8d97c4533d38261e56185ca420b1f23a5cf",
+    "gzip_sha256": "52a574d5aafbb43e53398b2fd67b6d0e5a98c0aafe49086d209a65b2c28af79a",
+    "raw_bytes": 622119,
+    "gzip_bytes": 23196
+  },
+  "extrude_curve_subd_holdouts": {
+    "results": 44,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "1abe6824f6facb2ad5a496513c9059e013b5411b2a987848c7f641e918dd20af",
+    "gzip_sha256": "780fbdff4cee626c6e1d8089c4b2a8078ac03ecbb7ba50667020869385ff06de",
+    "raw_bytes": 4805348,
+    "gzip_bytes": 211159
+  },
+  "extrude_curve_subd_confirmations": {
+    "results": 12,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "f19555265d5bb4265a3e5191cd2fed7d25359acd4537a4a720d764a69fef567d",
+    "gzip_sha256": "e9d649730a88dfbc20ae6e8d38cb9148d1d7f48467cc7a8fd31e1cb1c45b649e",
+    "raw_bytes": 1317548,
+    "gzip_bytes": 63794
+  },
+  "extrude_curve_subd_sdk": {
+    "results": 10,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "f411258a6897448046fc25831f653f0599a18b812d86178cbd7292d069e01d1b",
+    "gzip_sha256": "5f565dfb7381fbebc695dfaa4802596a0e0694a1458b2a8fe2df7e93376fd23a",
+    "raw_bytes": 540518,
+    "gzip_bytes": 22149
+  }
+}

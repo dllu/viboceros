@@ -51,8 +51,11 @@ fn revolve_subd_retains_source_metadata_and_rolls_back_mixed_profile_failure() {
     assert!(output.group_ids().is_empty());
     assert!(!doc.is_selected(output.id()));
     assert_eq!(
-        doc.group(group).unwrap().members().collect::<Vec<_>>(),
-        [source, anchor]
+        doc.group(group)
+            .unwrap()
+            .members()
+            .collect::<std::collections::BTreeSet<_>>(),
+        [source, anchor].into_iter().collect()
     );
     commands.execute(&mut doc, "Undo").unwrap();
     doc.select_objects_direct([source, axis], SelectionMode::Replace)

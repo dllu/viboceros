@@ -1049,7 +1049,7 @@ pub enum CommandError {
     #[error("MeshToNURB would create more than {maximum} NURBS control points")]
     TooManyMeshNurbsControls { maximum: usize },
 
-    #[error("ExtrudeCrv currently supports Output=Surface only")]
+    #[error("ExtrudeCrv supports Output=Surface or Output=SubD")]
     UnsupportedCurveExtrusionOutput,
 
     #[error("ExtrudeCrvToPoint currently supports Output=Surface only")]
