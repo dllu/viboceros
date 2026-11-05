@@ -1,45 +1,51 @@
-"""Bounded public keystrokes for the owned Edge Analysis Zoom button."""
+"""Public Zoom command events request fixed inputs from the owned host window."""
 
 
 def start(R, S, tokens):
-    import clr
-    clr.AddReference('WindowsBase')
-    from System.Windows.Threading import DispatcherTimer
-    timer = DispatcherTimer()
-    timer.Interval = S.TimeSpan.FromMilliseconds(50)
-    begun = S.DateTime.UtcNow
-    last, busy = [begun], [False]
+    import json
+    import os
+    root = os.path.dirname(__file__)
+    progress = os.path.join(root, 'worker-progress.log')
+    acknowledgement = os.path.join(root, 'edge-zoom-ack.json')
+    identity = str(S.Guid.NewGuid().ToString('N'))
+    names, closed = [], [False]
     state = dict(sent=[], errors=[])
+    allowed = ('All', 'Current', 'Next', 'Previous', 'Mark', 'Enter', 'Escape')
+    choices = [token.lstrip('_') if token else 'Enter' for token in tokens]
+    if not choices or len(choices) > 32 or any(token not in allowed for token in choices):
+        raise ValueError('fixed edge Zoom options required')
 
-    def tick(sender, args):
-        if busy[0]:
+    def begun(sender, event):
+        if event.CommandEnglishName not in ('ZoomNaked', 'ZoomNonManifold') or names:
             return
-        if (S.DateTime.UtcNow - begun).TotalSeconds > 30:
-            timer.Stop()
-            state['errors'].append('owned edge Zoom timeout: ' + str(R.RhinoApp.CommandPrompt))
-            R.RhinoApp.SendKeystrokes('_Cancel', True)
-            return
-        prompt = str(R.RhinoApp.CommandPrompt)
-        if (len(state['sent']) >= len(tokens) or ('mark' not in prompt.lower() or 'enter' not in prompt.lower() or prompt.lower().startswith('select'))
-                or (S.DateTime.UtcNow - last[0]).TotalSeconds < .2):
-            return
-        token = tokens[len(state['sent'])]
-        busy[0] = True
-        try:
-            state['sent'].append(dict(token=token, prompt=prompt))
-            last[0] = S.DateTime.UtcNow
-            R.RhinoApp.SendKeystrokes(token, True)
-        finally:
-            busy[0] = False
+        for i, (token, choice) in enumerate(zip(tokens, choices)):
+            name = '@edge-zoom:'+identity+':'+str(i)+':'+choice
+            names.append(name)
+            state['sent'].append(dict(token=token, command=event.CommandEnglishName, phase='command_begin'))
+            with open(progress, 'a') as stream:
+                stream.write('PICK '+name+' 1 1\n');stream.flush()
 
-    timer.Tick += tick
-    timer.Start()
+    def stop():
+        if not closed[0]:
+            closed[0] = True
+            R.Commands.Command.BeginCommand -= begun
+
+    R.Commands.Command.BeginCommand += begun
 
     def finish():
-        timer.Stop()
-        if state['errors'] or len(state['sent']) != len(tokens):
-            raise ValueError('owned edge Zoom input failed: ' + str(state))
+        stop()
+        accepted = []
+        # Final Enter can return the native command just before its host receipt.
+        for unused in range(200):
+            try:
+                with open(acknowledgement) as stream:accepted = json.load(stream)
+            except (IOError, ValueError):pass
+            if names and all(name in accepted for name in names):break
+            S.Threading.Thread.Sleep(10)
+        if not names or not all(name in accepted for name in names):
+            raise ValueError('owned edge Zoom input failed: '+str(state))
+        for item in state['sent']:item['acknowledged'] = True
         return state
 
-    finish.stop = timer.Stop
+    finish.stop = stop
     return finish

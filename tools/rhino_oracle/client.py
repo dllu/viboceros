@@ -504,6 +504,12 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') in ('edge_analysis_lifetime', 'edge_analysis_mixed', 'subd_edge_analysis') for op in request.get('operations', [])):
+            if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
+                    or request.get('iterations', 1) != 1 or len({op['op'] for op in request['operations']}) != 1):
+                raise OracleProtocolError('edge diagnostics require a dedicated private one-iteration request')
+            from .edge_zoom_picking import EdgeZoomPicker
+            interaction = EdgeZoomPicker()
         if any(op.get('op') == 'extract_points_command' for op in request.get('operations', [])):
             from .extract_points_cases import ALL_CASES, validate
             if self.settings_scheme is None or request.get('iterations',1) != 1 or any(op.get('op') != 'extract_points_command' for op in request['operations']):

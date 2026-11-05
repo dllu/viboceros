@@ -149,6 +149,8 @@ impl Document {
             let source = &self.objects[index];
             let preserve_text = preserve_geometry_user_text(source, &geometry);
             let after = Object {
+                runtime_serial: Object::new_runtime_serial(),
+                geometry_event_serial: Object::new_runtime_serial(),
                 id: source.id,
                 geometry: geometry.into(),
                 geometry_user_text: if preserve_text {

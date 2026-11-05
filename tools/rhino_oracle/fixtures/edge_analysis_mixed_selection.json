@@ -1,0 +1,113 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_brep_mesh_subd",
+      "order": [
+        "brep",
+        "mesh",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_brep_subd_mesh",
+      "order": [
+        "brep",
+        "subd",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_mesh_brep_subd",
+      "order": [
+        "mesh",
+        "brep",
+        "subd"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_mesh_subd_brep",
+      "order": [
+        "mesh",
+        "subd",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_subd_brep_mesh",
+      "order": [
+        "subd",
+        "brep",
+        "mesh"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    },
+    {
+      "op": "edge_analysis_mixed",
+      "id": "selection_membership_subd_mesh_brep",
+      "order": [
+        "subd",
+        "mesh",
+        "brep"
+      ],
+      "preselect": true,
+      "flat": false,
+      "grouped": false,
+      "extra_point": false,
+      "command": "ShowEdges",
+      "actions": [],
+      "membership": true,
+      "mode_trace": true
+    }
+  ]
+}

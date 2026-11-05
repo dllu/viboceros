@@ -247,6 +247,7 @@ impl Document {
                 })
                 .or_insert(state);
             self.selection.remove(&id);
+            self.temporary_object_selection.remove(&id);
             self.selection_order.retain(|old| *old != id);
         }
         Ok(count)

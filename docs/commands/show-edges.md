@@ -20,7 +20,7 @@ ZoomNaked
 ZoomNonManifold
 ```
 
-`Naked` is the initial mode. B-rep edges are classified by their trim use count;
+`All` is the initial mode in a fresh session. B-rep edges are classified by their trim use count;
 mesh edges use exact-location topology and original polygon sides. `All` includes
 every B-rep edge, naked or unwelded mesh edges, and naked, hard-crease or
 soft-crease SubD edges. `NonManifold` selects
@@ -28,11 +28,14 @@ edges used by more than two faces. Closed boxes and spheres have no naked edges.
 These classifications follow the [Rhino 8 command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/showedges.htm).
 
 Mode and RGB color edits retain the current sources. `Add` and `Remove` use the
-eligible selected objects and retain their preselection. Bare `ShowEdges` replaces
+eligible selected objects and keep them selected temporarily. A subsequent
+command releases those getter picks on completion; manual and Undo-restored
+preselection remain persistent. Bare `ShowEdges` replaces
 the sources when eligible objects are selected and clears supported input selection.
 Unsupported selected group peers remain selected. The panel's Zoom button starts
-interactive Zoom on the analyzed sources with All focus; it is disabled in All
-display mode. `ShowEdgesOff`, or closing the window, clears the display;
+interactive Zoom on the analyzed sources with All focus, retaining persistent
+preselection and releasing temporary getter picks on completion. It is disabled
+in All display mode. `ShowEdgesOff`, or closing the window, clears the display;
 the session remembers its mode and color. `ZoomNaked` and `ZoomNonManifold`
 start temporary command input in the corresponding mode and request a fit of
 the current edge in the active viewport. Bare commands continue with navigation
@@ -62,14 +65,15 @@ Ten [live Rhino SDK captures](../edge-analysis-native.md) also match edge order,
 domains, classifications and curve samples without exclusions. Exact zoom framing and curved display accuracy still need qualification.
 SubD overlays and `ZoomNaked` marking follow smooth/flat appearance; see
 [SubD edge-analysis evidence](subd-edge-analysis.md). Standalone extrusion
-types are not supported. Deleted
-sources leave the session; after Undo restores an object, select and add it
-again. Analysis settings are transient and are not saved in model files.
+types are not supported. Deleted sources leave the live display cache; Undo
+restores their analysis automatically. Explicit Remove and ShowEdgesOff discard
+membership. [Lifetime evidence](edge-analysis-lifetime.md) covers geometry edits,
+restoration, source order and selection. Analysis settings are transient and are not saved in model files.
 
 Fifty [native command workflows](../edge-mark.md) qualify endpoint duplicates,
 point creation order, navigation wraparound and Undo/Redo for the recorded
 surface, trimmed-hole, mesh and mixed-object cases. In naked/non-manifold All
 focus, curved sources are marked before polygonal edges. Smooth SubDs retain
 source order with B-reps; flat SubDs retain source order with meshes. Current
-navigation retains the full source order. Another [86 mixed-source workflows](mixed-edge-analysis.md)
+navigation retains the full source order. Another [92 mixed-source workflows](mixed-edge-analysis.md)
 qualify both appearances, selection routes, groups and panel membership.

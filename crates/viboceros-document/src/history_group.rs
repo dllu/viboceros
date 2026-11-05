@@ -227,6 +227,7 @@ impl Document {
         };
         let unchanged = self.selection_untouched_by_history(&suffix);
         let selection_before = self.selection.clone();
+        let temporary_before = self.temporary_object_selection.clone();
         let selection_order_before = self.selection_order.clone();
         for index in (0..suffix.edits.len()).rev() {
             if let Err(error) = suffix.edits[index].undo(self) {
@@ -236,6 +237,7 @@ impl Document {
                 entry.edits.extend(suffix.edits);
                 self.history.undo.push(entry);
                 self.selection = selection_before;
+                self.temporary_object_selection = temporary_before;
                 self.selection_order = selection_order_before;
                 return Err(error);
             }

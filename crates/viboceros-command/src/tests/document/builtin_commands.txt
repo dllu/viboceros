@@ -293,6 +293,7 @@ Section
 SelAll
 SelBadObjects
 SelBox
+SelChain
 SelClosedCrv
 SelClosedMesh
 SelClosedPolysrf
@@ -302,6 +303,9 @@ SelColor
 SelCrv
 SelDup
 SelDupAll
+SelEdgeLoop
+SelEdgeRing
+SelFaceLoop
 SelGroup
 SelID
 SelKey

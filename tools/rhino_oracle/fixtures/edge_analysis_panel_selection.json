@@ -1,0 +1,253 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_Zoom",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Zoom"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Naked"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "All"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_1_Zoom",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        1
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Zoom"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_1_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        1
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Naked"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_1_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        1
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "All"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_2_Zoom",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Zoom"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_2_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Naked"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_2_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "All"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_1_2_Zoom",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Zoom"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_1_2_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Naked"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "select_0_1_2_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "All"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "outside_Zoom",
+      "flat": false,
+      "analyzed": [
+        0
+      ],
+      "removed": [],
+      "targets": [
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Zoom"
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "outside_Naked",
+      "flat": false,
+      "analyzed": [
+        0
+      ],
+      "removed": [],
+      "targets": [
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "panel_mode": "Naked"
+    }
+  ]
+}

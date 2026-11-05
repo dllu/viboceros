@@ -108,6 +108,7 @@ mod divide_command;
 mod document_brep;
 mod document_units;
 mod edge_analysis;
+pub mod edge_analysis_lifetime;
 pub mod edge_analysis_mixed;
 mod extract_surface;
 mod iplane;
@@ -374,6 +375,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    EdgeAnalysisLifetime {
+        id: String,
+        #[serde(flatten)]
+        fixture: edge_analysis_lifetime::Fixture,
     },
     EdgeAnalysisMixed {
         id: String,
@@ -2897,6 +2903,7 @@ impl Operation {
             | Self::LengthChain { id, .. }
             | Self::ComponentLength { id, .. }
             | Self::SubdArea { id, .. }
+            | Self::EdgeAnalysisLifetime { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3440,6 +3447,9 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::EdgeAnalysisLifetime { fixture, .. } => {
+            edge_analysis_lifetime::run(fixture, iterations, tolerance)?
+        }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?
         }

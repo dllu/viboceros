@@ -7,8 +7,8 @@ mod observation;
 #[test]
 fn native_mixed_diagnostic_source_order_selection_groups_and_history() {
     replay("edge_analysis_mixed", 72);
-    replay("edge_analysis_mixed_membership", 6);
-    replay("edge_analysis_mixed_panels", 8);
+    replay("edge_analysis_mixed_ui", 14);
+    replay("edge_analysis_mixed_selection", 6);
 }
 
 fn replay(family: &str, count: usize) {

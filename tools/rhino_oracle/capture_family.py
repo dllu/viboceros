@@ -17,6 +17,8 @@ def capture(family, query, sources, scheme, timeout=1200):
     if fixture.exists() and fixture.read_bytes() != encoded:
         raise ValueError('existing fixture differs: ' + family)
     fixture.write_bytes(encoded)
+    if 'edge_zoom_input.py' in sources:
+        sources = [*sources, 'edge_zoom_picking.py', 'group_picking.py']
     sources = list(dict.fromkeys([*sources, 'capture_family.py']))
     frozen = {name: (HERE / name).read_bytes() for name in sources}
     digest = lambda data: hashlib.sha256(data).hexdigest()

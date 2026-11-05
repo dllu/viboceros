@@ -260,6 +260,7 @@ impl Document {
             used_group_names: self.used_group_names.clone(),
             block_definitions: self.block_definitions.clone(),
             selection: self.selection.clone(),
+            temporary_object_selection: self.temporary_object_selection.clone(),
             selection_order: self.selection_order.clone(),
             control_points: self.control_points.clone(),
             previous_selection: self.previous_selection.clone(),

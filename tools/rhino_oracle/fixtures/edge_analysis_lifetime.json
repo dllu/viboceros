@@ -1,0 +1,195 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_brep_smooth",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        0
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_mesh_smooth",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        1
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_subd_smooth",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        2
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_brep_mesh_subd_smooth",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "removed_mesh_smooth",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [
+        1
+      ],
+      "deleted": [
+        1
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_brep_flat",
+      "flat": true,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        0
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_mesh_flat",
+      "flat": true,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        1
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_subd_flat",
+      "flat": true,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        2
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mixed_brep_mesh_subd_flat",
+      "flat": true,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "removed_mesh_flat",
+      "flat": true,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [
+        1
+      ],
+      "deleted": [
+        1
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "only_brep",
+      "flat": false,
+      "analyzed": [
+        0
+      ],
+      "removed": [],
+      "deleted": [
+        0
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "only_mesh",
+      "flat": false,
+      "analyzed": [
+        1
+      ],
+      "removed": [],
+      "deleted": [
+        1
+      ]
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "only_subd",
+      "flat": false,
+      "analyzed": [
+        2
+      ],
+      "removed": [],
+      "deleted": [
+        2
+      ]
+    }
+  ]
+}

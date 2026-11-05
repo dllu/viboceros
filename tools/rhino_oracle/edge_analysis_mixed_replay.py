@@ -3,7 +3,7 @@ import json
 from .client import OracleClient
 from .subd_edge_analysis_replay import HERE, read
 
-FAMILIES = ('edge_analysis_mixed', 'edge_analysis_mixed_membership', 'edge_analysis_mixed_panels')
+FAMILIES = ('edge_analysis_mixed', 'edge_analysis_mixed_ui', 'edge_analysis_mixed_selection')
 
 
 def compare(actual, native, path):
@@ -42,7 +42,7 @@ def replay(client=None):
             assert a['id'] == b['id'] == op['id']
             check(op, a['value'], b['value'])
             count += 1
-    assert count == 86
+    assert count == 92
     return dict(workflows=count, model_coordinate_epsilon=1e-12, ordered_points=True)
 
 

@@ -88,6 +88,8 @@ impl Document {
             let mut attributes = original.attributes.clone();
             attributes.layer_id = layer_id;
             self.objects.push(Object {
+                runtime_serial: Object::new_runtime_serial(),
+                geometry_event_serial: Object::new_runtime_serial(),
                 id,
                 geometry: original.geometry.clone(),
                 geometry_user_text: original.geometry_user_text.clone(),

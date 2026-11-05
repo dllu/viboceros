@@ -75,6 +75,18 @@ class CaptureFamilyTests(unittest.TestCase):
             self.capture()
         self.assertFalse(self.output.exists())
 
+    def test_edge_zoom_host_input_producers_are_frozen_with_worker(self):
+        names = ['edge_zoom_input.py', 'edge_zoom_picking.py', 'group_picking.py']
+        for name in names:
+            (self.root / name).write_text('original '+name+'\n')
+        def run(*args, **kwargs):
+            (self.root / 'edge_zoom_picking.py').write_text('changed host input\n')
+            return self.response
+        self.run.side_effect = run
+        with self.assertRaisesRegex(ValueError, 'producer changed during capture: edge_zoom_picking.py'):
+            capture_family.capture('example', self.query, ['edge_zoom_input.py'], 'private-test-scheme')
+        self.assertFalse(self.output.exists())
+
     def test_fixture_mutation_does_not_publish_a_successful_capture(self):
         def run(*args, **kwargs):
             self.fixture.write_text('changed fixture\n')

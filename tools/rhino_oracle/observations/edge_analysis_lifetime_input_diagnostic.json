@@ -1,0 +1,38 @@
+{
+  "classification": "input-driver failure; not successful geometry evidence",
+  "active_case": "mixed_subd_smooth",
+  "driver_log": "Capturing 13 cases: edge_analysis_lifetime\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/generate_edge_analysis_lifetime.py\", line 8, in <module>\n    capture('edge_analysis_lifetime',\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/capture_family.py\", line 24, in capture\n    data = OracleClient(settings_scheme=scheme).run_rhino(query, timeout=timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/client.py\", line 2182, in run_rhino\n    _validate_response(response, \"rhino\", request)\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/client.py\", line 2662, in _validate_response\n    raise OracleError(f\"{engine} probe failed: {error}\")\ntools.rhino_oracle.client.OracleError: rhino probe failed: ValueError at operation mixed_subd_smooth: start: owned edge Zoom input failed: {'errors': ['owned edge Zoom timeout: All naked edges. Press Enter when done ( All  Current  Next  Previous  Mark )'], 'sent': []}\n",
+  "worker_progress": "worker: started\nworker: started\nworker: request loaded\noperation mixed_brep_smooth: start\noperation mixed_mesh_smooth: start\noperation mixed_subd_smooth: start\n",
+  "recovery": "Verified the Rhino PID and main window on private Xvfb :99, then sent Escape to end the stalled owned Zoom prompt; original capture process exited 1.",
+  "provenance": {
+    "request_sha256": "9e4b46c47dce3a11aaaa97922be0e185b80899af6f456857cb0a80db4a415941",
+    "sources": {
+      "generate_edge_analysis_lifetime.py": "814ffb8d0de9fa1eaf733735c889505bf5952412db375e3788142268c0805316",
+      "edge_analysis_lifetime_probe.py": "3490c4a60df511cfcab84e576c81cb8f948ea37bd46a83c9d57b8c98126ed970",
+      "edge_analysis_lifetime_cases.py": "5eb997f9bf605870384832e22f3ba48335c9c6dc4032dec8b0bafbbf76d57979",
+      "edge_analysis_mixed_probe.py": "c9b2351f4d549a16b250621c1cf973a38f9c3d7fe2a0e0c9308a18446cbced66",
+      "edge_analysis_mixed_cases.py": "c2a40f3fdb8aeeeea58736de5310dda2246e36cc3fbc5b576c46a23983f4540e",
+      "subd_edge_analysis_probe.py": "c5dfceeb385f49d6fa155e516acfe99a0363797aabf8fd552d38b902e1edc28b",
+      "subd_edge_analysis_cases.py": "52d942ead1406fed3977f9df6f231d96663633e9767a5af7852a26c333ffaffd",
+      "owned_panel.py": "2259deb042b509fd1e87d4ec96a9019326ab5cd7f1c2ba39ca97727348f7d1b5",
+      "edge_zoom_input.py": "407924b31c39677271f591d725a2cde43374b2d303d513b2cde8e78445be6280",
+      "subd_direction_probe.py": "eee3861a274af5d627e248488615375884d26fa22c5a895736714b04ba105cbd",
+      "subd_direction_cases.py": "35c95d6952d3a98db9cff18efab1f3bbfbfaf45ac9edfdabf38df9fa333f948f",
+      "subd_volume_cases.py": "6d68a11a58b30690b9ec3a753de78c72da39d7549da5dd3b9c97c6b448a1c328",
+      "subd_area_cases.py": "4e98a594773c858b024bf539c2aa1a2f1ed187dacf36c226fc311332131be242",
+      "component_length_cases.py": "dd3322f028ca7f49790783deeb795e62f2cf24f753760a60b8a8d860d81f8176",
+      "subd_to_nurbs_probe.py": "c8383b2e400f80ec31927a0de037e2f98aacda7e9cb1a3ae3fed6042ce429a14",
+      "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+      "subd_join_probe.py": "d374a22ea73ef2e0bdf919ae740bf1775bd4405e4c7557a0ed34e31820a487d7",
+      "subd_join_cases.py": "e1f18eed251ee99c5c04fa71771ae5271cf59b1388e2b9469afbac503854b213",
+      "edge_loop_cases.py": "b1dfd6bead94cb13735039f84a2e8ae1f13506cb3ffebc71923ab40331c02f2e",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "b2f5635ae6928904e38da7caf1de7bef9c14be783a80d9970c1ae5d9afa02c92",
+      "rhino_worker.py": "1fb0fa202469a31c08be3d1bc8d8a9162b69b80d7b66c7856164fa80b889e719",
+      "client.py": "85727b98c17b89644bc6e5224e6f15266de23b64724147295ea61e533af526ca",
+      "fixtures/brep_direction/warped.3dm": "e2d5b39807c86d8f224d761a96734da91e86ad794f2c8329a463b837985e47bd",
+      "capture_family.py": "749f8fc772b09be8f9b6db9afe83bcd898106c3162bb45a04d2687bca2543994"
+    }
+  }
+}

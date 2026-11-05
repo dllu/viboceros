@@ -54,7 +54,7 @@ impl VibocerosApp {
 
     pub(super) fn finish_edge_zoom_options(&mut self, announce: bool) {
         if let Some(prompt) = self.edge_zoom_prompt.take() {
-            self.commands.clear_edge_zoom();
+            self.commands.finish_edge_zoom(&mut self.document);
             if announce {
                 self.push_log(format!("{} ended; accepted marks retained", prompt.command));
             }

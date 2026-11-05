@@ -48,7 +48,8 @@ budget and approximation limits. Station comparisons do not establish a
 continuous-error bound or identical native pixels. Captures cover valid manifold
 SubDs; non-manifold SubD file repair remains separate work.
 [Mixed-source workflows](mixed-edge-analysis.md) qualify marking order, source
-membership and enabled Naked-mode panel Zoom. Analysis state is transient, and restored deleted sources must be added again.
+membership and enabled Naked-mode panel Zoom. Analysis state is transient. Deleted sources rejoin automatically after Undo;
+see [lifetime and geometry-edit evidence](edge-analysis-lifetime.md).
 
 ```sh
 cargo test -p viboceros-command --lib edge_analysis

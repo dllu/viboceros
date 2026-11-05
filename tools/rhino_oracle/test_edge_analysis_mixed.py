@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from .edge_analysis_mixed_cases import cases, membership_cases, panel_cases
+from .edge_analysis_mixed_cases import cases, membership_cases, panel_cases, selection_cases
 from .edge_analysis_mixed_replay import FAMILIES
 from .subd_edge_analysis_replay import HERE, read
 from .structural_sdk import stage_helpers, validate_operations
@@ -17,7 +17,7 @@ from .structural_sdk import stage_helpers, validate_operations
 
 class MixedEdgeAnalysisTests(unittest.TestCase):
     def test_frozen_requests_producers_and_shared_inputs(self):
-        for family, recipes in zip(FAMILIES, (cases(), membership_cases(), panel_cases()), strict=True):
+        for family, recipes in zip(('edge_analysis_mixed','edge_analysis_mixed_membership','edge_analysis_mixed_panels','edge_analysis_mixed_ui','edge_analysis_mixed_selection'), (cases(),membership_cases(),panel_cases(),membership_cases()+panel_cases(),selection_cases()), strict=True):
             path = HERE / 'fixtures' / (family + '.json')
             request = json.loads(path.read_bytes())
             validate_operations(request)
@@ -60,9 +60,9 @@ class MixedEdgeAnalysisTests(unittest.TestCase):
                 self.assertIn('Undoing ZoomNaked', v['history'])
                 self.assertIn('Redoing ZoomNaked', v['history'])
 
-    def test_native_add_remove_preselection_and_enabled_panel_zoom(self):
+    def test_scripted_add_remove_preselection_and_enabled_panel_zoom(self):
         expected = [[False]*3, [False, True, True], [False, True, True], [True, False, False], [True, False, False], [False]*3]
-        for row in read(FAMILIES[1])['results']:
+        for row in read('edge_analysis_mixed_membership')['results']:
             v = row['value']
             self.assertTrue(v['success'])
             self.assertEqual([s['action'] for s in v['stages']], ['Start', 'SelectRest', 'Add', 'SelectFirst', 'Remove', 'Zoom'])
@@ -78,7 +78,7 @@ class MixedEdgeAnalysisTests(unittest.TestCase):
             self.assertEqual(v['redo']['points'], v['after']['points'])
 
     def test_native_panel_source_reversal_and_sequential_additions(self):
-        for op, row in zip(panel_cases(), read(FAMILIES[2])['results'], strict=True):
+        for op, row in zip(panel_cases(), read('edge_analysis_mixed_panels')['results'], strict=True):
             v = row['value']
             self.assertTrue(v['success'])
             self.assertEqual(v['stages'][-1]['input']['errors'], [])
@@ -93,16 +93,37 @@ class MixedEdgeAnalysisTests(unittest.TestCase):
                             for p in v['after']['points'][::8]]
             self.assertEqual(actual_order, expected_order, op['id'])
 
+    def test_physical_panel_input_releases_temporary_getter_selection(self):
+        for op,row in zip(membership_cases()+panel_cases(),read('edge_analysis_mixed_ui')['results'],strict=True):
+            v=row['value']
+            self.assertTrue(v['success'])
+            expected=[False,False,False]
+            self.assertEqual([s['selected'] for s in v['after']['sources']],expected)
+            self.assertEqual(v['stages'][-1]['input']['errors'],[])
+            self.assertTrue(all(s['acknowledged'] for s in v['stages'][-1]['input']['sent']))
+            self.assertEqual(len(v['after']['points']),24 if op.get('panel_only') else 16)
+
     def test_owned_validation_and_worker_staging(self):
-        for op in cases() + membership_cases() + panel_cases():
-            for change in (dict(order=['mesh']*3), dict(preselect=1), dict(flat=0), dict(membership=1), dict(extra=True), dict(actions=['Delete'])):
+        for op in cases() + membership_cases() + panel_cases() + selection_cases():
+            for change in (dict(order=['mesh']*3), dict(preselect=1), dict(flat=0), dict(membership=1), dict(extra=True), dict(actions=['Delete']), dict(mode_trace=1)):
                 with self.assertRaises(ValueError):
                     validate_operations(dict(operations=[dict(copy.deepcopy(op), **change)]))
-        request = dict(protocol_version=1, iterations=1, operations=cases()+membership_cases()+panel_cases())
+        request = dict(protocol_version=1, iterations=1, operations=cases()+membership_cases()+panel_cases()+selection_cases())
         with tempfile.TemporaryDirectory() as folder:
             stage_helpers(request, HERE, Path(folder))
             self.assertEqual((Path(folder) / 'fixtures/brep_direction/warped.3dm').read_bytes(), (HERE / 'fixtures/brep_direction/warped.3dm').read_bytes())
             subprocess.run([sys.executable, '-I', '-c', 'import sys;sys.path.insert(0,sys.argv[1]);import edge_analysis_mixed_probe', folder], check=True, capture_output=True)
+
+    def test_getters_downgrade_persistent_picks_until_command_completion(self):
+        expected=[[0,0,0],[0,2,2],[0,1,1],[2,0,0],[1,0,0],[1,0,0],[0,0,0]]
+        actions=['Start','SelectRest','Add','SelectFirst','Remove','Mode','Zoom']
+        for row in read('edge_analysis_mixed_selection')['results']:
+            v=row['value']
+            self.assertTrue(v['success'])
+            self.assertEqual([s['action'] for s in v['stages']],actions)
+            self.assertEqual([[o['selection_state'] for o in s['state']['sources']]
+                              for s in v['stages']],expected,row['id'])
+            self.assertEqual(v['stages'][-1]['input']['errors'],[])
 
 
 if __name__ == '__main__':

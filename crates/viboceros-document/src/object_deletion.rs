@@ -102,6 +102,9 @@ impl RemovedObjects {
             .filter(|id| self.ids.contains(id) && document.selection.contains(id))
             .collect();
         document.selection.retain(|id| !self.ids.contains(id));
+        document
+            .temporary_object_selection
+            .retain(|id| !self.ids.contains(id));
         document.selection_order.retain(|id| !self.ids.contains(id));
         self.stored = Some(removed);
         Ok(())
@@ -134,7 +137,13 @@ impl RemovedObjects {
                 memberships.entry(*group).or_default().push(object.id);
             }
         }
-        let mut removed = self.stored.take().unwrap().into_iter();
+        let mut restored = self.stored.take().unwrap();
+        // Undo admits removed objects in reverse deletion order while retaining
+        // their persistent table positions, UUIDs and shared geometry storage.
+        for object in restored.iter_mut().rev() {
+            object.note_geometry_event();
+        }
+        let mut removed = restored.into_iter();
         let mut survivors = std::mem::take(&mut document.objects).into_iter();
         let mut positions = self.positions.iter().copied().peekable();
         let mut output = Vec::with_capacity(self.object_count);
@@ -155,6 +164,7 @@ impl RemovedObjects {
         // Restore membership and relative pick order of removed objects without
         // replacing unrelated selection made after deletion.
         for id in &self.selected {
+            document.temporary_object_selection.remove(id);
             if document.selection.insert(*id) {
                 document.selection_order.push(*id);
             }

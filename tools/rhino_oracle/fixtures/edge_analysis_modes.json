@@ -1,0 +1,253 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_All_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "All",
+      "panel_mode": "All",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_All_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "All",
+      "panel_mode": "Naked",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_All_NonManifold",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "All",
+      "panel_mode": "NonManifold",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_Naked_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "Naked",
+      "panel_mode": "All",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_Naked_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "Naked",
+      "panel_mode": "Naked",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_Naked_NonManifold",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "Naked",
+      "panel_mode": "NonManifold",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_NonManifold_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "NonManifold",
+      "panel_mode": "All",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_NonManifold_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "NonManifold",
+      "panel_mode": "Naked",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "mode_NonManifold_NonManifold",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "NonManifold",
+      "panel_mode": "NonManifold",
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "repeat_All",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "All",
+      "panel_mode": "Naked",
+      "mode_sequence": [
+        "Naked",
+        "All",
+        "Naked"
+      ],
+      "skip_zoom": true
+    },
+    {
+      "op": "edge_analysis_lifetime",
+      "id": "repeat_Naked",
+      "flat": false,
+      "analyzed": [
+        0,
+        1,
+        2
+      ],
+      "removed": [],
+      "targets": [
+        0,
+        1,
+        2
+      ],
+      "runtime": true,
+      "edit": "Select",
+      "initial_mode": "Naked",
+      "panel_mode": "Naked",
+      "mode_sequence": [
+        "All",
+        "Naked",
+        "All",
+        "Naked"
+      ],
+      "skip_zoom": true
+    }
+  ]
+}

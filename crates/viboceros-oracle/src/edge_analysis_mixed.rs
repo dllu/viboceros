@@ -18,6 +18,8 @@ pub struct Fixture {
     pub panel_only: bool,
     #[serde(default)]
     pub sequential: bool,
+    #[serde(default)]
+    pub mode_trace: bool,
 }
 impl Fixture {
     pub fn input_name(&self) -> String {
@@ -56,6 +58,7 @@ impl Fixture {
                     || self.grouped))
             || ((self.panel_only || self.sequential) && !self.membership)
             || (self.panel_only && self.sequential)
+            || (self.mode_trace && !self.membership)
         {
             return Err(ProbeError::FixtureInvariant(
                 "owned mixed diagnostic recipe required",
@@ -101,7 +104,7 @@ pub fn sources(f: &Fixture, tolerance: Tolerance) -> Result<Vec<Geometry>, Probe
     Ok(result)
 }
 
-fn geometry(g: &Geometry) -> Result<Value, ProbeError> {
+pub(super) fn geometry(g: &Geometry) -> Result<Value, ProbeError> {
     Ok(match g {
         Geometry::SubD(_) => subd_direction::definition(g)?,
         Geometry::Brep(b) => json!({"kind":"brep","value":brep_interchange::geometry_record(b)?}),
@@ -139,7 +142,9 @@ pub fn setup(f: &Fixture, tolerance: Tolerance) -> Result<(Document, Vec<ObjectI
 pub fn snapshot(doc: &Document, ids: &[ObjectId], f: &Fixture) -> Result<Value, ProbeError> {
     let rows=ids.iter().zip(f.kinds()).map(|(&id,kind)| {
         let o=doc.object(id).ok_or(ProbeError::FixtureInvariant("mixed source identity changed"))?;
-        Ok(json!({"kind":kind,"name":o.attributes().name(),"groups":o.group_ids().len(),"geometry":geometry(o.geometry())?,"selected":doc.is_selected(id)}))
+        let mut row=json!({"kind":kind,"name":o.attributes().name(),"groups":o.group_ids().len(),"geometry":geometry(o.geometry())?,"selected":doc.is_selected(id)});
+        if f.mode_trace { row["selection_state"]=json!(doc.object_selection_state(id) as u8); }
+        Ok(row)
     }).collect::<Result<Vec<Value>,ProbeError>>()?;
     let points = doc
         .objects()
@@ -228,13 +233,16 @@ pub(super) fn run(
                 stages.push(json!({"action":"Remove","state":snapshot(&doc,&ids,f)?}));
             }
             commands.execute(&mut doc, "ShowEdges Show=Naked")?;
+            if f.mode_trace {
+                stages.push(json!({"action":"Mode","state":snapshot(&doc,&ids,f)?}));
+            }
             let name = commands
                 .begin_edge_analysis_zoom(&mut doc)?
                 .ok_or(ProbeError::FixtureInvariant("panel zoom unavailable"))?;
             let mut group = doc.begin_history_group(name)?;
             commands.execute_edge_zoom_actions(&mut doc, "All", &mut group)?;
             commands.execute_edge_zoom_actions(&mut doc, "Mark", &mut group)?;
-            commands.clear_edge_zoom();
+            commands.finish_edge_zoom(&mut doc);
             stages.push(json!({"action":"Zoom","state":snapshot(&doc,&ids,f)?}));
         }
         let after = snapshot(&doc, &ids, f)?;

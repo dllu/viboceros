@@ -11,24 +11,26 @@ flat SubD control edges belong to the polygonal batch with meshes. Current-edge
 navigation preserves the full source order across types. Duplicate endpoints
 remain separate point objects, in native creation order.
 
-The Edge Analysis panel's Add and Remove controls retain preselection. Its Zoom
-button starts live Zoom input using analyzed sources, even if current selection
-contains a removed source. It reverses analyzed source order before forming the curved/polygonal batches,
-starts in All focus, releases supported selection
-and leaves persistent analysis intact. All/Current/Next/Previous/Mark work until
+The Edge Analysis panel's Add and Remove controls keep getter picks selected
+temporarily. Its Zoom button starts live Zoom input using analyzed sources, even
+if current selection contains a removed source. It reverses analyzed source order
+before forming the curved/polygonal batches,
+starts in All focus, retains persistent preselection and releases temporary
+getter picks on completion. Persistent analysis remains intact.
+All/Current/Next/Previous/Mark work until
 Enter or Escape; accepted marks share one Undo step. The button is disabled in
 All display mode. Existing `ShowEdges Zoom ...` and `ShowEdges Mark` console
 bindings remain extensions.
 
 ## Native evidence
 
-Private Xvfb captures from licensed Rhino 8 cover 86 workflows:
+Private Xvfb captures from licensed Rhino 8 cover 92 workflows:
 
 | Family | Cases | Coverage |
 | --- | ---: | --- |
 | `edge_analysis_mixed` | 72 | Six source permutations, pre/postselection, smooth/flat, All marking and cross-source navigation, grouped inputs with an unsupported point |
-| `edge_analysis_mixed_membership` | 6 | Actual native Add Objects, Remove Objects, Naked radio and enabled Zoom button for each permutation |
-| `edge_analysis_mixed_panels` | 8 | Panel Zoom without membership edits and with sequential additions; distinguishes panel source reversal from insertion order |
+| `edge_analysis_mixed_ui` | 14 | Physical panel Zoom, Add/Remove membership, six permutations and sequential additions |
+| `edge_analysis_mixed_selection` | 6 | Exact temporary/persistent selection states across Add, Remove, mode controls and Zoom |
 
 Seven shared input archives retain native component ordinals. Their manifest
 links exact bytes to the first native record. Immutable observations retain
@@ -51,7 +53,16 @@ python3 -m unittest tools.rhino_oracle.test_edge_analysis_mixed
 python3 -m tools.rhino_oracle.edge_analysis_mixed_replay
 ```
 
+The earlier `edge_analysis_mixed_membership` (6) and `edge_analysis_mixed_panels`
+(8) scripted records remain immutable. Physical input reproduces their final
+selection cleanup. `edge_analysis_mixed_selection` adds six exact selection-state
+traces: Add/Remove inputs become temporary (`1`), mode changes retain them, and
+Zoom completion releases them. Manual selection and selection restored by Undo
+are persistent (`2`). The distinction explains the lifetime controls without
+clearing every selected source.
+
 Precise camera framing, native highlight pixels and more complex topology still
-need qualification. Analysis state is transient; restored deleted sources must
-be added again. See [SubD diagnostic edges](subd-edge-analysis.md) for limit-curve
+need qualification. Analysis state is transient; Undo restores deleted sources
+automatically. [Lifetime evidence](edge-analysis-lifetime.md) covers source order
+after deletion and geometry edits. See [SubD diagnostic edges](subd-edge-analysis.md) for limit-curve
 accuracy and the disabled-All native control evidence.

@@ -13,7 +13,9 @@ is needed. ShowEdges Add/Remove also support command-first selection. Eligible
 sources include NURBS surfaces, B-reps, meshes and SubDs.
 
 The panel's Zoom button starts temporary input on its analyzed sources, beginning
-in All focus. It is disabled in All display mode. Add/Remove retain preselection;
+in All focus. It is disabled in All display mode. Mode controls retain selection.
+Add/Remove getter picks become temporary; Zoom
+releases those picks on completion while retaining persistent preselection;
 starting ShowEdges clears supported inputs while leaving unsupported grouped
 peers selected. Preselected Zoom inputs stay selected; command-first Zoom picks
 are released. See the [mixed-source evidence](commands/mixed-edge-analysis.md).
@@ -56,3 +58,8 @@ hashes. Highlight styling during input, precise camera framing and broader
 curved/multi-face geometry remain
 qualification work. README remains concise; this page documents the detailed
 input behavior.
+
+Deleted sources leave the live cache while their requested membership remains.
+Undo restores their analysis; Remove and ShowEdgesOff explicitly forget them.
+Geometry replacement and history update the source sequence without changing
+UUIDs or persistent model order. See [lifetime qualification](commands/edge-analysis-lifetime.md).

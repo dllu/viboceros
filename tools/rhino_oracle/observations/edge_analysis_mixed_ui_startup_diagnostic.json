@@ -1,0 +1,37 @@
+{
+  "classification": "startup failure; not successful geometry evidence",
+  "driver_log": "Capturing 14 cases: edge_analysis_mixed_ui\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/generate_edge_analysis_mixed_ui.py\", line 11, in <module>\n    capture('edge_analysis_mixed_ui', query,\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/capture_family.py\", line 26, in capture\n    data = OracleClient(settings_scheme=scheme).run_rhino(query, timeout=timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/client.py\", line 2170, in run_rhino\n    raise OracleError(\ntools.rhino_oracle.client.OracleError: Rhino probe did not respond within 900 seconds (owned_pids=[408198], owned_window='0x00600006', ui_fallback_sent=True)\nLauncher output:\nLaunched Rhino 8 through direct ARM64 Wine\nWine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine\nWINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix\nExecutable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe\nLauncher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log\n",
+  "worker_progress": "",
+  "recovery": "The original capture exited 1 after its 900-second deadline and owned-process cleanup. No worker progress was published. It was launched concurrently with another capture in the same Wine prefix; the retry is serialized.",
+  "provenance": {
+    "request_sha256": "b050e91c4b9a5fde639ba6ef0cf343660efa2a51a4a1976b0433271f18787804",
+    "sources": {
+      "generate_edge_analysis_mixed_ui.py": "d08b3a4cc633a0b759648b9c8f0390303a9e6e5976364f49eb6ddec48218342b",
+      "edge_analysis_mixed_cases.py": "c2a40f3fdb8aeeeea58736de5310dda2246e36cc3fbc5b576c46a23983f4540e",
+      "edge_analysis_mixed_probe.py": "c3bb06e7c38df922aac5033e378a859a42b944aa80289816479284650aad66db",
+      "subd_edge_analysis_probe.py": "fb6cd4bc12567d57bb7c6ad007b1d68ca18868a7cb9a7fce2d08a50b532def74",
+      "subd_edge_analysis_cases.py": "52d942ead1406fed3977f9df6f231d96663633e9767a5af7852a26c333ffaffd",
+      "owned_panel.py": "2259deb042b509fd1e87d4ec96a9019326ab5cd7f1c2ba39ca97727348f7d1b5",
+      "edge_zoom_input.py": "85558e10a4e26484fc20e93ce9e1911f2152f4ebb5b4110b3a69a18bfd98cc0f",
+      "subd_direction_probe.py": "eee3861a274af5d627e248488615375884d26fa22c5a895736714b04ba105cbd",
+      "subd_direction_cases.py": "35c95d6952d3a98db9cff18efab1f3bbfbfaf45ac9edfdabf38df9fa333f948f",
+      "subd_volume_cases.py": "6d68a11a58b30690b9ec3a753de78c72da39d7549da5dd3b9c97c6b448a1c328",
+      "subd_area_cases.py": "4e98a594773c858b024bf539c2aa1a2f1ed187dacf36c226fc311332131be242",
+      "component_length_cases.py": "dd3322f028ca7f49790783deeb795e62f2cf24f753760a60b8a8d860d81f8176",
+      "subd_to_nurbs_probe.py": "c8383b2e400f80ec31927a0de037e2f98aacda7e9cb1a3ae3fed6042ce429a14",
+      "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+      "subd_join_probe.py": "d374a22ea73ef2e0bdf919ae740bf1775bd4405e4c7557a0ed34e31820a487d7",
+      "subd_join_cases.py": "e1f18eed251ee99c5c04fa71771ae5271cf59b1388e2b9469afbac503854b213",
+      "edge_loop_cases.py": "b1dfd6bead94cb13735039f84a2e8ae1f13506cb3ffebc71923ab40331c02f2e",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "b2f5635ae6928904e38da7caf1de7bef9c14be783a80d9970c1ae5d9afa02c92",
+      "rhino_worker.py": "1fb0fa202469a31c08be3d1bc8d8a9162b69b80d7b66c7856164fa80b889e719",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "fixtures/brep_direction/warped.3dm": "e2d5b39807c86d8f224d761a96734da91e86ad794f2c8329a463b837985e47bd",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821",
+      "edge_zoom_picking.py": "968f954c459f050bafb6b9a3eae45bfe4d7bb889d56dbbca3411469f4447a19c",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+    }
+  }
+}

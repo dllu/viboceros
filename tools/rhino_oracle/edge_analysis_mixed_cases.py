@@ -26,8 +26,8 @@ def cases():
 
 
 def validate(op):
-    if (not isinstance(op, dict) or op not in cases() + membership_cases() + panel_cases()
-            or any(k in op and type(op[k]) is not bool for k in ('membership', 'panel_only', 'sequential'))
+    if (not isinstance(op, dict) or op not in cases() + membership_cases() + panel_cases() + selection_cases()
+            or any(k in op and type(op[k]) is not bool for k in ('membership', 'panel_only', 'sequential', 'mode_trace'))
             or any(type(op.get(k)) is not bool for k in ('preselect', 'flat', 'grouped', 'extra_point'))):
         raise ValueError('fixed owned mixed edge-analysis recipe required')
 
@@ -49,3 +49,7 @@ def panel_cases():
                          preselect=True, flat=False, grouped=False, extra_point=False,
                          command='ShowEdges', actions=[], membership=True, sequential=True))
     return rows
+
+
+def selection_cases():
+    return [dict(row,id='selection_'+row['id'],mode_trace=True) for row in membership_cases()]

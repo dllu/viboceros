@@ -37,8 +37,11 @@ mod object_layer;
 mod object_lookup;
 mod object_order;
 mod object_properties;
+mod object_runtime;
 use object_properties::ObjectProperties;
 mod selection;
+mod selection_persistence;
+pub use selection_persistence::ObjectSelectionState;
 mod settings;
 mod smoothing;
 mod units;
@@ -327,8 +330,10 @@ fn validate_user_text(key: &str, value: Option<&str>) -> Result<(), DocumentErro
     Ok(())
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct Object {
+    runtime_serial: u64,
+    geometry_event_serial: u64,
     id: ObjectId,
     geometry: GeometrySnapshot,
     geometry_user_text: BTreeMap<String, String>,
@@ -350,6 +355,8 @@ impl Object {
     /// Geometry storage is shared without orientation normalization or history.
     pub fn geometry_query_proxy(geometry: GeometrySnapshot, layer: LayerId) -> Self {
         Self {
+            runtime_serial: Self::new_runtime_serial(),
+            geometry_event_serial: Self::new_runtime_serial(),
             id: ObjectId::new(),
             geometry,
             geometry_user_text: BTreeMap::new(),
@@ -465,6 +472,7 @@ pub struct Document {
     used_group_names: BTreeSet<String>,
     block_definitions: Vec<BlockDefinition>,
     selection: BTreeSet<ObjectId>,
+    temporary_object_selection: BTreeSet<ObjectId>,
     selection_order: Vec<ObjectId>,
     control_points: BTreeMap<ObjectId, control_points::ControlPoints>,
     previous_selection: BTreeSet<ObjectId>,
@@ -503,6 +511,7 @@ impl Document {
             used_group_names: BTreeSet::new(),
             block_definitions: Vec::new(),
             selection: BTreeSet::new(),
+            temporary_object_selection: BTreeSet::new(),
             selection_order: Vec::new(),
             control_points: BTreeMap::new(),
             previous_selection: BTreeSet::new(),
@@ -546,6 +555,7 @@ impl Document {
             object_ids: BTreeSet::new(),
             next_layer_number_before: self.next_layer_number,
             selection_before: self.selection.clone(),
+            temporary_object_selection_before: self.temporary_object_selection.clone(),
             selection_order_before: self.selection_order.clone(),
             previous_selection_before: self.previous_selection.clone(),
             previous_selection_order_before: self.previous_selection_order.clone(),
@@ -682,6 +692,7 @@ impl Document {
             .rev()
             .try_for_each(|edit| edit.undo(self));
         self.selection = transaction.selection_before;
+        self.temporary_object_selection = transaction.temporary_object_selection_before;
         self.selection_order = transaction.selection_order_before;
         self.previous_selection = transaction.previous_selection_before;
         self.previous_selection_order = transaction.previous_selection_order_before;
@@ -1704,6 +1715,7 @@ impl Document {
         self.set_object_group_memberships(id, [])?;
         let object = self.objects.remove(index);
         let selected = self.selection.remove(&id);
+        self.temporary_object_selection.remove(&id);
         self.selection_order.retain(|selected| *selected != id);
         self.record_edit(
             "Delete object",
@@ -1784,6 +1796,8 @@ impl Document {
             self.selection = next;
             self.selection_order = ordered;
         }
+        self.temporary_object_selection
+            .retain(|id| self.selection.contains(id));
         self.selection.len()
     }
 

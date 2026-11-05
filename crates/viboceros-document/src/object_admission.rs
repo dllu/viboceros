@@ -83,6 +83,8 @@ impl Document {
             .unwrap_or_else(ObjectId::new);
         let index = self.objects.len();
         self.objects.push(Object {
+            runtime_serial: Object::new_runtime_serial(),
+            geometry_event_serial: Object::new_runtime_serial(),
             id,
             geometry: geometry.into(),
             geometry_user_text,

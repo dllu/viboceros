@@ -1,5 +1,7 @@
 //! Non-destructive edge analysis state, shared by console and viewport UI.
 use super::*;
+#[cfg(test)]
+mod lifetime_tests;
 mod subd;
 #[cfg(test)]
 mod tests;
@@ -7,8 +9,8 @@ use std::sync::{Arc, Mutex};
 use viboceros_document::GeometrySnapshot;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Mode {
-    All,
     #[default]
+    All,
     Naked,
     NonManifold,
 }
@@ -87,6 +89,7 @@ struct State {
     enabled: bool,
     mode: Mode,
     color: [u8; 3],
+    // Requested membership survives deletion/Undo; caches contain live objects only.
     sources: BTreeSet<ObjectId>,
     cache: BTreeMap<ObjectId, Cache>,
     flat: Arc<[Edge]>,
@@ -100,7 +103,7 @@ impl Default for State {
     fn default() -> Self {
         Self {
             enabled: false,
-            mode: Mode::Naked,
+            mode: Mode::All,
             color: [255, 0, 255],
             sources: BTreeSet::new(),
             cache: BTreeMap::new(),
@@ -201,9 +204,9 @@ impl Session {
         proposed.zoom_requested = true;
         proposed.reverse_sources = true;
         if Self::resolve(&mut proposed, doc)?.current.is_none() {
+            doc.clear_temporary_object_selection();
             return Ok(None);
         }
-        release_diagnostic_selection(doc)?;
         let mode = proposed.mode;
         *self.0.lock().expect("edge zoom state") = proposed;
         Ok(Some(mode))
@@ -218,12 +221,10 @@ impl Session {
         };
     }
     fn resolve(state: &mut State, doc: &Document) -> Result<View, CommandError> {
-        state.sources.retain(|id| doc.object(*id).is_some());
-        state.cache.retain(|id, _| state.sources.contains(id));
         let mut dirty = false;
-        let mut ids = Vec::new();
+        let mut event_order = Vec::new();
         for object in doc.objects().filter(|o| state.sources.contains(&o.id())) {
-            ids.push(object.id());
+            event_order.push((object.geometry_event_serial(), object.id()));
             let control_net =
                 doc.subd_control_net() && matches!(object.geometry(), Geometry::SubD(_));
             let stale = state.cache.get(&object.id()).is_none_or(|c| {
@@ -245,6 +246,14 @@ impl Session {
                 );
             }
         }
+        event_order.sort_unstable_by_key(|&(serial, _)| serial);
+        let mut ids = event_order
+            .into_iter()
+            .map(|(_, id)| id)
+            .collect::<Vec<_>>();
+        let live = ids.iter().copied().collect::<BTreeSet<_>>();
+        state.cache.retain(|id, _| live.contains(id));
+        let sources = ids.len();
         if state.reverse_sources {
             ids.reverse();
         }
@@ -269,7 +278,7 @@ impl Session {
             mode: state.mode,
             color: state.color,
             edges: state.flat.clone(),
-            sources: state.sources.len(),
+            sources,
             current: state.current,
             focus_all: state.focus_all,
             zoom_requested: state.zoom_requested,
@@ -431,6 +440,7 @@ impl AnalysisCommand {
         if action != "replace" && selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
+        let temporary = (action != "replace").then(|| selected.iter().copied().collect::<Vec<_>>());
         if action == "remove" {
             for id in selected {
                 proposed.sources.remove(&id);
@@ -482,6 +492,9 @@ impl AnalysisCommand {
         }
         if release_source_picks {
             release_diagnostic_selection(doc)?;
+        }
+        if let Some(ids) = temporary {
+            doc.mark_object_selection_temporary(ids);
         }
         *self.session.0.lock().expect("edge analysis state") = proposed;
         if canceled {

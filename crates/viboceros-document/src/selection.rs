@@ -8,9 +8,11 @@ pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Obj
 }
 
 impl Document {
-    /// Replace temporary object picks in supplied order, without changing
+    /// Replace unrecorded object picks in supplied order, without changing
     /// SelPrev or model undo/redo. The caller restores its prior selection on
-    /// cancellation. Validate all ids before modifying any selection state.
+    /// cancellation. Retained IDs keep their persistence; modeless getters can
+    /// mark accepted inputs with `mark_object_selection_temporary`. Validate
+    /// all ids before modifying any selection state.
     pub fn set_transient_selection(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -28,6 +30,8 @@ impl Document {
             .collect();
         let changed = self.selection.symmetric_difference(&selection).count();
         self.selection = selection;
+        self.temporary_object_selection
+            .retain(|id| self.selection.contains(id));
         self.selection_order = order;
         Ok(changed)
     }
@@ -183,6 +187,7 @@ impl Document {
     }
 
     pub(super) fn record_picked_selection(&mut self, next: &BTreeSet<ObjectId>) {
+        self.temporary_object_selection.clear();
         if self.history.active.is_some() {
             return;
         }

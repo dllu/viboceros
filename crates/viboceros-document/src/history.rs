@@ -28,6 +28,7 @@ pub(super) struct PendingTransaction {
     pub object_ids: BTreeSet<ObjectId>,
     pub next_layer_number_before: u64,
     pub selection_before: BTreeSet<ObjectId>,
+    pub temporary_object_selection_before: BTreeSet<ObjectId>,
     pub selection_order_before: Vec<ObjectId>,
     pub previous_selection_before: BTreeSet<ObjectId>,
     pub previous_selection_order_before: Vec<ObjectId>,
@@ -260,9 +261,10 @@ impl Edit {
                 stored,
                 selected,
             } => {
-                let object = stored.take().ok_or(DocumentError::HistoryInvariant(
+                let mut object = stored.take().ok_or(DocumentError::HistoryInvariant(
                     "removed object was not stored",
                 ))?;
+                object.note_geometry_event();
                 insert_at(&mut document.objects, *index, object)?;
                 exchange_selection(document, *id, selected, true);
             }
@@ -409,9 +411,10 @@ impl Edit {
                 stored,
                 selected,
             } => {
-                let object = stored.take().ok_or(DocumentError::HistoryInvariant(
+                let mut object = stored.take().ok_or(DocumentError::HistoryInvariant(
                     "inserted object was not stored",
                 ))?;
+                object.note_geometry_event();
                 insert_at(&mut document.objects, *index, object)?;
                 exchange_selection(document, *id, selected, true);
             }
@@ -535,6 +538,7 @@ fn exchange_control_points(
 }
 
 fn exchange_selection(document: &mut Document, id: ObjectId, stored: &mut bool, exists: bool) {
+    document.temporary_object_selection.remove(&id);
     let current = document.selection.contains(&id);
     if *stored && exists {
         if document.selection.insert(id) {
@@ -609,6 +613,7 @@ fn replace_object(
         ));
     }
     *object = replacement.clone();
+    object.note_geometry_event();
     Ok(())
 }
 

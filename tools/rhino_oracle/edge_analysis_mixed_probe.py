@@ -91,6 +91,8 @@ def run(op, host, iterations, tolerance):
                 obj = doc.Objects.FindId(key)
                 rows.append(dict(kind=kind, name=str(obj.Attributes.Name), groups=int(obj.Attributes.GroupCount),
                                  geometry=geometry(obj.Geometry, host), selected=bool(obj.IsSelected(False))))
+            if op.get('mode_trace'):
+                for row,key in zip(rows,keys):row['selection_state']=int(doc.Objects.FindId(key).IsSelected(False))
             points = [o for o in doc.Objects if o.Id not in keys and isinstance(o.Geometry, R.Geometry.Point)]
             points.sort(key=lambda o: int(o.RuntimeSerialNumber))
             return dict(sources=rows, objects=len(list(doc.Objects)), points=[host['_xyz'](o.Geometry.Location) for o in points])
@@ -130,9 +132,10 @@ def run(op, host, iterations, tolerance):
                 inspect('Edge Analysis','Remove Objects');R.RhinoApp.Wait()
                 stages.append(dict(action='Remove',state=snapshot()))
             inspect('Edge Analysis','Naked edges');R.RhinoApp.Wait()
+            if op.get('mode_trace'):stages.append(dict(action='Mode',state=snapshot()))
             from edge_zoom_input import start
             finish_input=start(R,S,['_All','_Mark',''])
-            inspect('Edge Analysis','Zoom');R.RhinoApp.Wait()
+            inspect('Edge Analysis','Zoom',physical=True);R.RhinoApp.Wait()
             stages.append(dict(action='Zoom',input=finish_input(),state=snapshot()))
         after = snapshot()
         if after['points']:

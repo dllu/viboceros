@@ -13,8 +13,8 @@ fn mixed_edge_diagnostics_match_native_selection_order_membership_and_history() 
     let mut count = 0;
     for family in [
         "edge_analysis_mixed",
-        "edge_analysis_mixed_membership",
-        "edge_analysis_mixed_panels",
+        "edge_analysis_mixed_ui",
+        "edge_analysis_mixed_selection",
     ] {
         let request: serde_json::Value = serde_json::from_slice(
             &std::fs::read(base.join(format!("fixtures/{family}.json"))).unwrap(),
@@ -115,6 +115,9 @@ fn mixed_edge_diagnostics_match_native_selection_order_membership_and_history() 
                     stages.push(serde_json::json!({"action":"Remove","state":snapshot(&app.document,&ids,&f).unwrap()}));
                 }
                 enter(&mut app, "ShowEdges Show=Naked");
+                if f.mode_trace {
+                    stages.push(serde_json::json!({"action":"Mode","state":snapshot(&app.document,&ids,&f).unwrap()}));
+                }
                 app.start_edge_analysis_zoom();
                 assert!(
                     app.commands
@@ -191,7 +194,7 @@ fn mixed_edge_diagnostics_match_native_selection_order_membership_and_history() 
             }
         }
     }
-    assert_eq!(count, 86);
+    assert_eq!(count, 92);
 }
 
 #[test]

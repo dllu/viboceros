@@ -73,6 +73,7 @@ mod draft_angle;
 mod draft_angle_analysis;
 mod draft_pull;
 mod edge_analysis;
+mod edge_analysis_lifetime;
 mod edge_analysis_mixed;
 #[path = "../../../crates/viboceros-oracle/tests/support/edge_analysis_mixed.rs"]
 mod edge_analysis_mixed_support;

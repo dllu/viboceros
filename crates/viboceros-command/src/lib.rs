@@ -2441,6 +2441,7 @@ impl CommandRegistry {
         group: Option<&mut viboceros_document::HistoryGroup>,
         projection: Option<picking::Projection>,
     ) -> Result<String, CommandError> {
+        let completes_command = group.is_none();
         let mut tokens = input.trim_start().splitn(2, char::is_whitespace);
         let name = tokens
             .next()
@@ -2449,6 +2450,9 @@ impl CommandRegistry {
         let name = normalize_command_name(name);
 
         if name == "help" || name == "?" {
+            if completes_command {
+                document.clear_temporary_object_selection();
+            }
             return Ok(format!("Commands: {}", self.command_names().join(", ")));
         }
 
@@ -2540,6 +2544,9 @@ impl CommandRegistry {
         }
         if result.is_ok() && matches!(command.name(), "SelNone" | "Clear" | "ToNURBS") {
             self.components.clear();
+        }
+        if completes_command {
+            finish_command_selection(document, command.name(), &result);
         }
         result
     }
@@ -2989,6 +2996,11 @@ impl CommandRegistry {
     pub fn clear_edge_zoom(&self) {
         self.edge_zoom.clear();
     }
+    /// End the interactive command and release its nonpersistent getter picks.
+    pub fn finish_edge_zoom(&self, doc: &mut Document) {
+        doc.clear_temporary_object_selection();
+        self.edge_zoom.clear();
+    }
     /// Start the panel's temporary Zoom input using its analyzed sources.
     pub fn begin_edge_analysis_zoom(
         &self,
@@ -3038,7 +3050,9 @@ fn run_command_transaction<T>(
     name: &'static str,
     run: impl FnOnce(&mut Document) -> Result<T, CommandError>,
 ) -> Result<T, CommandError> {
-    run_command_transaction_with_policy(document, name, run, |_| false)
+    let result = run_command_transaction_with_policy(document, name, run, |_| false);
+    finish_command_selection(document, name, &result);
+    result
 }
 
 fn run_command_transaction_with_policy<T>(
@@ -3061,6 +3075,20 @@ fn run_command_transaction_with_policy<T>(
             }
             Err(error)
         }
+    }
+}
+
+fn finish_command_selection<T>(
+    document: &mut Document,
+    name: &str,
+    result: &Result<T, CommandError>,
+) {
+    // ShowEdges options are modeless panel actions; their getter picks are
+    // released by the next native-style command, rather than by the panel.
+    if name != "ShowEdges"
+        && (result.is_ok() || matches!(result, Err(CommandError::OperationDeclined)))
+    {
+        document.clear_temporary_object_selection();
     }
 }
 

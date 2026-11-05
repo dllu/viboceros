@@ -94,7 +94,7 @@ def run(op, host, iterations, tolerance):
         if op.get('zoom'):
             from edge_zoom_input import start
             finish_input = start(R,S,['_'+token for token in op['zoom']]+[''])
-            inspect('Edge Analysis','Zoom',op.get('native_click',False))
+            inspect('Edge Analysis','Zoom',True)
             R.RhinoApp.Wait()
             try:input_state=finish_input()
             except ValueError as error:input_state=dict(error=str(error),prompt=str(R.RhinoApp.CommandPrompt))

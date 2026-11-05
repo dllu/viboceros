@@ -242,6 +242,8 @@ impl Document {
                     let id = ObjectId::new();
                     let index = self.objects.len();
                     self.objects.push(Object {
+                        runtime_serial: Object::new_runtime_serial(),
+                        geometry_event_serial: Object::new_runtime_serial(),
                         id,
                         geometry: piece.geometry,
                         attributes: piece.attributes,
