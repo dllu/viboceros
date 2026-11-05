@@ -2696,15 +2696,11 @@ impl VibocerosApp {
             }
             InteractiveCommand::Revolve {
                 axis_start: None,
-                start_angle_degrees,
-                sweep_degrees,
-                delete_input,
+                options,
             } => {
                 let command = InteractiveCommand::Revolve {
                     axis_start: Some(point),
-                    start_angle_degrees,
-                    sweep_degrees,
-                    delete_input,
+                    options,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Axis start: {}", format_model_point(point)));
@@ -2712,9 +2708,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::Revolve {
                 axis_start: Some(axis_start),
-                start_angle_degrees,
-                sweep_degrees,
-                delete_input,
+                options,
             } => {
                 if axis_start.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: revolve axis points must differ".to_owned());
@@ -2722,12 +2716,11 @@ impl VibocerosApp {
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "Revolve {} {} {} StartAngle={} DeleteInput={}",
+                    "Revolve {} {} {} {}",
                     format_model_point(axis_start),
                     format_model_point(point),
-                    sweep_degrees,
-                    start_angle_degrees,
-                    if delete_input { "Yes" } else { "No" }
+                    options.sweep_degrees,
+                    options.command_options()
                 ));
             }
             InteractiveCommand::RailRevolve(mut state) => {

@@ -231,14 +231,9 @@ caps eligible planar boundary loops; `DeleteInput` applies only to profiles.
 See [curve-path extrusion](../smlib-translational-sweep.md) for defaults,
 source policy, native comparisons, and remaining limitations.
 
-`Revolve` creates exact rational NURBS surfaces around an arbitrary two-point
-axis. Supply a signed sweep from -360 through 360 degrees, or use
-`FullCircle=Yes`; `StartAngle=` rotates the beginning of a partial sweep.
-Entering `Revolve` without an axis starts the two-pick viewport workflow, which
-defaults to a full turn and also accepts `Angle=`, `StartAngle=`, and
-`DeleteInput=`. The exact surface keeps the profile in V and uses fully
-multiple quadratic quadrant knots in U. `Output=Surface` and `Deformable=No`
-are supported; deformable and SubD revolves are not yet represented.
+`Revolve` creates exact rational or cubic deformable surfaces around a two-point
+axis. Its [command guide](revolve.md) covers signed sweeps, profile preparation,
+parameter domains, point-count options and interactive axis picking.
 
 ## Surface extension
 

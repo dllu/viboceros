@@ -116,6 +116,7 @@ mod iplane;
 mod mesh_pull;
 #[cfg(test)]
 mod projection_loose_tests;
+pub mod revolve_deformable;
 mod section_command;
 pub mod short_span_extrusions;
 mod surface_pull;
@@ -358,6 +359,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    RevolveDeformable {
+        id: String,
+        #[serde(flatten)]
+        fixture: revolve_deformable::Fixture,
+    },
     ShortSpanExtrusions {
         id: String,
         #[serde(flatten)]
@@ -2932,6 +2938,7 @@ impl Operation {
             | Self::ConvertExtrusion { id, .. }
             | Self::UseExtrusions { id, .. }
             | Self::ShortSpanExtrusions { id, .. }
+            | Self::RevolveDeformable { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3489,6 +3496,9 @@ fn execute(
         }
         Operation::ShortSpanExtrusions { fixture, .. } => {
             short_span_extrusions::run(fixture, iterations, tolerance)?
+        }
+        Operation::RevolveDeformable { fixture, .. } => {
+            revolve_deformable::run(fixture, iterations, tolerance)?
         }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?

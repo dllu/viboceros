@@ -61,6 +61,7 @@ B-rep output for eligible creators.
 - [FilletSrf: surface picks, trim/split, joining and previews](fillet-srf.md)
 - [Reparameterize face domains](reparameterize.md)
 - [RailRevolve usage, options and qualification](rail-revolve.md)
+- [Exact and deformable Revolve surfaces](revolve.md)
 
 - [Sweep cross sections along two rails](sweep2.md)
 

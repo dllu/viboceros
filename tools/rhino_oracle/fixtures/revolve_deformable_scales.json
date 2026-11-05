@@ -1,0 +1,1207 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "revolve_deformable",
+      "id": "scale_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.999999999,
+          1.999999999
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_2",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0001,
+          2.0001
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_3",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          19.999,
+          19.999
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_4",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_5",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0001,
+          20.0001
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_6",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.9,
+          1.9
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_7",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_8",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          10.0,
+          10.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_9",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.9,
+          1.9
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_12",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          10.0,
+          10.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_13",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_14",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.9,
+          1.9
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              8.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_15",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              8.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_16",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          10.0,
+          10.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              8.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_17",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              8.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_18",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.9,
+          1.9
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              13.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_19",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              13.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_20",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          10.0,
+          10.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              13.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_21",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              13.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_22",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.9,
+          1.9
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              23.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_23",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              23.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_24",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          10.0,
+          10.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              23.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    },
+    {
+      "op": "revolve_deformable",
+      "id": "scale_25",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          20.0,
+          20.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              23.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "delete_input": false,
+      "cancel_before_history": false
+    }
+  ]
+}

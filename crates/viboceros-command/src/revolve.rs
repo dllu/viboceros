@@ -3,8 +3,11 @@ use super::*;
 
 #[cfg(feature = "native-smlib")]
 mod native;
+mod options;
+mod profile;
+pub use options::Options;
 
-const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Deformable=No] [SplitAtTangents=Yes|No]";
+const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Deformable=Yes|No] [PointCount=4..1000] [SplitAtTangents=Yes|No]";
 
 pub(super) struct RevolveCommand;
 
@@ -15,8 +18,16 @@ impl Command for RevolveCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (axis_origin, axis, start_angle, sweep_angle, delete_input) =
-            parse_revolution(arguments, document.tolerance())?;
+        let (axis_segment, options) = parse_revolution(arguments, document.tolerance())?;
+        let axis_origin = axis_segment.start();
+        let axis = axis_segment.direction(document.tolerance())?;
+        let (start_angle, sweep_angle) = options.angles()?;
+        let Options {
+            delete_input,
+            deformable,
+            point_count,
+            ..
+        } = options;
         let mut revolutions = Vec::new();
         for id in selected {
             let Some(curve) = document
@@ -27,16 +38,61 @@ impl Command for RevolveCommand {
             else {
                 continue;
             };
-            #[cfg(not(feature = "native-smlib"))]
-            let surface = NurbsSurface::try_revolved_curve(
-                &curve,
-                axis_origin,
-                axis,
-                start_angle,
-                sweep_angle,
-            )?;
-            #[cfg(feature = "native-smlib")]
-            let surface = native::revolve(&curve, axis_origin, axis, start_angle, sweep_angle)?;
+            let curve = if deformable {
+                profile::prepare(&curve, axis_segment, document.tolerance())?
+            } else {
+                curve
+            };
+            let surface = if deformable {
+                NurbsSurface::try_deformable_revolved_curve(
+                    &curve,
+                    axis_origin,
+                    axis,
+                    start_angle,
+                    sweep_angle,
+                    point_count,
+                )?
+            } else {
+                #[cfg(not(feature = "native-smlib"))]
+                let exact = NurbsSurface::try_revolved_curve(
+                    &curve,
+                    axis_origin,
+                    axis,
+                    start_angle,
+                    sweep_angle,
+                )?;
+                #[cfg(feature = "native-smlib")]
+                let exact = native::revolve(&curve, axis_origin, axis, start_angle, sweep_angle)?;
+                exact
+            };
+            let surface = if deformable {
+                let mid = curve.evaluate(curve.parameter_at(0.5)?)?;
+                let radius =
+                    mid.distance_to(axis_segment.closest_point(mid, document.tolerance())?)?;
+                let width = radius * sweep_angle.abs();
+                let u = if width > 0. {
+                    0.0..=width
+                } else {
+                    surface.domain_u()
+                };
+                let height = viboceros_geometry::ArcLengthSampler::try_new(
+                    CurveRef::NurbsCurve(&curve),
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?
+                .quadrature_length_estimate(1e-4)?;
+                let v = surface.domain_v();
+                let extent = v.end() - v.start();
+                // Native uses asymmetric thresholds, preserving well-scaled
+                // charts and their possibly nonzero parameter origin.
+                let v = if height > 3. * extent || height < 0.33 * extent {
+                    0.0..=height
+                } else {
+                    v
+                };
+                surface.try_reparameterized(u, v)?
+            } else {
+                surface
+            };
             revolutions.push((id, surface));
         }
         if revolutions.is_empty() {
@@ -53,8 +109,9 @@ impl Command for RevolveCommand {
             }
         }
         Ok(format!(
-            "Revolved {output_count} curve object(s) through {:.6} degrees into exact NURBS surfaces{}",
+            "Revolved {output_count} curve object(s) through {:.6} degrees into {} NURBS surfaces{}",
             sweep_angle.to_degrees(),
+            if deformable { "deformable" } else { "exact" },
             if delete_input {
                 ", deleting the input curves"
             } else {
@@ -67,82 +124,26 @@ impl Command for RevolveCommand {
 fn parse_revolution(
     arguments: &[&str],
     tolerance: Tolerance,
-) -> Result<(Point3, UnitVector3, Real, Real, bool), CommandError> {
-    let mut positional = Vec::new();
-    let mut start_angle_degrees = None;
-    let mut full_circle = None;
-    let mut delete_input = None;
-    let mut output_seen = false;
-    let mut deformable_seen = false;
-    let mut split_at_tangents = None;
-    for argument in arguments {
-        let Some((name, value)) = argument.split_once('=') else {
-            positional.push(*argument);
-            continue;
-        };
-        if option_name_eq(name, "StartAngle") && start_angle_degrees.is_none() {
-            start_angle_degrees = Some(parse_finite_real(value)?);
-        } else if option_name_eq(name, "FullCircle") && full_circle.is_none() {
-            full_circle = Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
-        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
-            delete_input = Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
-        } else if option_name_eq(name, "Output") && !output_seen {
-            if !value
-                .trim_start_matches('_')
-                .eq_ignore_ascii_case("Surface")
-            {
-                return Err(CommandError::UnsupportedRevolveOutput);
-            }
-            output_seen = true;
-        } else if option_name_eq(name, "Deformable") && !deformable_seen {
-            let deformable = parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?;
-            if deformable {
-                return Err(CommandError::DeformableRevolveUnsupported);
-            }
-            deformable_seen = true;
-        } else if option_name_eq(name, "SplitAtTangents") && split_at_tangents.is_none() {
-            split_at_tangents =
-                Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
-        } else {
-            return Err(CommandError::Usage(REVOLVE_USAGE));
-        }
+) -> Result<(LineSegment, Options), CommandError> {
+    let (options, positional): (Vec<_>, Vec<_>) = arguments
+        .iter()
+        .copied()
+        .partition(|a| a.contains('=') || option_name_eq(a, "FullCircle"));
+    let mut parsed = Options::default().updated(&options)?;
+    let (origin, consumed) = parse_point(&positional)?;
+    let (end, end_consumed) = parse_point(&positional[consumed..])?;
+    let remaining = &positional[consumed + end_consumed..];
+    let option_sweep = options.iter().any(|a| {
+        let (name, value) = a.split_once('=').unwrap_or((a, "Yes"));
+        option_name_eq(name, "Angle")
+            || option_name_eq(name, "SweepAngle")
+            || option_name_eq(name, "FullCircle") && parse_yes_no(value) == Some(true)
+    });
+    match remaining {
+        [angle] if !option_sweep => parsed.sweep_degrees = parse_finite_real(angle)?,
+        [] if option_sweep => {}
+        _ => return Err(CommandError::Usage(REVOLVE_USAGE)),
     }
-
-    let (axis_origin, origin_consumed) = parse_point(&positional)?;
-    let (axis_end, end_consumed) = parse_point(&positional[origin_consumed..])?;
-    let remaining = &positional[origin_consumed + end_consumed..];
-    let sweep_degrees = if full_circle.unwrap_or(false) {
-        if !remaining.is_empty() {
-            return Err(CommandError::Usage(REVOLVE_USAGE));
-        }
-        360.0
-    } else {
-        let [angle] = remaining else {
-            return Err(CommandError::Usage(REVOLVE_USAGE));
-        };
-        let degrees = parse_finite_real(angle)?;
-        if degrees == 0.0 || degrees.abs() > 360.0 {
-            return Err(CommandError::InvalidRevolutionAngle((*angle).to_owned()));
-        }
-        degrees
-    };
-    let start_angle = start_angle_degrees.unwrap_or(0.0).to_radians();
-    let sweep_angle = if sweep_degrees.abs() == 360.0 {
-        sweep_degrees.signum() * std::f64::consts::TAU
-    } else {
-        sweep_degrees.to_radians()
-    };
-    if !start_angle.is_finite() || !sweep_angle.is_finite() {
-        return Err(CommandError::InvalidRevolutionAngle(
-            sweep_degrees.to_string(),
-        ));
-    }
-    let axis = axis_origin.vector_to(axis_end)?.normalized(tolerance)?;
-    Ok((
-        axis_origin,
-        axis,
-        start_angle,
-        sweep_angle,
-        delete_input.unwrap_or(false),
-    ))
+    parsed.angles()?;
+    Ok((LineSegment::try_new(origin, end, tolerance)?, parsed))
 }

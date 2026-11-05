@@ -633,9 +633,7 @@ pub(super) enum InteractiveCommand {
     },
     Revolve {
         axis_start: Option<Point3>,
-        start_angle_degrees: f64,
-        sweep_degrees: f64,
-        delete_input: bool,
+        options: viboceros_command::revolve::Options,
     },
     RailRevolve(viboceros_command::rail_revolve::RailRevolveStart),
 }

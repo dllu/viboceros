@@ -172,9 +172,11 @@ fn interactive_revolve_uses_two_axis_picks_and_angle_options() {
         app.active_command,
         Some(InteractiveCommand::Revolve {
             axis_start: None,
-            start_angle_degrees: 30.0,
-            sweep_degrees: 120.0,
-            delete_input: false,
+            options: viboceros_command::revolve::Options {
+                start_angle_degrees: 30.0,
+                sweep_degrees: 120.0,
+                ..Default::default()
+            },
         })
     );
     app.accept_drafting_point(point(0.0, 0.0, 0.0));
@@ -183,9 +185,11 @@ fn interactive_revolve_uses_two_axis_picks_and_angle_options() {
         app.active_command,
         Some(InteractiveCommand::Revolve {
             axis_start: Some(point(0.0, 0.0, 0.0)),
-            start_angle_degrees: 30.0,
-            sweep_degrees: 120.0,
-            delete_input: false,
+            options: viboceros_command::revolve::Options {
+                start_angle_degrees: 30.0,
+                sweep_degrees: 120.0,
+                ..Default::default()
+            },
         })
     );
     app.accept_drafting_point(point(0.0, 0.0, 1.0));

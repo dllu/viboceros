@@ -1102,9 +1102,6 @@ pub enum CommandError {
     #[error("Revolve currently supports Output=Surface only")]
     UnsupportedRevolveOutput,
 
-    #[error("deformable Revolve output is not yet supported")]
-    DeformableRevolveUnsupported,
-
     #[error("'{0}' is not a valid non-zero revolution angle from -360 through 360 degrees")]
     InvalidRevolutionAngle(String),
 

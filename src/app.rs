@@ -137,6 +137,7 @@ mod curve_extraction_subcurve;
 mod edge_pattern_selection;
 mod extract_points;
 mod length_measurement;
+mod revolve;
 mod use_extrusions;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
@@ -687,6 +688,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_curve_extrusion_options(&input) {
+            return;
+        }
+        if self.continue_revolve_options(&input) {
             return;
         }
         if self.try_continue_use_extrusions(&input) {

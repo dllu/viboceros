@@ -1051,57 +1051,10 @@ impl VibocerosApp {
                 }
             }
         } else if normalized == "revolve" {
-            let mut start_angle_degrees = 0.0;
-            let mut sweep_degrees = 360.0;
-            let mut delete_input = false;
-            let mut start_angle_seen = false;
-            let mut sweep_seen = false;
-            let mut delete_input_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                if name.eq_ignore_ascii_case("StartAngle") && !start_angle_seen {
-                    let Ok(angle) = value.parse::<f64>() else {
-                        return false;
-                    };
-                    if !angle.is_finite() {
-                        return false;
-                    }
-                    start_angle_degrees = angle;
-                    start_angle_seen = true;
-                } else if matches!(name.to_ascii_lowercase().as_str(), "angle" | "sweepangle")
-                    && !sweep_seen
-                {
-                    let Ok(angle) = value.parse::<f64>() else {
-                        return false;
-                    };
-                    if !angle.is_finite() || angle == 0.0 || angle.abs() > 360.0 {
-                        return false;
-                    }
-                    sweep_degrees = angle;
-                    sweep_seen = true;
-                } else if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
-                    delete_input = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    delete_input_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            InteractiveCommand::Revolve {
-                axis_start: None,
-                start_angle_degrees,
-                sweep_degrees,
-                delete_input,
-            }
+            let Some(command) = super::revolve::start(&arguments) else {
+                return false;
+            };
+            command
         } else if matches!(normalized.as_str(), "curvature" | "radius" | "diameter") {
             let mut mark = false;
             let mut display_units = None;

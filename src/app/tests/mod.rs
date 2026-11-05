@@ -173,6 +173,7 @@ mod polyline_closure;
 mod polyline_closure_reference;
 mod polyline_on_mesh;
 mod primitive_input;
+mod revolve_deformable;
 mod round_primitive_input;
 mod selection_sidebar;
 mod short_span_extrusions;

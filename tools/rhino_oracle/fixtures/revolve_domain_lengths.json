@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "revolve_domain_sampling",
+      "id": "line",
+      "case": "line"
+    },
+    {
+      "op": "revolve_domain_sampling",
+      "id": "rational",
+      "case": "rational"
+    },
+    {
+      "op": "revolve_domain_sampling",
+      "id": "spatial",
+      "case": "spatial"
+    },
+    {
+      "op": "revolve_domain_sampling",
+      "id": "axis_tips",
+      "case": "axis_tips"
+    }
+  ]
+}

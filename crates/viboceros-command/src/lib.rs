@@ -199,7 +199,7 @@ mod knot_refinement;
 pub mod shell;
 use extrude_apex::ExtrudeCurveToPointCommand;
 mod planar_surface;
-mod revolve;
+pub mod revolve;
 use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
 mod extrude_mesh;
