@@ -122,6 +122,8 @@ fn revolve_options_remain_atomic_between_axis_picks_and_cancel_preserves_redo() 
     let expected = InteractiveCommand::Revolve {
         axis_start: Some(point(0., 0., 0.)),
         options: Options {
+            output: viboceros_command::revolve::Output::Surface,
+            segment_count: 10,
             deformable: true,
             point_count: 16,
             sweep_degrees: -270.,
@@ -140,7 +142,7 @@ fn revolve_options_remain_atomic_between_axis_picks_and_cancel_preserves_redo() 
         "Angle=NaN",
         "Angle=361",
         "StartAngle=inf",
-        "Output=SubD",
+        "Output=Mesh",
         "PointCount=8 PointCount=16",
         "Angle=90 SweepAngle=120",
         "FullCircle=Yes Angle=30",

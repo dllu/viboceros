@@ -36,7 +36,7 @@ fn invalid_deformable_revolutions_preserve_model_attributes_selection_and_redo()
         "Deformable=Yes Deformable=No",
         "Deformable=Maybe",
         "StartAngle=NaN",
-        "Output=SubD",
+        "Output=Mesh",
         "FullCircle=Yes",
         "Angle=90",
         "extra",

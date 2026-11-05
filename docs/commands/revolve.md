@@ -5,14 +5,15 @@ Select curve profiles, then enter:
 ```text
 Revolve axis-start axis-end sweep-degrees [StartAngle=degrees]
     [Deformable=Yes|No] [PointCount=4..1000] [DeleteInput=Yes|No]
-    [SplitAtTangents=Yes|No]
+    [SplitAtTangents=Yes|No] [Output=Surface|SubD] [SegmentCount=4..100000]
 Revolve axis-start axis-end FullCircle
 ```
 
 Sweeps are signed, nonzero and at most 360 degrees. Defaults are a zero start
-angle, exact output, ten deformable points and retained inputs. `Output=Surface`
-is accepted; SubD output is unsupported. Exact output uses rational quadratic
-quadrant spans in U and the profile in V.
+angle, exact Surface output, ten deformable points and retained inputs.
+[SubD output](revolve-subd.md) uses a separate angular SegmentCount and fits the
+profile. Exact Surface output uses rational quadratic quadrant spans in U and
+the profile in V.
 
 `Deformable=Yes` creates cubic angular spans with simple interior knots. Partial
 turns have the requested number of U controls and tangent-aligned end handles.
@@ -25,17 +26,17 @@ first interior contact with the infinite axis. This affects only the output;
 retained sources stay unchanged. Deformable output's angular domain uses the
 profile midpoint's distance to the **finite picked axis segment**, multiplied by
 the sweep radians. Exact output uses the 65-sample maximum-radius estimate
-around the infinite axis. The V domain is retained unless the Cash–Karp length estimate at `1e-4` exceeds
-three times its span or falls below `0.33` times it. Poorly scaled domains become
+around the infinite axis. The V domain is retained unless the Cash–Karp length
+estimate at `1e-4` exceeds three times its span or falls below `0.33` times it. Poorly scaled domains become
 `[0, estimated length]`. If an interior span is too narrow for integration,
 exact Bézier spans are integrated in individual unit charts.
-The geometry kernel's lower-level construction API
-preserves the supplied profile chart; the command owns this native domain policy.
+The geometry kernel's Surface constructors preserve the supplied profile chart;
+the command owns this native domain policy.
 
 In the application, bare `Revolve` starts axis picking. `Angle=`, `StartAngle=`,
-`Deformable=`, `PointCount=`, `SplitAtTangents=`, `DeleteInput=` and
-`Output=Surface` can be edited before either pick. `FullCircle` chooses a full turn. Enter after the first pick
-uses the active construction plane's Z direction. Escape cancels without changing
+`Deformable=`, `PointCount=`, `SplitAtTangents=`, `DeleteInput=`, `Output=` and
+`SegmentCount=` can be edited before either pick. `FullCircle` chooses a full turn.
+Enter after the first pick uses the active construction plane's Z direction. Escape cancels without changing
 the model, selection or pending Redo. Invalid option groups are atomic.
 
 The [validation record](../revolve-deformable-validation.json) covers 172 native

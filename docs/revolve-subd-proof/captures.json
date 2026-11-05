@@ -1,0 +1,32 @@
+{
+  "revolve_subd_pilot": {
+    "raw_sha256": "98fc2935044fd05acd189218108eeff5c9a3ce3112aafccec86eff71ec0937fa",
+    "gzip_sha256": "016a1baee352b09d42ed68e764fd0f739c3af18370496c0964dcd270b4a11156",
+    "raw_bytes": 3004008,
+    "gzip_bytes": 184499
+  },
+  "revolve_subd_profiles": {
+    "raw_sha256": "ee68b6985f4ca5246edd31117cf74876aaf738225f5b4943b4187bf0d0f64ae3",
+    "gzip_sha256": "548733503f6201f1c61e56b3d084e017036a7d740201569b218406be736c7f26",
+    "raw_bytes": 606041,
+    "gzip_bytes": 41514
+  },
+  "revolve_subd_holdouts": {
+    "raw_sha256": "a3f956832af32e14828f1ef1d125f106163897bcdcb5e5b6a37e0cfd09d3c437",
+    "gzip_sha256": "409393fb043c608121a2289f64c5ff8818d4c97e79c921d3a6966908646060f4",
+    "raw_bytes": 22390408,
+    "gzip_bytes": 1850626
+  },
+  "revolve_subd_edges": {
+    "raw_sha256": "577405f3832431a36dd8394c9550d00aa4af4aca5c1fea137217b0a10f1e5661",
+    "gzip_sha256": "73df0c8e54c5d7dfa2bd310703bee18338d95bdcde9955364e0ba20547f02d0a",
+    "raw_bytes": 11135498,
+    "gzip_bytes": 846328
+  },
+  "revolve_subd_policy": {
+    "raw_sha256": "4cb7c3f96708df97857a120ea22d78f0d15bc0664949d4f82ae817a25d0bf20a",
+    "gzip_sha256": "0bbe1c56e34b4e43579275a295c6b225a796c172f5dd10716a281b4801f33e63",
+    "raw_bytes": 8188542,
+    "gzip_bytes": 514533
+  }
+}

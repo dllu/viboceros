@@ -50,6 +50,7 @@ impl VibocerosApp {
                         "DeleteInput",
                         "Deformable",
                         "PointCount",
+                        "SegmentCount",
                         "Output",
                         "SplitAtTangents",
                     ]

@@ -1,8 +1,25 @@
 //! Shared scalar options for scripted execution and interactive axis getters.
 use super::*;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Output {
+    #[default]
+    Surface,
+    SubD,
+}
+impl Output {
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Surface => "Surface",
+            Self::SubD => "SubD",
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
+    pub output: Output,
+    pub segment_count: usize,
     pub start_angle_degrees: Real,
     pub sweep_degrees: Real,
     pub delete_input: bool,
@@ -13,6 +30,8 @@ pub struct Options {
 impl Default for Options {
     fn default() -> Self {
         Self {
+            output: Output::Surface,
+            segment_count: 10,
             start_angle_degrees: 0.,
             sweep_degrees: 360.,
             delete_input: false,
@@ -59,13 +78,26 @@ impl Options {
                     }
                     self.point_count = count;
                 }
+                "segmentcount" => {
+                    let count = value
+                        .parse::<usize>()
+                        .map_err(|_| CommandError::Usage(REVOLVE_USAGE))?;
+                    if count > 100_000 {
+                        return Err(CommandError::Usage(REVOLVE_USAGE));
+                    }
+                    self.segment_count = count.max(4);
+                }
                 "output" => {
-                    if !value
+                    self.output = if value
                         .trim_start_matches('_')
                         .eq_ignore_ascii_case("Surface")
                     {
+                        Output::Surface
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("SubD") {
+                        Output::SubD
+                    } else {
                         return Err(CommandError::UnsupportedRevolveOutput);
-                    }
+                    };
                 }
                 "splitattangents" => {
                     self.split_at_tangents = yes_no()?;
@@ -96,7 +128,9 @@ impl Options {
     pub fn command_options(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         format!(
-            "StartAngle={} DeleteInput={} Deformable={} PointCount={} SplitAtTangents={}",
+            "Output={} SegmentCount={} StartAngle={} DeleteInput={} Deformable={} PointCount={} SplitAtTangents={}",
+            self.output.name(),
+            self.segment_count,
             self.start_angle_degrees,
             yes(self.delete_input),
             yes(self.deformable),

@@ -12,6 +12,18 @@ pub(super) fn construct(
     let origin = axis_segment.start();
     let axis = axis_segment.direction(tolerance)?;
     let (start, sweep) = options.angles()?;
+    if options.output == Output::SubD {
+        return Ok(Geometry::SubD(
+            viboceros_geometry::SubD::try_revolved_curve(
+                &curve,
+                origin,
+                axis,
+                start,
+                sweep,
+                options.segment_count,
+            )?,
+        ));
+    }
     let surface = if options.deformable {
         NurbsSurface::try_deformable_revolved_curve(
             &curve,

@@ -1,0 +1,66 @@
+{
+  "scope": "Revolve Output=SubD, SegmentCount, automatic Greville profile fitting, native history and interactive output switching.",
+  "baseline_revision": "4d2af87d733dff0f214f502339c1531655aa065b",
+  "passed": {
+    "new_native_command_workflows": 80,
+    "independent_sdk_profile_fits": 17,
+    "command_geometry_workflows_per_build": 417,
+    "app_fixture_replays_per_build": 408,
+    "archive_roundtrips_per_build": 412,
+    "test_counts": {
+      "default": {
+        "oracle": 8,
+        "app": 9,
+        "command-unit": 3,
+        "command-policy": 6,
+        "conversion": 5,
+        "point-input": 5
+      },
+      "native": {
+        "oracle": 8,
+        "app": 10,
+        "command-unit": 4,
+        "command-policy": 6,
+        "conversion": 5,
+        "point-input": 5
+      }
+    },
+    "kernel_tests": 4,
+    "python_tests": 15,
+    "workspace_clippy_all_targets_default_and_all_features": true,
+    "formatting": true
+  },
+  "geometry_comparison": {
+    "absolute_epsilon": 1e-12,
+    "large_world_fixture": {
+      "id": "line_translated",
+      "absolute_epsilon": 2e-09,
+      "origin": [
+        1000000.0,
+        2000000.0,
+        -3000000.0
+      ]
+    },
+    "correspondence": "Unique geometric control vertices, tagged edge incidence and oriented face cycles. Every oriented density-2 limit quad is paired across different display buffers; the 1e-6 lookup grid does not relax the comparison epsilon."
+  },
+  "checks": [
+    "Natural and periodic angular fits; positive, negative and partial turns; counts below four clamp to four.",
+    "Greville profile sampling for degrees one through four, rational weights, multiple knots, active domains, closed and periodic profiles.",
+    "Axis contact/crossing, pole fans, spatial axes, small models and million-unit translations.",
+    "Global crease admission and hidden Surface options leave SubD output unchanged.",
+    "Source retention/deletion, selection, Undo/Redo, output modes, cancellation and atomic invalid option groups.",
+    "3DM preserves control positions, face/edge topology and tags; native limit geometry and normal-aware meshing remain valid.",
+    "Current-layer output, source attributes/groups, mixed-profile failure rollback and a 1001-segment construction.",
+    "Shared cubic collocation retains existing ToSubD conversion and command behavior in both builds."
+  ],
+  "limits": [
+    "The native profile fit can substantially change source geometry; a single cubic Bezier can become a line.",
+    "Native control-vertex, edge and display-buffer numbering are not reproduced; geometric correspondence is verified.",
+    "Options reset per invocation. Continuous error bounds, arbitrary topology and comparative performance remain unqualified.",
+    "Construction is bounded by 100000 SubD control vertices and faces per result."
+  ],
+  "capture_environment": "Five owned private Xvfb captures. All native command probes explicitly set/restore request document tolerances. App tests removed desktop display/compositor variables. Frozen request and producer hashes passed verification; compression preserves exact observation bytes.",
+  "proof": "revolve-subd-proof",
+  "capture_integrity": "revolve-subd-proof/captures.json",
+  "sha256_manifest": "revolve-subd-proof/sha256.json"
+}

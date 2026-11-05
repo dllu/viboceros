@@ -6,9 +6,9 @@ mod construction;
 mod native;
 mod options;
 mod profile;
-pub use options::Options;
+pub use options::{Options, Output};
 
-const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Deformable=Yes|No] [PointCount=4..1000] [SplitAtTangents=Yes|No]";
+const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface|SubD] [SegmentCount=4..100000] [Deformable=Yes|No] [PointCount=4..1000] [SplitAtTangents=Yes|No]";
 
 pub(super) struct RevolveCommand(pub crease_splitting::Preference);
 
@@ -62,7 +62,13 @@ impl Command for RevolveCommand {
         Ok(format!(
             "Revolved {output_count} curve object(s) through {:.6} degrees ({}){}",
             sweep_angle.to_degrees(),
-            if deformable { "deformable" } else { "exact" },
+            if options.output == Output::SubD {
+                "SubD from fitted profiles"
+            } else if deformable {
+                "deformable"
+            } else {
+                "exact"
+            },
             if delete_input {
                 ", deleting the input curves"
             } else {

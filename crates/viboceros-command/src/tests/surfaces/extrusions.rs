@@ -759,7 +759,7 @@ fn revolve_matches_rhino_exact_surface_attributes_groups_and_delete_input() {
         "Revolve 0,0,0 0,0,1 90 FullCircle=Yes",
         "Revolve 0,0,0 0,0,1 FullCircle=Maybe",
         "Revolve 0,0,0 0,0,1 90 DeleteInput=Yes DeleteInput=No",
-        "Revolve 0,0,0 0,0,1 90 Output=SubD",
+        "Revolve 0,0,0 0,0,1 90 Output=Mesh",
         "Revolve 0,0,0 0,0,1 90 Deformable=Maybe",
         "Revolve 0,0,0 0,0,1 90 SplitAtTangents=Maybe",
         "Revolve 0,0,0 0,0,1 90 extra",

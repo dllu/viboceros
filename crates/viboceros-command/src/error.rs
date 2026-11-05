@@ -1099,7 +1099,7 @@ pub enum CommandError {
     #[error("none of the selected objects is a revolvable curve")]
     NoRevolvableCurves,
 
-    #[error("Revolve currently supports Output=Surface only")]
+    #[error("Revolve supports Output=Surface or Output=SubD")]
     UnsupportedRevolveOutput,
 
     #[error("'{0}' is not a valid non-zero revolution angle from -360 through 360 degrees")]

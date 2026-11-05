@@ -231,8 +231,8 @@ caps eligible planar boundary loops; `DeleteInput` applies only to profiles.
 See [curve-path extrusion](../smlib-translational-sweep.md) for defaults,
 source policy, native comparisons, and remaining limitations.
 
-`Revolve` creates exact rational or cubic deformable surfaces around a two-point
-axis. Its [command guide](revolve.md) covers signed sweeps, profile preparation,
+`Revolve` creates exact rational surfaces, cubic deformable surfaces or SubDs
+around a two-point axis. Its [command guide](revolve.md) covers signed sweeps, profile preparation,
 parameter domains, point-count options and interactive axis picking.
 
 ## Surface extension

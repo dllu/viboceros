@@ -118,6 +118,7 @@ mod mesh_pull;
 mod projection_loose_tests;
 pub mod revolve_deformable;
 pub mod revolve_splitting;
+pub mod revolve_subd;
 mod section_command;
 pub mod short_span_extrusions;
 mod surface_pull;
@@ -360,6 +361,15 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    RevolveSubd {
+        id: String,
+        #[serde(flatten)]
+        fixture: revolve_subd::Fixture,
+    },
+    RevolveSubdProfile {
+        id: String,
+        curve: NurbsCurveDefinition,
+    },
     RevolveSplitting {
         id: String,
         #[serde(flatten)]
@@ -2946,6 +2956,8 @@ impl Operation {
             | Self::ShortSpanExtrusions { id, .. }
             | Self::RevolveDeformable { id, .. }
             | Self::RevolveSplitting { id, .. }
+            | Self::RevolveSubd { id, .. }
+            | Self::RevolveSubdProfile { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3507,6 +3519,10 @@ fn execute(
         Operation::RevolveDeformable { fixture, .. } => {
             revolve_deformable::run(fixture, iterations, tolerance)?
         }
+        Operation::RevolveSubd { fixture, .. } => {
+            revolve_subd::run(fixture, iterations, tolerance)?
+        }
+        Operation::RevolveSubdProfile { curve, .. } => revolve_subd::profile(curve)?,
         Operation::RevolveSplitting { fixture, .. } => {
             revolve_splitting::run(fixture, iterations, tolerance)?
         }

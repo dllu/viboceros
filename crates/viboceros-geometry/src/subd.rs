@@ -29,6 +29,7 @@ mod nurbs_conversion;
 mod offset;
 mod orientation;
 mod primitives;
+mod revolution;
 mod seams;
 mod soft_crease;
 mod sphere;

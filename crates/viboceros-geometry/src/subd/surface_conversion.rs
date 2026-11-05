@@ -42,9 +42,35 @@ fn convert_control_net(
     corners: bool,
     tolerance: Tolerance,
 ) -> Result<(SubD, TriangleMesh), GeometryError> {
+    convert_control_net_ordered(surface, corners, tolerance, false)
+}
+
+pub(super) fn convert_revolution_net(surface: &NurbsSurface) -> Result<SubD, GeometryError> {
+    convert_control_net_ordered(surface, true, Tolerance::NUMERICAL_VALIDATION, true).map(|r| r.0)
+}
+
+fn convert_control_net_ordered(
+    surface: &NurbsSurface,
+    corners: bool,
+    tolerance: Tolerance,
+    quads_first: bool,
+) -> Result<(SubD, TriangleMesh), GeometryError> {
     let mesh = surface
         .control_polygon_mesh(tolerance)?
         .ok_or(GeometryError::EmptyMesh)?;
+    // Revolve retains ordinary bands before appending singular end fans.
+    let mesh = if quads_first
+        && mesh
+            .faces()
+            .iter()
+            .any(|f| matches!(f, MeshFace::Triangle(_)))
+    {
+        let mut faces = mesh.faces().to_vec();
+        faces.sort_by_key(|f| matches!(f, MeshFace::Triangle(_)));
+        TriangleMesh::try_from_face_records(mesh.vertices().to_vec(), faces)?
+    } else {
+        mesh
+    };
     // A cleaned mesh must still contain each source pole. Otherwise a
     // collapsed first band would silently discard part of the surface.
     let singular = singular_sides(surface);

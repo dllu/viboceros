@@ -913,9 +913,21 @@ impl InteractiveCommand {
                 "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
             }
             Self::Revolve {
+                axis_start: None,
+                options,
+            } if matches!(options.output, viboceros_command::revolve::Output::SubD) => {
+                "Revolve: pick the axis start (Output, Angle, StartAngle, SegmentCount, DeleteInput; Esc cancels)"
+            }
+            Self::Revolve {
+                axis_start: Some(_),
+                options,
+            } if matches!(options.output, viboceros_command::revolve::Output::SubD) => {
+                "Revolve: pick the axis end or Enter for CPlane Z (Output, Angle, StartAngle, SegmentCount, DeleteInput; Esc cancels)"
+            }
+            Self::Revolve {
                 axis_start: None, ..
             } => {
-                "Revolve: pick the axis start (Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
+                "Revolve: pick the axis start (Output, Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
             }
             Self::RailRevolve(state) if state.axis_start.is_none() => {
                 "RailRevolve: pick the axis start (ScaleHeight, SplitAtTangents; Esc cancels)"
@@ -927,7 +939,7 @@ impl InteractiveCommand {
                 axis_start: Some(_),
                 ..
             } => {
-                "Revolve: pick the axis end or Enter for CPlane Z (Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
+                "Revolve: pick the axis end or Enter for CPlane Z (Output, Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
             }
         }
     }
