@@ -79,6 +79,7 @@ mod mass_properties;
 mod parameter_bounds;
 pub mod select_uv_rows;
 mod self_intersect;
+pub mod subd_area;
 mod surface_closest;
 mod surface_face_uv;
 pub use surface_face_uv::FaceUvQuery;
@@ -369,6 +370,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    SubdArea {
+        id: String,
+        #[serde(flatten)]
+        fixture: subd_area::Fixture,
     },
     ComponentLength {
         id: String,
@@ -2866,6 +2872,7 @@ impl Operation {
             | Self::ChainSelection { id, .. }
             | Self::LengthChain { id, .. }
             | Self::ComponentLength { id, .. }
+            | Self::SubdArea { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
             | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
@@ -3405,6 +3412,7 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::SubdArea { fixture, .. } => subd_area::run(fixture, iterations, tolerance)?,
         Operation::ComponentLength { fixture, .. } => {
             component_length::run(fixture, iterations, tolerance)?
         }

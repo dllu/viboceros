@@ -23,6 +23,7 @@ mod inset;
 mod interpolation;
 mod join;
 mod limit_faces;
+mod mass_properties;
 mod mesh_conversion;
 mod nurbs_conversion;
 mod offset;

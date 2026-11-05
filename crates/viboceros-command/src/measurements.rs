@@ -108,6 +108,17 @@ impl Command for AreaCommand {
         }))
     }
 
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: crate::CommandContext,
+    ) -> Result<String, CommandError> {
+        let report = self.run(document, arguments)?;
+        document.clear_selection();
+        Ok(report)
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let target = match arguments {
             [] => None,
@@ -124,6 +135,7 @@ impl Command for AreaCommand {
                 Geometry::NurbsSurface(surface) => Ok(surface.area(tolerance)?),
                 Geometry::Brep(brep) => Ok(brep.area(tolerance)?),
                 Geometry::Mesh(mesh) => Ok(mesh.area()?),
+                Geometry::SubD(subd) => Ok(subd.area(tolerance)?),
                 _ => geometry_curve_ref(geometry)
                     .ok_or(CommandError::UnsupportedAreaGeometry)?
                     .planar_area(tolerance)

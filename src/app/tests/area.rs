@@ -15,13 +15,14 @@ fn area_postselection_accepts_display_units_at_start_or_during_selection() {
             assert!(app.try_continue_object_prompt("Units=cm"));
         }
         app.select_prompt_objects([id], viboceros_document::SelectionMode::Replace);
-        let before = format!("{:?}", app.document);
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
         assert!(app.try_continue_object_prompt(""));
         assert!(app.object_prompt.is_none());
         assert_eq!(
             app.command_log.back().unwrap(),
             "Measured 1 object(s): total area 120000 Centimetres²"
         );
-        assert_eq!(format!("{:?}", app.document), before);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(app.document.selected_object_count(), 0);
     }
 }

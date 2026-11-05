@@ -9,7 +9,7 @@ centroid. Groups do not partition or multiply the measurement; a directly select
 subset of a group contributes only that subset.
 
 Supported inputs are closed planar curves, NURBS surfaces, trimmed B-reps
-(including holes), and polygon meshes. Open/nonplanar curves and points are
+(including holes), polygon meshes, and SubDs. Open/nonplanar curves and points are
 excluded. A numerical failure on eligible geometry aborts the complete operation,
 without leaving a partial marker. If no selected geometry is eligible, the command
 fails and clears selection.
@@ -33,6 +33,9 @@ exact.
 - Surfaces integrate area and first-moment densities over each knot rectangle.
   Arbitrary B-rep trims reuse the Green-theorem boundary traversal, including
   holes and surface-knot crossings. Face reversal does not change area mass.
+- SubDs integrate the prepared Local G1x NURBS patches in both flat and smooth
+  appearance. Regular patches are exact; extraordinary neighborhoods retain the
+  existing conversion approximation. See [native controls](../oracle/subd-area.md).
 - Mesh faces contribute triangle areas and their centroids. Unused vertices
   contribute nothing. An allocation-free exact-product accumulator handles the
   ordinary mesh hot loop; exceptional coordinate/area ranges use rational edges.

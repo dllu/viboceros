@@ -730,7 +730,9 @@ pub enum CommandError {
     #[error("Length supports selected curves and surface, mesh, or SubD edges")]
     UnsupportedLengthGeometry,
 
-    #[error("Area supports selected closed planar curves, NURBS surfaces, B-reps, and meshes only")]
+    #[error(
+        "Area supports selected closed planar curves, NURBS surfaces, B-reps, meshes, and SubDs"
+    )]
     UnsupportedAreaGeometry,
 
     #[error("Volume supports selected meshes, NURBS surfaces, and exact B-reps only")]

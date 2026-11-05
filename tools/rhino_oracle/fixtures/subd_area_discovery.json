@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_area",
+      "id": "grid_0",
+      "scene": "grid",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "grid_1",
+      "scene": "grid",
+      "flat": true
+    },
+    {
+      "op": "subd_area",
+      "id": "bent_grid_0",
+      "scene": "bent_grid",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "bent_grid_1",
+      "scene": "bent_grid",
+      "flat": true
+    },
+    {
+      "op": "subd_area",
+      "id": "creased_grid_0",
+      "scene": "creased_grid",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "creased_grid_1",
+      "scene": "creased_grid",
+      "flat": true
+    },
+    {
+      "op": "subd_area",
+      "id": "fan5_0",
+      "scene": "fan5",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "fan5_1",
+      "scene": "fan5",
+      "flat": true
+    },
+    {
+      "op": "subd_area",
+      "id": "raised_fan_0",
+      "scene": "raised_fan",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "raised_fan_1",
+      "scene": "raised_fan",
+      "flat": true
+    },
+    {
+      "op": "subd_area",
+      "id": "cube_0",
+      "scene": "cube",
+      "flat": false
+    },
+    {
+      "op": "subd_area",
+      "id": "cube_1",
+      "scene": "cube",
+      "flat": true
+    }
+  ]
+}

@@ -3,8 +3,7 @@ use serde_json::{Value, json};
 use viboceros_command::{ComponentPick, ComponentSelectionKind as Kind, chain_selection::Target};
 #[path = "../../../crates/viboceros-oracle/tests/support/component_length.rs"]
 mod native;
-#[path = "../../../crates/viboceros-oracle/tests/support/observation.rs"]
-mod observation;
+use super::oracle_observation as observation;
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

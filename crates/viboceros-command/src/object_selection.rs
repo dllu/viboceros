@@ -105,7 +105,10 @@ impl ObjectSelectionFilter {
             Self::Area => {
                 matches!(
                     geometry,
-                    Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    Geometry::NurbsSurface(_)
+                        | Geometry::Brep(_)
+                        | Geometry::Mesh(_)
+                        | Geometry::SubD(_)
                 ) || geometry
                     .curve_ref()
                     .is_some_and(|curve| curve.is_closed().unwrap_or(false))

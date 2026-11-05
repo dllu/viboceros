@@ -39,6 +39,7 @@ impl Command for AreaCentroidCommand {
                 }
                 Geometry::Brep(brep) => brep.area_mass_properties(document.tolerance())?,
                 Geometry::Mesh(mesh) => mesh.area_mass_properties()?,
+                Geometry::SubD(subd) => subd.area_mass_properties(document.tolerance())?,
                 geometry => {
                     let Some(curve) = geometry.curve_ref() else {
                         continue;

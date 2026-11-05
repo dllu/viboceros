@@ -189,7 +189,9 @@ total can still yield a finite converted area. Unrepresentable display results
 are rejected. The report appends the target unit with a `²` suffix. Rhino
 documents Area's [Units option](https://docs.mcneel.com/rhino/8/help/en-us/commands/area.htm)
 for postselection; typed options with a preselected object are a native
-scripting convenience. Hatch, extrusion, and SubD inputs remain pending.
+scripting convenience. SubD areas use the prepared Local G1x NURBS representation
+in both smooth and flat appearance. See [SubD area comparisons](../oracle/subd-area.md).
+Hatch and typed extrusion inputs remain pending.
 
 Totals use round-trip decimal digits, rather than a fixed twelve decimal places.
 Nonzero magnitudes below `1e-6` or at least `1e12` use scientific notation; zero
@@ -201,7 +203,7 @@ tolerances.
 | Command | Supported geometry |
 | --- | --- |
 | Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, polycurves, and surface/mesh/SubD edges |
-| Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, and meshes |
+| Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, meshes, and SubDs |
 | [Volume](volume.md) | Meshes, NURBS surfaces and B-reps; open collections require confirmation |
 
 NURBS/B-rep measurements use the geometry kernel's accuracy-controlled routines,

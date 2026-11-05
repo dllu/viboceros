@@ -144,6 +144,8 @@ mod nurbs_subd_selection;
 mod object_selection;
 #[cfg(feature = "native-smlib")]
 mod offset_surface;
+#[path = "../../../crates/viboceros-oracle/tests/support/observation.rs"]
+mod oracle_observation;
 mod orient_curve;
 mod orient_curve_edge;
 mod orient_curve_subcurve;
@@ -168,6 +170,7 @@ mod polyline_on_mesh;
 mod primitive_input;
 mod round_primitive_input;
 mod selection_sidebar;
+mod subd_area;
 mod subd_join;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]

@@ -32,6 +32,7 @@ For current command support, use the [command reference](../commands/README.md).
 - [Face loops and mixed component preselection](face-loops.md)
 - [Connected curves and surface-edge chains](curve-chains.md)
 - [Mesh, SubD and surface-edge lengths](component-lengths.md)
+- [SubD area and area centroids](subd-area.md)
 - [Construction planes](construction-planes.md): frame and option captures.
 - [Cameras and views](cameras.md): SetView, named views, Plan and Zoom.
 - [Clipping and visibility](visibility.md): depth planes, selection and snapping.
