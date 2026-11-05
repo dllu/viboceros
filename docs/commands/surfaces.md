@@ -216,16 +216,11 @@ records the signed-interval and cap behavior.
 `Output=SubD` creates an uncapped editable SubD; see [profile fitting, interactive
 output switching and qualification](extrude-crv-subd.md).
 
-`ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
-curves to one apex. Its U direction runs from the profile to the apex while V
-preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
-form. Enter it without an apex to pick one in the viewport. Inputs are retained
-by default; `DeleteInput=Yes` removes them. `Solid=Yes` turns each closed planar
-profile into an exact closed B-rep with a singular-apex ruled wall, planar
-trimmed cap, shared rational rim, and one twice-used wall seam; open and
-nonplanar profiles remain surfaces. `Output=Surface` and `Solid=No` are accepted
-explicitly. `Output=SubD` adds fitted SubDs and Rhino-compatible degree-one
-B-rep fallback; see [apex fitting, output switching and qualification](extrude-crv-to-point-subd.md).
+`ExtrudeCrvToPoint` tapers selected curves to an apex. It supports exact NURBS
+sheets, capped planar profiles, independent tangent/crease splitting, and fitted
+SubDs. Start without an apex to pick it in the viewport. Inputs are retained
+unless `DeleteInput=Yes`. See [surface splitting and caps](extrude-crv-to-point.md)
+and [SubD fitting and output switching](extrude-crv-to-point-subd.md).
 
 `ExtrudeCrvAlongCrv` creates exact fixed-orientation sum surfaces from selected
 profiles and a path named with `PathName=`, or selected last. `SplitAtTangents`

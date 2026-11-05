@@ -1,0 +1,1831 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "apex_splitting",
+      "id": "smooth_00",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "smooth_01",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "smooth_10",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "smooth_11",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "tangent_00",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "tangent_01",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "tangent_10",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "tangent_11",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "corner_00",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "corner_01",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "corner_10",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "corner_11",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "polyline_00",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "polyline_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "polyline_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "polyline_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "rational_00",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "rational_01",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "rational_10",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "rational_11",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_00",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_solid_00",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_solid_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_solid_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false
+    },
+    {
+      "op": "apex_splitting",
+      "id": "closed_solid_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "apex": [
+        0.0,
+        3.0,
+        2.0
+      ],
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true
+    }
+  ]
+}

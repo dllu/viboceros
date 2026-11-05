@@ -1,0 +1,326 @@
+{
+  "default": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "extrude_curve_to_point"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-command-unit.log.gz"
+    },
+    {
+      "label": "options",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "apex_split_options"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-options.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-command-policy.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "apex_splitting",
+        "--test",
+        "apex_splitting_archive",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive",
+        "--test",
+        "revolve_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "apex_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-app.log.gz"
+    },
+    {
+      "label": "app-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-app-subd.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-point-input.log.gz"
+    },
+    {
+      "label": "final-apex",
+      "command": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "viboceros-oracle",
+          "--test",
+          "apex_splitting",
+          "--test",
+          "apex_splitting_archive"
+        ],
+        [
+          "cargo",
+          "test",
+          "-p",
+          "viboceros",
+          "apex_splitting"
+        ]
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/default-final-apex.log.gz"
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "extrude_curve_to_point"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-command-unit.log.gz"
+    },
+    {
+      "label": "options",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "apex_split_options"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-options.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-command-policy.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "apex_splitting",
+        "--test",
+        "apex_splitting_archive",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive",
+        "--test",
+        "revolve_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "apex_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-app.log.gz"
+    },
+    {
+      "label": "app-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-app-subd.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/native-point-input.log.gz"
+    }
+  ],
+  "quality": [
+    {
+      "label": "kernel-face-split",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::face_split"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/kernel-face-split.log.gz"
+    },
+    {
+      "label": "support-frames",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve::orientation"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/support-frames.log.gz"
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/clippy-default.log.gz"
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/clippy-all-features.log.gz"
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/fmt.log.gz"
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_apex_splitting",
+        "tools.rhino_oracle.test_extrude_apex_subd",
+        "tools.rhino_oracle.test_extrude_curve_subd",
+        "tools.rhino_oracle.test_revolve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/apex-splitting-proof/python.log.gz"
+    }
+  ]
+}

@@ -94,6 +94,7 @@ mod audit;
 pub use audit::{
     OperationFailure, OperationOutcome, ProbeAuditResponse, run_audit_files, run_request_audit,
 };
+pub mod apex_splitting;
 mod border;
 mod bounding_box;
 mod brep_join;
@@ -363,6 +364,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ApexSplitting {
+        id: String,
+        #[serde(flatten)]
+        fixture: apex_splitting::Fixture,
+    },
     ExtrudeApexSubd {
         id: String,
         #[serde(flatten)]
@@ -2971,6 +2977,7 @@ impl Operation {
             | Self::RevolveSubd { id, .. }
             | Self::ExtrudeCurveSubd { id, .. }
             | Self::ExtrudeApexSubd { id, .. }
+            | Self::ApexSplitting { id, .. }
             | Self::RevolveSubdProfile { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
@@ -3532,6 +3539,9 @@ fn execute(
         }
         Operation::RevolveDeformable { fixture, .. } => {
             revolve_deformable::run(fixture, iterations, tolerance)?
+        }
+        Operation::ApexSplitting { fixture, .. } => {
+            apex_splitting::run(fixture, iterations, tolerance)?
         }
         Operation::ExtrudeApexSubd { fixture, .. } => {
             extrude_apex_subd::run(fixture, iterations, tolerance)?

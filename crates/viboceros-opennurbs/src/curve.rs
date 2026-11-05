@@ -308,3 +308,6 @@ mod tests {
         assert!(curve_plane_normal(1, &zero_weight, &[0., 0., 1., 1.], 1e-6).is_err());
     }
 }
+
+mod plane;
+pub use plane::curve_plane_frame;

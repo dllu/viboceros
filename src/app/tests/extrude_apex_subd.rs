@@ -114,7 +114,7 @@ fn extrude_apex_subd_option_edits_and_cancel_preserve_model_selection_and_redo()
         options.output,
         viboceros_command::CurveExtrusionOutput::SubD
     );
-    assert!(options.solid);
+    assert!(!options.solid);
     app.cancel_current_prompt_or_selection();
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
     assert_eq!(

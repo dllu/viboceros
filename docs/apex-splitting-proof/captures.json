@@ -1,0 +1,26 @@
+{
+  "apex_splitting_pilot": {
+    "results": 28,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "48ef21f3baf1af4e24ffc43d068552676d50ffe02d1b61ea05c20450fc06e90b",
+    "gzip_sha256": "0a4a39dd19017a3bd586090b326cb17f384697cb81504fa8bf55979d5d3a8899",
+    "raw_bytes": 3961877,
+    "gzip_bytes": 115729
+  },
+  "apex_splitting_holdouts": {
+    "results": 43,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "3d7585a2068e7b1c6fe00befcdbb3182883870aeba6f1eec4ca8c9daa5189b05",
+    "gzip_sha256": "e56e4f3a579c6c327e4886cc6387af043923daee8ae188bbab0bfd76846b40d1",
+    "raw_bytes": 4895236,
+    "gzip_bytes": 147732
+  },
+  "apex_splitting_planes": {
+    "results": 3,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "bd2e43d9bedafc7a61758d159112786142e44cddeb5d926b1c56f44d77d72aae",
+    "gzip_sha256": "10f37ccba4351b72555a4b764a3818bba79b08aa4df10bc1fa088179442b8758",
+    "raw_bytes": 9644,
+    "gzip_bytes": 1314
+  }
+}

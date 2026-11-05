@@ -591,7 +591,11 @@ fn extrude_curve_to_point_solid_caps_closed_planar_profiles() {
             < 0.01
     );
     assert!(matches!(outputs[2].geometry(), Geometry::NurbsSurface(_)));
-    assert!(matches!(outputs[3].geometry(), Geometry::NurbsSurface(_)));
+    let Geometry::Brep(nonplanar) = outputs[3].geometry() else {
+        panic!("kinked nonplanar sheet must be partitioned")
+    };
+    assert_eq!(nonplanar.faces().len(), 4);
+    assert!(!nonplanar.is_solid());
     assert!(source_ids.iter().all(|id| document.is_selected(*id)));
     assert_eq!(document.undo_label(), Some("ExtrudeCrvToPoint"));
 

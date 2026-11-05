@@ -146,10 +146,15 @@ fn roots_in_span(
         // Direct inversion avoids rounding a linear crossing to the wrong
         // side after 64 bisections. This is only a proposal: the caller still
         // requires exact UV evaluation and every partition certificate.
-        let scale = coefficients[0].abs().max(coefficients[1].abs());
-        let a = coefficients[0] / scale;
-        let b = coefficients[1] / scale;
-        let fraction = a / (a - b);
+        let [a, b] = [coefficients[0], coefficients[1]];
+        let difference = a - b;
+        let fraction = if difference.is_finite() {
+            a / difference
+        } else {
+            let scale = a.abs().max(b.abs());
+            let [a, b] = [a / scale, b / scale];
+            a / (a - b)
+        };
         if fraction > 0. && fraction < 1. {
             roots.push(parameter[0] * (1. - fraction) + parameter[1] * fraction);
             return Ok(());

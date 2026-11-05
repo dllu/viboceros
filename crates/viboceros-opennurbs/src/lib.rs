@@ -6,8 +6,8 @@ mod curve;
 pub use curve::{
     ArcDefinition, CurveContinuity, CurveParametricContinuity, CurveQueryError, arc_through_points,
     curvature_vectors_g2, curve_continuity_breaks, curve_continuity_breaks_with_curvature,
-    curve_discontinuities, curve_parametric_continuity_breaks, curve_plane_normal, curve_speeds,
-    curve_tangents, transform_analytic_circle,
+    curve_discontinuities, curve_parametric_continuity_breaks, curve_plane_frame,
+    curve_plane_normal, curve_speeds, curve_tangents, transform_analytic_circle,
 };
 
 pub use curve::{

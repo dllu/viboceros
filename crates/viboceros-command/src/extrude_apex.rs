@@ -2,12 +2,12 @@
 use super::*;
 mod options;
 mod subd;
+mod surface;
 pub use options::Options;
 #[cfg(feature = "native-smlib")]
 mod native;
 
-const EXTRUDE_CURVE_TO_POINT_USAGE: &str =
-    "ExtrudeCrvToPoint apex [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No]";
+const EXTRUDE_CURVE_TO_POINT_USAGE: &str = "ExtrudeCrvToPoint apex [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No] [SplitAtTangents=Yes|No]";
 
 pub(super) struct ExtrudeCurveToPointCommand(pub crease_splitting::Preference);
 
@@ -19,11 +19,7 @@ impl Command for ExtrudeCurveToPointCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
         let (apex, options) = options::parse(arguments)?;
-        let Options {
-            delete_input,
-            solid,
-            ..
-        } = options;
+        let Options { delete_input, .. } = options;
         let mut extrusions = Vec::new();
         for id in selected {
             let Some(curve) = document
@@ -41,19 +37,8 @@ impl Command for ExtrudeCurveToPointCommand {
                 ));
                 continue;
             }
-            #[cfg(not(feature = "native-smlib"))]
             let geometry =
-                if solid && curve.is_closed()? && curve.is_planar(document.tolerance())? {
-                    Geometry::Brep(Brep::try_extruded_curve_to_point(
-                        &curve,
-                        apex,
-                        document.tolerance(),
-                    )?)
-                } else {
-                    Geometry::NurbsSurface(NurbsSurface::try_extruded_curve_to_point(&curve, apex)?)
-                };
-            #[cfg(feature = "native-smlib")]
-            let geometry = native::extrude(&curve, apex, solid, document.tolerance())?;
+                surface::extrude(&curve, apex, options, self.0.get().0, document.tolerance())?;
             extrusions.push((id, geometry));
         }
         if extrusions.is_empty() {
@@ -63,7 +48,7 @@ impl Command for ExtrudeCurveToPointCommand {
         let output_count = extrusions.len();
         let solid_count = extrusions
             .iter()
-            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(_)))
+            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(b) if b.is_solid()))
             .count();
         for (_, geometry) in &extrusions {
             document.add_geometry(geometry.clone())?;
@@ -74,9 +59,14 @@ impl Command for ExtrudeCurveToPointCommand {
             }
         }
         if options.output == CurveExtrusionOutput::SubD {
+            let fallback_count = extrusions
+                .iter()
+                .filter(|(_, g)| matches!(g, Geometry::Brep(_)))
+                .count();
             return Ok(format!(
-                "Extruded {output_count} curve object(s) to {} SubD(s) and {solid_count} fallback B-rep(s){}",
-                output_count - solid_count,
+                "Extruded {output_count} curve object(s) to {} SubD(s) and {} fallback B-rep(s){}",
+                output_count - fallback_count,
+                fallback_count,
                 if delete_input {
                     ", deleting the input curves"
                 } else {

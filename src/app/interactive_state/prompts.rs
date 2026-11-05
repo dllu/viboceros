@@ -932,7 +932,7 @@ impl InteractiveCommand {
                 "ExtrudeCrvToPoint: pick the apex (Output=SubD, DeleteInput; Esc cancels)"
             }
             Self::ExtrudeCurveToPoint { .. } => {
-                "ExtrudeCrvToPoint: pick the apex (Output, Solid, DeleteInput; Esc cancels)"
+                "ExtrudeCrvToPoint: pick the apex (Output, Solid, DeleteInput, SplitAtTangents; Esc cancels)"
             }
             Self::Revolve {
                 axis_start: None,

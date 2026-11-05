@@ -5,6 +5,7 @@ use crate::SurfaceKnotDirection;
 
 #[cfg(test)]
 mod apex_tests;
+mod continuity;
 mod curves;
 mod rings;
 mod singular;

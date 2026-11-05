@@ -11,7 +11,7 @@ open ends, periodic closed seams, and retained crease stations. An adjacent ring
 supports the apex pole. Quadratic and higher noncubic linear profiles retain
 their stations near a pole; natural cubic pieces can omit endpoint handles.
 The fitted profile can differ from the input. The default `Output=Surface`
-retains the [exact apex extrusion](surfaces.md).
+retains the [exact apex extrusion](extrude-crv-to-point.md).
 
 Matching Rhino's public factory, degree-one profiles produce an exact uncapped
 B-rep instead. Global `CreaseSplitting` controls whether its kinks become shared
@@ -21,9 +21,11 @@ crossings use direct root proposals followed by the same exact partition checks.
 
 `Solid` applies to Surface output. Switching to SubD leaves the base open, even
 when Solid was enabled. This also applies to the degree-one B-rep fallback.
+Switching to SubD sets `Solid` and `SplitAtTangents` to No; switching back
+retains No until explicitly changed.
 
 Start without an apex to pick it in the viewport. `Output=Surface|SubD`,
-`DeleteInput`, and the stored Solid option remain editable until the pick.
+`DeleteInput`, and the Surface Solid option remain editable until the pick.
 Invalid option groups leave the getter unchanged; Escape preserves the model
 and pending Redo. Options reset for each invocation. Outputs use fresh attributes
 on the current layer, remain unselected and ungrouped, and share one undo step

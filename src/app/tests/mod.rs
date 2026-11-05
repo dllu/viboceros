@@ -2,6 +2,7 @@ mod affine_preview;
 mod align;
 mod analysis_mesh;
 mod angle;
+mod apex_splitting;
 mod apply_curves;
 mod arc_deform;
 mod arc_extension;
@@ -502,3 +503,6 @@ mod subd_face_comparison;
 
 #[path = "../../../crates/viboceros-oracle/tests/support/extrude_apex_subd.rs"]
 mod subd_apex_comparison;
+
+#[path = "../../../crates/viboceros-oracle/tests/support/apex_splitting.rs"]
+mod apex_splitting_comparison;
