@@ -1,0 +1,4348 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_000",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_001",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_010",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_011",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_100",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_101",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_110",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "circle_solid_111",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              -2.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_000",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_001",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_010",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_011",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_100",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_101",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_110",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "periodic_solid_111",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -2.0,
+          -2.0,
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          7.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_000",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_001",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_010",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_011",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_100",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_101",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_110",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_reverse_111",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        -3.0,
+        2.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_0_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0016,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_0_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0016,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_0_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0016,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_1_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0018,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_1_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0018,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_1_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0018,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_2_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0157,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_2_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0157,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_2_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0157,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_3_01",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0192,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_3_10",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0192,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "small_3_11",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0192,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_domain_00",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          100.0,
+          100.0,
+          100.0,
+          101.6,
+          102.8,
+          104.0,
+          104.0,
+          104.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "cubic_c1_00",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_domain_01",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          100.0,
+          100.0,
+          100.0,
+          101.6,
+          102.8,
+          104.0,
+          104.0,
+          104.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "cubic_c1_01",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_domain_10",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          100.0,
+          100.0,
+          100.0,
+          101.6,
+          102.8,
+          104.0,
+          104.0,
+          104.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "cubic_c1_10",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_domain_11",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          100.0,
+          100.0,
+          100.0,
+          101.6,
+          102.8,
+          104.0,
+          104.0,
+          104.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "cubic_c1_11",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": false,
+      "delete_input": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "use_extrusions": false
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "smooth_oblique_typed_0",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "smooth_oblique_typed_1",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "tangent_oblique_typed_0",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "tangent_oblique_typed_1",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "corner_oblique_typed_0",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "corner_oblique_typed_1",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.5,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "polyline_oblique_typed_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "polyline_oblique_typed_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_oblique_typed_0",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "rational_oblique_typed_1",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.4,
+          0.7,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              4.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": false,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_oblique_typed_0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_oblique_typed_1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        1.0,
+        3.0,
+        2.0
+      ],
+      "both_sides": false,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": true,
+      "split_at_tangents": null,
+      "use_extrusions": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "tangent_mode",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.5,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.25,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.5,
+              0.0,
+              5.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false,
+      "seed_subd": true
+    },
+    {
+      "op": "extrusion_splitting",
+      "id": "closed_mode",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "direction": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "solid": true,
+      "delete_input": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "use_extrusions": false,
+      "seed_subd": true
+    }
+  ]
+}

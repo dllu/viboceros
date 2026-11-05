@@ -506,3 +506,10 @@ mod subd_apex_comparison;
 
 #[path = "../../../crates/viboceros-oracle/tests/support/apex_splitting.rs"]
 mod apex_splitting_comparison;
+
+#[path = "../../../crates/viboceros-oracle/tests/support/apex_splitting/cap_chart.rs"]
+mod cap_charts;
+
+mod extrusion_splitting;
+#[path = "../../../crates/viboceros-oracle/tests/support/extrusion_splitting.rs"]
+mod extrusion_splitting_comparison;

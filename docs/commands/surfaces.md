@@ -194,27 +194,10 @@ major radius (or point on the major circle), and minor radius. `Axis=` orients
 the torus; the major radius must exceed the positive minor radius. Its U and V
 domains are the major- and minor-circle circumferences, matching OpenNURBS.
 
-`ExtrudeCrv` creates typed extrusions for perpendicular planar sweeps of
-selected analytic, polyline and NURBS curves, with explicit B-reps for other
-supported sweeps. A numeric distance uses the common normal of parallel
-planar profiles, oriented with its largest world-axis component positive.
-Incompatible or nonplanar profiles and a single line use the active CPlane Z.
-Parallel offset lines use their containing plane. Two points define
-an arbitrary direction; entering it without either starts the two-pick viewport
-workflow. `BothSides=Yes` sweeps equally in both directions and
-`DeleteInput=Yes` removes profiles that produced geometry. Lines parallel to the
-extrusion direction are skipped. Matching Rhino, outputs are unselected,
-ungrouped objects with fresh attributes on the current layer. `Solid=Yes`
-turns each closed planar profile into an exact closed B-rep with a ruled wall,
-two planar trimmed caps, shared rational rim curves, and one shared wall seam;
-open profiles remain open, and nonplanar profiles retain explicit B-reps.
-See [numeric directions and qualification](../smlib-extrusion-direction.md).
-Profile parameters are retained, including native polyline vertex intervals;
-extrusion does not assign a new chord-length parameterization. Closed profiles
-may reverse with the path; [typed creator qualification](../creator-extrusions.md)
-records the signed-interval and cap behavior.
-`Output=SubD` creates an uncapped editable SubD; see [profile fitting, interactive
-output switching and qualification](extrude-crv-subd.md).
+`ExtrudeCrv` sweeps selected curves by a distance or two direction points.
+It supports exact capped solids, typed extrusion storage, independent tangent
+and crease splitting, and fitted SubD output. See [straight extrusion options,
+interactive direction picking and qualification](extrude-crv.md).
 
 `ExtrudeCrvToPoint` tapers selected curves to an apex. It supports exact NURBS
 sheets, capped planar profiles, independent tangent/crease splitting, and fitted

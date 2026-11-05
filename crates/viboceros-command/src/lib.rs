@@ -204,7 +204,7 @@ use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
 mod extrude_mesh;
 use extrude_curve::ExtrudeCurveCommand;
-pub use extrude_curve::Output as CurveExtrusionOutput;
+pub use extrude_curve::{Options as CurveExtrusionOptions, Output as CurveExtrusionOutput};
 mod geometric_continuity;
 pub mod insert_control_point;
 pub mod insert_edit_point;
@@ -981,6 +981,7 @@ pub struct CommandRegistry {
     chain_options:
         std::sync::Arc<remembered::Remembered<Option<viboceros_geometry::CurveChainOptions>>>,
     crease_splitting: crease_splitting::Preference,
+    curve_extrusion_split: extrude_curve::SplitPreference,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -1021,6 +1022,15 @@ impl CommandRegistry {
     /// Application output mode, shared across documents using this registry.
     pub fn use_extrusions(&self) -> bool {
         self.use_extrusions.get().0
+    }
+
+    pub fn curve_extrusion_split_at_tangents(&self) -> bool {
+        self.curve_extrusion_split.get().0
+    }
+    /// Remember the getter option independently of geometry Undo/Redo.
+    pub fn set_curve_extrusion_split_at_tangents(&self, enabled: bool) {
+        self.curve_extrusion_split
+            .set(extrude_curve::SplitSetting(enabled));
     }
 
     /// Current application policy; independent registries retain independent settings.
@@ -1442,7 +1452,11 @@ impl CommandRegistry {
             .register(TorusCommand)
             .expect("unique built-in command");
         registry
-            .register(ExtrudeCurveCommand(registry.use_extrusions.clone()))
+            .register(ExtrudeCurveCommand {
+                extrusions: registry.use_extrusions.clone(),
+                crease: registry.crease_splitting.clone(),
+                split: registry.curve_extrusion_split.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(extrude_tapered::ExtrudeTaperedCommand)

@@ -159,7 +159,24 @@ impl Brep {
         }
         let profile = curve.transformed(AffineTransform3::from_translation(start))?;
         let origin = profile.evaluate(*profile.domain().start())?;
-        let frame = Frame3::try_from_unit_normal(origin, normal)?;
+        // Keep the profile plane's up direction when orienting the path.
+        // Reversing the path flips X while retaining Y, as in the public
+        // extrusion factory's SetPathAndUp construction.
+        let support = if curve.is_linear(tolerance)? {
+            None
+        } else {
+            crate::CurveRef::NurbsCurve(&profile).supporting_plane_frame(tolerance)?
+        };
+        let frame = if let Some(support) = support {
+            let x = support
+                .y_axis()
+                .as_vector()
+                .cross(normal.as_vector())?
+                .normalized_nonzero()?;
+            Frame3::try_from_unit_x_and_normal(origin, x, normal, tolerance)?
+        } else {
+            Frame3::try_from_unit_normal(origin, normal)?
+        };
         Ok(Some(Self::profile_extrusion(
             &profile,
             frame,

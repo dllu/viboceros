@@ -39,8 +39,30 @@ inline std::unique_ptr<ON_NurbsCurve> project_cap_curve(
     }
     double s=0.,t=0.;
     if(!plane.m_plane.ClosestPointTo(target,&s,&t)) return {};
-    const double u=plane.Domain(0).ParameterAt(plane.Extents(0).NormalizedParameterAt(s));
-    const double v=plane.Domain(1).ParameterAt(plane.Extents(1).NormalizedParameterAt(t));
+    double u=plane.Domain(0).ParameterAt(plane.Extents(0).NormalizedParameterAt(s));
+    double v=plane.Domain(1).ParameterAt(plane.Extents(1).NormalizedParameterAt(t));
+    // Retain an attained boundary isocurve when inverse projection rounds
+    // different controls to neighboring values. Stale flags cannot authorize
+    // a repair: the same whole-curve spatial bound must still pass.
+    switch(trim.m_iso) {
+      case ON_Surface::W_iso:u=plane.Domain(0)[0];break;
+      case ON_Surface::E_iso:u=plane.Domain(0)[1];break;
+      case ON_Surface::S_iso:v=plane.Domain(1)[0];break;
+      case ON_Surface::N_iso:v=plane.Domain(1)[1];break;
+      default:break;
+    }
+    // An inverse plane projection can round an attained boundary just outside
+    // its domain. Propose the domain endpoint only for a rounding-sized spatial
+    // displacement. The complete positive-basis control bound below still
+    // certifies this derived UV replacement; model edges/surfaces never change.
+    const double cu=std::clamp(u,plane.Domain(0)[0],plane.Domain(0)[1]);
+    const double cv=std::clamp(v,plane.Domain(1)[0],plane.Domain(1)[1]);
+    if(cu!=u || cv!=v) {
+      const auto a=plane.PointAt(u,v),b=plane.PointAt(cu,cv);
+      const double gap=std::hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+      if(!std::isfinite(gap) || gap>64.*std::numeric_limits<double>::epsilon()*scale) return {};
+      u=cu;v=cv;
+    }
     if(!std::isfinite(u) || !std::isfinite(v) ||
        !curve->SetCV(i,ON_4dPoint(u*w,v*w,0.,w))) return {};
     ON_3dPoint uv;if(!curve->GetCV(i,uv)) return {};

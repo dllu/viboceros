@@ -35,6 +35,7 @@ pub use boolean::{
 mod cap;
 mod combine;
 mod command_apex;
+mod command_linear;
 mod components;
 mod curved_boundaries;
 mod edge_representation;

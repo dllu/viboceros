@@ -1,0 +1,72 @@
+{
+  "scope": "ExtrudeCrv explicit Surface tangent and crease splitting, profile-first capped construction and native rational cap normalization, typed support frames, remembered split choices and atomic interactive direction editing.",
+  "baseline_revision": "8d02baa77897923a2da2e4e8974b31b6d2b1975b",
+  "passed": {
+    "new_native_command_workflows": 163,
+    "app_fixture_replays_per_build": 163,
+    "new_3dm_roundtrips_per_build": 163,
+    "test_counts": {
+      "default": {
+        "command-unit": 10,
+        "command-policy": 7,
+        "oracle": 13,
+        "app": 2,
+        "app-straight-subd": 2,
+        "app-apex": 2,
+        "app-apex-subd": 2,
+        "point-input": 5,
+        "geometry-caps": 1,
+        "geometry-linear": 2,
+        "live-oracle": 1
+      },
+      "native": {
+        "command-unit": 12,
+        "command-policy": 7,
+        "oracle": 13,
+        "app": 2,
+        "app-straight-subd": 2,
+        "app-apex": 2,
+        "app-apex-subd": 2,
+        "point-input": 5,
+        "geometry-caps": 1,
+        "geometry-linear": 2,
+        "live-oracle": 1,
+        "creators-report": 1
+      }
+    }
+  },
+  "comparisons": {
+    "absolute_epsilon": 1e-12,
+    "geometry": "Complete used NURBS surfaces, spatial edges, UV trims, knots, weights, tolerances, face senses and oriented incidence",
+    "history": [
+      "before",
+      "after",
+      "undo",
+      "redo"
+    ],
+    "correspondence": [
+      "B-rep vertex and edge numbering, preserving native face order",
+      "Two unused full-vector padding knots omitted by OpenNURBS/3DM",
+      "Equivalent orientation-preserving cap-axis exchanges, preserving the complete rectangular model-space support and mapping every rational trim control",
+      "Unused native surface-table slots excluded; every used face definition retained"
+    ]
+  },
+  "headless": {
+    "native_captures": "Private Xvfb/i3 and private runtime directory via tools/rhino_oracle/run_headless.sh, Wayland/compositor sockets unset, only owned Rhino closed",
+    "application_tests": "test_app state without DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK or I3SOCK; no GUI event loop"
+  },
+  "limits": [
+    "G1/G2 angular admission is sampled, without a continuous maximum-angle certificate",
+    "Local cap coordinate axes may differ from Rhino",
+    "Split memory between successful commands and cancelled edits has native evidence; its independence from geometry Undo/Redo is locally regression-tested",
+    "Other flags reset each invocation",
+    "ToBoundary unsupported",
+    "Shared refinement and exact-partition resource limits apply",
+    "Comparative performance unqualified"
+  ],
+  "evidence": {
+    "captures": "extrusion-splitting-proof/captures.json",
+    "runs": "extrusion-splitting-proof/runs.json",
+    "sha256": "extrusion-splitting-proof/sha256.json"
+  }
+}

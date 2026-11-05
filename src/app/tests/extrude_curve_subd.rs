@@ -111,16 +111,18 @@ fn extrude_curve_subd_option_edits_and_cancel_preserve_model_selection_and_redo(
     enter(&mut app, "Output=Surface Solid=Yes");
     enter(&mut app, "_Output=_SubD");
     let Some(InteractiveCommand::ExtrudeCurve {
-        output,
-        solid,
+        options,
         base: Some(_),
         ..
     }) = app.active_command
     else {
         panic!("extrusion getter required")
     };
-    assert_eq!(output, viboceros_command::CurveExtrusionOutput::SubD);
-    assert!(solid);
+    assert_eq!(
+        options.output,
+        viboceros_command::CurveExtrusionOutput::SubD
+    );
+    assert!(!options.solid);
     app.cancel_current_prompt_or_selection();
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
     assert_eq!(

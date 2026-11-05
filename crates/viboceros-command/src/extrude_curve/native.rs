@@ -1,40 +1,5 @@
-//! Native producers own the geometric construction; command policy stays shared.
+//! Native command regressions for curve conditioning and transactional failure.
 use super::*;
-use viboceros_smlib::{KernelCurve, Shape};
-
-pub(super) fn extrude(
-    curve: &NurbsCurve,
-    profile: &KernelCurve,
-    start: Vector3,
-    end: Vector3,
-    solid: bool,
-    tolerance: Tolerance,
-) -> Result<Geometry, CommandError> {
-    let displacement = Vector3::try_new(
-        end.x() - start.x(),
-        end.y() - start.y(),
-        end.z() - start.z(),
-    )?;
-    let restore = AffineTransform3::from_translation(start);
-    if solid && curve.is_closed()? && curve.is_planar(tolerance)? {
-        let result = Shape::linear_sweep(&[profile], displacement, true, tolerance)?
-            .to_brep(tolerance)?
-            .transformed(restore, tolerance)?;
-        if !result.is_solid() {
-            return Err(viboceros_smlib::Error::Kernel(
-                "Native extrusion did not produce the requested closed solid".into(),
-            )
-            .into());
-        }
-        Ok(Geometry::Brep(result))
-    } else {
-        Ok(Geometry::NurbsSurface(
-            profile
-                .extruded_surface(displacement)?
-                .transformed(restore)?,
-        ))
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -58,37 +23,60 @@ mod tests {
             )
             .unwrap();
             let before = source.clone();
-            let start = Vector3::try_new(0., -3., -4.).unwrap();
-            let end = Vector3::try_new(0., 3., 4.).unwrap();
-            let Geometry::NurbsSurface(surface) = extrude(
-                &source,
-                &KernelCurve::from_nurbs_for_modeling(&source).unwrap(),
-                start,
-                end,
-                false,
-                Tolerance::DEFAULT,
-            )
-            .unwrap() else {
-                panic!("surface")
+            let mut document = Document::default();
+            let registry = CommandRegistry::with_builtins();
+            registry
+                .execute(&mut document, "UseExtrusions Polysurface")
+                .unwrap();
+            let source_id = document
+                .add_geometry(Geometry::NurbsCurve(source.clone()))
+                .unwrap();
+            document
+                .select_objects_direct([source_id], SelectionMode::Replace)
+                .unwrap();
+            registry
+                .execute(&mut document, "ExtrudeCrv 0,0,0 0,3,4 BothSides=Yes")
+                .unwrap();
+            let Geometry::Brep(result) = document
+                .objects()
+                .find(|o| o.id() != source_id)
+                .unwrap()
+                .geometry()
+            else {
+                panic!("explicit B-rep")
             };
-            assert_eq!(surface.domain_u(), source.domain());
-            assert_eq!(surface.domain_v(), 0. ..=10.);
-            for i in 0..=32 {
-                let u = source.parameter_at(i as f64 / 32.).unwrap();
-                for j in 0..=8 {
-                    let f = j as f64 / 8.;
-                    let offset = Vector3::try_new(0., -3. + 6. * f, -4. + 8. * f).unwrap();
-                    let expected = source.evaluate(u).unwrap().translated(offset).unwrap();
-                    assert!(
-                        surface
-                            .evaluate(u, 10. * f)
-                            .unwrap()
-                            .distance_to(expected)
-                            .unwrap()
-                            < 1e-12
-                    );
+            assert!(!result.is_extrusion());
+            assert_eq!(
+                document.object(source_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(before.clone())
+            );
+            let mut covered = 0.;
+            for face in result.faces() {
+                let surface = face.surface();
+                let interval = surface.domain_u();
+                assert!(*interval.start() >= *source.domain().start());
+                assert!(*interval.end() <= *source.domain().end());
+                covered += interval.end() - interval.start();
+                assert_eq!(surface.domain_v(), 0. ..=10.);
+                for i in 0..=32 {
+                    let u =
+                        *interval.start() + (interval.end() - interval.start()) * i as f64 / 32.;
+                    for j in 0..=8 {
+                        let f = j as f64 / 8.;
+                        let offset = Vector3::try_new(0., -3. + 6. * f, -4. + 8. * f).unwrap();
+                        let expected = source.evaluate(u).unwrap().translated(offset).unwrap();
+                        assert!(
+                            surface
+                                .evaluate(u, 10. * f)
+                                .unwrap()
+                                .distance_to(expected)
+                                .unwrap()
+                                < 1e-12
+                        );
+                    }
                 }
             }
+            assert_eq!(covered, source.domain().end() - source.domain().start());
             assert_eq!(source, before);
         }
     }

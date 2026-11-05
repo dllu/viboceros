@@ -1,0 +1,438 @@
+{
+  "default": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "extrude_curve"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-command-unit.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "extrusion_splitting",
+        "--test",
+        "extrusion",
+        "--test",
+        "creator_extrusions_native",
+        "--test",
+        "use_extrusions_native",
+        "--test",
+        "extrude_curve_subd",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-command-policy.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "extrusion_splitting_archive",
+        "--test",
+        "short_span_extrusions",
+        "--test",
+        "use_extrusions",
+        "--test",
+        "apex_splitting",
+        "--test",
+        "apex_splitting_archive",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrusion_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-app.log.gz"
+    },
+    {
+      "label": "app-straight-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrude_curve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-app-straight-subd.log.gz"
+    },
+    {
+      "label": "app-apex",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "apex_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-app-apex.log.gz"
+    },
+    {
+      "label": "app-apex-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-app-apex-subd.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-point-input.log.gz"
+    },
+    {
+      "label": "geometry-caps",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::extrusion::caps"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-geometry-caps.log.gz"
+    },
+    {
+      "label": "geometry-linear",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "command_linear"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-geometry-linear.log.gz"
+    },
+    {
+      "label": "live-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "extrusion_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/default-live-oracle.log.gz"
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "extrude_curve"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-command-unit.log.gz"
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrusion_splitting",
+        "--test",
+        "extrusion",
+        "--test",
+        "creator_extrusions_native",
+        "--test",
+        "use_extrusions_native",
+        "--test",
+        "extrude_curve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-command-policy.log.gz"
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrusion_splitting_archive",
+        "--test",
+        "short_span_extrusions",
+        "--test",
+        "use_extrusions",
+        "--test",
+        "apex_splitting",
+        "--test",
+        "apex_splitting_archive",
+        "--test",
+        "extrude_apex_subd",
+        "--test",
+        "extrude_apex_subd_archive",
+        "--test",
+        "extrude_curve_subd",
+        "--test",
+        "extrude_curve_subd_archive"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-oracle.log.gz"
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrusion_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-app.log.gz"
+    },
+    {
+      "label": "app-straight-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrude_curve_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-app-straight-subd.log.gz"
+    },
+    {
+      "label": "app-apex",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "apex_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-app-apex.log.gz"
+    },
+    {
+      "label": "app-apex-subd",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrude_apex_subd"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-app-apex-subd.log.gz"
+    },
+    {
+      "label": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "extrusion_input"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-point-input.log.gz"
+    },
+    {
+      "label": "geometry-caps",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::extrusion::caps"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-geometry-caps.log.gz"
+    },
+    {
+      "label": "geometry-linear",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "command_linear"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-geometry-linear.log.gz"
+    },
+    {
+      "label": "live-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "extrusion_splitting"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-live-oracle.log.gz"
+    },
+    {
+      "label": "creators-report",
+      "command": [
+        "target/debug/deps/creator_extrusions_native-aa46b2efd7d0b04a",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/native-creators-report.log.gz"
+    }
+  ],
+  "quality": [
+    {
+      "label": "kernel-face-split",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::face_split"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/kernel-face-split.log.gz"
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/clippy-default.log.gz"
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/clippy-all-features.log.gz"
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/fmt.log.gz"
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_extrusion_splitting",
+        "tools.rhino_oracle.test_apex_splitting",
+        "tools.rhino_oracle.test_extrude_curve_subd",
+        "tools.rhino_oracle.test_extrude_apex_subd",
+        "tools.rhino_oracle.test_creator_extrusions",
+        "tools.rhino_oracle.test_use_extrusions"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/python.log.gz"
+    },
+    {
+      "label": "cap-roundoff",
+      "command": [
+        "target/debug/build/viboceros-opennurbs-407f24dbd5511de2/out/build/viboceros_extrusion_roundoff_check"
+      ],
+      "exit_code": 0,
+      "log": "docs/extrusion-splitting-proof/cap-roundoff.log.gz"
+    }
+  ]
+}

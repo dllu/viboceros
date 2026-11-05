@@ -23,8 +23,10 @@ factories. General sweeps continue to use usd-brep/SMLib when enabled.
 
 Closed profiles reverse when the path direction requires it. Capped results
 retain the resulting signed profile interval; uncapped command results restore
-the original interval. The canonical B-rep supplies trimmed faces and solid
-operations. `Geometry::nurbs_surface_representation` provides an untrimmed
+the original interval. The path frame preserves the public source support plane's
+up direction, including when the path reverses. The canonical B-rep supplies
+trimmed faces and solid operations. The [straight extrusion qualification](extrusion-splitting-validation.json)
+adds full B-rep and cap-chart comparisons for rotated and reversed profiles. `Geometry::nurbs_surface_representation` provides an untrimmed
 surface view for read-only comparisons; extrusion caps and B-rep trims are
 excluded from that view.
 

@@ -2581,17 +2581,13 @@ impl VibocerosApp {
             }
             InteractiveCommand::ExtrudeCurve {
                 base: None,
-                both_sides,
-                delete_input,
-                solid,
-                output,
+                options,
+                split_available,
             } => {
                 let command = InteractiveCommand::ExtrudeCurve {
                     base: Some(point),
-                    both_sides,
-                    delete_input,
-                    solid,
-                    output,
+                    options,
+                    split_available,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Direction base: {}", format_model_point(point)));
@@ -2599,25 +2595,35 @@ impl VibocerosApp {
             }
             InteractiveCommand::ExtrudeCurve {
                 base: Some(base),
-                both_sides,
-                delete_input,
-                solid,
-                output,
+                options,
+                split_available,
             } => {
                 if base.is_near(point, self.document.tolerance()) {
-                    self.push_log("Error: extrusion direction points must differ".to_owned());
+                    self.push_log("Error: extrusion direction points must differ".into());
                     return false;
                 }
+                let saved_split = self.commands.curve_extrusion_split_at_tangents();
+                self.commands
+                    .set_curve_extrusion_split_at_tangents(options.split_at_tangents);
                 self.active_command = None;
-                self.execute_command(&format!(
-                    "ExtrudeCrv {} {} BothSides={} DeleteInput={} Solid={} Output={}",
+                let success = self.try_execute_command(&format!(
+                    "ExtrudeCrv {} {} {}",
                     format_model_point(base),
                     format_model_point(point),
-                    if both_sides { "Yes" } else { "No" },
-                    if delete_input { "Yes" } else { "No" },
-                    if solid { "Yes" } else { "No" },
-                    output.name()
+                    options.command_options(split_available)
                 ));
+                if !success {
+                    self.commands
+                        .set_curve_extrusion_split_at_tangents(saved_split);
+                    let command = InteractiveCommand::ExtrudeCurve {
+                        base: Some(base),
+                        options,
+                        split_available,
+                    };
+                    self.active_command = Some(command);
+                    self.push_log(command.prompt().into());
+                    return false;
+                }
             }
             InteractiveCommand::ExtrudeCurveTapered {
                 base: None,

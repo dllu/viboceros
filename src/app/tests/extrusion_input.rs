@@ -23,10 +23,11 @@ fn interactive_curve_extrusion_uses_two_direction_points_and_options() {
         app.active_command,
         Some(InteractiveCommand::ExtrudeCurve {
             base: None,
-            both_sides: true,
-            delete_input: false,
-            solid: false,
-            output: viboceros_command::CurveExtrusionOutput::Surface,
+            options: viboceros_command::CurveExtrusionOptions {
+                both_sides: true,
+                ..Default::default()
+            },
+            split_available: false,
         })
     );
     app.accept_drafting_point(point(0.0, 0.0, 0.0));
@@ -35,10 +36,11 @@ fn interactive_curve_extrusion_uses_two_direction_points_and_options() {
         app.active_command,
         Some(InteractiveCommand::ExtrudeCurve {
             base: Some(point(0.0, 0.0, 0.0)),
-            both_sides: true,
-            delete_input: false,
-            solid: false,
-            output: viboceros_command::CurveExtrusionOutput::Surface,
+            options: viboceros_command::CurveExtrusionOptions {
+                both_sides: true,
+                ..Default::default()
+            },
+            split_available: false,
         })
     );
     app.accept_drafting_point(point(0.0, 2.0, 0.0));

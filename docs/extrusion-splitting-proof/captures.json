@@ -1,0 +1,50 @@
+{
+  "extrusion_splitting_pilot": {
+    "results": 55,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "dd08e717875a099dabf19598b9c9d890eb65800ca2061812b76fc7c15e3c5444",
+    "gzip_sha256": "488a4a38b18f53fc7179085b3e99d4a7cdb0f5509b548c5f487226a5e9e0fb21",
+    "raw_bytes": 9348651,
+    "gzip_bytes": 267418
+  },
+  "extrusion_splitting_holdouts": {
+    "results": 58,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "42c9ff3458fceaad606f408a76e3aa15193adf6603c16e7b86bacef18cf96869",
+    "gzip_sha256": "8801c090be31f8785ae0344fcbef65fb90595b39fd663d2e6795fb5399e40aac",
+    "raw_bytes": 10102872,
+    "gzip_bytes": 298828
+  },
+  "extrusion_splitting_confirmations": {
+    "results": 10,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "a8bd65f04fa0635a351344ff7299a2bee5f7f93d319df8f8d715f5e0e6ab3cb6",
+    "gzip_sha256": "d8d07a6dac009a7c5b73fdb6554af0ee6f42439c001f97e4dfa209f0e356255e",
+    "raw_bytes": 1887177,
+    "gzip_bytes": 56465
+  },
+  "extrusion_splitting_cancellations": {
+    "results": 2,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "82e4454fbe8c730f0c3df4fec929089623445b48c6e42f0eecb42d909033cdd2",
+    "gzip_sha256": "7465952c711404a8e020e8c10be7552daf2bdcf80436fc6dbbaaee4e0b22c30e",
+    "raw_bytes": 308081,
+    "gzip_bytes": 12501
+  },
+  "extrusion_splitting_curved": {
+    "results": 22,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "16462adacb49db3944ab1f82a476cac404c083f264329edb8c4e18aefcfc30d2",
+    "gzip_sha256": "6640c4f68e13cdca3c99c9f3e63cf76f1c1a82cc62b19263f6865bb5fc7de652",
+    "raw_bytes": 4748343,
+    "gzip_bytes": 147362
+  },
+  "extrusion_splitting_mixed": {
+    "results": 16,
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "4cb0791c2a4d5a6acbe65a9375b1428e5a5b4f16099b34ad3f5fc595a37b94dc",
+    "gzip_sha256": "bcd330e4591946632eb2bc42398ede82b4fa5053123dada7f90da3f23fc0cc7d",
+    "raw_bytes": 4862343,
+    "gzip_bytes": 135336
+  }
+}

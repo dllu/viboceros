@@ -8,7 +8,7 @@ ExtrudeCrv 0,0,0 1,2,3 Output=SubD
 ```
 
 Direction, BothSides and DeleteInput follow the ordinary
-[straight extrusion](surfaces.md) rules. SubD output fits the swept profile to
+[straight extrusion](extrude-crv.md) rules. SubD output fits the swept profile to
 non-rational cubic limit stations. It can change the source shape; choose the
 default `Output=Surface` when exact extrusion geometry is required.
 
@@ -19,15 +19,16 @@ Bézier profiles use their interior stations; their behavior differs from
 [SubD Revolve](revolve-subd.md). Planar oblique profiles follow the public
 OpenNURBS support-plane orientation.
 
-`Solid` applies to Surface output. Switching to SubD leaves both ends uncapped,
-including for a closed planar profile with Solid previously enabled.
+Switching to SubD resets Solid and SplitAtTangents to No, leaving both ends
+uncapped, including for a closed planar profile. Switching back retains No.
 `UseExtrusions` does not change SubD output. Existing conversion budgets apply,
 including 100,000 control vertices and faces per result.
 
 Start bare `ExtrudeCrv` to pick the direction base and target. `Output=Surface|SubD`
-can change before either point, along with BothSides, DeleteInput and the stored
-Solid option. Escape preserves the model and pending Redo. Options reset for
-each invocation. Outputs use fresh attributes on the current layer, remain
+can change before either point, along with BothSides, DeleteInput and Solid.
+The Surface split option is available in Polysurface mode. A successful command
+remembers its split setting; Escape discards pending edits and preserves the
+model and pending Redo. Other options reset for each invocation. Outputs use fresh attributes on the current layer, remain
 unselected and ungrouped, and share one undo step with source deletion.
 
 The [validation record](../extrude-curve-subd-validation.json) covers 62 native

@@ -1,3 +1,5 @@
+#[path = "support/apex_splitting/cap_chart.rs"]
+mod cap_charts;
 #[path = "support/observation.rs"]
 mod observation;
 #[path = "support/extrude_apex_subd.rs"]

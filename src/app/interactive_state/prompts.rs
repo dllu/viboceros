@@ -884,17 +884,39 @@ impl InteractiveCommand {
             } => "Shear: pick the target angle in the viewport (Esc to cancel)",
             Self::ExtrudeCurve {
                 base: None,
-                output: viboceros_command::CurveExtrusionOutput::SubD,
+                options:
+                    viboceros_command::CurveExtrusionOptions {
+                        output: viboceros_command::CurveExtrusionOutput::SubD,
+                        ..
+                    },
                 ..
             } => {
                 "ExtrudeCrv: pick the direction base point (Output=SubD, BothSides, DeleteInput; Esc cancels)"
             }
             Self::ExtrudeCurve {
                 base: Some(_),
-                output: viboceros_command::CurveExtrusionOutput::SubD,
+                options:
+                    viboceros_command::CurveExtrusionOptions {
+                        output: viboceros_command::CurveExtrusionOutput::SubD,
+                        ..
+                    },
                 ..
             } => {
                 "ExtrudeCrv: pick the direction target (Output=SubD, BothSides, DeleteInput; Esc cancels)"
+            }
+            Self::ExtrudeCurve {
+                base: None,
+                split_available: true,
+                ..
+            } => {
+                "ExtrudeCrv: pick the direction base (Output, Solid, BothSides, DeleteInput, SplitAtTangents; Esc cancels)"
+            }
+            Self::ExtrudeCurve {
+                base: Some(_),
+                split_available: true,
+                ..
+            } => {
+                "ExtrudeCrv: pick the direction target (Output, Solid, BothSides, DeleteInput, SplitAtTangents; Esc cancels)"
             }
             Self::ExtrudeCurve { base: None, .. } => {
                 "ExtrudeCrv: pick the direction base point (Output, Solid, BothSides, DeleteInput; Esc cancels)"

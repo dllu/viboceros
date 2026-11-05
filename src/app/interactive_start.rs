@@ -983,7 +983,11 @@ impl VibocerosApp {
             }
             InteractiveCommand::Curve { degree, closure }
         } else if normalized == "extrudecrv" {
-            let Some(command) = super::curve_extrusion::start(&arguments) else {
+            let Some(command) = super::curve_extrusion::start(
+                &arguments,
+                !self.commands.use_extrusions(),
+                self.commands.curve_extrusion_split_at_tangents(),
+            ) else {
                 return false;
             };
             command

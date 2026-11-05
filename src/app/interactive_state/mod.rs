@@ -607,11 +607,9 @@ pub(super) enum InteractiveCommand {
         reference: Option<Point3>,
     },
     ExtrudeCurve {
-        output: viboceros_command::CurveExtrusionOutput,
         base: Option<Point3>,
-        both_sides: bool,
-        delete_input: bool,
-        solid: bool,
+        options: viboceros_command::CurveExtrusionOptions,
+        split_available: bool,
     },
     ExtrudeCurveTapered {
         base: Option<Point3>,

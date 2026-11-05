@@ -23,6 +23,12 @@ option-change object discrepancies; see [provenance](tween-options-provenance.js
 Rectangularity only after acceptance, including successful conversions that merge
 no faces. Cancel discards staged values. Its observed fresh defaults are 5 and 2.
 
+[`ExtrudeCrv`](commands/extrude-crv.md) remembers SplitAtTangents after success;
+its fresh default is Yes. Cancel and failure discard pending edits. Switching
+to SubD resets it to No. Undo/Redo leaves the setting unchanged. The hidden
+setting still controls explicit B-rep fallback in UseExtrusions Extrusion mode.
+Other straight-extrusion flags reset each invocation.
+
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
 across documents retains choices; separate registries are independent. The GUI

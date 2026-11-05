@@ -17,6 +17,7 @@ B-rep output for eligible creators.
 - [Surfaces and solids](surfaces.md)
 - [Fit a rectangular plane through points, clouds and grips](plane-through-points.md)
 - [Fit a sphere through points and grips](sphere-fit-points.md)
+- [Straight curve extrusion and tangent splitting](extrude-crv.md)
 - [Tapered curve extrusion](extrude-crv-tapered.md)
 - [Surface and face extrusion](extrude-srf.md)
 - [Convert lightweight extrusions to explicit B-reps](convert-extrusion.md)

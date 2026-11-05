@@ -98,3 +98,56 @@ fn plane_point(surface: &NurbsSurface, u: f64, v: f64) -> Result<Point3, Geometr
     };
     Point3::try_new(component(0)?, component(1)?, component(2)?)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn rotated_profile_caps_keep_every_endpoint_inside_the_native_domains() {
+        let point = |p| Point3::try_from(p).unwrap();
+        let curve = NurbsCurve::try_new(
+            1,
+            [
+                [3., 0., 0.],
+                [4., 0., 1.],
+                [3., 0., 2.],
+                [2., 0., 1.],
+                [3., 0., 0.],
+            ]
+            .into_iter()
+            .map(point)
+            .collect(),
+            vec![0., 0., 1., 2., 3., 4., 4.],
+        )
+        .unwrap();
+        let original = curve.clone();
+        for sign in [-1., 1.] {
+            let typed = Brep::try_command_curve_extrusion(
+                &curve,
+                Vector3::try_new(0., 0., 0.).unwrap(),
+                Vector3::try_new(0., 3. * sign, 0.).unwrap(),
+                true,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .unwrap();
+            let runtime = typed.try_extrusion_brep_form(Tolerance::DEFAULT).unwrap();
+            assert!(typed.is_extrusion());
+            assert!(runtime.is_solid());
+            for face in runtime.faces() {
+                for boundary in face.loops() {
+                    for trim in boundary.trims() {
+                        for uv in [
+                            trim.curve().start_point().unwrap(),
+                            trim.curve().end_point().unwrap(),
+                        ] {
+                            assert!(face.surface().evaluate(uv.x(), uv.y()).is_ok());
+                        }
+                    }
+                }
+            }
+            assert!((runtime.signed_volume(Tolerance::DEFAULT).unwrap() - 6.).abs() < 1e-12);
+        }
+        assert_eq!(curve, original);
+    }
+}

@@ -1,7 +1,6 @@
 //! Preserve every used B-rep definition after component correspondence.
+use super::cap_charts;
 use super::subd_apex_comparison;
-#[path = "apex_splitting/cap_chart.rs"]
-mod cap_chart;
 use serde_json::Value;
 use std::collections::BTreeMap;
 pub fn compare(actual: &Value, native: &Value, path: &str, epsilon: f64) {
@@ -10,7 +9,7 @@ pub fn compare(actual: &Value, native: &Value, path: &str, epsilon: f64) {
     used_surfaces(&mut native);
     padding(&mut actual);
     padding(&mut native);
-    cap_chart::align(&mut actual, &native);
+    cap_charts::align(&mut actual, &native, false);
     align_vertices(&mut actual, &native);
     subd_apex_comparison::compare(&actual, &native, path, epsilon);
 }

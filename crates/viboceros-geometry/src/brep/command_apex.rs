@@ -164,7 +164,7 @@ impl Brep {
 
 // Balanced extraction keeps total copied control data O(n log k) for k pieces,
 // instead of trimming every interval from the complete source control net.
-fn partition<T>(
+pub(super) fn partition<T>(
     curve: T,
     stops: &[Real],
     trim: &impl Fn(&T, std::ops::RangeInclusive<Real>) -> Result<T, GeometryError>,

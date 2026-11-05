@@ -2,17 +2,30 @@
 use super::*;
 mod options;
 mod subd;
-pub use options::Output;
+pub use options::{Options, Output};
+#[derive(Clone, Copy)]
+pub(super) struct SplitSetting(pub bool);
+impl Default for SplitSetting {
+    fn default() -> Self {
+        Self(true)
+    }
+}
+pub(super) type SplitPreference = std::sync::Arc<remembered::Remembered<SplitSetting>>;
+mod surface;
 use options::{Direction, parse_curve_extrusion};
 
-#[cfg(feature = "native-smlib")]
+#[cfg(all(test, feature = "native-smlib"))]
 mod native;
 #[cfg(test)]
 mod tests;
 
-const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No]";
+const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No] [SplitAtTangents=Yes|No]";
 
-pub(super) struct ExtrudeCurveCommand(pub use_extrusions::Preference);
+pub(super) struct ExtrudeCurveCommand {
+    pub extrusions: use_extrusions::Preference,
+    pub crease: crease_splitting::Preference,
+    pub split: SplitPreference,
+}
 
 impl Command for ExtrudeCurveCommand {
     fn name(&self) -> &'static str {
@@ -30,7 +43,12 @@ impl Command for ExtrudeCurveCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let options = parse_curve_extrusion(arguments, document.tolerance())?;
+        let (input_direction, options) = parse_curve_extrusion(
+            arguments,
+            document.tolerance(),
+            !self.extrusions.get().0,
+            self.split.get().0,
+        )?;
         let curves = selected
             .into_iter()
             .filter_map(|id| {
@@ -47,9 +65,7 @@ impl Command for ExtrudeCurveCommand {
             return Err(CommandError::NoExtrudableCurves);
         }
         #[cfg(feature = "native-smlib")]
-        let profiles = if options.output == Output::Surface
-            || matches!(&options.direction, Direction::Numeric(_))
-        {
+        let profiles = if matches!(&input_direction, Direction::Numeric(_)) {
             curves
                 .iter()
                 .map(|(_, curve)| viboceros_smlib::KernelCurve::from_nurbs_for_modeling(curve))
@@ -57,7 +73,7 @@ impl Command for ExtrudeCurveCommand {
         } else {
             Vec::new()
         };
-        let direction = match options.direction {
+        let direction = match input_direction {
             Direction::Explicit(direction) => direction,
             Direction::Numeric(distance) => {
                 #[cfg(feature = "native-smlib")]
@@ -85,9 +101,7 @@ impl Command for ExtrudeCurveCommand {
         let both_sides = options.both_sides;
         let solid = options.solid;
         let mut extrusions = Vec::new();
-        for (index, (id, curve)) in curves.into_iter().enumerate() {
-            #[cfg(not(feature = "native-smlib"))]
-            let _ = index;
+        for (id, curve) in curves {
             if curve.is_linear(document.tolerance())? {
                 // The shared linearity predicate already requires a nonzero
                 // endpoint chord. Interior controls can be within tolerance of
@@ -117,62 +131,29 @@ impl Command for ExtrudeCurveCommand {
                 ));
                 continue;
             }
-            let typed = Brep::try_command_curve_extrusion(
-                &curve,
-                start_offset,
-                end_offset,
-                solid,
-                document.tolerance(),
-            )?;
-            let typed = typed
-                .map(|brep| use_extrusions::output(brep, &self.0, document.tolerance()))
-                .transpose()?;
-            #[cfg(not(feature = "native-smlib"))]
-            let geometry = if let Some(extrusion) = typed {
-                Geometry::Brep(extrusion)
-            } else {
-                if solid && curve.is_closed()? && curve.is_planar(document.tolerance())? {
-                    Geometry::Brep(Brep::try_extruded_curve(
-                        &curve,
-                        start_offset,
-                        end_offset,
-                        document.tolerance(),
-                    )?)
-                } else {
-                    Geometry::NurbsSurface(NurbsSurface::try_extruded_curve(
-                        &curve,
-                        start_offset,
-                        end_offset,
-                    )?)
-                }
-            };
-            #[cfg(feature = "native-smlib")]
-            let geometry = if let Some(extrusion) = typed {
-                Geometry::Brep(extrusion)
-            } else {
-                native::extrude(
+            let geometry = if self.extrusions.get().0 {
+                Brep::try_command_curve_extrusion(
                     &curve,
-                    &profiles[index],
                     start_offset,
                     end_offset,
                     solid,
                     document.tolerance(),
                 )?
+            } else {
+                None
             };
-            let geometry = match geometry {
-                Geometry::NurbsSurface(surface) => {
-                    Geometry::Brep(Brep::try_surface_face(surface, document.tolerance())?)
-                }
-                other => other,
-            };
-            #[cfg(not(feature = "native-smlib"))]
-            let geometry = match geometry {
-                Geometry::Brep(brep) if !brep.is_extrusion() => {
-                    let split = brep
-                        .try_split_kinky_faces(std::f64::consts::PI / 180., document.tolerance())?;
-                    Geometry::Brep(split.unwrap_or(brep))
-                }
-                other => other,
+            let geometry = if let Some(typed) = geometry {
+                Geometry::Brep(typed)
+            } else {
+                surface::construct(
+                    &curve,
+                    start_offset,
+                    end_offset,
+                    solid,
+                    options.split_at_tangents,
+                    self.crease.get().0,
+                    document.tolerance(),
+                )?
             };
             extrusions.push((id, geometry));
         }
@@ -193,6 +174,7 @@ impl Command for ExtrudeCurveCommand {
                 document.delete_object(*id)?;
             }
         }
+        self.split.set(SplitSetting(options.split_at_tangents));
         if options.output == Output::SubD {
             return Ok(format!(
                 "Extruded {output_count} curve object(s) into SubD object(s){}{}",
