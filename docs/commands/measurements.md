@@ -144,13 +144,14 @@ failure, and reports no performance timing. It runs in an oracle-owned session.
 
 Select objects, then enter `Length` (alias `Len`) or `Area` without
 arguments. Each command reports the selected count and aggregate measurement.
-They do not change geometry, selection, or undo/redo history. An empty selection,
+They do not change geometry or undo/redo history. Length retains preselected
+whole curves and releases measured edge components; Area retains selection. An empty selection,
 unsupported object, invalid measurement, or numerical failure rejects the query
 without reporting a partial total.
 
-Enter `Length` without preselection to pick curves or B-rep/NURBS surface edges,
+Enter `Length` without preselection to pick curves or surface, mesh and SubD edges,
 then press Enter to measure their total. Command-first measurement clears these
-picks after reporting; preselected inputs remain selected. Geometry and model
+picks after reporting; preselected whole curves remain selected. Geometry and model
 history remain unchanged. Enter `SelChain` during selection to use the
 [connected-chain picker](curve-chains.md), then finish both the chain and the
 parent Length prompt. Escape from either cancels Length. To measure only part
@@ -172,8 +173,11 @@ changes at either point. The source model must have physical units for a
 conversion, and overflowing or underflowing display results are rejected. The
 unit setting and geometry remain unchanged. Selected lengths are accumulated
 exactly before display scaling, so a converted total can be reported even if
-the unconverted total exceeds binary64's range. Mesh/SubD edge length inputs
-and chain selection within `Length SubCrv` remain pending.
+the unconverted total exceeds binary64's range. SubD edges use limit curves in
+smooth appearance and straight control edges in flat appearance; display mesh
+density does not change measurements. [Native component comparisons](../oracle/component-lengths.md)
+cover these choices and input cleanup. Partial edge measurement and chain
+selection within `Length SubCrv` remain pending.
 
 Enter `Area` without preselection to pick supported objects, then press Enter.
 `Area Units=Centimeters` reports square centimetres without changing model
@@ -196,7 +200,7 @@ tolerances.
 
 | Command | Supported geometry |
 | --- | --- |
-| Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, polycurves, and B-rep/NURBS surface edges |
+| Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, polycurves, and surface/mesh/SubD edges |
 | Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, and meshes |
 | [Volume](volume.md) | Meshes, NURBS surfaces and B-reps; open collections require confirmation |
 

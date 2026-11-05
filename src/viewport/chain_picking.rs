@@ -7,6 +7,7 @@ impl Viewport {
         pointer: Pos2,
         rect: Rect,
         document: &Document,
+        polygon_edges: bool,
     ) -> Vec<Target> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return Vec::new();
@@ -16,6 +17,7 @@ impl Viewport {
             let geo = object.geometry();
             if geo.curve_ref().is_none()
                 && !matches!(geo, Geometry::Brep(_) | Geometry::NurbsSurface(_))
+                && !(polygon_edges && matches!(geo, Geometry::Mesh(_) | Geometry::SubD(_)))
             {
                 continue;
             }

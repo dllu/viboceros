@@ -2200,7 +2200,7 @@ impl Viewport {
                 &painter,
                 rect,
                 document,
-                &self.pick_chain_targets(pointer, rect, document),
+                &self.pick_chain_targets(pointer, rect, document, input.length_pick),
             );
         }
         self.paint_component_highlights(
@@ -2920,7 +2920,7 @@ impl Viewport {
             response
                 .interact_pointer_pos()
                 .map_or_else(Vec::new, |pointer| {
-                    self.pick_chain_targets(pointer, rect, document)
+                    self.pick_chain_targets(pointer, rect, document, input.length_pick)
                 })
         });
         let parametric_click = (input.parametric_pick

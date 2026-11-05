@@ -68,7 +68,11 @@ fn rational_surface_edges_accumulate_with_curves_and_keep_preselection_and_redo(
         let report = registry.execute(&mut doc, "Length").unwrap();
         assert!((total(&report) - expected).abs() < 1e-8, "{report}");
         assert!(doc.is_selected(line));
-        assert_eq!(registry.component_selection().len(), 2);
+        assert!(registry.component_selection().is_empty());
+        registry
+            .component_selection()
+            .replace(&doc, picks.to_vec())
+            .unwrap();
         let report = registry
             .execute_postselected(&mut doc, "Length", CommandContext::default())
             .unwrap();

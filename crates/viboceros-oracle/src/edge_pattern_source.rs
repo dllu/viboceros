@@ -136,6 +136,17 @@ pub(super) fn geometry(
     } else {
         return Err(ProbeError::FixtureInvariant("unknown edge selection scene"));
     }
+    from_parts(kind, points, faces, corners, creases, ngons, tolerance)
+}
+pub(super) fn from_parts(
+    kind: &str,
+    points: Vec<[f64; 3]>,
+    faces: Vec<Vec<u32>>,
+    corners: Vec<usize>,
+    creases: Vec<[u32; 2]>,
+    ngons: Vec<MeshNgon>,
+    tolerance: Tolerance,
+) -> Result<(Geometry, Vec<Point3>), ProbeError> {
     let points = points
         .into_iter()
         .map(Point3::try_from)

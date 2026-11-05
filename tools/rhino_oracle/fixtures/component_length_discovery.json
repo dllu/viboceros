@@ -1,0 +1,341 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_length",
+      "id": "mesh_grid_0_0",
+      "kind": "mesh",
+      "scene": "grid",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_bent_grid_6_0",
+      "kind": "mesh",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_bent_grid_1_0",
+      "kind": "mesh",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_creased_grid_6_0",
+      "kind": "mesh",
+      "scene": "creased_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_fan5_0_0",
+      "kind": "mesh",
+      "scene": "fan5",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_raised_fan_0_0",
+      "kind": "mesh",
+      "scene": "raised_fan",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_cube_0_0",
+      "kind": "mesh",
+      "scene": "cube",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "mesh_mixed",
+      "kind": "mesh",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "flat": false,
+      "curve": true
+    },
+    {
+      "op": "component_length",
+      "id": "subd_grid_0_0",
+      "kind": "subd",
+      "scene": "grid",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_grid_0_1",
+      "kind": "subd",
+      "scene": "grid",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_bent_grid_6_0",
+      "kind": "subd",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_bent_grid_6_1",
+      "kind": "subd",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_bent_grid_1_0",
+      "kind": "subd",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_bent_grid_1_1",
+      "kind": "subd",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_creased_grid_6_0",
+      "kind": "subd",
+      "scene": "creased_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_creased_grid_6_1",
+      "kind": "subd",
+      "scene": "creased_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_fan5_0_0",
+      "kind": "subd",
+      "scene": "fan5",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_fan5_0_1",
+      "kind": "subd",
+      "scene": "fan5",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_raised_fan_0_0",
+      "kind": "subd",
+      "scene": "raised_fan",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_raised_fan_0_1",
+      "kind": "subd",
+      "scene": "raised_fan",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_cube_0_0",
+      "kind": "subd",
+      "scene": "cube",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": false,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_cube_0_1",
+      "kind": "subd",
+      "scene": "cube",
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "flat": true,
+      "curve": false
+    },
+    {
+      "op": "component_length",
+      "id": "subd_mixed",
+      "kind": "subd",
+      "scene": "bent_grid",
+      "pairs": [
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "flat": false,
+      "curve": true
+    }
+  ]
+}

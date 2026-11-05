@@ -37,6 +37,7 @@ mod circle_fit_points;
 mod circle_tangent;
 mod command_focus;
 mod command_line;
+mod component_length;
 mod conic;
 mod construction_plane;
 mod contour;

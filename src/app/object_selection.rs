@@ -150,7 +150,7 @@ impl PendingObjectCommand {
             && self.phase == ObjectPromptPhase::Selecting
             && !self.subcurve_measurement
         {
-            return "Select curves or surface edges; SelChain selects connected inputs; Units=name changes display units; Enter measures, Esc cancels";
+            return "Select curves or edge components; SelChain selects connected inputs; Units=name changes display units; Enter measures, Esc cancels";
         }
         if let Some(session) = &self.mesh_conversion {
             return session.hint(self.phase);

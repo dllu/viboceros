@@ -57,6 +57,7 @@ mod maelstrom_points;
 pub use maelstrom_points::MaelstromPointFixture;
 mod centroid_command;
 pub mod chain_selection;
+pub mod component_length;
 mod connect_command;
 mod construction_plane;
 mod control_point_insertion;
@@ -368,6 +369,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    ComponentLength {
+        id: String,
+        #[serde(flatten)]
+        fixture: component_length::Fixture,
     },
     LengthChain {
         id: String,
@@ -2859,6 +2865,7 @@ impl Operation {
             | Self::EdgeRingWorkflow { id, .. }
             | Self::ChainSelection { id, .. }
             | Self::LengthChain { id, .. }
+            | Self::ComponentLength { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
             | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
@@ -3398,6 +3405,9 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::ComponentLength { fixture, .. } => {
+            component_length::run(fixture, iterations, tolerance)?
+        }
         Operation::LengthChain { fixture, .. } => {
             length_chain::run(fixture, iterations, tolerance)?
         }

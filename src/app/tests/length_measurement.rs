@@ -208,7 +208,7 @@ fn length_edge_preselection_and_changed_overlap_choices_preserve_history() {
     enter(&mut app, "Length");
     assert!(app.object_prompt.is_none());
     assert_eq!(report_mm(&app), Some(3.));
-    assert!(app.commands.component_selection().contains(&pick));
+    assert!(app.commands.component_selection().is_empty());
     app.commands.component_selection().clear();
     enter(&mut app, "Length");
     app.pick_length_inputs(

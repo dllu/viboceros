@@ -1,5 +1,6 @@
-//! Exact selected curve and B-rep edge lengths without temporary document objects.
+//! Selected curve and edge lengths without temporary document objects.
 use super::*;
+mod components;
 pub(crate) struct LengthCommand {
     selection: crate::component_selection::ComponentSelection,
 }
@@ -135,6 +136,7 @@ impl Command for LengthCommand {
             )
             .into());
         }
+        self.selection.clear();
         Ok(length_report(count, total, target.as_ref()))
     }
 }
@@ -164,21 +166,7 @@ fn accumulate_length(
             geometry_curve_ref(object.geometry()).ok_or(CommandError::UnsupportedLengthGeometry)?;
         add(curve.length(document.tolerance())?)?;
     }
-    for pick in picks {
-        if pick.kind != crate::ComponentSelectionKind::BrepEdge {
-            return Err(CommandError::UnsupportedLengthGeometry);
-        }
-        let object = document
-            .object(pick.object)
-            .ok_or(CommandError::Usage("Select the surface edges again"))?;
-        let curve = crate::curve_reference::resolve(
-            object.geometry(),
-            Some(pick.index),
-            document.tolerance(),
-        )
-        .ok_or(CommandError::UnsupportedLengthGeometry)?;
-        add(curve.curve().length(document.tolerance())?)?;
-    }
+    components::accumulate(document, picks, &mut add)?;
     if count == 0 {
         return Err(CommandError::NoObjectsSelected);
     }

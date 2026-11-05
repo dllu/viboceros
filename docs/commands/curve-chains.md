@@ -44,7 +44,9 @@ selection without changing geometry or either history stack.
 
 Length also accepts ordinary curve and surface-edge picks and preselected surface
 edges. `Units`, followed by a unit name, changes display units; `Units=Centimeters`
-remains a Viboceros scripting convenience. Preselected measurement retains selection.
+remains a Viboceros scripting convenience. Length retains preselected whole
+curves and releases measured edge components. Mesh/SubD edges are also accepted
+by Length's ordinary picker; they do not enter the SelChain walker.
 
 The [native comparison corpus](../oracle/curve-chains.md) qualifies standalone
 selection and nested Length workflows. Nesting inside other commands or `Length

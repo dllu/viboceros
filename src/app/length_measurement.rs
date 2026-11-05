@@ -1,4 +1,4 @@
-//! Length's parent getter accepts curves and surface edges, with explicit overlaps.
+//! Length's parent getter accepts curves and edge components, with explicit overlaps.
 use super::*;
 use viboceros_command::chain_selection::Target;
 use viboceros_command::component_selection::{ComponentAction, ComponentPick, stage_sources};
@@ -10,13 +10,29 @@ pub(super) struct Choices {
     sources: Vec<(ObjectId, GeometrySnapshot)>,
     tolerance: Tolerance,
 }
+fn edge_kind(doc: &Document, id: ObjectId) -> Option<viboceros_command::ComponentSelectionKind> {
+    use viboceros_command::ComponentSelectionKind as Kind;
+    match doc.object(id)?.geometry() {
+        Geometry::Brep(_) | Geometry::NurbsSurface(_) => Some(Kind::BrepEdge),
+        Geometry::Mesh(_) => Some(Kind::MeshEdge),
+        Geometry::SubD(_) => Some(Kind::SubDEdge),
+        _ => None,
+    }
+}
 impl VibocerosApp {
     pub(super) fn has_length_edges(&self) -> bool {
         self.commands
             .component_selection()
             .live_picks(&self.document)
             .iter()
-            .any(|p| p.kind == viboceros_command::ComponentSelectionKind::BrepEdge)
+            .any(|p| {
+                matches!(
+                    p.kind,
+                    viboceros_command::ComponentSelectionKind::BrepEdge
+                        | viboceros_command::ComponentSelectionKind::MeshEdge
+                        | viboceros_command::ComponentSelectionKind::SubDEdge
+                )
+            })
     }
     pub(super) fn length_choice_highlights(&self) -> &[Target] {
         self.length_choices
@@ -54,7 +70,7 @@ impl VibocerosApp {
                 Target::Edge(object, index) => Some(ComponentPick {
                     object,
                     index,
-                    kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                    kind: edge_kind(&self.document, object)?,
                 }),
             })
             .collect();
@@ -70,8 +86,11 @@ impl VibocerosApp {
                     .object(t.object())
                     .filter(|_| self.document.is_object_selectable(t.object()))
                     .ok_or("Length input is unavailable")?;
-                if matches!(t, Target::Curve(_)) && object.geometry().curve_ref().is_none() {
-                    return Err("Select a curve or surface edge");
+                if (matches!(t, Target::Curve(_)) && object.geometry().curve_ref().is_none())
+                    || (matches!(t, Target::Edge(_, _))
+                        && edge_kind(&self.document, t.object()).is_none())
+                {
+                    return Err("Select a curve or edge component");
                 }
                 Ok((t.object(), object.geometry_snapshot().clone()))
             })
@@ -90,7 +109,15 @@ impl VibocerosApp {
                 .map(|(i, t)| {
                     let kind = match t {
                         Target::Curve(_) => "curve".to_owned(),
-                        Target::Edge(_, e) => format!("surface edge {}", e + 1),
+                        Target::Edge(object, e) => format!(
+                            "{} edge {}",
+                            match edge_kind(&self.document, *object) {
+                                Some(viboceros_command::ComponentSelectionKind::MeshEdge) => "mesh",
+                                Some(viboceros_command::ComponentSelectionKind::SubDEdge) => "SubD",
+                                _ => "surface",
+                            },
+                            e + 1
+                        ),
                     };
                     let name = self
                         .document
@@ -126,7 +153,7 @@ impl VibocerosApp {
                     vec![ComponentPick {
                         object,
                         index,
-                        kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                        kind: edge_kind(&self.document, object).expect("validated edge owner"),
                     }],
                     match mode {
                         SelectionMode::Remove => ComponentAction::Remove,
