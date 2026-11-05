@@ -117,6 +117,7 @@ mod mesh_pull;
 #[cfg(test)]
 mod projection_loose_tests;
 mod section_command;
+pub mod short_span_extrusions;
 mod surface_pull;
 pub mod type_selection;
 pub mod use_extrusions;
@@ -357,6 +358,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ShortSpanExtrusions {
+        id: String,
+        #[serde(flatten)]
+        fixture: short_span_extrusions::Fixture,
+    },
     UseExtrusions {
         id: String,
         #[serde(flatten)]
@@ -2925,6 +2931,7 @@ impl Operation {
             | Self::TypeSelection { id, .. }
             | Self::ConvertExtrusion { id, .. }
             | Self::UseExtrusions { id, .. }
+            | Self::ShortSpanExtrusions { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3479,6 +3486,9 @@ fn execute(
         }
         Operation::UseExtrusions { fixture, .. } => {
             use_extrusions::run(fixture, iterations, tolerance)?
+        }
+        Operation::ShortSpanExtrusions { fixture, .. } => {
+            short_span_extrusions::run(fixture, iterations, tolerance)?
         }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?

@@ -24,7 +24,7 @@ impl Brep {
             .faces
             .iter()
             .map(|face| {
-                let frame = face.local_parameter_frame()?;
+                let frame = face.sampling_parameter_frame()?;
                 let face = frame.face.as_ref();
                 let surface = if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
                     face.surface
@@ -78,7 +78,7 @@ impl Brep {
         let frames = self
             .faces
             .iter()
-            .map(BrepFace::local_parameter_frame)
+            .map(BrepFace::sampling_parameter_frame)
             .collect::<Result<Vec<_>, _>>()?;
         let creases = frames
             .iter()

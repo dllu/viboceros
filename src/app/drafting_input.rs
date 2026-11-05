@@ -2583,11 +2583,13 @@ impl VibocerosApp {
                 base: None,
                 both_sides,
                 delete_input,
+                solid,
             } => {
                 let command = InteractiveCommand::ExtrudeCurve {
                     base: Some(point),
                     both_sides,
                     delete_input,
+                    solid,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Direction base: {}", format_model_point(point)));
@@ -2597,6 +2599,7 @@ impl VibocerosApp {
                 base: Some(base),
                 both_sides,
                 delete_input,
+                solid,
             } => {
                 if base.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: extrusion direction points must differ".to_owned());
@@ -2604,11 +2607,12 @@ impl VibocerosApp {
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "ExtrudeCrv {} {} BothSides={} DeleteInput={}",
+                    "ExtrudeCrv {} {} BothSides={} DeleteInput={} Solid={}",
                     format_model_point(base),
                     format_model_point(point),
                     if both_sides { "Yes" } else { "No" },
-                    if delete_input { "Yes" } else { "No" }
+                    if delete_input { "Yes" } else { "No" },
+                    if solid { "Yes" } else { "No" }
                 ));
             }
             InteractiveCommand::ExtrudeCurveTapered {

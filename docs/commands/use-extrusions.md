@@ -28,8 +28,8 @@ Rhino's explicit constructors can use different face order, parameter axes,
 degrees and cap support rectangles. Exact explicit parameterization, arbitrary
 inputs, continuous error bounds and comparative performance remain unqualified.
 Successful observations retain complete geometry and frozen producer sources.
-An existing native-SMLib short-span ExtrudeCrv regression reproduces at the
-starting revision; see the [validation record](../use-extrusions-validation.json).
+The former short-span ExtrudeCrv regression is resolved; see the
+[geometry and getter follow-up](../short-span-extrusions.md).
 
 ```sh
 cargo test -p viboceros-command --release --test use_extrusions_native

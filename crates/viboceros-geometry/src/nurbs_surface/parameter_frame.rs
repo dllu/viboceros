@@ -1,6 +1,6 @@
 //! Lossless local parameter origins shared by surfaces and trimmed faces.
 use super::*;
-use crate::parameter::lossless_parameter_origin;
+use crate::parameter::{exact_difference, lossless_parameter_origin};
 use std::borrow::Cow;
 
 pub(crate) struct SurfaceParameterFrame<'a> {
@@ -15,16 +15,38 @@ impl NurbsSurface {
         &self,
         coordinates: impl Iterator<Item = [Real; 2]> + Clone,
     ) -> Result<SurfaceParameterFrame<'_>, GeometryError> {
+        self.parameter_frame(coordinates, false)
+    }
+
+    /// Finite mesh grids start at each chart's lower endpoint. Prefer that
+    /// endpoint when knots and trim controls all translate without rounding,
+    /// including negative domains ending at zero.
+    pub(crate) fn sampling_parameter_frame(
+        &self,
+        coordinates: impl Iterator<Item = [Real; 2]> + Clone,
+    ) -> Result<SurfaceParameterFrame<'_>, GeometryError> {
+        self.parameter_frame(coordinates, true)
+    }
+
+    fn parameter_frame(
+        &self,
+        coordinates: impl Iterator<Item = [Real; 2]> + Clone,
+        sampling: bool,
+    ) -> Result<SurfaceParameterFrame<'_>, GeometryError> {
         let knots = [self.knots_u(), self.knots_v()];
         let domains = [self.domain_u(), self.domain_v()];
         let origin = std::array::from_fn(|axis| {
-            lossless_parameter_origin(
-                domains[axis].clone(),
+            let values = || {
                 knots[axis]
                     .iter()
                     .copied()
-                    .chain(coordinates.clone().map(|p| p[axis])),
-            )
+                    .chain(coordinates.clone().map(move |p| p[axis]))
+            };
+            let start = *domains[axis].start();
+            if sampling && (start == 0. || values().all(|v| exact_difference(v, start).is_some())) {
+                return start;
+            }
+            lossless_parameter_origin(domains[axis].clone(), values())
         });
         let surface = if origin == [0.; 2] {
             Cow::Borrowed(self)

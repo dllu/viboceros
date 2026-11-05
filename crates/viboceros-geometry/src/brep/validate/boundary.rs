@@ -3,6 +3,7 @@
 use super::super::trim_image::LiftedTrim;
 use super::*;
 use crate::ParameterSide;
+mod certificate;
 
 pub(super) fn validate(
     brep: &Brep,
@@ -63,6 +64,9 @@ pub(super) fn validate(
         }
         let closest = edge_curve.closest_parameter(point, search_tolerance)?;
         if point.distance_to(edge_curve.evaluate(closest)?)? > allowed {
+            if certificate::within(face, trim, edge, allowed)? {
+                return Ok(());
+            }
             return invalid("a p-curve interior leaves its model-space edge");
         }
     }
@@ -83,6 +87,9 @@ pub(super) fn validate(
             .0
             > allowed
         {
+            if certificate::within(face, trim, edge, allowed)? {
+                return Ok(());
+            }
             return invalid("a model-space edge interior leaves its lifted p-curve");
         }
     }

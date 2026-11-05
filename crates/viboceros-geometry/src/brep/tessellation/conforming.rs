@@ -50,7 +50,7 @@ impl Brep {
         let frames = self
             .faces
             .iter()
-            .map(BrepFace::local_parameter_frame)
+            .map(BrepFace::sampling_parameter_frame)
             .collect::<Result<Vec<_>, _>>()?;
         // The UV triangulation below does not split internal positional
         // breaks. Never "repair" a naked interior jump by bridging it. Even

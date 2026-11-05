@@ -12,6 +12,8 @@ NURBS profile, a frame, a nonzero height and a cap choice.
 `Brep::try_from_extrusion_archive` restores it from an owned archive.
 `Brep::extrusion` exposes the retained representation; `explicit_brep` removes it.
 The geometry and IO layers share one versioned structural transfer codec.
+[Microscopic spans](short-span-extrusions.md) describes exact boundary
+certification and lossless mesh sampling.
 
 Native planar caps can report unset or zero edge tolerances after closing
 roundoff-sized gaps. Their end-weight normalization can also make cap trims

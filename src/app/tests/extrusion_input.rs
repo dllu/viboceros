@@ -25,6 +25,7 @@ fn interactive_curve_extrusion_uses_two_direction_points_and_options() {
             base: None,
             both_sides: true,
             delete_input: false,
+            solid: false,
         })
     );
     app.accept_drafting_point(point(0.0, 0.0, 0.0));
@@ -35,6 +36,7 @@ fn interactive_curve_extrusion_uses_two_direction_points_and_options() {
             base: Some(point(0.0, 0.0, 0.0)),
             both_sides: true,
             delete_input: false,
+            solid: false,
         })
     );
     app.accept_drafting_point(point(0.0, 2.0, 0.0));

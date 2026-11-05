@@ -1,4 +1,5 @@
 use super::*;
+mod short_spans;
 mod stationary_trims;
 
 #[test]

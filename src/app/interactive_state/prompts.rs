@@ -883,10 +883,10 @@ impl InteractiveCommand {
                 reference: Some(_), ..
             } => "Shear: pick the target angle in the viewport (Esc to cancel)",
             Self::ExtrudeCurve { base: None, .. } => {
-                "ExtrudeCrv: pick the direction base point in the viewport (Esc to cancel)"
+                "ExtrudeCrv: pick the direction base point (Solid, BothSides, DeleteInput; Esc cancels)"
             }
             Self::ExtrudeCurve { base: Some(_), .. } => {
-                "ExtrudeCrv: pick the direction target point in the viewport (Esc to cancel)"
+                "ExtrudeCrv: pick the direction target (Solid, BothSides, DeleteInput; Esc cancels)"
             }
             Self::ExtrudeCurveTapered { base: None, .. } => {
                 "ExtrudeCrvTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"

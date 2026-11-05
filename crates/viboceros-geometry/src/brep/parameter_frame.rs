@@ -38,13 +38,23 @@ impl ParameterFrame<'_> {
 
 impl BrepFace {
     pub(super) fn local_parameter_frame(&self) -> Result<ParameterFrame<'_>, GeometryError> {
+        self.parameter_frame(false)
+    }
+    pub(super) fn sampling_parameter_frame(&self) -> Result<ParameterFrame<'_>, GeometryError> {
+        self.parameter_frame(true)
+    }
+    fn parameter_frame(&self, sampling: bool) -> Result<ParameterFrame<'_>, GeometryError> {
         let coordinates = self
             .loops
             .iter()
             .flat_map(|boundary| &boundary.trims)
             .flat_map(|trim| trim.curve.control_points())
             .map(|c| c.point().to_array());
-        let surface_frame = self.surface.local_parameter_frame(coordinates)?;
+        let surface_frame = if sampling {
+            self.surface.sampling_parameter_frame(coordinates)?
+        } else {
+            self.surface.local_parameter_frame(coordinates)?
+        };
         let origin = surface_frame.origin;
         if origin == [0.; 2] {
             return Ok(ParameterFrame {

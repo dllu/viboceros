@@ -10,6 +10,17 @@ from .report_subdivide import subd_check
 from .report_subd_box import error
 HERE=Path(__file__).resolve().parent
 SOURCES=list(dict.fromkeys(COMMAND_SOURCES+[
+    'crates/viboceros-geometry/src/brep/trim_image/isocurve.rs',
+    'crates/viboceros-geometry/src/brep/validate/boundary.rs',
+    'crates/viboceros-geometry/src/brep/validate/boundary/certificate.rs',
+    'crates/viboceros-geometry/src/brep/parameter_frame.rs',
+    'crates/viboceros-geometry/src/nurbs/parameter_frame.rs',
+    'crates/viboceros-geometry/src/nurbs_surface/parameter_frame.rs',
+    'crates/viboceros-geometry/src/brep/tessellation/independent.rs',
+    'crates/viboceros-geometry/src/brep/tessellation/conforming.rs',
+    'crates/viboceros-geometry/src/brep/tessellation/normals.rs',
+    'crates/viboceros-geometry/src/brep/tessellation/curvature.rs',
+    'src/app/curve_extrusion.rs',
     'crates/viboceros-command/src/extrude_surface.rs',
     'crates/viboceros-command/src/extrude_surface/tests.rs',
     'crates/viboceros-command/src/use_extrusions.rs',

@@ -610,6 +610,7 @@ pub(super) enum InteractiveCommand {
         base: Option<Point3>,
         both_sides: bool,
         delete_input: bool,
+        solid: bool,
     },
     ExtrudeCurveTapered {
         base: Option<Point3>,

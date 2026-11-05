@@ -94,7 +94,7 @@ impl Brep {
             .faces
             .iter()
             .map(|face| {
-                face.local_parameter_frame()?
+                face.sampling_parameter_frame()?
                     .face
                     .surface
                     .polygon_mesh_samples_per_span(density, simple_planes, tolerance)
@@ -160,7 +160,7 @@ impl Brep {
         let mut face_sources = Vec::new();
         let mut vertex_parameters = Vec::new();
         for (face_index, face) in self.faces.iter().enumerate() {
-            let frame = face.local_parameter_frame()?;
+            let frame = face.sampling_parameter_frame()?;
             let face = frame.face.as_ref();
             let resolution = sampling.grid(face_index);
             let (mesh, parameters) = if face_covers_full_surface_domain(face, tolerance)? {
@@ -470,8 +470,13 @@ impl Brep {
             }]);
         };
         let edge = &self.edges[edge_index];
-        let spans = edge.curve.spans().collect::<Vec<_>>();
-        let domain = edge.curve.domain();
+        // Model-space samples do not need the native parameter origin. A
+        // microscopic span near 0.5 otherwise rounds its interior stations to
+        // a different grid than the incident face's losslessly local UV frame.
+        let frame = edge.curve.sampling_parameter_frame()?;
+        let curve = frame.curve.as_ref();
+        let spans = curve.spans().collect::<Vec<_>>();
+        let domain = curve.domain();
         let last_span = spans
             .len()
             .checked_sub(1)
@@ -503,7 +508,7 @@ impl Brep {
                 } else {
                     let parameter =
                         brep_span_parameter(start, end, sample, samples_per_span, *domain.end());
-                    (edge.curve.evaluate(parameter)?, edge.tolerance)
+                    (curve.evaluate(parameter)?, edge.tolerance)
                 };
                 candidates.push(BoundarySnapPoint {
                     point,

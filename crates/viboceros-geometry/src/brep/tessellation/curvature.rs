@@ -33,7 +33,7 @@ impl Brep {
         let frames = self
             .faces
             .iter()
-            .map(BrepFace::local_parameter_frame)
+            .map(BrepFace::sampling_parameter_frame)
             .collect::<Result<Vec<_>, _>>()?;
         let surfaces = frames.iter().map(|f| &f.face.surface).collect::<Vec<_>>();
         Ok(crate::CurvatureMesh::from_tessellation(t, &surfaces))

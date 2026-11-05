@@ -185,6 +185,7 @@ mod curvature_analysis;
 mod curvature_graph;
 mod curve_array;
 mod curve_deviation;
+mod curve_extrusion;
 mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
@@ -683,6 +684,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_curve_deviation(&input) {
+            return;
+        }
+        if self.continue_curve_extrusion_options(&input) {
             return;
         }
         if self.try_continue_use_extrusions(&input) {

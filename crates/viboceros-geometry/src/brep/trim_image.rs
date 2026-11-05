@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::ParameterSide;
+pub(super) mod isocurve;
 
 #[cfg(test)]
 mod tests;

@@ -983,38 +983,10 @@ impl VibocerosApp {
             }
             InteractiveCommand::Curve { degree, closure }
         } else if normalized == "extrudecrv" {
-            let mut both_sides = false;
-            let mut delete_input = false;
-            let mut both_sides_seen = false;
-            let mut delete_input_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let parsed = if value.eq_ignore_ascii_case("Yes") {
-                    true
-                } else if value.eq_ignore_ascii_case("No") {
-                    false
-                } else {
-                    return false;
-                };
-                if name.eq_ignore_ascii_case("BothSides") && !both_sides_seen {
-                    both_sides = parsed;
-                    both_sides_seen = true;
-                } else if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
-                    delete_input = parsed;
-                    delete_input_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            InteractiveCommand::ExtrudeCurve {
-                base: None,
-                both_sides,
-                delete_input,
-            }
+            let Some(command) = super::curve_extrusion::start(&arguments) else {
+                return false;
+            };
+            command
         } else if normalized == "extrudecrvtapered" {
             let Ok(options) =
                 viboceros_command::extrude_tapered::TaperedExtrusionOptions::parse(&arguments)

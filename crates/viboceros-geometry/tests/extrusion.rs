@@ -1,4 +1,6 @@
 use viboceros_geometry::{AffineTransform3, Brep, Frame3, NurbsCurve, Point3, Tolerance, Vector3};
+#[path = "extrusion/short_spans.rs"]
+mod short_spans;
 fn point(p: [f64; 3]) -> Point3 {
     Point3::try_from(p).unwrap()
 }

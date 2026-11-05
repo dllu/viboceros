@@ -1,0 +1,60 @@
+{
+  "scope": "Resolve valid short-span extrusion rejection and preserve finite mesh/normal sampling; complete curve-extrusion point-getter options.",
+  "baseline_revision": "3f14cfb76dfecd0f3f8948e4b227384906fb19cf",
+  "passed": {
+    "original_native_short_span_regression": true,
+    "native_numeric_direction_cases": 27,
+    "new_native_creator_workflows": 16,
+    "exact_knots_and_weights": true,
+    "coordinate_epsilon": 1e-12,
+    "native_and_default_3dm_roundtrips_per_build": 16,
+    "kernel_mesh_variants": 64,
+    "headless_app_builds": [
+      "default",
+      "native-smlib"
+    ],
+    "app_workflow_tests_per_build": 3,
+    "legacy_creator_cases_per_build": 42,
+    "boundary_validation_tests": 20,
+    "joining_tests": 101,
+    "tessellation_tests": 22,
+    "parameter_frame_tests": 5,
+    "curvature_tests": 48,
+    "legacy_point_getter_tests": 5,
+    "workspace_clippy_all_targets": true,
+    "formatting": true,
+    "python_tests": 18
+  },
+  "limits": [
+    "The exact fallback certifies straight monotone isoparametric trim images. Unproved images retain the sampled check.",
+    "Validation and component tolerances are unchanged. Each fallback has a 16 million work-unit budget.",
+    "Stored geometry and parameter domains are unchanged. Mesh corner UV and its chart origin must remain paired.",
+    "Continuous mesh error bounds and comparative performance remain unqualified."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/brep/validate/boundary.rs": "f1fb6c48a1028c5e04711c7c4f7cf5caa231bdd3ff89dd4dd320c92019e995cb",
+    "crates/viboceros-geometry/src/brep/validate/boundary/certificate.rs": "1e5f3f9bc9fd810a7c3393948c5a2b382788bb6079ebc6d2600d9a4ccd327261",
+    "crates/viboceros-geometry/src/brep/trim_image/isocurve.rs": "10b823ba9537316f27c6f112ecc0f823774b6351eeadcbf91fbb81bcdfa2af4c",
+    "crates/viboceros-geometry/src/brep/join_edges/automatic/rebuild/image.rs": "cba20b5b4c3c9d5c0b376fe0b8ee8f1ea447f92326ea08ec3597f41c6f9b4103",
+    "crates/viboceros-geometry/src/brep/parameter_frame.rs": "8794c1643cc488ff32839b609100b78a2deb6ee726d8b2872c9cc74887dab6c4",
+    "crates/viboceros-geometry/src/nurbs/parameter_frame.rs": "700cf71b155e9643080528346c0a254c9c524ba4c6b7849685c2b3664e9bc12c",
+    "crates/viboceros-geometry/src/nurbs_surface/parameter_frame.rs": "ff1260db2c2e29108128ed44fb90c87af52ab93111847766640941b8bc0fb505",
+    "crates/viboceros-geometry/src/brep/tessellation/independent.rs": "f04d9c9e5b5a501eb04cdb8aba96b4adcf4de236c8d802a477e5e4c274874423",
+    "crates/viboceros-geometry/src/brep/tessellation/conforming.rs": "7edc8a49d4ff1f2f26e8e705cdcf3e72f4c45db0e612aa34eb3e5784ac809838",
+    "crates/viboceros-geometry/src/brep/tessellation/normals.rs": "4d70a80b589992e237d14e6bf3d20311833e3c227f14798df010d09c945e12cd",
+    "crates/viboceros-geometry/src/brep/tessellation/curvature.rs": "3c572bc8e27e33b7fb2af5379048f08e63a3a0b4f4db4321ee03b69be20b5b7c",
+    "crates/viboceros-geometry/tests/extrusion/short_spans.rs": "be8b751cb56dfd4d73d923cd83b8fb536d0ee3cac59fd3ad4d81658e54914a30",
+    "crates/viboceros-geometry/src/brep/validate/tests/short_spans.rs": "3c02debf3a573ed9ce1050371d70b920b3d0fbe25350713612d3a7504647a71c",
+    "crates/viboceros-oracle/src/short_span_extrusions.rs": "965d733f67d33d1827e8999d1fcb78466597a590923cc38dcc2b36ad1805d5ab",
+    "crates/viboceros-oracle/tests/short_span_extrusions.rs": "9ea86175fd915885199039c969f4c1d51ef7ce4b88acf9a544893c747886d390",
+    "crates/viboceros-oracle/tests/support/short_span_extrusions.rs": "669171f705c897d605d51db0b5d1dd458e2feeffe787384a8f50d24e0ce00391",
+    "src/app/curve_extrusion.rs": "a5f2e3388eb3076c3cfef7c5862cf85f57df2dfd3dcb2eae6cb1f23d365d401c",
+    "src/app/tests/short_span_extrusions.rs": "38abd1c652b19a6817c4fe1cb3185e05c2b6efe8bf6840f8780d5ef3685fa2d4",
+    "src/app/interactive_start.rs": "a8b21667bfd6894c73ec0a925d91187abdd325191ec9860732e80b947dab8298",
+    "src/app/drafting_input.rs": "274f64ad675677e7a39b32e14af0dbaf714dec4e43937ac30350df17cdbb3a41",
+    "src/app/interactive_state/mod.rs": "0b75c8aed42b35b1f781182223c90be64c4e30e796ad5a2c6640f57a12df01c1",
+    "tools/rhino_oracle/test_short_span_extrusions.py": "6c363399e2c28448e10254a532ba179e0ff9098d86a8c7170ea1db98d1a0401b",
+    "tools/rhino_oracle/fixtures/short_span_extrusions.json": "d1bf514d9591d1e85f05467d654bcba26187270cce8bfe3d21912e5ba4f2b11c",
+    "tools/rhino_oracle/observations/short_span_extrusions.json.gz": "281a88fc0d53d3e3b07c1fc967078a6f3dbf3ce027576f10395262632c44dce3"
+  }
+}
