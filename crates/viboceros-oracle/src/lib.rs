@@ -80,6 +80,7 @@ mod parameter_bounds;
 pub mod select_uv_rows;
 mod self_intersect;
 pub mod subd_area;
+pub mod subd_volume;
 mod surface_closest;
 mod surface_face_uv;
 pub use surface_face_uv::FaceUvQuery;
@@ -370,6 +371,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    SubdVolume {
+        id: String,
+        #[serde(flatten)]
+        fixture: subd_volume::Fixture,
     },
     SubdArea {
         id: String,
@@ -2873,6 +2879,7 @@ impl Operation {
             | Self::LengthChain { id, .. }
             | Self::ComponentLength { id, .. }
             | Self::SubdArea { id, .. }
+            | Self::SubdVolume { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
             | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
@@ -3412,6 +3419,7 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::SubdVolume { fixture, .. } => subd_volume::run(fixture, iterations, tolerance)?,
         Operation::SubdArea { fixture, .. } => subd_area::run(fixture, iterations, tolerance)?,
         Operation::ComponentLength { fixture, .. } => {
             component_length::run(fixture, iterations, tolerance)?

@@ -72,7 +72,11 @@ class VolumeConfirmation:
         self.choices = {}
         for operation in operations:
             try:
-                validate(operation, "volume", operation.get("op") != "volume_command")
+                if operation.get("op") == "subd_volume":
+                    from .subd_volume_cases import validate as validate_subd
+                    validate_subd(operation)
+                else:
+                    validate(operation, "volume", operation.get("op") != "volume_command")
             except ValueError as error:
                 raise OracleProtocolError("volume confirmation requires a dedicated volume command request") from error
             name = operation["id"]

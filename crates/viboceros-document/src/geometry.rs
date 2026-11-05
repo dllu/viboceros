@@ -91,6 +91,7 @@ impl Geometry {
         use viboceros_geometry::VolumeBoundary;
         match self {
             Self::Mesh(m) => Some(VolumeBoundary::Mesh(m)),
+            Self::SubD(s) => Some(VolumeBoundary::SubD(s)),
             Self::Brep(b) => Some(VolumeBoundary::Brep(b)),
             Self::NurbsSurface(s) => Some(VolumeBoundary::Surface(s)),
             _ => None,

@@ -29,6 +29,7 @@ struct ViboSubDResult {
   std::vector<double> points, surface_points, corner_normals, edge_sharpness;
   std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces, edge_face_counts;
   size_t boundary_edge_count=0;
+  int solid_orientation=0;
 };
 namespace {
 using vibo_subd::require;
@@ -39,7 +40,7 @@ void point(std::vector<double>& out, const ON_3dPoint& p) {
 std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false, const std::unordered_map<unsigned,uint32_t>* sources=nullptr, const std::unordered_set<unsigned>* retained_faces=nullptr, bool curvature=false) {
   auto out=std::make_unique<ViboSubDResult>();
   vibo_subd::JetSamples jets;
-  if (!evaluated) out->archive=vibo_subd::encode(subd);
+  if (!evaluated) { out->archive=vibo_subd::encode(subd); out->solid_orientation=subd.SolidOrientation(); }
   std::unordered_map<const ON_SubDVertex*,uint32_t> indices;
   std::vector<const ON_SubDVertex*> vertices;
   auto vit=subd.VertexIterator();
@@ -236,6 +237,13 @@ extern "C" int vibo_subd_remap(const uint8_t* bytes,size_t count,const size_t* c
     return extract(*subd);
   });
 }
+extern "C" int vibo_subd_reverse_orientation(const uint8_t* bytes,size_t n,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    auto subd=vibo_subd::decode(bytes,n);
+    require(subd->ReverseOrientation(),"Cannot reverse SubD orientation");
+    return extract(*subd);
+  });
+}
 extern "C" int vibo_subd_read(const uint8_t* bytes,size_t n,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{return extract(*vibo_subd::decode(bytes,n));});
 }
@@ -304,7 +312,7 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
     r->mesh_texture_coordinates.size()/2,r->mesh_vertex_normals.size()/3,
     r->mesh_ngons.data(),r->mesh_ngon_vertices.data(),r->mesh_ngon_faces.data(),
     r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data(),
-    r->surface_jets.size()/18,r->corner_jet_indices.size(),r->surface_jets.data(),r->corner_jet_indices.data()};return 1;
+    r->surface_jets.size()/18,r->corner_jet_indices.size(),r->surface_jets.data(),r->corner_jet_indices.data(),r->solid_orientation};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 

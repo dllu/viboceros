@@ -1,0 +1,53 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_volume",
+      "id": "cube_replace_Volume",
+      "scene": "cube",
+      "command": "Volume",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "replace_reversed": true
+    },
+    {
+      "op": "subd_volume",
+      "id": "cube_replace_VolumeCentroid",
+      "scene": "cube",
+      "command": "VolumeCentroid",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "replace_reversed": true
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_replace_Volume",
+      "scene": "open_cube",
+      "command": "Volume",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "replace_reversed": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_replace_VolumeCentroid",
+      "scene": "open_cube",
+      "command": "VolumeCentroid",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "replace_reversed": true,
+      "open_confirmation": "yes"
+    }
+  ]
+}

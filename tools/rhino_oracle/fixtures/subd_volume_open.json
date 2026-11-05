@@ -1,0 +1,191 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_Volume_yes",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_1_1_0_Volume_yes",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_1_1_0_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_Volume_no",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "no"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_VolumeCentroid_no",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "no"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_Volume_escape",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "escape"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_0_VolumeCentroid_escape",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "escape"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_0_0_Volume_yes",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": false,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_0_0_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": false,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_open_0_1_0_Volume_yes",
+      "command": "Volume",
+      "scene": "reversed_open",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_open_0_1_0_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "reversed_open",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "bent_grid_0_1_0_Volume_yes",
+      "command": "Volume",
+      "scene": "bent_grid",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "bent_grid_0_1_0_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "bent_grid",
+      "flat": false,
+      "preselect": true,
+      "mixed": false,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "bent_grid_0_1_1_Volume_yes",
+      "command": "Volume",
+      "scene": "bent_grid",
+      "flat": false,
+      "preselect": true,
+      "mixed": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "bent_grid_0_1_1_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "bent_grid",
+      "flat": false,
+      "preselect": true,
+      "mixed": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_1_Volume_yes",
+      "command": "Volume",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true,
+      "open_confirmation": "yes"
+    },
+    {
+      "op": "subd_volume",
+      "id": "open_cube_0_1_1_VolumeCentroid_yes",
+      "command": "VolumeCentroid",
+      "scene": "open_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true,
+      "open_confirmation": "yes"
+    }
+  ]
+}

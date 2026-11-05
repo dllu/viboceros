@@ -3,7 +3,7 @@
 [Project overview](../README.md) · [Measurement commands](commands/editing.md)
 
 `Area` measures analytic geometry, meshes, NURBS surfaces, trimmed B-reps and SubDs.
-[Volume](commands/volume.md) measures meshes, NURBS surfaces and B-reps, asking
+[Volume](commands/volume.md) measures meshes, SubDs, NURBS surfaces and B-reps, asking
 before integrating open boundary collections. Outward normals give positive
 volume and reversing every face gives negative volume. Both commands preserve
 geometry, attributes and model undo history; Volume retains preselection but
@@ -38,6 +38,10 @@ geometry or document tolerances.
 SubD area and area moments use the prepared Local G1x NURBS patches, independent
 of smooth/flat appearance or viewport mesh density. [Native comparisons](oracle/subd-area.md)
 distinguish this representation from G0, G1 and other continuity modes.
+
+SubD volume boundaries prepare the same Local G1x representation as a sewn
+B-rep before choosing a shared volume reference. [Volume controls](oracle/subd-volume.md)
+cover open pieces, mixed meshes, inward admission and marker history.
 
 B-rep measurements use the NURBS surfaces and parameter-space trim curves.
 Display tessellation is not involved. Full domains and rectangular trims are

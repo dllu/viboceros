@@ -15,6 +15,8 @@ mod insert;
 mod inset;
 mod join;
 mod offset;
+mod orientation;
+pub use orientation::{SubDSolidOrientation, subd_reverse_orientation};
 mod regular_patches;
 mod remap;
 mod sharpness;
@@ -57,6 +59,7 @@ pub struct SubDData {
     /// Newly refined face ordinals for a local subdivision result only.
     pub selected_faces: Vec<u32>,
     pub boundary_edge_count: usize,
+    pub solid_orientation: SubDSolidOrientation,
     /// Display quad to active control face ordinal, present for tessellations.
     pub face_sources: Vec<u32>,
     pub archive: Vec<u8>,
@@ -123,6 +126,7 @@ struct View {
     corner_jet_count: usize,
     surface_jets: *const f64,
     corner_jet_indices: *const u32,
+    solid_orientation: c_int,
 }
 #[repr(C)]
 struct NativeResult {
@@ -325,6 +329,7 @@ fn call(
     Ok(SubDData {
         selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
         boundary_edge_count: v.boundary_edge_count,
+        solid_orientation: SubDSolidOrientation::from_native(v.solid_orientation)?,
         face_sources: unsafe { copy(v.face_sources, v.face_source_count) },
         archive: unsafe { copy(v.archive, v.archive_count) },
         points: unsafe { copy(v.points.cast(), v.point_count) },

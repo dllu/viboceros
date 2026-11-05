@@ -1,0 +1,335 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_volume",
+      "id": "cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "skew_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "skew_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "creased_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "creased_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "creased_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "creased_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "creased_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "creased_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "creased_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "creased_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "sharp_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "sharp_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "sharp_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "sharp_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "sharp_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "sharp_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "sharp_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "sharp_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "reversed_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "reversed_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "reversed_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "reversed_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "translated_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "translated_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "translated_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "translated_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "translated_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "translated_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "translated_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "translated_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "scaled_cube_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "scaled_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "scaled_cube_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "scaled_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "scaled_cube_1_1_0_Volume",
+      "command": "Volume",
+      "scene": "scaled_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "scaled_cube_1_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "scaled_cube",
+      "flat": true,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "bipyramid7_0_1_0_Volume",
+      "command": "Volume",
+      "scene": "bipyramid7",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "bipyramid7_0_1_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "bipyramid7",
+      "flat": false,
+      "preselect": true,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_0_0_Volume",
+      "command": "Volume",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": false,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_0_0_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": false,
+      "mixed": false
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_1_1_Volume",
+      "command": "Volume",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true
+    },
+    {
+      "op": "subd_volume",
+      "id": "skew_cube_0_1_1_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "skew_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_0_1_1_Volume",
+      "command": "Volume",
+      "scene": "reversed_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true
+    },
+    {
+      "op": "subd_volume",
+      "id": "reversed_cube_0_1_1_VolumeCentroid",
+      "command": "VolumeCentroid",
+      "scene": "reversed_cube",
+      "flat": false,
+      "preselect": true,
+      "mixed": true
+    }
+  ]
+}

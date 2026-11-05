@@ -27,6 +27,7 @@ mod mass_properties;
 mod mesh_conversion;
 mod nurbs_conversion;
 mod offset;
+mod orientation;
 mod primitives;
 mod seams;
 mod soft_crease;
@@ -53,7 +54,7 @@ pub use nurbs_conversion::{
 pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
-pub use viboceros_opennurbs::{SubDComponentIds, SubDFacePack};
+pub use viboceros_opennurbs::{SubDComponentIds, SubDFacePack, SubDSolidOrientation};
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.

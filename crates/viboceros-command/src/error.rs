@@ -735,7 +735,7 @@ pub enum CommandError {
     )]
     UnsupportedAreaGeometry,
 
-    #[error("Volume supports selected meshes, NURBS surfaces, and exact B-reps only")]
+    #[error("Volume supports selected meshes, SubDs, NURBS surfaces, and exact B-reps")]
     UnsupportedVolumeGeometry,
 
     #[error(

@@ -30,7 +30,7 @@ fn planar_subd_area_units_appearance_and_centroid_obey_analytic_references() {
     let (mut doc, r, owner) = setup();
     let source = doc.object(owner).unwrap().clone();
     assert!(ObjectSelectionFilter::Area.accepts_object(&source));
-    assert!(!ObjectSelectionFilter::Volume.accepts_object(&source));
+    assert!(ObjectSelectionFilter::Volume.accepts_object(&source));
     for _ in 0..2 {
         let report = r.execute(&mut doc, "Area Units=Centimeters").unwrap();
         let value = report

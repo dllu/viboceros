@@ -1,6 +1,9 @@
 //! Shared-reference integration of separately represented volume boundaries.
 use super::*;
-use crate::{BoundingBox3, Brep, NurbsSurface, Tolerance, TriangleMesh};
+use crate::{
+    BoundingBox3, Brep, NurbsSurface, SubD, SubDNurbsContinuity, SubDSolidOrientation, Tolerance,
+    TriangleMesh,
+};
 
 /// An oriented boundary piece, not a claim that this piece encloses a solid.
 #[derive(Clone, Copy)]
@@ -8,6 +11,7 @@ pub enum VolumeBoundary<'a> {
     Mesh(&'a TriangleMesh),
     Brep(&'a Brep),
     Surface(&'a NurbsSurface),
+    SubD(&'a SubD),
 }
 
 impl VolumeBoundary<'_> {
@@ -16,13 +20,16 @@ impl VolumeBoundary<'_> {
     pub fn is_closed(self, tolerance: Tolerance) -> Result<bool, GeometryError> {
         Ok(match self {
             Self::Mesh(m) => m.topology().is_closed(),
+            Self::SubD(s) => s.solid_orientation() != SubDSolidOrientation::NotSolid,
             Self::Brep(b) => b.is_solid(),
             Self::Surface(s) => Brep::try_surface_face(s.clone(), tolerance)?.is_solid(),
         })
     }
 
     /// Bounds of participating geometry. Unused mesh vertices never choose the
-    /// volume reference point or enlarge the numeric integration frame.
+    /// volume reference point or enlarge the numeric integration frame. SubDs
+    /// return conservative control bounds here; collection queries prepare
+    /// their NURBS representation before choosing the shared reference.
     pub fn bounds(self) -> Result<BoundingBox3, GeometryError> {
         match self {
             Self::Mesh(m) => BoundingBox3::from_points(
@@ -32,6 +39,7 @@ impl VolumeBoundary<'_> {
                     .map(|i| m.vertices()[*i as usize]),
             ),
             Self::Brep(b) => Ok(b.bounds()),
+            Self::SubD(s) => Ok(s.bounds()),
             Self::Surface(s) => Ok(s.control_point_bounds()),
         }
     }
@@ -47,6 +55,9 @@ impl VolumeBoundary<'_> {
         match self {
             Self::Mesh(m) => m.volume_flux(base),
             Self::Brep(b) => b.volume_flux(base, tolerance),
+            Self::SubD(s) => s
+                .to_nurbs_brep(SubDNurbsContinuity::G1x, tolerance)?
+                .volume_flux(base, tolerance),
             Self::Surface(s) => s.volume_flux(base, tolerance),
         }
     }
@@ -113,6 +124,36 @@ impl VolumeMassProperties {
         tolerance: Tolerance,
         moments: SurfaceVolumeMoments,
     ) -> Result<Self, GeometryError> {
+        if boundaries
+            .iter()
+            .any(|b| matches!(b, VolumeBoundary::SubD(_)))
+        {
+            // Prepare each source once before choosing the shared reference.
+            // Keep the existing mesh/B-rep hot path allocation-free here.
+            let prepared = boundaries
+                .iter()
+                .map(|b| match b {
+                    VolumeBoundary::SubD(s) => s
+                        .to_nurbs_brep(SubDNurbsContinuity::G1x, tolerance)
+                        .map(Some),
+                    _ => Ok(None),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let boundaries = boundaries
+                .iter()
+                .zip(&prepared)
+                .map(|(b, owned)| owned.as_ref().map_or(*b, VolumeBoundary::Brep))
+                .collect::<Vec<_>>();
+            return Self::prepared_boundary_integrals::<FIRST>(&boundaries, tolerance, moments);
+        }
+        Self::prepared_boundary_integrals::<FIRST>(boundaries, tolerance, moments)
+    }
+
+    fn prepared_boundary_integrals<const FIRST: bool>(
+        boundaries: &[VolumeBoundary<'_>],
+        tolerance: Tolerance,
+        moments: SurfaceVolumeMoments,
+    ) -> Result<Self, GeometryError> {
         let mut bounds = None;
         for boundary in boundaries {
             let next = boundary.bounds()?;
@@ -143,6 +184,9 @@ impl VolumeMassProperties {
                         base
                     };
                     b.volume_integrals::<FIRST>(reference, tolerance, moments)?
+                }
+                VolumeBoundary::SubD(_) => {
+                    unreachable!("SubD boundaries are prepared before integration")
                 }
                 VolumeBoundary::Surface(s) => {
                     let b = Brep::try_surface_face(s.clone(), tolerance)?;

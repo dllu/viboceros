@@ -100,7 +100,10 @@ impl ObjectSelectionFilter {
             ),
             Self::Volume => matches!(
                 geometry,
-                Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                Geometry::NurbsSurface(_)
+                    | Geometry::Brep(_)
+                    | Geometry::Mesh(_)
+                    | Geometry::SubD(_)
             ),
             Self::Area => {
                 matches!(

@@ -2,7 +2,7 @@
 
 [Command index](README.md) · [VolumeCentroid](volume-centroid.md) · [Mass integration](../mass-properties.md)
 
-Select meshes, NURBS surfaces or B-reps and enter `Volume`, or enter it first,
+Select meshes, SubDs, NURBS surfaces or B-reps and enter `Volume`, or enter it first,
 pick objects and press Enter. The result is cumulative signed volume, initially
 in cubed document-coordinate units. Reversed orientation subtracts; exact cancellation
 reports zero. Mixed preselection skips curves and points. Directly selected
@@ -63,7 +63,11 @@ source units retain their exact stored binary64 scale. Unitless sources use
 factor one even with an explicit display choice, as observed in Rhino; this does
 not establish a physical size for a unitless model. Unset conversion is an error.
 
-SubD geometry is **not implemented**.
+SubDs use the prepared Local G1x NURBS representation in both flat and smooth
+appearance. Each source is prepared once before choosing the shared reference;
+open SubDs use the same warning and explicit continuation rules. Known inward
+SubD solids are turned outward on document admission, matching native insertion;
+raw kernel geometry can retain either orientation. See the [58 native controls](../oracle/subd-volume.md).
 Native output round-trips its computed binary64 result; it does not reproduce
 Rhino's printed uncertainty or exact history text. The [official command help](https://docs.mcneel.com/rhino/8/help/en-us/commands/volume.htm)
 documents unjoined enclosing collections and display-unit selection.

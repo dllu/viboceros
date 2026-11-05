@@ -1,11 +1,11 @@
 //! Geometry admission policy, separate from transforms and historical snapshots.
 use super::*;
-use viboceros_geometry::BrepSolidOrientation;
+use viboceros_geometry::{BrepSolidOrientation, SubDSolidOrientation};
 
 #[cfg(test)]
 mod tests;
 
-/// Only an exact, supported inward witness authorizes whole-object reversal.
+/// Only a supported inward-orientation witness authorizes whole-object reversal.
 /// Unknown is not inward: preserve unsupported/coincident geometry and never
 /// fall back to signed volume or independently orient connected components.
 pub(super) fn normalize_geometry(mut geometry: Geometry) -> Result<Geometry, GeometryError> {
@@ -14,13 +14,19 @@ pub(super) fn normalize_geometry(mut geometry: Geometry) -> Result<Geometry, Geo
     {
         brep.reverse_orientation();
     }
+    if let Geometry::SubD(subd) = &mut geometry
+        && subd.solid_orientation() == SubDSolidOrientation::Inward
+    {
+        *subd = subd.reversed()?;
+    }
     Ok(geometry)
 }
 
 impl Document {
     /// Adds geometry on the current layer, globally reversing known inward
-    /// B-rep solids. Open/inconsistent B-reps, unknown solid orientations and
-    /// non-B-rep geometry retain their supplied sense.
+    /// B-rep and SubD solids. Open/inconsistent boundaries, unknown solid
+    /// orientations and
+    /// other geometry retain their supplied sense.
     pub fn add_geometry(&mut self, geometry: Geometry) -> Result<ObjectId, DocumentError> {
         self.add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(self.current_layer))
     }

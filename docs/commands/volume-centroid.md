@@ -2,7 +2,7 @@
 
 [Command index](README.md) · [AreaCentroid](area-centroid.md) · [Mass integration](../mass-properties.md)
 
-Select surfaces, B-reps or meshes and enter `VolumeCentroid`, or enter the command first,
+Select surfaces, B-reps, meshes or SubDs and enter `VolumeCentroid`, or enter the command first,
 pick objects, and press Enter. One point marks the cumulative **signed-volume**
 centroid, not the surface-area centroid or a vertex average. Groups do not
 partition the result or multiply contributions; directly selected group subsets
@@ -48,6 +48,11 @@ and clears selection. Numerical failures leave no partial marker; Esc cancels
 picking. Native tests exercise actual UI picking and repeated undo/redo.
 
 ## Kernel
+
+SubD inputs share [Volume's preparation and admission policy](volume.md).
+Local G1x patches supply surface moments in both display appearances, including
+open-shell continuation and mixed collections. [Native SubD controls](../oracle/subd-volume.md)
+check cumulative markers, warnings, selection and model history.
 
 `VolumeMassProperties` owns signed volume and three signed first moments,
 independently of document state. Mesh tetrahedral contributions are exact for

@@ -172,6 +172,7 @@ mod round_primitive_input;
 mod selection_sidebar;
 mod subd_area;
 mod subd_join;
+mod subd_volume;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;

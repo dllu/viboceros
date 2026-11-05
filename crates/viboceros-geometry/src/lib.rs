@@ -17,8 +17,8 @@ pub use subd::{
     SubDDirectedEdge, SubDDisplayMesh, SubDEdgeChain, SubDEdgeChainType, SubDEdgeSeamResult,
     SubDExtrudeDirection, SubDExtrudeSelection, SubDFaceExtraction, SubDFacePack,
     SubDFromMeshOptions, SubDFromSurfaceMethod, SubDJoinResult, SubDLimitFaceGrid, SubDMeshDensity,
-    SubDNurbsContinuity, SubDNurbsPackedPatch, SubDNurbsPatch, SubDNurbsTile, SubDSphereStyle,
-    SubDVertexInsertion, join_subds, join_subds_seeded,
+    SubDNurbsContinuity, SubDNurbsPackedPatch, SubDNurbsPatch, SubDNurbsTile, SubDSolidOrientation,
+    SubDSphereStyle, SubDVertexInsertion, join_subds, join_subds_seeded,
 };
 mod area_mass_properties;
 mod mass_integration;

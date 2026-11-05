@@ -204,7 +204,7 @@ tolerances.
 | --- | --- |
 | Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, polycurves, and surface/mesh/SubD edges |
 | Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, meshes, and SubDs |
-| [Volume](volume.md) | Meshes, NURBS surfaces and B-reps; open collections require confirmation |
+| [Volume](volume.md) | Meshes, SubDs, NURBS surfaces and B-reps; open collections require confirmation |
 
 NURBS/B-rep measurements use the geometry kernel's accuracy-controlled routines,
 not viewport tessellation. General curve area uses `CurveRef::planar_area`,
