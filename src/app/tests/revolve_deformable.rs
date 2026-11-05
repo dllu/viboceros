@@ -127,6 +127,7 @@ fn revolve_options_remain_atomic_between_axis_picks_and_cancel_preserves_redo() 
             sweep_degrees: -270.,
             start_angle_degrees: 20.,
             delete_input: true,
+            split_at_tangents: false,
         },
     };
     assert_eq!(app.active_command, Some(expected));
@@ -144,6 +145,9 @@ fn revolve_options_remain_atomic_between_axis_picks_and_cancel_preserves_redo() 
         "Angle=90 SweepAngle=120",
         "FullCircle=Yes Angle=30",
         "Deformable=No PointCount=0",
+        "SplitAtTangents=Maybe",
+        "SplitAtTangents=Yes SplitAtTangents=No",
+        "SplitAtTangents=Yes PointCount=0",
     ] {
         enter(&mut app, input);
         assert_eq!(app.active_command, Some(expected), "{input}");

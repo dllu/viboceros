@@ -8,6 +8,7 @@ pub struct Options {
     pub delete_input: bool,
     pub deformable: bool,
     pub point_count: usize,
+    pub split_at_tangents: bool,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -17,6 +18,7 @@ impl Default for Options {
             delete_input: false,
             deformable: false,
             point_count: 10,
+            split_at_tangents: false,
         }
     }
 }
@@ -66,7 +68,7 @@ impl Options {
                     }
                 }
                 "splitattangents" => {
-                    yes_no()?;
+                    self.split_at_tangents = yes_no()?;
                 }
                 _ => return Err(CommandError::Usage(REVOLVE_USAGE)),
             }
@@ -94,11 +96,12 @@ impl Options {
     pub fn command_options(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         format!(
-            "StartAngle={} DeleteInput={} Deformable={} PointCount={}",
+            "StartAngle={} DeleteInput={} Deformable={} PointCount={} SplitAtTangents={}",
             self.start_angle_degrees,
             yes(self.delete_input),
             yes(self.deformable),
-            self.point_count
+            self.point_count,
+            yes(self.split_at_tangents)
         )
     }
 }

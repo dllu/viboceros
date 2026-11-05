@@ -915,7 +915,7 @@ impl InteractiveCommand {
             Self::Revolve {
                 axis_start: None, ..
             } => {
-                "Revolve: pick the axis start (Angle, StartAngle, Deformable, PointCount, DeleteInput; Esc cancels)"
+                "Revolve: pick the axis start (Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
             }
             Self::RailRevolve(state) if state.axis_start.is_none() => {
                 "RailRevolve: pick the axis start (ScaleHeight, SplitAtTangents; Esc cancels)"
@@ -927,7 +927,7 @@ impl InteractiveCommand {
                 axis_start: Some(_),
                 ..
             } => {
-                "Revolve: pick the axis end or Enter for CPlane Z (Angle, StartAngle, Deformable, PointCount, DeleteInput; Esc cancels)"
+                "Revolve: pick the axis end or Enter for CPlane Z (Angle, StartAngle, Deformable, PointCount, SplitAtTangents, DeleteInput; Esc cancels)"
             }
         }
     }

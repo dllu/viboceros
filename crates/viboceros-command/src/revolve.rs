@@ -1,6 +1,7 @@
 //! Revolution input parsing and transactional surface staging.
 use super::*;
 
+mod construction;
 #[cfg(feature = "native-smlib")]
 mod native;
 mod options;
@@ -9,7 +10,7 @@ pub use options::Options;
 
 const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Deformable=Yes|No] [PointCount=4..1000] [SplitAtTangents=Yes|No]";
 
-pub(super) struct RevolveCommand;
+pub(super) struct RevolveCommand(pub crease_splitting::Preference);
 
 impl Command for RevolveCommand {
     fn name(&self) -> &'static str {
@@ -19,15 +20,13 @@ impl Command for RevolveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
         let (axis_segment, options) = parse_revolution(arguments, document.tolerance())?;
-        let axis_origin = axis_segment.start();
-        let axis = axis_segment.direction(document.tolerance())?;
-        let (start_angle, sweep_angle) = options.angles()?;
+        let (_, sweep_angle) = options.angles()?;
         let Options {
             delete_input,
             deformable,
-            point_count,
             ..
         } = options;
+        let crease = self.0.get().0;
         let mut revolutions = Vec::new();
         for id in selected {
             let Some(curve) = document
@@ -38,70 +37,22 @@ impl Command for RevolveCommand {
             else {
                 continue;
             };
-            let curve = if deformable {
-                profile::prepare(&curve, axis_segment, document.tolerance())?
-            } else {
-                curve
-            };
-            let surface = if deformable {
-                NurbsSurface::try_deformable_revolved_curve(
-                    &curve,
-                    axis_origin,
-                    axis,
-                    start_angle,
-                    sweep_angle,
-                    point_count,
-                )?
-            } else {
-                #[cfg(not(feature = "native-smlib"))]
-                let exact = NurbsSurface::try_revolved_curve(
-                    &curve,
-                    axis_origin,
-                    axis,
-                    start_angle,
-                    sweep_angle,
-                )?;
-                #[cfg(feature = "native-smlib")]
-                let exact = native::revolve(&curve, axis_origin, axis, start_angle, sweep_angle)?;
-                exact
-            };
-            let surface = if deformable {
-                let mid = curve.evaluate(curve.parameter_at(0.5)?)?;
-                let radius =
-                    mid.distance_to(axis_segment.closest_point(mid, document.tolerance())?)?;
-                let width = radius * sweep_angle.abs();
-                let u = if width > 0. {
-                    0.0..=width
-                } else {
-                    surface.domain_u()
-                };
-                let height = viboceros_geometry::ArcLengthSampler::try_new(
-                    CurveRef::NurbsCurve(&curve),
-                    Tolerance::NUMERICAL_VALIDATION,
-                )?
-                .quadrature_length_estimate(1e-4)?;
-                let v = surface.domain_v();
-                let extent = v.end() - v.start();
-                // Native uses asymmetric thresholds, preserving well-scaled
-                // charts and their possibly nonzero parameter origin.
-                let v = if height > 3. * extent || height < 0.33 * extent {
-                    0.0..=height
-                } else {
-                    v
-                };
-                surface.try_reparameterized(u, v)?
-            } else {
-                surface
-            };
-            revolutions.push((id, surface));
+            let geometry = construction::construct(
+                &curve,
+                axis_segment,
+                options,
+                crease,
+                document.tolerance(),
+            )?;
+            revolutions.push((id, geometry));
         }
         if revolutions.is_empty() {
             return Err(CommandError::NoRevolvableCurves);
         }
 
         let output_count = revolutions.len();
-        for (_, surface) in &revolutions {
-            document.add_geometry(Geometry::NurbsSurface(surface.clone()))?;
+        for (_, geometry) in &revolutions {
+            document.add_geometry(geometry.clone())?;
         }
         if delete_input {
             for (id, _) in revolutions {
@@ -109,7 +60,7 @@ impl Command for RevolveCommand {
             }
         }
         Ok(format!(
-            "Revolved {output_count} curve object(s) through {:.6} degrees into {} NURBS surfaces{}",
+            "Revolved {output_count} curve object(s) through {:.6} degrees ({}){}",
             sweep_angle.to_degrees(),
             if deformable { "deformable" } else { "exact" },
             if delete_input {

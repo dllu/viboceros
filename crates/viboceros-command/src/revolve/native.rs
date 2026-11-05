@@ -9,13 +9,25 @@ pub(super) fn revolve(
     start: Real,
     sweep: Real,
 ) -> Result<NurbsSurface, CommandError> {
+    let chart_start = if sweep < 0. { start + sweep } else { start };
+    // usd-brep uses three quadrant spans for a three-quarter turn. Rhino uses
+    // four equal spans for every turn above 180 degrees, retaining a different
+    // rational parameter chart. Use our exact construction for that layout.
+    if sweep.abs() > std::f64::consts::PI && sweep.abs() < std::f64::consts::TAU {
+        return Ok(NurbsSurface::try_revolved_curve(
+            curve,
+            origin,
+            axis,
+            chart_start,
+            sweep.abs(),
+        )?);
+    }
     let length = curve.revolution_parameter_length(origin, axis, sweep)?;
     // Native radial degeneracy thresholds include coordinate magnitude.
     // Work around the axis origin, then restore world placement on the result.
     let zero = Point3::try_new(0., 0., 0.)?;
     // Rhino encodes negative sweeps with increasing circular parameters,
     // starting at the geometric end angle rather than reversing the axis.
-    let chart_start = if sweep < 0. { start + sweep } else { start };
     let local = AffineTransform3::from_translation(origin.vector_to(zero)?).then(
         AffineTransform3::try_rotation(zero, axis, chart_start.rem_euclid(std::f64::consts::TAU))?,
     )?;

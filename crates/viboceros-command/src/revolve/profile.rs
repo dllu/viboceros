@@ -1,6 +1,36 @@
 //! Owned command profiles: active ends and the first interior axis contact.
 use super::*;
 
+pub(super) fn length_estimate(curve: &NurbsCurve) -> Result<Real, GeometryError> {
+    let estimate = |c: &NurbsCurve| {
+        viboceros_geometry::ArcLengthSampler::try_new(
+            CurveRef::NurbsCurve(c),
+            Tolerance::NUMERICAL_VALIDATION,
+        )?
+        .quadrature_length_estimate(1e-4)
+    };
+    match estimate(curve) {
+        Err(GeometryError::NumericalIntegrationDidNotConverge) => {
+            // A short interior span can have too few representable parameters
+            // for adaptive integration. Extract exact spans and integrate each
+            // in its own unit chart, retaining the same quadrature rule.
+            let mut sum = viboceros_geometry::FiniteSum::default();
+            for span in curve.try_bezier_spans()? {
+                if span
+                    .control_points()
+                    .iter()
+                    .all(|p| p.point() == span.control_points()[0].point())
+                {
+                    continue;
+                }
+                sum.add(estimate(&span.try_reparameterized(0. ..=1.)?)?)?;
+            }
+            sum.total()
+        }
+        other => other,
+    }
+}
+
 pub(super) fn prepare(
     curve: &NurbsCurve,
     axis: LineSegment,

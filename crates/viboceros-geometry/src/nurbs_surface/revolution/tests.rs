@@ -1,7 +1,49 @@
 use super::*;
+use crate::{Brep, BrepTrimType, CurveContinuity};
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
+}
+
+#[test]
+fn partial_exact_revolution_retains_axis_poles_as_singular_boundaries() {
+    let tolerance = Tolerance::DEFAULT;
+    let origin = point(12., -7., 2.);
+    let axis = UnitVector3::try_new(0., 0., 1., tolerance).unwrap();
+    let profile = NurbsCurve::try_new(
+        1,
+        vec![origin, point(15., -7., 3.), point(12., -7., 6.)],
+        vec![0., 0., 1., 2., 2.],
+    )
+    .unwrap();
+    for sweep in [120_f64.to_radians(), -270_f64.to_radians()] {
+        let surface =
+            NurbsSurface::try_revolved_curve(&profile, origin, axis, 30_f64.to_radians(), sweep)
+                .unwrap();
+        let brep = Brep::try_surface_partitioned_at_discontinuities(
+            &surface,
+            &[(CurveContinuity::G1, 0.1_f64.to_radians())],
+            tolerance,
+        )
+        .unwrap();
+        assert_eq!(
+            (
+                brep.faces().len(),
+                brep.edges().len(),
+                brep.vertices().len()
+            ),
+            (2, 5, 4)
+        );
+        assert_eq!(
+            brep.faces()
+                .iter()
+                .flat_map(|f| f.loops())
+                .flat_map(|l| l.trims())
+                .filter(|t| t.trim_type() == BrepTrimType::Singular)
+                .count(),
+            2
+        );
+    }
 }
 
 #[test]

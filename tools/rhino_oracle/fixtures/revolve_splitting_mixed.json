@@ -1,0 +1,2123 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10000",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10001",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10010",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10011",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10100",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10101",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10110",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_10111",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11000",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11001",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11010",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11011",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11100",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11101",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11110",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_11111",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0026,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00000",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00001",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00010",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00011",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00100",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00101",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00110",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_00111",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": false,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01000",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01001",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01010",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01011",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": false,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01100",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01101",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": false,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01110",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": 360.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    },
+    {
+      "op": "revolve_splitting",
+      "id": "mixed_01111",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              1.0026
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis_end": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "start_degrees": 30.0,
+      "sweep_degrees": -270.0,
+      "point_count": 8,
+      "deformable": true,
+      "crease_splitting": true,
+      "split_at_tangents": true,
+      "delete_input": false
+    }
+  ]
+}

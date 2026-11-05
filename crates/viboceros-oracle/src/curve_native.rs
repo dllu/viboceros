@@ -569,7 +569,10 @@ pub(super) fn revolve_command(
         let source_id = document.add_geometry(source.clone())?;
         document.select_objects_direct([source_id], viboceros_document::SelectionMode::Replace)?;
         let point = |p: [f64; 3]| format!("{},{},{}", p[0], p[1], p[2]);
-        viboceros_command::CommandRegistry::with_builtins().execute(
+        let commands = viboceros_command::CommandRegistry::with_builtins();
+        // The frozen native producer explicitly disables global crease splitting.
+        commands.execute(&mut document, "CreaseSplitting Disable")?;
+        commands.execute(
             &mut document,
             &format!(
                 "Revolve {} {} {} StartAngle={} Output=Surface Deformable=No SplitAtTangents=No",

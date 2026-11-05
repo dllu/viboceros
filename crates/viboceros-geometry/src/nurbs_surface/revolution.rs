@@ -152,15 +152,20 @@ impl NurbsSurface {
         for profile_control in curve.control_points() {
             let point = profile_control.point();
             let center = axis_center(point)?;
-            let first =
-                AffineTransform3::try_rotation(axis_origin, axis_direction, normalized_start)?
-                    .transform_point(point)?;
+            // Rotate only the radial offset so an exact axis control remains
+            // one identical pole in every angular column.
+            let radial = center.vector_to(point)?;
+            let rotate = |angle| -> Result<Point3, GeometryError> {
+                center.translated(
+                    AffineTransform3::try_rotation(axis_origin, axis_direction, angle)?
+                        .transform_vector(radial)?,
+                )
+            };
+            let first = rotate(normalized_start)?;
             controls.push(WeightedPoint3::try_new(first, profile_control.weight())?);
             for span in 0..span_count {
                 let middle_angle = normalized_start + (span as Real + 0.5) * segment_angle;
-                let rotated_middle =
-                    AffineTransform3::try_rotation(axis_origin, axis_direction, middle_angle)?
-                        .transform_point(point)?;
+                let rotated_middle = rotate(middle_angle)?;
                 let middle = center.translated(
                     center
                         .vector_to(rotated_middle)?
@@ -174,12 +179,7 @@ impl NurbsSurface {
                 let endpoint = if full_turn && span + 1 == span_count {
                     first
                 } else {
-                    AffineTransform3::try_rotation(
-                        axis_origin,
-                        axis_direction,
-                        normalized_start + (span + 1) as Real * segment_angle,
-                    )?
-                    .transform_point(point)?
+                    rotate(normalized_start + (span + 1) as Real * segment_angle)?
                 };
                 controls.push(WeightedPoint3::try_new(endpoint, profile_control.weight())?);
             }

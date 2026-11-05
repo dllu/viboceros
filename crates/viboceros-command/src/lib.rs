@@ -1480,7 +1480,7 @@ impl CommandRegistry {
             .register(ExtrudeCurveToPointCommand)
             .expect("unique built-in command");
         registry
-            .register(RevolveCommand)
+            .register(RevolveCommand(registry.crease_splitting.clone()))
             .expect("unique built-in command");
         registry
             .register(loft::LoftCommand(registry.crease_splitting.clone()))

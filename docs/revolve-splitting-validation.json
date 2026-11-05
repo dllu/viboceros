@@ -1,0 +1,131 @@
+{
+  "scope": "Revolve G2 tangent splitting, global G1 crease splitting, sewn boundaries and exact command chart compatibility.",
+  "baseline_revision": "a175cce0d187b55949f7a1a5a37c7e3ac093b18d",
+  "passed": {
+    "new_native_workflows": 160,
+    "geometry_workflows_per_build": 337,
+    "legacy_deformable_workflows_per_build": 172,
+    "legacy_exact_workflows_per_build": 5,
+    "headless_app_fixture_replays_per_build": 328,
+    "archive_roundtrips_and_meshing_per_build": 332,
+    "absolute_geometry_epsilon": 1e-12,
+    "builds": [
+      "default",
+      "native-smlib"
+    ],
+    "test_counts": {
+      "default": {
+        "oracle": 5,
+        "app": 7,
+        "command-unit": 3,
+        "command-policy": 4,
+        "point-input": 5
+      },
+      "native": {
+        "oracle": 5,
+        "app": 8,
+        "command-unit": 4,
+        "command-policy": 4,
+        "point-input": 5
+      }
+    },
+    "kernel_tests": 3,
+    "python_tests": 10,
+    "workspace_clippy_all_targets_default_and_all_features": true,
+    "formatting": true
+  },
+  "native_captures": {
+    "revolve_splitting": {
+      "raw_sha256": "328690b1d6097832919709d864cea0dc276bb6b1f6bc1aeebc3de20a788b2dc5",
+      "gzip_sha256": "eca1228f59f7fa3c36e8871b87a1f9f315c77df3bcde5d8a1d31dd6a47071aeb",
+      "raw_bytes": 10137130,
+      "gzip_bytes": 570550
+    },
+    "revolve_splitting_holdouts": {
+      "raw_sha256": "89313ee2c88d26be86a9ad15d430fbac49ceb3c3cbcf1cb2cba6345b756addc8",
+      "gzip_sha256": "4ce9d9074a9a11e62463779eb280ea623dfe4555dcc1bbc98f9e977e1fb23a4a",
+      "raw_bytes": 15509137,
+      "gzip_bytes": 1001514
+    },
+    "revolve_splitting_mixed": {
+      "raw_sha256": "0c0160478fb14cf9a838a1f6ea4fd7c9a6e4b1d4259a9474d24bc9b79d6f0fe1",
+      "gzip_sha256": "25c78b88d0b224a3653b50be9e9fe68655922ab987b99479389ecea0d6ecb516",
+      "raw_bytes": 7839461,
+      "gzip_bytes": 488313
+    }
+  },
+  "checks": [
+    "Exact and deformable full, partial and negative turns; geometric G1/G2 continuity, redundant knots, rational weights, poles and small angles.",
+    "G2 splits at one degree, followed by global G1 splits at 0.1 degrees; preserve native face slots and the common U chart.",
+    "Surface controls, weights, active knots, domains, orientation, face/edge/vertex counts, trim types and valences.",
+    "Sparse face incidence, native edge vertices, canonical NURBS boundary samples and original analytic boundary samples on the candidate edges.",
+    "Source retention/deletion, selection, Undo/Redo, shared preference isolation and atomic invalid getter options.",
+    "3DM geometry and face incidence; normal-aware tessellation before and after export.",
+    "Legacy exact short-span chart matches using exact Bezier-span integration fallback; native large partial turns retain the Rhino four-span chart."
+  ],
+  "capture_environment": {
+    "display": "All three licensed sessions used the private Xvfb wrapper; app replay removed desktop display and compositor environment variables.",
+    "tolerances": "Main 48 cases used fresh native document defaults. Remaining 112 explicitly set and restored request tolerances: absolute 1e-6, relative 1e-12, angular 1e-6.",
+    "provenance": "Every request hash and immutable, content-addressed producer snapshot was verified. Observation compression preserves the original bytes."
+  },
+  "limits": [
+    "Finite examples and boundary samples; continuous error bounds and comparative performance remain unqualified.",
+    "Native edge indices and analytic parameter clocks are not reproduced. Comparisons use unique geometric edge correspondence without relaxing the coordinate epsilon.",
+    "OpenNURBS canonicalizes the two unused outer padding knots; active knots and geometry are compared.",
+    "Options reset per invocation; SubD output and arbitrary axis-contact configurations remain unqualified."
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/lib.rs": "1c3095ed910d1b0596ef2d5142f1d4f92618c275cbb1c1af95710ea685f1d615",
+    "crates/viboceros-command/src/revolve.rs": "3c0cd03cec79352c101074c2419de213df65f45ebe0d0f6293c36c9bb6830961",
+    "crates/viboceros-command/src/revolve/construction.rs": "1072e610c83e89112ba4accbd11828eb016e101ed23250fa731e96847aea5129",
+    "crates/viboceros-command/src/revolve/native.rs": "b471fe6360f8f27f640fc058444339d4e056941739877a3dfdedec241d8fd3de",
+    "crates/viboceros-command/src/revolve/options.rs": "f92194d1ae3977e0d5e9aa1e77bd590a2fe9abfef1cdd3bfccce7a2affafea2f",
+    "crates/viboceros-command/src/revolve/profile.rs": "0dd3d166d5586bdffbdd11e586b24d700a44d30e8b541af1808bc668629e8714",
+    "crates/viboceros-command/tests/revolve_splitting.rs": "6a4438d7cbc45ea67a85e6290c2f8c399e9ca6f2aa5670e617238fc21939c3e2",
+    "crates/viboceros-geometry/src/nurbs_surface/revolution.rs": "6a53a34f8255aaad7e048d2cb3772cbbbcc539cc64c21e9da2e66aa98ea5bb8f",
+    "crates/viboceros-geometry/src/nurbs_surface/revolution/tests.rs": "c382daae02ff9bd3c256066ca2d2c1e3a9e1616c0817cd57e7385cd88fc55972",
+    "crates/viboceros-oracle/src/curve_native.rs": "f083991e7138bc6b4855d0d37abcd9d9b60a507706f52c2ae38e95951e066aca",
+    "crates/viboceros-oracle/src/lib.rs": "cde15023f217bcb9149d01265938430cc72b8966720cd8e84485201ccba67946",
+    "crates/viboceros-oracle/src/revolve_splitting.rs": "0550c6f3fac967a7243c56a97005edafe69c91116509d396c80f9a2717d3060e",
+    "crates/viboceros-oracle/src/revolve_splitting/record.rs": "ae2e70d1e5e9d086018307affeb9513c619735e0401a2be01a75c811869f3758",
+    "crates/viboceros-oracle/tests/revolve_splitting.rs": "38d014335ea93a8c63820faf0f5eedcc4f6c56cd6a0ef3ee2771e86d1e970b4a",
+    "crates/viboceros-oracle/tests/support/revolve_splitting.rs": "756f7e341021c9c919e479dc2256354b35119b2d9445b78eaca0a7bb14887298",
+    "docs/commands/revolve.md": "18193772ed2049dfdd3b8f2ac159d5eff7f63f4d6eb99d3db4e1bf2918df6c5c",
+    "docs/revolve-splitting-proof/capture-holdouts.log.gz": "8475e8a0ccd0cc4ddf2a733529199e53af79bd4863f72151c1c8fc93ab727798",
+    "docs/revolve-splitting-proof/capture-main.log.gz": "ee03e5fc4a00f5c3c75b0d23d4afff518283ea3fd4f3d068bdd5e306081dc1a8",
+    "docs/revolve-splitting-proof/capture-mixed.log.gz": "f97e8c4c2af92161b8d7fee64240c82c1d71145fdf622da837e2e248e149c949",
+    "docs/revolve-splitting-proof/clippy-default.log.gz": "11f3b45f02a6368bb8da71dc6082c40a0713beba8ca118371a7c8239983f2a94",
+    "docs/revolve-splitting-proof/clippy-native.log.gz": "cd1560d535805b2bdbb69ef15c8d7bee61ece3f6e6830a18d2f2887840c497e0",
+    "docs/revolve-splitting-proof/default-app.log.gz": "592868a91e0049183d16cd5e528f81ba8b5ab999290aab74b88cdbc8ead528f8",
+    "docs/revolve-splitting-proof/default-command-policy.log.gz": "2007cda576020caf6013659afcd9b8be5812a1788c0284ef6830e1d1126535cf",
+    "docs/revolve-splitting-proof/default-command-unit.log.gz": "3d9714f8495d77c0ac40e261496adad902cec547c1844cc44d7cce92ecb87324",
+    "docs/revolve-splitting-proof/default-oracle.log.gz": "a01905a2ead8ce645ab71a2edc9866e274ac80282214c8d2249ac2909e5491c1",
+    "docs/revolve-splitting-proof/default-point-input.log.gz": "a94aa152b0b1f0cd72d53932d79e18fb9d7f2c155911af0748cd7cd035139a9c",
+    "docs/revolve-splitting-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/revolve-splitting-proof/kernel.log.gz": "1a0dff9aef6f436ff8cc3b783ce84e17adede30a0b8c6ec1bcf7547d0e5f6ac4",
+    "docs/revolve-splitting-proof/native-app.log.gz": "c6d5e1da9a82dde2d4222ecd27caa101d5b4e668e2f74e6acb172b686f278e45",
+    "docs/revolve-splitting-proof/native-command-policy.log.gz": "085a5a61809100e670f3bc3cce0b94020026aebeae955780a992155af5703624",
+    "docs/revolve-splitting-proof/native-command-unit.log.gz": "1a9678cc29ab6ae39595a3d9c19a1700c23beb8f3149bef10242dbfdcfed1101",
+    "docs/revolve-splitting-proof/native-oracle.log.gz": "0eb6e1f95d7f205bf452a41bd84e1d00630ba99d9d15bcb600f5468535edf26c",
+    "docs/revolve-splitting-proof/native-point-input.log.gz": "dca90b10b7d552dd6cd3d72d44094192b176f255edfe048c159b377e9a168c13",
+    "docs/revolve-splitting-proof/python.log.gz": "dac2f611136b2b617923bb2b3791d5bf77de2406a0b90fabdf98b52e365c34c6",
+    "src/app/interactive_state/prompts.rs": "070289a9543c9e3154383498de00906c8b88b9e166ae022b3acfce661c8e50cd",
+    "src/app/tests/mod.rs": "acf0d97ffa9a042ad6e4ff2a69ce3073d132dbeff967ade97ef3a4488dc10a25",
+    "src/app/tests/revolve_deformable.rs": "ef58af04452414d0cb0173dcfeb52fb0445d5881b52791da3df8dab2e24ab612",
+    "src/app/tests/revolve_splitting.rs": "b6b0e646599089a2f8b7facd0fab649b6c95875939a018cff6576a4d0f693a4d",
+    "tools/rhino_oracle/fixtures/revolve_splitting.json": "e1272c91805b145be55ca47d9dd11c1bf9c7e968cc19ebf2cf5e7faf5d0aa483",
+    "tools/rhino_oracle/fixtures/revolve_splitting_holdouts.json": "8fabcb5d2809f7abc9d2e920b02be98983f93172edb37669389fe1989453ce4a",
+    "tools/rhino_oracle/fixtures/revolve_splitting_mixed.json": "58ee0bc82a6df195eba1da0001080d8f3f4b3e7ebd9378ac026c90f137116558",
+    "tools/rhino_oracle/generate_revolve_splitting.py": "127bb97a0b1a8906fd038d04b7a22ea5d457dee8575bc9ef5538a4c21307e093",
+    "tools/rhino_oracle/generate_revolve_splitting_holdouts.py": "27585763b904d9e43e3bf9f353df4d3d69f197685bbc9577d00d173fec4179df",
+    "tools/rhino_oracle/generate_revolve_splitting_mixed.py": "013cdccd610177529367257f47aa1b90f67ec075d175cc4f8cc42517d3ce006f",
+    "tools/rhino_oracle/observations/revolve_splitting.json.gz": "eca1228f59f7fa3c36e8871b87a1f9f315c77df3bcde5d8a1d31dd6a47071aeb",
+    "tools/rhino_oracle/observations/revolve_splitting_holdouts.json.gz": "4ce9d9074a9a11e62463779eb280ea623dfe4555dcc1bbc98f9e977e1fb23a4a",
+    "tools/rhino_oracle/observations/revolve_splitting_mixed.json.gz": "25c78b88d0b224a3653b50be9e9fe68655922ab987b99479389ecea0d6ecb516",
+    "tools/rhino_oracle/revolve_splitting_cases.py": "96af8beaf8f7d4687e515cbdbbdbd0e01f6b565c98976ec885ef2c5d91fb7ea7",
+    "tools/rhino_oracle/revolve_splitting_probe.py": "811dafeade5b4a164691c7ced50bfe009ee7d716dabbee1574a9547d4438b181",
+    "tools/rhino_oracle/rhino_worker.py": "51841d2c54c4dcd8e9c18bb6e41131bcf0d7673819de77cab5094048ae0eadb6",
+    "tools/rhino_oracle/structural_sdk.py": "49a84acebf447552d696e725a20a0778ecc6c94f905905c17096e48f0e97097e",
+    "tools/rhino_oracle/test_revolve_splitting.py": "f8e6b2705a14cc0269c5387777fe20ef68feffd552c64fbd5efeab28d37e3590"
+  }
+}
