@@ -1,0 +1,107 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "length_chain",
+      "id": "settled_cancel_empty",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "key",
+          "value": "Escape"
+        }
+      ],
+      "finish": "Cancel",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "settled_cancel_after_seed",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Escape"
+        }
+      ],
+      "finish": "Cancel",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "units_menu",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        },
+        {
+          "kind": "key",
+          "value": "Units"
+        },
+        {
+          "kind": "key",
+          "value": "Centimeter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "mixed_units_menu",
+      "scene": "mixed",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        },
+        {
+          "kind": "key",
+          "value": "Units"
+        },
+        {
+          "kind": "key",
+          "value": "Centimeter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    }
+  ]
+}

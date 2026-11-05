@@ -31,7 +31,7 @@ def _input_hooks(timer, mouse, handlers):
             raise ValueError('component input cleanup failed: %s; original error: %s' % (failures, original))
 
 
-def drive(operation, points, host, selected, trace, command, script=None, completion=None, timer_factory=None, input_ready=None, accept_last_enter=False):
+def drive(operation, points, host, selected, trace, command, script=None, completion=None, timer_factory=None, input_ready=None, accept_last_enter=False, accept_last_keys=(), settle_terminal=False):
     Rhino, System = host['Rhino'], host['System']
     import clr
     clr.AddReference('System.Windows.Forms')
@@ -43,7 +43,7 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
     start = Rhino.RhinoApp.CommandHistoryWindowText
     clock = [System.DateTime.UtcNow]
     pending, acknowledged, errors, finished = [], [], [], []
-    ready = []
+    ready = []; terminal_trace = []
     active = []
     def diagnostic(label):
         with open(progress, 'a') as stream:
@@ -70,8 +70,10 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
         if event.CommandEnglishName == command: active.append(True)
     def ended(sender, event):
         if event.CommandEnglishName == command:
-            if accept_last_enter and len(trace)+1==len(operation['steps']) and operation['steps'][-1]==dict(kind='key',value='Enter') and pending==['@component-key:%s:%d:Enter' % (operation['id'],len(trace))]:
-                trace.append(selected());finished.append(True)
+            last=operation['steps'][-1] if operation['steps'] else {}
+            key=last.get('value') if last.get('kind')=='key' else None
+            if key is not None and (key in accept_last_keys or (accept_last_enter and key=='Enter')) and len(trace)+1==len(operation['steps']) and pending==['@component-key:%s:%d:%s' % (operation['id'],len(trace),key)]:
+                trace.append(selected());finished.append(True);terminal_trace.append(True)
             active[:] = []
     def emit(name, x=1, y=1):
         with open(progress, 'a') as stream:
@@ -139,6 +141,8 @@ def drive(operation, points, host, selected, trace, command, script=None, comple
                 (Rhino.Commands.Command.EndCommand, ended), (Rhino.RhinoApp.EscapeKeyPressed, escape)]
     with _input_hooks(timer, mouse, handlers):
         result = Rhino.RhinoApp.RunScript(script or '_'+command+' _Pause', True)
+        if settle_terminal and terminal_trace:
+            trace[-1]=selected()
         # None can leave GetMultiple and invoke SelNone instead of requesting
         # another input. Observe that final delivered key after command exit.
         if (not errors and operation['steps'][-1] == dict(kind='key', value='None')

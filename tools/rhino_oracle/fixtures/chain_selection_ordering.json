@@ -1,0 +1,57 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chain_selection",
+      "id": "middle_undo_1",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "direction": "Both"
+      }
+    },
+    {
+      "op": "chain_selection",
+      "id": "middle_undo_2",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "direction": "Both"
+      }
+    }
+  ]
+}

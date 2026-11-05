@@ -42,6 +42,7 @@ impl eframe::App for VibocerosApp {
         self.validate_blend_surface();
         self.validate_fillet_surface();
         self.validate_chain();
+        self.validate_length_choices();
         self.validate_edge_pattern();
         self.validate_select_uv();
         self.validate_refinement();
@@ -996,6 +997,9 @@ impl eframe::App for VibocerosApp {
             }
             _ => None,
         };
+        let length_pick =
+            self.chain_prompt.is_none() && self.length_chain_available() && model_input_active;
+        let length_highlights = self.length_choice_highlights().to_vec();
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1281,10 +1285,11 @@ impl eframe::App for VibocerosApp {
                             mesh_boundary_edges,
                             curve_or_edge_pick,
                             chain_pick: self.chain_prompt.is_some() && model_input_active,
+                            length_pick,
                             chain_highlights: self
                                 .chain_prompt
                                 .as_ref()
-                                .map_or(&[], |p| p.highlights()),
+                                .map_or_else(|| length_highlights.as_slice(), |p| p.highlights()),
                             point_deviation: deviation_view.as_ref(),
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),

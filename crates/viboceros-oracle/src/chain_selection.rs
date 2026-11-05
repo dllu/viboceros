@@ -3,20 +3,20 @@ use super::*;
 use viboceros_command::chain_selection::{Session, Target, defaults, parse_options};
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
-    scene: String,
-    seed: Option<usize>,
-    pre: Vec<usize>,
-    steps: Vec<Step>,
-    finish: String,
+    pub(crate) scene: String,
+    pub(crate) seed: Option<usize>,
+    pub(crate) pre: Vec<usize>,
+    pub(crate) steps: Vec<Step>,
+    pub(crate) finish: String,
     #[serde(default)]
-    options: BTreeMap<String, String>,
+    pub(crate) options: BTreeMap<String, String>,
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-struct Step {
-    kind: String,
-    modifiers: Option<String>,
-    value: Option<String>,
-    source: Option<usize>,
+pub(crate) struct Step {
+    pub(crate) kind: String,
+    pub(crate) modifiers: Option<String>,
+    pub(crate) value: Option<String>,
+    pub(crate) source: Option<usize>,
 }
 pub fn source(scene: &str, tolerance: Tolerance) -> Result<Vec<Geometry>, ProbeError> {
     let p = |x, y| Point3::try_new(x, y, 0.);

@@ -234,7 +234,7 @@ impl Session {
         match self.options.direction {
             ChainDirection::Forward => vec![1],
             ChainDirection::Backward => vec![0],
-            ChainDirection::Both => vec![0, 1],
+            ChainDirection::Both => vec![1, 0],
         }
     }
     pub fn choosing_branch(&self) -> bool {

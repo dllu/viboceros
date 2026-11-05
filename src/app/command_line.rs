@@ -88,6 +88,11 @@ impl VibocerosApp {
         }
         let name = input.split_whitespace().next().unwrap_or("");
         let command_name = name.trim_start_matches(['\'', '_', '-']);
+        if self.length_units_pending
+            || (self.length_chain_available() && command_name.eq_ignore_ascii_case("Units"))
+        {
+            return;
+        }
         if self.chain_prompt.is_some() && command_name.eq_ignore_ascii_case("Undo") {
             return;
         }
@@ -195,6 +200,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.length_units_pending {
+                        "Length units"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"
                     } else if let Some(p)=&self.edge_pattern_prompt {
@@ -342,6 +349,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if self.edge_pattern_prompt.is_some() {
                                 edge_pattern_selection::HINT
+                            } else if self.length_units_pending {
+                                "Enter a unit name or Model_Units; Esc cancels Length"
                             } else if let Some(prompt) = &self.object_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.group_prompt {

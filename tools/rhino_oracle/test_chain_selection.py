@@ -11,7 +11,7 @@ from pathlib import Path
 from .chain_selection_cases import (
     discovery_cases, curvature_cases, curvature_limit_cases, curvature_boundary_cases,
     acceptance_cases, fork_cases, angle_precision_cases, option_minimum_cases,
-    option_boundary_cases, source,
+    option_boundary_cases, ordering_cases, source,
 )
 from .generate_chain_selection_controls import grouped
 from .structural_sdk import stage_helpers, validate_operations
@@ -27,6 +27,7 @@ FAMILIES = [('discovery', discovery_cases())] + [
     ('curvature_boundary', curvature_boundary_cases()), ('acceptance', acceptance_cases()),
     ('forks', fork_cases()), ('angle_precision', angle_precision_cases()),
     ('option_minimums', option_minimum_cases()), ('option_boundary', option_boundary_cases()),
+    ('ordering', ordering_cases()),
 ]
 
 
@@ -65,7 +66,7 @@ class ChainSelectionTests(unittest.TestCase):
                     self.assertIn('Unknown command: Next', value['history'])
                 else:
                     self.assertNotIn('Unknown command', value['history'])
-        self.assertEqual(count, 144)
+        self.assertEqual(count, 146)
 
     def test_fixed_owned_inputs_and_isolated_worker_imports(self):
         for _, recipes in FAMILIES:

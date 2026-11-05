@@ -9,14 +9,19 @@ fn length_postselection_reports_whole_curve() {
     app.run_command();
     assert!(app.object_prompt.is_some());
     app.select_prompt_objects([id], viboceros_document::SelectionMode::Replace);
-    let before = format!("{:?}", app.document);
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let redo = app.document.redo_label().map(str::to_owned);
     assert!(app.try_continue_object_prompt(""));
     assert!(app.object_prompt.is_none());
     assert_eq!(
         app.command_log.back().unwrap(),
         "Measured 1 curve(s): total length 5"
     );
-    assert_eq!(format!("{:?}", app.document), before);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert_eq!(app.document.selected_object_count(), 0);
 }
 
 #[test]

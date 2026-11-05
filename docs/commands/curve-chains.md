@@ -35,6 +35,17 @@ followed by the same options. These Viboceros extensions explicitly choose a
 seed, use zero-based edge indices, and accept the default branch proposal.
 Explicit seeds can also identify a preselected curve.
 
+For a cumulative measurement, enter `Length`, then `SelChain`. Finishing a chain
+returns to Length's selection prompt; another Enter measures all inputs. At a
+fork, first confirm the proposal, then finish the chain, then finish Length.
+You can start another chain from the parent prompt. Escape inside the chain
+cancels Length. Successful command-first measurement clears its curve and edge
+selection without changing geometry or either history stack.
+
+Length also accepts ordinary curve and surface-edge picks and preselected surface
+edges. `Units`, followed by a unit name, changes display units; `Units=Centimeters`
+remains a Viboceros scripting convenience. Preselected measurement retains selection.
+
 The [native comparison corpus](../oracle/curve-chains.md) qualifies standalone
-selection. Nested `SelChain` inside another command, mesh/SubD edge chains,
-and arbitrary complex trimmed-surface branch behavior remain unqualified.
+selection and nested Length workflows. Nesting inside other commands or `Length
+SubCrv`, mesh/SubD edge chains and complex trimmed-surface branches remain unqualified.

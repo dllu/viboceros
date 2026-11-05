@@ -27,6 +27,7 @@ fn independent_chain_sources_reproduce_native_selection_and_history() {
         "chain_selection_angle_precision",
         "chain_selection_option_minimums",
         "chain_selection_option_boundary",
+        "chain_selection_ordering",
     ] {
         let request = serde_json::from_slice(
             &std::fs::read(base.join(format!("fixtures/{family}.json"))).unwrap(),
@@ -79,5 +80,5 @@ fn independent_chain_sources_reproduce_native_selection_and_history() {
             }
         }
     }
-    assert_eq!(count, 144);
+    assert_eq!(count, 146);
 }

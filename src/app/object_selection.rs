@@ -146,6 +146,12 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "Length"
+            && self.phase == ObjectPromptPhase::Selecting
+            && !self.subcurve_measurement
+        {
+            return "Select curves or surface edges; SelChain selects connected inputs; Units=name changes display units; Enter measures, Esc cancels";
+        }
         if let Some(session) = &self.mesh_conversion {
             return session.hint(self.phase);
         }
@@ -902,12 +908,14 @@ impl VibocerosApp {
         } else {
             0
         };
+        let length_edges =
+            description.command == "Length" && !subcurve_measurement && self.has_length_edges();
         let preselected = if let Some(kind) =
             viboceros_command::point_fitting::PointFitKind::from_command(description.command)
         {
             kind.selected_point_count(&self.document) >= kind.minimum_points()
         } else {
-            selected_objects + selected_grips >= required
+            selected_objects + selected_grips >= required || length_edges
         };
         if description.command == "Smooth"
             && preselected
@@ -1124,6 +1132,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_length_choices(input)
+            || self.continue_length_units(input)
+            || self.start_length_chain(input)
+        {
+            return true;
+        }
         if self.sweep_session.is_some() {
             return false;
         }
@@ -1325,14 +1339,17 @@ impl VibocerosApp {
                     return true;
                 }
                 let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
-                let has_eligible_picks =
-                    self.document.selected_objects().any(|o| {
+                let has_eligible_picks = (pending.description.command == "Length"
+                    && !pending.subcurve_measurement
+                    && self.has_length_edges())
+                    || self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
                             && pending.description.filter.accepts_object(o)
                             && graph_allowed
                                 .as_ref()
                                 .is_none_or(|ids| ids.contains(&o.id()))
-                    }) || (matches!(
+                    })
+                    || (matches!(
                         pending.description.command,
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
@@ -1616,6 +1633,7 @@ impl VibocerosApp {
                 if self.shrink_prompt_mode().is_some()
                     || self.picking_subdivide()
                     || self.picking_nurbs_edges()
+                    || pending.description.command == "Length"
                 {
                     self.component_selection.clear();
                 }
@@ -1931,6 +1949,8 @@ impl VibocerosApp {
     }
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
+        self.length_choices = None;
+        self.length_units_pending = false;
         self.clear_sweep_input();
         self.rebuild_preview = None;
         self.weight_prompt = None;
@@ -1970,6 +1990,9 @@ impl VibocerosApp {
                     | "ExtractControlPolygon"
                     | "ExtractPt"
             ) {
+                self.component_selection.clear();
+            }
+            if pending.description.command == "Length" && pending.postselected {
                 self.component_selection.clear();
             }
             if let Some(selection_before) = pending.selection_before {

@@ -4,7 +4,7 @@ use viboceros_command::chain_selection::{Session, Target, parse_options};
 pub(super) const HINT: &str = "Select connected curves or surface edges; Undo / Next / All / ChainContinuity / Direction / GapTolerance / AngleTolerance; Enter accepts, Esc restores selection";
 #[derive(Debug)]
 pub(super) struct Prompt {
-    session: Session,
+    pub(super) session: Session,
     choices: Vec<Target>,
     preview: Vec<Target>,
     pending: Option<String>,
@@ -27,6 +27,16 @@ impl Prompt {
     }
 }
 impl VibocerosApp {
+    pub(super) fn length_chain_available(&self) -> bool {
+        self.object_prompt.as_ref().is_some_and(|p| {
+            p.description.command == "Length"
+                && p.phase == object_selection::ObjectPromptPhase::Selecting
+                && !p.subcurve_measurement
+        })
+    }
+    pub(super) fn start_length_chain(&mut self, input: &str) -> bool {
+        self.length_chain_available() && self.start_chain(input)
+    }
     pub(super) fn start_chain(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
         if !words.next().is_some_and(|s| {
@@ -53,7 +63,10 @@ impl VibocerosApp {
                 return true;
             }
         };
-        self.cancel_interactive_command(false);
+        if !self.length_chain_available() {
+            self.cancel_interactive_command(false);
+        }
+        self.length_choices = None;
         match Session::new(&self.document, self.commands.component_selection(), options) {
             Ok(session) => {
                 self.commands
@@ -130,7 +143,11 @@ impl VibocerosApp {
             self.command_input.clear();
             return;
         }
+        let nested = self.length_chain_available();
         self.finish_chain(false);
+        if nested {
+            self.cancel_object_prompt(true);
+        }
     }
     pub(super) fn finish_chain(&mut self, accept: bool) {
         let Some(p) = self.chain_prompt.take() else {
@@ -153,6 +170,9 @@ impl VibocerosApp {
             Err(e) => self.push_log(format!("Error: {e}")),
         }
         self.command_input.clear();
+        if self.length_chain_available() {
+            self.log_object_prompt();
+        }
     }
     pub(super) fn validate_chain(&mut self) {
         if self

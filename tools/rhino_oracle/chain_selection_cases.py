@@ -45,7 +45,7 @@ def source(scene):
     raise ValueError('owned SelChain source required')
 
 def validate(op):
-    if not isinstance(op,dict) or op not in discovery_cases()+cases()+curvature_cases()+curvature_limit_cases()+curvature_boundary_cases()+acceptance_cases()+fork_cases()+angle_precision_cases()+option_minimum_cases()+option_boundary_cases() or any(type(i) is not int for i in op.get('pre',[])) or any('source' in step and type(step['source']) is not int for step in op.get('steps',[])) or ('inspect' in op and type(op['inspect']) is not bool) or (op.get('seed') is not None and type(op['seed']) is not int):
+    if not isinstance(op,dict) or op not in discovery_cases()+cases()+curvature_cases()+curvature_limit_cases()+curvature_boundary_cases()+acceptance_cases()+fork_cases()+angle_precision_cases()+option_minimum_cases()+option_boundary_cases()+ordering_cases() or any(type(i) is not int for i in op.get('pre',[])) or any('source' in step and type(step['source']) is not int for step in op.get('steps',[])) or ('inspect' in op and type(op['inspect']) is not bool) or (op.get('seed') is not None and type(op['seed']) is not int):
         raise ValueError('fixed owned SelChain operation required')
 
 
@@ -110,3 +110,7 @@ def option_minimum_cases():
 
 def option_boundary_cases():
     return [dict(op='chain_selection',id='option_boundary_'+str(i),scene=scene,seed=0,pre=[],steps=[dict(kind='click',modifiers='plain')],finish='Enter',options=options) for i,(scene,options) in enumerate([('subdoc_gap',dict(gap='0.0000000001')),('subdoc_gap',dict(gap='0.0000000003')),('angle_0.00004',dict(angle='0.00000001')),('angle_0.00004',dict(angle='0.00000002'))])]
+
+
+def ordering_cases():
+    return [dict(op='chain_selection',id='middle_undo_'+str(n),scene='lines',seed=1,pre=[],steps=[dict(kind='click',modifiers='plain')]+[dict(kind='key',value='Undo')]*n,finish='Enter',options=dict(direction='Both')) for n in (1,2)]

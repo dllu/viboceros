@@ -1,14 +1,15 @@
 use super::*;
 use crate::viewport::{ViewKind, ViewportInput, ViewportOutput};
 use egui::{Context, Event, PointerButton, Pos2, Rect, Vec2};
-struct Pointer {
+pub(in crate::app::tests) struct Pointer {
     view: Viewport,
     context: Context,
     time: f64,
     area: Rect,
+    modifiers: egui::Modifiers,
 }
 impl Pointer {
-    fn new(mode: DisplayMode) -> Self {
+    pub(in crate::app::tests) fn new(mode: DisplayMode) -> Self {
         let mut view = Viewport::new(ViewKind::Top);
         view.display_mode = mode;
         Self {
@@ -16,10 +17,16 @@ impl Pointer {
             context: Context::default(),
             time: 0.,
             area: Rect::NOTHING,
+            modifiers: egui::Modifiers::NONE,
         }
     }
-    fn frame(&mut self, app: &VibocerosApp, events: Vec<Event>) -> (ViewportOutput, bool) {
+    pub(in crate::app::tests) fn frame(
+        &mut self,
+        app: &VibocerosApp,
+        mut events: Vec<Event>,
+    ) -> (ViewportOutput, bool) {
         self.time += 0.4;
+        events.insert(0, Event::ModifiersChanged(self.modifiers));
         let mut output = ViewportOutput::default();
         let drawn = self.context.run_ui(
             egui::RawInput {
@@ -35,6 +42,8 @@ impl Pointer {
                     &app.document,
                     ViewportInput {
                         chain_pick: app.chain_prompt.is_some(),
+                        length_pick: app.chain_prompt.is_none() && app.length_chain_available(),
+                        object_filter: app.viewport_object_filter(),
                         chain_highlights: app.chain_prompt.as_ref().map_or(&[], |p| p.highlights()),
                         ..Default::default()
                     },
@@ -49,7 +58,16 @@ impl Pointer {
         drawn.drop_without_applying_deltas();
         (output, highlighted)
     }
-    fn click(&mut self, app: &mut VibocerosApp, station: Point3) {
+    pub(in crate::app::tests) fn click(&mut self, app: &mut VibocerosApp, station: Point3) {
+        self.click_with_modifiers(app, station, egui::Modifiers::NONE);
+    }
+    pub(in crate::app::tests) fn click_with_modifiers(
+        &mut self,
+        app: &mut VibocerosApp,
+        station: Point3,
+        modifiers: egui::Modifiers,
+    ) {
+        self.modifiers = modifiers;
         self.frame(app, vec![]);
         let pos = self.view.project(station, self.area).unwrap();
         self.frame(
@@ -60,7 +78,7 @@ impl Pointer {
                     pos,
                     button: PointerButton::Primary,
                     pressed: true,
-                    modifiers: egui::Modifiers::NONE,
+                    modifiers,
                 },
             ],
         );
@@ -70,12 +88,47 @@ impl Pointer {
                 pos,
                 button: PointerButton::Primary,
                 pressed: false,
-                modifiers: egui::Modifiers::NONE,
+                modifiers,
             }],
         );
         assert_eq!(output.chain_click.as_ref().unwrap().len(), 1);
         assert!(output.component_click.is_none());
         assert!(output.picked_point.is_none());
+        app.handle_viewport_action(output);
+        self.modifiers = egui::Modifiers::NONE;
+    }
+    pub(in crate::app::tests) fn window(
+        &mut self,
+        app: &mut VibocerosApp,
+        start: Point3,
+        end: Point3,
+    ) {
+        self.frame(app, vec![]);
+        let start = self.view.project(start, self.area).unwrap();
+        let end = self.view.project(end, self.area).unwrap();
+        self.frame(
+            app,
+            vec![
+                Event::PointerMoved(start),
+                Event::PointerButton {
+                    pos: start,
+                    button: PointerButton::Primary,
+                    pressed: true,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        );
+        self.frame(app, vec![Event::PointerMoved(end)]);
+        let (output, _) = self.frame(
+            app,
+            vec![Event::PointerButton {
+                pos: end,
+                button: PointerButton::Primary,
+                pressed: false,
+                modifiers: egui::Modifiers::NONE,
+            }],
+        );
+        assert!(output.chain_click.is_none());
         app.handle_viewport_action(output);
     }
 }

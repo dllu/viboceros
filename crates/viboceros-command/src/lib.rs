@@ -1683,7 +1683,7 @@ impl CommandRegistry {
             .register(SelSmallCommand)
             .expect("unique built-in command");
         registry
-            .register(LengthCommand)
+            .register(LengthCommand::new(registry.components.clone()))
             .expect("unique built-in command");
         registry
             .register(DistanceCommand)

@@ -92,10 +92,10 @@ fn chain_ambiguity_options_and_stale_sources_are_explicit_and_atomic() {
     assert!(app.command_log.back().unwrap().contains("changed"));
 }
 #[path = "chain_selection/viewport.rs"]
-mod viewport;
+pub(super) mod viewport;
 
 #[path = "../../../crates/viboceros-oracle/tests/support/chain_selection.rs"]
-mod native;
+pub(super) mod native;
 #[test]
 fn native_chain_states_replay_through_command_input_and_viewport_actions() {
     use std::io::Read;
@@ -121,6 +121,7 @@ fn native_chain_states_replay_through_command_input_and_viewport_actions() {
         "angle_precision",
         "option_minimums",
         "option_boundary",
+        "ordering",
     ] {
         let name = format!("chain_selection_{family}");
         let request: serde_json::Value = serde_json::from_slice(
@@ -246,5 +247,5 @@ fn native_chain_states_replay_through_command_input_and_viewport_actions() {
             check(&app, &v["undo"]);
         }
     }
-    assert_eq!(count, 144);
+    assert_eq!(count, 146);
 }

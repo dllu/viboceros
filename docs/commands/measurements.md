@@ -148,8 +148,13 @@ They do not change geometry, selection, or undo/redo history. An empty selection
 unsupported object, invalid measurement, or numerical failure rejects the query
 without reporting a partial total.
 
-Enter `Length` without preselection to pick curves, then press Enter to measure
-their total. To measure only part of one curve, select it and enter
+Enter `Length` without preselection to pick curves or B-rep/NURBS surface edges,
+then press Enter to measure their total. Command-first measurement clears these
+picks after reporting; preselected inputs remain selected. Geometry and model
+history remain unchanged. Enter `SelChain` during selection to use the
+[connected-chain picker](curve-chains.md), then finish both the chain and the
+parent Length prompt. Escape from either cancels Length. To measure only part
+of one curve, select it and enter
 `Length SubCrv Parameter=0,6` or `Length SubCrv 2,0,0 8,0,0`. The first form
 uses native curve parameters; the second finds closest parameters to two world
 points. Enter `Length SubCrv` to select one curve if needed, then pick or type
@@ -167,9 +172,8 @@ changes at either point. The source model must have physical units for a
 conversion, and overflowing or underflowing display results are rejected. The
 unit setting and geometry remain unchanged. Selected lengths are accumulated
 exactly before display scaling, so a converted total can be reported even if
-the unconverted total exceeds binary64's range. Nested `SelChain` within Length
-and mesh/SubD edge length inputs remain pending; standalone
-[SelChain](curve-chains.md) is available separately.
+the unconverted total exceeds binary64's range. Mesh/SubD edge length inputs
+and chain selection within `Length SubCrv` remain pending.
 
 Enter `Area` without preselection to pick supported objects, then press Enter.
 `Area Units=Centimeters` reports square centimetres without changing model
@@ -192,7 +196,7 @@ tolerances.
 
 | Command | Supported geometry |
 | --- | --- |
-| Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, and polycurves |
+| Length | Lines, circles, arcs, ellipses, polylines, NURBS curves, polycurves, and B-rep/NURBS surface edges |
 | Area | Circles, ellipses, closed planar polylines/NURBS/polycurves, NURBS surfaces, B-reps, and meshes |
 | [Volume](volume.md) | Meshes, NURBS surfaces and B-reps; open collections require confirmation |
 

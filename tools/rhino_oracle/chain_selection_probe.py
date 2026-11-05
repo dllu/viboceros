@@ -4,10 +4,16 @@ if __package__:
 else:
     from chain_selection_cases import validate,source
 
-def run(op,host,iterations,tolerance):
-    validate(op)
+def run(op,host,iterations,tolerance,command='SelChain'):
+    if command=='Length':
+        if __package__:from .length_chain_cases import validate as validate_length
+        else:from length_chain_cases import validate as validate_length
+        validate_length(op)
+    elif command=='SelChain':validate(op)
+    else:raise ValueError('owned chain command required')
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects) or R.Commands.Command.InCommand():raise ValueError('empty private idle document required')
+    if command=='Length':doc.ModelUnitSystem=R.UnitSystem.Millimeters
     recipe=source(op['scene']);inputs=[];ids=[]
     try:
         R.RhinoApp.RunScript('_SelectionFilterNone',False)
@@ -30,13 +36,17 @@ def run(op,host,iterations,tolerance):
         def snapshot():
             state=dict(whole=[i for i,k in enumerate(ids) if doc.Objects.FindId(k).IsSelected(False)],
                 components=[dict(object=i,kind=str(c.ComponentIndexType),index=int(c.Index)) for i,k in enumerate(ids) for c in (doc.Objects.FindId(k).GetSelectedSubObjects() or [])],objects=len(list(doc.Objects)))
+            if command=='Length':
+                state['prompt']=R.RhinoApp.CommandPrompt
+                state['getting_objects']=R.Input.RhinoGet.InGetObject(doc)
+                state['in_command']=int(R.Commands.Command.InCommand())
             if op.get('inspect'):
                 state['highlighted_whole']=[i for i,k in enumerate(ids) if doc.Objects.FindId(k).IsHighlighted(False)]
                 state['highlighted']=[dict(object=i,kind=str(c.ComponentIndexType),index=int(c.Index)) for i,k in enumerate(ids) for c in (doc.Objects.FindId(k).GetHighlightedSubObjects() or [])]
             return state
         before=snapshot();trace=[];events=[];marker='Owned SelChain '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         def ended(sender,event):
-            if event.CommandEnglishName=='SelChain':events.append(dict(result=str(event.CommandResult),selection=snapshot()))
+            if event.CommandEnglishName==command:events.append(dict(result=str(event.CommandResult),selection=snapshot()))
         R.Commands.Command.EndCommand+=ended
         try:
             if op['steps']:
@@ -47,7 +57,7 @@ def run(op,host,iterations,tolerance):
                 if row['kind'] in ('arc','circle'):
                     curve=inputs[op['seed']];station=curve.PointAt(curve.Domain.T0+(curve.Domain.T1-curve.Domain.T0)*.375)
                 options=op.get('options',{})
-                script='_SelChain _ChainContinuity=_'+options.get('continuity','Tangency')+' _Direction=_'+options.get('direction','Both')+' _GapTolerance='+options.get('gap','0.000001')+' _AngleTolerance='+options.get('angle','0.00005729577951308232')+' _Pause'
+                script=('_Length _SelChain' if command=='Length' else '_SelChain')+' _ChainContinuity=_'+options.get('continuity','Tangency')+' _Direction=_'+options.get('direction','Both')+' _GapTolerance='+options.get('gap','0.000001')+' _AngleTolerance='+options.get('angle','0.00005729577951308232')+' _Pause'
                 points=[]
                 for step in op['steps']:
                     target=step.get('source',op['seed']);other=recipe[target];pts=[G.Point3d(*p) for p in other['points'][:2]]
@@ -55,7 +65,7 @@ def run(op,host,iterations,tolerance):
                     if other['kind'] in ('arc','circle'):
                         curve=inputs[target];point=curve.PointAt(curve.Domain.T0+(curve.Domain.T1-curve.Domain.T0)*.375)
                     points.append([point])
-                success=drive(op,points,host,snapshot,trace,'SelChain',script=script,timer_factory=DispatchTimer,accept_last_enter=True,input_ready=lambda: '_Pause' in R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1] and R.Input.RhinoGet.InGetObject(doc))
+                success=drive(op,points,host,snapshot,trace,command,script=script,timer_factory=DispatchTimer,accept_last_enter=True,accept_last_keys=('Escape',) if command=='Length' else (),settle_terminal=command=='Length',input_ready=lambda: '_Pause' in R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1] and R.Input.RhinoGet.InGetObject(doc))
             else:success=R.RhinoApp.RunScript('_SelChain _Cancel',True)
         finally:R.Commands.Command.EndCommand-=ended
         if R.Commands.Command.InCommand():raise ValueError('SelChain left active input')

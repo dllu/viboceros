@@ -434,6 +434,7 @@ pub struct ViewportInput<'a> {
     /// Allow ordinary curve selection alongside edge hits in the source getter.
     pub curve_or_edge_pick: bool,
     pub chain_pick: bool,
+    pub length_pick: bool,
     pub chain_highlights: &'a [viboceros_command::chain_selection::Target],
     pub component_preselection: bool,
     pub control_point_pick: bool,
@@ -560,6 +561,7 @@ impl Default for ViewportInput<'_> {
             mesh_boundary_edges: None,
             curve_or_edge_pick: false,
             chain_pick: false,
+            length_pick: false,
             chain_highlights: &[],
             component_preselection: false,
             control_point_pick: false,
@@ -607,6 +609,7 @@ pub struct ViewportOutput {
     pub face_hit_point: Option<Point3>,
     pub parametric_click: Option<Vec<ParametricPick>>,
     pub chain_click: Option<Vec<viboceros_command::chain_selection::Target>>,
+    pub length_mode: Option<SelectionMode>,
     pub component_click: Option<ComponentClick>,
     pub component_double_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
@@ -2190,7 +2193,7 @@ impl Viewport {
         );
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
-        if input.chain_pick
+        if (input.chain_pick || input.length_pick)
             && let Some(pointer) = response.hover_pos()
         {
             self.paint_chain_targets(
@@ -2909,7 +2912,7 @@ impl Viewport {
         })
         .flatten();
         let face_click = face_hit.map(|(object, face, _)| (object, face));
-        let chain_click = (input.chain_pick
+        let chain_click = ((input.chain_pick || input.length_pick)
             && !input.zoom_window
             && input.zoom_target.is_none()
             && response.clicked_by(PointerButton::Primary))
@@ -3050,6 +3053,7 @@ impl Viewport {
             face_hit_point,
             parametric_click,
             chain_click,
+            length_mode: input.length_pick.then_some(selection_mode(modifiers)),
             direction_click: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(direction_hit.map(|(id, _)| id))
@@ -3062,6 +3066,7 @@ impl Viewport {
                 && input.insert_edges.is_none()
                 && !input.parametric_pick
                 && !input.chain_pick
+                && !input.length_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
@@ -3070,6 +3075,7 @@ impl Viewport {
                 && input.insert_edges.is_none()
                 && !input.parametric_pick
                 && !input.chain_pick
+                && !input.length_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| {

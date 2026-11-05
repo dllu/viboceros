@@ -1,0 +1,180 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "length_chain",
+      "id": "inner_cancel_empty",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "key",
+          "value": "Escape"
+        }
+      ],
+      "finish": "Cancel",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "inner_cancel_after_seed",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Escape"
+        }
+      ],
+      "finish": "Cancel",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "outer_cancel_after_chain",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Cancel",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "undo_nested",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "branch_alternative",
+      "scene": "branch",
+      "seed": 0,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "source": 1
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Position"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "outer_reenter",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        },
+        {
+          "kind": "key",
+          "value": "SelChain"
+        },
+        {
+          "kind": "click",
+          "modifiers": "plain",
+          "source": 3
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    },
+    {
+      "op": "length_chain",
+      "id": "units_after_chain",
+      "scene": "lines",
+      "seed": 1,
+      "pre": [],
+      "steps": [
+        {
+          "kind": "click",
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Enter"
+        },
+        {
+          "kind": "key",
+          "value": "Units=Centimeters"
+        }
+      ],
+      "finish": "Enter",
+      "options": {
+        "continuity": "Tangency"
+      }
+    }
+  ]
+}

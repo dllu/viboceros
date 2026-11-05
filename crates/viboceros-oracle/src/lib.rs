@@ -73,6 +73,7 @@ pub mod grip_visibility;
 pub mod grip_weight;
 mod interface;
 mod isocurves;
+mod length_chain;
 mod mass_properties;
 mod parameter_bounds;
 pub mod select_uv_rows;
@@ -367,6 +368,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    LengthChain {
+        id: String,
+        #[serde(flatten)]
+        fixture: chain_selection::Fixture,
     },
     ChainSelection {
         id: String,
@@ -2852,6 +2858,7 @@ impl Operation {
             | Self::EdgeLoopWorkflow { id, .. }
             | Self::EdgeRingWorkflow { id, .. }
             | Self::ChainSelection { id, .. }
+            | Self::LengthChain { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
             | Self::ComponentPatternWorkflow { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
@@ -3391,6 +3398,9 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::LengthChain { fixture, .. } => {
+            length_chain::run(fixture, iterations, tolerance)?
+        }
         Operation::ChainSelection { fixture, .. } => {
             chain_selection::run(fixture, iterations, tolerance)?
         }

@@ -727,7 +727,7 @@ pub enum CommandError {
         maximum: usize,
     },
 
-    #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
+    #[error("Length supports selected curves and surface edges")]
     UnsupportedLengthGeometry,
 
     #[error("Area supports selected closed planar curves, NURBS surfaces, B-reps, and meshes only")]

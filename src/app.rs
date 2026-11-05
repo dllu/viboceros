@@ -136,6 +136,7 @@ mod crease;
 mod curve_extraction_subcurve;
 mod edge_pattern_selection;
 mod extract_points;
+mod length_measurement;
 #[cfg(test)]
 pub(crate) use extract_points::native as extract_points_native;
 mod extract_surface;
@@ -423,6 +424,8 @@ pub struct VibocerosApp {
     select_uv_prompt: Option<select_uv_rows::Prompt>,
     edge_pattern_prompt: Option<edge_pattern_selection::Prompt>,
     chain_prompt: Option<chain_selection::Prompt>,
+    length_choices: Option<length_measurement::Choices>,
+    length_units_pending: bool,
     rebuild_preview: Option<surface_rebuild::Preview>,
     weight_prompt: Option<weight::Session>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
@@ -594,6 +597,8 @@ impl VibocerosApp {
             select_uv_prompt: None,
             edge_pattern_prompt: None,
             chain_prompt: None,
+            length_choices: None,
+            length_units_pending: false,
             rebuild_preview: None,
             weight_prompt: None,
             edge_prompt: None,

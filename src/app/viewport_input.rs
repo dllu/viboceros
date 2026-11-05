@@ -4,7 +4,11 @@ use super::*;
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
         if let Some(picks) = output.chain_click.take() {
-            self.pick_chain(picks);
+            if self.chain_prompt.is_some() {
+                self.pick_chain(picks);
+            } else {
+                self.pick_length_inputs(picks, output.length_mode.unwrap_or(SelectionMode::Add));
+            }
             return true;
         }
         if self.direction_session.is_some()

@@ -1,4 +1,4 @@
-# Standalone SelChain comparisons
+# Curve and surface-edge chain comparisons
 
 [Command behavior](../commands/curve-chains.md) · [Oracle overview](../oracle.md)
 
@@ -8,7 +8,7 @@ selection, highlight, EndCommand and command-history APIs. Each capture uses
 private Xvfb, an isolated runtime directory and a private settings scheme.
 Compressed observations and content-addressed producer snapshots are immutable.
 
-The 144 workflows check entry, preselection, cancellation, repeated picks, direction,
+The 146 standalone workflows check entry, preselection, cancellation, repeated picks, direction,
 continuity, gaps, angle boundaries, closed paths, mixed curve/edge preference,
 branch proposals, explicit alternatives, per-segment Undo, Next and All.
 Every source CRC remains unchanged. A seeded Redo/Undo cycle verifies selection
@@ -46,4 +46,22 @@ in all three display modes without opening windows. A 20,000-segment chain
 with unrelated dense endpoints checks traversal and redo preservation. Endpoint
 queries reuse Join's balanced spatial index; source geometry is prepared once.
 These controls establish selection behavior for the measured sources, not
-arbitrary trimmed-B-rep topology, nested getters or performance parity with Rhino.
+arbitrary trimmed-B-rep topology, other nested getters or performance parity with Rhino.
+
+Seventeen `length_chain_*` workflows additionally qualify SelChain inside Length:
+parent/seed/connected/branch/unit prompts, re-entry, cancellation, surface-edge
+measurement, mixed inputs and redo/undo. Native middle-seed Undo controls establish
+forward-before-backward growth for Both direction; each Undo removes one segment.
+Rust constructs the sources independently and replays shared selection and Length
+commands. App tests replay every input and use real egui events for ordinary
+curve/edge picks in all display modes.
+
+Comparisons retain raw prompt text and component flags, compare getter phases
+and settled selection, and normalize lengths to millimeters within native printed
+precision. Older EndCommand notifications precede selection cleanup; their terminal
+trace uses the settled after-state. Follow-up captures explicitly sample after
+RunScript returns and confirm the cleared selection. Source CRCs remain unchanged.
+Rhino accepts `Units`, then singular `Centimeter`; a retained negative control
+rejects typed `Units=Centimeters`. Viboceros accepts that existing shorthand and
+reports the equivalent physical length. These tests do not establish remembered
+display-unit defaults or nested SubCrv behavior.

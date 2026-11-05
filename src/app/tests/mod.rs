@@ -112,6 +112,7 @@ mod insert_knot;
 mod interface;
 mod intersect_two_sets;
 mod length;
+mod length_measurement;
 mod line_through_points;
 mod loft_input;
 mod loft_options;
@@ -323,6 +324,8 @@ pub(super) fn test_app() -> VibocerosApp {
         select_uv_prompt: None,
         edge_pattern_prompt: None,
         chain_prompt: None,
+        length_choices: None,
+        length_units_pending: false,
         rebuild_preview: None,
         weight_prompt: None,
         edge_prompt: None,
