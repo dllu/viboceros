@@ -81,6 +81,7 @@ pub mod select_uv_rows;
 mod self_intersect;
 pub mod subd_area;
 pub mod subd_direction;
+pub mod subd_edge_analysis;
 pub mod subd_volume;
 mod surface_closest;
 mod surface_face_uv;
@@ -372,6 +373,11 @@ pub enum Operation {
         command: String,
         #[serde(flatten)]
         fixture: edge_loop_workflow::Fixture,
+    },
+    SubdEdgeAnalysis {
+        id: String,
+        #[serde(flatten)]
+        fixture: subd_edge_analysis::Fixture,
     },
     SubdDirection {
         id: String,
@@ -2885,6 +2891,7 @@ impl Operation {
             | Self::LengthChain { id, .. }
             | Self::ComponentLength { id, .. }
             | Self::SubdArea { id, .. }
+            | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
             | Self::SubdVolume { id, .. }
             | Self::FaceLoopWorkflow { id, .. }
@@ -3426,6 +3433,9 @@ fn execute(
                 ProbeError::FixtureInvariant("loop/ring/face-loop command required"),
             )?,
         )?,
+        Operation::SubdEdgeAnalysis { fixture, .. } => {
+            subd_edge_analysis::run(fixture, iterations, tolerance)?
+        }
         Operation::SubdDirection { fixture, .. } => {
             subd_direction::run(fixture, iterations, tolerance)?
         }

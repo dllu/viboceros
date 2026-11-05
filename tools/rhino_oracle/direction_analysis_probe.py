@@ -8,6 +8,10 @@ STEPS=('ShowDir','ShowDirOff','Hide','Show','Delete','Undo','Redo','Flip','UReve
 STEPS += ('SelectPrimary','SelectCompanion','SelNone','SelAll','Add','Remove')
 
 def validate(op):
+    if isinstance(op,dict) and op.get('op')=='subd_direction_analysis':
+        if __package__:from .subd_direction_analysis_cases import validate as owned_validate
+        else:from subd_direction_analysis_cases import validate as owned_validate
+        owned_validate(op);return
     if (not isinstance(op,dict) or set(op)-{'companion','picks'} != {'op','id','source','preselect','steps'}
             or op['op']!='direction_analysis' or op['source'] not in SOURCES
             or type(op['preselect']) is not bool or not isinstance(op['id'],str)
@@ -63,7 +67,13 @@ def run(op,host,iterations,tolerance):
     if iterations!=1 or list(doc.Objects) or doc.UndoRecordingIsActive or R.Commands.Command.InCommand():
         raise ValueError('ShowDir capture requires an empty owned idle document')
     model=None;source=None;key=S.Guid.Empty;keys=[];finish=None
-    if op['source'] in ('line','mesh','point'):
+    old_appearance=doc.SubDAppearance
+    if op['op']=='subd_direction_analysis':
+        from subd_direction_cases import source as subd_recipe
+        from subd_to_nurbs_probe import make_source
+        source=make_source(subd_recipe(op['source'][5:]),host)
+        doc.SubDAppearance=G.SubDComponentLocation.ControlNet if op['flat'] else G.SubDComponentLocation.Surface
+    elif op['source'] in ('line','mesh','point'):
         if op['source']=='line': source=G.LineCurve(G.Point3d(0,0,0),G.Point3d(4,2,1))
         elif op['source']=='point':source=G.Point(G.Point3d(1,2,3))
         else:
@@ -78,7 +88,10 @@ def run(op,host,iterations,tolerance):
         obj=doc.Objects.FindId(identity)
         if obj is None:return dict(exists=False,selected=False,hidden=False,analysis=False,geometry=None)
         g=obj.Geometry
-        geometry=(host['_interchange_brep_record'](g) if isinstance(g,G.Brep) else
+        if isinstance(g,G.SubD):
+            from subd_direction_probe import geometry as subd_geometry
+            geometry=subd_geometry(g,host)
+        else:geometry=(host['_interchange_brep_record'](g) if isinstance(g,G.Brep) else
                   host['_interchange_curve_record'](g) if isinstance(g,G.Curve) else
                   host['_polygon_mesh_value'](g) if isinstance(g,G.Mesh) else [float(g.Location.X),float(g.Location.Y),float(g.Location.Z)])
         return dict(exists=True,selected=bool(obj.IsSelected(False)),hidden=bool(obj.IsHidden),
@@ -106,6 +119,7 @@ def run(op,host,iterations,tolerance):
                 finish=start(R,S,doc,keys[pick],pick,step)
             select='' if any(obj.IsSelected(False) for obj in doc.Objects) else ' _SelID '+str(key)+' _Enter'
             macro=('_ShowDir'+select if step=='ShowDir' else ('_SelID '+str(key)+' _Delete' if step=='Delete' else '_'+step+(select if step=='Hide' else '')))
+            if op['op']=='subd_direction_analysis' and step=='ShowDir':macro+=' !'
             if step in ('SelectPrimary','SelectCompanion','SelNone'):
                 doc.Objects.UnselectAll()
                 if step!='SelNone':
@@ -122,7 +136,7 @@ def run(op,host,iterations,tolerance):
                 success=True;state=snapshot();macro=None
             else:
                 success,state,events=observe_command(R.Commands.Command,step,lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
-                if step=='ShowDir':
+                if step=='ShowDir' and (op['op']!='subd_direction_analysis' or controls()):
                     for setting in ('Direction=Yes','U=Yes','V=Yes'):controls(setting)
             R.RhinoApp.Wait()
             modes=[];obj=doc.Objects.FindId(key)
@@ -138,3 +152,4 @@ def run(op,host,iterations,tolerance):
         for identity in keys:doc.Objects.Delete(identity,True)
         if source is not None:source.Dispose()
         if model is not None:model.Dispose()
+        doc.SubDAppearance=old_appearance

@@ -1,0 +1,475 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_0_0_0",
+      "scene": "bent_grid",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_0_0_1",
+      "scene": "bent_grid",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_0_1_0",
+      "scene": "bent_grid",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_0_1_1",
+      "scene": "bent_grid",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_1_0_0",
+      "scene": "bent_grid",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_1_0_1",
+      "scene": "bent_grid",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_1_1_0",
+      "scene": "bent_grid",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "bent_grid_1_1_1",
+      "scene": "bent_grid",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_0_0",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_0_1",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_1_0",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_1_1",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_0_0",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_0_1",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_1_0",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_1_1",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_0_0_0",
+      "scene": "pentagon",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_0_0_1",
+      "scene": "pentagon",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_0_1_0",
+      "scene": "pentagon",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_0_1_1",
+      "scene": "pentagon",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_1_0_0",
+      "scene": "pentagon",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_1_0_1",
+      "scene": "pentagon",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_1_1_0",
+      "scene": "pentagon",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "pentagon_1_1_1",
+      "scene": "pentagon",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_0_0_0",
+      "scene": "fan7",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_0_0_1",
+      "scene": "fan7",
+      "preselect": false,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_0_1_0",
+      "scene": "fan7",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_0_1_1",
+      "scene": "fan7",
+      "preselect": false,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_1_0_0",
+      "scene": "fan7",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_1_0_1",
+      "scene": "fan7",
+      "preselect": true,
+      "flat": false,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_1_1_0",
+      "scene": "fan7",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "All",
+        "Mark"
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "fan7_1_1_1",
+      "scene": "fan7",
+      "preselect": true,
+      "flat": true,
+      "command": "ZoomNaked",
+      "shared_input": true,
+      "actions": [
+        "Mark",
+        "Next",
+        "Mark"
+      ],
+      "finish": "Cancel"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+"""Capture actual enabled states of owned Edge Analysis panel controls."""
+from .capture_family import capture
+from .subd_edge_analysis_cases import capabilities, ASSETS
+
+if __name__ == '__main__':
+    request = dict(protocol_version=1, iterations=1,
+                   tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6), operations=capabilities())
+    capture('subd_edge_analysis_capabilities', request,
+            ['generate_subd_edge_analysis_capabilities.py', 'subd_edge_analysis_cases.py',
+             'subd_edge_analysis_probe.py', 'owned_panel.py', 'edge_zoom_input.py',
+             'subd_direction_probe.py', 'subd_direction_cases.py', 'subd_volume_cases.py',
+             'subd_area_cases.py', 'component_length_cases.py', 'subd_to_nurbs_probe.py',
+             'subd_box_probe.py', 'subd_join_probe.py', 'subd_join_cases.py', 'edge_loop_cases.py',
+             'join_probe.py', 'merge_edges_probe.py', 'structural_sdk.py', 'rhino_worker.py', 'client.py',
+             'fixtures/subd_soft_nurbs_inputs/provenance.json',
+             *['fixtures/subd_soft_nurbs_inputs/' + name + '.3dm' for name in ASSETS]],
+            'VibocerosOracleSubDEdgeAnalysisCapabilities20261105', timeout=600)

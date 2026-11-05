@@ -1,0 +1,219 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_0",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_0_1",
+      "scene": "open_cube",
+      "preselect": false,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_0",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "open_cube_1_1",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cube_0_0",
+      "scene": "cube",
+      "preselect": false,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cube_0_1",
+      "scene": "cube",
+      "preselect": false,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cube_1_0",
+      "scene": "cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cube_1_1",
+      "scene": "cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "creased_cube_0_0",
+      "scene": "creased_cube",
+      "preselect": false,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "creased_cube_0_1",
+      "scene": "creased_cube",
+      "preselect": false,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "creased_cube_1_0",
+      "scene": "creased_cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "creased_cube_1_1",
+      "scene": "creased_cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "asset_hard_soft_chain_0_0",
+      "scene": "asset_hard_soft_chain",
+      "preselect": false,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "asset_hard_soft_chain_0_1",
+      "scene": "asset_hard_soft_chain",
+      "preselect": false,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "asset_hard_soft_chain_1_0",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "asset_hard_soft_chain_1_1",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    }
+  ]
+}

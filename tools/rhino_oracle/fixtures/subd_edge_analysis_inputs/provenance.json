@@ -1,0 +1,28 @@
+{
+  "bent_grid": {
+    "case": "bent_grid_0_0_0",
+    "sha256": "6e192631e465dec0c3d0f1414619d318fb8acbf13d025b4c72b9bef8a2b0fb87"
+  },
+  "open_cube": {
+    "case": "open_cube_0_0_0",
+    "sha256": "611eade67693ecf022e1be52a382078aef3c9f5fd4bd90060d008fe2c12283be"
+  },
+  "pentagon": {
+    "case": "pentagon_0_0_0",
+    "sha256": "39c49786aebd8e80227917df94e75f892809681d0624f4e6c64f34475c2544bb"
+  },
+  "fan7": {
+    "case": "fan7_0_0_0",
+    "sha256": "f8cea34cb91e0d0e78a960edcd1150be6789691df953669727ac1d6f0c3ad5a5"
+  },
+  "asset_variable_both_ends": {
+    "family": "subd_edge_analysis_panels",
+    "case": "panel_asset_variable_both_ends_0",
+    "sha256": "a0ea226cded4cc953681020e4ea35ddd3ebe414dd2916290a999bc3daa0273cb"
+  },
+  "asset_hard_soft_chain": {
+    "family": "subd_edge_analysis_panels",
+    "case": "panel_asset_hard_soft_chain_0",
+    "sha256": "76ced195972002a1e47cf5fb0981b4ae68892db8c67905b6b373b2b72aa8e2e1"
+  }
+}

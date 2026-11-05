@@ -1,0 +1,89 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_open_cube_0",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_open_cube_1",
+      "scene": "open_cube",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_asset_variable_both_ends_0",
+      "scene": "asset_variable_both_ends",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_asset_variable_both_ends_1",
+      "scene": "asset_variable_both_ends",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_asset_hard_soft_chain_0",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "cap_asset_hard_soft_chain_1",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "actions": [
+        "Show=Naked",
+        "Show=All",
+        "Show=NonManifold"
+      ]
+    }
+  ]
+}

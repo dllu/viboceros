@@ -5,6 +5,8 @@
 `ShowDir` adds selected curves, surfaces, polysurfaces and meshes to a persistent
 direction display, or asks for objects first. The Direction Analysis panel stays
 open while modeling. `ShowDirOff` closes it and removes all analysis membership.
+SubDs use live [`Dir`](subd-direction.md); native admission probes do not add
+them to persistent `ShowDir`.
 
 Direction, U and V checkboxes control curve tangents, oriented normals and surface
 parameter axes. Direction color changes tangent/normal arrows; U/V use the axis

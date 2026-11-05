@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_edge_analysis",
+      "id": "panel_asset_variable_both_ends_0_mouse",
+      "scene": "asset_variable_both_ends",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "shared_input": true,
+      "actions": [
+        "Show=Naked",
+        "Show=All"
+      ],
+      "zoom": [
+        "All",
+        "Mark"
+      ],
+      "native_click": true
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "panel_asset_variable_both_ends_1_mouse",
+      "scene": "asset_variable_both_ends",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "shared_input": true,
+      "actions": [
+        "Show=Naked",
+        "Show=All"
+      ],
+      "zoom": [
+        "All",
+        "Mark"
+      ],
+      "native_click": true
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "panel_asset_hard_soft_chain_0_mouse",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": false,
+      "command": "ShowEdges",
+      "shared_input": true,
+      "actions": [
+        "Show=Naked",
+        "Show=All"
+      ],
+      "zoom": [
+        "All",
+        "Mark"
+      ],
+      "native_click": true
+    },
+    {
+      "op": "subd_edge_analysis",
+      "id": "panel_asset_hard_soft_chain_1_mouse",
+      "scene": "asset_hard_soft_chain",
+      "preselect": true,
+      "flat": true,
+      "command": "ShowEdges",
+      "shared_input": true,
+      "actions": [
+        "Show=Naked",
+        "Show=All"
+      ],
+      "zoom": [
+        "All",
+        "Mark"
+      ],
+      "native_click": true
+    }
+  ]
+}

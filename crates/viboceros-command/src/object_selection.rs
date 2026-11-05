@@ -13,6 +13,7 @@ pub enum ObjectSelectionFilter {
     Any,
     Section,
     EdgeAnalysis,
+    DiagnosticEdges,
     BlockEditSources,
     Blocks,
     Grouped,
@@ -93,6 +94,9 @@ impl ObjectSelectionFilter {
                         geometry,
                         Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
                     )
+            }
+            Self::DiagnosticEdges => {
+                Self::EdgeAnalysis.accepts_object(object) || matches!(geometry, Geometry::SubD(_))
             }
             Self::EdgeAnalysis => matches!(
                 geometry,

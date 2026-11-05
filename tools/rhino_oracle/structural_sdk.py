@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'subd_edge_analysis': ('subd_edge_analysis_probe', ('subd_edge_analysis_cases','owned_panel','edge_zoom_input','subd_direction_probe','subd_direction_cases','subd_volume_cases','subd_area_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
     'subd_direction': ('subd_direction_probe', ('subd_direction_cases','subd_volume_cases','subd_area_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
     'subd_volume': ('subd_volume_probe', ('subd_volume_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
     'subd_area': ('subd_area_probe', ('subd_to_nurbs_probe','subd_box_probe','subd_area_cases','component_length_cases','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
@@ -94,6 +95,7 @@ PROBES = {
     'surface_analysis_input': ('analysis_input_probe', ('join_probe','merge_edges_probe')),
     'curvature_analysis': ('curvature_analysis_probe', ('curvature_analysis_controls','join_probe','merge_edges_probe')),
     'draft_angle_analysis': ('draft_angle_probe', ('join_probe', 'merge_edges_probe')),
+    'subd_direction_analysis': ('direction_analysis_probe', ('subd_direction_analysis_cases','direction_analysis_input','subd_direction_probe','subd_direction_cases','subd_volume_cases','subd_area_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
     'direction_analysis': ('direction_analysis_probe', ('direction_analysis_input','join_probe', 'merge_edges_probe')),
     'brep_direction_command': ('brep_direction_probe', ('join_probe', 'merge_edges_probe')),
     'sweep1': ('sweep1_probe', ()),
@@ -318,6 +320,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
             asset=Path('fixtures/subd_soft_nurbs_inputs')/(name+'.3dm')
             (destination/asset.parent).mkdir(parents=True,exist_ok=True)
             shutil.copyfile(source_directory/asset,destination/asset)
+    if 'subd_edge_analysis_probe' in modules:
+        from .subd_edge_analysis_cases import ASSETS
+        for name in ASSETS:
+            asset=Path('fixtures/subd_soft_nurbs_inputs')/(name+'.3dm')
+            (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+            shutil.copy2(source_directory/asset,destination/asset)
     if 'subd_soft_nurbs_probe' in modules:
         from .subd_soft_nurbs_cases import ASSETS,CHAIN_ASSETS
         for name in ASSETS+CHAIN_ASSETS:

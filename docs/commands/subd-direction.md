@@ -16,7 +16,9 @@ Hover interpolates cached display normals at the picked mesh point, including
 flat control-net appearance, and applies the provisional orientation. Display
 mesh interpolation approximates smooth normals between exact native samples;
 native arrow positions, density and pixels have not been matched. Persistent
-`ShowDir` membership for SubDs remains outside this implementation.
+`ShowDir` membership excludes SubDs: six native admission/control captures
+confirm that open and closed SubDs stay unanalyzed while lines and meshes join
+the display. See the [edge-analysis evidence](subd-edge-analysis.md).
 
 ## Evidence
 

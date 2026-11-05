@@ -2,6 +2,7 @@
 
 [All commands](README.md) · [Command input](../command-line.md)
 
+- [SubD diagnostic edges, creases and boundary marking](subd-edge-analysis.md)
 - [ExtractAnalysisMesh: copy analysis meshes, normals and colors](extract-analysis-mesh.md)
 - [PolylineOnMesh drawing](polyline-on-mesh.md)
 - [MeshPatch from curves, points and point clouds](mesh-patch.md)

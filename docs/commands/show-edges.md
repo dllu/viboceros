@@ -1,6 +1,6 @@
 # Edge analysis
 
-Select NURBS surfaces, B-reps or meshes and run `ShowEdges`. With no selection,
+Select NURBS surfaces, B-reps, meshes or SubDs and run `ShowEdges`. With no selection,
 the application prompts for eligible objects. A shared Edge Analysis window and
 console session control colored edge overlays and endpoint markers.
 
@@ -22,7 +22,8 @@ ZoomNonManifold
 
 `Naked` is the initial mode. B-rep edges are classified by their trim use count;
 mesh edges use exact-location topology and original polygon sides. `All` includes
-every B-rep edge, but only naked or unwelded mesh edges. `NonManifold` selects
+every B-rep edge, naked or unwelded mesh edges, and naked, hard-crease or
+soft-crease SubD edges. `NonManifold` selects
 edges used by more than two faces. Closed boxes and spheres have no naked edges.
 These classifications follow the [Rhino 8 command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/showedges.htm).
 
@@ -45,7 +46,8 @@ marks the first and second edges in one Undo step. A fresh Zoom command starts
 at the first eligible edge. The analysis session remains open after Undo.
 Hidden objects and hidden layers suppress their overlays.
 
-Geometry snapshots and tolerance changes invalidate the topology cache.
+Geometry snapshots, tolerance changes and SubD appearance changes invalidate
+the topology cache.
 Unchanged frames and color edits reuse the edge data; the four viewports share
 sampled curve segments. Sessions are limited to one million edges. Straight
 degree-one edges draw their spans directly; other curves use the existing
@@ -56,7 +58,9 @@ two application and one viewport regression in a full 5,610-test Rust run.
 Ten [live Rhino SDK captures](../edge-analysis-native.md) also match edge order,
 domains, classifications and curve samples without exclusions. Native dialog
 behavior, zoom framing and curved display accuracy still need qualification.
-Standalone SubD and extrusion types are not supported. Deleted
+SubD overlays and `ZoomNaked` marking follow smooth/flat appearance; see
+[SubD edge-analysis evidence](subd-edge-analysis.md). Standalone extrusion
+types are not supported. Deleted
 sources leave the session; after Undo restores an object, select and add it
 again. Analysis settings are transient and are not saved in model files.
 

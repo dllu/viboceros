@@ -174,6 +174,7 @@ mod subd_area;
 mod subd_direction;
 #[path = "../../../crates/viboceros-oracle/tests/support/subd_direction.rs"]
 mod subd_direction_support;
+mod subd_edge_analysis;
 mod subd_join;
 mod subd_volume;
 #[cfg(feature = "native-smlib")]

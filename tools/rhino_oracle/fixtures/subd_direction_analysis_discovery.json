@@ -1,0 +1,75 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_direction_analysis",
+      "id": "open_cube_0",
+      "source": "subd_open_cube",
+      "preselect": false,
+      "flat": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "subd_direction_analysis",
+      "id": "open_cube_1",
+      "source": "subd_open_cube",
+      "preselect": true,
+      "flat": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "subd_direction_analysis",
+      "id": "cube_0",
+      "source": "subd_cube",
+      "preselect": false,
+      "flat": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "subd_direction_analysis",
+      "id": "cube_1",
+      "source": "subd_cube",
+      "preselect": true,
+      "flat": false,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "control_line",
+      "source": "line",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    },
+    {
+      "op": "direction_analysis",
+      "id": "control_mesh",
+      "source": "mesh",
+      "preselect": true,
+      "steps": [
+        "ShowDir",
+        "ShowDirOff"
+      ]
+    }
+  ]
+}

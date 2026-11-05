@@ -1,5 +1,6 @@
 //! Non-destructive edge analysis state, shared by console and viewport UI.
 use super::*;
+mod subd;
 #[cfg(test)]
 mod tests;
 use std::sync::{Arc, Mutex};
@@ -78,6 +79,7 @@ struct Cache {
     snapshot: GeometrySnapshot,
     tolerance: Tolerance,
     edges: Arc<[Edge]>,
+    control_net: bool,
 }
 #[derive(Clone, Debug)]
 struct State {
@@ -116,8 +118,10 @@ fn gather(
     geometry: &Geometry,
     object: ObjectId,
     tolerance: Tolerance,
+    control_net: bool,
 ) -> Result<Vec<Edge>, CommandError> {
     match geometry {
+        Geometry::SubD(s) => subd::gather(s, object, control_net),
         Geometry::Mesh(mesh) => mesh
             .diagnostic_edges()
             .into_iter()
@@ -147,6 +151,7 @@ fn gather(
             )?),
             object,
             tolerance,
+            control_net,
         ),
         Geometry::Brep(brep) => {
             let counts = brep.edge_use_counts();
@@ -174,7 +179,7 @@ fn gather(
                 .collect()
         }
         _ => Err(CommandError::Usage(
-            "ShowEdges requires surfaces, polysurfaces or meshes",
+            "ShowEdges requires surfaces, polysurfaces, meshes or SubDs",
         )),
     }
 }
@@ -194,19 +199,23 @@ impl Session {
         let mut ids = Vec::new();
         for object in doc.objects().filter(|o| state.sources.contains(&o.id())) {
             ids.push(object.id());
+            let control_net =
+                doc.subd_control_net() && matches!(object.geometry(), Geometry::SubD(_));
             let stale = state.cache.get(&object.id()).is_none_or(|c| {
-                c.tolerance != doc.tolerance()
+                c.control_net != control_net
+                    || c.tolerance != doc.tolerance()
                     || !c.snapshot.shares_storage_with(object.geometry_snapshot())
             });
             if stale {
                 dirty = true;
-                let value = gather(object.geometry(), object.id(), doc.tolerance())?;
+                let value = gather(object.geometry(), object.id(), doc.tolerance(), control_net)?;
                 state.cache.insert(
                     object.id(),
                     Cache {
                         snapshot: object.geometry_snapshot().clone(),
                         tolerance: doc.tolerance(),
                         edges: value.into(),
+                        control_net,
                     },
                 );
             }
@@ -276,7 +285,7 @@ impl Command for AnalysisCommand {
                 || !self.session.0.lock().expect("edge analysis state").enabled))
             .then(|| ObjectSelectionPrompt {
                 command: self.name,
-                filter: ObjectSelectionFilter::EdgeAnalysis,
+                filter: ObjectSelectionFilter::DiagnosticEdges,
                 options: Vec::new(),
                 menus: Vec::new(),
                 choices: Vec::new(),
@@ -284,6 +293,24 @@ impl Command for AnalysisCommand {
             }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
+        self.run_selected(doc, args, false)
+    }
+    fn run_postselected(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        self.run_selected(doc, args, true)
+    }
+}
+impl AnalysisCommand {
+    fn run_selected(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        postselected: bool,
+    ) -> Result<String, CommandError> {
         let mut proposed = self.session.0.lock().expect("edge analysis state").clone();
         if self.name == "ShowEdgesOff" {
             require_consumed(args, 0, USAGE)?;
@@ -363,9 +390,11 @@ impl Command for AnalysisCommand {
                 }
             }
         }
+        let release_subd_picks = self.name == "ShowEdges"
+            && (!proposed.enabled || args.is_empty() || action != "replace");
         let selected = doc
             .selected_objects()
-            .filter(|o| ObjectSelectionFilter::EdgeAnalysis.accepts_object(o))
+            .filter(|o| ObjectSelectionFilter::DiagnosticEdges.accepts_object(o))
             .map(|o| o.id())
             .collect::<BTreeSet<_>>();
         if action != "replace" && selected.is_empty() {
@@ -389,6 +418,9 @@ impl Command for AnalysisCommand {
         proposed.enabled = true;
         let mut view = Session::resolve(&mut proposed, doc)?;
         let count = view.displayed().count();
+        if postselected && self.name.starts_with("Zoom") {
+            release_subd_selection(doc)?;
+        }
         for action in actions {
             match action.as_str() {
                 "all" => proposed.focus_all = true,
@@ -417,6 +449,9 @@ impl Command for AnalysisCommand {
             };
             view = Session::resolve(&mut proposed, doc)?;
         }
+        if release_subd_picks {
+            release_subd_selection(doc)?;
+        }
         *self.session.0.lock().expect("edge analysis state") = proposed;
         if canceled {
             return Err(CommandError::OperationDeclined);
@@ -428,4 +463,14 @@ impl Command for AnalysisCommand {
             view.sources
         ))
     }
+}
+
+fn release_subd_selection(doc: &mut Document) -> Result<(), CommandError> {
+    let retained = doc
+        .selected_objects()
+        .filter(|o| !matches!(o.geometry(), Geometry::SubD(_)))
+        .map(|o| o.id())
+        .collect::<Vec<_>>();
+    doc.set_transient_selection(retained)?;
+    Ok(())
 }
