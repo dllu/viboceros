@@ -30,6 +30,8 @@ orientation reversal and topology reconstruction produce explicit B-reps, so a
 later save cannot restore obsolete extrusion geometry. `ToNURBS` also produces an
 explicit B-rep and follows its existing source-retention and Undo/Redo behavior.
 Managed geometry user text stays independent of the archive, including removal.
+`ConvertExtrusion` provides explicit B-rep conversion with native deletion,
+selection and history behavior; see its [command qualification](commands/convert-extrusion.md).
 
 The [qualification record](extrusion-interop-qualification.json) covers 11 native
 Rhino files: open/capped rectangles, negative heights, circles, an arc, a kinked

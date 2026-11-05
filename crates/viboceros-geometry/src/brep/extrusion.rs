@@ -1,6 +1,7 @@
 //! A typed native extrusion plus its validated canonical B-rep view.
 use super::*;
 use std::sync::Arc;
+mod caps;
 
 /// Immutable extrusion data retained alongside its exact B-rep view. Only
 /// constructors that decode both views together can attach this representation.

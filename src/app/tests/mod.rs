@@ -41,6 +41,7 @@ mod component_length;
 mod conic;
 mod construction_plane;
 mod contour;
+mod convert_extrusion;
 mod coplanar_faces;
 mod copy_options;
 mod create_uv_curves;

@@ -302,6 +302,7 @@ use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 pub use bounding_box::selected_bounding_box_center;
 mod block_selection;
+mod convert_extrusion;
 mod distribute;
 mod geometry_selection;
 pub mod infinite_plane;
@@ -1566,6 +1567,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(block_selection::SelBlockInstanceNamedCommand)
+            .expect("unique built-in command");
+        registry
+            .register(convert_extrusion::ConvertExtrusionCommand)
             .expect("unique built-in command");
         registry
             .register(SelIdCommand)

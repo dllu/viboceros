@@ -102,6 +102,7 @@ mod cap_command;
 mod contour_command;
 mod conversion;
 mod conversion_session;
+pub mod convert_extrusion;
 mod copy_options;
 mod distribute;
 mod divide_command;
@@ -355,6 +356,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ConvertExtrusion {
+        id: String,
+        #[serde(flatten)]
+        fixture: convert_extrusion::Fixture,
+    },
     TypeSelection {
         id: String,
         #[serde(flatten)]
@@ -2911,6 +2917,7 @@ impl Operation {
             | Self::SubdArea { id, .. }
             | Self::EdgeAnalysisLifetime { id, .. }
             | Self::TypeSelection { id, .. }
+            | Self::ConvertExtrusion { id, .. }
             | Self::EdgeAnalysisMixed { id, .. }
             | Self::SubdEdgeAnalysis { id, .. }
             | Self::SubdDirection { id, .. }
@@ -3459,6 +3466,9 @@ fn execute(
         }
         Operation::TypeSelection { fixture, .. } => {
             type_selection::run(fixture, iterations, tolerance)?
+        }
+        Operation::ConvertExtrusion { fixture, .. } => {
+            convert_extrusion::run(fixture, iterations, tolerance)?
         }
         Operation::EdgeAnalysisMixed { fixture, .. } => {
             edge_analysis_mixed::run(fixture, iterations, tolerance)?

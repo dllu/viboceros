@@ -16,6 +16,38 @@ pub enum ReplacementHistory {
 }
 
 impl Document {
+    /// Replace a staged batch in the supplied order, retaining object UUIDs and
+    /// table positions. Repeated IDs use their last geometry and input position.
+    /// All IDs and geometry are validated before assigning any object version.
+    pub fn replace_object_geometries_in_order(
+        &mut self,
+        replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<usize, DocumentError> {
+        let mut replacements = replacements
+            .into_iter()
+            .enumerate()
+            .map(|(rank, (id, g))| (id, (rank, g)))
+            .collect::<BTreeMap<_, _>>();
+        let indices = self.resolve_object_indices(replacements.keys().copied())?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        let mut staged = indices
+            .into_iter()
+            .map(|index| {
+                let (rank, geometry) = replacements.remove(&self.objects[index].id).unwrap();
+                Ok((rank, index, object_admission::normalize_geometry(geometry)?))
+            })
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        staged.sort_unstable_by_key(|(rank, _, _)| *rank);
+        self.commit_object_geometries(
+            staged.into_iter().map(|(_, index, g)| (index, g)).collect(),
+            "Replace object geometry",
+            "Replace object geometry",
+            ReplacementHistory::ChangesOnly,
+            false,
+        )
+    }
     /// Apply a separate affine map to each object, staging the entire edit
     /// before mutation. Duplicate IDs use their last supplied map. Geometry
     /// metadata and existing representations follow ordinary affine edits.

@@ -1,5 +1,46 @@
 use super::*;
 
+#[test]
+fn ordered_replacement_stages_once_preserves_positions_and_restores_versions() {
+    let (mut doc, ids) = document();
+    let original = doc.objects().cloned().collect::<Vec<_>>();
+    doc.clear_history().unwrap();
+    doc.replace_object_geometries_in_order([
+        (ids[0], point(7.)),
+        (ids[1], point(8.)),
+        (ids[0], point(9.)),
+    ])
+    .unwrap();
+    assert_eq!(
+        doc.objects().map(Object::id).collect::<Vec<_>>(),
+        original.iter().map(Object::id).collect::<Vec<_>>()
+    );
+    assert_eq!(doc.object(ids[0]).unwrap().geometry(), &point(9.));
+    assert!(
+        doc.object(ids[0]).unwrap().runtime_serial_number()
+            > doc.object(ids[1]).unwrap().runtime_serial_number()
+    );
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), original);
+    for object in &original {
+        assert_eq!(
+            doc.object(object.id()).unwrap().runtime_serial_number(),
+            object.runtime_serial_number()
+        );
+    }
+    for bad in [ids[1], ObjectId::new()] {
+        if bad == ids[1] {
+            doc.set_objects_locked([bad], true).unwrap();
+        }
+        let before = format!("{doc:?}");
+        assert!(
+            doc.replace_object_geometries_in_order([(ids[0], point(10.)), (bad, point(11.))])
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+    }
+}
+
 fn point(x: f64) -> Geometry {
     Geometry::Point(Point3::try_new(x, 0., 0.).unwrap())
 }

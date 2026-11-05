@@ -50,6 +50,7 @@ Conic
 Connect
 Contour
 ControlPointCurve
+ConvertExtrusion
 ConvertToBeziers
 ConvertToSingleSpans
 Copy

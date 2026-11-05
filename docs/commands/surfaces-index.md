@@ -16,6 +16,7 @@
 - [Fit a sphere through points and grips](sphere-fit-points.md)
 - [Tapered curve extrusion](extrude-crv-tapered.md)
 - [Surface and face extrusion](extrude-srf.md)
+- [Convert lightweight extrusions to explicit B-reps](convert-extrusion.md)
 - [Surface extrusion along curves](extrude-srf-along-crv.md)
 - [Surface extrusion to a point](extrude-srf-to-point.md)
 - [Tapered surface extrusion](extrude-srf-tapered.md)

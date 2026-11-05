@@ -1,0 +1,507 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_00_00",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_00_01",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_00_10",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_00_11",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_open_00_00",
+      "asset": "tosubd_extrusion_rectangle_open_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_open_00_01",
+      "asset": "tosubd_extrusion_rectangle_open_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_open_00_10",
+      "asset": "tosubd_extrusion_rectangle_open_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_open_00_11",
+      "asset": "tosubd_extrusion_rectangle_open_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_negative_00_00",
+      "asset": "tosubd_extrusion_rectangle_negative_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_negative_00_01",
+      "asset": "tosubd_extrusion_rectangle_negative_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_negative_00_10",
+      "asset": "tosubd_extrusion_rectangle_negative_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_negative_00_11",
+      "asset": "tosubd_extrusion_rectangle_negative_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_00_00",
+      "asset": "tosubd_extrusion_circle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_00_01",
+      "asset": "tosubd_extrusion_circle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_00_10",
+      "asset": "tosubd_extrusion_circle_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_00_11",
+      "asset": "tosubd_extrusion_circle_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_open_00_00",
+      "asset": "tosubd_extrusion_circle_open_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_open_00_01",
+      "asset": "tosubd_extrusion_circle_open_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_open_00_10",
+      "asset": "tosubd_extrusion_circle_open_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_open_00_11",
+      "asset": "tosubd_extrusion_circle_open_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_open_kink_00_00",
+      "asset": "tosubd_extrusion_open_kink_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_open_kink_00_01",
+      "asset": "tosubd_extrusion_open_kink_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_open_kink_00_10",
+      "asset": "tosubd_extrusion_open_kink_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_open_kink_00_11",
+      "asset": "tosubd_extrusion_open_kink_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_arc_00_00",
+      "asset": "tosubd_extrusion_arc_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_arc_00_01",
+      "asset": "tosubd_extrusion_arc_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_arc_00_10",
+      "asset": "tosubd_extrusion_arc_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_arc_00_11",
+      "asset": "tosubd_extrusion_arc_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_miter_00_00",
+      "asset": "tosubd_extrusion_rectangle_miter_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_miter_00_01",
+      "asset": "tosubd_extrusion_rectangle_miter_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_miter_00_10",
+      "asset": "tosubd_extrusion_rectangle_miter_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_rectangle_miter_00_11",
+      "asset": "tosubd_extrusion_rectangle_miter_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_shear_00_00",
+      "asset": "tosubd_extrusion_circle_shear_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_shear_00_01",
+      "asset": "tosubd_extrusion_circle_shear_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_shear_00_10",
+      "asset": "tosubd_extrusion_circle_shear_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_extrusion_circle_shear_00_11",
+      "asset": "tosubd_extrusion_circle_shear_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_000_00",
+      "asset": "tosubd_pipe_000",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_000_01",
+      "asset": "tosubd_pipe_000",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_000_10",
+      "asset": "tosubd_pipe_000",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_000_11",
+      "asset": "tosubd_pipe_000",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_100_00",
+      "asset": "tosubd_pipe_100",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_100_01",
+      "asset": "tosubd_pipe_100",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_100_10",
+      "asset": "tosubd_pipe_100",
+      "delete": true,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "tosubd_pipe_100_11",
+      "asset": "tosubd_pipe_100",
+      "delete": true,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "grouped_00",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "grouped_01",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "grouped_10",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "grouped_11",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "default_0",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "default_1",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": null,
+      "preselect": true,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "default_2",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "default_3",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": null,
+      "preselect": false,
+      "grouped": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_000",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false,
+      "pair": true,
+      "reverse": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_001",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": false,
+      "grouped": false,
+      "pair": true,
+      "reverse": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_010",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false,
+      "pair": true,
+      "reverse": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_011",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": false,
+      "preselect": true,
+      "grouped": false,
+      "pair": true,
+      "reverse": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_100",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false,
+      "pair": true,
+      "reverse": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_101",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": false,
+      "grouped": false,
+      "pair": true,
+      "reverse": true
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_110",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false,
+      "pair": true,
+      "reverse": false
+    },
+    {
+      "op": "convert_extrusion",
+      "id": "pair_111",
+      "asset": "tosubd_extrusion_rectangle_00",
+      "delete": true,
+      "preselect": true,
+      "grouped": false,
+      "pair": true,
+      "reverse": true
+    }
+  ]
+}

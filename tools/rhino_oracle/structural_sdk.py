@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'convert_extrusion': ('convert_extrusion_probe', ('convert_extrusion_cases','join_probe','merge_edges_probe')),
     'type_selection': ('type_selection_probe', ('type_selection_cases','type_selection_scene','join_probe','merge_edges_probe')),
     'edge_analysis_lifetime': ('edge_analysis_lifetime_probe', ('edge_analysis_lifetime_cases','edge_analysis_mixed_probe','edge_analysis_mixed_cases','subd_edge_analysis_probe','subd_edge_analysis_cases','owned_panel','edge_zoom_input','subd_direction_probe','subd_direction_cases','subd_volume_cases','subd_area_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
     'edge_analysis_mixed': ('edge_analysis_mixed_probe', ('edge_analysis_mixed_cases','subd_edge_analysis_probe','subd_edge_analysis_cases','owned_panel','edge_zoom_input','subd_direction_probe','subd_direction_cases','subd_volume_cases','subd_area_cases','component_length_cases','subd_to_nurbs_probe','subd_box_probe','subd_join_probe','subd_join_cases','edge_loop_cases','join_probe','merge_edges_probe')),
@@ -302,6 +303,12 @@ def stage_helpers(request, source_directory: Path, destination: Path):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'convert_extrusion_probe' in modules:
+        from .convert_extrusion_cases import ASSETS
+        for name in ASSETS:
+            asset=Path('fixtures/extrusions')/(name+'.3dm')
+            (destination/asset.parent).mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(source_directory/asset,destination/asset)
     if 'draft_pull_probe' in modules:
         asset=Path('fixtures/brep_direction/box.3dm')
         (destination/asset.parent).mkdir(parents=True,exist_ok=True)
