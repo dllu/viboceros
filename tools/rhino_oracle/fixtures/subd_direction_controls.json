@@ -1,0 +1,651 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_bare_0_0",
+      "scene": "bent_grid",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_bare_0_1",
+      "scene": "bent_grid",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_bare_0_0",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_bare_0_1",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_bare_0_0",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_bare_0_1",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_bare_0_0",
+      "scene": "pentagon",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_bare_0_1",
+      "scene": "pentagon",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_bare_1_0",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_bare_1_1",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_bare_1_0",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_bare_1_1",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false,
+      "bare": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_0_0",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_0_1",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_0_2",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_0_3",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_0_4",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_1_0",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_1_1",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_1_2",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_1_3",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_0_1_4",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_0_0",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_0_1",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_0_2",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_0_3",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_0_4",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_1_0",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_1_1",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_1_2",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_1_3",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_0_1_4",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_0_0",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_0_1",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_0_2",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_0_3",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_0_4",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_1_0",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_1_1",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_1_2",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_1_3",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_session_1_1_4",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_0_0",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_0_1",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_0_2",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_0_3",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_0_4",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_1_0",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_1_1",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_1_2",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll",
+        "FlipAll"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_1_3",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [
+        "FlipAll"
+      ],
+      "cancel": true
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_session_1_1_4",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": true
+    }
+  ]
+}

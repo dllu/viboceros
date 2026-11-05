@@ -190,3 +190,21 @@ fn small_trimmed_regions_keep_direction_arrows_when_the_interior_grid_misses() {
     );
     assert!((view.markers[0].axes[2].unwrap().z() - 1.).abs() < 1e-12);
 }
+
+#[test]
+fn persistent_controls_only_edit_types_admitted_to_persistent_analysis() {
+    let (mut doc, commands, curve) = setup();
+    commands.execute(&mut doc, "ShowDir").unwrap();
+    commands
+        .execute(&mut doc, "SubDPlane XCount=2 YCount=2 0,0,0 4,4,0")
+        .unwrap();
+    let id = doc.objects().last().unwrap().id();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = format!("{doc:?}");
+    commands.execute(&mut doc, "ShowDir Flip").unwrap();
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(commands.object_has_direction_analysis(curve));
+    assert!(!commands.object_has_direction_analysis(id));
+}

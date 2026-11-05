@@ -1,5 +1,6 @@
 //! Camera-independent direction markers shared by Dir and persistent analysis.
 use super::*;
+mod subd;
 
 #[derive(Clone, Debug)]
 pub struct Marker {
@@ -45,6 +46,7 @@ pub fn collect_markers<'a>(
                         }
                     }
                 }
+                Geometry::SubD(s) => markers.extend(subd::collect(id, s)),
                 Geometry::Mesh(mesh) => {
                     // Bound annotation density independently of triangle count.
                     for face in (0..mesh.triangles().len())

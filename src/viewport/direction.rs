@@ -3,6 +3,9 @@ use super::*;
 use std::collections::BTreeSet;
 use viboceros_command::direction::{DirectionSession, marker_at};
 pub(crate) use viboceros_command::direction::{Marker, collect_markers};
+mod subd;
+#[cfg(test)]
+mod subd_tests;
 #[cfg(test)]
 mod tests;
 
@@ -74,6 +77,9 @@ impl Viewport {
                 marker_at(id, geometry, face_index, point, document.tolerance())
             }
             Geometry::Mesh(_) => marker_at(id, geometry, face_index, point, document.tolerance()),
+            Geometry::SubD(staged) => {
+                self.subd_direction_marker(pointer, rect, document, id, face_index, staged)
+            }
             _ => None,
         };
         Some((id, marker))

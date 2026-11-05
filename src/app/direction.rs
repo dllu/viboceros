@@ -24,7 +24,8 @@ impl Session {
         if self.choosing_mode {
             "Mode: FlipNormal / FlipU / FlipV / SwapUV; Esc discards edits"
         } else if self.edits.geometries().all(|(_, geometry)| {
-            geometry.curve_ref().is_some() || matches!(geometry, Geometry::Mesh(_))
+            geometry.curve_ref().is_some()
+                || matches!(geometry, Geometry::Mesh(_) | Geometry::SubD(_))
         }) {
             "Click to flip direction; Flip / FlipAll; Enter accepts, Esc discards edits"
         } else {

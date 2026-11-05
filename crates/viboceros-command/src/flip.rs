@@ -1,4 +1,4 @@
-//! In-place direction reversal with command-specific closed-B-rep policy.
+//! In-place direction reversal with command-specific solid policies.
 use super::*;
 
 #[cfg(test)]
@@ -23,7 +23,7 @@ impl Command for FlipCommand {
         Ok(Some(ObjectSelectionPrompt {
             command: "Flip",
             // Rhino's actual command accepts mixed selections, including
-            // points and closed solids, then leaves the skipped peers selected.
+            // points and closed solids; skipped B-rep and point peers stay selected.
             filter: ObjectSelectionFilter::Any,
             options: vec![],
             menus: vec![],
@@ -60,14 +60,22 @@ fn run(
     for object in document.selected_objects() {
         if let Some(reversed) = flipped_geometry(object.geometry(), document.tolerance())? {
             replacements.push((object.id(), reversed));
-        } else {
+        } else if !matches!(object.geometry(), Geometry::SubD(_)) {
+            // Native Flip releases even skipped closed SubDs after picking.
             retained.push(object.id());
         }
     }
+    if postselected
+        && document
+            .selected_objects()
+            .any(|o| matches!(o.geometry(), Geometry::SubD(_)))
+    {
+        // SubD getter cleanup also survives Undo, including mixed curves.
+        document.select_command_results(retained.iter().copied())?;
+    }
     let count = document.replace_object_geometries(replacements)?;
     if postselected {
-        // Do not expand groups or clear skipped objects. In particular, a
-        // flipped member must not drag its unchanged group peers out of selection.
+        // Preserve skipped non-SubD peers without expanding their groups.
         document.select_command_results(retained)?;
     }
     Ok(format!("Flipped {count} object(s)"))
@@ -94,7 +102,7 @@ pub(super) fn flipped_geometry(
     Ok((!brep.is_solid()).then(|| Geometry::Brep(brep.reversed())))
 }
 
-/// Primitive curve/mesh reversal shared by Flip and Dir's normal mode.
+/// Primitive curve, mesh and open-SubD reversal shared by Flip and Dir.
 pub(super) fn flipped_curve_or_mesh(
     geometry: &Geometry,
     tolerance: Tolerance,
@@ -108,6 +116,11 @@ pub(super) fn flipped_curve_or_mesh(
         Geometry::NurbsCurve(curve) => Some(Geometry::NurbsCurve(curve.reversed()?)),
         Geometry::PolyCurve(curve) => Some(Geometry::PolyCurve(curve.reversed()?)),
         Geometry::Mesh(mesh) => Some(Geometry::Mesh(mesh.reversed())),
+        Geometry::SubD(subd)
+            if subd.solid_orientation() == viboceros_geometry::SubDSolidOrientation::NotSolid =>
+        {
+            Some(Geometry::SubD(subd.reversed()?))
+        }
         _ => None,
     })
 }

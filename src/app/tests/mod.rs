@@ -171,6 +171,9 @@ mod primitive_input;
 mod round_primitive_input;
 mod selection_sidebar;
 mod subd_area;
+mod subd_direction;
+#[path = "../../../crates/viboceros-oracle/tests/support/subd_direction.rs"]
+mod subd_direction_support;
 mod subd_join;
 mod subd_volume;
 #[cfg(feature = "native-smlib")]

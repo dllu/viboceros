@@ -10,7 +10,8 @@ Dir Mode=FlipNormal|FlipU|FlipV|SwapUV [Faces=All|i,j]
 
 Bare `Dir` inspects selected objects, or asks for objects and Enter first.
 `Direction` is an alias. Viewports show curve tangents, surface U/V axes and
-oriented normals, and mesh face normals (up to 256 sampled triangles). Hovering
+oriented normals, mesh face normals, and SubD limit face-center normals (up to
+256 samples per mesh/SubD). Hovering
 a single object moves its arrows to the cursor. End-on arrows use a dot toward
 the camera and a cross away. Click an inspected object to preview a reversal.
 Navigation and display-mode changes remain available during inspection.
@@ -29,7 +30,7 @@ With an explicit edit on the initial command line, `Dir` executes immediately
 on preselection, or after picking objects and Enter.
 
 `UReverse`, `VReverse` and `SwapUV` edit a surface's parameter directions without
-changing its spatial geometry or oriented normal. Curves and meshes in a UV-edit
+changing its spatial geometry or oriented normal. Curves, meshes and SubDs in a UV-edit
 selection are errors; the complete batch is prepared before any edit is admitted.
 A single-face B-rep needs no selector. `Faces=0,2` or `Faces=All` explicitly applies
 a UV edit to selected polysurface faces; other faces and all spatial edges remain
@@ -37,8 +38,9 @@ unchanged. This face-list syntax is a Viboceros batching extension, qualified
 against the public face API separately from actual `Dir` commands. Face lists
 are not accepted with normal flipping.
 
-`Flip` reverses curve traversal, mesh winding and open surface/B-rep face sense.
-Closed B-rep solids and unsupported peers such as points are skipped. See
+`Flip` reverses curve traversal, mesh winding, open SubD winding and open
+surface/B-rep face sense. Closed SubDs, B-rep solids and unsupported peers such
+as points are skipped. See
 [Flip's supported geometry](flip.md). UV edits preserve solid orientation, so
 a closed surface's parameter directions remain editable even when its normal
 cannot be flipped. A standalone NURBS surface becomes a single-face B-rep to
@@ -46,11 +48,17 @@ store its independent face sense; Undo restores the original representation.
 
 Objects retain their identities, attributes and groups. Explicit single edits
 and single-object inspection retain preselection after execution and Redo;
-Undo clears changed inputs. Multiple-object inspection retains preselection
+Undo clears changed inputs except for SubDs, which retain preselection.
+Canceling SubD inspection clears even a single preselection.
+Multiple-object inspection retains preselection
 through Undo too, but clears it on Escape. Command-first inspected inputs are
 deselected on acceptance or Escape and remain deselected through Undo/Redo.
 Invalid edits preserve the previous preview. Scripted all-skipped batches add
 no Undo entry and preserve Redo and skipped peers' selection.
+
+SubD topology, component IDs, tags, metadata, selection and history are covered
+by [82 native direction workflows](subd-direction.md). SubDs have normal arrows
+without surface UV axes.
 
 ## Geometry and validation
 

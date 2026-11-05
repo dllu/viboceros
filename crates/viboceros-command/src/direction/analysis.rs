@@ -192,7 +192,10 @@ impl AnalysisCommand {
                     if doc.selected_object_count() == 0 {
                         return Err(CommandError::NoObjectsSelected);
                     }
-                    for object in doc.selected_objects() {
+                    for object in doc
+                        .selected_objects()
+                        .filter(|o| ObjectSelectionFilter::Direction.accepts_object(o))
+                    {
                         if edit != DirectionEdit::Flip
                             && !ObjectSelectionFilter::Surfaces.accepts_object(object)
                         {

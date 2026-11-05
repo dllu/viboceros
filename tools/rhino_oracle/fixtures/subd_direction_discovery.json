@@ -1,0 +1,369 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_Flip_0",
+      "scene": "bent_grid",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_Flip_1",
+      "scene": "bent_grid",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_Dir_0",
+      "scene": "bent_grid",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "bent_grid_Dir_1",
+      "scene": "bent_grid",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Flip_0",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Flip_1",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Dir_0",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Dir_1",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Flip_0",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Flip_1",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Dir_0",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Dir_1",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "creased_cube_Flip_0",
+      "scene": "creased_cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "creased_cube_Flip_1",
+      "scene": "creased_cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "creased_cube_Dir_0",
+      "scene": "creased_cube",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "creased_cube_Dir_1",
+      "scene": "creased_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_Flip_0",
+      "scene": "pentagon",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_Flip_1",
+      "scene": "pentagon",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_Dir_0",
+      "scene": "pentagon",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "pentagon_Dir_1",
+      "scene": "pentagon",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "fan7_Flip_0",
+      "scene": "fan7",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "fan7_Flip_1",
+      "scene": "fan7",
+      "command": "Flip",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "fan7_Dir_0",
+      "scene": "fan7",
+      "command": "Dir",
+      "preselect": false,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "fan7_Dir_1",
+      "scene": "fan7",
+      "command": "Dir",
+      "preselect": true,
+      "flat": false,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Flip_flat",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": true,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_Dir_flat",
+      "scene": "open_cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": true,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "open_cube_mixed",
+      "scene": "open_cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Flip_flat",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": true,
+      "flat": true,
+      "mixed": false,
+      "steps": [],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_Dir_flat",
+      "scene": "cube",
+      "command": "Dir",
+      "preselect": true,
+      "flat": true,
+      "mixed": false,
+      "steps": [
+        "Flip"
+      ],
+      "cancel": false
+    },
+    {
+      "op": "subd_direction",
+      "id": "cube_mixed",
+      "scene": "cube",
+      "command": "Flip",
+      "preselect": false,
+      "flat": false,
+      "mixed": true,
+      "steps": [],
+      "cancel": false
+    }
+  ]
+}

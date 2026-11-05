@@ -26,7 +26,10 @@ impl DirectionSession {
                 o.geometry().curve_ref().is_some()
                     || matches!(
                         o.geometry(),
-                        Geometry::Brep(_) | Geometry::NurbsSurface(_) | Geometry::Mesh(_)
+                        Geometry::Brep(_)
+                            | Geometry::NurbsSurface(_)
+                            | Geometry::Mesh(_)
+                            | Geometry::SubD(_)
                     )
             })
             .map(|o| Source {
@@ -83,6 +86,16 @@ impl DirectionSession {
             .enumerate()
             .filter(|(_, s)| target.is_none_or(|id| s.id == id))
         {
+            // SubDs only admit normal reversal. The second Flip restores the
+            // original storage directly: kernel archive caches are not a
+            // semantic equality witness and must not consume pending Redo.
+            if edit == DirectionEdit::Flip
+                && matches!(&*source.original, Geometry::SubD(_))
+                && !source.original.shares_storage_with(&source.staged)
+            {
+                replacements.push((index, source.original.clone()));
+                continue;
+            }
             if let Some(geometry) = edited_geometry(&source.staged, &options, self.tolerance)? {
                 // Natural surfaces need an independent face sense after the
                 // first edit. Returning to their original chart restores the
@@ -112,7 +125,14 @@ impl DirectionSession {
     }
 
     pub fn cancel(self, document: &mut Document) -> Result<(), CommandError> {
-        self.release_picks(document, self.sources.len() > 1)
+        self.release_picks(
+            document,
+            self.sources.len() > 1
+                || self
+                    .sources
+                    .iter()
+                    .any(|s| matches!(&*s.original, Geometry::SubD(_))),
+        )
     }
 
     fn release_picks(&self, document: &mut Document, force: bool) -> Result<(), CommandError> {
@@ -128,6 +148,21 @@ impl DirectionSession {
     }
 
     pub fn accept(self, document: &mut Document) -> Result<usize, CommandError> {
+        self.accept_with_history(document, true)
+    }
+
+    pub(super) fn accept_in_transaction(
+        self,
+        document: &mut Document,
+    ) -> Result<usize, CommandError> {
+        self.accept_with_history(document, false)
+    }
+
+    fn accept_with_history(
+        self,
+        document: &mut Document,
+        own_transaction: bool,
+    ) -> Result<usize, CommandError> {
         if !self.is_current(document) {
             return Err(CommandError::Usage(
                 "Dir source changed; restart direction inspection",
@@ -146,9 +181,15 @@ impl DirectionSession {
                 .iter()
                 .map(|(id, _)| *id)
                 .collect::<BTreeSet<_>>();
-            document.begin_transaction("Dir")?;
+            if own_transaction {
+                document.begin_transaction("Dir")?;
+            }
             let result = (|| -> Result<(), CommandError> {
-                if self.sources.len() == 1 || self.postselected {
+                // Unlike a single B-rep, a SubD retains preselection on Undo.
+                if self.postselected
+                    || (self.sources.len() == 1
+                        && !matches!(&*self.sources[0].original, Geometry::SubD(_)))
+                {
                     document.select_command_results(
                         selected.iter().copied().filter(|id| !changed.contains(id)),
                     )?;
@@ -160,10 +201,14 @@ impl DirectionSession {
                 Ok(())
             })();
             if let Err(error) = result {
-                document.rollback_transaction()?;
+                if own_transaction {
+                    document.rollback_transaction()?;
+                }
                 return Err(error);
             }
-            document.commit_transaction()?;
+            if own_transaction {
+                document.commit_transaction()?;
+            }
         }
         self.release_picks(document, false)?;
         Ok(count)

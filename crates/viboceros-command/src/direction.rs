@@ -104,6 +104,15 @@ fn run(
         return Err(CommandError::NoObjectsSelected);
     }
 
+    if edit == DirectionEdit::Flip && selected.iter().any(|(_, g)| matches!(g, Geometry::SubD(_))) {
+        let mut session = DirectionSession::new(document, postselected)?;
+        session.apply(document, edit, None)?;
+        let count = session.accept_in_transaction(document)?;
+        return Ok(format!(
+            "Edited {count} object direction(s) with {}",
+            edit.label()
+        ));
+    }
     let selection_before = document.selected_object_ids().collect::<Vec<_>>();
     let mut replacements = Vec::new();
     for (id, geometry) in selected {

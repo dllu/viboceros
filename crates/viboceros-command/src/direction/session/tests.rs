@@ -98,3 +98,76 @@ fn stale_sources_cannot_overwrite_an_intervening_edit() {
     assert!(session.accept(&mut doc).is_err());
     assert_eq!(format!("{doc:?}"), before);
 }
+
+#[test]
+fn subd_reversal_pairs_restore_storage_and_pending_redo_without_archive_equality() {
+    let mut doc = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut doc, "SubDPlane XCount=2 YCount=2 0,0,0 4,4,0")
+        .unwrap();
+    let id = doc.objects().last().unwrap().id();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let storage = doc.object(id).unwrap().geometry_snapshot().clone();
+    doc.clear_history().unwrap();
+    registry.execute(&mut doc, "Point 99,99,99").unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    let mut session = DirectionSession::new(&doc, false).unwrap();
+    for _ in 0..3 {
+        assert_eq!(session.apply(&doc, DirectionEdit::Flip, None).unwrap(), 1);
+        assert_eq!(session.apply(&doc, DirectionEdit::Flip, None).unwrap(), 1);
+    }
+    assert_eq!(session.accept(&mut doc).unwrap(), 0);
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(storage.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    assert_eq!(doc.redo().unwrap().as_deref(), Some("Point"));
+    assert_eq!(doc.objects().len(), 2);
+}
+
+#[test]
+fn scripted_subd_dir_uses_the_registry_transaction_and_native_selection_history() {
+    for closed in [false, true] {
+        for postselected in [false, true] {
+            let mut doc = Document::default();
+            let registry = CommandRegistry::with_builtins();
+            registry
+                .execute(
+                    &mut doc,
+                    if closed {
+                        "SubDBox XCount=1 YCount=1 ZCount=1 0,0,0 4,4,0 4"
+                    } else {
+                        "SubDPlane XCount=2 YCount=2 0,0,0 4,4,0"
+                    },
+                )
+                .unwrap();
+            let id = doc.objects().last().unwrap().id();
+            doc.select_objects_direct([id], SelectionMode::Replace)
+                .unwrap();
+            let original = doc.object(id).unwrap().geometry_snapshot().clone();
+            doc.clear_history().unwrap();
+            registry.execute(&mut doc, "Point 99,99,99").unwrap();
+            doc.undo().unwrap();
+            let result = if postselected {
+                registry.execute_postselected(&mut doc, "Dir Flip", Default::default())
+            } else {
+                registry.execute(&mut doc, "Dir Flip")
+            }
+            .unwrap();
+            assert!(result.starts_with(if closed { "Edited 0" } else { "Edited 1" }));
+            assert_eq!(doc.is_selected(id), !postselected);
+            if closed {
+                assert!(!doc.can_undo());
+                assert_eq!(doc.redo().unwrap().as_deref(), Some("Point"));
+            } else {
+                assert_eq!(doc.undo_label(), Some("Dir"));
+                assert_eq!(doc.undo().unwrap().as_deref(), Some("Dir"));
+                assert_eq!(doc.is_selected(id), !postselected);
+                assert!(original.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+                assert_eq!(doc.redo().unwrap().as_deref(), Some("Dir"));
+                assert_eq!(doc.is_selected(id), !postselected);
+            }
+        }
+    }
+}
