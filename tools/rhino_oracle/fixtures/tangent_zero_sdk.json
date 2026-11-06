@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tangent_zero_sdk",
+      "id": "zero_arc",
+      "case": "zero_arc"
+    },
+    {
+      "op": "tangent_zero_sdk",
+      "id": "zero_nurbs",
+      "case": "zero_nurbs"
+    }
+  ]
+}

@@ -1,0 +1,994 @@
+{
+  "ray_elevated_top": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_elevated_far": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_vertical_front": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    ],
+    "view": "Front",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5.99,
+          2.0,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          9.0,
+          2.0,
+          9.0
+        ]
+      }
+    ]
+  },
+  "ray_tilted_perspective": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          2.0,
+          -3.0,
+          4.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.6,
+          0.8
+        ]
+      }
+    ],
+    "view": "Perspective",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          6.99,
+          -2.8,
+          4.15
+        ]
+      },
+      {
+        "click": [
+          10.0,
+          1.8,
+          7.6
+        ]
+      }
+    ]
+  },
+  "ray_cubic_top": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.52,
+          1.84,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          6.22,
+          1.39,
+          3.85
+        ]
+      }
+    ]
+  },
+  "ray_cubic_perspective": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      }
+    ],
+    "view": "Perspective",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.52,
+          1.84,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          6.22,
+          1.39,
+          3.85
+        ]
+      }
+    ]
+  },
+  "ray_fixed_elevated": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Perspective",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      "FromFirstPoint",
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_signed_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      -5.0,
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_bothsides": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "BothSides",
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_planar_elevated": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": true,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_arc_boundary": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5.0,
+            0.0,
+            3.0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            3.0
+          ],
+          [
+            0.0,
+            5.0,
+            3.0
+          ]
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          -8.0,
+          2.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "ray_line_boundary": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "end": [
+          10.0,
+          0.0,
+          3.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5.0,
+          0.0,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          15.0,
+          4.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "mouse_elevated_top": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_elevated_far": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_vertical_front": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    ],
+    "view": "Front",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5.99,
+          2.0,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          9.0,
+          2.0,
+          9.0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_tilted_perspective": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          2.0,
+          -3.0,
+          4.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.6,
+          0.8
+        ]
+      }
+    ],
+    "view": "Perspective",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          6.99,
+          -2.8,
+          4.15
+        ]
+      },
+      {
+        "click": [
+          10.0,
+          1.8,
+          7.6
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_cubic_top": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.52,
+          1.84,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          6.22,
+          1.39,
+          3.85
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_cubic_perspective": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      }
+    ],
+    "view": "Perspective",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.52,
+          1.84,
+          2.8
+        ]
+      },
+      {
+        "click": [
+          6.22,
+          1.39,
+          3.85
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_signed_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      -5.0,
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "mouse_bothsides": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    ],
+    "view": "Top",
+    "planar": false,
+    "actions": [
+      "BothSides",
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3.0
+        ]
+      },
+      {
+        "click": [
+          8.0,
+          6.0,
+          3.0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  }
+}

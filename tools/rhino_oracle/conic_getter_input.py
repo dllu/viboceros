@@ -99,7 +99,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     for i,a in enumerate(actions):
         if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('line_tangent_mouse','line_tangent_rays','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
@@ -118,7 +118,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
                         E.IfThen(confirm,block([E.Assign(item(counts,i),integer(10)),E.Assign(item(last,0),now)]+([E.Assign(stage,integer(i+1))]if i+1==len(actions)else[])+[log('\nReparameterize accepts selection %s\n'%op['id']),send_token('')]))])
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
-            if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs'):
+            if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse'):
                 ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]
                 ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
@@ -170,7 +170,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
                     if 'edge'in a:source=source.Edges[a['edge']]
                     if isinstance(source,R.Geometry.Curve):
                         ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
-                        if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs'):
+                        if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse'):
                             clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]
                             sight=R.Geometry.LineCurve(ray)
                             try:
@@ -192,7 +192,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             request=pointer_request(i,marker,screen)
             if hover:
                 ready=os.path.join(root,'subcurve-direction-ready-'+name+'.json')
-                hover_gate=base if op.get('op')in('arc_command','line_normal','line_perpendicular','line_tangent','line_tangent_arcs')else length
+                hover_gate=base if op.get('op')in('arc_command','line_normal','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse')else length
                 body=E.IfThen(hover_gate,request)
                 mouse_steps.append((i,marker,pixel,ready,advance,hover_gate))
                 hovers.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]))
@@ -216,7 +216,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
                     token=number_token(a)
                 else:token=repr(float(a))
                 gate=base
-            if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs') and a=='Enter':token=''
+            if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse') and a=='Enter':token=''
             if command=='Reparameterize':
                 gate=number_prompt
                 if a=='Enter':token=''

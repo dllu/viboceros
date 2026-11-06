@@ -1,7 +1,7 @@
 //! Local branches of bounded curve normals, including common perpendiculars.
 use crate::{CurveRef, GeometryError, Point3, Real, Tolerance, UnitVector3};
 
-use crate::curve_contact::{Domain, project};
+use crate::curve_contact::{Domain, project, seeds};
 fn root(
     c: CurveRef<'_>,
     domain: Domain,
@@ -57,15 +57,7 @@ impl CurveRef<'_> {
         tolerance: Tolerance,
     ) -> Result<Real, GeometryError> {
         self.evaluate(seed)?;
-        let mut seeds = vec![seed];
-        for i in 0..=32 {
-            seeds.push(self.parameter_at(i as Real / 32.)?);
-        }
-        if let Self::NurbsCurve(c) = self {
-            for (a, b) in c.spans() {
-                seeds.extend([a, 0.5 * a + 0.5 * b, b]);
-            }
-        }
+        let seeds = seeds(self, seed)?;
         // Closure tests can inspect the control net. Cache them once per
         // query rather than repeating that work at every Newton step.
         let domain = Domain::new(self)?;

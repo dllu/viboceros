@@ -1,0 +1,39 @@
+[
+  {
+    "family": "line_tangent_rays",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_rays"
+    ],
+    "exit_status": null,
+    "log": "capture-line_tangent_rays.log.gz",
+    "completion_evidence": "Terminal tool status was unavailable after context truncation. The Recorded marker and immutable output prove capture-family validation and writing completed; no exit status is inferred."
+  },
+  {
+    "family": "line_tangent_mouse",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_mouse"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_mouse.log.gz"
+  },
+  {
+    "family": "tangent_zero_sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_tangent_zero_sdk"
+    ],
+    "exit_status": 0,
+    "log": "capture-tangent_zero_sdk.log.gz"
+  }
+]

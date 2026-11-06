@@ -46,6 +46,7 @@ remain explicit known differences, outside the passing comparison counts.
 
 Matching coefficients, domains and 33 locally evaluated samples use a `1e-6`
 gate. Independent native PointAt samples, arbitrary singular curves, all common
-tangents, spatial mouse rays, continuous distance and comparative speed remain
-unqualified. Run `python3 -m tools.rhino_oracle.check_line_tangent` without opening
+tangents, continuous distance and comparative speed remain unqualified.
+[Mouse-mode checks](line-tangent-mouse.md) cover CPlane rejection, Planar,
+boundary projection and the remaining perspective pick calibration difference. Run `python3 -m tools.rhino_oracle.check_line_tangent` without opening
 a desktop window. See the public [Rhino Line reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/line.htm).

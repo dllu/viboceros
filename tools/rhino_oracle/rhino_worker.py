@@ -6355,6 +6355,12 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') in ('line_tangent_rays','line_tangent_mouse'):
+        from line_tangent_rays_probe import run
+        return run(operation, globals(), iterations, tolerance)
+    if operation.get('op') == 'tangent_zero_sdk':
+        from tangent_zero_sdk import run
+        return run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'line_tangent_arcs_sdk':
         from line_tangent_arcs_sdk import run
         return run(operation, globals(), iterations, tolerance)
@@ -18049,7 +18055,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('line_tangent_arcs_sdk','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','line_construction','lines_command','command_file','point_grid_input','srf_pt_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('line_tangent_mouse','line_tangent_rays','tangent_zero_sdk','line_tangent_arcs_sdk','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','line_construction','lines_command','command_file','point_grid_input','srf_pt_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

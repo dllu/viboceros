@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_elevated_top",
+      "case": "mouse_elevated_top"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_elevated_far",
+      "case": "mouse_elevated_far"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_vertical_front",
+      "case": "mouse_vertical_front"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_tilted_perspective",
+      "case": "mouse_tilted_perspective"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_cubic_top",
+      "case": "mouse_cubic_top"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_cubic_perspective",
+      "case": "mouse_cubic_perspective"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_signed_length",
+      "case": "mouse_signed_length"
+    },
+    {
+      "op": "line_tangent_mouse",
+      "id": "mouse_bothsides",
+      "case": "mouse_bothsides"
+    }
+  ]
+}

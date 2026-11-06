@@ -64,6 +64,15 @@ pub fn click_point(
         .find(|c| c["action"].as_u64() == Some(index as u64))
         .unwrap();
     let raw = native::point(&c["projected_point"]);
+    if c["ray"].is_array()
+        && let Some(line) = input.mouse_line()
+    {
+        let origin = native::point(&c["ray"][0]);
+        let direction = origin.vector_to(native::point(&c["ray"][1])).unwrap();
+        return line
+            .project_view_line(line.anchor.vector_to(origin).unwrap(), direction)
+            .unwrap();
+    }
     if let Some(plane) = input.mouse_plane() {
         let origin = native::point(&c["ray"][0]);
         let direction = origin.vector_to(native::point(&c["ray"][1])).unwrap();

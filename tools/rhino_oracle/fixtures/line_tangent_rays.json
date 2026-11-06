@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_elevated_top",
+      "case": "ray_elevated_top"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_elevated_far",
+      "case": "ray_elevated_far"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_vertical_front",
+      "case": "ray_vertical_front"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_tilted_perspective",
+      "case": "ray_tilted_perspective"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_cubic_top",
+      "case": "ray_cubic_top"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_cubic_perspective",
+      "case": "ray_cubic_perspective"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_fixed_elevated",
+      "case": "ray_fixed_elevated"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_signed_length",
+      "case": "ray_signed_length"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_bothsides",
+      "case": "ray_bothsides"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_planar_elevated",
+      "case": "ray_planar_elevated"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_arc_boundary",
+      "case": "ray_arc_boundary"
+    },
+    {
+      "op": "line_tangent_rays",
+      "id": "ray_line_boundary",
+      "case": "ray_line_boundary"
+    }
+  ]
+}

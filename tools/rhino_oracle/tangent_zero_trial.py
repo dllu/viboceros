@@ -1,0 +1,1 @@
+../../third_party/opennurbs_python/local_zero_trial.py

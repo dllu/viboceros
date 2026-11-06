@@ -32,3 +32,16 @@ pub(super) fn project(v: Vector3, normal: Option<UnitVector3>) -> Result<Vector3
         v.to_array()[i] - d * n.as_vector().to_array()[i]
     }))
 }
+
+pub(super) fn seeds(c: CurveRef<'_>, seed: Real) -> Result<Vec<Real>, GeometryError> {
+    let mut result = vec![seed];
+    for i in 0..=32 {
+        result.push(c.parameter_at(i as Real / 32.)?);
+    }
+    if let CurveRef::NurbsCurve(c) = c {
+        for (a, b) in c.spans() {
+            result.extend([a, 0.5 * a + 0.5 * b, b]);
+        }
+    }
+    Ok(result)
+}

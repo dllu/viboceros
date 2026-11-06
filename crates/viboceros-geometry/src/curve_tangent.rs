@@ -1,5 +1,5 @@
 //! Bounded tangent contacts from curve derivatives, without tessellation.
-use crate::curve_contact::{Domain, project};
+use crate::curve_contact::{Domain, project, seeds};
 use crate::{CurveRef, GeometryError, Point3, Real, Tolerance, UnitVector3, Vector3};
 
 fn tangent_jet(
@@ -81,15 +81,7 @@ impl CurveRef<'_> {
         }
 
         let domain = Domain::new(self)?;
-        let mut seeds = vec![seed];
-        for i in 0..=32 {
-            seeds.push(self.parameter_at(i as Real / 32.)?);
-        }
-        if let Self::NurbsCurve(c) = self {
-            for (a, b) in c.spans() {
-                seeds.extend([a, 0.5 * a + 0.5 * b, b]);
-            }
-        }
+        let seeds = seeds(self, seed)?;
         let distance = |t: Real| (t - seed).abs();
         let mut best: Option<Real> = None;
         for t in seeds
