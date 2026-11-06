@@ -40,7 +40,7 @@ fn controls(v: &Value) -> Vec<WeightedPoint3> {
         })
         .collect()
 }
-fn curve(v: &Value) -> NurbsCurve {
+pub fn curve(v: &Value) -> NurbsCurve {
     NurbsCurve::try_new_rational(
         v["degree"].as_u64().unwrap() as usize,
         controls(v),

@@ -139,9 +139,10 @@ X/Y direction by screen distance. An axis projected edge-on has no usable Z
 tracking line. Cursor paths for Ortho, Planar, and CPlane Z have viewport and
 projection regressions but no live Rhino pick trace comparison yet.
 SmartTrack is reference-axis tracking, not Rhino's
-complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
-interpretation
-remain unimplemented. The supported controls follow McNeel's documentation for
+complete inference system. Custom display modes and persistence for snap and
+display controls remain unimplemented. [Command files](command-files.md) support
+existing getters, nesting, pauses and grouped Undo; advanced macro syntax remains
+incomplete. The supported controls follow McNeel's documentation for
 [Ortho, SetOrtho, and OrthoAngle](https://docs.mcneel.com/rhino/8/help/en-us/commands/ortho.htm),
 [Planar and SetPlanar](https://docs.mcneel.com/rhino/8/help/en-us/commands/planar.htm),
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),

@@ -3,6 +3,13 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn cancel_current_prompt_or_selection(&mut self) {
+        if self.abort_command_file() {
+            return;
+        }
+        if self.layer_prompt.is_some() {
+            self.cancel_layer_prompt();
+            return;
+        }
         if self.discard_surface_interpolation_plane() {
             return;
         }

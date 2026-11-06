@@ -50,8 +50,8 @@ impl Polyline3 {
         Self::try_with_parameters(vertices, parameters, tolerance)
     }
 
-    /// Retains a native parameter at every vertex. Newly constructed
-    /// polylines use vertex indices; joined curves use chord lengths.
+    /// Retains a parameter at every vertex. SDK-style construction uses vertex
+    /// indices; command-created and joined curves can retain chord lengths.
     pub fn try_with_parameters(
         vertices: Vec<Point3>,
         parameters: Vec<Real>,

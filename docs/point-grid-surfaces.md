@@ -28,7 +28,7 @@ Degrees must be 1–11 and each command count must exceed its
 requested degree. `ClosedU` and `ClosedV` apply only to `SrfPtGrid`; closed
 directions require at least three stations. Enter either command alone or with options/counts to start [incremental count and point entry](commands/point-grid-input.md),
 including viewport picks, per-point Undo and remembered counts/degrees.
-Loading a command file is not implemented.
+[Command files](commands/command-files.md) can feed the same getters.
 
 The geometry APIs `NurbsSurface::try_control_point_grid` and
 `NurbsSurface::try_through_point_grid` independently clamp degrees to

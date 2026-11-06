@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "command_file",
+      "id": "line",
+      "case": "line"
+    },
+    {
+      "op": "command_file",
+      "id": "two_points",
+      "case": "two_points"
+    },
+    {
+      "op": "command_file",
+      "id": "polyline",
+      "case": "polyline"
+    },
+    {
+      "op": "command_file",
+      "id": "grid",
+      "case": "grid"
+    },
+    {
+      "op": "command_file",
+      "id": "comments",
+      "case": "comments"
+    },
+    {
+      "op": "command_file",
+      "id": "bang_middle",
+      "case": "bang_middle"
+    },
+    {
+      "op": "command_file",
+      "id": "bang_incomplete",
+      "case": "bang_incomplete"
+    },
+    {
+      "op": "command_file",
+      "id": "explicit_enter",
+      "case": "explicit_enter"
+    },
+    {
+      "op": "command_file",
+      "id": "empty_lines",
+      "case": "empty_lines"
+    },
+    {
+      "op": "command_file",
+      "id": "quoted_layer",
+      "case": "quoted_layer"
+    },
+    {
+      "op": "command_file",
+      "id": "utf8_bom",
+      "case": "utf8_bom"
+    },
+    {
+      "op": "command_file",
+      "id": "utf16_le",
+      "case": "utf16_le"
+    }
+  ]
+}

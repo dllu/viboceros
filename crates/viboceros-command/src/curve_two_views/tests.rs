@@ -3,8 +3,24 @@ use super::*;
 fn reconstructs_profiles_with_fresh_unselected_output_and_one_undo() {
     let r = CommandRegistry::with_builtins();
     let mut doc = Document::default();
-    r.execute(&mut doc, "Polyline 0,0,0 5,4,0 10,1,0").unwrap();
-    r.execute(&mut doc, "Polyline 0,0,2 5,0,3 10,0,-1").unwrap();
+    // This experimental solver's exact fast path requires a shared chart.
+    // SDK polylines use vertex indices; command polylines use independent lengths.
+    for points in [
+        [[0., 0., 0.], [5., 4., 0.], [10., 1., 0.]],
+        [[0., 0., 2.], [5., 0., 3.], [10., 0., -1.]],
+    ] {
+        doc.add_geometry(Geometry::Polyline(
+            Polyline3::try_new(
+                points
+                    .into_iter()
+                    .map(|p| Point3::try_from(p).unwrap())
+                    .collect(),
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    }
     let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
     doc.clear_selection();
     doc.clear_history().unwrap();

@@ -1147,8 +1147,15 @@ fn invalid_polyline_close_preserves_points_plane_reference_and_redo() {
         assert_eq!(app.last_point, last_point);
         assert_eq!(app.command_input, "Close");
         assert_eq!(format!("{:?}", app.document), document);
-        // An open completion remains available after a rejected closing edge.
+        // An open completion remains available unless its physical domain overflows.
         enter(&mut app, "");
+        if points.first().is_some_and(|p| p.x() == -1e308) {
+            assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
+            assert_eq!(app.curve_points, points);
+            assert_eq!(format!("{:?}", app.document), document);
+            assert!(app.document.can_redo());
+            continue;
+        }
         assert!(app.active_command.is_none());
         assert_eq!(app.document.objects().len(), 1);
     }

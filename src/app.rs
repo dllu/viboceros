@@ -128,6 +128,7 @@ impl SelectionMenu {
 }
 
 mod chain_selection;
+mod command_file;
 mod command_line;
 mod component_selection;
 mod control_polygon;
@@ -136,6 +137,7 @@ mod crease;
 mod curve_extraction_subcurve;
 mod edge_pattern_selection;
 mod extract_points;
+mod layer_prompt;
 mod length_measurement;
 mod revolve;
 mod use_extrusions;
@@ -360,6 +362,12 @@ pub struct VibocerosApp {
     commands: CommandRegistry,
     draft_pull_source: draft_angle_analysis::Source,
     command_input: String,
+    command_file_job: Option<command_file::Job>,
+    command_file_prompt: bool,
+    executing_command_file: bool,
+    command_file_step_failed: bool,
+    last_command_file_result: Option<bool>,
+    layer_prompt: Option<layer_prompt::Prompt>,
     command_log: VecDeque<String>,
     command_line: command_line::CommandLineState,
     viewports: Vec<Viewport>,
@@ -539,6 +547,12 @@ impl VibocerosApp {
             commands,
             draft_pull_source: Default::default(),
             command_input: String::new(),
+            command_file_job: None,
+            command_file_prompt: false,
+            executing_command_file: false,
+            command_file_step_failed: false,
+            last_command_file_result: None,
+            layer_prompt: None,
             command_log,
             viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
@@ -686,14 +700,30 @@ impl VibocerosApp {
     }
 
     fn run_command(&mut self) {
+        if !self.executing_command_file
+            && self.command_file_job.is_some()
+            && self
+                .command_input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Cancel")
+        {
+            self.abort_command_file();
+            self.command_input.clear();
+            return;
+        }
         self.selection_menu = None;
         self.run_command_input();
         self.discard_inactive_snap_overrides();
+        self.command_file_user_step();
     }
 
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.command_file_input(&input) || self.continue_layer_prompt(&input) {
+            return;
+        }
         if self.try_draft_pull_command(&input) {
             return;
         }
@@ -1027,7 +1057,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.start_merge_face_input(&input)
+        if self.start_layer_prompt(&input)
+            || self.start_merge_face_input(&input)
             || self.try_start_shell_input(&input)
             || self.try_start_surface_tapered_input(&input)
             || self.try_start_surface_apex_input(&input)
@@ -1237,6 +1268,7 @@ impl VibocerosApp {
                 true
             }
             Err(error) => {
+                self.command_file_step_failed = self.executing_command_file;
                 self.push_log(format!("Error: {error}"));
                 false
             }
@@ -1244,6 +1276,9 @@ impl VibocerosApp {
     }
 
     fn push_log(&mut self, message: String) {
+        if self.suppress_command_file_echo() {
+            return;
+        }
         if self.command_log.len() == MAX_LOG_ENTRIES {
             self.command_log.pop_front();
         }

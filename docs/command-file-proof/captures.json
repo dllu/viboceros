@@ -1,0 +1,50 @@
+[
+  {
+    "family": "command_file",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_command_file"
+    ],
+    "exit_status": 0,
+    "log": "capture-command_file.log.gz"
+  },
+  {
+    "family": "command_file_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_command_file_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-command_file_holdouts.log.gz"
+  },
+  {
+    "family": "command_file_extras",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_command_file_extras"
+    ],
+    "exit_status": 0,
+    "log": "capture-command_file_extras.log.gz"
+  },
+  {
+    "family": "command_file_polyline",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_command_file_polyline"
+    ],
+    "exit_status": 0,
+    "log": "capture-command_file_polyline.log.gz"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "command_file",
+      "id": "layer_table",
+      "case": "layer_table"
+    },
+    {
+      "op": "command_file",
+      "id": "layer_options",
+      "case": "layer_options"
+    },
+    {
+      "op": "command_file",
+      "id": "nested_file",
+      "case": "nested_file"
+    },
+    {
+      "op": "command_file",
+      "id": "nested_bang",
+      "case": "nested_bang"
+    },
+    {
+      "op": "command_file",
+      "id": "unknown_command",
+      "case": "unknown_command"
+    },
+    {
+      "op": "command_file",
+      "id": "last_selection",
+      "case": "last_selection"
+    }
+  ]
+}

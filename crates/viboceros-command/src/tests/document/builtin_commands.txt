@@ -266,6 +266,7 @@ Pyramid
 QuadrangulateMesh
 Radius
 RailRevolve
+ReadCommandFile
 Rebuild
 RebuildMesh
 RebuildMeshNormals

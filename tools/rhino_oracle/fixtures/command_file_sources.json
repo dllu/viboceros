@@ -1,0 +1,121 @@
+{
+  "line": {
+    "text": "! _Line w0,0,0 w4,3,2\n"
+  },
+  "two_points": {
+    "text": "_Point w1,2,3 _Point w4,5,6\n"
+  },
+  "polyline": {
+    "text": "! _Polyline\nw0,0,0\nw4,0,0\nw4,3,1\n_Enter\n"
+  },
+  "grid": {
+    "text": "! _SrfControlPtGrid _Degree=1 2 _Degree=1 3\nw0,0,0 w0,2,1 w0,5,0\nw4,0,0 w4,2,3 w4,5,2\n"
+  },
+  "comments": {
+    "text": "; comment-only line\n_Point w1,2,3 ; ignored _Point w90,90,90\n_Point w4,5,6\n"
+  },
+  "bang_middle": {
+    "text": "_Point w1,2,3 ! _Point w4,5,6\n"
+  },
+  "bang_incomplete": {
+    "text": "! _Line w0,0,0 ! _Point w4,5,6\n"
+  },
+  "explicit_enter": {
+    "text": "_Point w1,2,3 _Enter\n_Point w4,5,6 _Enter\n"
+  },
+  "empty_lines": {
+    "text": "\n\n_Point w1,2,3\n\n_Point w4,5,6\n\n"
+  },
+  "quoted_layer": {
+    "text": "! _-Layer _New \"Macro layer\" _Enter _Point w1,2,3\n"
+  },
+  "utf8_bom": {
+    "text": "_Point w1,2,3\n",
+    "encoding": "utf-8-sig"
+  },
+  "utf16_le": {
+    "text": "_Point w4,5,6\n",
+    "encoding": "utf-16"
+  },
+  "undo_inside": {
+    "text": "_Point w1,2,3 _Point w4,5,6 _Undo _Point w7,8,9\n"
+  },
+  "redo_inside": {
+    "text": "_Point w1,2,3 _Undo _Redo _Point w4,5,6\n"
+  },
+  "paused_line": {
+    "text": "! _Line _Pause w4,3,2\n",
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "multi_pause_polyline": {
+    "text": "! _Polyline _MultiPause _Enter _Point w9,9,9\n",
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        1
+      ],
+      "Enter"
+    ]
+  },
+  "incomplete_line": {
+    "text": "! _Line w0,0,0\n",
+    "actions": [
+      "Cancel"
+    ]
+  },
+  "no_echo": {
+    "text": "_NoEcho ! _Point w1,2,3 _Point w4,5,6 _Echo\n"
+  },
+  "layer_table": {
+    "text": "! _-Layer _New \"Macro layer\" _Enter _Point w1,2,3\n",
+    "layers": true
+  },
+  "layer_options": {
+    "text": "! _-Layer _New \"Macro layer\" _Off \"Macro layer\" _On \"Macro layer\" _Lock \"Macro layer\" _Unlock \"Macro layer\" _Current \"Macro layer\" _Enter _Point w1,2,3\n",
+    "layers": true
+  },
+  "nested_file": {
+    "text": "_Point w1,2,3 _-ReadCommandFile \"@CHILD@\" _Point w7,8,9\n",
+    "child": "_Point w4,5,6\n"
+  },
+  "nested_bang": {
+    "text": "_Point w1,2,3 _-ReadCommandFile \"@CHILD@\" _Point w7,8,9\n",
+    "child": "! _Point w4,5,6\n"
+  },
+  "unknown_command": {
+    "text": "_Point w1,2,3 _VibocerosMissingCommand _Point w4,5,6\n"
+  },
+  "last_selection": {
+    "text": "_Point w1,2,3 _Point w4,5,6\n",
+    "last_selection": true
+  },
+  "polyline_closed": {
+    "text": "! _Polyline w0,0,0 w3,0,0 w3,4,0 w0,0,0 _Enter\n"
+  },
+  "polyline_reversed": {
+    "text": "! _Polyline w4,3,1 w4,0,0 w0,0,0 _Enter\n"
+  },
+  "polyline_translated": {
+    "text": "! _Polyline w1000000000000,1000000000000,1000000000000 w1000000000004,1000000000000,1000000000000 w1000000000004,1000000000003,1000000000001 _Enter\n"
+  },
+  "polyline_long": {
+    "text": "! _Polyline w1000000000000,1000000000000,1000000000000 w1000000000003,1000000000004,1000000000001 w1000000000006,1000000000008,1000000000002 w1000000000009,1000000000000,1000000000003 w1000000000012,1000000000004,1000000000004 w1000000000015,1000000000008,1000000000000 w1000000000018,1000000000000,1000000000001 w1000000000021,1000000000004,1000000000002 w1000000000024,1000000000008,1000000000003 w1000000000027,1000000000000,1000000000004 w1000000000030,1000000000004,1000000000000 w1000000000033,1000000000008,1000000000001 w1000000000036,1000000000000,1000000000002 w1000000000039,1000000000004,1000000000003 w1000000000042,1000000000008,1000000000004 w1000000000045,1000000000000,1000000000000 w1000000000048,1000000000004,1000000000001 w1000000000051,1000000000008,1000000000002 w1000000000054,1000000000000,1000000000003 w1000000000057,1000000000004,1000000000004 _Enter\n"
+  }
+}

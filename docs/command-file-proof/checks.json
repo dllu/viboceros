@@ -1,0 +1,346 @@
+[
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.063968790011131
+  },
+  {
+    "name": "history",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-document",
+      "--lib"
+    ],
+    "status": 0,
+    "seconds": 33.536975191003876
+  },
+  {
+    "name": "macro",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "command_macro"
+    ],
+    "status": 0,
+    "seconds": 28.772709170007147
+  },
+  {
+    "name": "cuts",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "curve_cut::tests"
+    ],
+    "status": 0,
+    "seconds": 0.7210138869995717
+  },
+  {
+    "name": "closure",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "tests::curves::closure"
+    ],
+    "status": 0,
+    "seconds": 0.09606176899978891
+  },
+  {
+    "name": "two-views",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "curve_two_views::tests"
+    ],
+    "status": 0,
+    "seconds": 0.11103062899201177
+  },
+  {
+    "name": "commands-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "srf_pt",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 60.69614367399481
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::command_file",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 36.57270043500466
+  },
+  {
+    "name": "grid-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::surface_point_grid",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.5642869360017357
+  },
+  {
+    "name": "corners-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::srf_pt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.0163603749970207
+  },
+  {
+    "name": "plane-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.1455564180068905
+  },
+  {
+    "name": "polyline-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "invalid_polyline_close_preserves",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.15118418900237884
+  },
+  {
+    "name": "commands-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "srf_pt",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 60.5165307589923
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::command_file",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 37.7213860060001
+  },
+  {
+    "name": "grid-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::surface_point_grid",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.5052474239928415
+  },
+  {
+    "name": "corners-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::srf_pt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.9251226659980603
+  },
+  {
+    "name": "plane-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.1343522520037368
+  },
+  {
+    "name": "polyline-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "invalid_polyline_close_preserves",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.15127878000203054
+  },
+  {
+    "name": "subd-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.28469734500686
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 20.659402674005833
+  },
+  {
+    "name": "clippy-all-features",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 38.55840654000349
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_command_file",
+      "tools.rhino_oracle.test_point_grid_input",
+      "tools.rhino_oracle.test_srf_pt",
+      "tools.rhino_oracle.test_srf_pt_followup",
+      "tools.rhino_oracle.test_plane_surface",
+      "tools.rhino_oracle.test_plane_completion",
+      "tools.rhino_oracle.test_rectangle",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 3.263959359988803
+  }
+]

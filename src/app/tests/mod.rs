@@ -36,6 +36,7 @@ mod circle_deform;
 mod circle_fit_grips;
 mod circle_fit_points;
 mod circle_tangent;
+mod command_file;
 mod command_focus;
 mod command_line;
 mod component_length;
@@ -285,6 +286,12 @@ pub(super) fn test_app() -> VibocerosApp {
         commands,
         draft_pull_source: Default::default(),
         command_input: String::new(),
+        command_file_job: None,
+        command_file_prompt: false,
+        executing_command_file: false,
+        command_file_step_failed: false,
+        last_command_file_result: None,
+        layer_prompt: None,
         command_log: VecDeque::new(),
         command_line: Default::default(),
         viewports: Viewport::standard_views().into(),

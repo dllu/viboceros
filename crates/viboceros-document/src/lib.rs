@@ -26,7 +26,9 @@ mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
 mod groups;
 mod history;
+mod history_batch;
 mod history_group;
+pub use history_batch::HistoryBatch;
 pub use history_group::HistoryGroup;
 mod object_admission;
 mod object_copy;
@@ -713,7 +715,7 @@ impl Document {
     }
 
     pub fn can_undo(&self) -> bool {
-        !self.history.undo.is_empty()
+        self.history.batches.is_empty() && !self.history.undo.is_empty()
     }
 
     /// Discards construction edits after a new document has been loaded.
@@ -733,7 +735,7 @@ impl Document {
     }
 
     pub fn can_redo(&self) -> bool {
-        !self.history.redo.is_empty()
+        self.history.batches.is_empty() && !self.history.redo.is_empty()
     }
 
     pub fn undo_label(&self) -> Option<&str> {
@@ -747,6 +749,9 @@ impl Document {
     /// Reverses the latest committed transaction and returns its label.
     pub fn undo(&mut self) -> Result<Option<String>, DocumentError> {
         self.ensure_no_transaction()?;
+        if !self.history.batches.is_empty() {
+            return Ok(None);
+        }
         let Some(mut entry) = self.history.undo.pop() else {
             return Ok(None);
         };
@@ -773,6 +778,9 @@ impl Document {
     /// Reapplies the latest undone transaction and returns its label.
     pub fn redo(&mut self) -> Result<Option<String>, DocumentError> {
         self.ensure_no_transaction()?;
+        if !self.history.batches.is_empty() {
+            return Ok(None);
+        }
         let Some(mut entry) = self.history.redo.pop() else {
             return Ok(None);
         };
@@ -1982,7 +1990,7 @@ impl Document {
     }
 
     fn push_replayed_undo(&mut self, entry: HistoryEntry) {
-        if self.history.undo.len() == HISTORY_LIMIT {
+        if self.history.batches.is_empty() && self.history.undo.len() >= HISTORY_LIMIT {
             self.history.undo.remove(0);
         }
         self.history.undo.push(entry);
@@ -2014,6 +2022,8 @@ pub enum DocumentError {
     BlockDefinitionNotFound(BlockDefinitionId),
     #[error("the incremental command's history changed; finish it and start again")]
     HistoryGroupStale,
+    #[error("history batch changed; finish the current command before continuing")]
+    HistoryBatchStale,
     #[error("invalid user text: {0}")]
     InvalidUserText(&'static str),
 

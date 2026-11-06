@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "command_file",
+      "id": "undo_inside",
+      "case": "undo_inside"
+    },
+    {
+      "op": "command_file",
+      "id": "redo_inside",
+      "case": "redo_inside"
+    },
+    {
+      "op": "command_file",
+      "id": "paused_line",
+      "case": "paused_line"
+    },
+    {
+      "op": "command_file",
+      "id": "multi_pause_polyline",
+      "case": "multi_pause_polyline"
+    },
+    {
+      "op": "command_file",
+      "id": "incomplete_line",
+      "case": "incomplete_line"
+    },
+    {
+      "op": "command_file",
+      "id": "no_echo",
+      "case": "no_echo"
+    }
+  ]
+}

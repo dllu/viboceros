@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "command_file",
+      "id": "polyline_closed",
+      "case": "polyline_closed"
+    },
+    {
+      "op": "command_file",
+      "id": "polyline_reversed",
+      "case": "polyline_reversed"
+    },
+    {
+      "op": "command_file",
+      "id": "polyline_translated",
+      "case": "polyline_translated"
+    },
+    {
+      "op": "command_file",
+      "id": "polyline_long",
+      "case": "polyline_long"
+    }
+  ]
+}

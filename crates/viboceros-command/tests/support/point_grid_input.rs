@@ -113,74 +113,78 @@ pub fn check(doc: &Document, v: &Value, phase: &str, archive: bool) -> f64 {
                 }
             }
             Geometry::Brep(brep) => {
-                let topology = &target["brep"]["topology"];
-                assert_eq!(brep.is_solid(), topology["solid"]);
-                assert_eq!(brep.vertices().len(), topology["vertices"]);
-                assert_eq!(
-                    brep.edges().len(),
-                    target["brep"]["edges"].as_array().unwrap().len()
-                );
-                assert_eq!(brep.faces().len(), target["face_count"]);
-                let vertices = sorted_points(brep.vertices().iter().map(|v| v.point()));
-                let target_vertices = sorted_points(
-                    target["brep"]["vertices"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .map(|v| native::point(&v["point"])),
-                );
-                for (a, b) in vertices.iter().zip(target_vertices) {
-                    error = error.max(a.distance_to(b).unwrap());
-                }
-                let key = |s: &NurbsSurface| {
-                    [
-                        *s.domain_u().start(),
-                        *s.domain_v().start(),
-                        *s.domain_u().end(),
-                        *s.domain_v().end(),
-                    ]
-                };
-                let mut faces = brep.faces().iter().collect::<Vec<_>>();
-                faces.sort_by(|a, b| key(a.surface()).partial_cmp(&key(b.surface())).unwrap());
-                let mut indices = (0..faces.len()).collect::<Vec<_>>();
-                indices.sort_by(|&a, &b| {
-                    key(&native::surface(&target["surfaces"][a]))
-                        .partial_cmp(&key(&native::surface(&target["surfaces"][b])))
-                        .unwrap()
-                });
-                for (face, index) in faces.iter().zip(indices) {
-                    error = error.max(surface_error(face.surface(), &target["surfaces"][index]));
-                    let native = &topology["faces"][index];
-                    assert_eq!(face.is_reversed(), native["reversed"]);
-                    assert_eq!(
-                        face.loops().len(),
-                        native["loops"].as_array().unwrap().len()
-                    );
-                    for (boundary, target) in
-                        face.loops().iter().zip(native["loops"].as_array().unwrap())
-                    {
-                        assert_eq!(
-                            boundary.trims().len(),
-                            target["trims"].as_array().unwrap().len()
-                        );
-                        let mut types = boundary
-                            .trims()
-                            .iter()
-                            .map(|t| format!("{:?}", t.trim_type()))
-                            .collect::<Vec<_>>();
-                        let mut target = target["trims"]
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|t| t["type"].as_str().unwrap().to_owned())
-                            .collect::<Vec<_>>();
-                        types.sort();
-                        target.sort();
-                        assert_eq!(types, target);
-                    }
-                }
+                error = error.max(check_brep(brep, target));
             }
             other => panic!("unexpected grid output {other:?}"),
+        }
+    }
+    error
+}
+
+pub fn check_brep(brep: &viboceros_geometry::Brep, target: &Value) -> f64 {
+    let mut error = 0_f64;
+    let topology = &target["brep"]["topology"];
+    assert_eq!(brep.is_solid(), topology["solid"]);
+    assert_eq!(brep.vertices().len(), topology["vertices"]);
+    assert_eq!(
+        brep.edges().len(),
+        target["brep"]["edges"].as_array().unwrap().len()
+    );
+    assert_eq!(brep.faces().len(), target["face_count"]);
+    let vertices = sorted_points(brep.vertices().iter().map(|v| v.point()));
+    let target_vertices = sorted_points(
+        target["brep"]["vertices"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| native::point(&v["point"])),
+    );
+    for (a, b) in vertices.iter().zip(target_vertices) {
+        error = error.max(a.distance_to(b).unwrap());
+    }
+    let key = |s: &NurbsSurface| {
+        [
+            *s.domain_u().start(),
+            *s.domain_v().start(),
+            *s.domain_u().end(),
+            *s.domain_v().end(),
+        ]
+    };
+    let mut faces = brep.faces().iter().collect::<Vec<_>>();
+    faces.sort_by(|a, b| key(a.surface()).partial_cmp(&key(b.surface())).unwrap());
+    let mut indices = (0..faces.len()).collect::<Vec<_>>();
+    indices.sort_by(|&a, &b| {
+        key(&native::surface(&target["surfaces"][a]))
+            .partial_cmp(&key(&native::surface(&target["surfaces"][b])))
+            .unwrap()
+    });
+    for (face, index) in faces.iter().zip(indices) {
+        error = error.max(surface_error(face.surface(), &target["surfaces"][index]));
+        let native = &topology["faces"][index];
+        assert_eq!(face.is_reversed(), native["reversed"]);
+        assert_eq!(
+            face.loops().len(),
+            native["loops"].as_array().unwrap().len()
+        );
+        for (boundary, target) in face.loops().iter().zip(native["loops"].as_array().unwrap()) {
+            assert_eq!(
+                boundary.trims().len(),
+                target["trims"].as_array().unwrap().len()
+            );
+            let mut types = boundary
+                .trims()
+                .iter()
+                .map(|t| format!("{:?}", t.trim_type()))
+                .collect::<Vec<_>>();
+            let mut target = target["trims"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|t| t["type"].as_str().unwrap().to_owned())
+                .collect::<Vec<_>>();
+            types.sort();
+            target.sort();
+            assert_eq!(types, target);
         }
     }
     error

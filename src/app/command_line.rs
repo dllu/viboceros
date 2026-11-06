@@ -36,7 +36,9 @@ impl CommandLineState {
 
 impl VibocerosApp {
     pub(super) fn command_line_idle(&self) -> bool {
-        self.direction_session.is_none()
+        !self.command_file_prompt
+            && self.layer_prompt.is_none()
+            && self.direction_session.is_none()
             && self.end_analysis_pick.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
@@ -74,6 +76,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn remember_command_input(&mut self, input: &str) {
+        if self.executing_command_file || self.command_file_prompt {
+            return;
+        }
         if input.is_empty() {
             return;
         }

@@ -279,6 +279,7 @@ use extract_mesh_faces_by_aspect_ratio::ExtractMeshFacesByAspectRatioCommand;
 use extract_mesh_faces_by_draft_angle::ExtractMeshFacesByDraftAngleCommand;
 use extract_mesh_faces_by_edge_length::ExtractMeshFacesByEdgeLengthCommand;
 use extract_mesh_part::ExtractMeshPartCommand;
+pub mod command_macro;
 mod copy_options;
 mod cylinder;
 use cylinder::CylinderCommand;
@@ -519,6 +520,7 @@ use point_arguments::parse_point;
 pub mod point_grid;
 mod point_matrix;
 mod points;
+mod polyline_command;
 mod visibility_selection;
 pub use point_matrix::{PointGridOptions, point_grid_vertical_frame};
 pub mod rail_revolve;
@@ -1210,7 +1212,7 @@ impl CommandRegistry {
             .register(EllipsoidCommand)
             .expect("unique built-in command");
         registry
-            .register(PolylineCommand)
+            .register(polyline_command::PolylineCommand)
             .expect("unique built-in command");
         registry
             .register(conic::ConicCommand::default())
@@ -1544,6 +1546,9 @@ impl CommandRegistry {
         registry
             .register(edge_surface::EdgeSurfaceCommand)
             .expect("unique built-in command");
+        registry
+            .register(command_macro::ReadCommandFileCommand)
+            .expect("built-in command names are unique");
         for control in [false, true] {
             registry
                 .register(point_grid::PointGridCommand::new(control))
@@ -3287,37 +3292,6 @@ impl Command for EllipsoidCommand {
         Ok(format!(
             "Added NURBS ellipsoid {id} (radii {:.6} × {:.6} × {:.6})",
             positionals.radii[0], positionals.radii[1], positionals.radii[2]
-        ))
-    }
-}
-
-struct PolylineCommand;
-
-impl Command for PolylineCommand {
-    fn name(&self) -> &'static str {
-        "Polyline"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["PLine"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let mut vertices = Vec::new();
-        let mut consumed = 0;
-        while consumed < arguments.len() {
-            let (vertex, vertex_consumed) = parse_point(&arguments[consumed..])?;
-            vertices.push(vertex);
-            consumed += vertex_consumed;
-        }
-        let polyline = Polyline3::try_new(vertices, document.tolerance())?;
-        let vertex_count = polyline.vertices().len();
-        let segment_count = polyline.segment_count();
-        let closed = polyline.is_closed();
-        let id = document.add_geometry(Geometry::Polyline(polyline))?;
-        Ok(format!(
-            "Added {}polyline {id} ({vertex_count} vertices, {segment_count} segments)",
-            if closed { "closed " } else { "" }
         ))
     }
 }

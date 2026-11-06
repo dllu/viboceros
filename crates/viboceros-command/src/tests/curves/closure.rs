@@ -35,7 +35,8 @@ fn closes_polylines_without_changing_identity_attributes_or_groups() {
             Point3::try_new(2.0, 3.0, 0.0).unwrap(),
         ]
     );
-    assert_eq!(closed.parameters(), &[0.0, 2.0, 2.0 + 13.0_f64.sqrt()]);
+    let end = 4.0 + 13.0_f64.sqrt();
+    assert_eq!(closed.parameters(), &[0.0, end, end + 13.0_f64.sqrt()]);
     assert!(document.is_selected(id));
     assert!(
         document

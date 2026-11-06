@@ -42,6 +42,7 @@ pub(super) struct History {
     pub undo: Vec<HistoryEntry>,
     pub redo: Vec<HistoryEntry>,
     pub active: Option<PendingTransaction>,
+    pub batches: Vec<Uuid>,
 }
 
 impl Default for History {
@@ -51,6 +52,7 @@ impl Default for History {
             undo: Vec::new(),
             redo: Vec::new(),
             active: None,
+            batches: Vec::new(),
         }
     }
 }

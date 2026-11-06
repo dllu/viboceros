@@ -3,68 +3,98 @@ use super::*;
 #[test]
 fn native_polyline_cuts_retain_station_parameters_and_undo() {
     let registry = CommandRegistry::with_builtins();
-    for (command, expected) in [
-        (
-            "Split CuttingObjects=4,3",
-            vec![[-7.0, 0.5], [0.5, 8.0], [8.0, 13.0]],
-        ),
-        (
-            "Trim 4,3 ApparentIntersections=No",
-            vec![[-7.0, 0.5], [8.0, 13.0]],
-        ),
-    ] {
-        let mut document = Document::default();
-        registry
-            .execute(&mut document, "Polyline 0,0 4,3 10,0")
-            .unwrap();
-        let id = document.objects().next().unwrap().id();
-        document.select_object(id, SelectionMode::Replace).unwrap();
-        registry
-            .execute(&mut document, "Reparameterize -7 13")
-            .unwrap();
-        registry.execute(&mut document, "Group NativeCuts").unwrap();
-        registry
-            .execute(&mut document, "SetObjectName NativePolyline")
-            .unwrap();
-        let before = document.object(id).unwrap().clone();
-        let view = before.geometry().curve_ref().unwrap();
-        registry.execute(&mut document, "Line 3,-10 3,10").unwrap();
-        registry.execute(&mut document, "Line 7,-10 7,10").unwrap();
-        registry.execute(&mut document, "SelAll").unwrap();
-        registry.execute(&mut document, command).unwrap();
-        let outputs = document.selected_objects().collect::<Vec<_>>();
-        assert_eq!(outputs.len(), expected.len());
-        for (object, [a, b]) in outputs.iter().zip(expected) {
-            let Geometry::Polyline(curve) = object.geometry() else {
-                panic!("native polyline lost");
-            };
-            assert!((*curve.domain().start() - a).abs() < 1e-12);
-            assert!((*curve.domain().end() - b).abs() < 1e-12);
-            assert_eq!(object.attributes(), before.attributes());
-            assert!(
-                document
-                    .group_by_name("NativeCuts")
-                    .unwrap()
-                    .members()
-                    .any(|id| id == object.id())
-            );
-            for i in 0..=16 {
-                let t = CurveRef::Polyline(curve)
-                    .parameter_at(i as Real / 16.0)
-                    .unwrap();
-                assert!(
-                    curve
-                        .evaluate(t)
-                        .unwrap()
-                        .distance_to(view.evaluate(t).unwrap())
-                        .unwrap()
-                        < 1e-12
-                );
+    for sdk_parameters in [true, false] {
+        let station = |x: f64| {
+            if sdk_parameters {
+                x
+            } else {
+                let length = 45_f64.sqrt();
+                -7. + 20. * if x == 0.5 { 3.75 } else { 5. + 0.5 * length } / (5. + length)
             }
+        };
+        for (command, expected) in [
+            (
+                "Split CuttingObjects=4,3",
+                vec![
+                    [-7.0, station(0.5)],
+                    [station(0.5), station(8.0)],
+                    [station(8.0), 13.0],
+                ],
+            ),
+            (
+                "Trim 4,3 ApparentIntersections=No",
+                vec![[-7.0, station(0.5)], [station(8.0), 13.0]],
+            ),
+        ] {
+            let mut document = Document::default();
+            if sdk_parameters {
+                // Retain the original vertex-index cutting regression as an SDK input.
+                document
+                    .add_geometry(Geometry::Polyline(
+                        Polyline3::try_new(
+                            vec![(0., 0.), (4., 3.), (10., 0.)]
+                                .into_iter()
+                                .map(|(x, y)| Point3::try_new(x, y, 0.).unwrap())
+                                .collect(),
+                            document.tolerance(),
+                        )
+                        .unwrap(),
+                    ))
+                    .unwrap();
+            } else {
+                registry
+                    .execute(&mut document, "Polyline 0,0 4,3 10,0")
+                    .unwrap();
+            }
+            let id = document.objects().next().unwrap().id();
+            document.select_object(id, SelectionMode::Replace).unwrap();
+            registry
+                .execute(&mut document, "Reparameterize -7 13")
+                .unwrap();
+            registry.execute(&mut document, "Group NativeCuts").unwrap();
+            registry
+                .execute(&mut document, "SetObjectName NativePolyline")
+                .unwrap();
+            let before = document.object(id).unwrap().clone();
+            let view = before.geometry().curve_ref().unwrap();
+            registry.execute(&mut document, "Line 3,-10 3,10").unwrap();
+            registry.execute(&mut document, "Line 7,-10 7,10").unwrap();
+            registry.execute(&mut document, "SelAll").unwrap();
+            registry.execute(&mut document, command).unwrap();
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), expected.len());
+            for (object, [a, b]) in outputs.iter().zip(expected) {
+                let Geometry::Polyline(curve) = object.geometry() else {
+                    panic!("native polyline lost");
+                };
+                assert!((*curve.domain().start() - a).abs() < 1e-12);
+                assert!((*curve.domain().end() - b).abs() < 1e-12);
+                assert_eq!(object.attributes(), before.attributes());
+                assert!(
+                    document
+                        .group_by_name("NativeCuts")
+                        .unwrap()
+                        .members()
+                        .any(|id| id == object.id())
+                );
+                for i in 0..=16 {
+                    let t = CurveRef::Polyline(curve)
+                        .parameter_at(i as Real / 16.0)
+                        .unwrap();
+                    assert!(
+                        curve
+                            .evaluate(t)
+                            .unwrap()
+                            .distance_to(view.evaluate(t).unwrap())
+                            .unwrap()
+                            < 1e-12
+                    );
+                }
+            }
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.object(id).unwrap(), &before);
+            assert_eq!(document.objects().count(), 3);
         }
-        registry.execute(&mut document, "Undo").unwrap();
-        assert_eq!(document.object(id).unwrap(), &before);
-        assert_eq!(document.objects().count(), 3);
     }
 }
 

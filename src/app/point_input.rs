@@ -311,6 +311,7 @@ impl VibocerosApp {
             if let Some(hint) = self.transform_default_hint() {
                 self.push_log(hint);
             }
+            self.command_file_point_accepted();
             true
         } else {
             false

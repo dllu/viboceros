@@ -58,6 +58,9 @@ impl eframe::App for VibocerosApp {
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             self.cancel_current_prompt_or_selection();
         }
+        if self.drain_command_file() {
+            ui.ctx().request_repaint();
+        }
         if self.selection_menu.is_none()
             && self
                 .reparameterize_prompt

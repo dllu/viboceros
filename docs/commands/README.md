@@ -15,3 +15,4 @@ See [command input](../command-line.md) for completion and coordinates,
 [viewport controls](../interface.md) for picking and drafting, and
 [file formats](../file-formats.md) for import/export support.
 [Remembered options](../command-options.md) describes option lifetime.
+[Command files](command-files.md) describes scripted input, pauses and Undo.
