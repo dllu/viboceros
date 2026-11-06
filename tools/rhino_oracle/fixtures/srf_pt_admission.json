@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_edge_1e10",
+      "case": "triangle_edge_1e10"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_edge_zero_tolerance",
+      "case": "triangle_edge_zero_tolerance"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_edge_above_zero_tolerance",
+      "case": "triangle_edge_above_zero_tolerance"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_edge_3e10",
+      "case": "triangle_edge_3e10"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_diagonal_small",
+      "case": "triangle_diagonal_small"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_near_second",
+      "case": "triangle_near_second"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_two_adjacent_b",
+      "case": "quad_two_adjacent_b"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_two_adjacent_a",
+      "case": "quad_two_adjacent_a"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_one_opposite_b",
+      "case": "quad_one_opposite_b"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_two_each",
+      "case": "quad_two_each"
+    }
+  ]
+}

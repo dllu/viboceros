@@ -416,6 +416,7 @@ pub struct ViewportInput<'a> {
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
+    pub srf_pt_input: Option<viboceros_command::srf_pt::Input>,
     pub flow_preview: Option<FlowPreview<'a>>,
     pub flow_local_preview: Option<FlowLocalPreview>,
     pub twist_preview: Option<TwistPreview<'a>>,
@@ -545,6 +546,7 @@ impl Default for ViewportInput<'_> {
             conic_input: None,
             conic_reference: None,
             rectangle_input: None,
+            srf_pt_input: None,
             flow_preview: None,
             flow_local_preview: None,
             twist_preview: None,
@@ -2724,6 +2726,18 @@ impl Viewport {
                 let mut projected = ProjectedPrimitives::default();
                 self.add_projected_nurbs_curve(&mut projected, rect, &curve);
                 for segment in projected.segments {
+                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
+            }
+        }
+        if let Some(getter) = input.srf_pt_input {
+            let mut points = getter.corners().into_iter().flatten().collect::<Vec<_>>();
+            self.paint_draft_points(&painter, rect, &points);
+            if let Some(cursor) = drafting_cursor {
+                points = getter.preview(cursor.point);
+            }
+            for pair in points.windows(2) {
+                if let Some(segment) = self.project_segment(pair[0], pair[1], rect) {
                     painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
                 }
             }

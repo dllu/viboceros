@@ -281,6 +281,7 @@ mod silhouette;
 mod smooth;
 mod snapping;
 mod spiral;
+mod srf_pt;
 mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
@@ -487,6 +488,7 @@ pub struct VibocerosApp {
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     plane_surface_session: Option<plane_surface::Session>,
+    srf_pt_session: Option<srf_pt::Session>,
     subd_primitive_session: Option<subd_primitives::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
@@ -663,6 +665,7 @@ impl VibocerosApp {
             conic_session: None,
             rectangle_session: None,
             plane_surface_session: None,
+            srf_pt_session: None,
             subd_primitive_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
@@ -828,6 +831,7 @@ impl VibocerosApp {
             || self.continue_subd_sphere(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
+            || self.continue_srf_pt(&input)
             || self.continue_plane_surface_option(&input)
             || self.try_continue_rectangle(&input)
         {

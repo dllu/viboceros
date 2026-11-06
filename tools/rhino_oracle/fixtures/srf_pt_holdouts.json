@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "quad_holdout_a",
+      "case": "quad_holdout_a"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_holdout_b",
+      "case": "quad_holdout_b"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_small",
+      "case": "quad_small"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_large",
+      "case": "quad_large"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_holdout_a",
+      "case": "triangle_holdout_a"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_holdout_b",
+      "case": "triangle_holdout_b"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_small",
+      "case": "triangle_small"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_first_second_triangle",
+      "case": "repeat_first_second_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_first_second_quad",
+      "case": "repeat_first_second_quad"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_first_third_quad",
+      "case": "repeat_first_third_quad"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "all_coincident_triangle",
+      "case": "all_coincident_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "all_coincident_quad",
+      "case": "all_coincident_quad"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "thin_triangle",
+      "case": "thin_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "thin_quad",
+      "case": "thin_quad"
+    }
+  ]
+}

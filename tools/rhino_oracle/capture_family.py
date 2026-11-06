@@ -19,11 +19,11 @@ def capture(family, query, sources, scheme, timeout=1200):
     fixture.write_bytes(encoded)
     if 'edge_zoom_input.py' in sources:
         sources = [*sources, 'edge_zoom_picking.py', 'group_picking.py']
-    if 'plane_surface_probe.py' in sources:
-        # The shared recipe factory imports all Plane families. Freeze its
+    if 'plane_surface_probe.py' in sources or 'srf_pt_probe.py' in sources:
+        # The shared recipe factories import every corner/Plane family. Freeze their
         # entire staged companion closure, including future added families.
         from .structural_sdk import PROBES
-        module, dependencies = PROBES['plane_surface_command']
+        module, dependencies = PROBES['srf_pt_command' if 'srf_pt_probe.py' in sources else 'plane_surface_command']
         sources = [*sources, *(name+'.py' for name in (module,*dependencies))]
     sources = list(dict.fromkeys([*sources, 'capture_family.py']))
     frozen = {name: (HERE / name).read_bytes() for name in sources}

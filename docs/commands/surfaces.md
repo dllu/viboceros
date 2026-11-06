@@ -45,6 +45,10 @@ Rhino differences.
 
 ## Edge surfaces
 
+`SrfPt` creates three- or four-corner surfaces with physical-length UV charts.
+Enter after three picks makes a trimmed triangular face. See
+[corner construction, repeated points and qualification](srf-pt.md).
+
 `EdgeSrf` creates a ruled, triangular, or four-sided Coons face from two, three,
 or four selected open curves. Inputs remain unchanged and selected; the result
 is an unselected B-rep on the current layer. See [edge-surface construction and

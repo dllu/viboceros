@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "tiny_negative",
+      "case": "tiny_negative"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "tiny_reverse",
+      "case": "tiny_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "tiny_translated",
+      "case": "tiny_translated"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "tiny_rotated",
+      "case": "tiny_rotated"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_closed",
+      "case": "relative_closed"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_closed_reverse",
+      "case": "relative_closed_reverse"
+    }
+  ]
+}

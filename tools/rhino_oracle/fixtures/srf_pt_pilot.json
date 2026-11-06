@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "quad_flat",
+      "case": "quad_flat"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_warped",
+      "case": "quad_warped"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_skew",
+      "case": "quad_skew"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_reversed",
+      "case": "quad_reversed"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_crossed",
+      "case": "quad_crossed"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_flat",
+      "case": "triangle_flat"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_spatial",
+      "case": "triangle_spatial"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_reversed",
+      "case": "triangle_reversed"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_tilted_cplane",
+      "case": "triangle_tilted_cplane"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_large",
+      "case": "triangle_large"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_fourth_third",
+      "case": "repeat_fourth_third"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_fourth_first",
+      "case": "repeat_fourth_first"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "cancel_initial",
+      "case": "cancel_initial"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "cancel_after_first",
+      "case": "cancel_after_first"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "cancel_after_second",
+      "case": "cancel_after_second"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "collinear_triangle",
+      "case": "collinear_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "collinear_quad",
+      "case": "collinear_quad"
+    }
+  ]
+}

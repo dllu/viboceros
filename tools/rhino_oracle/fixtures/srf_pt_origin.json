@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "zero_quad",
+      "case": "zero_quad"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "zero_triangle",
+      "case": "zero_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "zero_late_quad",
+      "case": "zero_late_quad"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "zero_cplane_triangle",
+      "case": "zero_cplane_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "zero_cplane_late",
+      "case": "zero_cplane_late"
+    }
+  ]
+}

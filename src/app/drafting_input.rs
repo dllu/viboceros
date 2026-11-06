@@ -1883,40 +1883,7 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
-            InteractiveCommand::SrfPt { mut corners } => {
-                let corner_count = corners.iter().flatten().count();
-                if let Some(previous) = corners.iter().flatten().next_back()
-                    && previous.is_near(point, self.document.tolerance())
-                {
-                    self.push_log("Error: adjacent surface corners must differ".to_owned());
-                    return false;
-                }
-                if corner_count < corners.len() {
-                    corners[corner_count] = Some(point);
-                    let command = InteractiveCommand::SrfPt { corners };
-                    self.active_command = Some(command);
-                    self.push_log(format!(
-                        "Corner {}: {}",
-                        corner_count + 1,
-                        format_model_point(point)
-                    ));
-                    self.push_log(command.prompt().to_owned());
-                } else {
-                    let [Some(first), Some(second), Some(third)] = corners else {
-                        self.push_log("Error: surface corner state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    self.active_command = None;
-                    self.execute_command(&format!(
-                        "SrfPt {} {} {} {}",
-                        format_model_point(first),
-                        format_model_point(second),
-                        format_model_point(third),
-                        format_model_point(point)
-                    ));
-                }
-            }
+            InteractiveCommand::SrfPt { corners } => return self.accept_srf_pt(corners, point),
             InteractiveCommand::Curvature { mark } => {
                 self.active_command = None;
                 self.execute_command(&format!(

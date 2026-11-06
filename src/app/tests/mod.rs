@@ -243,6 +243,7 @@ mod splop_grips;
 mod splop_guided;
 mod splop_reference;
 mod splop_tangent;
+mod srf_pt;
 mod standalone_subcurve;
 mod stretch;
 mod subcurve_direction;
@@ -412,6 +413,7 @@ pub(super) fn test_app() -> VibocerosApp {
         conic_session: None,
         rectangle_session: None,
         plane_surface_session: None,
+        srf_pt_session: None,
         subd_primitive_session: None,
         subd_axial_session: None,
         subd_sphere_session: None,

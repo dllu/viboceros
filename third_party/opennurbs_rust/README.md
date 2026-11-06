@@ -1,5 +1,11 @@
 # OpenNURBS Rust adaptations
 
+`length.rs` adapts `ON_Length3d` from `opennurbs_point.cpp` at the pinned
+revision below, under the [MIT license](LICENSE). It retains component scaling,
+operation order and denormal handling. Corner-surface charts use this explicit
+entry point to preserve native parameter extents at remote coordinates; the
+general geometry distance functions retain their existing arithmetic.
+
 `line_projection.rs` adapts `ON_Line::ClosestPointTo` and `PointAt` from
 `opennurbs_line.cpp` at the pinned revision below, under the [MIT license](LICENSE).
 It retains endpoint-conditioned parameter calculation/evaluation and uses validated

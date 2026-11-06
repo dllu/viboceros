@@ -589,7 +589,7 @@ impl InteractiveCommand {
                     "SrfPt: pick the third corner in the viewport (Esc to cancel)"
                 }
                 [Some(_), Some(_), Some(_)] => {
-                    "SrfPt: pick the fourth corner in the viewport (Esc to cancel)"
+                    "SrfPt: pick the fourth corner or Enter for a triangle (Esc to cancel)"
                 }
             },
             Self::ExtractSrf { .. } => {

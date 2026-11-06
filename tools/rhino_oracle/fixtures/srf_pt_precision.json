@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_huge_a",
+      "case": "triangle_huge_a"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_huge_b",
+      "case": "triangle_huge_b"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_huge",
+      "case": "quad_huge"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "triangle_tiny_edge",
+      "case": "triangle_tiny_edge"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "quad_tiny_edge",
+      "case": "quad_tiny_edge"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_third_first_triangle",
+      "case": "repeat_third_first_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "repeat_third_second_triangle",
+      "case": "repeat_third_second_triangle"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "alternating_quad",
+      "case": "alternating_quad"
+    }
+  ]
+}

@@ -45,6 +45,7 @@ pub use circle_fit::MAX_CIRCLE_FIT_POINTS;
 pub use sphere_fit::{MAX_SPHERE_FIT_POINTS, SphereFit};
 mod analysis_color;
 mod circular;
+mod corner_surface;
 mod cubic_grid;
 mod curvature_color;
 mod curvature_comb;

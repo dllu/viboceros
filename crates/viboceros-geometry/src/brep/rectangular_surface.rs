@@ -129,10 +129,13 @@ impl Brep {
         }
         let singular = side_curves.each_ref().map(|curve| {
             let first = curve.control_points()[0].point();
-            curve
-                .control_points()
-                .iter()
-                .all(|control| control.point() == first)
+            curve.control_points().iter().all(|control| {
+                crate::curve_points_coincident(control.point(), first)
+                    && control
+                        .point()
+                        .distance_to(first)
+                        .is_ok_and(|d| d <= tolerance.absolute())
+            })
         });
 
         // Join corner records only where the intervening topological side
@@ -140,8 +143,9 @@ impl Brep {
         // distinct vertices, as required at self-intersections.
         let mut corner_groups = [0, 1, 2, 3];
         for side in 0..4 {
-            if corner_points[side].distance_to(corner_points[(side + 1) % 4])?
-                <= tolerance.absolute()
+            if crate::curve_points_coincident(corner_points[side], corner_points[(side + 1) % 4])
+                && corner_points[side].distance_to(corner_points[(side + 1) % 4])?
+                    <= tolerance.absolute()
             {
                 let first = corner_groups[side];
                 let second = corner_groups[(side + 1) % 4];

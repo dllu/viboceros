@@ -203,7 +203,7 @@ fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
     assert!(app.active_command.is_none());
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),
-        Geometry::NurbsSurface(_)
+        Geometry::Brep(brep) if !brep.is_closed() && brep.faces().len()==1
     ));
 
     app.document

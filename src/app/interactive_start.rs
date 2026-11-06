@@ -65,7 +65,10 @@ impl VibocerosApp {
         if self.start_subd_primitive(input) {
             return true;
         }
-        if self.try_start_plane_surface(input) || self.try_start_rectangle(input) {
+        if self.try_start_srf_pt(input)
+            || self.try_start_plane_surface(input)
+            || self.try_start_rectangle(input)
+        {
             return true;
         }
         if self.try_start_surface_tapered_input(input)
@@ -2018,7 +2021,6 @@ impl VibocerosApp {
                     base: None,
                     opposite: None,
                 },
-                "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,

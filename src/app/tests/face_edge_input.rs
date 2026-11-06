@@ -22,7 +22,7 @@ fn interactive_srfpt_collects_four_corners_and_uses_command_history() {
     let Geometry::NurbsSurface(surface) = app.document.objects().next().unwrap().geometry() else {
         panic!("expected an interactively created NURBS surface")
     };
-    assert_eq!(surface.evaluate(0.5, 0.5).unwrap(), point(2.0, 1.5, 0.0));
+    assert_eq!(surface.evaluate(2., 1.5).unwrap(), point(2.0, 1.5, 0.0));
     assert_eq!(app.document.undo_label(), Some("SrfPt"));
 }
 

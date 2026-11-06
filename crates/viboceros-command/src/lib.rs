@@ -201,6 +201,7 @@ use extrude_apex::ExtrudeCurveToPointCommand;
 mod planar_surface;
 pub mod plane_surface;
 pub mod revolve;
+pub mod srf_pt;
 use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
 mod extrude_mesh;
@@ -1298,7 +1299,7 @@ impl CommandRegistry {
             .register(reduce_polyline::ReducePolylineCommand::default())
             .expect("unique built-in command");
         registry
-            .register(SrfPtCommand)
+            .register(srf_pt::SrfPtCommand)
             .expect("unique built-in command");
         registry
             .register(point_fitting::PointFitCommand(
@@ -5268,38 +5269,6 @@ fn parse_remove_multi_knot_options(
         remove_fully_multiple_knots,
         maximum_kink_angle_radians: maximum_kink_angle_degrees.to_radians(),
     })
-}
-
-struct SrfPtCommand;
-
-impl Command for SrfPtCommand {
-    fn name(&self) -> &'static str {
-        "SrfPt"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["SurfaceFromCorners"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let mut corners = Vec::with_capacity(4);
-        let mut consumed = 0;
-        for _ in 0..4 {
-            let (corner, point_tokens) = parse_point(&arguments[consumed..])?;
-            corners.push(corner);
-            consumed += point_tokens;
-        }
-        require_consumed(arguments, consumed, "SrfPt corner1 corner2 corner3 corner4")?;
-        let corners: [Point3; 4] = corners
-            .try_into()
-            .map_err(|_| CommandError::Usage("SrfPt corner1 corner2 corner3 corner4"))?;
-        let surface = NurbsSurface::try_bilinear(corners)?;
-        // A tensor-product surface may legitimately have singular boundaries,
-        // but four-corner construction must span at least one valid face.
-        surface.tessellate(1, document.tolerance())?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!("Added four-corner NURBS surface {id}"))
-    }
 }
 
 const MESH_USAGE: &str = "Mesh [Density=0..1] [JaggedSeams=Yes|No] [SimplePlanes=Yes|No]";

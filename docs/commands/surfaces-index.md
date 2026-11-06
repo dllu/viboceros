@@ -16,6 +16,7 @@ B-rep output for eligible creators.
 - [Rebuild surface control nets](rebuild-surfaces.md)
 - [Planar surfaces from closed curves and connected open pieces](planar-srf.md)
 - [Rectangular planes and editable planar control nets](plane.md)
+- [Three- and four-corner surfaces](srf-pt.md)
 - [Pick and combine planar curve regions](curve-boolean.md)
 - [Surfaces and solids](surfaces.md)
 - [Fit a rectangular plane through points, clouds and grips](plane-through-points.md)

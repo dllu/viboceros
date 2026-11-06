@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'srf_pt_command': ('srf_pt_probe', ('srf_pt_cases','srf_pt_holdouts','srf_pt_precision','srf_pt_admission','srf_pt_singular','srf_pt_origin','conic_getter_input','managed_mouse_callback','snap_environment','number_token','join_probe','merge_edges_probe')),
     'plane_surface_command': ('plane_surface_probe', ('plane_surface_cases','plane_surface_holdouts','plane_surface_guide_cases','plane_finish_cases','plane_finish_workflows','plane_finish_pointer_cases','plane_finish_pointer','plane_completion_cases','conic_getter_input','managed_mouse_callback','snap_environment','number_token','join_probe','merge_edges_probe')),
     'surface_interpolate_plane': ('surface_interpolate_plane_probe', ('surface_interpolate_plane_cases','surface_interpolate_plane_input','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'curve_two_views': ('curve_two_views_probe', ('curve_two_views_cases','curve_two_views_fit_probe','curve_two_views_surface_probe','planar_regions_cases','join_probe','merge_edges_probe')),

@@ -14,9 +14,15 @@ fn creates_and_tessellates_a_four_corner_surface_atomically() {
     };
     assert_eq!(surface.degree_u(), 1);
     assert_eq!(surface.degree_v(), 1);
-    assert_eq!(
-        surface.evaluate(0.5, 0.5).unwrap(),
-        Point3::try_new(2.0, 1.5, 1.0).unwrap()
+    assert_eq!(surface.domain_u(), 0. ..=4.);
+    assert!((*surface.domain_v().end() - 13_f64.sqrt()).abs() < 1e-14);
+    assert!(
+        surface
+            .evaluate(2., surface.domain_v().end() * 0.5)
+            .unwrap()
+            .distance_to(Point3::try_new(2., 1.5, 1.).unwrap())
+            .unwrap()
+            < 1e-12
     );
     assert_eq!(
         combined_document_mesh(&document).unwrap().triangles().len(),
@@ -26,12 +32,18 @@ fn creates_and_tessellates_a_four_corner_surface_atomically() {
     registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(document.objects().len(), 0);
 
-    assert!(
-        registry
-            .execute(&mut document, "SrfPt 0,0 1,0 2,0 3,0")
-            .is_err()
+    registry
+        .execute(&mut document, "SrfPt 0,0 1,0 2,0 3,0")
+        .unwrap();
+    let Geometry::NurbsSurface(surface) = document.objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(surface.domain_u(), 0. ..=1.);
+    assert_eq!(surface.domain_v(), 0. ..=3.);
+    assert_eq!(
+        surface.tessellate(1, document.tolerance()),
+        Err(GeometryError::EmptyMesh)
     );
-    assert_eq!(document.objects().len(), 0);
 }
 
 #[test]
