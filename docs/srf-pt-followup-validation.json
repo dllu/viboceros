@@ -1,0 +1,1609 @@
+{
+  "scope": "SrfPt remote-coordinate triangle admission and coincidence-closed surface orientation diagnostics.",
+  "baseline_revision": "34114eab232db5b408cffcf570057e82151027ba",
+  "implementation_revision": "2137d327c6ba256de7ef96da54112da14112f3ae",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_native_distance_qualified": false,
+  "performance_qualified": false,
+  "native_observations": 97,
+  "new_native_observations": 37,
+  "qualified_geometry_workflows": 97,
+  "workflows_with_matching_face_sense": 89,
+  "constructions_per_route_and_build": 71,
+  "controls_per_route_and_build": 26,
+  "archive_round_trips_per_build": 71,
+  "native_face_sense_gaps": [
+    "follow_tiny_translated",
+    "shift_01_forward",
+    "shift_02_forward",
+    "shift_07_forward",
+    "shift_08_forward",
+    "shift_09_forward",
+    "shift_10_forward",
+    "tiny_translated"
+  ],
+  "remote_coincidence_rejections": [
+    "relative_triangle_1e12_below",
+    "relative_triangle_1e12_close",
+    "relative_triangle_1e9_close",
+    "relative_triangle_near_second"
+  ],
+  "maximum_coefficient_and_sample_difference": 3.552713678800501e-15,
+  "parameter_grid": [
+    9,
+    9
+  ],
+  "captures": [
+    {
+      "family": "srf_pt_pilot",
+      "observations": 17,
+      "raw_sha256": "eeda6b0277fcadae2823ef8833ea9d63631710328e033665b6b49aea9028894d",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_holdouts",
+      "observations": 14,
+      "raw_sha256": "233d8415ed01755fa67ddf5e40e4a3571abbf398344e58582877064d6439a8da",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_precision",
+      "observations": 8,
+      "raw_sha256": "db0ba100788b98604d147b9538224d9d0e1abe39ec472ad8aec22bc0fed07936",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_admission",
+      "observations": 10,
+      "raw_sha256": "7dd520206defb1cb6d03ba189a3b574afce864146583ca482685714c2d2ad2e2",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_singular",
+      "observations": 6,
+      "raw_sha256": "9b28bb020bec00d0f55bb11a30bc8bd47cd0c33cdd0f860bd1aafee34c4ae4dd",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_origin",
+      "observations": 5,
+      "raw_sha256": "5b5b97f83106fbe1caeaac2e85d7c9e6b674cac909bbb4bbb1982f293b222112",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "srf_pt_followup",
+      "observations": 37,
+      "raw_sha256": "292af35cc66f146cfbe82ad97e5696dce1cc085e01ff7a851a0f7b4f70bf9606",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "cases": [
+    {
+      "id": "quad_flat",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_warped",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_skew",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_reversed",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_crossed",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_flat",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_spatial",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_reversed",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_tilted_cplane",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_large",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_fourth_third",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_fourth_first",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "cancel_initial",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "cancel_after_first",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "cancel_after_second",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "collinear_triangle",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "collinear_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_holdout_a",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_holdout_b",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_small",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_large",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_holdout_a",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_holdout_b",
+      "success": true,
+      "portable_script_error": 3.552713678800501e-15,
+      "portable_ui_error": 3.552713678800501e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.552713678800501e-15,
+      "native_ui_error": 3.552713678800501e-15
+    },
+    {
+      "id": "triangle_small",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_first_second_triangle",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_first_second_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_first_third_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "all_coincident_triangle",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "all_coincident_quad",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "thin_triangle",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "thin_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_huge_a",
+      "success": true,
+      "portable_script_error": 1.7763568394002505e-15,
+      "portable_ui_error": 1.7763568394002505e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.7763568394002505e-15,
+      "native_ui_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "triangle_huge_b",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_huge",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_tiny_edge",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_tiny_edge",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_third_first_triangle",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "repeat_third_second_triangle",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "alternating_quad",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_edge_1e10",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_edge_zero_tolerance",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_edge_above_zero_tolerance",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_edge_3e10",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_diagonal_small",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "triangle_near_second",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_two_adjacent_b",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_two_adjacent_a",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_one_opposite_b",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "quad_two_each",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "tiny_negative",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "tiny_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "tiny_translated",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "tiny_rotated",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_closed",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_closed_reverse",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_triangle",
+      "success": true,
+      "portable_script_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "archive_objects": 2,
+      "native_script_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "zero_late_quad",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_cplane_triangle",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_cplane_late",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_tiny_negative",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_tiny_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_tiny_translated",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_tiny_rotated",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_relative_closed",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "follow_relative_closed_reverse",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_00_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_00_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_01_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_01_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_02_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_02_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_03_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_03_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_04_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_04_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_05_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_05_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_06_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_06_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_07_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_07_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_08_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_08_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_09_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_09_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_10_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_10_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_11_forward",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "shift_11_reverse",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e9_close",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e9_open",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e12_close",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e12_below",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e12_above",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "relative_triangle_1e12_open",
+      "success": true,
+      "portable_script_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "archive_objects": 2,
+      "native_script_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "relative_triangle_near_second",
+      "success": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    }
+  ],
+  "public_sdk_diagnostics": {
+    "follow_tiny_negative": {
+      "surface": {
+        "error": 2.7476305036635697e-28,
+        "volume": 1.7663338952122945e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.7476305036635697e-28,
+        "volume": 1.7663338952122945e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "follow_tiny_reverse": {
+      "surface": {
+        "error": 2.4032209102991023e-28,
+        "volume": 1.2630401095689926e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.4032209102991023e-28,
+        "volume": 1.2630401095689926e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "follow_tiny_translated": {
+      "surface": {
+        "error": 6.958592492472278e-27,
+        "volume": -4.223011205244416e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 6.958592492472278e-27,
+        "volume": -4.223011205244416e-27
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "follow_tiny_rotated": {
+      "surface": {
+        "error": 2.7476305036635697e-28,
+        "volume": 1.7663338952122945e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.7476305036635697e-28,
+        "volume": 1.7663338952122945e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_00_forward": {
+      "surface": {
+        "error": 2.7476305036635697e-28,
+        "volume": -1.7663338952122945e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.7476305036635697e-28,
+        "volume": -1.7663338952122945e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_00_reverse": {
+      "surface": {
+        "error": 2.4032209102991023e-28,
+        "volume": 1.2630401095689926e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.4032209102991023e-28,
+        "volume": 1.2630401095689926e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_01_forward": {
+      "surface": {
+        "error": 6.958592492472278e-27,
+        "volume": -4.223011205244416e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 6.958592492472278e-27,
+        "volume": -4.223011205244416e-27
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_01_reverse": {
+      "surface": {
+        "error": 3.67964006538662e-27,
+        "volume": -2.7851932343044954e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.67964006538662e-27,
+        "volume": -2.7851932343044954e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_02_forward": {
+      "surface": {
+        "error": 1.993905549042971e-27,
+        "volume": 1.2768965916267237e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 1.993905549042971e-27,
+        "volume": 1.2768965916267237e-27
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_02_reverse": {
+      "surface": {
+        "error": 3.853017845979489e-27,
+        "volume": -1.8535615308940114e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.853017845979489e-27,
+        "volume": -1.8535615308940114e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_03_forward": {
+      "surface": {
+        "error": 2.2548412542988167e-27,
+        "volume": -1.4495408063349534e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.2548412542988167e-27,
+        "volume": -1.4495408063349534e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_03_reverse": {
+      "surface": {
+        "error": 1.0096702978521944e-27,
+        "volume": 8.732842040156324e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 1.0096702978521944e-27,
+        "volume": 8.732842040156324e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_04_forward": {
+      "surface": {
+        "error": 5.037517663098292e-28,
+        "volume": -3.5295697504940525e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 5.037517663098292e-28,
+        "volume": -3.5295697504940525e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_04_reverse": {
+      "surface": {
+        "error": 1.4217067309682343e-28,
+        "volume": 4.77206019297566e-29
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 1.4217067309682343e-28,
+        "volume": 4.77206019297566e-29
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_05_forward": {
+      "surface": {
+        "error": 3.956188619150101e-27,
+        "volume": -2.0774406626830475e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.956188619150101e-27,
+        "volume": -2.0774406626830475e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_05_reverse": {
+      "surface": {
+        "error": 2.0484159829876246e-27,
+        "volume": 1.3221970406071979e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.0484159829876246e-27,
+        "volume": 1.3221970406071979e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_06_forward": {
+      "surface": {
+        "error": 5.936266823082559e-27,
+        "volume": -3.350348079496771e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 5.936266823082559e-27,
+        "volume": -3.350348079496771e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_06_reverse": {
+      "surface": {
+        "error": 2.8771546578342794e-27,
+        "volume": 2.107356820253026e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.8771546578342794e-27,
+        "volume": 2.107356820253026e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_07_forward": {
+      "surface": {
+        "error": 4.1228488941357064e-27,
+        "volume": -2.4003275255979845e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 4.1228488941357064e-27,
+        "volume": -2.4003275255979845e-27
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_07_reverse": {
+      "surface": {
+        "error": 1.5831148914120294e-27,
+        "volume": -1.2288834414852327e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 1.5831148914120294e-27,
+        "volume": -1.2288834414852327e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_08_forward": {
+      "surface": {
+        "error": 3.1064618346992528e-27,
+        "volume": -2.0258333854440983e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.1064618346992528e-27,
+        "volume": -2.0258333854440983e-27
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_08_reverse": {
+      "surface": {
+        "error": 1.6326317457045275e-27,
+        "volume": -1.2872091427815953e-27
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 1.6326317457045275e-27,
+        "volume": -1.2872091427815953e-27
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_09_forward": {
+      "surface": {
+        "error": 5.796677022553547e-28,
+        "volume": -5.027372732846622e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 5.796677022553547e-28,
+        "volume": -5.027372732846622e-28
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_09_reverse": {
+      "surface": {
+        "error": 5.300931354347233e-29,
+        "volume": 2.6941349444725295e-28
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 5.300931354347233e-29,
+        "volume": 2.6941349444725295e-28
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_10_forward": {
+      "surface": {
+        "error": 6.805250018694015e-26,
+        "volume": 3.9670462230498647e-26
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 6.805250018694015e-26,
+        "volume": 3.9670462230498647e-26
+      },
+      "base_orientation": "Outward",
+      "command_orientation": "Outward",
+      "command_reversed": false
+    },
+    "shift_10_reverse": {
+      "surface": {
+        "error": 3.2121525179280727e-26,
+        "volume": -1.6498290263334485e-26
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.2121525179280727e-26,
+        "volume": -1.6498290263334485e-26
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_11_forward": {
+      "surface": {
+        "error": 2.833204505319606e-25,
+        "volume": 1.963329531976259e-25
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.833204505319606e-25,
+        "volume": 1.963329531976259e-25
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "shift_11_reverse": {
+      "surface": {
+        "error": 2.1871392427027724e-25,
+        "volume": -1.2834414004138365e-25
+      },
+      "base_solid": true,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.1871392427027724e-25,
+        "volume": -1.2834414004138365e-25
+      },
+      "base_orientation": "Inward",
+      "command_orientation": "Outward",
+      "command_reversed": true
+    },
+    "relative_triangle_1e9_open": {
+      "surface": {
+        "error": 2.625235349360209e-09,
+        "volume": 2.7528941154683487e-09
+      },
+      "base_solid": false,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 2.625235349360209e-09,
+        "volume": 2.7528941154683487e-09
+      },
+      "base_orientation": "None",
+      "command_orientation": "None",
+      "command_reversed": false
+    },
+    "relative_triangle_1e12_above": {
+      "surface": null,
+      "base_solid": false,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 3.109966004792259e-05,
+        "volume": -6.908000001710579e-05
+      },
+      "base_orientation": "None",
+      "command_orientation": "None",
+      "command_reversed": false
+    },
+    "relative_triangle_1e12_open": {
+      "surface": null,
+      "base_solid": false,
+      "base_reversed": false,
+      "base_valid": true,
+      "base": {
+        "error": 6.220601528155568e-05,
+        "volume": -0.00013816296296636807
+      },
+      "base_orientation": "None",
+      "command_orientation": "None",
+      "command_reversed": false
+    }
+  },
+  "execution": "Rhino ran on private Xvfb displays. Command, application and egui tests created no desktop windows.",
+  "limits": [
+    "Eight captured zero-volume charts retain different native face-orientation flags; the count includes repeated input geometry under distinct observation IDs. Their underlying surfaces, trims, edges, vertices and topology match. Face-sense parity remains unqualified.",
+    "Fresh public SDK surface-to-B-rep conversions and command outputs differ in face orientation. This is consistent with the documented document-admission flips, but does not prove where SrfPt applies them. Volume estimates do not establish a reliable classification rule for these degenerate solids; no world-coordinate lookup or sign heuristic was added.",
+    "Every replay retains the 1e-6 geometry gate. Face-sense exceptions apply only to named cases that are topological solids without a certified spatial orientation.",
+    "Native cancellation undo/redo fields are passive snapshots. Local failed-command tests separately preserve pending Redo.",
+    "Parameter-grid comparisons evaluate captured native NURBS definitions, not a continuous distance certificate. General mouse trajectories, all coordinate expressions, restart behavior and comparative speed remain unqualified."
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "creation",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "2137d327c6ba256de7ef96da54112da14112f3ae:crates/viboceros-command/tests/srf_pt.rs": "bc7451a96551e853abdc9b6054e7c23ce6f6f341770bb77bfabb56f3a6a92899",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:crates/viboceros-command/tests/support/srf_pt.rs": "bb80d1b2b921bd48ea51313ab8b96c00c04b4dd687199abd33a787ee7e532152",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:crates/viboceros-geometry/src/corner_surface.rs": "72a7caea69f99430f47e8100b7fa0d7c77872868a62b43a4b773d2a3a192cb5c",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/commands/srf-pt.md": "4b9744fbb31f7e4bc62900d33e48461a0c87364cb981c89386dba6ddc0daaedf",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/capture.json": "3fd0dcfc964e3db718c35e52aecd3a62cd2d80a7177d1f8fabd993912650fbc4",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/capture.log.gz": "da8062871be8b5cff3fb8022985918fea31ebde709eb517164b3a9590883fe75",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/checks.json": "3ed917c1b81d1f458140bf1c85d09db2df5ceb92c38e8a8ba5eb924693e8a0a1",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/clippy-all-features.log.gz": "8e64015232f5bcd8f23537a228e1baaf0f3bcd1f4b53ad7eb49d30c60ae9c6d9",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/clippy-portable.log.gz": "1067204701ee288a14c6790ed50767b9f4540423c22a6d2640c43b348b1b7639",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/commands-native.log.gz": "801a00375c52db2aaefc812ef295df733be2b0ccdfd9e84207d1af18a3ea9236",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/commands-portable.log.gz": "1592a70656a7786ddde5553f644f0e43bb1780561e4638eb08756c81a97db6f8",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/creation.log.gz": "3b352f9c9181735687baff7d0de153d624ae1bbc8f2d7c4f2bd8ef6a84c564b3",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/python.log.gz": "23e4b06092abe58419508b09093862da850ff0f4096f5bfd1ec2adda0b08bd8d",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/subd-native.log.gz": "c98cd667769fc4a2cae6acb7dcbc6993b6351ec8a4b81bdd30708de734a5b843",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/ui-native.log.gz": "c11522bc788778e1223228590f4b1557fdfd76eea355edc5448341da0ceda584",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/srf-pt-followup-proof/ui-portable.log.gz": "9cbf7ff47dbf08dacdef3024950b943d292ca1c201fe28e39faa48667708c474",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/subd-box-qualification.json": "942a50551bbd7cbbfb35891f471248224dbaa3c1e8d2a4123d9b596e535d83da",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:docs/subd-plane-qualification.json": "20826883d671fd281515c3d62cf4190ac12359d00402be5faf83b7f6b2f3e235",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:src/app/tests/srf_pt.rs": "df0552747eda97a3e2905cdbbb4869ecda20ece60e4a769c33cf98a1ff036145",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/check_srf_pt_followup.py": "5d9235d1274e9c44cf509b2f5adb618c49439cd0e24cca831168686a4133f2cb",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/fixtures/srf_pt_followup.json": "82cb2ed721db7258e44eb23554b4e0a89711b6d599ca03bf66fcc132bb72ba5c",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/generate_srf_pt_followup.py": "11765cfcd342474206f6e60bb7f2bbde46ce8571d14bcd1d37a49b46f5c40a11",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/0c272d15e280aa61e17827951d08cfe7235949114cf69f73525df4ef83cc8c7d.gz": "b9b07732da1f0e884a3e7af545dfac58053b3b784ecf6bac35cc03c8c9a62c81",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/11765cfcd342474206f6e60bb7f2bbde46ce8571d14bcd1d37a49b46f5c40a11.gz": "1046f66ce8fbfd033a57ca514a15559223aa1d1e26c7041cf2fa7bffb0384edd",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/7f927df83ebd1a4baaa8321958002311427c9d1fcfc6617b09498e5bd83d0b01.gz": "e8bb8631b62c3bd84262d355abee5a47b3173f72c8944148e320a1523a352ae1",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/8c3d9affdde0701528ab4192dfa2ac24374b6e080935ffb782e475eb56ea829b.gz": "bd54eb49146a62762983b9c3e96fb2f100591e1ec9d3e3caaa5e778bac92137d",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/d44074f6d12f58051788a855cbb2904d3f2f2bc002ee8ccf7349ebc35a472e3c.gz": "a284c03bd25c99c2de94176622d168966203be112f6e4e5b3dc3088f22579996",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/source_snapshots/e2960e3277ff77d399e3d0aeec82b7ef982589cdadce14cb2502d892b4ced479.gz": "b26461dcafeebec8ee7fd6e1b28e7432d55ef323a3a9da8a69c5d69f1e9d15f0",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/observations/srf_pt_followup.json.gz": "12fbb6b3596bcf5e8850154aead9ed991763ff839feae521cf1c0f2c2f775221",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/report_srf_pt_followup.py": "e229142cc8e85558c86ef485db85a7400a8163d0a3fbe226b8a23197a63b919d",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/srf_pt_cases.py": "8c3d9affdde0701528ab4192dfa2ac24374b6e080935ffb782e475eb56ea829b",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/srf_pt_diagnostics.py": "d44074f6d12f58051788a855cbb2904d3f2f2bc002ee8ccf7349ebc35a472e3c",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/srf_pt_followup_cases.py": "0c272d15e280aa61e17827951d08cfe7235949114cf69f73525df4ef83cc8c7d",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/srf_pt_probe.py": "7f927df83ebd1a4baaa8321958002311427c9d1fcfc6617b09498e5bd83d0b01",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/structural_sdk.py": "e2960e3277ff77d399e3d0aeec82b7ef982589cdadce14cb2502d892b4ced479",
+    "2137d327c6ba256de7ef96da54112da14112f3ae:tools/rhino_oracle/test_srf_pt_followup.py": "4909bbbf006a1df7f0f9e904870c733ef6df138fda21f3090393b48ce284c46d"
+  },
+  "evidence_sha256": {
+    "docs/srf-pt-followup-proof/capture.json": "3fd0dcfc964e3db718c35e52aecd3a62cd2d80a7177d1f8fabd993912650fbc4",
+    "docs/srf-pt-followup-proof/capture.log.gz": "da8062871be8b5cff3fb8022985918fea31ebde709eb517164b3a9590883fe75",
+    "docs/srf-pt-followup-proof/checks.json": "6683df9466a9fb7e0b41242172600ddffa8bad08f88d04a94b2df4d965f146fa",
+    "docs/srf-pt-followup-proof/clippy-all-features.log.gz": "8e64015232f5bcd8f23537a228e1baaf0f3bcd1f4b53ad7eb49d30c60ae9c6d9",
+    "docs/srf-pt-followup-proof/clippy-portable.log.gz": "1067204701ee288a14c6790ed50767b9f4540423c22a6d2640c43b348b1b7639",
+    "docs/srf-pt-followup-proof/commands-native.log.gz": "801a00375c52db2aaefc812ef295df733be2b0ccdfd9e84207d1af18a3ea9236",
+    "docs/srf-pt-followup-proof/commands-portable.log.gz": "1592a70656a7786ddde5553f644f0e43bb1780561e4638eb08756c81a97db6f8",
+    "docs/srf-pt-followup-proof/creation.log.gz": "3b352f9c9181735687baff7d0de153d624ae1bbc8f2d7c4f2bd8ef6a84c564b3",
+    "docs/srf-pt-followup-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/srf-pt-followup-proof/python.log.gz": "24999e9cbc183f0522d9ec17d2eb09a20081208e059773b284ba186da148a59e",
+    "docs/srf-pt-followup-proof/subd-native.log.gz": "c98cd667769fc4a2cae6acb7dcbc6993b6351ec8a4b81bdd30708de734a5b843",
+    "docs/srf-pt-followup-proof/ui-native.log.gz": "c11522bc788778e1223228590f4b1557fdfd76eea355edc5448341da0ceda584",
+    "docs/srf-pt-followup-proof/ui-portable.log.gz": "9cbf7ff47dbf08dacdef3024950b943d292ca1c201fe28e39faa48667708c474",
+    "docs/srf-pt-validation.json": "e312cb90d828f7518d11d0325397a4111ae89d45bc22aea1715fd3a2d8dee8f4",
+    "tools/rhino_oracle/fixtures/srf_pt_admission.json": "ce05c2e6995a5367bfc940931edc3811e55f144f94978e6a5f0d21c8790ce942",
+    "tools/rhino_oracle/fixtures/srf_pt_followup.json": "82cb2ed721db7258e44eb23554b4e0a89711b6d599ca03bf66fcc132bb72ba5c",
+    "tools/rhino_oracle/fixtures/srf_pt_holdouts.json": "d77dfe443c79bb98460ad2afaf13f4c00a38928533d6d3bf5b3a0de770080ca1",
+    "tools/rhino_oracle/fixtures/srf_pt_origin.json": "83cf1e71a2249be94b325218fd792bf213919f3111ce33dde06f5da83ca2e843",
+    "tools/rhino_oracle/fixtures/srf_pt_pilot.json": "e9b81fa0d887e152cf32371d5f22d8ff50fa819dd29ea76d0ac41689dfd336ea",
+    "tools/rhino_oracle/fixtures/srf_pt_precision.json": "2e410e490589c580387dbe5f8315aa11183cd3faf851f33604d6882207eaeec9",
+    "tools/rhino_oracle/fixtures/srf_pt_singular.json": "4a45d07707a20bb27e0d4787c687974c7fc1a8ed0c2ad5fc9831b8bac5a0dc87",
+    "tools/rhino_oracle/observations/source_snapshots/0c272d15e280aa61e17827951d08cfe7235949114cf69f73525df4ef83cc8c7d.gz": "b9b07732da1f0e884a3e7af545dfac58053b3b784ecf6bac35cc03c8c9a62c81",
+    "tools/rhino_oracle/observations/source_snapshots/0c47d32ab0ce82cbeadefdc1dee4da3652a2c600a92e5f2237a2cad4faa9d008.gz": "f5a2781844522ae1a571fb4e8278ea2b34d6fbae68c5cfa6857c0443de688511",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/11765cfcd342474206f6e60bb7f2bbde46ce8571d14bcd1d37a49b46f5c40a11.gz": "1046f66ce8fbfd033a57ca514a15559223aa1d1e26c7041cf2fa7bffb0384edd",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/314641eb854ec35258a2d0d58260b46a95e21047bca08cabb0751b227ceef27d.gz": "db405049677b591c5ccbc2a6d81e42c109501de5b628c08fe532d08b18379651",
+    "tools/rhino_oracle/observations/source_snapshots/373d0577b3f9c70bd55e22387eedad1a159da0bac18beb9bbaaede40078e8bb8.gz": "41e7f5584d8eb610d422a2a949287a700d4260704d3ab5e3fbacf23f1e92aa6b",
+    "tools/rhino_oracle/observations/source_snapshots/38010cd4e5e2a2b2ca2c00aa4906d9cebec84f678c8ffeced95cffb497eee83b.gz": "60aa8bfa86ee504397c0298ab150eb6a2877ec769d50fefc3d593e557418549e",
+    "tools/rhino_oracle/observations/source_snapshots/3ca92e44bcf3eb0fe90912c6c986c8ea6745cea1982834e1db2f69b32e22acd4.gz": "30a296e32bcce458147bb44f15ee8c49b4094213654584b89b9ac56126f05a8c",
+    "tools/rhino_oracle/observations/source_snapshots/3e7db569da0aa566d4fd5acf966a8515a76dd379a5bdd1a1d6f76a5d3aad69a0.gz": "7e394b6af68b9d0aacfb142486b202c926d6925d23460d2af75f70bbd10c006c",
+    "tools/rhino_oracle/observations/source_snapshots/41b3790d813ddfeac2ce18ecd23e3502509c6f6e9c76b35ae9b1d5210d08a776.gz": "e7219b4fdc7d467c024679e8497b4327f42c92e61f6f76d23137d39703a513fb",
+    "tools/rhino_oracle/observations/source_snapshots/4ffeed7e27adc552b81eca361dafd7c68f1b3d0d199d2ce774d01e978478c472.gz": "43b47e69d5b0b70c5b0fd3e0a74e7f774beb0abe6bf86e9ab769c0608fbaf39a",
+    "tools/rhino_oracle/observations/source_snapshots/51d64fc6ffbcb8d954fdb91509ba1f469a96ff752cc281fd5baff2de9c3dc367.gz": "2a7e08af957cdaa1aa8e3d92b7e95346ec10e0524e5973eb49ea6d59b1d8ec1d",
+    "tools/rhino_oracle/observations/source_snapshots/5267838de55f2d519c2e16539caaa94620a6447388d1fedbd6abbde67b3310fb.gz": "333117785409c3b00b71c5cbc15ce5d265e5f1ae288ca7344d278d6d4e07e44d",
+    "tools/rhino_oracle/observations/source_snapshots/52d1c48b85b375e530130b86bac6ca34470e23a213f697a43e2f3e9ae2a9887c.gz": "9717c37e456265d67b3c1e7e0cd1ab9ff51f728639b743d7352c2db7ea1475b9",
+    "tools/rhino_oracle/observations/source_snapshots/7f927df83ebd1a4baaa8321958002311427c9d1fcfc6617b09498e5bd83d0b01.gz": "e8bb8631b62c3bd84262d355abee5a47b3173f72c8944148e320a1523a352ae1",
+    "tools/rhino_oracle/observations/source_snapshots/87952bbc5769f3272502ec2db4ae613dfc825144ae5f3381f3dc4a60be53a1ac.gz": "145ce2f9238a21ed52dd3688e2f90dfd22f2a3b0d6213ada349a593155de320f",
+    "tools/rhino_oracle/observations/source_snapshots/89083c9dfd97ced553df0eef041de8101a27a3d73ce04de8e6f3971673cdc14e.gz": "fbfd42d3957040e15a5dfd13609b6304c118cb76e7d64e7274c0acddfb8bb964",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/8c3d9affdde0701528ab4192dfa2ac24374b6e080935ffb782e475eb56ea829b.gz": "bd54eb49146a62762983b9c3e96fb2f100591e1ec9d3e3caaa5e778bac92137d",
+    "tools/rhino_oracle/observations/source_snapshots/9d2df0e5b3df1761375c9404b53cd8a09dc6cff9f0d082436fd3d44b4b58c3cb.gz": "ca95f9914c7f789eea41f6895fb62bceb24dfcdec91909c9abc811cfce1c0af1",
+    "tools/rhino_oracle/observations/source_snapshots/a07ac38fd609762d579f2b973e0916461534894a752da374e9839029c571cb49.gz": "dea7bfaf9f12d6825c3380bbabf4c340ba87f7489dd5a5082b731ad85e53d9ef",
+    "tools/rhino_oracle/observations/source_snapshots/a23128aed7e883cb88798a614faba5b6cbdf8aca3f75e10db8fe36a8c1120df0.gz": "07c345c1c83e72ffd7691d043fc177f2e85d950be67ff6e5156d5441d2cb2778",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c45347400756551874fb30e0b4fd26d4f049568f9ca93bae5fff86c88ad9e70b.gz": "84f6c31b46be9cd03bb31d1955968cc0208ff112d76361447828c3006d05daa2",
+    "tools/rhino_oracle/observations/source_snapshots/c561a90305e562677410ac7e0f4703e61206ab95ac828c7d5dd687fcca93f7e8.gz": "af0934fd6440da1778fe1642f94d13cee36b4d157f8ce24b5869ff661b4aed79",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbb3d70de1c9c46089781bd26781bdbc4fc2fcfc234d22f48440bfaa09c7e6f6.gz": "f62a9c2ef07171076c084c9253318116723d0c65f1ad9e2904cfdee372d484cb",
+    "tools/rhino_oracle/observations/source_snapshots/d032d3cdde493c56d440aade2be35c19bea7cb85542feed982c2deae83cd55ab.gz": "83b547547798a3fd67bc8c634c982671b157c2dfc7a1c79035e01715b940fb0d",
+    "tools/rhino_oracle/observations/source_snapshots/d44074f6d12f58051788a855cbb2904d3f2f2bc002ee8ccf7349ebc35a472e3c.gz": "a284c03bd25c99c2de94176622d168966203be112f6e4e5b3dc3088f22579996",
+    "tools/rhino_oracle/observations/source_snapshots/e2960e3277ff77d399e3d0aeec82b7ef982589cdadce14cb2502d892b4ced479.gz": "b26461dcafeebec8ee7fd6e1b28e7432d55ef323a3a9da8a69c5d69f1e9d15f0",
+    "tools/rhino_oracle/observations/source_snapshots/e3fa94b91b21b0ad22842ae8b97df7959e0a3c0089213164b5185b88d70a2c5d.gz": "7dd04495b1e56509019ccb605b61885c7087b16e3930925af236282012e6a140",
+    "tools/rhino_oracle/observations/source_snapshots/ed01b9677f3755330dd37a9600d04016342bcbf7c388c90c76ee2b9205b53484.gz": "1ada499673183462fcc8aa545faf8175d4e3eb2ad9cd6b7d42b3bb9effb54773",
+    "tools/rhino_oracle/observations/source_snapshots/ef929dac9045d7c75c09a3dfe925e501479084f953fcec8b872cd8cbd8d49315.gz": "1fa64cf3893c0e7ec0548f10995b38b0e31f39fbe72ea5119b837801d2892ff3",
+    "tools/rhino_oracle/observations/source_snapshots/efc262af9991b5c88fa74c9c2758e6d0c66c020f8ebd5f1186f144ff4a1f6b68.gz": "0bf66e8af5403678cc6287406739686a2430a2ba3409ff26e59a818255d6ebde",
+    "tools/rhino_oracle/observations/source_snapshots/f04871ff3c39636918aa108106afcfd67a1c291b5b02cf893ed14e482241d7c2.gz": "3d1ed0ad15e4b09da09ce8aee25cb752d9b1f1853efc40f8318fcfda028ba14c",
+    "tools/rhino_oracle/observations/source_snapshots/f3b12a47492cf5446fc58e8518df88f446c847ff5883c8d97588311676fe32bc.gz": "02e05877c7f601b5d94dac532d32987f47882ee48d21afcd311c64599e0b82f8",
+    "tools/rhino_oracle/observations/source_snapshots/f8368b2a0eb920c822f481d32e31571b31955a493361bdf87310cbeeed979b5c.gz": "07894effc5e45b06a464bbf7a96f904d625ad040dfbc5d4e1c99bec3310e91c4",
+    "tools/rhino_oracle/observations/source_snapshots/fd6d0006867ff8e23cc7c47cb8d46e632935059593ede8b22cfd8ca2c163ef74.gz": "559eadcb71a13e76578a6e9bc8e548d570304fc19ecc8f606e4667af63ede1b6",
+    "tools/rhino_oracle/observations/source_snapshots/fdc4ecfba7bb17ed96a29a2f2eb071bb01b6dd852e41bec039f610cc9d26e250.gz": "fab1fd96ecf40f8527cd978b7a835ea2b6d99fb920bce147668f837ee804f66a",
+    "tools/rhino_oracle/observations/srf_pt_admission.json.gz": "778a0333f52615aa6798b8669a1c0b17e330b87a7c47394261eef76b7b3d0b75",
+    "tools/rhino_oracle/observations/srf_pt_followup.json.gz": "12fbb6b3596bcf5e8850154aead9ed991763ff839feae521cf1c0f2c2f775221",
+    "tools/rhino_oracle/observations/srf_pt_holdouts.json.gz": "0fc252bb99ce781ae209b8fa4a9eadd855a4c99b1f3ea5e6ca8b3db4f6839525",
+    "tools/rhino_oracle/observations/srf_pt_origin.json.gz": "b54d3a9168a3db4ec63289bcf887cf75f376e573bd679bca7b7963a07edc8d69",
+    "tools/rhino_oracle/observations/srf_pt_pilot.json.gz": "89b53fd14e299dc2a2a4e0f57dd2afe11f3a870e451aa189237692f643cf0acf",
+    "tools/rhino_oracle/observations/srf_pt_precision.json.gz": "b0a4f0b83ed6554a893f4fd63991b8351219336f9340599cde3d23e63077606c",
+    "tools/rhino_oracle/observations/srf_pt_singular.json.gz": "a0d13bf63723de476da39bbb33acaf39a54cd6137ea4746f6f8a65a98dbed89b"
+  }
+}
