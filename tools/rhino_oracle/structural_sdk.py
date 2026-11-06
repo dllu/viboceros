@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'line_reference': ('line_reference_probe', ('line_reference_cases','line_reference_holdouts','line_reference_completion','line_reference_final','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'line_construction': ('line_construction_probe', ('line_construction_cases','line_construction_holdouts','line_construction_precision','line_construction_completion','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'lines_command': ('lines_probe', ('lines_cases','lines_precision_cases','lines_finish_cases','lines_boundary_cases','lines_macro_cases','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'command_file': ('command_file_probe', ('command_file_cases','command_file_holdouts','command_file_extras','command_file_polyline','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),

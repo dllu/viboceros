@@ -241,6 +241,7 @@ mod intersect_two_sets;
 mod iplane;
 mod length;
 mod line_input;
+mod line_reference;
 mod maelstrom_prompt;
 mod mesh_face_prompt;
 mod mirror;
@@ -412,6 +413,7 @@ pub struct VibocerosApp {
     block_manager: block_manager::BlockManager,
     last_point: Option<Point3>,
     line_input: Option<viboceros_command::line::Input>,
+    line_reference: Option<line_reference::Session>,
     line_accepted_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -598,6 +600,7 @@ impl VibocerosApp {
             block_manager: Default::default(),
             last_point: None,
             line_input: None,
+            line_reference: None,
             line_accepted_point: None,
             drafting_plane: None,
             point_filter: None,

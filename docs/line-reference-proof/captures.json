@@ -1,0 +1,50 @@
+[
+  {
+    "family": "line_reference",
+    "log": "capture-line_reference.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_reference"
+    ]
+  },
+  {
+    "family": "line_reference_holdouts",
+    "log": "capture-line_reference_holdouts.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_reference_holdouts"
+    ]
+  },
+  {
+    "family": "line_reference_completion",
+    "log": "capture-line_reference_completion.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_reference_completion"
+    ]
+  },
+  {
+    "family": "line_reference_final",
+    "log": "capture-line_reference_final.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_reference_final"
+    ]
+  }
+]

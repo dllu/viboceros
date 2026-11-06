@@ -1,0 +1,1573 @@
+{
+  "line_end": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      [
+        14,
+        6,
+        5
+      ]
+    ]
+  },
+  "line_start": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          1,
+          0,
+          0
+        ]
+      },
+      [
+        -4,
+        6,
+        5
+      ]
+    ]
+  },
+  "line_length": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      5,
+      [
+        15,
+        5,
+        0
+      ]
+    ]
+  },
+  "line_increment": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      -5,
+      [
+        18,
+        5,
+        0
+      ]
+    ]
+  },
+  "line_both": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      [
+        14,
+        6,
+        5
+      ]
+    ]
+  },
+  "arc_end": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          4.99,
+          0
+        ]
+      },
+      [
+        -4,
+        8,
+        0
+      ]
+    ]
+  },
+  "arc_start": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        6,
+        -4,
+        0
+      ]
+    ]
+  },
+  "nurbs_end": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9.5,
+          0.6,
+          0
+        ]
+      },
+      [
+        13,
+        -4,
+        0
+      ]
+    ]
+  },
+  "polyline_end": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          4,
+          2.8,
+          0
+        ]
+      },
+      [
+        7,
+        9,
+        2
+      ]
+    ]
+  },
+  "closed_cancel": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "cancel_empty": {
+    "actions": [
+      "Extension",
+      "Cancel"
+    ]
+  },
+  "cancel_selected": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "circle_seam": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        4,
+        0
+      ]
+    ]
+  },
+  "closed_polyline_end": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          0.15,
+          0
+        ]
+      },
+      [
+        -4,
+        -3,
+        0
+      ]
+    ]
+  },
+  "hairpin_first_half": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              100,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              100,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          48.008,
+          0.104,
+          0
+        ]
+      },
+      [
+        4,
+        -3,
+        0
+      ]
+    ]
+  },
+  "nurbs_remote": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1000000000002.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1000000000007.0,
+              1000000000004.0,
+              1000000000000.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1000000000010.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          1000000000009.5,
+          1000000000000.6,
+          1000000000000.0
+        ]
+      },
+      [
+        1000000000013.0,
+        999999999996.0,
+        1000000000000.0
+      ]
+    ]
+  },
+  "end_reverse": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      [
+        6,
+        7,
+        2
+      ]
+    ]
+  },
+  "nurbs_start": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          0.3,
+          0
+        ]
+      },
+      [
+        -2,
+        -3,
+        0
+      ]
+    ]
+  },
+  "polyline_start": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          0,
+          0
+        ]
+      },
+      [
+        -7,
+        8,
+        2
+      ]
+    ]
+  },
+  "spatial_end": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          4.8,
+          5.8,
+          6.8
+        ]
+      },
+      [
+        10,
+        10,
+        9
+      ]
+    ]
+  },
+  "cplane_normal_ignored": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          4.99,
+          0
+        ]
+      },
+      [
+        -4,
+        8,
+        7
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "both_late": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      "BothSides",
+      [
+        14,
+        6,
+        5
+      ]
+    ]
+  },
+  "both_fixed_length": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9.5,
+          0.6,
+          0
+        ]
+      },
+      "BothSides",
+      5,
+      [
+        13,
+        -4,
+        0
+      ]
+    ]
+  },
+  "coarse_tolerance": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      [
+        10.0000001,
+        2,
+        3
+      ]
+    ],
+    "absolute_tolerance": 0.01
+  },
+  "redo_cancel": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "redo_empty": {
+    "actions": [
+      "Extension",
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "polyline_parameter_first": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            100,
+            0,
+            0
+          ],
+          [
+            100,
+            1,
+            0
+          ],
+          [
+            101,
+            1,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          75,
+          0,
+          0
+        ]
+      },
+      [
+        110,
+        5,
+        0
+      ]
+    ]
+  },
+  "polyline_parameter_last": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            101,
+            1,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          40,
+          1,
+          0
+        ]
+      },
+      [
+        -5,
+        -5,
+        0
+      ]
+    ]
+  },
+  "polycurve_length_domain": {
+    "curves": [
+      {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              100,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              100,
+              0,
+              0
+            ],
+            "end": [
+              100,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              100,
+              1,
+              0
+            ],
+            "end": [
+              101,
+              1,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          75,
+          0,
+          0
+        ]
+      },
+      [
+        110,
+        5,
+        0
+      ]
+    ]
+  },
+  "weighted_nurbs_end": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              5,
+              0
+            ],
+            "weight": 0.2
+          },
+          {
+            "point": [
+              5,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              8,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          7.7,
+          0.4,
+          0
+        ]
+      },
+      [
+        11,
+        -4,
+        0
+      ]
+    ]
+  },
+  "weighted_nurbs_start": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              5,
+              0
+            ],
+            "weight": 0.2
+          },
+          {
+            "point": [
+              5,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              8,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          0.05,
+          0.25,
+          0
+        ]
+      },
+      [
+        -1,
+        -5,
+        0
+      ]
+    ]
+  },
+  "enter_length": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      5,
+      "Enter"
+    ]
+  },
+  "enter_both_length": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      5,
+      "Enter"
+    ]
+  },
+  "zero_endpoint_cancel": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      },
+      [
+        10,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "linear_nurbs_arclength": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              100,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              100,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              101,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          75,
+          0,
+          0
+        ]
+      },
+      [
+        110,
+        5,
+        0
+      ]
+    ]
+  },
+  "cubic_nurbs_arclength": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              200,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              100,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              101,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Extension",
+      {
+        "curve": 0,
+        "pick": [
+          87.208,
+          0.104,
+          0
+        ]
+      },
+      [
+        110,
+        5,
+        0
+      ]
+    ]
+  }
+}

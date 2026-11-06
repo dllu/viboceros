@@ -223,7 +223,7 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
-        for operation_kind, label in [('line_construction','Line construction'),('lines_command','Lines'),('command_file','Command-file'),('point_grid_input','Point-grid'),('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
+        for operation_kind, label in [('line_reference','Line references'),('line_construction','Line construction'),('lines_command','Lines'),('command_file','Command-file'),('point_grid_input','Point-grid'),('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
             if any(op.get('op') == operation_kind for op in request.get('operations', [])):
                 operations = request['operations']
                 if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
@@ -512,6 +512,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='line_reference'for op in request.get('operations',[])):
+            from .line_reference_cases import CASES
+            from .catenary_point_picker import CatenaryPointPicker
+            click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in CASES[op['case']]['actions']])for op in request['operations']])
+            interaction=CatenaryPointPicker(click_request)
         if any(op.get('op') in ('edge_analysis_lifetime', 'edge_analysis_mixed', 'subd_edge_analysis') for op in request.get('operations', [])):
             if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
                     or request.get('iterations', 1) != 1 or len({op['op'] for op in request['operations']}) != 1):
@@ -2204,6 +2209,8 @@ Rhino.RhinoApp.Idle += execute_owned_controls
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino", request)
+        if any(op.get('op')=='line_reference'for op in request.get('operations',[])):
+            interaction.record_diagnostics(response)
         if any(op.get('op') == 'surface_interpolate_plane' for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if any(op.get("op") == "scale_by_plane" for op in request.get("operations", [])):

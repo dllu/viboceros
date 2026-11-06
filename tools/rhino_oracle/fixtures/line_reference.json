@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_reference",
+      "id": "line_end",
+      "case": "line_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "line_start",
+      "case": "line_start"
+    },
+    {
+      "op": "line_reference",
+      "id": "line_length",
+      "case": "line_length"
+    },
+    {
+      "op": "line_reference",
+      "id": "line_increment",
+      "case": "line_increment"
+    },
+    {
+      "op": "line_reference",
+      "id": "line_both",
+      "case": "line_both"
+    },
+    {
+      "op": "line_reference",
+      "id": "arc_end",
+      "case": "arc_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "arc_start",
+      "case": "arc_start"
+    },
+    {
+      "op": "line_reference",
+      "id": "nurbs_end",
+      "case": "nurbs_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "polyline_end",
+      "case": "polyline_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "closed_cancel",
+      "case": "closed_cancel"
+    },
+    {
+      "op": "line_reference",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    },
+    {
+      "op": "line_reference",
+      "id": "cancel_selected",
+      "case": "cancel_selected"
+    }
+  ]
+}

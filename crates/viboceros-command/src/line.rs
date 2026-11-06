@@ -6,7 +6,7 @@ use crate::native_length;
 mod native_rotation;
 pub use input::{Definition, Input, Mode};
 pub const USAGE: &str =
-    "Line [BothSides] [Vertical|FourPoint|Bisector|Angled] points [angle|length]";
+    "Line [BothSides] [Vertical|FourPoint|Bisector|Angled|Extension] points [angle|length]";
 
 /// Admission is independent of document modelling tolerance. The getter also
 /// rejects coincident points before constructing a document line.
@@ -50,6 +50,40 @@ impl Command for LineCommand {
                 i += 1;
                 continue;
             }
+            if args[i]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Enter")
+            {
+                result = Some(input.enter().ok_or(CommandError::Usage(USAGE))?);
+                i += 1;
+                continue;
+            }
+            if input.wants_curve() {
+                let (key, value) =
+                    args[i]
+                        .trim_start_matches('_')
+                        .split_once('=')
+                        .ok_or(CommandError::Usage(
+                            "Line Extension Curve=id|Edge=id,index pick endpoint|length",
+                        ))?;
+                let (id, edge) = if key.eq_ignore_ascii_case("Edge") {
+                    let (id, edge) = crate::curve_reference::parse_edge(value)
+                        .ok_or(CommandError::Usage("Edge=id,index"))?;
+                    (id, Some(edge))
+                } else if key.eq_ignore_ascii_case("Curve") {
+                    (
+                        value.parse().map_err(|_| CommandError::Usage("Curve=id"))?,
+                        None,
+                    )
+                } else {
+                    return Err(CommandError::Usage(USAGE));
+                };
+                let captured = crate::curve_reference::CapturedCurve::capture(doc, id, edge)?;
+                let (pick, n) = parse_point(&args[i + 1..])?;
+                input.extension(captured.curve_ref(), pick)?;
+                i += 1 + n;
+                continue;
+            }
             if input.requests_angle()
                 || (input.direction()?.is_some() && args.len() - i < 3 && !args[i].contains(','))
             {
@@ -66,6 +100,9 @@ impl Command for LineCommand {
         }
         let definition = result.ok_or(CommandError::Usage(USAGE))?;
         let length = definition.line.length()?;
+        if input.mode() == Mode::Extension {
+            doc.clear_selection();
+        }
         let id = doc.add_geometry(Geometry::Line(definition.line))?;
         Ok(format!("Added line {id} (length {length:.6})"))
     }

@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_reference",
+      "id": "circle_seam",
+      "case": "circle_seam"
+    },
+    {
+      "op": "line_reference",
+      "id": "closed_polyline_end",
+      "case": "closed_polyline_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "hairpin_first_half",
+      "case": "hairpin_first_half"
+    },
+    {
+      "op": "line_reference",
+      "id": "nurbs_remote",
+      "case": "nurbs_remote"
+    },
+    {
+      "op": "line_reference",
+      "id": "end_reverse",
+      "case": "end_reverse"
+    },
+    {
+      "op": "line_reference",
+      "id": "nurbs_start",
+      "case": "nurbs_start"
+    },
+    {
+      "op": "line_reference",
+      "id": "polyline_start",
+      "case": "polyline_start"
+    },
+    {
+      "op": "line_reference",
+      "id": "spatial_end",
+      "case": "spatial_end"
+    },
+    {
+      "op": "line_reference",
+      "id": "cplane_normal_ignored",
+      "case": "cplane_normal_ignored"
+    },
+    {
+      "op": "line_reference",
+      "id": "both_late",
+      "case": "both_late"
+    },
+    {
+      "op": "line_reference",
+      "id": "both_fixed_length",
+      "case": "both_fixed_length"
+    },
+    {
+      "op": "line_reference",
+      "id": "coarse_tolerance",
+      "case": "coarse_tolerance"
+    },
+    {
+      "op": "line_reference",
+      "id": "redo_cancel",
+      "case": "redo_cancel"
+    },
+    {
+      "op": "line_reference",
+      "id": "redo_empty",
+      "case": "redo_empty"
+    }
+  ]
+}

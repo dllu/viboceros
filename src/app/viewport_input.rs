@@ -53,6 +53,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.array_curve_surface_session {
                 s.pointer = output.selection_pointer;
             }
+            if let Some(s) = &mut self.line_reference {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.arc_extension_session {
                 s.pointer = output.selection_pointer;
             }
@@ -74,6 +77,11 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            if self.plane_prompt.is_none()
+                && let Some(input) = &mut self.line_input
+            {
+                input.observe_cursor(point);
+            }
             if let Some(s) = self.arc_extension_session.as_mut() {
                 let _ = s.input.observe_cursor(point);
             }
@@ -257,6 +265,7 @@ impl VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve()

@@ -37,6 +37,7 @@ impl eframe::App for VibocerosApp {
         self.validate_rectangle_curve();
         self.validate_ellipse_curve();
         self.validate_arc_extension_source();
+        self.validate_line_reference();
         self.validate_tangent_sources();
         self.validate_circle_around_curve();
         self.validate_blend_surface();
@@ -380,6 +381,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
+            || self.picking_line_curve()
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
             || self.picking_circle_around_curve()
@@ -718,6 +720,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve()

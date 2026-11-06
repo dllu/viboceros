@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_reference",
+      "id": "linear_nurbs_arclength",
+      "case": "linear_nurbs_arclength"
+    },
+    {
+      "op": "line_reference",
+      "id": "cubic_nurbs_arclength",
+      "case": "cubic_nurbs_arclength"
+    }
+  ]
+}

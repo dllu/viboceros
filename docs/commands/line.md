@@ -11,6 +11,7 @@ the first point:
 | `FourPoint` | Supply two reference points, then a start and endpoint. Both latter points project onto the reference line; the final getter follows its direction through the projected start. |
 | `Bisector` | Supply a pivot, one point on each ray, then an endpoint. The endpoint projects onto the internal spatial angle bisector. Exactly opposite rays cancel. |
 | `Angled` | Supply two base-line points, an angle in degrees, then an endpoint. Rotate the base line around the initial construction-plane normal and project onto the rotated line. Spatial base lines retain their normal component. |
+| [`Extension`](line-extension.md) | Pick a curve near an end, then project the endpoint onto that end's tangent. |
 
 At a constrained endpoint prompt, a positive number locks the length and a
 negative number sets a length increment. Then pick or type a point to choose
@@ -21,9 +22,9 @@ distance and angle shortcuts, coordinate filters, snapping and relative input.
 
 Prompts, axis picking and viewport previews share the command geometry model.
 Reference points remain outside the document until completion. Enter or Escape
-cancels an incomplete line; repeated points retain the prompt. A completed line
-creates one Undo/Redo entry on the current layer without changing existing
-selection. `ReadCommandFile` uses the same getters and groups its edits; a
+cancels an incomplete line (Extension can accept a locked length on Enter); repeated points retain the prompt. A completed line
+creates one Undo/Redo entry on the current layer. Most construction modes
+preserve existing selection; Extension clears it while choosing a reference. `ReadCommandFile` uses the same getters and groups its edits; a
 canceled line stops the file before subsequent commands execute.
 
 Line admission is independent of document modelling tolerance. Native Rhino
@@ -41,7 +42,7 @@ getter/file constructions and 37 valid direct commands through 3DM, plus
 cancellation and atomic history. Coefficients, domains and 33 locally evaluated
 samples use the same `1e-6` comparison gate.
 
-`Normal`, `Tangent`, `Perpendicular` and `Extension` remain unsupported.
+`Normal`, `Tangent` and `Perpendicular` remain unsupported.
 Independent native point sampling, continuous distance, arbitrary mouse
 trajectories and comparative speed remain unqualified. Run the windowless
 checks with `python3 -m tools.rhino_oracle.check_line_construction`.

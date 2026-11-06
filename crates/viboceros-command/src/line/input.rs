@@ -7,6 +7,7 @@ pub enum Mode {
     FourPoint,
     Bisector,
     Angled,
+    Extension,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct Definition {
@@ -22,6 +23,8 @@ pub struct Input {
     angle: Option<Real>,
     distance: Option<viboceros_drafting::PointConstraintState>,
     cancelled: bool,
+    extension_line: Option<(Point3, Point3)>,
+    cursor: Option<Point3>,
 }
 impl Input {
     pub fn new(plane: Frame3) -> Self {
@@ -33,6 +36,8 @@ impl Input {
             angle: None,
             distance: None,
             cancelled: false,
+            extension_line: None,
+            cursor: None,
         }
     }
     pub fn mode(self) -> Mode {
@@ -63,8 +68,9 @@ impl Input {
     pub fn prompt(self) -> &'static str {
         match (self.mode, self.count()) {
             (Mode::Default, 0) if self.both => "middle point of line",
+            (Mode::Extension, 0) => "pick a curve or surface edge near its end",
             (Mode::Default | Mode::Vertical, 0) => {
-                "start point; BothSides, Vertical, FourPoint, Bisector or Angled"
+                "start point; BothSides, Vertical, FourPoint, Bisector, Angled or Extension"
             }
             (Mode::FourPoint, 0) => "start of reference line",
             (Mode::FourPoint, 1) => "end of reference line",
@@ -106,6 +112,8 @@ impl Input {
             Mode::Bisector
         } else if word.eq_ignore_ascii_case("Angled") {
             Mode::Angled
+        } else if word.eq_ignore_ascii_case("Extension") {
+            Mode::Extension
         } else {
             return Ok(false);
         };
@@ -114,6 +122,48 @@ impl Input {
         self.distance = None;
         Ok(true)
     }
+    pub fn wants_curve(self) -> bool {
+        self.mode == Mode::Extension && self.points[0].is_none()
+    }
+    pub fn extension(&mut self, curve: CurveRef<'_>, pick: Point3) -> Result<(), CommandError> {
+        if !self.wants_curve() {
+            return Err(CommandError::Usage(
+                "Line Extension already has a reference",
+            ));
+        }
+        // Compare distance along the source. Unequal polyline segments and
+        // folded curves distinguish this from parameter or endpoint distance.
+        let station = curve.closest_parameter(pick, Tolerance::NUMERICAL_VALIDATION)?;
+        let lengths = viboceros_geometry::ArcLengthSampler::try_new(curve, Tolerance::DEFAULT)?;
+        let at_end = lengths.distance_at_parameter(station)? > 0.5 * lengths.total_length();
+        let parameter = if at_end {
+            *curve.domain().end()
+        } else {
+            *curve.domain().start()
+        };
+        let sample = curve.evaluate_with_tangent(parameter)?;
+        let direction = if at_end {
+            sample.tangent()
+        } else {
+            sample.tangent().opposite()
+        };
+        let start = sample.point();
+        let end = start.translated(direction.as_vector())?;
+        self.points[0] = Some(start);
+        self.extension_line = Some((start, end));
+        self.cursor = Some(pick);
+        Ok(())
+    }
+    pub fn observe_cursor(&mut self, point: Point3) {
+        self.cursor = Some(point);
+    }
+    /// A constrained Extension length accepts the remembered cursor on Enter.
+    /// Other Line getters keep their existing cancellation policy here.
+    pub fn enter(self) -> Option<Definition> {
+        (self.mode == Mode::Extension && self.distance.is_some())
+            .then(|| self.preview(self.cursor?))
+            .flatten()
+    }
     /// The actual finite constraint line is significant at remote coordinates.
     /// Do not replace its endpoints with a normalized direction before projecting.
     fn reference(self) -> Result<Option<(Point3, Point3)>, CommandError> {
@@ -121,6 +171,7 @@ impl Input {
             return Ok(None);
         };
         Ok(match self.mode {
+            Mode::Extension => self.extension_line,
             Mode::Vertical => Some((origin, origin.translated(self.plane.z_axis().as_vector())?)),
             Mode::FourPoint if self.count() == 2 => Some((origin, self.points[1].unwrap())),
             Mode::FourPoint if self.count() == 3 => {
@@ -165,7 +216,7 @@ impl Input {
     pub fn endpoint(self) -> bool {
         self.count()
             == match self.mode {
-                Mode::Default | Mode::Vertical => 1,
+                Mode::Default | Mode::Vertical | Mode::Extension => 1,
                 Mode::Angled => 2,
                 _ => 3,
             }
@@ -195,13 +246,16 @@ impl Input {
     }
     pub fn point(&mut self, point: Point3) -> Result<Option<Definition>, CommandError> {
         let count = self.count();
+        if self.wants_curve() {
+            return Err(CommandError::Usage("Pick a Line Extension reference first"));
+        }
         if self.requests_angle() {
             return Err(CommandError::Usage(
                 "Line Angled: enter an angle before the endpoint",
             ));
         }
         let required = match self.mode {
-            Mode::Default | Mode::Vertical => 1,
+            Mode::Default | Mode::Vertical | Mode::Extension => 1,
             Mode::Angled => 2,
             _ => 3,
         };

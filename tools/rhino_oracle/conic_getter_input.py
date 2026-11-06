@@ -13,7 +13,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
         vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned surface curve array input',False);vp.ZoomExtents();view.Redraw()
     if command=='OrientCrvToEdge':
         vp.SetProjection(R.Display.DefinedViewportProjection.Perspective,'Owned curve edge input',False);vp.ZoomExtents();view.Redraw()
-    if command in('Circle','Arc','Splop','ArrayCrvOnSrf') and op.get('op')in('subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
+    if command in('Circle','Arc','Splop','ArrayCrvOnSrf') and op.get('op')in('line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
         origin,x,y=op['construction_plane']
         plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
         if not plan_view:raise ValueError('could not align owned tangent input viewport')
@@ -48,7 +48,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
-    if command=='Line':prefixes=('Middle','Start','End','Angle','Length','First','Second','Direction','Point','Pivot','Bisector')
+    if command=='Line':prefixes=('Select','Middle','Start','End','Angle','Length','First','Second','Direction','Point','Pivot','Bisector')
     if command=='Lines':prefixes=('Start','End','Next','Point')
     if command=='ReadCommandFile':prefixes=('Start of line','End of line','Start of polyline','Next point','Location of point object')
     if command in('SrfPtGrid','SrfControlPtGrid'):prefixes=('Number','Point','First point','Next point','Degree','Row degree','Column degree','KeepPoints','Closed')
@@ -99,7 +99,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     for i,a in enumerate(actions):
         if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name

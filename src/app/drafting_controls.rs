@@ -24,6 +24,7 @@ impl VibocerosApp {
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
+                && !self.picking_line_curve()
                 && !self.picking_arc_extension_curve()
                 && self
                     .tangent_session
