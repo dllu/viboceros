@@ -59,6 +59,20 @@ impl VibocerosApp {
         if self.pick_flow_surface(Some(object), Some(face)) {
             return;
         }
+        if self.picking_line_normal() {
+            if let Some(point) = point {
+                self.pick_line_normal_at(
+                    object,
+                    if self.line_input.unwrap().ignore_trims() {
+                        viboceros_command::line::normal::Component::Face(face)
+                    } else {
+                        viboceros_command::line::normal::Component::Object
+                    },
+                    point,
+                );
+            }
+            return;
+        }
         if self.selecting_move_normal_reference() {
             self.accept_move_normal_reference(object, Some(face));
             return;

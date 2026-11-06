@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_normal",
+      "id": "line_point",
+      "case": "line_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "polyline_point",
+      "case": "polyline_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "polyline_vertex",
+      "case": "polyline_vertex"
+    },
+    {
+      "op": "line_normal",
+      "id": "line_length",
+      "case": "line_length"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_numeric",
+      "case": "circle_numeric"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_negative",
+      "case": "circle_negative"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_numeric_hover",
+      "case": "circle_numeric_hover"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_numeric_inward",
+      "case": "circle_numeric_inward"
+    },
+    {
+      "op": "line_normal",
+      "id": "plane_numeric",
+      "case": "plane_numeric"
+    },
+    {
+      "op": "line_normal",
+      "id": "plane_numeric_hover",
+      "case": "plane_numeric_hover"
+    },
+    {
+      "op": "line_normal",
+      "id": "quadratic_numeric",
+      "case": "quadratic_numeric"
+    },
+    {
+      "op": "line_normal",
+      "id": "surface_reversed",
+      "case": "surface_reversed"
+    },
+    {
+      "op": "line_normal",
+      "id": "trimmed_no",
+      "case": "trimmed_no"
+    },
+    {
+      "op": "line_normal",
+      "id": "trimmed_yes",
+      "case": "trimmed_yes"
+    },
+    {
+      "op": "line_normal",
+      "id": "trimmed_flipped",
+      "case": "trimmed_flipped"
+    },
+    {
+      "op": "line_normal",
+      "id": "ignore_reset",
+      "case": "ignore_reset"
+    },
+    {
+      "op": "line_normal",
+      "id": "normal_redo_cancel",
+      "case": "normal_redo_cancel"
+    },
+    {
+      "op": "line_normal",
+      "id": "normal_redo_empty",
+      "case": "normal_redo_empty"
+    }
+  ]
+}

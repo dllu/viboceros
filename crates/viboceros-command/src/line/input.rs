@@ -8,6 +8,7 @@ pub enum Mode {
     Bisector,
     Angled,
     Extension,
+    Normal,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct Definition {
@@ -19,11 +20,13 @@ pub struct Input {
     plane: Frame3,
     mode: Mode,
     both: bool,
+    ignore_trims: bool,
     points: [Option<Point3>; 3],
     angle: Option<Real>,
     distance: Option<viboceros_drafting::PointConstraintState>,
     cancelled: bool,
     extension_line: Option<(Point3, Point3)>,
+    normal_plane: Option<UnitVector3>,
     cursor: Option<Point3>,
 }
 impl Input {
@@ -32,11 +35,13 @@ impl Input {
             plane,
             mode: Mode::Default,
             both: false,
+            ignore_trims: false,
             points: [None; 3],
             angle: None,
             distance: None,
             cancelled: false,
             extension_line: None,
+            normal_plane: None,
             cursor: None,
         }
     }
@@ -45,6 +50,39 @@ impl Input {
     }
     pub fn both_sides(self) -> bool {
         self.both
+    }
+    pub fn ignore_trims(self) -> bool {
+        self.ignore_trims
+    }
+    pub fn wants_normal_origin(self) -> bool {
+        self.mode == Mode::Normal && self.points[0].is_none()
+    }
+    pub fn normal(&mut self, location: super::normal::Location) -> Result<(), CommandError> {
+        if !self.wants_normal_origin() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let (axis, plane) = match location.constraint {
+            super::normal::Constraint::Axis(normal) => (
+                Some((
+                    location.point,
+                    location.point.translated(normal.as_vector())?,
+                )),
+                None,
+            ),
+            super::normal::Constraint::Plane(tangent) => (None, Some(tangent)),
+        };
+        self.points[0] = Some(location.point);
+        self.extension_line = axis;
+        self.normal_plane = plane;
+        Ok(())
+    }
+    pub fn mouse_plane(self) -> Option<Frame3> {
+        Frame3::try_from_normal(
+            self.anchor()?,
+            self.normal_plane?.as_vector(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .ok()
     }
     pub fn plane(self) -> Frame3 {
         self.plane
@@ -68,9 +106,12 @@ impl Input {
     pub fn prompt(self) -> &'static str {
         match (self.mode, self.count()) {
             (Mode::Default, 0) if self.both => "middle point of line",
+            (Mode::Normal, 0) => {
+                "select a normal reference, then a start point on it; IgnoreTrims=Yes|No"
+            }
             (Mode::Extension, 0) => "pick a curve or surface edge near its end",
             (Mode::Default | Mode::Vertical, 0) => {
-                "start point; BothSides, Vertical, FourPoint, Bisector, Angled or Extension"
+                "start point; BothSides, Vertical, FourPoint, Bisector, Angled, Extension or Normal"
             }
             (Mode::FourPoint, 0) => "start of reference line",
             (Mode::FourPoint, 1) => "end of reference line",
@@ -92,7 +133,16 @@ impl Input {
                     .ok_or(CommandError::Usage(USAGE))?;
                 return Ok(true);
             }
+            if key.eq_ignore_ascii_case("IgnoreTrims") && self.wants_normal_origin() {
+                self.ignore_trims = parse_yes_no(value.trim_start_matches('_'))
+                    .ok_or(CommandError::Usage(USAGE))?;
+                return Ok(true);
+            }
             return Ok(false);
+        }
+        if word.eq_ignore_ascii_case("IgnoreTrims") && self.wants_normal_origin() {
+            self.ignore_trims = !self.ignore_trims;
+            return Ok(true);
         }
         if word.eq_ignore_ascii_case("BothSides") {
             if self.both {
@@ -112,6 +162,8 @@ impl Input {
             Mode::Bisector
         } else if word.eq_ignore_ascii_case("Angled") {
             Mode::Angled
+        } else if word.eq_ignore_ascii_case("Normal") {
+            Mode::Normal
         } else if word.eq_ignore_ascii_case("Extension") {
             Mode::Extension
         } else {
@@ -171,7 +223,7 @@ impl Input {
             return Ok(None);
         };
         Ok(match self.mode {
-            Mode::Extension => self.extension_line,
+            Mode::Extension | Mode::Normal => self.extension_line,
             Mode::Vertical => Some((origin, origin.translated(self.plane.z_axis().as_vector())?)),
             Mode::FourPoint if self.count() == 2 => Some((origin, self.points[1].unwrap())),
             Mode::FourPoint if self.count() == 3 => {
@@ -205,6 +257,14 @@ impl Input {
         self.cancelled
     }
     pub fn resolve_point(self, point: Point3) -> Result<Point3, CommandError> {
+        if let Some(tangent) = self.normal_plane {
+            let distance = self
+                .anchor()
+                .unwrap()
+                .vector_to(point)?
+                .dot(tangent.as_vector())?;
+            return Ok(point.translated(tangent.as_vector().scaled(-distance)?)?);
+        }
         if let Some((a, b)) = self.reference()? {
             return Ok(crate::native_line_projection::closest_point(a, b, point)?.0);
         }
@@ -216,7 +276,7 @@ impl Input {
     pub fn endpoint(self) -> bool {
         self.count()
             == match self.mode {
-                Mode::Default | Mode::Vertical | Mode::Extension => 1,
+                Mode::Default | Mode::Vertical | Mode::Extension | Mode::Normal => 1,
                 Mode::Angled => 2,
                 _ => 3,
             }
@@ -246,6 +306,11 @@ impl Input {
     }
     pub fn point(&mut self, point: Point3) -> Result<Option<Definition>, CommandError> {
         let count = self.count();
+        if self.wants_normal_origin() {
+            return Err(CommandError::Usage(
+                "Choose a Line Normal reference and start point first",
+            ));
+        }
         if self.wants_curve() {
             return Err(CommandError::Usage("Pick a Line Extension reference first"));
         }
@@ -255,7 +320,7 @@ impl Input {
             ));
         }
         let required = match self.mode {
-            Mode::Default | Mode::Vertical | Mode::Extension => 1,
+            Mode::Default | Mode::Vertical | Mode::Extension | Mode::Normal => 1,
             Mode::Angled => 2,
             _ => 3,
         };
@@ -307,6 +372,18 @@ impl Input {
         }
         if !self.endpoint() {
             return Err(CommandError::Usage("Line length needs an endpoint prompt"));
+        }
+        if self.mode == Mode::Normal
+            && let Some(direction) = self.direction()?
+        {
+            if value == 0. {
+                return Err(CommandError::Usage("Line needs a nonzero length"));
+            }
+            let point = self
+                .anchor()
+                .unwrap()
+                .translated(direction.as_vector().scaled(value)?)?;
+            return self.complete(point).map(Some);
         }
         let mut distance =
             viboceros_drafting::PointConstraintState::new(self.anchor().unwrap(), self.plane);

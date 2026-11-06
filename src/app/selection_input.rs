@@ -113,6 +113,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_line_normal_object(click.object_id) {
+            return;
+        }
         if self.pick_line_reference_curve(click.object_id, None) {
             return;
         }

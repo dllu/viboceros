@@ -99,7 +99,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     for i,a in enumerate(actions):
         if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
@@ -163,21 +163,22 @@ def drive(op,host,guides,command="Conic",start_script=None):
                 if 'edge'not in a or op.get('op')in('arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge'):
                     source=doc.Objects.FindId(guides[a['curve']]).Geometry
                     if 'edge'in a:source=source.Edges[a['edge']]
-                    ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
-                    ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
-                    if ok:
-                        ok,parameter=source.ClosestPoint(ray.PointAt(t))
+                    if isinstance(source,R.Geometry.Curve):
+                        ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                        ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
                         if ok:
-                            accepted=source.PointAt(parameter)
-                            clicks[-1]['projected_point']=[accepted.X,accepted.Y,accepted.Z]
-                            clicks[-1]['projected_parameter']=float(parameter)
+                            ok,parameter=source.ClosestPoint(ray.PointAt(t))
+                            if ok:
+                                accepted=source.PointAt(parameter)
+                                clicks[-1]['projected_point']=[accepted.X,accepted.Y,accepted.Z]
+                                clicks[-1]['projected_parameter']=float(parameter)
         elif isinstance(a,dict)and('hover'in a or'edge'in a):
             hover='hover'in a;aim=a['hover']if hover else a['pick'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker=('@subcurve-direction:'if hover else'@conic-edge:')+name
             request=pointer_request(i,marker,screen)
             if hover:
                 ready=os.path.join(root,'subcurve-direction-ready-'+name+'.json')
-                hover_gate=base if op.get('op')=='arc_command'else length
+                hover_gate=base if op.get('op')in('arc_command','line_normal')else length
                 body=E.IfThen(hover_gate,request)
                 mouse_steps.append((i,marker,pixel,ready,advance,hover_gate))
                 hovers.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]))

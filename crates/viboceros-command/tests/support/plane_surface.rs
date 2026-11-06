@@ -77,6 +77,16 @@ pub fn setup(v: &Value) -> Document {
 }
 /// Assemble the prescribed existing scene before choosing its history policy.
 pub fn scene(v: &Value) -> Document {
+    scene_with_geometry(v, |row| {
+        if row["source"] == true {
+            Geometry::Point(point(&row["point"]))
+        } else {
+            Geometry::NurbsCurve(curve(&row["curve"]))
+        }
+    })
+}
+/// Keep scene metadata independent from each family's prescribed geometry.
+pub fn scene_with_geometry(v: &Value, geometry: impl Fn(&Value) -> Geometry) -> Document {
     let mut doc = Document::new(Tolerance::try_new(1e-6, 1e-9, 1e-6).unwrap());
     let input = doc.add_layer("Plane sources", ColorRgb::BLACK).unwrap();
     let output = doc.add_layer("Plane output", ColorRgb::BLACK).unwrap();
@@ -93,11 +103,7 @@ pub fn scene(v: &Value) -> Document {
                 blue: c[2].as_u64().unwrap() as u8,
             });
         }
-        let geometry = if row["source"] == true {
-            Geometry::Point(point(&row["point"]))
-        } else {
-            Geometry::NurbsCurve(curve(&row["curve"]))
-        };
+        let geometry = geometry(row);
         let id = doc.add_geometry_with_attributes(geometry, attrs).unwrap();
         ids.push(id);
         if row["selected"] != 0 {

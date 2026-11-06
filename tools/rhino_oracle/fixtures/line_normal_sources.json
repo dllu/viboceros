@@ -1,0 +1,2778 @@
+{
+  "circle_point": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        7,
+        6,
+        2
+      ]
+    ]
+  },
+  "circle_offbase": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        4,
+        4,
+        3
+      ],
+      [
+        8,
+        7,
+        5
+      ]
+    ]
+  },
+  "circle_both": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        7,
+        6,
+        2
+      ]
+    ]
+  },
+  "circle_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      5,
+      [
+        8,
+        9,
+        3
+      ]
+    ]
+  },
+  "arc_point": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        7,
+        6,
+        2
+      ]
+    ]
+  },
+  "quadratic_point": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        4.5,
+        3,
+        0
+      ],
+      [
+        9,
+        8,
+        4
+      ]
+    ]
+  },
+  "spatial_curve": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        4.5,
+        3,
+        2
+      ],
+      [
+        9,
+        8,
+        6
+      ]
+    ]
+  },
+  "plane_point": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        0
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "plane_offbase": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        2
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "curved_surface": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          1
+        ]
+      },
+      [
+        5,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        6
+      ]
+    ]
+  },
+  "plane_length": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        0
+      ],
+      5,
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "line_cancel": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "polyline_cancel": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      [
+        3,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_reference": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "cancel_base": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_empty": {
+    "actions": [
+      "Normal",
+      "Cancel"
+    ]
+  },
+  "line_point": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "polyline_point": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "polyline_vertex": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "line_length": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      5
+    ]
+  },
+  "circle_numeric": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      5
+    ]
+  },
+  "circle_negative": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      -5
+    ]
+  },
+  "circle_numeric_hover": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      {
+        "hover": [
+          8,
+          9,
+          0
+        ]
+      },
+      5
+    ]
+  },
+  "circle_numeric_inward": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      {
+        "hover": [
+          0,
+          0,
+          0
+        ]
+      },
+      5
+    ]
+  },
+  "plane_numeric": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        0
+      ],
+      5
+    ]
+  },
+  "plane_numeric_hover": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        0
+      ],
+      {
+        "hover": [
+          8,
+          9,
+          0
+        ]
+      },
+      5
+    ]
+  },
+  "quadratic_numeric": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        4.5,
+        3,
+        0
+      ],
+      5
+    ]
+  },
+  "surface_reversed": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "brep",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": true
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        2
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "trimmed_no": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": false
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=No",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ]
+  },
+  "trimmed_yes": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": false
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=Yes",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ]
+  },
+  "trimmed_flipped": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": true
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=No",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ]
+  },
+  "ignore_reset": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=No",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        2
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "normal_redo_cancel": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "normal_redo_empty": {
+    "actions": [
+      "Normal",
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "trim_shaded_no": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": false
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=No",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ],
+    "shaded": true
+  },
+  "trim_shaded_yes": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": false
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=Yes",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ],
+    "shaded": true
+  },
+  "trim_shaded_flipped": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "trimmed",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": true
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      "IgnoreTrims=No",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        8,
+        3,
+        2
+      ],
+      [
+        8,
+        3,
+        7
+      ]
+    ],
+    "shaded": true
+  },
+  "reversed_shaded_point": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "brep",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": true
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        2
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ],
+    "shaded": true
+  },
+  "reversed_shaded_numeric": {
+    "curves": [
+      {
+        "type": "normal_surface",
+        "target": {
+          "kind": "brep",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ],
+          "aim": [
+            2,
+            3,
+            0
+          ],
+          "view": "Top",
+          "flip": true
+        }
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          2,
+          3,
+          0
+        ]
+      },
+      [
+        4,
+        3,
+        2
+      ],
+      5
+    ],
+    "shaded": true
+  },
+  "line_numeric_point": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      5,
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "line_increment_point": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      -2,
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "line_normal_both": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "spatial_linear_normal": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          5,
+          3
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          2.5,
+          1.5
+        ]
+      },
+      [
+        5,
+        2.5,
+        1.5
+      ],
+      [
+        7,
+        4,
+        8
+      ]
+    ]
+  },
+  "surface_normal_both": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          1
+        ]
+      },
+      [
+        5,
+        5,
+        1
+      ],
+      [
+        8,
+        7,
+        6
+      ]
+    ]
+  },
+  "surface_numeric_both": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          1
+        ]
+      },
+      [
+        5,
+        5,
+        1
+      ],
+      5
+    ]
+  },
+  "spatial_curve_numeric": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        4.5,
+        3,
+        2
+      ],
+      5
+    ]
+  },
+  "curved_offbase": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          1
+        ]
+      },
+      [
+        6,
+        3,
+        4
+      ],
+      [
+        8,
+        7,
+        6
+      ]
+    ]
+  },
+  "surface_domain_clamped": {
+    "curves": [
+      {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          0
+        ]
+      },
+      [
+        12,
+        3,
+        2
+      ],
+      [
+        15,
+        7,
+        8
+      ]
+    ]
+  },
+  "normal_cplane_independent": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        7,
+        6,
+        2
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "box_side_after_top": {
+    "curves": [
+      {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          10,
+          10
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          10
+        ]
+      },
+      [
+        0,
+        3,
+        4
+      ],
+      [
+        -6,
+        5,
+        7
+      ]
+    ],
+    "shaded": true
+  },
+  "box_top_normal": {
+    "curves": [
+      {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          10,
+          10
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          10
+        ]
+      },
+      [
+        4,
+        3,
+        10
+      ],
+      [
+        7,
+        8,
+        14
+      ]
+    ],
+    "shaded": true
+  },
+  "box_bottom_numeric": {
+    "curves": [
+      {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          10,
+          10
+        ]
+      }
+    ],
+    "actions": [
+      "Normal",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          10
+        ]
+      },
+      [
+        4,
+        3,
+        0
+      ],
+      5
+    ],
+    "shaded": true
+  },
+  "box_ignore_face": {
+    "curves": [
+      {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          10,
+          10
+        ]
+      }
+    ],
+    "shaded": true,
+    "actions": [
+      "Normal",
+      "IgnoreTrims=Yes",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          5,
+          10
+        ]
+      },
+      [
+        0,
+        3,
+        4
+      ],
+      5
+    ]
+  }
+}

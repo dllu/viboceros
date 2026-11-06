@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_normal",
+      "id": "trim_shaded_no",
+      "case": "trim_shaded_no"
+    },
+    {
+      "op": "line_normal",
+      "id": "trim_shaded_yes",
+      "case": "trim_shaded_yes"
+    },
+    {
+      "op": "line_normal",
+      "id": "trim_shaded_flipped",
+      "case": "trim_shaded_flipped"
+    },
+    {
+      "op": "line_normal",
+      "id": "reversed_shaded_point",
+      "case": "reversed_shaded_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "reversed_shaded_numeric",
+      "case": "reversed_shaded_numeric"
+    },
+    {
+      "op": "line_normal",
+      "id": "line_numeric_point",
+      "case": "line_numeric_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "line_increment_point",
+      "case": "line_increment_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "line_normal_both",
+      "case": "line_normal_both"
+    },
+    {
+      "op": "line_normal",
+      "id": "spatial_linear_normal",
+      "case": "spatial_linear_normal"
+    },
+    {
+      "op": "line_normal",
+      "id": "surface_normal_both",
+      "case": "surface_normal_both"
+    },
+    {
+      "op": "line_normal",
+      "id": "surface_numeric_both",
+      "case": "surface_numeric_both"
+    },
+    {
+      "op": "line_normal",
+      "id": "spatial_curve_numeric",
+      "case": "spatial_curve_numeric"
+    },
+    {
+      "op": "line_normal",
+      "id": "curved_offbase",
+      "case": "curved_offbase"
+    },
+    {
+      "op": "line_normal",
+      "id": "surface_domain_clamped",
+      "case": "surface_domain_clamped"
+    },
+    {
+      "op": "line_normal",
+      "id": "normal_cplane_independent",
+      "case": "normal_cplane_independent"
+    }
+  ]
+}

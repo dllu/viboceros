@@ -33,18 +33,26 @@ impl VibocerosApp {
             self.document.clear_selection();
             self.line_reference = Some(Default::default());
         }
+        if input.wants_normal_origin() && self.line_normal.is_none() {
+            self.document.clear_selection();
+            self.line_normal = Some(Default::default());
+        }
         self.active_command = Some(InteractiveCommand::Line {
             start: input.anchor(),
         });
-        self.push_log(format!("Line: {}; Esc cancels", input.prompt()));
+        self.push_log(format!(
+            "Line: {}; Esc cancels",
+            self.line_normal_prompt().unwrap_or(input.prompt())
+        ));
     }
     pub(super) fn try_continue_line(&mut self, text: &str) -> bool {
         if self.line_input.is_none() || self.plane_prompt.is_some() || self.object_prompt.is_some()
         {
             return false;
         }
+        self.validate_line_normal();
         self.validate_line_reference();
-        if self.try_continue_line_reference(text) {
+        if self.try_continue_line_normal(text) || self.try_continue_line_reference(text) {
             return true;
         }
         if text.is_empty() {
@@ -75,7 +83,10 @@ impl VibocerosApp {
         }
         // Ordinary Line retains the shared drafting distance/angle shortcuts.
         // Construction modes project first and apply their own distance lock.
-        let number = if input.requests_angle() || input.direction().ok().flatten().is_some() {
+        let number = if input.requests_angle()
+            || input.mode() == viboceros_command::line::Mode::Normal && input.endpoint()
+            || input.direction().ok().flatten().is_some()
+        {
             text.parse::<f64>().ok().map(Ok).or_else(|| {
                 let scalar = viboceros_drafting::PointInput::parse_length_with_units(
                     text,
@@ -112,7 +123,12 @@ impl VibocerosApp {
             }
             let result = input.number(value);
             match result {
-                Ok(_) => self.line_prompt(),
+                Ok(Some(definition)) => {
+                    if self.finish_line_definition(definition) {
+                        self.line_accepted_point = None;
+                    }
+                }
+                Ok(None) => self.line_prompt(),
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
             self.command_input.clear();
@@ -121,7 +137,11 @@ impl VibocerosApp {
         false
     }
     pub(super) fn accept_line_point(&mut self, point: Point3) -> bool {
+        self.validate_line_normal();
         self.validate_line_reference();
+        if let Some(accepted) = self.accept_line_normal_base(point) {
+            return accepted;
+        }
         if let Some((id, edge)) = self.line_reference.as_mut().and_then(|s| s.binding.take()) {
             return self.pick_line_reference_at(id, edge, point);
         }
@@ -162,6 +182,7 @@ impl VibocerosApp {
     fn finish_line_definition(&mut self, definition: viboceros_command::line::Definition) -> bool {
         let input = self.line_input;
         let reference = self.line_reference.clone();
+        let normal = self.line_normal.clone();
         let command = format!(
             "Line {} {}",
             format_model_point(definition.line.start()),
@@ -170,6 +191,7 @@ impl VibocerosApp {
         if !self.try_execute_command(&command) {
             self.line_input = input;
             self.line_reference = reference;
+            self.line_normal = normal;
             self.line_prompt();
             return false;
         }

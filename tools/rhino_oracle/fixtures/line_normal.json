@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_normal",
+      "id": "circle_point",
+      "case": "circle_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_offbase",
+      "case": "circle_offbase"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_both",
+      "case": "circle_both"
+    },
+    {
+      "op": "line_normal",
+      "id": "circle_length",
+      "case": "circle_length"
+    },
+    {
+      "op": "line_normal",
+      "id": "arc_point",
+      "case": "arc_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "quadratic_point",
+      "case": "quadratic_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "spatial_curve",
+      "case": "spatial_curve"
+    },
+    {
+      "op": "line_normal",
+      "id": "plane_point",
+      "case": "plane_point"
+    },
+    {
+      "op": "line_normal",
+      "id": "plane_offbase",
+      "case": "plane_offbase"
+    },
+    {
+      "op": "line_normal",
+      "id": "curved_surface",
+      "case": "curved_surface"
+    },
+    {
+      "op": "line_normal",
+      "id": "plane_length",
+      "case": "plane_length"
+    },
+    {
+      "op": "line_normal",
+      "id": "line_cancel",
+      "case": "line_cancel"
+    },
+    {
+      "op": "line_normal",
+      "id": "polyline_cancel",
+      "case": "polyline_cancel"
+    },
+    {
+      "op": "line_normal",
+      "id": "cancel_reference",
+      "case": "cancel_reference"
+    },
+    {
+      "op": "line_normal",
+      "id": "cancel_base",
+      "case": "cancel_base"
+    },
+    {
+      "op": "line_normal",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    }
+  ]
+}

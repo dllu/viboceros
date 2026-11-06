@@ -11,6 +11,8 @@ impl VibocerosApp {
         self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
+        self.release_line_normal();
+        self.line_normal = None;
         self.release_line_reference();
         self.line_reference = None;
         self.line_input = None;

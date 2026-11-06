@@ -339,6 +339,12 @@ impl Viewport {
         );
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
+            .or_else(|| {
+                input
+                    .line_input?
+                    .mouse_plane()
+                    .map(|p| (p.origin(), p.z_axis()))
+            })
             .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| input.taper_preview.and_then(|p| p.mouse_plane()))
         else {
@@ -350,6 +356,11 @@ impl Viewport {
         let (origin, direction) = self.drafting_view_line_relative_to(anchor, pointer, rect)?;
         let denominator = direction.dot(normal.as_vector()).ok()?;
         if denominator.abs() <= 1e-12 * direction.length().ok()? {
+            if let Some(getter) = input.line_input.filter(|g| g.mouse_plane().is_some()) {
+                let mut cursor = cursor?;
+                cursor.point = getter.resolve_point(cursor.point).ok()?;
+                return Some(cursor);
+            }
             return input.taper_preview.and(cursor);
         }
         let distance = -origin.dot(normal.as_vector()).ok()? / denominator;

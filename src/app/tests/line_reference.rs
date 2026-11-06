@@ -3,7 +3,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/line_reference.rs"]
 #[allow(dead_code)]
-mod inputs;
+pub(super) mod inputs;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

@@ -37,6 +37,7 @@ impl eframe::App for VibocerosApp {
         self.validate_rectangle_curve();
         self.validate_ellipse_curve();
         self.validate_arc_extension_source();
+        self.validate_line_normal();
         self.validate_line_reference();
         self.validate_tangent_sources();
         self.validate_circle_around_curve();
@@ -307,6 +308,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_surface_array()
             || self.picking_flow_surface()
             || self.picking_surface_flow()
+            || self.picking_line_normal()
             || self.selecting_move_normal_reference()
             || self.picking_uv_reference()
             || self.picking_mirror_object()
@@ -406,6 +408,10 @@ impl eframe::App for VibocerosApp {
             .and_then(|normal| normal.curve.as_ref());
         let edge_curve = split_selection
             .map(viboceros_command::SplitEdgeSelection::curve)
+            .or_else(|| {
+                self.line_input.filter(|i| i.wants_normal_origin())?;
+                self.line_normal.as_ref()?.source.as_ref()?.curve()
+            })
             .or(normal_curve)
             .or_else(|| {
                 self.refinement_prompt
@@ -698,6 +704,7 @@ impl eframe::App for VibocerosApp {
                     .or_else(|| self.short_path_session.as_ref()?.cursor_surface())
                     .or_else(|| self.surface_offset_session.as_ref()?.cursor_surface())
                     .or_else(|| self.select_uv_prompt.as_ref().and_then(|p| p.surface()))
+                    .or_else(|| self.line_normal_surface())
                     .or_else(|| self.move_normal_surface())
                     .or_else(|| {
                         self.refinement_prompt
@@ -706,7 +713,8 @@ impl eframe::App for VibocerosApp {
                     })
             })
             .flatten();
-        let selecting_normal = model_input_active && self.selecting_move_normal_reference();
+        let selecting_normal = model_input_active
+            && (self.picking_line_normal() || self.selecting_move_normal_reference());
         let curve_or_edge_pick = edge_pick
             && (self.picking_subcurve_edge()
                 || (self.picking_orient_curve()

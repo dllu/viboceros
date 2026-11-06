@@ -1,12 +1,13 @@
 //! Shared edit-free Line construction for typed commands and viewport getters.
 use super::*;
 mod input;
+pub mod normal;
 use crate::native_length;
 #[path = "../../../third_party/opennurbs_rust/line_rotation.rs"]
 mod native_rotation;
 pub use input::{Definition, Input, Mode};
 pub const USAGE: &str =
-    "Line [BothSides] [Vertical|FourPoint|Bisector|Angled|Extension] points [angle|length]";
+    "Line [BothSides] [Vertical|FourPoint|Bisector|Angled|Extension|Normal] points [angle|length]";
 
 /// Admission is independent of document modelling tolerance. The getter also
 /// rejects coincident points before constructing a document line.
@@ -42,6 +43,7 @@ impl Command for LineCommand {
         let mut input = Input::new(context.construction_plane);
         let mut i = 0;
         let mut result = None;
+        let mut normal_reference = None;
         while i < args.len() {
             if result.is_some() {
                 return Err(CommandError::Usage(USAGE));
@@ -56,6 +58,27 @@ impl Command for LineCommand {
             {
                 result = Some(input.enter().ok_or(CommandError::Usage(USAGE))?);
                 i += 1;
+                continue;
+            }
+            if input.wants_normal_origin() {
+                if let Some(reference) = &normal_reference {
+                    let reference: &normal::Reference = reference;
+                    let (point, n) = parse_point(&args[i..])?;
+                    input.normal(reference.location(point, input.ignore_trims())?)?;
+                    i += n;
+                } else {
+                    let (id, component) = normal::parse_binding(args[i]).ok_or(CommandError::Usage("Line Normal Curve=id|Surface=id|Face=id,index|Edge=id,index selection-point start endpoint|length"))?;
+                    let (pick, n) = parse_point(&args[i + 1..])?;
+                    normal_reference = Some(normal::Reference::capture(
+                        doc,
+                        id,
+                        component,
+                        pick,
+                        input.ignore_trims(),
+                    )?);
+                    input.observe_cursor(pick);
+                    i += 1 + n;
+                }
                 continue;
             }
             if input.wants_curve() {
@@ -85,7 +108,10 @@ impl Command for LineCommand {
                 continue;
             }
             if input.requests_angle()
-                || (input.direction()?.is_some() && args.len() - i < 3 && !args[i].contains(','))
+                || ((input.direction()?.is_some()
+                    || input.mode() == Mode::Normal && input.endpoint())
+                    && args.len() - i < 3
+                    && !args[i].contains(','))
             {
                 result = input.number(parse_finite_real(args[i])?)?;
                 i += 1;
@@ -100,7 +126,7 @@ impl Command for LineCommand {
         }
         let definition = result.ok_or(CommandError::Usage(USAGE))?;
         let length = definition.line.length()?;
-        if input.mode() == Mode::Extension {
+        if matches!(input.mode(), Mode::Extension | Mode::Normal) {
             doc.clear_selection();
         }
         let id = doc.add_geometry(Geometry::Line(definition.line))?;

@@ -53,6 +53,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.array_curve_surface_session {
                 s.pointer = output.selection_pointer;
             }
+            if let Some(s) = &mut self.line_normal {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.line_reference {
                 s.pointer = output.selection_pointer;
             }
@@ -301,6 +304,8 @@ impl VibocerosApp {
                 || self.accept_array_curve_surface_parameter(parameter)
                 || self.accept_curve_array_parameter(parameter)
             {
+            } else if self.line_normal_curve().is_some() {
+                self.accept_line_normal_parameter(parameter);
             } else if self.move_normal_curve().is_some() {
                 self.accept_move_normal_curve_parameter(parameter);
             } else {
