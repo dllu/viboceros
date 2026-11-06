@@ -2,12 +2,12 @@
 use super::*;
 mod input;
 pub mod normal;
+pub mod perpendicular;
 use crate::native_length;
 #[path = "../../../third_party/opennurbs_rust/line_rotation.rs"]
 mod native_rotation;
 pub use input::{Definition, Input, Mode};
-pub const USAGE: &str =
-    "Line [BothSides] [Vertical|FourPoint|Bisector|Angled|Extension|Normal] points [angle|length]";
+pub const USAGE: &str = "Line [BothSides] [Vertical|FourPoint|Bisector|Angled|Extension|Normal|Perpendicular] points [angle|length]";
 
 /// Admission is independent of document modelling tolerance. The getter also
 /// rejects coincident points before constructing a document line.
@@ -40,6 +40,9 @@ impl Command for LineCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if perpendicular::requested(args) {
+            return perpendicular::run(doc, args, context);
+        }
         let mut input = Input::new(context.construction_plane);
         let mut i = 0;
         let mut result = None;

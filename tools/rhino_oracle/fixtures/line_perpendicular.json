@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_perpendicular",
+      "id": "line_sliding",
+      "case": "line_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "line_outside",
+      "case": "line_outside"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "circle_sliding",
+      "case": "circle_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "circle_reverse_pick",
+      "case": "circle_reverse_pick"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "arc_sliding",
+      "case": "arc_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "arc_outside",
+      "case": "arc_outside"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "quadratic_sliding",
+      "case": "quadratic_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "spatial_sliding",
+      "case": "spatial_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "from_first_late",
+      "case": "from_first_late"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "from_first_early",
+      "case": "from_first_early"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "perp_both",
+      "case": "perp_both"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "perp_length",
+      "case": "perp_length"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "perp_point",
+      "case": "perp_point"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_lines",
+      "case": "two_lines"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "cancel_picked",
+      "case": "cancel_picked"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    }
+  ]
+}

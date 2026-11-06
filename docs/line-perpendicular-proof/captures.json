@@ -1,0 +1,62 @@
+[
+  {
+    "family": "line_perpendicular",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_perpendicular"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_perpendicular.log.gz"
+  },
+  {
+    "family": "line_perpendicular_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_perpendicular_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_perpendicular_holdouts.log.gz"
+  },
+  {
+    "family": "line_perpendicular_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_perpendicular_final"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_perpendicular_final.log.gz"
+  },
+  {
+    "family": "line_perpendicular_completion",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_perpendicular_completion"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_perpendicular_completion.log.gz"
+  },
+  {
+    "family": "line_perpendicular_boundaries",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_perpendicular_boundaries"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_perpendicular_boundaries.log.gz"
+  }
+]

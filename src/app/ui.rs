@@ -37,6 +37,7 @@ impl eframe::App for VibocerosApp {
         self.validate_rectangle_curve();
         self.validate_ellipse_curve();
         self.validate_arc_extension_source();
+        self.validate_line_perpendicular();
         self.validate_line_normal();
         self.validate_line_reference();
         self.validate_tangent_sources();
@@ -383,6 +384,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
+            || self.picking_line_perpendicular()
             || self.picking_line_curve()
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
@@ -412,6 +414,7 @@ impl eframe::App for VibocerosApp {
                 self.line_input.filter(|i| i.wants_normal_origin())?;
                 self.line_normal.as_ref()?.source.as_ref()?.curve()
             })
+            .or_else(|| self.line_perpendicular.as_ref()?.input.base_curve())
             .or(normal_curve)
             .or_else(|| {
                 self.refinement_prompt
@@ -728,6 +731,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_line_perpendicular()
                 || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
@@ -1027,6 +1031,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active)
             .and_then(surface_point_grid::Session::preview);
+        let selecting_perpendicular = model_input_active && self.picking_line_perpendicular();
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1071,6 +1076,11 @@ impl eframe::App for VibocerosApp {
                             point_filter,
                             point_constraint,
                             translation_constraint,
+                            perpendicular_input: self
+                                .line_perpendicular
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map(|s| &s.input),
                             line_input: self
                                 .line_input
                                 .filter(|_| model_input_active && self.plane_prompt.is_none()),
@@ -1142,6 +1152,8 @@ impl eframe::App for VibocerosApp {
                             },
                             object_filter: if self.offset_subd_session.is_some() {
                                 Some(viboceros_command::ObjectSelectionFilter::SubD)
+                            } else if selecting_perpendicular {
+                                Some(viboceros_command::ObjectSelectionFilter::Curves)
                             } else if selecting_normal {
                                 Some(viboceros_command::ObjectSelectionFilter::Parametric)
                             } else if plane_object_pick {

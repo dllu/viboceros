@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_circle_clean",
+      "case": "oncurve_circle_clean"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_signed_length",
+      "case": "oncurve_signed_length"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_spatial_clean",
+      "case": "oncurve_spatial_clean"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "circle_signed_length",
+      "case": "circle_signed_length"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "numeric_enter_cancel",
+      "case": "numeric_enter_cancel"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_both",
+      "case": "two_both"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_intersecting",
+      "case": "two_intersecting"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "polyline_sliding",
+      "case": "polyline_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "weighted_sliding",
+      "case": "weighted_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "planar_mouse_sliding",
+      "case": "planar_mouse_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "planar_mouse_fixed",
+      "case": "planar_mouse_fixed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "mouse_spatial_sliding",
+      "case": "mouse_spatial_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "point_line_outside",
+      "case": "point_line_outside"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "perp_cplane",
+      "case": "perp_cplane"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "redo_empty_cancel",
+      "case": "redo_empty_cancel"
+    }
+  ]
+}

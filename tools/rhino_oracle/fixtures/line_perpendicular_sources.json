@@ -1,0 +1,2880 @@
+{
+  "line_sliding": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "line_outside": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        15,
+        4,
+        3
+      ]
+    ]
+  },
+  "circle_sliding": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "circle_reverse_pick": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "arc_sliding": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "arc_outside": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        -7,
+        6,
+        2
+      ]
+    ]
+  },
+  "quadratic_sliding": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        9,
+        8,
+        4
+      ]
+    ]
+  },
+  "spatial_sliding": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ]
+  },
+  "from_first_late": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint=Yes",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "from_first_early": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "FromFirstPoint=Yes",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "perp_both": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "perp_length": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      5,
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "perp_point": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "Point",
+      [
+        3,
+        2,
+        4
+      ],
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "two_lines": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          2,
+          3,
+          5
+        ],
+        "end": [
+          2,
+          9,
+          5
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          2,
+          6,
+          5
+        ]
+      }
+    ]
+  },
+  "cancel_picked": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "cancel_empty": {
+    "actions": [
+      "Perpendicular",
+      "Cancel"
+    ]
+  },
+  "oncurve_sliding": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "oncurve_fixed": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      "FromFirstPoint",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "oncurve_fixed_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      "FromFirstPoint",
+      5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "line_fixed": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "circle_from_first_no": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint=No",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "circle_numeric_lock": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "line_numeric_lock": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      3,
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "line_numeric_increment": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      -3,
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "point_end": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Point",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "point_to_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "point_to_far_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "two_skew_valid": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          2,
+          -3,
+          5
+        ],
+        "end": [
+          2,
+          9,
+          5
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          2,
+          6,
+          5
+        ]
+      }
+    ]
+  },
+  "two_parallel": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          0,
+          5,
+          0
+        ],
+        "end": [
+          10,
+          5,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          7,
+          5,
+          0
+        ]
+      }
+    ]
+  },
+  "two_circles_near": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          12,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          10,
+          0.05,
+          0
+        ]
+      }
+    ]
+  },
+  "two_circles_far": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          12,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          14,
+          0.05,
+          0
+        ]
+      }
+    ]
+  },
+  "two_nurbs_line": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          0,
+          8,
+          4
+        ],
+        "end": [
+          10,
+          8,
+          4
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          6,
+          8,
+          4
+        ]
+      }
+    ]
+  },
+  "two_spatial_line": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          0,
+          8,
+          4
+        ],
+        "end": [
+          10,
+          8,
+          4
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          6,
+          8,
+          4
+        ]
+      }
+    ]
+  },
+  "spatial_fixed": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      "FromFirstPoint",
+      [
+        9,
+        8,
+        6
+      ]
+    ]
+  },
+  "planar_spatial": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "planar": true
+  },
+  "planar_spatial_fixed": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      "FromFirstPoint",
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "planar": true
+  },
+  "cancel_two_first": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "perp_redo_cancel": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "oncurve_circle_clean": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "oncurve_signed_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      -5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "oncurve_spatial_clean": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        4.5,
+        3,
+        2
+      ],
+      [
+        9,
+        8,
+        6
+      ]
+    ]
+  },
+  "circle_signed_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      -5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "numeric_enter_cancel": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      5,
+      "Enter"
+    ]
+  },
+  "two_both": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          2,
+          -3,
+          5
+        ],
+        "end": [
+          2,
+          9,
+          5
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          2,
+          6,
+          5
+        ]
+      }
+    ]
+  },
+  "two_intersecting": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          2,
+          -3,
+          0
+        ],
+        "end": [
+          2,
+          9,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          2,
+          6,
+          0
+        ]
+      }
+    ]
+  },
+  "polyline_sliding": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "weighted_sliding": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              5,
+              0
+            ],
+            "weight": 0.2
+          },
+          {
+            "point": [
+              5,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              8,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          0.05,
+          0.25,
+          0
+        ]
+      },
+      [
+        2,
+        3,
+        5
+      ]
+    ]
+  },
+  "planar_mouse_sliding": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      {
+        "click": [
+          9,
+          8,
+          6
+        ]
+      }
+    ],
+    "planar": true
+  },
+  "planar_mouse_fixed": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      "FromFirstPoint",
+      {
+        "click": [
+          9,
+          8,
+          6
+        ]
+      }
+    ],
+    "planar": true
+  },
+  "mouse_spatial_sliding": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      {
+        "click": [
+          9,
+          8,
+          6
+        ]
+      }
+    ]
+  },
+  "point_line_outside": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "Point",
+      [
+        15,
+        4,
+        3
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          9,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "perp_cplane": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "redo_empty_cancel": {
+    "actions": [
+      "Perpendicular",
+      "Cancel"
+    ],
+    "pending_redo": true
+  },
+  "enter_then_point": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      "Enter",
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "enter_length_then_point": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      3,
+      "Enter",
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "fixed_enter_cancel": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      "Enter"
+    ]
+  },
+  "verified_planar_mouse": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      {
+        "click": [
+          9,
+          8,
+          6
+        ]
+      }
+    ],
+    "planar": true
+  },
+  "verified_planar_fixed_mouse": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      "FromFirstPoint",
+      {
+        "click": [
+          9,
+          8,
+          6
+        ]
+      }
+    ],
+    "planar": true
+  },
+  "verified_planar_typed": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "planar": true
+  },
+  "verified_planar_fixed_typed": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      "FromFirstPoint",
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "planar": true
+  },
+  "point_override_mouse": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "Point",
+      [
+        15,
+        4,
+        3
+      ],
+      "Point",
+      {
+        "click": [
+          9,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "vertical_planar": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          0
+        ],
+        "end": [
+          1,
+          2,
+          10
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          1,
+          2,
+          5
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "planar": true,
+    "view": "Front"
+  },
+  "vertical_spatial": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          0
+        ],
+        "end": [
+          1,
+          2,
+          10
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      {
+        "curve": 0,
+        "pick": [
+          1,
+          2,
+          5
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ],
+    "view": "Front"
+  },
+  "polyline_fixed_vertex": {
+    "curves": [
+      {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Perpendicular",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          3,
+          0,
+          0
+        ]
+      },
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  }
+}

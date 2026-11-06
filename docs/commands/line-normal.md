@@ -43,6 +43,6 @@ have additional Rust checks. Run `python3 -m tools.rhino_oracle.check_line_norma
 
 SubD references, native component-edge picking, arbitrary singular curves,
 independent native PointAt samples, continuous distance and comparative speed
-remain unqualified. `Tangent` and `Perpendicular` are still unsupported.
+remain unqualified. [Perpendicular](line-perpendicular.md) supports sliding or fixed curve contacts. `Tangent` is still unsupported.
 The public [Rhino Line reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/line.htm)
 describes the native command options.

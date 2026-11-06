@@ -337,11 +337,28 @@ impl Viewport {
                 translation: input.translation_constraint.or(line),
             },
         );
+        if drafting.planar
+            && let Some(getter) = input
+                .perpendicular_input
+                .filter(|g| g.mouse_plane().is_none())
+        {
+            return cursor.and_then(|mut c| {
+                c.point = getter.cursor_point(c.source_point, true)?;
+                c.source_point = c.point;
+                Some(c)
+            });
+        }
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
             .or_else(|| {
                 input
                     .line_input?
+                    .mouse_plane()
+                    .map(|p| (p.origin(), p.z_axis()))
+            })
+            .or_else(|| {
+                input
+                    .perpendicular_input?
                     .mouse_plane()
                     .map(|p| (p.origin(), p.z_axis()))
             })
@@ -359,6 +376,12 @@ impl Viewport {
             if let Some(getter) = input.line_input.filter(|g| g.mouse_plane().is_some()) {
                 let mut cursor = cursor?;
                 cursor.point = getter.resolve_point(cursor.point).ok()?;
+                return Some(cursor);
+            }
+            if let Some(getter) = input.perpendicular_input {
+                let mut cursor = cursor?;
+                cursor.point = getter.cursor_point(cursor.source_point, false)?;
+                cursor.source_point = cursor.point;
                 return Some(cursor);
             }
             return input.taper_preview.and(cursor);

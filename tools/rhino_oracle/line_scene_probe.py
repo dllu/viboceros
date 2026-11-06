@@ -43,7 +43,7 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True):
                 geometries.append(geometry)
                 attrs=R.DocObjects.ObjectAttributes();attrs.Name='guide'+str(i);attrs.LayerIndex=layers[0]
                 guides.append(doc.Objects.AddBrep(geometry,attrs)if isinstance(geometry,G.Brep)else doc.Objects.AddSurface(geometry,attrs)if isinstance(geometry,G.Surface)else doc.Objects.AddCurve(geometry,attrs));attrs.Dispose();bounds.Union(geometry.GetBoundingBox(True))
-            vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned Line reference picking',False)
+            vp.SetProjection(getattr(R.Display.DefinedViewportProjection,case.get('view','Top')),'Owned Line reference picking',False)
             bounds.Inflate(5.);vp.ZoomBoundingBox(bounds)
             if case.get('shaded'):vp.DisplayMode=R.Display.DisplayModeDescription.FindByName('Shaded')
             vp.SetConstructionPlane(G.Plane(G.Point3d(*frame[0]),G.Vector3d(*frame[1]),G.Vector3d(*frame[2])));doc.Views.Redraw()
@@ -58,7 +58,7 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True):
                 path=os.path.join(os.path.dirname(host['__file__']),'owned Lines macro.txt')
                 with open(path,'wb') as stream:stream.write(case['macro'].encode('utf-8'))
                 return R.RhinoApp.RunScript('_-ReadCommandFile "'+path.replace('/','\\')+'"',True)
-            result,trace=drive(dict(op=op['op'],id=op['id'],actions=case['actions']),host,guides,command);traces.append(trace);return result
+            result,trace=drive(dict(op=op['op'],id=op['id'],actions=case['actions'],planar=case.get('planar',False)),host,guides,command);traces.append(trace);return result
         success,created,events=observe_command(R.Commands.Command,'ReadCommandFile' if case.get('macro') else command,invoke,snapshot,lambda:[],True)
         after=snapshot();history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         if R.Commands.Command.InCommand():raise ValueError('Lines did not return idle')

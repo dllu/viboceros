@@ -11,7 +11,8 @@ def environment(operation, host, capture_radius=12):
     aid, track = settings.ModelAidSettings, settings.SmartTrackSettings
     original_aid, original_track = aid.GetCurrentState(), track.GetCurrentState()
     try:
-        aid.GridSnap = aid.Ortho = aid.Planar = False
+        aid.GridSnap = aid.Ortho = False
+        aid.Planar = bool(operation.get("planar", False))
         aid.Osnap = True
         modes = getattr(settings.OsnapModes, "None")
         names = dict(Point="Point", End="End", Mid="Midpoint", Cen="Center", Quad="Quadrant", Near="Near", Vertex="Vertex", Int="Intersection")

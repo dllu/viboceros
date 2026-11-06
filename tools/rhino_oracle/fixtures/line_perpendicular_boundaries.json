@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_perpendicular",
+      "id": "vertical_planar",
+      "case": "vertical_planar"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "vertical_spatial",
+      "case": "vertical_spatial"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "polyline_fixed_vertex",
+      "case": "polyline_fixed_vertex"
+    }
+  ]
+}

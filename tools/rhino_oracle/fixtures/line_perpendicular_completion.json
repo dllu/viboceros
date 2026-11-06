@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_perpendicular",
+      "id": "enter_then_point",
+      "case": "enter_then_point"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "enter_length_then_point",
+      "case": "enter_length_then_point"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "fixed_enter_cancel",
+      "case": "fixed_enter_cancel"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "verified_planar_mouse",
+      "case": "verified_planar_mouse"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "verified_planar_fixed_mouse",
+      "case": "verified_planar_fixed_mouse"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "verified_planar_typed",
+      "case": "verified_planar_typed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "verified_planar_fixed_typed",
+      "case": "verified_planar_fixed_typed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "point_override_mouse",
+      "case": "point_override_mouse"
+    }
+  ]
+}

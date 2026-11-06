@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_sliding",
+      "case": "oncurve_sliding"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_fixed",
+      "case": "oncurve_fixed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "oncurve_fixed_length",
+      "case": "oncurve_fixed_length"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "line_fixed",
+      "case": "line_fixed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "circle_from_first_no",
+      "case": "circle_from_first_no"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "circle_numeric_lock",
+      "case": "circle_numeric_lock"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "line_numeric_lock",
+      "case": "line_numeric_lock"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "line_numeric_increment",
+      "case": "line_numeric_increment"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "point_end",
+      "case": "point_end"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "point_to_curve",
+      "case": "point_to_curve"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "point_to_far_curve",
+      "case": "point_to_far_curve"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_skew_valid",
+      "case": "two_skew_valid"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_parallel",
+      "case": "two_parallel"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_circles_near",
+      "case": "two_circles_near"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_circles_far",
+      "case": "two_circles_far"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_nurbs_line",
+      "case": "two_nurbs_line"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "two_spatial_line",
+      "case": "two_spatial_line"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "spatial_fixed",
+      "case": "spatial_fixed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "planar_spatial",
+      "case": "planar_spatial"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "planar_spatial_fixed",
+      "case": "planar_spatial_fixed"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "cancel_two_first",
+      "case": "cancel_two_first"
+    },
+    {
+      "op": "line_perpendicular",
+      "id": "perp_redo_cancel",
+      "case": "perp_redo_cancel"
+    }
+  ]
+}

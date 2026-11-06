@@ -4,6 +4,9 @@ use viboceros_command::line::Input;
 
 impl VibocerosApp {
     pub(super) fn try_start_line(&mut self, text: &str) -> bool {
+        if self.try_start_line_perpendicular(text) {
+            return true;
+        }
         let mut words = text.split_whitespace();
         if !words.next().is_some_and(|w| {
             matches!(
@@ -46,6 +49,9 @@ impl VibocerosApp {
         ));
     }
     pub(super) fn try_continue_line(&mut self, text: &str) -> bool {
+        if self.try_continue_line_perpendicular(text) || self.choose_line_perpendicular(text) {
+            return true;
+        }
         if self.line_input.is_none() || self.plane_prompt.is_some() || self.object_prompt.is_some()
         {
             return false;
@@ -137,6 +143,9 @@ impl VibocerosApp {
         false
     }
     pub(super) fn accept_line_point(&mut self, point: Point3) -> bool {
+        if self.line_perpendicular.is_some() {
+            return self.accept_line_perpendicular_point(point);
+        }
         self.validate_line_normal();
         self.validate_line_reference();
         if let Some(accepted) = self.accept_line_normal_base(point) {
@@ -179,10 +188,14 @@ impl VibocerosApp {
             }
         }
     }
-    fn finish_line_definition(&mut self, definition: viboceros_command::line::Definition) -> bool {
+    pub(super) fn finish_line_definition(
+        &mut self,
+        definition: viboceros_command::line::Definition,
+    ) -> bool {
         let input = self.line_input;
         let reference = self.line_reference.clone();
         let normal = self.line_normal.clone();
+        let perpendicular = self.line_perpendicular.clone();
         let command = format!(
             "Line {} {}",
             format_model_point(definition.line.start()),
@@ -192,7 +205,12 @@ impl VibocerosApp {
             self.line_input = input;
             self.line_reference = reference;
             self.line_normal = normal;
-            self.line_prompt();
+            self.line_perpendicular = perpendicular;
+            if self.line_perpendicular.is_some() {
+                self.line_perpendicular_prompt();
+            } else {
+                self.line_prompt();
+            }
             return false;
         }
         self.last_point = Some(definition.accepted_point);
