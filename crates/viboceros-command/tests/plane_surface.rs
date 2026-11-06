@@ -55,11 +55,41 @@ fn invalid_or_incomplete_plane_scripts_preserve_document_selection_and_redo() {
         "Plane Deformable UPointCount=3 0,0 8,5",
         "Plane Deformable UPointCount=1000000 0,0 8,5",
         "Plane Deformable UDegree",
+        "Plane Deformable UDegree=4.5 0,0 8,5",
+        "Plane Deformable= 0,0 8,5",
+        "Plane Deformable Deformable=No 0,0 8,5",
         "Plane UDegree=3 0,0 8,5",
         "Plane AroundCurve Curve=bad 0,0 8 5",
+        "Plane Enter",
+        "Plane 0,0 Enter",
+        "Plane 3Point 0,0 4,0 Enter Enter",
     ] {
         assert!(registry.execute(&mut doc, script).is_err(), "{script}");
         assert_eq!(format!("{doc:?}"), before, "{script}");
         assert_eq!(registry.plane_preferences(), Preferences::default());
+    }
+}
+
+#[test]
+fn deformable_assignments_enter_the_mode_without_disabling_the_editable_basis() {
+    for flag in ["Deformable=No", "_dEfOrMaBlE=_yEs", "Deformable=Ignored"] {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry
+            .execute(
+                &mut doc,
+                &format!(
+                    "Plane {flag} UDegree=3 VDegree=2 UPointCount=6 VPointCount=5 1,2,3 9,7,11"
+                ),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(s) = doc.objects().last().unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!([s.degree_u(), s.degree_v()], [3, 2]);
+        assert_eq!(
+            [s.control_point_count_u(), s.control_point_count_v()],
+            [6, 5]
+        );
     }
 }

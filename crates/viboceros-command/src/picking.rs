@@ -1,7 +1,39 @@
 //! Camera context for view-dependent getters and modeling commands.
 use crate::CommandError;
-use viboceros_geometry::{Frame3, MeshOutlineProjection, NurbsCurve, Point3, WeightedPoint3};
+use viboceros_geometry::{
+    Frame3, MeshOutlineProjection, NurbsCurve, Point3, Vector3, WeightedPoint3,
+};
 use viboceros_io::{ThreeDmNamedView, ThreeDmProjection};
+
+/// A pointer's camera line, recorded independently of any construction result.
+#[derive(Clone, Copy, Debug)]
+pub struct PointerRay {
+    origin: Point3,
+    direction: Vector3,
+    forward_only: bool,
+}
+impl PointerRay {
+    pub fn try_new(
+        origin: Point3,
+        direction: Vector3,
+        forward_only: bool,
+    ) -> Result<Self, CommandError> {
+        direction.normalized_nonzero()?;
+        Ok(Self {
+            origin,
+            direction,
+            forward_only,
+        })
+    }
+    pub fn on_plane(self, plane: Frame3) -> Result<Option<Point3>, CommandError> {
+        Ok(viboceros_drafting::plane::intersect_view_line(
+            self.origin,
+            self.direction,
+            plane,
+            self.forward_only,
+        )?)
+    }
+}
 
 #[derive(Clone, Copy, Debug)]
 pub struct Projection {
@@ -10,6 +42,7 @@ pub struct Projection {
     offset: [f64; 2],
     perspective: bool,
     clipping: [f64; 2],
+    pointer: Option<PointerRay>,
 }
 impl Projection {
     pub fn from_view(view: &ThreeDmNamedView) -> Result<Self, CommandError> {
@@ -43,7 +76,16 @@ impl Projection {
             offset,
             perspective,
             clipping: [near, far],
+            pointer: None,
         })
+    }
+
+    pub fn with_pointer(mut self, pointer: Option<PointerRay>) -> Self {
+        self.pointer = pointer;
+        self
+    }
+    pub fn pointer(self) -> Option<PointerRay> {
+        self.pointer
     }
 
     /// Mesh outlines lie on the supplied CPlane when it is parallel to a

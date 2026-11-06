@@ -35,6 +35,17 @@ enum Setting {
     UCount,
     VCount,
 }
+fn integer(word: &str) -> Result<usize, CommandError> {
+    if let Ok(n) = word.parse() {
+        return Ok(n);
+    }
+    let n: f64 = word.parse().map_err(|_| CommandError::Usage(USAGE))?;
+    if n.is_finite() && n >= 0. && n <= MAX_PLANE_CONTROL_POINTS as f64 && n.fract() == 0. {
+        Ok(n as usize)
+    } else {
+        Err(CommandError::Usage(USAGE))
+    }
+}
 impl Setting {
     fn parse(word: &str) -> Option<Self> {
         [Self::UDegree, Self::VDegree, Self::UCount, Self::VCount]
@@ -112,7 +123,7 @@ impl Options {
             let n = if word.is_empty() || option_name_eq(word, "Enter") {
                 setting.current(self.preferences)
             } else {
-                word.parse().map_err(|_| CommandError::Usage(USAGE))?
+                integer(word)?
             };
             let mut next = self.preferences;
             setting.set(&mut next, n);
@@ -121,22 +132,29 @@ impl Options {
             self.pending = None;
             return Ok(true);
         }
-        if option_name_eq(word, "Deformable") {
-            self.deformable = true;
-            return Ok(true);
+        if word.chars().any(char::is_whitespace) {
+            return Ok(false);
         }
         let (key, value) = word
             .split_once('=')
             .map_or((word, None), |(k, v)| (k, Some(v)));
-        let Some(setting) = Setting::parse(key).filter(|_| self.deformable) else {
+        if option_name_eq(key, "Deformable") {
+            // A native menu action: nonempty assignment suffixes are ignored.
+            if self.deformable || value == Some("") {
+                return Err(CommandError::Usage(USAGE));
+            }
+            self.deformable = true;
+            return Ok(true);
+        }
+        let Some(setting) = Setting::parse(key) else {
             return Ok(false);
         };
+        if !self.deformable {
+            return Err(CommandError::Usage(USAGE));
+        }
         if let Some(value) = value {
             let mut next = self.preferences;
-            setting.set(
-                &mut next,
-                value.parse().map_err(|_| CommandError::Usage(USAGE))?,
-            );
+            setting.set(&mut next, integer(value)?);
             next.validate()?;
             self.preferences = next;
         } else {

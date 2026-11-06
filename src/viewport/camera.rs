@@ -495,6 +495,23 @@ impl Viewport {
         .ok()
     }
 
+    pub(crate) fn pointer_ray(&self) -> Option<viboceros_command::picking::PointerRay> {
+        let (origin, direction) =
+            self.drafting_local_view_line(self.last_pointer?, self.last_rect?)?;
+        let origin = Point3::try_new(
+            origin.x() + self.target.x,
+            origin.y() + self.target.y,
+            origin.z() + self.target.z,
+        )
+        .ok()?;
+        viboceros_command::picking::PointerRay::try_new(
+            origin,
+            direction,
+            self.kind == ViewKind::Perspective,
+        )
+        .ok()
+    }
+
     fn drafting_local_view_line(&self, pointer: Pos2, rect: Rect) -> Option<(Point3, Vector3)> {
         let (origin, direction) = if self.kind == ViewKind::Perspective {
             let (camera, ray) = self.perspective_local_ray(pointer, rect);

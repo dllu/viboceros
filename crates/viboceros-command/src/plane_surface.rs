@@ -1,5 +1,5 @@
 //! Rectangular planar NURBS creation; rectangle input owns construction modes.
-use crate::rectangle_input::{RectangleDefinition, RectangleInput, RectangleScript};
+use crate::rectangle_input::{EnterAction, RectangleDefinition, RectangleInput, RectangleScript};
 use crate::{Command, CommandContext, CommandError, CommandRegistry, option_name_eq, remembered};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{Frame3, MAX_PLANE_CONTROL_POINTS, NurbsSurface, Tolerance};
@@ -41,6 +41,16 @@ pub fn from_arguments(
     frame: Frame3,
     preferences: Preferences,
 ) -> Result<(RectangleDefinition, Options, bool), CommandError> {
+    from_arguments_with_pointer(doc, args, frame, preferences, None)
+}
+
+pub fn from_arguments_with_pointer(
+    doc: &Document,
+    args: &[&str],
+    frame: Frame3,
+    preferences: Preferences,
+    pointer: Option<crate::picking::PointerRay>,
+) -> Result<(RectangleDefinition, Options, bool), CommandError> {
     let mut script = RectangleScript::new(RectangleInput::new(frame).with_height_line_constraint());
     let mut options = Options::new(preferences);
     let mut result = None;
@@ -60,6 +70,25 @@ pub fn from_arguments(
         if script.input.option(args[i]) {
             i += 1;
             continue;
+        }
+        if option_name_eq(args[i], "Enter") {
+            match script.input.enter_action() {
+                EnterAction::Cancel => return Err(CommandError::OperationDeclined),
+                EnterAction::Dimension => (),
+                EnterAction::Cursor => {
+                    let cursor = pointer
+                        .zip(script.input.plane_surface_mouse_plane())
+                        .map(|(ray, plane)| ray.on_plane(plane))
+                        .transpose()?
+                        .flatten()
+                        .ok_or(CommandError::Usage(
+                            "Plane Enter requires a usable viewport pointer",
+                        ))?;
+                    result = script.input.point(cursor)?;
+                    i += 1;
+                    continue;
+                }
+            }
         }
         if script.input.requests_curve() && !script.has_curve() && !args[i].contains('=') {
             let selected = doc
@@ -96,6 +125,33 @@ pub fn from_arguments(
 
 #[derive(Default)]
 pub(super) struct PlaneCommand(remembered::Remembered<Preferences>);
+impl PlaneCommand {
+    fn execute(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+        pointer: Option<crate::picking::PointerRay>,
+    ) -> Result<String, CommandError> {
+        let (base, options, release_selection) = from_arguments_with_pointer(
+            doc,
+            args,
+            context.construction_plane,
+            self.0.get(),
+            pointer,
+        )?;
+        let geometry = geometry(base, options)?;
+        if release_selection {
+            doc.release_command_selection_on_history_replay(
+                doc.selected_object_ids().collect::<Vec<_>>(),
+            )?;
+            doc.clear_selection();
+        }
+        let id = doc.add_geometry(geometry)?;
+        self.0.set(options.preferences);
+        Ok(format!("Added plane {id}"))
+    }
+}
 impl Command for PlaneCommand {
     fn name(&self) -> &'static str {
         "Plane"
@@ -116,18 +172,17 @@ impl Command for PlaneCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (base, options, release_selection) =
-            from_arguments(doc, args, context.construction_plane, self.0.get())?;
-        let geometry = geometry(base, options)?;
-        if release_selection {
-            doc.release_command_selection_on_history_replay(
-                doc.selected_object_ids().collect::<Vec<_>>(),
-            )?;
-            doc.clear_selection();
-        }
-        let id = doc.add_geometry(geometry)?;
-        self.0.set(options.preferences);
-        Ok(format!("Added plane {id}"))
+        self.execute(doc, args, context, None)
+    }
+    fn run_with_pick_projection(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+        _postselected: bool,
+        projection: crate::picking::Projection,
+    ) -> Result<String, CommandError> {
+        self.execute(doc, args, context, projection.pointer())
     }
 }
 impl CommandRegistry {

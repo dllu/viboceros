@@ -199,7 +199,11 @@ mod trim_split_input;
 mod type_selection;
 mod use_extrusions;
 
+mod plane_completion;
 mod plane_surface;
+#[path = "../../../crates/viboceros-command/tests/support/plane_surface.rs"]
+#[allow(dead_code)]
+mod plane_surface_native_support;
 mod project;
 mod radius;
 mod rail_revolve;

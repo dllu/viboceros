@@ -18,6 +18,7 @@ def run(op, host, iterations, tolerance):
            doc.ModelAbsoluteTolerance, doc.ModelRelativeTolerance, doc.ModelAngleToleranceRadians)
     layers, source, guide, group = [], None, None, None
     case = recipe(op['case'])
+    original_view = R.DocObjects.ViewportInfo(vp) if case.get('view') else None
 
     def snapshot():
         rows = []
@@ -52,7 +53,16 @@ def run(op, host, iterations, tolerance):
         plane = G.Plane(G.Point3d(*frame[0]), G.Vector3d(*frame[1]), G.Vector3d(*frame[2]))
         if not plane.IsValid:
             raise ValueError('invalid Plane frame')
+        if case.get('view'):
+            vp.SetProjection(getattr(R.Display.DefinedViewportProjection,case['view']),'Owned Plane completion view',False)
         vp.SetConstructionPlane(plane)
+        if case.get('pointer_pixel'):
+            import clr
+            clr.AddReference('System.Windows.Forms')
+            from System.Windows.Forms import Cursor
+            u, v = case['pointer_pixel']
+            pixel = S.Drawing.Point(int(u * vp.Size.Width),int(v * vp.Size.Height))
+            Cursor.Position = doc.Views.ActiveView.ClientToScreen(pixel)
         for name in ['Plane sources', 'Plane output']:
             layer = R.DocObjects.Layer(); layer.Name = name
             layers.append(doc.Layers.Add(layer)); layer.Dispose()
@@ -79,9 +89,27 @@ def run(op, host, iterations, tolerance):
         macro = '_Plane ' + ' '.join(words)
         marker = 'Owned Plane ' + str(S.Guid.NewGuid())
         R.RhinoApp.WriteLine(marker)
+        pointer = None
+        if case.get('pointer'):
+            from plane_finish_pointer import record
+            pointer = record(host,vp)
+        traces = []
+        def invoke():
+            if not case.get('paced'): return R.RhinoApp.RunScript(macro, True)
+            from conic_getter_input import drive
+            actions = []
+            for a in case['actions']:
+                actions.append(a)
+                if a == 'AroundCurve' and not case.get('skip_guide_pick'):
+                    actions.append(dict(curve=0))
+            returned, trace = drive(dict(id=op['id'], actions=actions), host,
+                                    [guide] if guide is not None else [], 'Plane')
+            traces.append(trace)
+            return returned
         success, created, events = observe_command(R.Commands.Command, 'Plane',
-            lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
+            invoke, snapshot, lambda: [], True)
         after = snapshot()
+        pointer_after = record(host,vp) if pointer is not None else None
         history = R.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         if R.Commands.Command.InCommand():
             raise ValueError('Plane did not return to idle: ' + history)
@@ -92,8 +120,13 @@ def run(op, host, iterations, tolerance):
         else:
             undo, redo = before, after
         return dict(success=success, before=before, created=created, after=after,
-                    undo=undo, redo=redo, history=history, macro=macro, events=events,
+                    undo=undo, redo=redo, history=history,
+                    macro='_Plane _Pause' if case.get('paced') else macro,
+                    planned_macro=macro, events=events,
                     construction_plane=frame, returned_idle=True,
+                    input_trace=traces,
+                    pointer=pointer,
+                    pointer_after=pointer_after,
                     model_tolerance=dict(absolute=doc.ModelAbsoluteTolerance,
                                          relative=doc.ModelRelativeTolerance,
                                          angular=doc.ModelAngleToleranceRadians),
@@ -104,6 +137,8 @@ def run(op, host, iterations, tolerance):
         doc.ClearUndoRecords(True)
         if group is not None: doc.Groups.Delete(group)
         doc.Layers.SetCurrentLayerIndex(old[0], True)
+        if original_view is not None:
+            vp.SetViewProjection(original_view,False);original_view.Dispose()
         vp.SetConstructionPlane(old[1])
         doc.ModelAbsoluteTolerance, doc.ModelRelativeTolerance, doc.ModelAngleToleranceRadians = old[2:]
         for index in reversed(layers): doc.Layers.Delete(index, True)

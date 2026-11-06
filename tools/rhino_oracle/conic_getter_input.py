@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic",start_script=None):
-    if command not in ("TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Plane","TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     if command=='InsertPoint' and op.get('view_target_offset_z'):
         target=vp.CameraTarget
@@ -43,11 +43,12 @@ def drive(op,host,guides,command="Conic",start_script=None):
     def send_token(token):return call(None,send,[E.Constant(token),E.Constant(True)])
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
     def point(p):
-        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):
+        if command in('Plane','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):
             from number_token import number_token
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
+    if command=='Plane':prefixes=('First corner of plane','Other corner','Start of edge','End of edge','Edge midpoint','Width','Height','Choose rectangle','Direction','Center of plane','Select curve','UDegree','VDegree','UPointCount','VPointCount')
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
@@ -190,7 +191,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:
-                if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf','SubDCrease'):
+                if command in('Plane','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf','SubDCrease'):
                     from number_token import number_token
                     token=number_token(a)
                 else:token=repr(float(a))

@@ -6,6 +6,13 @@ type two opposite corners, or choose `Center`, `3Point`, `EdgeMidpoint`,
 picks and Enter defaults share the [Rectangle getter](rectangle.md).
 AroundCurve accepts curves and surface/B-rep edges.
 
+Enter cancels an empty point prompt. After an ordinary numeric length it accepts
+an equal width. In 3Point and EdgeMidpoint, Enter at the width prompt uses the
+picked edge distance, then Enter accepts the current preview orientation. A
+numeric first edge followed by Enter accepts the pointer direction. Vertical's
+final orientation prompt cancels on Enter. Pointer-dependent command strings
+require viewport pointer context; the application supplies its last viewport ray.
+
 ```text
 Plane 1,2,3 9,7,11
 Plane Center 1,2,3 8 5
@@ -30,6 +37,9 @@ from 2 to 11; each control count must exceed its degree. Increasing a degree
 raises a smaller count automatically. Invalid entries leave the current setting
 and prompt intact. Settings are remembered within the command registry, including
 interactive cancellation; each new construction starts with ordinary output.
+Integer settings accept integral decimal and scientific notation. `Deformable`
+is a menu action: `Deformable=Yes`, `Deformable=No` and other nonempty suffixes all
+enable the mode. An empty suffix or repeated mode action is rejected.
 
 Both output modes retain physical-length UV domains. Uniform clamped knots and
 controls at their Greville stations preserve the affine parameter map. Construction
@@ -44,22 +54,22 @@ pending Redo. Source geometry,
 attributes and groups remain unchanged. Document or tolerance changes invalidate
 an active draft. The viewport's CPlane is unchanged.
 
-The [qualification record](../plane-surface-validation.json) distinguishes actual
-CLI constructions from UI recovery and cancellation workflows. It compares native
+The [basis qualification](../plane-surface-validation.json) and
+[completion qualification](../plane-completion-validation.json) distinguish actual
+CLI constructions from UI recovery and cancellation workflows. They compare native
 NURBS degrees, counts, knots, weights, controls and a parameter grid, together with
 attributes, selection and history. Constructed UI outputs also round-trip through
 3DM. The geometry gate remains `1e-6`; this is not a continuous native distance
-certificate or a full parity claim. Native pixel/mouse behavior, all curved-guide
-and edge-frame cases, cross-restart preferences, reactive Rhino History and
+certificate or a full parity claim. Completion tests record camera rays for Top,
+Front and Perspective views and rotated CPlanes. General mouse trajectories,
+curved-guide and edge-frame cases, cross-restart preferences, reactive Rhino History and
 comparative performance remain unqualified. Numeric dimensions use the
 existing Rectangle input rules.
-Assignment-form `Deformable=Yes|No` tokens remain pending; use the bare
-`Deformable` mode. The native pilot retains its unusual `Deformable=No` result.
 
 ```sh
-cargo test -p viboceros-command --test plane_surface --test plane_surface_native
-cargo test -p viboceros --bin viboceros plane_surface
-python3 -m unittest tools.rhino_oracle.test_plane_surface
+cargo test -p viboceros-command --test plane_surface --test plane_surface_native --test plane_completion
+cargo test -p viboceros --bin viboceros app::tests::plane_
+python3 -m unittest tools.rhino_oracle.test_plane_surface tools.rhino_oracle.test_plane_completion
 ```
 
 Reference: [Rhino Plane](https://docs.mcneel.com/rhino/8/help/en-us/commands/plane.htm).

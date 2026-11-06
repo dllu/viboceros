@@ -1,7 +1,5 @@
+use super::plane_surface_native_support as native;
 use super::*;
-#[path = "../../../crates/viboceros-command/tests/support/plane_surface.rs"]
-#[allow(dead_code)]
-mod native;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();
@@ -154,4 +152,24 @@ fn plane_guide_picker_clears_selection_without_consuming_pending_redo() {
     }
     app.document.redo().unwrap();
     assert_eq!(app.document.objects().len(), 3);
+}
+
+#[test]
+fn plane_enter_cancels_point_prompts_and_retains_pending_redo() {
+    for steps in [
+        vec!["Plane", ""],
+        vec!["Plane", "w1,2,3", "Enter"],
+        vec!["Plane Vertical", "w1,2,3", "w4,6,8", "Enter", "Enter"],
+    ] {
+        let mut app = test_app();
+        enter(&mut app, "Point 8,9,10");
+        app.document.undo().unwrap();
+        let before = format!("{:?}", app.document);
+        for step in steps {
+            enter(&mut app, step);
+        }
+        assert!(app.plane_surface_session.is_none(), "{:?}", app.command_log);
+        assert_eq!(format!("{:?}", app.document), before);
+        assert!(app.document.can_redo());
+    }
 }

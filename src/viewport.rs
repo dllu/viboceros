@@ -720,6 +720,7 @@ pub struct Viewport {
     camera_target_offset: NaVector3<Real>,
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
+    last_pointer: Option<Pos2>,
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
     lasso_drag_path: Vec<Pos2>,
@@ -786,6 +787,7 @@ impl Viewport {
             camera_target_offset: NaVector3::zeros(),
             target: NaVector3::zeros(),
             last_rect: None,
+            last_pointer: None,
             selection_drag_start: None,
             component_drag: None,
             lasso_drag_path: Vec::new(),
@@ -1310,6 +1312,9 @@ impl Viewport {
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
         let rect = response.rect;
         self.last_rect = Some(rect);
+        if let Some(pointer) = response.hover_pos() {
+            self.last_pointer = Some(pointer);
+        }
         // Redraw refreshes saved clip metadata without entering camera history.
         let previous_preview = input
             .mirror_preview

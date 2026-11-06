@@ -1,13 +1,14 @@
 //! Plane owns surface options; point and guide input share Rectangle's getter.
 use super::*;
 use viboceros_command::plane_surface::{self as solver, Options};
-use viboceros_command::rectangle_input::RectangleDefinition;
+use viboceros_command::rectangle_input::{EnterAction, RectangleDefinition, RectangleInput};
 
 pub(super) struct Session {
     pub(super) rectangle: rectangle::InputSession,
     options: Options,
     group: viboceros_document::HistoryGroup,
     tolerance: Tolerance,
+    pub(super) cursor: Option<(RectangleInput, Point3)>,
 }
 impl VibocerosApp {
     pub(super) fn plane_surface_curve_mode(&mut self) {
@@ -43,6 +44,12 @@ impl VibocerosApp {
         true
     }
     pub(super) fn plane_surface_prompt(&mut self) {
+        let pointer = self.viewports[self.active_viewport].pointer_ray();
+        let s = self.plane_surface_session.as_mut().unwrap();
+        s.cursor = pointer
+            .zip(s.rectangle.input.plane_surface_mouse_plane())
+            .and_then(|(ray, plane)| ray.on_plane(plane).ok().flatten())
+            .map(|p| (s.rectangle.input, p));
         let s = self.plane_surface_session.as_ref().unwrap();
         let phase = if s.options.pending() {
             s.options.prompt()
@@ -54,7 +61,7 @@ impl VibocerosApp {
             };
             format!("{phase}; {}", s.options.prompt())
         };
-        self.drafting_plane = s.rectangle.input.mouse_plane();
+        self.drafting_plane = s.rectangle.input.plane_surface_mouse_plane();
         self.active_command = Some(InteractiveCommand::Plane {
             first: s.rectangle.input.anchor(),
         });
@@ -94,6 +101,7 @@ impl VibocerosApp {
             options,
             group,
             tolerance: self.document.tolerance(),
+            cursor: None,
         });
         self.plane_surface_curve_mode();
         self.plane_surface_prompt();
@@ -103,6 +111,34 @@ impl VibocerosApp {
         let Some(s) = &self.plane_surface_session else {
             return false;
         };
+        let word = text.trim().trim_start_matches('_');
+        if (word.is_empty() || word.eq_ignore_ascii_case("Enter")) && !s.options.pending() {
+            let action = s.rectangle.input.enter_action();
+            let cursor = s
+                .cursor
+                .filter(|(input, _)| *input == s.rectangle.input)
+                .map(|(_, p)| p);
+            if !self.validate_plane_surface() {
+                return true;
+            }
+            match action {
+                EnterAction::Cancel => {
+                    self.cancel_interactive_command(true);
+                    return true;
+                }
+                EnterAction::Cursor => {
+                    if let Some(cursor) = cursor {
+                        self.accept_filtered_drafting_point(cursor, false);
+                    } else {
+                        self.push_log(
+                            "Plane: move the pointer to choose the rectangle direction".into(),
+                        );
+                    }
+                    return true;
+                }
+                EnterAction::Dimension => return false,
+            }
+        }
         if !s.options.pending() && s.rectangle.input.anchor().is_some() {
             return false;
         }

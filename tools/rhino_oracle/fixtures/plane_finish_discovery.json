@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "finish_initial_enter",
+      "case": "finish_initial_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_corner_enter",
+      "case": "finish_corner_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_length_enter",
+      "case": "finish_length_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_three_start_enter",
+      "case": "finish_three_start_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_three_width_enter",
+      "case": "finish_three_width_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_vertical_height_enter",
+      "case": "finish_vertical_height_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_center_three_enter",
+      "case": "finish_center_three_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_midpoint_enter",
+      "case": "finish_midpoint_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_deform_yes",
+      "case": "finish_deform_yes"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "finish_deform_no",
+      "case": "finish_deform_no"
+    }
+  ]
+}

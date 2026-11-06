@@ -58,14 +58,26 @@ for name, edits in [
     CASES[key] = dict(actions=basis + edits + ([] if name == 'cancel_integer' else points))
 
 if __package__:
+    from .plane_finish_cases import FINISH_DISCOVERY
+    from .plane_finish_workflows import FINISH_WORKFLOWS
+    from .plane_finish_pointer_cases import POINTER_WORKFLOWS
+    from .plane_completion_cases import COMPLETION_CASES
     from .plane_surface_holdouts import HOLDOUT_CASES
     from .plane_surface_guide_cases import GUIDE_CASES
 else:
+    from plane_finish_cases import FINISH_DISCOVERY
+    from plane_finish_workflows import FINISH_WORKFLOWS
+    from plane_finish_pointer_cases import POINTER_WORKFLOWS
+    from plane_completion_cases import COMPLETION_CASES
     from plane_surface_holdouts import HOLDOUT_CASES
     from plane_surface_guide_cases import GUIDE_CASES
 CASES.update(HOLDOUT_CASES)
 HOLDOUTS = list(HOLDOUT_CASES)
 CASES.update(GUIDE_CASES)
+CASES.update(FINISH_DISCOVERY)
+CASES.update(FINISH_WORKFLOWS)
+CASES.update(POINTER_WORKFLOWS)
+CASES.update(COMPLETION_CASES)
 VERTICAL_AUDIT = []
 for suffix, basis in [('plain', []), ('deform_minimum', ['Deformable','UDegree=2','VDegree=4','UPointCount=3','VPointCount=5']),
                       ('deform_cubic', ['Deformable','UDegree=3','VDegree=3','UPointCount=4','VPointCount=4']),

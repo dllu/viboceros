@@ -1,6 +1,8 @@
 //! Rectangle getters return geometry definitions without document edits.
 use viboceros_geometry::{Frame3, GeometryError, Point3, Polyline3, Real, Tolerance};
+mod enter;
 mod height_line;
+pub use enter::EnterAction;
 const ZERO: Real = 2.3283064365386963e-10;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RectangleDefinition {

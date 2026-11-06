@@ -37,6 +37,14 @@ impl InputSession {
     }
 }
 impl VibocerosApp {
+    pub(super) fn rectangle_mouse_plane(&self) -> Option<Frame3> {
+        let s = self.rectangle_getter()?;
+        if self.plane_surface_session.is_some() {
+            s.input.plane_surface_mouse_plane()
+        } else {
+            s.input.mouse_plane()
+        }
+    }
     pub(super) fn rectangle_getter(&self) -> Option<&InputSession> {
         self.rectangle_session
             .as_ref()

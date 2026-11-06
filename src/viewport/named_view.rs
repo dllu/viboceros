@@ -31,7 +31,11 @@ impl Viewport {
 
     pub(crate) fn pick_projection(&self) -> Option<viboceros_command::picking::Projection> {
         let view = Self::named_view_to_3dm(self.named_view_snapshot(), String::new()).ok()?;
-        viboceros_command::picking::Projection::from_view(&view).ok()
+        Some(
+            viboceros_command::picking::Projection::from_view(&view)
+                .ok()?
+                .with_pointer(self.pointer_ray()),
+        )
     }
 
     pub(super) fn named_view_port_size(&self) -> [i32; 2] {

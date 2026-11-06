@@ -817,7 +817,7 @@ impl eframe::App for VibocerosApp {
                     .map(viboceros_command::circle_around_input::Input::frame)
             })
             .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
-            .or_else(|| self.rectangle_getter().and_then(|s| s.input.mouse_plane()))
+            .or_else(|| self.rectangle_mouse_plane())
             .or_else(|| {
                 self.conic_session
                     .as_ref()

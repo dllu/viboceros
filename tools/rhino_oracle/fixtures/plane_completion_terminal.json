@@ -1,0 +1,276 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_initial_enter",
+      "case": "pointer_initial_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_corner_enter",
+      "case": "pointer_corner_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_initial_enter",
+      "case": "pointer_center_initial_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_enter",
+      "case": "pointer_center_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_initial_enter",
+      "case": "pointer_three_initial_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_edge_enter",
+      "case": "pointer_three_edge_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_length_direction_enter",
+      "case": "pointer_three_length_direction_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_vertical_edge_enter",
+      "case": "pointer_vertical_edge_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_vertical_length_direction_enter",
+      "case": "pointer_vertical_length_direction_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_choose_enter",
+      "case": "pointer_three_choose_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_vertical_choose_enter",
+      "case": "pointer_vertical_choose_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_width_choose_enter",
+      "case": "pointer_three_width_choose_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_midpoint_choose_enter",
+      "case": "pointer_midpoint_choose_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_three_choose_enter",
+      "case": "pointer_center_three_choose_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_length_enter",
+      "case": "pointer_length_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_length_enter",
+      "case": "pointer_center_length_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_default",
+      "case": "pointer_three_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_vertical_default",
+      "case": "pointer_vertical_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_midpoint_default",
+      "case": "pointer_midpoint_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_three_default",
+      "case": "pointer_center_three_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_three_length_width",
+      "case": "pointer_center_three_length_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_three_width",
+      "case": "pointer_center_three_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_midpoint_width",
+      "case": "pointer_midpoint_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_three_length_default",
+      "case": "pointer_three_length_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_center_three_length_default",
+      "case": "pointer_center_three_length_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_midpoint_length_width",
+      "case": "pointer_midpoint_length_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_late_three_length_default",
+      "case": "pointer_late_three_length_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_guide_enter_picked",
+      "case": "pointer_guide_enter_picked"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_guide_length_enter_picked",
+      "case": "pointer_guide_length_enter_picked"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_guide_enter_preselected",
+      "case": "pointer_guide_enter_preselected"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_guide_length_enter_preselected",
+      "case": "pointer_guide_length_enter_preselected"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_guide_center_enter",
+      "case": "pointer_guide_center_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_deform_yes",
+      "case": "pointer_deform_yes"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_deform_no",
+      "case": "pointer_deform_no"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_deform_ignored",
+      "case": "pointer_deform_ignored"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_deform_empty",
+      "case": "pointer_deform_empty"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_deform_repeated",
+      "case": "pointer_deform_repeated"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_choose_top",
+      "case": "pointer_choose_top"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_choose_front",
+      "case": "pointer_choose_front"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_integer_getters",
+      "case": "pointer_integer_getters"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "pointer_fractional_degree",
+      "case": "pointer_fractional_degree"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_top_3point",
+      "case": "holdout_top_3point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_top_edgemidpoint",
+      "case": "holdout_top_edgemidpoint"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_top_centered",
+      "case": "holdout_top_centered"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_top_vertical",
+      "case": "holdout_top_vertical"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_front_3point",
+      "case": "holdout_front_3point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_front_edgemidpoint",
+      "case": "holdout_front_edgemidpoint"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_front_centered",
+      "case": "holdout_front_centered"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_front_vertical",
+      "case": "holdout_front_vertical"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_perspective_3point",
+      "case": "holdout_perspective_3point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_perspective_edgemidpoint",
+      "case": "holdout_perspective_edgemidpoint"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_perspective_centered",
+      "case": "holdout_perspective_centered"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_perspective_vertical",
+      "case": "holdout_perspective_vertical"
+    }
+  ]
+}

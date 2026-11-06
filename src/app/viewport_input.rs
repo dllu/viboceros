@@ -83,6 +83,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.ellipse_session {
                 s.cursor = Some(point);
             }
+            if let Some(s) = &mut self.plane_surface_session {
+                s.cursor = Some((s.rectangle.input, point));
+            }
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
