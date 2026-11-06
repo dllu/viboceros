@@ -1,0 +1,258 @@
+[
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.159405975995469
+  },
+  {
+    "name": "commands-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_plane_native",
+      "--test",
+      "subd_box_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 47.67637444699358
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 39.28174989701074
+  },
+  {
+    "name": "rectangle-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "rectangle",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.29934745500213467
+  },
+  {
+    "name": "subd-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.11019997901167
+  },
+  {
+    "name": "surface-flow-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "surface_flow",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.21757377000176348
+  },
+  {
+    "name": "commands-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_plane_native",
+      "--test",
+      "subd_box_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 47.741407251000055
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 38.88687000999926
+  },
+  {
+    "name": "rectangle-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "rectangle",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.25811594699916895
+  },
+  {
+    "name": "subd-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.38445231800142
+  },
+  {
+    "name": "surface-flow-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "surface_flow",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.203638137987582
+  },
+  {
+    "name": "rectangle-input",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "rectangle"
+    ],
+    "status": 0,
+    "seconds": 2.039124943999923
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 0.7768408600095427
+  },
+  {
+    "name": "clippy-all-features",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 36.509170670004096
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_plane_completion",
+      "tools.rhino_oracle.test_plane_surface",
+      "tools.rhino_oracle.test_rectangle",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_surface_interpolate_plane",
+      "tools.rhino_oracle.test_project_plane",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.9117186269868398
+  }
+]

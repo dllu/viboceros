@@ -1,0 +1,812 @@
+{
+  "scope": "Plane Enter defaults, live pointer direction/orientation, Deformable actions and integer input.",
+  "baseline_revision": "a8765d384a948a04850242bb3088b9f7ee60af09",
+  "implementation_revision": "a8e4b02ebdf788c88dc0a05775674a2d874e2000",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_native_distance_qualified": false,
+  "performance_qualified": false,
+  "native_observations": 194,
+  "qualified_workflows": 53,
+  "script_constructions": 39,
+  "ui_constructions": 42,
+  "ui_controls": 11,
+  "recovered_invalid_option_workflows": 3,
+  "archive_round_trips_per_build": 42,
+  "maximum_coefficient_and_sample_difference": 6.335908083186696e-13,
+  "parameter_grid": [
+    9,
+    9
+  ],
+  "captures": [
+    {
+      "family": "plane_finish_discovery",
+      "observations": 10,
+      "raw_sha256": "ccc9a973f67f4d3251ddcc575e63ae93bfa362019e388eb6c290afa9fafc1866",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "plane_finish_workflows",
+      "observations": 37,
+      "raw_sha256": "05b1fa206a131cfbf36e1da59bc6d62721f0451b11002f48b94a771f0e3640a3",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "plane_finish_pointer",
+      "observations": 41,
+      "raw_sha256": "f9f79b231a9585c1f4992d0146b92260482c4298d808bcc23ed0d071243998db",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "plane_completion",
+      "observations": 53,
+      "raw_sha256": "4978386b2653a4808e93e66aac3503f3a05d8c88d72570f889fbf51f1c772e43",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "plane_completion_terminal",
+      "observations": 53,
+      "raw_sha256": "12d5abb4067796dd2122657c6687c83f526a557a94c8672e256d966f1a07751c",
+      "engine_version": "8.32.26160.13001",
+      "role": "qualification"
+    }
+  ],
+  "cases": [
+    {
+      "id": "pointer_initial_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_corner_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_center_initial_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_center_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_three_initial_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_three_edge_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_three_length_direction_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.1086244689504387e-15,
+      "portable_ui_error": 2.5989654674417885e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.1086244689504387e-15,
+      "native_ui_error": 2.5989654674417885e-15
+    },
+    {
+      "id": "pointer_vertical_edge_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_vertical_length_direction_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.6418022968069345e-15,
+      "portable_ui_error": 4.118313910115614e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.6418022968069345e-15,
+      "native_ui_error": 4.118313910115614e-15
+    },
+    {
+      "id": "pointer_three_choose_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 7.601582815929793e-15,
+      "portable_ui_error": 9.769962616701378e-15,
+      "archive_objects": 2,
+      "native_script_error": 7.601582815929793e-15,
+      "native_ui_error": 9.769962616701378e-15
+    },
+    {
+      "id": "pointer_vertical_choose_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_three_width_choose_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.831026719408895e-15,
+      "portable_ui_error": 1.831026719408895e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.831026719408895e-15,
+      "native_ui_error": 1.831026719408895e-15
+    },
+    {
+      "id": "pointer_midpoint_choose_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.520138589050549e-15,
+      "portable_ui_error": 9.901546312420039e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.520138589050549e-15,
+      "native_ui_error": 9.901546312420039e-15
+    },
+    {
+      "id": "pointer_center_three_choose_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.2434497875801753e-14,
+      "portable_ui_error": 1.7763568394002505e-14,
+      "archive_objects": 2,
+      "native_script_error": 1.2434497875801753e-14,
+      "native_ui_error": 1.7763568394002505e-14
+    },
+    {
+      "id": "pointer_length_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_center_length_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_three_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 4.9650683064945454e-15,
+      "portable_ui_error": 5.17892563931115e-15,
+      "archive_objects": 2,
+      "native_script_error": 4.9650683064945454e-15,
+      "native_ui_error": 5.17892563931115e-15
+    },
+    {
+      "id": "pointer_vertical_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.7763568394002505e-15,
+      "portable_ui_error": 5.420799638382024e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.7763568394002505e-15,
+      "native_ui_error": 5.420799638382024e-15
+    },
+    {
+      "id": "pointer_midpoint_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.972054645195637e-15,
+      "portable_ui_error": 6.153480596427405e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.972054645195637e-15,
+      "native_ui_error": 6.153480596427405e-15
+    },
+    {
+      "id": "pointer_center_three_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.0877919644084145e-14,
+      "portable_ui_error": 1.0877919644084145e-14,
+      "archive_objects": 2,
+      "native_script_error": 1.0877919644084145e-14,
+      "native_ui_error": 1.0877919644084145e-14
+    },
+    {
+      "id": "pointer_center_three_length_width",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.646518689688359e-15,
+      "portable_ui_error": 6.76741041355929e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.646518689688359e-15,
+      "native_ui_error": 6.76741041355929e-15
+    },
+    {
+      "id": "pointer_center_three_width",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.5358285084610146e-15,
+      "portable_ui_error": 6.1555459323990494e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.5358285084610146e-15,
+      "native_ui_error": 6.1555459323990494e-15
+    },
+    {
+      "id": "pointer_midpoint_width",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.66205343881779e-15,
+      "portable_ui_error": 4.905125646631375e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.66205343881779e-15,
+      "native_ui_error": 4.905125646631375e-15
+    },
+    {
+      "id": "pointer_three_length_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.9968028886505635e-15,
+      "portable_ui_error": 5.347542221830668e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.9968028886505635e-15,
+      "native_ui_error": 5.347542221830668e-15
+    },
+    {
+      "id": "pointer_center_three_length_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.66503786375278e-15,
+      "portable_ui_error": 7.444291678311382e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.66503786375278e-15,
+      "native_ui_error": 7.444291678311382e-15
+    },
+    {
+      "id": "pointer_midpoint_length_width",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 4.782987168225453e-15,
+      "portable_ui_error": 5.617333549722722e-15,
+      "archive_objects": 2,
+      "native_script_error": 4.782987168225453e-15,
+      "native_ui_error": 5.617333549722722e-15
+    },
+    {
+      "id": "pointer_late_three_length_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.9968028886505635e-15,
+      "portable_ui_error": 5.347542221830668e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.9968028886505635e-15,
+      "native_ui_error": 5.347542221830668e-15
+    },
+    {
+      "id": "pointer_guide_enter_picked",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_guide_length_enter_picked",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 3,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_guide_enter_preselected",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_guide_length_enter_preselected",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 3,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_guide_center_enter",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_deform_yes",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.9860273225978185e-15,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.9860273225978185e-15,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "pointer_deform_no",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.9860273225978185e-15,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.9860273225978185e-15,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "pointer_deform_ignored",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.9860273225978185e-15,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.9860273225978185e-15,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "pointer_deform_empty",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "pointer_deform_repeated",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "pointer_choose_top",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 4.950150691486844e-15,
+      "portable_ui_error": 6.2172489379008774e-15,
+      "archive_objects": 2,
+      "native_script_error": 4.950150691486844e-15,
+      "native_ui_error": 6.2172489379008774e-15
+    },
+    {
+      "id": "pointer_choose_front",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.831026719408895e-15,
+      "portable_ui_error": 2.1755839288168296e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.831026719408895e-15,
+      "native_ui_error": 2.1755839288168296e-15
+    },
+    {
+      "id": "pointer_integer_getters",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.035072419451041e-15,
+      "portable_ui_error": 2.035072419451041e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.035072419451041e-15,
+      "native_ui_error": 2.035072419451041e-15
+    },
+    {
+      "id": "pointer_fractional_degree",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 2.035072419451041e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 2.035072419451041e-15
+    },
+    {
+      "id": "holdout_top_3point",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.722145839155691e-15,
+      "portable_ui_error": 3.614624287906422e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.722145839155691e-15,
+      "native_ui_error": 3.614624287906422e-15
+    },
+    {
+      "id": "holdout_top_edgemidpoint",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.0242958677880805e-15,
+      "portable_ui_error": 5.0242958677880805e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.0242958677880805e-15,
+      "native_ui_error": 5.0242958677880805e-15
+    },
+    {
+      "id": "holdout_top_centered",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.661338147750939e-15,
+      "portable_ui_error": 7.793734002518813e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.661338147750939e-15,
+      "native_ui_error": 7.793734002518813e-15
+    },
+    {
+      "id": "holdout_top_vertical",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.4047456679787536e-15,
+      "portable_ui_error": 6.4047456679787536e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.4047456679787536e-15,
+      "native_ui_error": 6.4047456679787536e-15
+    },
+    {
+      "id": "holdout_front_3point",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.1648350771590544e-14,
+      "portable_ui_error": 1.1648350771590544e-14,
+      "archive_objects": 2,
+      "native_script_error": 1.1648350771590544e-14,
+      "native_ui_error": 1.1648350771590544e-14
+    },
+    {
+      "id": "holdout_front_edgemidpoint",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.5067062021407764e-14,
+      "portable_ui_error": 5.626454312132926e-14,
+      "archive_objects": 2,
+      "native_script_error": 5.5067062021407764e-14,
+      "native_ui_error": 5.626454312132926e-14
+    },
+    {
+      "id": "holdout_front_centered",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.565130648868625e-14,
+      "portable_ui_error": 5.6152266545246277e-14,
+      "archive_objects": 2,
+      "native_script_error": 5.565130648868625e-14,
+      "native_ui_error": 5.6152266545246277e-14
+    },
+    {
+      "id": "holdout_front_vertical",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.756054031998179e-15,
+      "portable_ui_error": 5.756054031998179e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.756054031998179e-15,
+      "native_ui_error": 5.756054031998179e-15
+    },
+    {
+      "id": "holdout_perspective_3point",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.303914769177293e-13,
+      "portable_ui_error": 6.308249319564298e-13,
+      "archive_objects": 2,
+      "native_script_error": 6.303914769177293e-13,
+      "native_ui_error": 6.308249319564298e-13
+    },
+    {
+      "id": "holdout_perspective_edgemidpoint",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.321100980765347e-13,
+      "portable_ui_error": 6.335908083186696e-13,
+      "archive_objects": 2,
+      "native_script_error": 6.321100980765347e-13,
+      "native_ui_error": 6.335908083186696e-13
+    },
+    {
+      "id": "holdout_perspective_centered",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.305090959063934e-13,
+      "portable_ui_error": 6.312824573520604e-13,
+      "archive_objects": 2,
+      "native_script_error": 6.305090959063934e-13,
+      "native_ui_error": 6.312824573520604e-13
+    },
+    {
+      "id": "holdout_perspective_vertical",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.350827110103048e-13,
+      "portable_ui_error": 1.3544138475826255e-13,
+      "archive_objects": 2,
+      "native_script_error": 1.350827110103048e-13,
+      "native_ui_error": 1.3544138475826255e-13
+    }
+  ],
+  "execution": "Rhino captures used private Xvfb displays; command, egui and application tests created no windows.",
+  "limits": [
+    "The preceding 141 observations are exploratory, including unused Cancel tails, incomplete recipes, and ClientToWorld lines whose direction was not a forward camera ray.",
+    "The final 53 recipes consume every planned token and record stable cursor pixels before and after. Pointer rays and initial setting prompts are independent input context, never inferred from constructed geometry.",
+    "CLI replays execute 39 accepted constructions with camera/pointer context. Three invalid-option recoveries and eleven cancellations are interactive-only.",
+    "Native cancellation undo/redo fields are passive snapshots. Local cancellation tests separately check pending Redo preservation.",
+    "GUI native replay supplies drafting hover from the saved camera ray and current getter plane; separate windowless egui tests check stationary-pointer transitions and full command-line execution.",
+    "These recipes cover Top, Front and Perspective views and rotated construction planes. General mouse trajectories, all snap modes, degenerate camera directions, curved guide and surface-edge parity, restart persistence and speed remain unqualified."
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "subd-portable",
+      "status": 0
+    },
+    {
+      "name": "surface-flow-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "surface-flow-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-input",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/src/picking.rs": "0200aa08cfc6e3ce8abede4c2933fe274acc19aae5b6f3de837630ca6032795d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/src/plane_surface.rs": "a9b914c9618da38363ae8aafd7158a88678efbbd5ad40d48e9b2cbb5016bba46",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/src/plane_surface/options.rs": "3a92a8fc2688c7d1f747c38dcf117bbd6c9fba698d96a90e175f7f6ab6cf9362",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/src/rectangle_input.rs": "b70b5bafa901c53fb1594674ac856c96b6e83b1d5c37a593fb60c55f5d4755ab",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/src/rectangle_input/enter.rs": "edd660e3ad558356f95a70c549b22bd35082be7df76bfddd2df345e7da559876",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/tests/plane_completion.rs": "a4be4a4717eac1daa48d22d88bd8a3eb77e311f395c2bf55c199dc62f6b489ab",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/tests/plane_surface.rs": "a583c86b1e8c25d3016445d94f317d827432e1f0e48c78fda3e81b5a830ec2a3",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:crates/viboceros-command/tests/support/plane_completion.rs": "9f71d23418292a4578457ccd0d2aa24651c869ebd5e71a629392547a6d3c4f83",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:docs/commands/plane.md": "b0f9954c23ec89c3b41b58c368c1d1638ba062855428619eca667bc1e785d675",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:docs/subd-box-qualification.json": "68ecdfca685af56f22f82bccaec49474f626eb98ba5c6c5f1b1c5951915aab92",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:docs/subd-plane-qualification.json": "dfe422066aaaeb05b77ae09e31d100336052cbdd7ced72c107030eae219e5c2a",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/plane_surface.rs": "b0c07f8f55a6734be5e631f3c25712f2c7158b0231affbb160de0623036cc257",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/rectangle.rs": "748f3dfdf97d09f97296a5f1eb3aca983d2008aa5da3f575957967bcf1712b2a",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/tests/mod.rs": "68555c672a3a963b41abd7a2d1406576c314a8cd2de3f99b39ed8fa27ce54ff3",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/tests/plane_completion.rs": "43cff0bb26aba692a0bc468427f2bcaf0f915faafdc49e605d2885b2e69e19bf",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/tests/plane_surface.rs": "1a672637be0a6274291e7750de525d40269ebb24064b3863569b88a0410f4b40",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/ui.rs": "6a3455e100fd07f8b01f63b92ea74ffbf1082f9e7e648c66d6952e05138149c9",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/app/viewport_input.rs": "5d4d89d5271c8bc8732599fe7f21e0ef3c924b56277b76005aa12718024ad1c4",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/viewport.rs": "b1348d4e2c61eb80abd1648a0a8f52ded229b1da1d261fd3edbf2215caa4d914",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/viewport/camera.rs": "9648973097cdc143fd9cea4055c8a3b88bd793aa83ab4a11da979aaf6aa09fd3",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:src/viewport/named_view.rs": "e53fe794238315cf046787c6f12bc6f8d5565bbe20e7a8fdc928fd363eeac72f",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/capture_family.py": "fd6d0006867ff8e23cc7c47cb8d46e632935059593ede8b22cfd8ca2c163ef74",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/check_plane_completion.py": "c88f22df27dcad4078ed11b787541f97bde60b8e22aea4b143dcda07466b8a9f",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/conic_getter_input.py": "536beccfe6fc47f04115c6edbd9767aafe56d969cebd8f468802d6d6550c0c1c",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/fixtures/plane_completion.json": "adb3a6e3d81936704154f92f2a4be76c9ab6a5e3136bf584a3f7bc882e9d1351",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/fixtures/plane_completion_terminal.json": "adb3a6e3d81936704154f92f2a4be76c9ab6a5e3136bf584a3f7bc882e9d1351",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/fixtures/plane_finish_discovery.json": "42d125b6c2a540211e8880568d377cf947199f8ddccb1852083c67041fac4b6d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/fixtures/plane_finish_pointer.json": "e572a4138d02a5bf357c60141e5271fa23bfec783a2812a55c847ad9042e91bd",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/fixtures/plane_finish_workflows.json": "b1ac1301938f9884ff358e77fe4ee62e5942ebbe703abfadd1f699f2e379977b",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/generate_plane_completion.py": "6af19bd4f0ea0f58fd73318dd66d932a0b9359cbbdfefa8a15368ec252d791de",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/generate_plane_completion_terminal.py": "49d77c7c825a375b332f525913225a513c22af603f22aebae0942e55a8bbde3d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/generate_plane_finish_discovery.py": "61d859a88d36102d4159c462530380402de739c07d11855bbb343821b833c4b9",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/generate_plane_finish_pointer.py": "7da6ae6e48fd5ee9d9297422c8b46aeee4dd536d2c5d9011f5ace76f6811d71f",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/generate_plane_finish_workflows.py": "482f1ebf6cef97c0c9f12761b19eb72c233f608f3f7abd4d35a62bbf0741ab2d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/plane_completion.json.gz": "e0cf290972b0310e86f7d60ccaab537efd19274d1e9f684e2da9e304ffac7e58",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/plane_completion_terminal.json.gz": "6e65bd3c61ae6b4d7d14da725341ac6b9c362abf00cc581a83b7674ba45abc06",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/plane_finish_discovery.json.gz": "415c519ffce1d34d53ce7e19bf23246656cbebec4d12ff804a13a3d35bee1a06",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/plane_finish_pointer.json.gz": "f6a7fe8a5b3bb07672d629ab40a4e396743a70a11d73d7978fd3d7f113345f1e",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/plane_finish_workflows.json.gz": "cc18b511d33ae0c3297f4b16d0f3cee7ad5fa812d8aa5e304ef2b08b96ccc4cd",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/025b54d09483d131ab962d3524cac1ade5bdf0326a0bcfa37319467134ef2e09.gz": "5b1cef0bebd6e808d0f501da8c8bb879c68a6a80f1045390fc0a0656b8ce502b",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/17c38fd8290a42438e973be09d5f2cdf589e120f1806f79826a7692903438d00.gz": "ad9922bdadedafbe1c58b66ebd29aa209b168180becea944585b09baafcd7813",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/2653ef0faa6bc39072dc44ca76bb9f6cbacd4cf48a0b525486ba11eeb174beca.gz": "d8eac8cb15245253ad48c9566c01d7323dbe1c8137505d4f937dcb55211d1874",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/482f1ebf6cef97c0c9f12761b19eb72c233f608f3f7abd4d35a62bbf0741ab2d.gz": "bf3ac06d697c889ab34cbd8841d6939e8d52ca2f3ea98e864afb8509fdc291a8",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/49d77c7c825a375b332f525913225a513c22af603f22aebae0942e55a8bbde3d.gz": "241509872f6d6494787280eb8c530e1c2e90f13c8da8d5963bb0d5b687befd6c",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/5228399c62cdf052e9aa9c3f0dada7025e046a3a7bd2e5f54977ca71c72ad7bc.gz": "319a6674182a1868ebc198e3a87ec6778ecb9267fe4345e4e40775e6086593e9",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/536beccfe6fc47f04115c6edbd9767aafe56d969cebd8f468802d6d6550c0c1c.gz": "4e88408d569b435d6bdb04845261c22815e866cff4c08cbe7a0ccb4611d9466d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/5775d4685d5b370482c56bb09a4aa78230c550e9da67217764b52be760861cba.gz": "5d8d9277f9505bd5c0bf4ab760e74e3f84e36849f51c307ae57491229d3280ec",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/5a6179195afedc2cc97b11b2a159c04bfa63c22c8939878962fbf04a0c118456.gz": "6ca9d061274da56228a890a4bf26f855aa2ab3ea55e6f73d68d59a8f0144581d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/61d859a88d36102d4159c462530380402de739c07d11855bbb343821b833c4b9.gz": "9161bdd83a1fe69e12c82c73a48b6155df1bdcf5366260dbc3cd2ad69793a4c7",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/6af19bd4f0ea0f58fd73318dd66d932a0b9359cbbdfefa8a15368ec252d791de.gz": "83ef72f212d44d08f587955d820a3b5fe250b9a73e6311ee094add597a2d8604",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/7da6ae6e48fd5ee9d9297422c8b46aeee4dd536d2c5d9011f5ace76f6811d71f.gz": "174d311ccb65b13a42467a41d50de2264e22bf3ce751350b846b4a55db34ca11",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/8be55a7b2a9b89b2d626098fb6d59469f6f9cf12cf9ba572e1c58614cddc98c7.gz": "3e5652a3326b3c2c566af9a155198dc72a2d5804ca7608a4bf7dcd582532764a",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/98fc098b719d51f5bd833a146442da46accf427dd3ff010ddaf8fa351620f180.gz": "9b094b4bfa434ae1f4a497a4175a0dcba20e6dc1b89407c2f6135e6065a95500",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/a7014ed9af2ad55bbcf39d63df671468b0dca314323da5772a6f8e1a56ea4c04.gz": "01a0959e714ce1b205ab56a6709b56730bd06a9a75f871851bb3fe6df2be1c0b",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/b6ccc078c3292434c106dc4c2061dd65254261d72f555f3e883461bdb2876cf8.gz": "331a04ec641ae9a07b15ccbe89c95b72cf2315b30603a9c8cbeaab3dbd930fdb",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/ba83b5204c0740ee3e5297472f4cfaa1ca3b66d675f63f33e4c0df887846dcca.gz": "9ded1b27113e78a86e73222e26f3ea89c2c9313f8ab2b890b68c5c2a9632190b",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/c26318594f805366c3bb5826f4d877997cc147c70ebe678027f532786df4fdf8.gz": "442593c6dc4762b3df5176a5e2dfe9a9cb4303f1c54f9cfeccdfa97cf0394cdc",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/cb4c431cf927f654d1497e87477e2eb76af2aa58f315c0aba2cabf3c6f33f313.gz": "5c867c0c59e96a4d84634ecac0ea4bb9e74407d6ecbb42a069955046709dbc2d",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/cc42ce7c6c09896970a7135b176f07de5da789b51c6760bf3c2dfaa48b4e1dee.gz": "7d1dcdcbe3c4be5cccc0243cb5f41554b69aa4a7fb3e48e615f7edeeadaca5ab",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/cd057cc68b0b31a40f6aca1b8147784a5b8e526d0a57dd319c3db3592706e433.gz": "0c2d3705f1d8c525cb9ddb3a44c42f9aafa828d81301d6269fcc77631bc3eb28",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/d3ce0653396579e7e4328afd2cb60b31ff587cfd7f68347c267d324d232e8397.gz": "55e02b455c38f1f234b07e4fdfe5bddc5d5499a4eefbc80709890ba40aa4d604",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/d4d8696af5ae3f499b1c23aa48fc5644159432cd2b62626fbc9f3c734269d383.gz": "c8e1fdd725348f77c4ee6e042481fcf0602b45bb0d9528bf1f71ca8d67cb21c9",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/d7eae75924237425cb98b09972c311c807a684d47a0cf6b28b8dc22723dafdb7.gz": "3568725bc3dcdb7ef2bc6ee4c183b12aa4506b1875b5f924297bd565271d6644",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/dcc6ab1f426222856f2ef822301d28a025ce20726f3f0f79c81b9265226abb67.gz": "d0264ec79420c64a16f3c3d5a7c9a6655fb28a8b8d103e60798f0624a59de50e",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/e1426b09e6a95d5ec97e838b7a265451e09a9aaab703fddd47371e0801283e80.gz": "7aa2398744b5c9977699e0e3f062ec4952a8f26ddeb50d790f24e561b774833e",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/ea2656559616dbb70614765369dc60fdb9a413717625cf89ebbd1684fe7f6c1e.gz": "68e4603bac3c330c025136a5445b8eae38fe693e822b69c6b614bf5c48c671c3",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/observations/source_snapshots/fd6d0006867ff8e23cc7c47cb8d46e632935059593ede8b22cfd8ca2c163ef74.gz": "559eadcb71a13e76578a6e9bc8e548d570304fc19ecc8f606e4667af63ede1b6",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_completion_cases.py": "c26318594f805366c3bb5826f4d877997cc147c70ebe678027f532786df4fdf8",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_finish_cases.py": "025b54d09483d131ab962d3524cac1ade5bdf0326a0bcfa37319467134ef2e09",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_finish_pointer.py": "a7014ed9af2ad55bbcf39d63df671468b0dca314323da5772a6f8e1a56ea4c04",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_finish_pointer_cases.py": "ea2656559616dbb70614765369dc60fdb9a413717625cf89ebbd1684fe7f6c1e",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_finish_workflows.py": "ba83b5204c0740ee3e5297472f4cfaa1ca3b66d675f63f33e4c0df887846dcca",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_surface_cases.py": "2653ef0faa6bc39072dc44ca76bb9f6cbacd4cf48a0b525486ba11eeb174beca",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/plane_surface_probe.py": "cd057cc68b0b31a40f6aca1b8147784a5b8e526d0a57dd319c3db3592706e433",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/report_plane_completion.py": "95c12d6e9eb4fa78da23d63eb9ca385f735c74524ea3b74d552a039ab49725e3",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/structural_sdk.py": "d3ce0653396579e7e4328afd2cb60b31ff587cfd7f68347c267d324d232e8397",
+    "a8e4b02ebdf788c88dc0a05775674a2d874e2000:tools/rhino_oracle/test_plane_completion.py": "5acd7862f7604e7f008c54b116c26071df01a4baf0f30e9770a37f9a1e10c74f"
+  },
+  "evidence_sha256": {
+    "docs/plane-completion-proof/capture-plane_completion.log.gz": "115a4e3eec988bb7a0d462a56be306d348c1e9b5a24091e1e2cb3937918e0f13",
+    "docs/plane-completion-proof/capture-plane_completion_terminal.log.gz": "a3b8559957e03c2a6bc18e7329fc8255ba5f1f45b8a8ed3a9c3c7f5a3dee5c6b",
+    "docs/plane-completion-proof/capture-plane_finish_discovery.log.gz": "86b6ebf1885888b9338caf3cd70cb82c9eea9b3ccf4cc3f4088f35cb0e559ed1",
+    "docs/plane-completion-proof/capture-plane_finish_pointer.log.gz": "761ccbbc2c26af91e8248aacff7856a6d2027961673be3f89e15484e4b919c64",
+    "docs/plane-completion-proof/capture-plane_finish_workflows.log.gz": "962421a2de1a83da53cb43e6802db5694c717977422c0c930ed89b27448cf4bd",
+    "docs/plane-completion-proof/captures.json": "b91e9a28a8bf75e974f7d79c083ea0c40a6b379683e3aa6246f6c1d0747ea51a",
+    "docs/plane-completion-proof/checks.json": "f8d7f765b512c868c2d1bb10e5ae5dbe4f2299ea3520d2f3a72acf7897e1653e",
+    "docs/plane-completion-proof/clippy-all-features.log.gz": "2a052b2599180db3de11208b2fcb77fbf3e3f76141707e3d09859131a28c5114",
+    "docs/plane-completion-proof/clippy-portable.log.gz": "1769781c38f6440a45769ad0f12d376a2f7b8303ef953505580d0ce3b1556bdf",
+    "docs/plane-completion-proof/commands-native.log.gz": "9ddf6b8238e777b9e56acac5917904aab9487b160727d52de73bbe9c24e9aea4",
+    "docs/plane-completion-proof/commands-portable.log.gz": "d803f47f686e298686af4f828c2bef9a99efe9f5ff2933b373ab7c2c2657b1d8",
+    "docs/plane-completion-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/plane-completion-proof/python.log.gz": "1bc0a2c69b93de50f36840584659025f1c077f9ad3c891082323c555a9412651",
+    "docs/plane-completion-proof/rectangle-input.log.gz": "28e63c2c7f47a3913db86b58ea722987b974b91818346798fc1b15cb3a0961e6",
+    "docs/plane-completion-proof/rectangle-native.log.gz": "2c3064fbc695eeb69e20f7995d62d2b8e57c57d37ca765e90f83827954674f35",
+    "docs/plane-completion-proof/rectangle-portable.log.gz": "45828077c887c95252e12e34917cd4c4ba2f719ad3d393d372bc916a97f7859a",
+    "docs/plane-completion-proof/subd-native.log.gz": "24a382906dac11a79a57552cf178e0d3a03df4de28221f314b19602f50882e4f",
+    "docs/plane-completion-proof/subd-portable.log.gz": "cbeb2d50ee8722cc66426db99838aeef42f6f83819c36714be0ee30ddf26a0f2",
+    "docs/plane-completion-proof/surface-flow-native.log.gz": "22af6367334caf1bc2fd78ff836a9142e2339c3768f5a4a0d8f6fddd43b9d3ac",
+    "docs/plane-completion-proof/surface-flow-portable.log.gz": "17c49b23bf51cd5f762c01c30896a412f7a859f96ce969e9f80aeb3940e153c6",
+    "docs/plane-completion-proof/ui-native.log.gz": "5b8a9c89e7a06e070bc22fd2854b4634b31eb565ed03952627760d63dd42bc72",
+    "docs/plane-completion-proof/ui-portable.log.gz": "788d338ae6e4f37ce3c017048d6d674166494485dd4159dadeddfa6f7f570acf",
+    "tools/rhino_oracle/fixtures/plane_completion.json": "adb3a6e3d81936704154f92f2a4be76c9ab6a5e3136bf584a3f7bc882e9d1351",
+    "tools/rhino_oracle/fixtures/plane_completion_terminal.json": "adb3a6e3d81936704154f92f2a4be76c9ab6a5e3136bf584a3f7bc882e9d1351",
+    "tools/rhino_oracle/fixtures/plane_finish_discovery.json": "42d125b6c2a540211e8880568d377cf947199f8ddccb1852083c67041fac4b6d",
+    "tools/rhino_oracle/fixtures/plane_finish_pointer.json": "e572a4138d02a5bf357c60141e5271fa23bfec783a2812a55c847ad9042e91bd",
+    "tools/rhino_oracle/fixtures/plane_finish_workflows.json": "b1ac1301938f9884ff358e77fe4ee62e5942ebbe703abfadd1f699f2e379977b",
+    "tools/rhino_oracle/observations/plane_completion.json.gz": "e0cf290972b0310e86f7d60ccaab537efd19274d1e9f684e2da9e304ffac7e58",
+    "tools/rhino_oracle/observations/plane_completion_terminal.json.gz": "6e65bd3c61ae6b4d7d14da725341ac6b9c362abf00cc581a83b7674ba45abc06",
+    "tools/rhino_oracle/observations/plane_finish_discovery.json.gz": "415c519ffce1d34d53ce7e19bf23246656cbebec4d12ff804a13a3d35bee1a06",
+    "tools/rhino_oracle/observations/plane_finish_pointer.json.gz": "f6a7fe8a5b3bb07672d629ab40a4e396743a70a11d73d7978fd3d7f113345f1e",
+    "tools/rhino_oracle/observations/plane_finish_workflows.json.gz": "cc18b511d33ae0c3297f4b16d0f3cee7ad5fa812d8aa5e304ef2b08b96ccc4cd",
+    "tools/rhino_oracle/observations/source_snapshots/025b54d09483d131ab962d3524cac1ade5bdf0326a0bcfa37319467134ef2e09.gz": "5b1cef0bebd6e808d0f501da8c8bb879c68a6a80f1045390fc0a0656b8ce502b",
+    "tools/rhino_oracle/observations/source_snapshots/099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821.gz": "3731942f701270d8234fa63d8590e44c4dab38685a2428aac5e9d62fc478768a",
+    "tools/rhino_oracle/observations/source_snapshots/0c364115de8e6812e827e6447e659eacba0019e0104098b08f46eaa855651f8d.gz": "71ed8de985b6f3908b2026bfa694386314d07aa4c76d2ff6d7ff42d534605e05",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/17c38fd8290a42438e973be09d5f2cdf589e120f1806f79826a7692903438d00.gz": "ad9922bdadedafbe1c58b66ebd29aa209b168180becea944585b09baafcd7813",
+    "tools/rhino_oracle/observations/source_snapshots/2653ef0faa6bc39072dc44ca76bb9f6cbacd4cf48a0b525486ba11eeb174beca.gz": "d8eac8cb15245253ad48c9566c01d7323dbe1c8137505d4f937dcb55211d1874",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3567a606d62691474ac62c420e01c461335b928cc78c364588452a53336d57aa.gz": "5d984505c6674b1a66a5a0ec940962b7dbe89ee4c1b61fbb4eb4130f4cda0600",
+    "tools/rhino_oracle/observations/source_snapshots/482f1ebf6cef97c0c9f12761b19eb72c233f608f3f7abd4d35a62bbf0741ab2d.gz": "bf3ac06d697c889ab34cbd8841d6939e8d52ca2f3ea98e864afb8509fdc291a8",
+    "tools/rhino_oracle/observations/source_snapshots/49d77c7c825a375b332f525913225a513c22af603f22aebae0942e55a8bbde3d.gz": "241509872f6d6494787280eb8c530e1c2e90f13c8da8d5963bb0d5b687befd6c",
+    "tools/rhino_oracle/observations/source_snapshots/5228399c62cdf052e9aa9c3f0dada7025e046a3a7bd2e5f54977ca71c72ad7bc.gz": "319a6674182a1868ebc198e3a87ec6778ecb9267fe4345e4e40775e6086593e9",
+    "tools/rhino_oracle/observations/source_snapshots/536beccfe6fc47f04115c6edbd9767aafe56d969cebd8f468802d6d6550c0c1c.gz": "4e88408d569b435d6bdb04845261c22815e866cff4c08cbe7a0ccb4611d9466d",
+    "tools/rhino_oracle/observations/source_snapshots/5775d4685d5b370482c56bb09a4aa78230c550e9da67217764b52be760861cba.gz": "5d8d9277f9505bd5c0bf4ab760e74e3f84e36849f51c307ae57491229d3280ec",
+    "tools/rhino_oracle/observations/source_snapshots/5a6179195afedc2cc97b11b2a159c04bfa63c22c8939878962fbf04a0c118456.gz": "6ca9d061274da56228a890a4bf26f855aa2ab3ea55e6f73d68d59a8f0144581d",
+    "tools/rhino_oracle/observations/source_snapshots/61d859a88d36102d4159c462530380402de739c07d11855bbb343821b833c4b9.gz": "9161bdd83a1fe69e12c82c73a48b6155df1bdcf5366260dbc3cd2ad69793a4c7",
+    "tools/rhino_oracle/observations/source_snapshots/68e41b42cdd19a88ac22c884a71c3a90364d7a3d093d921eebe4c8a64633e2f3.gz": "84f9bf7a342a135fc25381d7c536cabb68e4005843d4e08a57037d65f2b7fba3",
+    "tools/rhino_oracle/observations/source_snapshots/6af19bd4f0ea0f58fd73318dd66d932a0b9359cbbdfefa8a15368ec252d791de.gz": "83ef72f212d44d08f587955d820a3b5fe250b9a73e6311ee094add597a2d8604",
+    "tools/rhino_oracle/observations/source_snapshots/7da6ae6e48fd5ee9d9297422c8b46aeee4dd536d2c5d9011f5ace76f6811d71f.gz": "174d311ccb65b13a42467a41d50de2264e22bf3ce751350b846b4a55db34ca11",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/8be55a7b2a9b89b2d626098fb6d59469f6f9cf12cf9ba572e1c58614cddc98c7.gz": "3e5652a3326b3c2c566af9a155198dc72a2d5804ca7608a4bf7dcd582532764a",
+    "tools/rhino_oracle/observations/source_snapshots/98fc098b719d51f5bd833a146442da46accf427dd3ff010ddaf8fa351620f180.gz": "9b094b4bfa434ae1f4a497a4175a0dcba20e6dc1b89407c2f6135e6065a95500",
+    "tools/rhino_oracle/observations/source_snapshots/a7014ed9af2ad55bbcf39d63df671468b0dca314323da5772a6f8e1a56ea4c04.gz": "01a0959e714ce1b205ab56a6709b56730bd06a9a75f871851bb3fe6df2be1c0b",
+    "tools/rhino_oracle/observations/source_snapshots/b6ccc078c3292434c106dc4c2061dd65254261d72f555f3e883461bdb2876cf8.gz": "331a04ec641ae9a07b15ccbe89c95b72cf2315b30603a9c8cbeaab3dbd930fdb",
+    "tools/rhino_oracle/observations/source_snapshots/ba83b5204c0740ee3e5297472f4cfaa1ca3b66d675f63f33e4c0df887846dcca.gz": "9ded1b27113e78a86e73222e26f3ea89c2c9313f8ab2b890b68c5c2a9632190b",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c26318594f805366c3bb5826f4d877997cc147c70ebe678027f532786df4fdf8.gz": "442593c6dc4762b3df5176a5e2dfe9a9cb4303f1c54f9cfeccdfa97cf0394cdc",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cb4c431cf927f654d1497e87477e2eb76af2aa58f315c0aba2cabf3c6f33f313.gz": "5c867c0c59e96a4d84634ecac0ea4bb9e74407d6ecbb42a069955046709dbc2d",
+    "tools/rhino_oracle/observations/source_snapshots/cc42ce7c6c09896970a7135b176f07de5da789b51c6760bf3c2dfaa48b4e1dee.gz": "7d1dcdcbe3c4be5cccc0243cb5f41554b69aa4a7fb3e48e615f7edeeadaca5ab",
+    "tools/rhino_oracle/observations/source_snapshots/cd057cc68b0b31a40f6aca1b8147784a5b8e526d0a57dd319c3db3592706e433.gz": "0c2d3705f1d8c525cb9ddb3a44c42f9aafa828d81301d6269fcc77631bc3eb28",
+    "tools/rhino_oracle/observations/source_snapshots/d3ce0653396579e7e4328afd2cb60b31ff587cfd7f68347c267d324d232e8397.gz": "55e02b455c38f1f234b07e4fdfe5bddc5d5499a4eefbc80709890ba40aa4d604",
+    "tools/rhino_oracle/observations/source_snapshots/d4d8696af5ae3f499b1c23aa48fc5644159432cd2b62626fbc9f3c734269d383.gz": "c8e1fdd725348f77c4ee6e042481fcf0602b45bb0d9528bf1f71ca8d67cb21c9",
+    "tools/rhino_oracle/observations/source_snapshots/d7eae75924237425cb98b09972c311c807a684d47a0cf6b28b8dc22723dafdb7.gz": "3568725bc3dcdb7ef2bc6ee4c183b12aa4506b1875b5f924297bd565271d6644",
+    "tools/rhino_oracle/observations/source_snapshots/d871ed58bcab2b82db65750a900e7865d410d0e029c830f8d71fbbd7221a8eb5.gz": "7f19b2afbcf3cea13a271e9d2b018bbecd5a5c6058f97d210315c91b63743ee0",
+    "tools/rhino_oracle/observations/source_snapshots/dcc6ab1f426222856f2ef822301d28a025ce20726f3f0f79c81b9265226abb67.gz": "d0264ec79420c64a16f3c3d5a7c9a6655fb28a8b8d103e60798f0624a59de50e",
+    "tools/rhino_oracle/observations/source_snapshots/e1426b09e6a95d5ec97e838b7a265451e09a9aaab703fddd47371e0801283e80.gz": "7aa2398744b5c9977699e0e3f062ec4952a8f26ddeb50d790f24e561b774833e",
+    "tools/rhino_oracle/observations/source_snapshots/ea2656559616dbb70614765369dc60fdb9a413717625cf89ebbd1684fe7f6c1e.gz": "68e4603bac3c330c025136a5445b8eae38fe693e822b69c6b614bf5c48c671c3",
+    "tools/rhino_oracle/observations/source_snapshots/fd6d0006867ff8e23cc7c47cb8d46e632935059593ede8b22cfd8ca2c163ef74.gz": "559eadcb71a13e76578a6e9bc8e548d570304fc19ecc8f606e4667af63ede1b6"
+  }
+}

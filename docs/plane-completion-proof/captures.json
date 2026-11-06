@@ -1,0 +1,63 @@
+[
+  {
+    "family": "plane_finish_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_finish_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-plane_finish_discovery.log.gz"
+  },
+  {
+    "family": "plane_finish_workflows",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_finish_workflows"
+    ],
+    "exit_status": 0,
+    "log": "capture-plane_finish_workflows.log.gz"
+  },
+  {
+    "family": "plane_finish_pointer",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_finish_pointer"
+    ],
+    "exit_status": null,
+    "log": "capture-plane_finish_pointer.log.gz",
+    "receipt": "Wait handle was unavailable; completed publication and frozen source hashes are retained."
+  },
+  {
+    "family": "plane_completion",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_completion"
+    ],
+    "exit_status": 0,
+    "log": "capture-plane_completion.log.gz"
+  },
+  {
+    "family": "plane_completion_terminal",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_completion_terminal"
+    ],
+    "exit_status": 0,
+    "log": "capture-plane_completion_terminal.log.gz"
+  }
+]
