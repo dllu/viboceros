@@ -5,7 +5,7 @@ use std::cell::RefCell;
 
 /// Curve-owned preparation for repeated independent targets. Seed points are
 /// evaluated in original coordinates; translated controls only propose parameters.
-pub(crate) struct PreparedCurveClosest<'a> {
+pub struct PreparedCurveClosest<'a> {
     source: &'a NurbsCurve,
     local: Option<NurbsCurve>,
     offset: Vector3,
@@ -40,7 +40,9 @@ impl<'a> PreparedCurveClosest<'a> {
             queries: RefCell::new(std::array::from_fn(|_| CurveQueryState::retaining_spans())),
         })
     }
-    pub(crate) fn closest_parameter(
+    /// Evaluate an independent target with the same seeds and refinement policy
+    /// as `NurbsCurve::closest_parameter`, retaining prepared span coefficients.
+    pub fn closest_parameter(
         &self,
         target: Point3,
         tolerance: Tolerance,

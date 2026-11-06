@@ -83,6 +83,11 @@ mod curve_frame;
 mod curve_hull_index;
 pub use brep::planar_curve_network_boundaries;
 pub use brep::{PlanarCurveArrangement, PlanarCurveRegion};
+mod curve_two_views;
+pub use curve_two_views::{
+    MAX_TWO_VIEW_CONTROLS, MAX_TWO_VIEW_OUTPUTS, curves_from_two_views,
+    curves_from_two_views_with_operation,
+};
 mod curve_sources;
 pub use curve_sources::{curve_overlap_source_intervals, curve_overlap_sources};
 mod curve_join;
@@ -356,8 +361,8 @@ pub use nurbs::{
     CurveCurveIntersectionParameters, CurveCurveOverlap, CurveExtensionBoundary,
     CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, CurveSoftEdit,
     KnotReduction, MAX_KNOT_REDUCTION_GROUPS, NurbsCurve, NurbsCurveParameterSampler,
-    NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots, knot_group_removal_knots,
-    knot_removal_knots,
+    NurbsCurveSamplingSpan, PreparedCurveClosest, WeightedPoint3, degree_change_knots,
+    knot_group_removal_knots, knot_removal_knots,
 };
 pub use nurbs_surface::{
     NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection, SurfaceSoftEdit,

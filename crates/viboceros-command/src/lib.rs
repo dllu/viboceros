@@ -428,6 +428,7 @@ mod boolean_solids;
 mod boolean_split;
 pub mod boolean_two;
 pub mod curve_boolean;
+pub mod curve_two_views;
 pub mod fillet_surface;
 use boolean_difference::BooleanDifferenceCommand;
 mod boolean_intersection;

@@ -5,6 +5,13 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("curve projection directions are nearly parallel")]
+    ParallelCurveViewDirections,
+    #[error("two-view curve reconstruction exceeds {maximum} {resource}")]
+    CurveTwoViewsLimit {
+        resource: &'static str,
+        maximum: usize,
+    },
     #[error("continuity angle must be finite and lie in [0, pi]")]
     InvalidContinuityAngle,
     #[error(transparent)]

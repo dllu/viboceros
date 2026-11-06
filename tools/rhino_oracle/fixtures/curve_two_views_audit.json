@@ -1,0 +1,591 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "curve_two_views",
+      "id": "two_views_audit_base",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                -3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "mode": "audit",
+      "api_tolerance": 1e-06,
+      "model_tolerance": 1e-06,
+      "api_angle": 1e-06
+    },
+    {
+      "op": "curve_two_views",
+      "id": "two_views_audit_api_fine",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                -3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "mode": "audit",
+      "api_tolerance": 1e-08,
+      "model_tolerance": 1e-06,
+      "api_angle": 1e-06
+    },
+    {
+      "op": "curve_two_views",
+      "id": "two_views_audit_api_coarse",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                -3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "mode": "audit",
+      "api_tolerance": 0.0001,
+      "model_tolerance": 1e-06,
+      "api_angle": 1e-06
+    },
+    {
+      "op": "curve_two_views",
+      "id": "two_views_audit_model_fine",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                -3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "mode": "audit",
+      "api_tolerance": 1e-06,
+      "model_tolerance": 1e-08,
+      "api_angle": 1e-06
+    },
+    {
+      "op": "curve_two_views",
+      "id": "two_views_audit_angle_fine",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                -3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "mode": "audit",
+      "api_tolerance": 1e-06,
+      "model_tolerance": 1e-06,
+      "api_angle": 1e-08
+    }
+  ]
+}

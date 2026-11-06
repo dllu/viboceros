@@ -7,6 +7,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 
 - [Surface curve networks and interior junctions](curve-networks.md)
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
+- [Experimental two-view reconstruction and native fidelity gaps](../curve-two-views.md)
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
 - [SubD limit charts and exact NURBS patches](subd-limit-faces.md)

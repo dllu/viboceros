@@ -74,14 +74,19 @@ fn boundaries(v: &Value) -> Vec<Vec<NurbsCurve>> {
 }
 fn directed(a: &[NurbsCurve], b: &[NurbsCurve]) -> f64 {
     let mut max = 0f64;
+    let prepared = b
+        .iter()
+        .map(|c| c.prepare_closest_parameter_search().unwrap())
+        .collect::<Vec<_>>();
     for c in a {
         for (lo, hi) in c.spans() {
             for i in 0..=8 {
                 let p = c.evaluate(lo + (hi - lo) * i as f64 / 8.).unwrap();
                 let distance = b
                     .iter()
-                    .map(|c| {
-                        let t = c.closest_parameter(p, Tolerance::DEFAULT).unwrap();
+                    .zip(&prepared)
+                    .map(|(c, query)| {
+                        let t = query.closest_parameter(p, Tolerance::DEFAULT).unwrap();
                         p.distance_to(c.evaluate(t).unwrap()).unwrap()
                     })
                     .fold(f64::INFINITY, f64::min);
@@ -148,7 +153,11 @@ pub fn qualify(id: &str, r: Comparison) -> Result<bool, String> {
         Err(format!("{id}: unexpected geometry gap {r:?}"))
     }
 }
-fn object_error(a: &Value, b: &Value) -> Result<Comparison, String> {
+fn object_error(
+    a: &Value,
+    b: &Value,
+    distance: &impl Fn(&[NurbsCurve], &[NurbsCurve]) -> f64,
+) -> Result<Comparison, String> {
     for key in [
         "kind",
         "source",
@@ -230,7 +239,7 @@ fn object_error(a: &Value, b: &Value) -> Result<Comparison, String> {
             .iter()
             .enumerate()
             .filter(|(i, _)| !used[*i])
-            .map(|(i, y)| (i, directed(x, y).max(directed(y, x))))
+            .map(|(i, y)| (i, distance(x, y).max(distance(y, x))))
             .min_by(|a, b| a.1.total_cmp(&b.1))
             .unwrap();
         used[best.0] = true;
@@ -244,6 +253,13 @@ fn object_error(a: &Value, b: &Value) -> Result<Comparison, String> {
     Ok(result)
 }
 pub fn compare(a: &Value, b: &Value) -> Result<Comparison, String> {
+    compare_with_curve_distance(a, b, &directed)
+}
+pub fn compare_with_curve_distance(
+    a: &Value,
+    b: &Value,
+    distance: &impl Fn(&[NurbsCurve], &[NurbsCurve]) -> f64,
+) -> Result<Comparison, String> {
     if a["success"] != b["success"] {
         return Err(format!("success {} != {}", a["success"], b["success"]));
     }
@@ -264,7 +280,9 @@ pub fn compare(a: &Value, b: &Value) -> Result<Comparison, String> {
                     .enumerate()
                     .filter(|(i, _)| !used[*i])
                     .filter_map(|(i, target)| {
-                        object_error(object, target).ok().map(|error| (i, error))
+                        object_error(object, target, distance)
+                            .ok()
+                            .map(|error| (i, error))
                     });
             let Some((i, error)) =
                 candidates.min_by(|a, b| a.1.model_error.total_cmp(&b.1.model_error))

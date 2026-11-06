@@ -286,6 +286,7 @@ pub mod curve_boolean;
 mod curve_join_close;
 mod curve_native;
 mod curve_offset;
+pub mod curve_two_views;
 mod ellipse_offset;
 mod extension_backend;
 mod knot_reduction;
@@ -1055,6 +1056,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: planar_regions::Fixture,
+    },
+    CurveTwoViews {
+        id: String,
+        #[serde(flatten)]
+        fixture: curve_two_views::Fixture,
     },
     CurveBoolean {
         id: String,
@@ -3077,6 +3083,7 @@ impl Operation {
             | Self::CurveAlongCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
             | Self::PlanarChains { id, .. }
+            | Self::CurveTwoViews { id, .. }
             | Self::CurveBoolean { id, .. }
             | Self::PlanarRegions { id, .. }
             | Self::PlanarSurfaceCommand { id, .. }
@@ -3910,6 +3917,9 @@ fn execute(
         }
         Operation::PlanarChains { fixture, .. } => {
             planar_regions::run_chains(fixture, iterations, tolerance)?
+        }
+        Operation::CurveTwoViews { fixture, .. } => {
+            curve_two_views::run(fixture, iterations, tolerance)?
         }
         Operation::CurveBoolean { fixture, .. } => {
             curve_boolean::run(fixture, iterations, tolerance)?

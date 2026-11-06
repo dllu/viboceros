@@ -4,7 +4,7 @@ use super::*;
 use crate::point::PointDistance;
 mod prepared;
 mod refine;
-pub(crate) use prepared::PreparedCurveClosest;
+pub use prepared::PreparedCurveClosest;
 
 #[cfg(test)]
 mod tests;
@@ -136,7 +136,9 @@ impl NurbsCurve {
         Ok(best.parameter)
     }
 
-    pub(crate) fn prepare_closest_parameter_search(
+    /// Prepare repeated independent closest-point queries without changing the
+    /// ordinary search's span coverage, refinement or original-coordinate ranks.
+    pub fn prepare_closest_parameter_search(
         &self,
     ) -> Result<PreparedCurveClosest<'_>, GeometryError> {
         PreparedCurveClosest::new(self)

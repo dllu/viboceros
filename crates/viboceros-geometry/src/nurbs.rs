@@ -12,7 +12,7 @@ mod conics;
 pub use boundary_extension::CurveExtensionOperations;
 pub(crate) use boundary_extension::with_portable_extension_operations;
 mod closest_point;
-pub(crate) use closest_point::PreparedCurveClosest;
+pub use closest_point::PreparedCurveClosest;
 mod decompose;
 mod discontinuities;
 mod edit_point_insertion;

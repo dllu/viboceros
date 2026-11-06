@@ -1,0 +1,896 @@
+{
+  "scope": "Experimental two-view geometry and immutable preparation; command intentionally unregistered.",
+  "baseline_revision": "07aba3100ac71b56e7646aaea8c2e6f6de826d03",
+  "command_registered": false,
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_coverage_qualified": false,
+  "performance_qualified": false,
+  "execution": "Native captures used private Xvfb displays. UI replays are windowless Rust unit tests.",
+  "native_observations": 45,
+  "local_workflows": 23,
+  "completed": 21,
+  "sampled_gate_matches": {
+    "successful_constructions": 1,
+    "expected_failures": 2
+  },
+  "above_gate_sampled_upper_bounds": 19,
+  "output_count_gaps": 1,
+  "native_only_cancellations": 6,
+  "limits": [
+    "A sampled distance upper bound above the model gate is inconclusive alone.",
+    "The exact exclusion audit covers five serialized reference points against the entire independently known cubic, not every curved workflow.",
+    "Equal circles have two local outputs and one native output; their union distance is not qualified.",
+    "Cancellation controls have no local interactive replay. No GUI controller is registered.",
+    "Curve fitting and direct surface-intersection controls do not establish the cause of the native discrepancies."
+  ],
+  "workflows": [
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_cubic",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309253827144537e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_reverse_second",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.3095108965251636e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_domains",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309253827407127e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_rational_shared",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 6.225253147842303e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_rational_distinct",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 6.422329036844001e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_different_clock",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 9.646226784460991e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_partial",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 0.00010448328666998897,
+      "success": true
+    },
+    {
+      "actual_outputs": 0,
+      "geometry_qualified": true,
+      "id": "two_views_disjoint",
+      "local_error": "usage: Crv2View profiles have no common spatial curve",
+      "native_outputs": 0,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 0.0,
+      "success": false
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_turning",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.4221263287166837e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": true,
+      "id": "two_views_lines",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 9.930136612989092e-16,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_line_and_cubic",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 3.561502353152346e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 2,
+      "geometry_qualified": false,
+      "id": "two_views_circles_equal",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": true,
+      "sample_distance_upper_bound": null,
+      "success": true
+    },
+    {
+      "actual_outputs": 2,
+      "geometry_qualified": false,
+      "id": "two_views_circles_unequal",
+      "local_error": null,
+      "native_outputs": 2,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 3.601832170237342e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_oblique",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 4.223425098779012e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_opposite",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309253827641344e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 0,
+      "geometry_qualified": true,
+      "id": "two_views_parallel",
+      "local_error": "curve projection directions are nearly parallel",
+      "native_outputs": 0,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 0.0,
+      "success": false
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_rotated",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309553382911966e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_remote",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309608729450946e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_auto",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309253827641344e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_preselected",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 5.309253827641344e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_temporary_first",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 1.330457274255175e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_temporary_both",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 1.4399570371852791e-05,
+      "success": true
+    },
+    {
+      "actual_outputs": 1,
+      "geometry_qualified": false,
+      "id": "two_views_temporary_reverse",
+      "local_error": null,
+      "native_outputs": 1,
+      "output_count_gap": false,
+      "sample_distance_upper_bound": 1.4368708691242059e-05,
+      "success": true
+    }
+  ],
+  "exact_exclusions": [
+    {
+      "certificate": {
+        "excluded_radius": 4e-05,
+        "leaves": 18,
+        "maximum_depth": 17,
+        "work": 35
+      },
+      "id": "two_views_audit_base",
+      "model_epsilon": 1e-06,
+      "reference_point": [
+        9.687683265920505,
+        2.5265957995136676,
+        1.2744047697978536
+      ]
+    },
+    {
+      "certificate": {
+        "excluded_radius": 4e-05,
+        "leaves": 19,
+        "maximum_depth": 18,
+        "work": 37
+      },
+      "id": "two_views_audit_api_fine",
+      "model_epsilon": 1e-06,
+      "reference_point": [
+        9.690064989593955,
+        2.529864026529764,
+        1.2725860278270842
+      ]
+    },
+    {
+      "certificate": {
+        "excluded_radius": 4e-05,
+        "leaves": 18,
+        "maximum_depth": 17,
+        "work": 35
+      },
+      "id": "two_views_audit_api_coarse",
+      "model_epsilon": 1e-06,
+      "reference_point": [
+        9.698091207445053,
+        2.5409109041681894,
+        1.2664306217926498
+      ]
+    },
+    {
+      "certificate": {
+        "excluded_radius": 4e-05,
+        "leaves": 18,
+        "maximum_depth": 17,
+        "work": 35
+      },
+      "id": "two_views_audit_model_fine",
+      "model_epsilon": 1e-06,
+      "reference_point": [
+        9.687683265920505,
+        2.5265957995136676,
+        1.2744047697978536
+      ]
+    },
+    {
+      "certificate": {
+        "excluded_radius": 4e-05,
+        "leaves": 18,
+        "maximum_depth": 17,
+        "work": 35
+      },
+      "id": "two_views_audit_angle_fine",
+      "model_epsilon": 1e-06,
+      "reference_point": [
+        9.687683265920505,
+        2.5265957995136676,
+        1.2744047697978536
+      ]
+    }
+  ],
+  "curve_boolean_regressions": [
+    {
+      "build": "portable",
+      "route": "command",
+      "workflows": 83,
+      "all_recorded_metrics_unchanged": true
+    },
+    {
+      "build": "portable",
+      "route": "ui",
+      "workflows": 83,
+      "all_recorded_metrics_unchanged": true
+    },
+    {
+      "build": "native",
+      "route": "command",
+      "workflows": 83,
+      "all_recorded_metrics_unchanged": true
+    },
+    {
+      "build": "native",
+      "route": "ui",
+      "workflows": 83,
+      "all_recorded_metrics_unchanged": true
+    }
+  ],
+  "captures": [
+    {
+      "path": "tools/rhino_oracle/observations/curve_two_views.json.gz",
+      "observations": 29,
+      "raw_sha256": "a04c51cfb028aaca2e5b06f534194bc5faece24f0465a828a1167d93fa2d65f6",
+      "engine_version": "8.32.26160.13001",
+      "invocation": "bash tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_two_views",
+      "provenance": {
+        "request_sha256": "8753546ac3dbccfb136fb7a7f28c6e271a409a39c02f73fd93b3d66368aedb30",
+        "sources": {
+          "generate_curve_two_views.py": "e20be8a6fac19ca6a54656491233f9f17d6157c1f426cbbd83e37a1012abe0c9",
+          "curve_two_views_cases.py": "96df24441c03bfaf38f01bc21ab932ec64a12232726d9f2e8fd2bde1bdbb833c",
+          "curve_two_views_probe.py": "022a7d6a70f4a50b5c9fde24ed263eb9439a534bd8e7e4110890167005a24041",
+          "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "structural_sdk.py": "9666508ec02158dbabdde48d0e42d5b54b28e3d368b778dce90dc2b104eec5af",
+          "rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+          "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+          "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+        }
+      }
+    },
+    {
+      "path": "tools/rhino_oracle/observations/curve_two_views_discovery.json.gz",
+      "observations": 5,
+      "raw_sha256": "ad575dec497e273a74acab3f1674a27dd3139b8dfc24e810dca6ba824f891fa6",
+      "engine_version": "8.32.26160.13001",
+      "invocation": "bash tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_two_views_discovery",
+      "provenance": {
+        "request_sha256": "acfbb51f35d74f6d3ebdc08320bff0d1ed86e8163d05c2e0e098c9fc984d885c",
+        "sources": {
+          "generate_curve_two_views_discovery.py": "8057cb78d3e2d57fc6880856048bad39d79b0831ff54a82455a8ce2521bd55e2",
+          "curve_two_views_cases.py": "9c3e52f38c861ebf7b2969643832de82e0db7aeb89835b146fe0c450edcada9d",
+          "curve_two_views_probe.py": "018c442640029272781900a41367b68f2844350a77d460202109fac2eaebf5eb",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "structural_sdk.py": "59a02ccbb97a3cbefcdedd64f03cd805ffbd02a92be7e7a9d5aaa291733f9683",
+          "rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+          "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+          "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+        }
+      }
+    },
+    {
+      "path": "tools/rhino_oracle/observations/curve_two_views_audit.json.gz",
+      "observations": 5,
+      "raw_sha256": "c6759260fb2f044f2f2f2285a83450f838fcc245502da5e653c458fff8bd2513",
+      "engine_version": "8.32.26160.13001",
+      "invocation": "bash tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_two_views_audit",
+      "provenance": {
+        "request_sha256": "4ad84d082a5e24f248fb1808db32e5ab32b168c098d85f0f3d013c71a0ec4c8f",
+        "sources": {
+          "generate_curve_two_views_audit.py": "9b23bb5c4e78398d03c07f3cc234663e29f566facf35df146edeeb66161f9ef9",
+          "curve_two_views_cases.py": "c187db42bc301cbcbd557a2fd60eedef04383e5feac3ac2eba29ed6238cf4b0a",
+          "curve_two_views_probe.py": "03bb695f2af7540bf53a0298fce6cee5a155412a433c05452cd53ea958bdfc45",
+          "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "structural_sdk.py": "9666508ec02158dbabdde48d0e42d5b54b28e3d368b778dce90dc2b104eec5af",
+          "rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+          "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+          "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+        }
+      }
+    },
+    {
+      "path": "tools/rhino_oracle/observations/curve_two_views_fit_audit.json.gz",
+      "observations": 3,
+      "raw_sha256": "05aa52cef0bad0121377c5d8dc9d7565d25b62ad07e2c2a6ade182acc152e296",
+      "engine_version": "8.32.26160.13001",
+      "invocation": "bash tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_two_views_fit_audit",
+      "provenance": {
+        "request_sha256": "b029897c8ba23daddacaeeedd02b9752ea8d5f8a60fb2883cefe81fadb0e9078",
+        "sources": {
+          "generate_curve_two_views_fit_audit.py": "8eb03de9056b700664f7e7bb2403b1e80cc214d88d59df7fed8dcda7165e8b06",
+          "curve_two_views_cases.py": "dcb872cfd24b1101628fe07f22b0160be46def03fd43f398b829637c85c110d6",
+          "curve_two_views_probe.py": "a571b5ff8a2f6e573860ff18ef5767c423c664b58c796251e758f98494ee3826",
+          "curve_two_views_fit_probe.py": "c1a61b0a960f5c4309873ea278f34e6c955c487b05a68fd9d7474eb7ade16b1b",
+          "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "structural_sdk.py": "1ea5a3f77914ba6d53b7568c33035f20d84750b30bd1300deb8f023187241224",
+          "rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+          "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+          "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+        }
+      }
+    },
+    {
+      "path": "tools/rhino_oracle/observations/curve_two_views_surface_audit.json.gz",
+      "observations": 3,
+      "raw_sha256": "c1cbec332f4843d815a162ad55af70d31c8923c27df8845b583c22e940b8b3ee",
+      "engine_version": "8.32.26160.13001",
+      "invocation": "bash tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_two_views_surface_audit",
+      "provenance": {
+        "request_sha256": "5e4863b1bc3ef6e28674c69d437d7508a3d6e178535411b54fd12dea1020ec41",
+        "sources": {
+          "generate_curve_two_views_surface_audit.py": "a4f6af6472bde8bda553b54303cc809f341cb9c1e1b699436e0d66ba6879c9c5",
+          "curve_two_views_cases.py": "d04f2c7d8d6daebf446868a3b594b3030d3c1c8c3f8d220326b989028e717d43",
+          "curve_two_views_probe.py": "2143b8016173a8ba571b3f07e48bb6745238612f5647b0ff7caf14e169d0b633",
+          "curve_two_views_surface_probe.py": "8b7075c9cb60d5019b0ffb4bb5fd88d210779a511ce89cd7e69a6cd5fec1f4d1",
+          "curve_two_views_fit_probe.py": "c1a61b0a960f5c4309873ea278f34e6c955c487b05a68fd9d7474eb7ade16b1b",
+          "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "structural_sdk.py": "1d0939ef42748762feae320a898ec5341c3fb47325268ccf78d0f5127042a415",
+          "rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+          "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+          "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "elapsed_seconds": 37.15950387799239,
+      "log": "docs/curve-two-views-proof/clippy-all-features.log.gz"
+    },
+    {
+      "name": "clippy-portable",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "elapsed_seconds": 44.718257158005144,
+      "log": "docs/curve-two-views-proof/clippy-portable.log.gz"
+    },
+    {
+      "name": "closest-point",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "closest_point"
+      ],
+      "status": 0,
+      "elapsed_seconds": 22.737851109006442,
+      "log": "docs/curve-two-views-proof/closest-point.log.gz"
+    },
+    {
+      "name": "command-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "curve_two_views",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 32.797570171998814,
+      "log": "docs/curve-two-views-proof/command-native.log.gz"
+    },
+    {
+      "name": "command-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "curve_two_views",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 39.800273831991944,
+      "log": "docs/curve-two-views-proof/command-portable.log.gz"
+    },
+    {
+      "name": "curve-boolean-command-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 88.56692466500681,
+      "log": "docs/curve-two-views-proof/curve-boolean-command-native.log.gz"
+    },
+    {
+      "name": "curve-boolean-command-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 87.15281541801232,
+      "log": "docs/curve-two-views-proof/curve-boolean-command-portable.log.gz"
+    },
+    {
+      "name": "curve-boolean-ui-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "curve_boolean_native_corpus",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 269.93949642901134,
+      "log": "docs/curve-two-views-proof/curve-boolean-ui-native.log.gz"
+    },
+    {
+      "name": "curve-boolean-ui-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "curve_boolean_native_corpus",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 281.3778971749998,
+      "log": "docs/curve-two-views-proof/curve-boolean-ui-portable.log.gz"
+    },
+    {
+      "name": "exact-audit-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "curve_two_views_audit",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 0.5795974229986314,
+      "log": "docs/curve-two-views-proof/exact-audit-native.log.gz"
+    },
+    {
+      "name": "exact-audit-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "curve_two_views_audit",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 0.6101371159893461,
+      "log": "docs/curve-two-views-proof/exact-audit-portable.log.gz"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "elapsed_seconds": 7.096598963995348,
+      "log": "docs/curve-two-views-proof/fmt.log.gz"
+    },
+    {
+      "name": "geometry",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_two_views"
+      ],
+      "status": 0,
+      "elapsed_seconds": null,
+      "log": "docs/curve-two-views-proof/geometry.log.gz"
+    },
+    {
+      "name": "help-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "reports_sorted_help"
+      ],
+      "status": 0,
+      "elapsed_seconds": 0.11796624699491076,
+      "log": "docs/curve-two-views-proof/help-native.log.gz"
+    },
+    {
+      "name": "help-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reports_sorted_help"
+      ],
+      "status": 0,
+      "elapsed_seconds": 0.10072256199782714,
+      "log": "docs/curve-two-views-proof/help-portable.log.gz"
+    },
+    {
+      "name": "planar-mesh-command-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 15.575265090999892,
+      "log": "docs/curve-two-views-proof/planar-mesh-command-native.log.gz"
+    },
+    {
+      "name": "planar-mesh-command-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 14.476685160989291,
+      "log": "docs/curve-two-views-proof/planar-mesh-command-portable.log.gz"
+    },
+    {
+      "name": "planar-mesh-ui-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 16.97650316399813,
+      "log": "docs/curve-two-views-proof/planar-mesh-ui-native.log.gz"
+    },
+    {
+      "name": "planar-mesh-ui-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 16.65470999199897,
+      "log": "docs/curve-two-views-proof/planar-mesh-ui-portable.log.gz"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_curve_two_views.TwoViewEvidenceTests.test_fixed_requests_and_all_frozen_producers",
+        "tools.rhino_oracle.test_curve_two_views.TwoViewEvidenceTests.test_recipe_identity_ignores_key_order_and_rejects_value_or_type_changes",
+        "tools.rhino_oracle.test_curve_two_views.TwoViewEvidenceTests.test_command_parents_output_attributes_and_native_only_cancellations",
+        "tools.rhino_oracle.test_curve_two_views.TwoViewEvidenceTests.test_sdk_controls_retain_unchanged_documents_and_parallel_pathology",
+        "tools.rhino_oracle.test_curve_two_views.TwoViewEvidenceTests.test_staged_helper_closure",
+        "tools.rhino_oracle.test_curve_boolean",
+        "tools.rhino_oracle.test_structural_sdk",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "status": 0,
+      "elapsed_seconds": 0.7287871360022109,
+      "log": "docs/curve-two-views-proof/python.log.gz"
+    },
+    {
+      "name": "two-view-experiment",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "curve_two_views",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "elapsed_seconds": 68.95427820600162,
+      "log": "docs/curve-two-views-proof/two-view-experiment.log.gz"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "a9688f58c566ca08d98b255d4a8babadcc50613624abb0d61530e17f79562efb",
+    "crates/viboceros-command/src/curve_two_views.rs": "35622f26465b2af87b58ca2a00bcbe055944358978c6a47c9b9b49c874946b78",
+    "crates/viboceros-command/src/curve_two_views/options.rs": "7e5e60466098b3075ed3d9d602fb1913226212779f5b030013819765b880b50e",
+    "crates/viboceros-command/src/curve_two_views/tests.rs": "9ff10f4ad1d20603706324f98f0f876bf9a1d5580d57b45eab9ae5229310b1e6",
+    "crates/viboceros-command/src/lib.rs": "05a29de211bef12a8a2ceabb75d4c0bb853dc1d5a1ed43a5edcb8d5e2fc5101f",
+    "crates/viboceros-geometry/src/curve_two_views.rs": "0127950befd97f5545524978fa5d45e396c1274d97b27c3b3630003a7c0afef8",
+    "crates/viboceros-geometry/src/curve_two_views/aligned.rs": "d89c54419646c1ac72e4fb44e19d9e66088cf895cc260fad2a3573598e3e8055",
+    "crates/viboceros-geometry/src/curve_two_views/tests.rs": "3509f541d779cf3d51f6a9951a482d84f659694071b3ac9a61d35393955313bd",
+    "crates/viboceros-geometry/src/error.rs": "602e694dc8c42c8aa74c527d0425f3330a1aa09849baa77db027e7c0d7dcc4d2",
+    "crates/viboceros-geometry/src/lib.rs": "7a164c7f14fb2474110246bc35957a1b191ecffe9354b047d97815049c20be3b",
+    "crates/viboceros-geometry/src/nurbs.rs": "cd276eedbb71fd0a1026ded8b1c3127b31c0d5e139d3c023fbe7c0d961858e44",
+    "crates/viboceros-geometry/src/nurbs/closest_point.rs": "11466063f21b36223c521cd9874ff612f3b5847a9fbd595fd46ac718b907e9e2",
+    "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "75d54673b047bd66289f01b8bb0d7ec379cb401d8469f241a8d62e7d385b6566",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/tests.rs": "3310b08aa8e543933e9bd7f90d12627a123c052ea487a393d50048500631af21",
+    "crates/viboceros-oracle/Cargo.toml": "096e0b5508b009f460a8248f5dddeb432d7336188cb40308a928f06cb8fa8da0",
+    "crates/viboceros-oracle/src/curve_two_views.rs": "e29c8d73981a66948382069c5e883c0d27acd70da446f267212c39572aaa60b7",
+    "crates/viboceros-oracle/src/lib.rs": "7a000816c9fd9fee635c808b02afa31a8b984d13efaffc0c99630ef749b65a88",
+    "crates/viboceros-oracle/tests/curve_two_views.rs": "ef349ae9262e50041ce8da650aa0425b40a09d65ce05909eed55bdacbaccb67d",
+    "crates/viboceros-oracle/tests/curve_two_views_audit.rs": "07edb1605389aee94d83bda5086473bd6130d5dd48db4e2342a40d0f24f24122",
+    "crates/viboceros-oracle/tests/support/curve_boolean.rs": "2dc6fc85cdc9e086d82dbfa7db1a1b7bc03779fb8eba4400c9f5673adc7d11d8",
+    "crates/viboceros-oracle/tests/support/curve_two_views.rs": "4f77d76e907b5b062de55a46fe3b71296bd1d4f760373c4b2a062bdb2f518f75",
+    "crates/viboceros-oracle/tests/support/curve_two_views_audit.rs": "b048307959151d51a5113c018d6ec140ddbdb702c2f52a79b8fc37525e13faf4",
+    "tools/rhino_oracle/curve_two_views_cases.py": "d04f2c7d8d6daebf446868a3b594b3030d3c1c8c3f8d220326b989028e717d43",
+    "tools/rhino_oracle/curve_two_views_fit_probe.py": "c1a61b0a960f5c4309873ea278f34e6c955c487b05a68fd9d7474eb7ade16b1b",
+    "tools/rhino_oracle/curve_two_views_probe.py": "2143b8016173a8ba571b3f07e48bb6745238612f5647b0ff7caf14e169d0b633",
+    "tools/rhino_oracle/curve_two_views_surface_probe.py": "8b7075c9cb60d5019b0ffb4bb5fd88d210779a511ce89cd7e69a6cd5fec1f4d1",
+    "tools/rhino_oracle/fixtures/curve_two_views.json": "8753546ac3dbccfb136fb7a7f28c6e271a409a39c02f73fd93b3d66368aedb30",
+    "tools/rhino_oracle/fixtures/curve_two_views_audit.json": "4ad84d082a5e24f248fb1808db32e5ab32b168c098d85f0f3d013c71a0ec4c8f",
+    "tools/rhino_oracle/fixtures/curve_two_views_discovery.json": "acfbb51f35d74f6d3ebdc08320bff0d1ed86e8163d05c2e0e098c9fc984d885c",
+    "tools/rhino_oracle/fixtures/curve_two_views_fit_audit.json": "b029897c8ba23daddacaeeedd02b9752ea8d5f8a60fb2883cefe81fadb0e9078",
+    "tools/rhino_oracle/fixtures/curve_two_views_surface_audit.json": "5e4863b1bc3ef6e28674c69d437d7508a3d6e178535411b54fd12dea1020ec41",
+    "tools/rhino_oracle/generate_curve_two_views.py": "e20be8a6fac19ca6a54656491233f9f17d6157c1f426cbbd83e37a1012abe0c9",
+    "tools/rhino_oracle/generate_curve_two_views_audit.py": "9b23bb5c4e78398d03c07f3cc234663e29f566facf35df146edeeb66161f9ef9",
+    "tools/rhino_oracle/generate_curve_two_views_discovery.py": "8057cb78d3e2d57fc6880856048bad39d79b0831ff54a82455a8ce2521bd55e2",
+    "tools/rhino_oracle/generate_curve_two_views_fit_audit.py": "8eb03de9056b700664f7e7bb2403b1e80cc214d88d59df7fed8dcda7165e8b06",
+    "tools/rhino_oracle/generate_curve_two_views_surface_audit.py": "a4f6af6472bde8bda553b54303cc809f341cb9c1e1b699436e0d66ba6879c9c5",
+    "tools/rhino_oracle/report_curve_two_views.py": "89bf9235e26e1c206300ba24857649bb1c784f9a87ab19e5030d2e4b79fa4698",
+    "tools/rhino_oracle/rhino_worker.py": "0ff5fe24775be2cb1d0a13d916f1dae5cc6f95d368063eab5fa97048a9ce56d6",
+    "tools/rhino_oracle/structural_sdk.py": "1d0939ef42748762feae320a898ec5341c3fb47325268ccf78d0f5127042a415",
+    "tools/rhino_oracle/test_curve_two_views.py": "658d94dc2e44a26041d1193130aec21c1ecb5b7b0f6290d3406b6de1218fbca2"
+  },
+  "evidence_sha256": {
+    "docs/curve-two-views-proof/capture-audit.log.gz": "f62abcce90fe5f7c4cfa74ac246c2bf5a0ca3031cedff9ceb988f06236da9f69",
+    "docs/curve-two-views-proof/capture-command.log.gz": "88a3b8ce7b9f5b13a9d4eee11d9017d8ed55b42f4d237f0a6569f6adf7644927",
+    "docs/curve-two-views-proof/capture-discovery.log.gz": "472d639e0625d2afb037f7ee5afa591fb72d8f14669b788a5b0d1b600e34ffc2",
+    "docs/curve-two-views-proof/capture-fit-audit.log.gz": "a122fb59f3700d84784ce2c9a70558707ddb26a215fb8e19c5ca95a8919ac999",
+    "docs/curve-two-views-proof/capture-surface-audit.log.gz": "6734d5d0d7b89a2005bd565f116abbb232f6b4a5ff64316a1a5001a9550b2e14",
+    "docs/curve-two-views-proof/checks.json": "6df7053d3f4132745fdcc0b0fd0631e5b9df2a338173f1a29e46afdfbabf598d",
+    "docs/curve-two-views-proof/clippy-all-features.log.gz": "46ea6f77916922139dc19aeb6ddd1449dd81ee08778b7b5f104fdea0cc7d48c9",
+    "docs/curve-two-views-proof/clippy-portable.log.gz": "09388a5db0e7169eecb3b2c731b17a9f99a86435fbe5db8d1cbbde13136d915b",
+    "docs/curve-two-views-proof/closest-point.log.gz": "338f304254c1828964b581a58ffb9a64f1e4108ccf8bc54ae59ae320ae5b25e5",
+    "docs/curve-two-views-proof/command-native.log.gz": "a3edc90b378aca8dd0df90172dbc9b082f32dcc077c027b838782cd8237725e7",
+    "docs/curve-two-views-proof/command-portable.log.gz": "a6f77559c9d9ef302aba66b4d2c5356b64190071a9c47e20ea77ede5ee1685f2",
+    "docs/curve-two-views-proof/curve-boolean-command-native.log.gz": "b3cac7b8fcb8585cb2d177438abbef5639fbf716c48609a2d8706f1af0510269",
+    "docs/curve-two-views-proof/curve-boolean-command-portable.log.gz": "1ee3d5b487c42363565a2dd87c2be8c1f5c3132e782a2025a6fca3dbcf35e415",
+    "docs/curve-two-views-proof/curve-boolean-ui-native.log.gz": "60f37a9d0705fde511a79f2c83250219291249d54f040e5dc42f807d3ace77ec",
+    "docs/curve-two-views-proof/curve-boolean-ui-portable.log.gz": "9c273d384001b92090ff2850f555fc837399784ca300f69aea99c33102767c86",
+    "docs/curve-two-views-proof/exact-audit-native.log.gz": "ac98942e6eb28b2cef06b4afc6bcdb9676f09e9da6745402a59c2d5cb1526b9e",
+    "docs/curve-two-views-proof/exact-audit-portable.log.gz": "a01f04157a2f11a2b1cc86bc6874a70de01392c2236d5b36617f61965d2f67dd",
+    "docs/curve-two-views-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/curve-two-views-proof/geometry.log.gz": "28a59bce76b996276754b319e18b4f94ca43dacbf2cc2a30c4db22be1d9d37dd",
+    "docs/curve-two-views-proof/help-native.log.gz": "92050169e59ad9d3025194e3374dabfe3ad07bef7bb1f3caf16a5c313a2847ee",
+    "docs/curve-two-views-proof/help-portable.log.gz": "a5cde559107f1cc4dd35d5ee0e6081f4761948745cf6e2a1dd0dd479dc5cca9f",
+    "docs/curve-two-views-proof/planar-mesh-command-native.log.gz": "b67e04b7894756350c83a2ad88ade2744c5ec536a54344ea8869197a25e52fe5",
+    "docs/curve-two-views-proof/planar-mesh-command-portable.log.gz": "7c5bfa9fe7358cb2e7865fcda01d3f3b827533c3f9455df7e97f45dd10bfaeeb",
+    "docs/curve-two-views-proof/planar-mesh-ui-native.log.gz": "7121297870dacd7feb0099de76aef46728e9fe851db534bb90715b704d8d0f5e",
+    "docs/curve-two-views-proof/planar-mesh-ui-portable.log.gz": "fe1701ea275faa8e1b78bddafca2341c4a29cb52927efd6054565b8bb1bdd5f2",
+    "docs/curve-two-views-proof/python.log.gz": "e3432b8a9dc19c7f98a1b4a3a7d7b1229169ac07ee5e3ac6fab882b66f0d0751",
+    "docs/curve-two-views-proof/two-view-experiment.log.gz": "b42cdc94bc2bfbd5b1feb88fcda4ddc2df1d0ac0561bc83e912be3eb2585bde9"
+  }
+}
