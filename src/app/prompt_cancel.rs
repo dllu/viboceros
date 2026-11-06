@@ -52,6 +52,8 @@ impl VibocerosApp {
             self.finish_direction(false);
         } else if self.reparameterize_prompt.take().is_some() {
             self.push_log("Reparameterize canceled".into());
+        } else if self.curve_boolean_prompt.is_some() {
+            self.cancel_curve_boolean();
         } else if self.fillet_surface_prompt.is_some() {
             self.fillet_surface_prompt = None;
         } else if self.blend_surface_prompt.is_some() {

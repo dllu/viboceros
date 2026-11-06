@@ -1,0 +1,2386 @@
+{
+  "portable-curve-oracle": {
+    "workflows": 62,
+    "geometry_qualified_workflows": 56,
+    "geometry_and_topology_summary_matches": 54,
+    "maximum_qualified_model_error": 2.2066259933257763e-10,
+    "geometry_gaps": [
+      {
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      }
+    ],
+    "topology_gaps": [
+      "curve_boolean_holdout_dangling",
+      "curve_boolean_confirmation_precise_circles_False",
+      "curve_boolean_confirmation_precise_circles_True",
+      "curve_boolean_confirmation_three_circles",
+      "curve_boolean_confirmation_scaled_small",
+      "curve_boolean_confirmation_scaled_large"
+    ],
+    "cases": [
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_defaults",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_False",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_True",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_surfaces_False",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_surfaces_True",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_picks_False",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_picks_True",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_toggle_empty",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_used_left",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_used_overlap",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_all",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_union",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_all_delete",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_nested_False",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_nested_True",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_annulus",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_bridge",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 6.661338147750935e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_dangling",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_cross",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.1316282072803006e-14,
+        "id": "curve_boolean_holdout_open_triangle",
+        "model_error": 1.831026719408895e-15,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_disjoint",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500628e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_point_contact",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_other_plane",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_different_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_tilted",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.9474596431116675e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_no_region",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_interaction_reverse_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_used_projection",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_single",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_boundary",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_exterior",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_interaction_first_line",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.947459643111666e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_nested_three",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_confirmation_duplicate",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_overlap_edge",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.197442310920451e-14,
+        "id": "curve_boolean_confirmation_self_cross",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.2789769243681797e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_confirmation_rational_line",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.362549621538472e-10,
+        "id": "curve_boolean_confirmation_scaled_small",
+        "model_error": 2.2066259933257763e-10,
+        "relative_area_error": 3.502145017513992e-06,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_confirmation_cplane_projection",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_coplanar_ignores_cplane",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_cancel_remembers",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_reversed_weights",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_other_domain",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_multiple_spans",
+        "model_error": 3.580361673049448e-15,
+        "relative_area_error": 1.2688263138573217e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      }
+    ]
+  },
+  "portable-curve-app": {
+    "workflows": 62,
+    "geometry_qualified_workflows": 56,
+    "geometry_and_topology_summary_matches": 54,
+    "maximum_qualified_model_error": 2.2066259933257763e-10,
+    "geometry_gaps": [
+      {
+        "archive_objects": 5,
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 10,
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      }
+    ],
+    "topology_gaps": [
+      "curve_boolean_holdout_dangling",
+      "curve_boolean_confirmation_precise_circles_False",
+      "curve_boolean_confirmation_precise_circles_True",
+      "curve_boolean_confirmation_three_circles",
+      "curve_boolean_confirmation_scaled_small",
+      "curve_boolean_confirmation_scaled_large"
+    ],
+    "cases": [
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_defaults",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_False",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_True",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_surfaces_False",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_surfaces_True",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_picks_False",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_picks_True",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_toggle_empty",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_used_left",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_used_overlap",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_all",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_union",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_all_delete",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_nested_False",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_nested_True",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_annulus",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_bridge",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 6.661338147750935e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_dangling",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 7,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_cross",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 2.1316282072803006e-14,
+        "id": "curve_boolean_holdout_open_triangle",
+        "model_error": 1.831026719408895e-15,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_disjoint",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500628e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_point_contact",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_other_plane",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_different_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_tilted",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.9474596431116675e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_no_region",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 1,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 1,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_interaction_reverse_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_used_projection",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_single",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_boundary",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_exterior",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_interaction_first_line",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.947459643111666e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 10,
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 6,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_nested_three",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_confirmation_duplicate",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_overlap_edge",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.197442310920451e-14,
+        "id": "curve_boolean_confirmation_self_cross",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.2789769243681797e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_confirmation_rational_line",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 1.362549621538472e-10,
+        "id": "curve_boolean_confirmation_scaled_small",
+        "model_error": 2.2066259933257763e-10,
+        "relative_area_error": 3.502145017513992e-06,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_confirmation_cplane_projection",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_coplanar_ignores_cplane",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_cancel_remembers",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_reversed_weights",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_other_domain",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_multiple_spans",
+        "model_error": 3.580361673049448e-15,
+        "relative_area_error": 1.2688263138573217e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      }
+    ]
+  },
+  "native-curve-oracle": {
+    "workflows": 62,
+    "geometry_qualified_workflows": 56,
+    "geometry_and_topology_summary_matches": 54,
+    "maximum_qualified_model_error": 2.2066259933257763e-10,
+    "geometry_gaps": [
+      {
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      }
+    ],
+    "topology_gaps": [
+      "curve_boolean_holdout_dangling",
+      "curve_boolean_confirmation_precise_circles_False",
+      "curve_boolean_confirmation_precise_circles_True",
+      "curve_boolean_confirmation_three_circles",
+      "curve_boolean_confirmation_scaled_small",
+      "curve_boolean_confirmation_scaled_large"
+    ],
+    "cases": [
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_defaults",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_False",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_True",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_surfaces_False",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_surfaces_True",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_picks_False",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_picks_True",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_toggle_empty",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_used_left",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_used_overlap",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_all",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_union",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_all_delete",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_nested_False",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_nested_True",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_annulus",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_bridge",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 6.661338147750935e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_dangling",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_cross",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.1316282072803006e-14,
+        "id": "curve_boolean_holdout_open_triangle",
+        "model_error": 1.831026719408895e-15,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_disjoint",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500628e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_point_contact",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_other_plane",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_different_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_tilted",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.9474596431116675e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_no_region",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_interaction_reverse_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_used_projection",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_single",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_boundary",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_exterior",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_interaction_first_line",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.947459643111666e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_nested_three",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_confirmation_duplicate",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_overlap_edge",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.197442310920451e-14,
+        "id": "curve_boolean_confirmation_self_cross",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.2789769243681797e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_confirmation_rational_line",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 1.362549621538472e-10,
+        "id": "curve_boolean_confirmation_scaled_small",
+        "model_error": 2.2066259933257763e-10,
+        "relative_area_error": 3.502145017513992e-06,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_confirmation_cplane_projection",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_coplanar_ignores_cplane",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_cancel_remembers",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_reversed_weights",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_other_domain",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_multiple_spans",
+        "model_error": 3.580361673049448e-15,
+        "relative_area_error": 1.2688263138573217e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      }
+    ]
+  },
+  "native-curve-app": {
+    "workflows": 62,
+    "geometry_qualified_workflows": 56,
+    "geometry_and_topology_summary_matches": 54,
+    "maximum_qualified_model_error": 2.2066259933257763e-10,
+    "geometry_gaps": [
+      {
+        "archive_objects": 5,
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 10,
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      }
+    ],
+    "topology_gaps": [
+      "curve_boolean_holdout_dangling",
+      "curve_boolean_confirmation_precise_circles_False",
+      "curve_boolean_confirmation_precise_circles_True",
+      "curve_boolean_confirmation_three_circles",
+      "curve_boolean_confirmation_scaled_small",
+      "curve_boolean_confirmation_scaled_large"
+    ],
+    "cases": [
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_defaults",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_False",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_curves_True",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_surfaces_False",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_surfaces_True",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_picks_False",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_picks_True",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_toggle_empty",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_used_left",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_used_overlap",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 4.440892098500626e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_all",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_used_union",
+        "model_error": 2.7012892057857038e-15,
+        "relative_area_error": 4.440892098500624e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_all_delete",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_nested_False",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.954021574121725e-05,
+        "id": "curve_boolean_holdout_circles_False",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 1.2499527338899678e-06,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_nested_True",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0623905723150529e-05,
+        "id": "curve_boolean_holdout_circles_True",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 9.045782072396737e-08,
+        "topology_gap": false,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_holdout_annulus",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_bridge",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 6.661338147750935e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_holdout_dangling",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 7,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_cross",
+        "model_error": 8.881784197001252e-16,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 2.1316282072803006e-14,
+        "id": "curve_boolean_holdout_open_triangle",
+        "model_error": 1.831026719408895e-15,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_disjoint",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 4.440892098500628e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_point_contact",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_other_plane",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_holdout_different_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_holdout_tilted",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.9474596431116675e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_holdout_no_region",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 1,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_False_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_False_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_None",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 1,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_All",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 7.105427357601002e-15,
+        "id": "curve_boolean_interaction_True_False_Used",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 2.5376526277146434e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_None",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_All",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_True_True_Used",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.842170943040401e-14,
+        "id": "curve_boolean_interaction_reverse_planes",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.0150610510858566e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_used_projection",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_single",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_boundary",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_interaction_exterior",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.4210854715202004e-14,
+        "id": "curve_boolean_interaction_first_line",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 3.947459643111666e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 4.947355552786803e-05,
+        "id": "curve_boolean_confirmation_precise_circles_False",
+        "model_error": 4.217957713770217e-06,
+        "relative_area_error": 1.248270825269448e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 1.0575553559988293e-05,
+        "id": "curve_boolean_confirmation_precise_circles_True",
+        "model_error": 4.217957714658394e-06,
+        "relative_area_error": 9.004612361172601e-08,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 10,
+        "area_error": 5.134256622696398e-05,
+        "id": "curve_boolean_confirmation_three_circles",
+        "model_error": 2.191540413136497e-05,
+        "relative_area_error": 2.354596714855858e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 6,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_nested_three",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 4.263256414560601e-14,
+        "id": "curve_boolean_confirmation_duplicate",
+        "model_error": 0.0,
+        "relative_area_error": 4.2632564145605995e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_overlap_edge",
+        "model_error": 1.7763568394002505e-15,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.197442310920451e-14,
+        "id": "curve_boolean_confirmation_self_cross",
+        "model_error": 2.5121479338940403e-15,
+        "relative_area_error": 1.2789769243681797e-15,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_confirmation_rational_line",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 1.362549621538472e-10,
+        "id": "curve_boolean_confirmation_scaled_small",
+        "model_error": 2.2066259933257763e-10,
+        "relative_area_error": 3.502145017513992e-06,
+        "topology_gap": true,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 49.47355754673481,
+        "id": "curve_boolean_confirmation_scaled_large",
+        "model_error": 0.0042179577103524935,
+        "relative_area_error": 1.24827087620762e-06,
+        "topology_gap": true,
+        "geometry_qualified": false
+      },
+      {
+        "archive_objects": 5,
+        "area_error": 2.4868995751603507e-14,
+        "id": "curve_boolean_confirmation_cplane_projection",
+        "model_error": 1.9860273225978185e-15,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 4,
+        "area_error": 5.684341886080802e-14,
+        "id": "curve_boolean_confirmation_coplanar_ignores_cplane",
+        "model_error": 0.0,
+        "relative_area_error": 8.881784197001244e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 2,
+        "area_error": 0.0,
+        "id": "curve_boolean_confirmation_cancel_remembers",
+        "model_error": 0.0,
+        "relative_area_error": 0.0,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_reversed_weights",
+        "model_error": 2.6645352591003757e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_other_domain",
+        "model_error": 1.3322676295501878e-15,
+        "relative_area_error": 1.77635683940025e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      },
+      {
+        "archive_objects": 3,
+        "area_error": 3.552713678800501e-15,
+        "id": "curve_boolean_weighted_multiple_spans",
+        "model_error": 3.580361673049448e-15,
+        "relative_area_error": 1.2688263138573217e-16,
+        "topology_gap": false,
+        "geometry_qualified": true
+      }
+    ]
+  }
+}

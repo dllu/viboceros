@@ -15,6 +15,7 @@
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)
+- [Pick, combine and fill planar curve regions](curve-boolean.md)
 - [Simplify lines, arcs and rational curve structures](simplify-crv.md)
 - [Change arc and circle sizes](modify-radius.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)

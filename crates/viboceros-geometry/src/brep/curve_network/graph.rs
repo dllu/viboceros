@@ -30,6 +30,7 @@ pub(super) enum Mode {
     Boundary,
     Network,
     Filled,
+    Regions,
 }
 
 pub(super) fn build_mode(
@@ -42,6 +43,7 @@ pub(super) fn build_mode(
     kink_angle: impl Fn(usize) -> Option<Real>,
 ) -> Result<SurfaceCutGraph, GeometryError> {
     let network = mode != Mode::Boundary;
+    let planar = matches!(mode, Mode::Filled | Mode::Regions);
     if cut_curves.len() > maximum || maximum < 4 {
         return invalid("a surface cutting arrangement exceeds its work limit");
     }
@@ -73,7 +75,7 @@ pub(super) fn build_mode(
             if !index::may_duplicate(&candidate, existing, tolerance).unwrap_or(true) {
                 continue;
             }
-            if mode == Mode::Filled
+            if planar
                 && let Some(same) = super::filled::same_line(&candidate.spatial, &existing.spatial)
             {
                 if same {
@@ -173,7 +175,7 @@ pub(super) fn build_mode(
         }
     }
 
-    let projection_axes = if mode == Mode::Filled {
+    let projection_axes = if planar {
         let controls = surface.control_points();
         let normal = controls[0]
             .point()
@@ -209,10 +211,10 @@ pub(super) fn build_mode(
             {
                 continue;
             }
-            if mode == Mode::Filled && super::filled::only_shared_ends(first, second, tolerance) {
+            if planar && super::filled::only_shared_ends(first, second, tolerance) {
                 continue;
             }
-            let exact = if mode == Mode::Filled {
+            let exact = if planar {
                 super::filled::line_contacts(first, second, tolerance, projection_axes)?
             } else {
                 None
@@ -521,17 +523,11 @@ pub(super) fn build_mode(
     }
     let mut next = vec![usize::MAX; halfedge_count];
     for halfedges in &mut outgoing {
-        if mode != Mode::Filled
-            || !super::filled::sort_line_rays(halfedges, &edges, projection_axes)
-        {
+        if !planar || !super::filled::sort_line_rays(halfedges, &edges, projection_axes) {
             sort_surface_cut_outgoing_halfedges(
                 halfedges,
                 &halfedge_directions,
-                if mode == Mode::Filled {
-                    0.
-                } else {
-                    tolerance.angular()
-                },
+                if planar { 0. } else { tolerance.angular() },
             );
         }
         for (index, &outgoing_halfedge) in halfedges.iter().enumerate() {
@@ -569,6 +565,14 @@ pub(super) fn build_mode(
         if cycle.is_empty() {
             continue;
         }
+        let cycle = if mode == Mode::Regions {
+            super::regions::reduce_spikes(cycle)
+        } else {
+            cycle
+        };
+        if cycle.is_empty() {
+            continue;
+        }
         if let Some(area) = sampled_surface_cut_cycle_signed_area(&edges, &cycle)? {
             if area > 0.0 {
                 outer_cycles.push(cycle);
@@ -580,7 +584,7 @@ pub(super) fn build_mode(
     if mode == Mode::Filled {
         return super::filled::from_cycles(nodes, edges, hole_cycles);
     }
-    if outer_cycles.len() < 2 {
+    if mode != Mode::Regions && outer_cycles.len() < 2 {
         return invalid("surface cutting arrangement did not divide the rectangular region");
     }
     // The halfedge walk emits the unbounded exterior clockwise as well as
@@ -721,6 +725,16 @@ pub(super) fn build_mode(
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
+    if mode == Mode::Regions {
+        regions.retain(|region| {
+            !region.outer.iter().any(|h| {
+                matches!(
+                    edges[h / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Boundary(_)
+                )
+            })
+        });
+    }
     Ok(SurfaceCutGraph {
         source_breaks: cuts.iter().map(|c| c.breaks.clone()).collect(),
         nodes,

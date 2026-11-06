@@ -282,6 +282,7 @@ mod sweep;
 pub use sweep::SweepFixture;
 mod curve_approximation;
 mod curve_area;
+pub mod curve_boolean;
 mod curve_join_close;
 mod curve_native;
 mod curve_offset;
@@ -1054,6 +1055,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: planar_regions::Fixture,
+    },
+    CurveBoolean {
+        id: String,
+        #[serde(flatten)]
+        fixture: curve_boolean::Fixture,
     },
     PlanarRegions {
         id: String,
@@ -3071,6 +3077,7 @@ impl Operation {
             | Self::CurveAlongCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
             | Self::PlanarChains { id, .. }
+            | Self::CurveBoolean { id, .. }
             | Self::PlanarRegions { id, .. }
             | Self::PlanarSurfaceCommand { id, .. }
             | Self::PolycurveNative { id, .. }
@@ -3903,6 +3910,9 @@ fn execute(
         }
         Operation::PlanarChains { fixture, .. } => {
             planar_regions::run_chains(fixture, iterations, tolerance)?
+        }
+        Operation::CurveBoolean { fixture, .. } => {
+            curve_boolean::run(fixture, iterations, tolerance)?
         }
         Operation::PlanarRegions { fixture, .. } => {
             planar_regions::run(fixture, iterations, tolerance)?

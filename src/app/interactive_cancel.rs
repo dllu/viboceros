@@ -30,6 +30,7 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
+        self.cancel_curve_boolean();
         self.finish_select_uv();
         self.refinement_prompt = None;
         self.reparameterize_prompt = None;

@@ -93,7 +93,7 @@ fn run_selected(
     })
 }
 
-fn simplified(
+pub(super) fn simplified(
     curve: &Curve3,
     tolerance: Tolerance,
 ) -> Result<viboceros_geometry::CurveSimplification, CommandError> {

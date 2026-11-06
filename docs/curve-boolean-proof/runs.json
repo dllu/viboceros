@@ -1,0 +1,498 @@
+{
+  "portable": [
+    {
+      "label": "curve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "curve_boolean"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-curve-command.log.gz",
+      "raw_sha256": "4806219878d8abbdfdb46bc68d99006d547d62fb7056c3b19b705dc7e7aa6aaa",
+      "raw_bytes": 755
+    },
+    {
+      "label": "curve-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-curve-oracle.log.gz",
+      "raw_sha256": "1bedd87b80f9fe82f823fbc94f1c5447d421116dce371a891cf2aecd72d98b84",
+      "raw_bytes": 12076
+    },
+    {
+      "label": "curve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-curve-app.log.gz",
+      "raw_sha256": "5af636be908fe10b241b300952b9a202004932cc617b4b792483f16ba6577659",
+      "raw_bytes": 13948
+    },
+    {
+      "label": "command-planar",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-command-planar.log.gz",
+      "raw_sha256": "83f742ee079476d146e6eabf3a1ab8d3f1e5a78137302f6b227a11028c87c656",
+      "raw_bytes": 2113
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-command-policy.log.gz",
+      "raw_sha256": "caacb80ad34c6ae70b656780cf523909c25b0a153d4d704adaa37d0cfb2c84e6",
+      "raw_bytes": 985
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-mesh-command.log.gz",
+      "raw_sha256": "1135b131b4cd77da91ea24401c18b733d07787ad38abf414b0a3fe231ed9e77a",
+      "raw_bytes": 14111
+    },
+    {
+      "label": "oracle-planar",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-oracle-planar.log.gz",
+      "raw_sha256": "4d6917e422fcf518db700d3ced855d612a39106c7d9f2000c596d072701b11a2",
+      "raw_bytes": 1783
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-app-regions.log.gz",
+      "raw_sha256": "369e33f24b641c358e50436f6473e3cc28b26c5d64f1269e5e411bf84a68db84",
+      "raw_bytes": 438
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-app-chains.log.gz",
+      "raw_sha256": "5ca8afd6381fe4cc0824defd8cdd6a4a1814352c32f1304d3b83fea3b9cc5d82",
+      "raw_bytes": 621
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/portable-mesh-app.log.gz",
+      "raw_sha256": "a6ed9056ab0e61b92eff12e6f10b598210b221c51ff1c839526a0fe65ff1a1cf",
+      "raw_bytes": 30451
+    }
+  ],
+  "native": [
+    {
+      "label": "curve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "curve_boolean"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-curve-command.log.gz",
+      "raw_sha256": "93b604e43f669e23e26638d1f7526ebc069a12a48a5fef4c9ba8ac9d59711107",
+      "raw_bytes": 980
+    },
+    {
+      "label": "curve-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-curve-oracle.log.gz",
+      "raw_sha256": "dd19c81536040140d027b83b72550eb15c64255cc6b2223ae1e46802c1da1858",
+      "raw_bytes": 12019
+    },
+    {
+      "label": "curve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-curve-app.log.gz",
+      "raw_sha256": "576df26b0555a9a5253535f245b80aaf83c85b525339bbfc1e1c45ffa11e0cd4",
+      "raw_bytes": 13813
+    },
+    {
+      "label": "command-planar",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-command-planar.log.gz",
+      "raw_sha256": "0bb35861d9a81b3e72d75733704e049ab44843875c18d6611d1afa4a53649793",
+      "raw_bytes": 2206
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-command-policy.log.gz",
+      "raw_sha256": "c5854e43b9e17755c1ae94fb1b154faa6a98081bd31595ee14db47713e0feddb",
+      "raw_bytes": 1042
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-mesh-command.log.gz",
+      "raw_sha256": "83f1308c4344b8df8739a9ddec1e178479866a8bdef16043f31acf3dc11f3611",
+      "raw_bytes": 14109
+    },
+    {
+      "label": "oracle-planar",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-oracle-planar.log.gz",
+      "raw_sha256": "bbbf303a470362ad9fe35aeb632950d43dcf6c30ebcd474c487e9d4ef8b6f38f",
+      "raw_bytes": 1726
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-app-regions.log.gz",
+      "raw_sha256": "6ecca8dfa33dcefc371b919315ab03ba263f5721b9e03e04ba10734dab779df3",
+      "raw_bytes": 380
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-app-chains.log.gz",
+      "raw_sha256": "eb7e99c339b4e022403368514ce92756962014f2228f025af766324e90d7bd38",
+      "raw_bytes": 621
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/native-mesh-app.log.gz",
+      "raw_sha256": "634fd5d5b86561fedae4d0f644df5ff2daa009063e13823c59d6d832670dc39c",
+      "raw_bytes": 30447
+    }
+  ],
+  "quality": [
+    {
+      "label": "source-overlaps",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_sources"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-source-overlaps.log.gz",
+      "raw_sha256": "3a1ef0a542f89590558eae92bfe42a76e40b882493b7b6eebc749f77480745b9",
+      "raw_bytes": 631
+    },
+    {
+      "label": "curve-network",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_network"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-curve-network.log.gz",
+      "raw_sha256": "a85bb8dabaa054e86e7c3e32d1765d3c600087cb5b1299f4f5618797698e52a4",
+      "raw_bytes": 2154
+    },
+    {
+      "label": "trim-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "trim_region"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-trim-regions.log.gz",
+      "raw_sha256": "a473b460ea0aed2529a1199b3eb5549fd789faf487d1394ac883380207a6a15b",
+      "raw_bytes": 1431
+    },
+    {
+      "label": "planar-faces",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "planar_face"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-planar-faces.log.gz",
+      "raw_sha256": "ef35af16d0048afa7298d1307646df060751b8dd99365dcc1a9559d711879678",
+      "raw_bytes": 1070
+    },
+    {
+      "label": "mesh-audit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::tessellation"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-mesh-audit.log.gz",
+      "raw_sha256": "64ec572e49f1162dcabbc461e7f861f91d06d187a09f06b1ab8db239de47a454",
+      "raw_bytes": 2857
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-clippy-default.log.gz",
+      "raw_sha256": "ee37018b3e9e04a0e95d258236b8a80a63eacf659ab04ba3b43718de5074eb26",
+      "raw_bytes": 758
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-clippy-all-features.log.gz",
+      "raw_sha256": "6e595df8f82152af8cea65b76a25df35875829a331bc2e35540757abe39ae58c",
+      "raw_bytes": 479
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-fmt.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_curve_boolean",
+        "tools.rhino_oracle.test_planar_chains",
+        "tools.rhino_oracle.test_planar_regions",
+        "tools.rhino_oracle.test_planar_crossings",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-proof/quality-python.log.gz",
+      "raw_sha256": "40228761472fb15dfed5561a0209104a3136c1f5b80dc4f0d12bc003eeef0947",
+      "raw_bytes": 128
+    }
+  ]
+}

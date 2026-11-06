@@ -50,6 +50,7 @@ impl VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
+            && self.curve_boolean_prompt.is_none()
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
             && self.edge_pattern_prompt.is_none()
@@ -215,6 +216,8 @@ impl VibocerosApp {
                         prompt.command_name()
                     } else if self.reparameterize_prompt.is_some() {
                         "Reparameterize"
+                    } else if self.curve_boolean_prompt.is_some() {
+                        "CurveBoolean"
                     } else if self.fillet_surface_prompt.is_some() {
                         "FilletSrf"
                     } else if self.blend_surface_prompt.is_some() {
@@ -328,6 +331,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if let Some(p) = &self.reparameterize_prompt {
                                 p.hint()
+                            } else if let Some(p) = &self.curve_boolean_prompt {
+                                if p.selecting() {"Select curves; Enter continues, Esc cancels"} else {"Pick regions or AllRegions; DeleteInput / CombineRegions / Output / SimplifyCurves; Enter accepts, Esc cancels"}
                             } else if let Some(p) = &self.fillet_surface_prompt {
                                 p.hint()
                             } else if let Some(p) = &self.blend_surface_prompt {

@@ -50,6 +50,8 @@ mod cull_degenerate;
 mod curvature_analysis;
 mod curvature_graph;
 mod curve_array;
+mod curve_boolean;
+mod curve_boolean_corpus;
 mod curve_completion;
 mod curve_deviation;
 mod curve_input;
@@ -341,6 +343,7 @@ pub(super) fn test_app() -> VibocerosApp {
         sweep_session: None,
         blend_surface_prompt: None,
         fillet_surface_prompt: None,
+        curve_boolean_prompt: None,
         reparameterize_prompt: None,
         direction_session: None,
         direction_mode: viboceros_command::direction::DirectionEdit::Flip,

@@ -544,6 +544,9 @@ impl VibocerosApp {
         if self.picking_project_direction() || self.picking_project_plane_points() {
             return None;
         }
+        if let Some(p) = &self.curve_boolean_prompt {
+            return p.selecting().then_some(ObjectSelectionFilter::Curves);
+        }
         if self.blend_surface_prompt.is_some() || self.fillet_surface_prompt.is_some() {
             return None;
         }
@@ -2040,6 +2043,10 @@ impl VibocerosApp {
     ) {
         if self.sweep_session.is_some() {
             self.select_sweep_objects(ids, mode);
+            return;
+        }
+        if self.curve_boolean_prompt.is_some() {
+            self.select_curve_boolean_sources(ids, mode);
             return;
         }
         let Some(filter) = self

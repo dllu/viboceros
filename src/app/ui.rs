@@ -41,6 +41,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_curve_boolean();
         self.validate_chain();
         self.validate_length_choices();
         self.validate_edge_pattern();
@@ -75,6 +76,7 @@ impl eframe::App for VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
+            && self.curve_boolean_prompt.is_none()
             && self.refinement_prompt.is_none()
             && self.select_uv_prompt.is_none()
             && self.edge_pattern_prompt.is_none()
@@ -722,7 +724,8 @@ impl eframe::App for VibocerosApp {
                 .as_ref()
                 .and_then(|p| p.scene())
                 .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
-                .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene())),
+                .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.curve_boolean_prompt.as_ref().and_then(|p| p.scene())),
             self.rebuild_preview
                 .as_ref()
                 .and_then(|p| p.scene())
@@ -796,6 +799,7 @@ impl eframe::App for VibocerosApp {
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
         let angle_plane = angle_plane
+            .or_else(|| self.curve_boolean_prompt.as_ref()?.plane())
             .or_else(|| {
                 self.subd_ellipsoid_session
                     .as_ref()

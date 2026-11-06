@@ -186,6 +186,7 @@ mod curvature_analysis;
 mod curvature_graph;
 mod curve_apex;
 mod curve_array;
+mod curve_boolean;
 mod curve_deviation;
 mod curve_extrusion;
 mod curve_preview;
@@ -422,6 +423,7 @@ pub struct VibocerosApp {
     sweep_session: Option<sweep::Session>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
+    curve_boolean_prompt: Option<curve_boolean::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
     direction_session: Option<direction::Session>,
     direction_mode: viboceros_command::direction::DirectionEdit,
@@ -596,6 +598,7 @@ impl VibocerosApp {
             sweep_session: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
+            curve_boolean_prompt: None,
             reparameterize_prompt: None,
             direction_session: None,
             direction_mode: viboceros_command::direction::DirectionEdit::Flip,
@@ -874,6 +877,9 @@ impl VibocerosApp {
         if self.continue_reparameterize(&input) {
             return;
         }
+        if self.continue_curve_boolean(&input) {
+            return;
+        }
         if self.continue_fillet_surface(&input) {
             return;
         }
@@ -1021,6 +1027,7 @@ impl VibocerosApp {
             || self.start_select_uv(&input)
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)
+            || self.start_curve_boolean(&input)
             || self.start_fillet_surface(&input)
             || self.start_loft(&input)
             || self.start_sweep_point_input(&input)

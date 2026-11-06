@@ -24,6 +24,7 @@ impl VibocerosApp {
             || self.sweep_session.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.curve_boolean_prompt.is_some()
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()

@@ -427,6 +427,7 @@ mod boolean_difference;
 mod boolean_solids;
 mod boolean_split;
 pub mod boolean_two;
+pub mod curve_boolean;
 pub mod fillet_surface;
 use boolean_difference::BooleanDifferenceCommand;
 mod boolean_intersection;
@@ -992,6 +993,7 @@ pub struct CommandRegistry {
     edge_zoom: std::sync::Arc<edge_analysis::Session>,
     point_deviation: std::sync::Arc<point_deviation::Session>,
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
+    curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
@@ -1049,6 +1051,11 @@ impl CommandRegistry {
             )),
             ..Self::default()
         };
+        registry
+            .register(curve_boolean::CurveBooleanCommand(
+                registry.curve_boolean_preferences.clone(),
+            ))
+            .expect("unique built-in command");
         registry
             .register(curvature_graph::ExtractCommand(
                 registry.curvature_graph.clone(),

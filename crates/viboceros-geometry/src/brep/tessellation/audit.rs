@@ -2,6 +2,7 @@
 
 use super::*;
 mod coincident;
+mod slits;
 
 struct NakedEdgeSamples {
     exact: BTreeSet<[u64; 3]>,
@@ -141,6 +142,7 @@ impl Brep {
             }
         }
         let mut matched = vec![false; self.edges.len()];
+        slits::mark(self, &uses, &mut matched);
         // Adjacent boundary sides reuse vertices. Cache each point/edge query
         // without sharing membership between unrelated source faces.
         let mut membership = BTreeMap::<(u32, usize), bool>::new();

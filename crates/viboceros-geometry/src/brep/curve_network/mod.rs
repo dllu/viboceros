@@ -6,7 +6,10 @@ mod filled;
 mod graph;
 pub use filled::planar_curve_network_boundaries;
 mod index;
+mod planar;
+mod regions;
 pub(super) use graph::build;
+pub use regions::{PlanarCurveArrangement, PlanarCurveRegion};
 
 #[cfg(test)]
 mod tests;

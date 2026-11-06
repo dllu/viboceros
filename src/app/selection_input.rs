@@ -50,6 +50,10 @@ impl VibocerosApp {
         }
         if self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self
+                .curve_boolean_prompt
+                .as_ref()
+                .is_some_and(|p| !p.selecting())
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
@@ -307,7 +311,7 @@ impl VibocerosApp {
             self.select_intersection_prompt_objects(click.object_id, click.mode);
             return;
         }
-        if self.object_prompt.is_some() {
+        if self.object_prompt.is_some() || self.curve_boolean_prompt.is_some() {
             self.select_prompt_objects(click.object_id, click.mode);
             return;
         }
@@ -393,6 +397,10 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self
+                .curve_boolean_prompt
+                .as_ref()
+                .is_some_and(|p| !p.selecting())
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
@@ -451,6 +459,10 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self
+                .curve_boolean_prompt
+                .as_ref()
+                .is_some_and(|p| !p.selecting())
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
@@ -530,7 +542,7 @@ impl VibocerosApp {
             self.select_group_prompt_objects(ids, mode);
         } else if self.intersection_prompt.is_some() {
             self.select_intersection_prompt_objects(ids, mode);
-        } else if self.object_prompt.is_some() {
+        } else if self.object_prompt.is_some() || self.curve_boolean_prompt.is_some() {
             self.select_prompt_objects(ids, mode);
         } else {
             match self.document.select_objects(ids, mode) {
@@ -549,6 +561,10 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self
+                .curve_boolean_prompt
+                .as_ref()
+                .is_some_and(|p| !p.selecting())
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
@@ -579,7 +595,7 @@ impl VibocerosApp {
             self.select_group_prompt_objects(ids, selection_mode);
         } else if self.intersection_prompt.is_some() {
             self.select_intersection_prompt_objects(ids, selection_mode);
-        } else if self.object_prompt.is_some() {
+        } else if self.object_prompt.is_some() || self.curve_boolean_prompt.is_some() {
             self.select_prompt_objects(ids, selection_mode);
         } else {
             match self.document.select_objects(ids, selection_mode) {
@@ -682,7 +698,7 @@ impl VibocerosApp {
             self.select_group_prompt_objects(ids, state.selection_mode);
         } else if self.intersection_prompt.is_some() {
             self.select_intersection_prompt_objects(ids, state.selection_mode);
-        } else if self.object_prompt.is_some() {
+        } else if self.object_prompt.is_some() || self.curve_boolean_prompt.is_some() {
             self.select_prompt_objects(ids, state.selection_mode);
         } else {
             match self.document.select_objects(ids, state.selection_mode) {
@@ -708,6 +724,10 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self
+                .curve_boolean_prompt
+                .as_ref()
+                .is_some_and(|p| !p.selecting())
             || self.refinement_prompt.is_some()
             || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
@@ -741,7 +761,7 @@ impl VibocerosApp {
         if self.select_loft_curves(selection.object_ids.iter().copied(), selection.mode) {
             return;
         }
-        if self.object_prompt.is_some() {
+        if self.object_prompt.is_some() || self.curve_boolean_prompt.is_some() {
             self.select_prompt_objects(selection.object_ids, selection.mode);
             return;
         }
