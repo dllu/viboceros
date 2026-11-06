@@ -1,0 +1,347 @@
+[
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.136637422998319
+  },
+  {
+    "name": "geometry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "brep::rectangular_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.22994005100918002
+  },
+  {
+    "name": "creation",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "tests::surfaces::creation",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 31.19029922799382
+  },
+  {
+    "name": "commands-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "srf_pt",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.59478636800486
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "app::tests::srf_pt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 38.90902126999572
+  },
+  {
+    "name": "plane-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.2089722370001255
+  },
+  {
+    "name": "face-input-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "face_edge_input",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.14663260700763203
+  },
+  {
+    "name": "primitive-prompts-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "interface::primitive_prompts",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.5807521280075889
+  },
+  {
+    "name": "subd-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.289901348995045
+  },
+  {
+    "name": "surface-flow-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "surface_flow",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.20752698701107875
+  },
+  {
+    "name": "commands-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "srf_pt",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 62.2866903069953
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "app::tests::srf_pt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 57.117510683005094
+  },
+  {
+    "name": "plane-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "app::tests::plane_",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.3003801839950029
+  },
+  {
+    "name": "face-input-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "face_edge_input",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.13716663299419452
+  },
+  {
+    "name": "primitive-prompts-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "interface::primitive_prompts",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.5698775009950623
+  },
+  {
+    "name": "subd-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.37033463099215
+  },
+  {
+    "name": "surface-flow-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "surface_flow",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.2493453899951419
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 20.516772061004303
+  },
+  {
+    "name": "clippy-all-features",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 37.58818951300054
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_srf_pt",
+      "tools.rhino_oracle.test_plane_surface",
+      "tools.rhino_oracle.test_plane_completion",
+      "tools.rhino_oracle.test_rectangle",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 1.5608055769989733
+  }
+]
