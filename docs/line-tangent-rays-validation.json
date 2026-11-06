@@ -1,0 +1,696 @@
+{
+  "scope": "Native Line Tangent mouse modes: three Planar/boundary constructions, one known fixed perspective pick difference and eight no-output sliding mouse workflows followed by explicit cancellation, preserving pending redo. Shared contact seed generation retains prior behavior.",
+  "baseline_revision": "ffa15af647ffc80e45d6b6bca3c5081df62d46c8",
+  "implementation_revision": "b2a1fba1cbef240a91501bf822f171e1a4bd28da",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "native_observations": 22,
+  "complete_native_ui_inputs": 12,
+  "matching_native_ui_inputs_per_build": 11,
+  "native_constructions_per_build": 3,
+  "native_no_output_workflows_per_build": 8,
+  "rejected_endpoint_coordinates_per_build": 7,
+  "edge_on_views_without_cplane_point_per_build": 1,
+  "native_physical_picks_in_matching_inputs": 22,
+  "archive_round_trips_per_build": 6,
+  "maximum_coefficient_and_sample_difference": 2.7268074226254076e-11,
+  "cases": [
+    {
+      "id": "ray_planar_elevated",
+      "portable_command_error": 2.7268074226254076e-11,
+      "portable_ui_error": 2.7268074226254076e-11,
+      "native_command_error": 2.7268074226254076e-11,
+      "native_ui_error": 2.7268074226254076e-11
+    },
+    {
+      "id": "ray_arc_boundary",
+      "portable_command_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "native_command_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "ray_line_boundary",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "mouse_elevated_top",
+      "portable_command_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "native_command_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "mouse_elevated_far",
+      "portable_command_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "native_command_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "mouse_vertical_front",
+      "portable_command_error": 1.2560739669470201e-15,
+      "portable_ui_error": 1.2560739669470201e-15,
+      "native_command_error": 1.2560739669470201e-15,
+      "native_ui_error": 1.2560739669470201e-15
+    },
+    {
+      "id": "mouse_tilted_perspective",
+      "portable_command_error": 1.88411095042053e-15,
+      "portable_ui_error": 1.88411095042053e-15,
+      "native_command_error": 1.88411095042053e-15,
+      "native_ui_error": 1.88411095042053e-15
+    },
+    {
+      "id": "mouse_cubic_top",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "mouse_cubic_perspective",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "mouse_signed_length",
+      "portable_command_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "native_command_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "mouse_bothsides",
+      "portable_command_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "native_command_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "ray_elevated_top",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_elevated_far",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_vertical_front",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_tilted_perspective",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_cubic_top",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_cubic_perspective",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_signed_length",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    },
+    {
+      "id": "ray_bothsides",
+      "reason": "The endpoint click left Line pending. The pilot hit its timer; the explicit-cancellation confirmation is required for passing workflow coverage."
+    }
+  ],
+  "known_geometry_differences": [
+    {
+      "id": "ray_fixed_elevated",
+      "reason": "The public curve/viewing-line closest point and the native fixed picked station differ by about 1.12e-4 model units. Perspective source pick calibration remains unqualified; no native output coordinate is substituted as an input.",
+      "observed_errors": {
+        "portable": 0.00018960788605910142,
+        "native": 0.00018960788605910142
+      },
+      "native_curve": {
+        "knots": [
+          0.0,
+          0.0,
+          8.020277060040119,
+          8.020277060040119
+        ],
+        "degree": 1,
+        "domain": [
+          0.0,
+          8.020277060040119
+        ],
+        "control_points": [
+          {
+            "weight": 1.0,
+            "point": [
+              4.995232847344296,
+              0.2182860527211986,
+              3.0
+            ]
+          },
+          {
+            "weight": 1.0,
+            "point": [
+              4.645089923110991,
+              8.230916335744066,
+              3.0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "zero_search_experiment": {
+    "native_queries": 2002,
+    "public_zero_finder_trials": 12012,
+    "native_query_failures": 30,
+    "trial_failures": 0,
+    "conclusion": "Six public zero-finder callback/bracket combinations converge on every recorded seed. This experiment does not explain the native tangent search failures and is not used by the production solver."
+  },
+  "captures": [
+    {
+      "family": "line_tangent_rays",
+      "observations": 12,
+      "raw_sha256": "e4491627639f9d543f140476736ceae63f6fcdd58a007d3df6f02339a538468d",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_tangent_mouse",
+      "observations": 8,
+      "raw_sha256": "6e11dbd7572ecf3935c7aaddedd1d1ec33f93d3a7ff2589ac8180fad148dabf6",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "tangent_zero_sdk",
+      "observations": 2,
+      "raw_sha256": "2960b379ac3385bd5b27c8c578bc9e3c71d5e1c0409dbaf0bbe0677b899c0cf7",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-native",
+      "status": 0
+    },
+    {
+      "name": "normal-command-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "move-normal-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-command-native",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-native",
+      "status": 0
+    },
+    {
+      "name": "move-normal-native",
+      "status": 0
+    },
+    {
+      "name": "reference-command-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-command-native",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-native",
+      "status": 0
+    },
+    {
+      "name": "line-command-portable",
+      "status": 0
+    },
+    {
+      "name": "line-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "line-command-native",
+      "status": 0
+    },
+    {
+      "name": "line-ui-native",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "lines-command-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "points-portable",
+      "status": 0
+    },
+    {
+      "name": "curves-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-command-native",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-native",
+      "status": 0
+    },
+    {
+      "name": "points-native",
+      "status": 0
+    },
+    {
+      "name": "curves-native",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "grid-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "polyline-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "grid-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "polyline-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "input_calibration": "Curves are independently prescribed. Public viewport queries measure source stations, CPlane projections and viewing lines before physical click acknowledgements. Fixed tangents use viewing-line projection; free sliding endpoints use the CPlane point, with Planar and boundary controls. Recorded output geometry is used only for comparisons.",
+  "command_input_path": "Seven rejected endpoint coordinates are submitted to the curve getter; the Front viewing line is parallel to the CPlane and supplies no endpoint coordinate. CLI atomicity, UI cancellation, geometry, selection and redo are compared where applicable.",
+  "execution": "Native observations use private Xvfb sessions. UI preview and click tests use windowless egui events.",
+  "limits": [
+    "Previously recorded native local tangent-search failures remain unresolved; no empirical failure intervals are embedded in production.",
+    "Control points, weights, knots, domains and 33 locally evaluated output samples are compared. Independent native PointAt sampling of constructed outputs, continuous distance, singular curves, remote coordinates, comparative speed and exhaustive mouse branches remain unqualified.",
+    "Eight pilot inputs timed out while the endpoint getter remained pending; they are diagnostic observations, excluded from passing counts. All eight require a separate clean explicit-cancellation capture. The pilot terminal tool status was unavailable after context truncation; its Recorded marker and immutable output prove capture validation completed, without inferring an exit status.",
+    "Object snaps, point filters, Ortho, grid snap and tracking retain their existing paths. Additional native settings combinations and spatial fallback branches remain unqualified."
+  ],
+  "implementation_git_sha256": {
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-command/tests/line_tangent_rays.rs": "8d01fef4a6055c386c5662c880970608e4aca87fde96eba92c12db2ff60f7380",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-command/tests/support/line_tangent.rs": "bcc610020359827671dd70f1a6e8c95fc6b5bb057c17da106a0d2d7f9f5a2a70",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-command/tests/support/line_tangent_rays.rs": "b7118046044127594fe53d7c976b9224f5d223d93a4853c33f0d7cd2a4fe639f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-geometry/src/curve_contact.rs": "d87d05e2f5a0f0c772df7f4df9597e8728605a79b4f53a78a87d5313cd73538d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-geometry/src/curve_perpendicular.rs": "e0e465304773f4b36ca4f1c5b6d58d550370c4be577be10ddb7e4062dd49b82b",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:crates/viboceros-geometry/src/curve_tangent.rs": "0a2cd1f6495f22b0676b1ae29917ca2c555282cbb5fa4d2cce39a2bde9fcb7c0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/commands/line-tangent-mouse.md": "f1135ba5e0f96453b46751c2f5dc3fd461c84ee450a6caf54a36747dafc0f056",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/commands/line-tangent.md": "80f406914b1b915fb4e7896d6538675c08c0bd343fe7a3e471e6909c4b7a57d0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/arc-extension-native.log.gz": "efebdeb9ecab87959e721f8420932325480833c91b06fee6b6a2f320ab53a92a",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/arc-extension-portable.log.gz": "7556b2f4e84d6f513206de9b6542b936de14a041888706792650c98b6808aecf",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/capture-line_tangent_mouse.log.gz": "8c5f2e8cb199f9ebaef70f43a23de94f4b12a84ac1886d434c973e1d6b81ff61",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/capture-line_tangent_rays.log.gz": "e0e6ec3c60719d6721bc806b16c8a2704b24cdf1798a30fea3b02254338f9822",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/capture-tangent_zero_sdk.log.gz": "03d243fb5ca12f2bf4c367960922d88745d59f96e282fd2b44af3f729797df6c",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/captures.json": "72db047c0dfd0c8823312e0c736e2b096dd900f61070958eaba699ec63efcc6d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/checks.json": "1a3834e5360ca39facb64a2fd96f521a043e3225b3866730ed3e5f6e13174bf2",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/clippy-all-features.log.gz": "98f7efcb51f84fc1a546653a9d0224d4a6c20b07412fb9dc4c9bd31c5d3cb9b4",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/clippy-portable.log.gz": "490a7923d5024c24ab9041ff3d390c2954db81a42ca6c67a63d6c5b716f382c5",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/commands-native.log.gz": "70b74f8f1cafcfdcc1dbadc6d6d887fe9cb713bf96bbd6bebdc6d89d16f046bd",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/commands-portable.log.gz": "3980a39db69082f26269105b24c90cdf40263641f1da1308cfd4ec962ff3e94e",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/corners-native.log.gz": "1d8c9f1fe6d803e15d19d45b3f20c44d771f9c321c937b47d65d86048de27cbe",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/corners-portable.log.gz": "610ba5d6570b622772a2af9a04a4259f8a5de1545978eee996e0373d3a2dbe81",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/curves-native.log.gz": "51a45cfdfda37b277720edaf7276b89ee0f537ebb113f924d791e70ef637142f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/curves-portable.log.gz": "141a8ff29cc35f05c862508da4192dcce5874a231ccb53ec81b7cd7cccc27348",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/grid-native.log.gz": "c55b764223d39ca809ccf4728bae1036a5c59cf20fd79d05339d09c1e25875f0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/grid-portable.log.gz": "027bbc3398fcbc6f2b627499b90a286b1f238a96a28578fd3fc663e02f5a4f8a",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/history.log.gz": "5fb0b9d93ce5928a359fb832bcdebce4f0619ed8af101939bed924e248b6d87f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/line-command-native.log.gz": "ffcbb9e1a1727f9af77130bb5c350fd3b0ec23bfd137ab1cc9bede009a5c27e8",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/line-command-portable.log.gz": "ffede49369fce38a9366bbdc210e0057378574e90e7e8180a1c0c8f26f4e7c54",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/line-ui-native.log.gz": "fc751675672a31150f62903455e8c68be2f81695c9036206c8463b44ab3872d9",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/line-ui-portable.log.gz": "b9f0b50aad2c75a1360a180f9347ba407beefdb5687c4c32a4e257f357c3a139",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/lines-command-native.log.gz": "9417316098ce3917122b58329f0cb1f1048d619c3cf9890e8415e10a369c46f4",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/lines-command-portable.log.gz": "47b0ac9530a9c42d6f00eb09a58fa716feba936c8f114d7d8c0e0b9dd62a5e33",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/lines-ui-native.log.gz": "0233499bc0d79737f44f6c9c97368765287342a4c397702d94069ebc901e0b22",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/lines-ui-portable.log.gz": "9fdc80711d7a1ce1716cc33ec07af6e1486a9392647b440043ff03908af1b9ec",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/move-normal-native.log.gz": "8d334693afc851b876044b3ecc8b22a671977107aad193880e0acbf7b2a5f840",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/move-normal-portable.log.gz": "05eb4e4cf25167382ff76c789e43dc4eee08ecce761efa687c08dd68823e9a6d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/normal-command-native.log.gz": "9a6ef5efd15b9ec8dc59b931238395a783e8bf445afaebcc11de39461682e0d1",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/normal-command-portable.log.gz": "bc2322a3fa28c3526bf35f0b47bd718762266da6ca29ee94045bc5de75a17a8f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/normal-ui-native.log.gz": "beb89c842ed3690dd3aceef1d5912cb0e42a49e962949a8baa50179a9801c73c",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/normal-ui-portable.log.gz": "a15ee435188420cf1607cb8bcfcaa2ef4b6b6508575405cdf26759ba44c18bd2",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/perpendicular-command-native.log.gz": "4776b1dc83ba89891dbba8de3f7cb14b04c22f10eca41766718ec28084f4c04c",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/perpendicular-command-portable.log.gz": "80952ccd7fcca11f64476a7277babf83da679245954ae5d8bb4fc2588a89a159",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/perpendicular-ui-native.log.gz": "09c9f2f782b0543bee6324ce457024554ce688757ac28064e59c5ed72e52ce31",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/perpendicular-ui-portable.log.gz": "fa6701e0d0e4ac8f32e00c60b41e8051ee68404332cd3818e064bc6f853d338f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/plane-native.log.gz": "74a67bc4d36d382ecf203e5220945f91f688d93820e89156aacf09398c213670",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/plane-portable.log.gz": "8652ef65a495926a3c2df1cc1b9af289ee04542fa6f4a5aba8a5f0b3259b1168",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/points-native.log.gz": "296ccdd266eb20d81af4e88c936e064de60406eb556de14433e48757f472e9e4",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/points-portable.log.gz": "4416d1216957acdf8a7daa286eaa458ce94181722121dec9587a2cdf7e530911",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/polyline-native.log.gz": "52bb187813a87f760e47255696a0e5bbb7ff423880f5a5cc4f176c1467c3141f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/polyline-portable.log.gz": "30b15558591fd73a68a0c21de1a3feae741753e92a52f0f558dd04ac5515fd29",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/primitive-input-native.log.gz": "2b740d361b7e7e99ec441e601c19142a353bf1a5288a1b3b5cb7e7175aa2cd16",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/primitive-input-portable.log.gz": "21727c27828524860578af0cd5d08c0b70e7844bfa4413d60f79df2f49c072cb",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/python.log.gz": "a98ef63371e83c9f834d257ccdfd2b13cbeac3d276b8ffd74de64a9717c6dbd0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/rectangle-native.log.gz": "32e81103a9611dff113b4fc24fe984bd5d388df428a93272945cc92b7ffa2274",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/rectangle-portable.log.gz": "d66933487031ea2a6aa16457d631d6a3f5882fe9549a8561512082d11c6a73ea",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/reference-command-native.log.gz": "afc75d7e3f89cc82ecbfb603b2eaa4a9f9d672ab96b26379501c4e013cdce0f1",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/reference-command-portable.log.gz": "26391b18bead48df1fc35a02a67d9c1d938755847d89ba6457516349ffe4317e",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/reference-ui-native.log.gz": "e1cbecff966e15187d4d5311616f208a2e55809340ac1cbed676ed2e5c432e32",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/reference-ui-portable.log.gz": "dda672423d9f9d320790d72f3d1abf01d367a74508eecff75e242c9486734cbb",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/registry.log.gz": "378e7f14b8c9160e67cf49a216cc940421045e6acc32fc20852cb7d746361480",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/subd-native.log.gz": "4561423f0c5ce9a73045a82fba62ee45dd9a04052f1352aa64a040574aa3dd76",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-boundary-command-native.log.gz": "0805b15e891cd3752c04264df59617c69556743c9c96e5d50702740778ac230b",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-boundary-command-portable.log.gz": "316cbb6e7f864acba118c70034f073d4e1b9c4c7d9385d3de930da8bd3322a58",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-boundary-ui-native.log.gz": "f85025dfd127c75bed31b0f081a465767f74c95e23a473c1263d019e341c651d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-boundary-ui-portable.log.gz": "e9a4b1bbc35cfb8fd248558d8e48eeea999a6692151df2d284bbfb37dfadcf87",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-command-native.log.gz": "cfc1316d52e4ec92e3694dafacafbb35a114225f5efec33d9dc995731087ad96",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-command-portable.log.gz": "ec333b819c511a4cbc2865487b14d5e565f929e4f9908bac6a2252a43b71a27c",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-rays-command-native.log.gz": "f30aa28f3a68f6493a55f7a408a5fb47a9645efa183da1f2f19d29950bf8aeee",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-rays-command-portable.log.gz": "fe5e5a89ff498873ce651cb1d2a2f626826bbbb7b96e5056567113e6ecd243ef",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-rays-ui-native.log.gz": "fff147d5db25377bf29a4696c0056330534540dbd862ada0e90be97e74f175cc",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-rays-ui-portable.log.gz": "9d2df106eb718faa777044a4a367c4ce93205a1544f2d5b76e7367a4ed4a1315",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-ui-native.log.gz": "26ac8a16212ac9a25b4dc31bc52bfbe95907f8ecc0c210073a386841693d1ebf",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/tangent-ui-portable.log.gz": "9f5ff9b64d43e8dd99ff3e1e977f52e07df1b72e9b85aa2fbd5409632fdd3421",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/ui-native.log.gz": "075683cc051193fd134f6c9650c44d9879a577ccd22e9ae172c30653bb287c58",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/line-tangent-rays-proof/ui-portable.log.gz": "50a8fe409a0febaa7c063c9758f52a16cea7cfab7d135362a668a6bdce1b695a",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/subd-box-qualification.json": "205b80eb23119bf643a5dd25a2c7d0a40d7d80438885c6ae79cad2ab4b3bc390",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:docs/subd-plane-qualification.json": "314505c29825b76cb9b1da9017c87bcc000a3f797010ff3581de7973e271b301",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:src/app/tests/line_tangent_rays.rs": "5f1ec0aacc5d71b2db17ca9e12976be70243775f9040de4e69f9873202afcb3d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:src/app/tests/mod.rs": "d265fc5ae9730435f04de5c13d820bc38e87778bc3b458da6973758b796e73b6",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:third_party/opennurbs_python/LICENSE": "ed88c38e2f964a455b372f6c611905c6d64109744366106cb37972a421a65661",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:third_party/opennurbs_python/README.md": "d4ce5409124b44d4023182f9047377b67494277b6cb1510d749c647284e3798e",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:third_party/opennurbs_python/local_zero_trial.py": "573b83790395c266ff937f694c91441e99203463cec9b65fc550bbadcb4e3d13",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/check_line_tangent_rays.py": "23c320931148f35df49cb72ee9aa2a8d47b94de225f7c60e799b263f50ebdbbf",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/client.py": "6ebad026f942e99fb208086684e4e4ed9462c1b274c1c6f6683d9464a90b5556",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/conic_getter_input.py": "612d4fb7e04d073c0605baa0daf77d8b581a97d555ecc62f1541026177f0c90c",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/fixtures/line_tangent_mouse.json": "4d66ae23fc79fe49162f8c8a4c0ac25c49d7ebd407cfa253a991db3c8c80582e",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/fixtures/line_tangent_rays.json": "ea1e5f561b325167de4988343f6af10d6394569f510f09ab60b6eec0fc0bc1dd",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/fixtures/line_tangent_rays_sources.json": "31647e974af66c72f8f1d83d1d5a180ad63a284923e5bed0fdaa1efb14728e39",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/fixtures/tangent_zero_sdk.json": "08f6981ae76cf680a035705a50529d65abded5c295e5d88d98c45d5f7b295bb0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/generate_line_tangent_mouse.py": "bece832cf5ecb22c27a1e1331da32f65ab076771f5f3fce8e5afae4d64ff4bf5",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/generate_line_tangent_rays.py": "8529c434069691c8ada77fcad1b73dc8f69e5355703b30c45f524481c4914c42",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/generate_tangent_zero_sdk.py": "491a007eddac682f3ac387bc2549d35d72c2af6815107cb16575c6c8751c7459",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/line_tangent_rays.py": "441a04269f53cc52aa30fe70cde5c1d29209ec64049ce8cfea7f3349afc810d7",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/line_tangent_rays_probe.py": "6e8898d61984e24413ea7ddb7e2aec7db363cd377fa6e52459def23cc0b10150",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/line_tangent_mouse.json.gz": "02e7ce0d2fd0babc21d8a5b076fa66732f9745049fd8ccdc1ef67628524cadb9",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/line_tangent_rays.json.gz": "bbe34feaa1992ab3a766a1d72c66168fde5ad89c63391b4c28cc05c92c189e9d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/0e614d2a68afdd461f13c63bd9728fc62cb9af263c294de1c1add3a440f7cb05.gz": "9a8fc9933b415036284e2fac959126b9283ee2e5429318a0ef651ed33f7e2427",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/1458e2517a26e55a21db55340fa51785f5eb911ca7c77b45f63d81c4ec55e280.gz": "c0e1f7edf4b4a442631beed8365486c5af541a509076476dfd151f8cdcd24098",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/1a6d36d553c37cda4afba9817aa9f41e01365d970d9435b398e1b1eadcde54c7.gz": "6256a97b201be40450f06d92e6716a7bf604c4931d1a038ec339a9213b4a7510",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/1ce60e8fae780d568d4c353e815dd8135eb1a38e6968def262fc2e481cb712bc.gz": "84c250e2005a848dada959493c8d8b251328aec521527901f468abe64be16b5a",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/272e21eb672e2c82e4c47f021d07542bb0b079e6c5253090ca025817cf2531b9.gz": "853c15565e01df2b5f770f37ade4b4bb3e428588c9680478825dd581757496c6",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/2bbf10dec2d77184d864b56baec8d615c70f7718a07b53981a288813c0758c7b.gz": "37095bdcc45d693ec047c6645c0e717426bd374c59176abd0b62de40b5ad0287",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/2d92433d5815e8a5d52cc9ce3efcf61c5101e6fd5a31ed575c82e06755e69266.gz": "e23cc1a90f530831589d4fe7b52ac9fc7a06456e401ff3953f358eee7fa7d2bb",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/441a04269f53cc52aa30fe70cde5c1d29209ec64049ce8cfea7f3349afc810d7.gz": "cf274a03f7f641d69a6822b21a16905f41e9b41883d3a9b2f40206c84a94b77b",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/491a007eddac682f3ac387bc2549d35d72c2af6815107cb16575c6c8751c7459.gz": "2a5198308897b05437fbf15947e5c2f1bbf75be711d3b424107051bff802d8cf",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/52ef6f3b79ce751d9202d816952eec870d32c754efb5a784fae19a1f69de66a8.gz": "c4a7cf576dddd2f233fd66ee5f0d9e0e49f78a3223e324ec5012411894a9e255",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/612d4fb7e04d073c0605baa0daf77d8b581a97d555ecc62f1541026177f0c90c.gz": "6a61860435483df59c0b076326b6f00d582fffd9a0b27da19c9bed83132a2caa",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/6e8898d61984e24413ea7ddb7e2aec7db363cd377fa6e52459def23cc0b10150.gz": "5829a15d0c588f71d74a3bf904d52e51107ce5fe92834fc1ea4e5c12274eed9f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/6ebad026f942e99fb208086684e4e4ed9462c1b274c1c6f6683d9464a90b5556.gz": "8fe04c88a0f0bee8ebaec0ca6a1aae028617be0b2f9e5af595f79240501ad41d",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/8529c434069691c8ada77fcad1b73dc8f69e5355703b30c45f524481c4914c42.gz": "7cca0576fae91135bc96ce32d792cc5f5306e23262e01ffbf223c9c5533ed5fa",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/8f29122054fd8fbeec63cdda214b5cca181083a27ff64f9d091930f31ad6d3dc.gz": "8e9b48f7757db1da618569e6ce49821098c1347e00d0353e2bce69f3566abfae",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/adc8899bb22ad763933a63e01e25bce575eafc558a8d7a34038f10d7de5141e3.gz": "0b7dca0969c9613ecf04ead793091467439290ec96813ab45f5f89ffef0b285f",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/b3468f31e1d91360c0a96f2084bfa1a5d65d3922660aac5d29f5d41115599e53.gz": "2fc6352376ce0522abb19ab5b7abbd00d7d92eeae2cf9e358eeb7ae9028d8d83",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/bece832cf5ecb22c27a1e1331da32f65ab076771f5f3fce8e5afae4d64ff4bf5.gz": "b69029d1ca6ab25992ab44af5f1144279cf2816b63ac328acca40e3dc0ff76ae",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/cccec6aa927940d3f0b601f72575d8c095422233cfb04a2aa18ad72efb218f2a.gz": "f1e1c9d1364f0a6be665d73cecb5414c62a5c152804d883518756ee5504b6bd0",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/source_snapshots/f5929822d63483ae9f9c01c175b1346e056d8b18d1b739da7d832bc55c441cac.gz": "0c3c0bc4ad1d0a07f98c9f772c10722e4db07d032e5920c94e85e191250b4fa2",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/observations/tangent_zero_sdk.json.gz": "7a4b190fb98ed24bf4bb2c65838f46df421dd4dcfe36bad2009955f8050710a8",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/report_line_tangent_rays.py": "dd45de02261dc908d7917405a1b1f449c1a101209ee1f7bd8f120cd10aec3c41",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/rhino_worker.py": "adc8899bb22ad763933a63e01e25bce575eafc558a8d7a34038f10d7de5141e3",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/structural_sdk.py": "0e614d2a68afdd461f13c63bd9728fc62cb9af263c294de1c1add3a440f7cb05",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/tangent_zero_sdk.py": "e9afe7a2b016f426671e6f3fc44694654e03940777864065f6e385690de51916",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/tangent_zero_trial.py": "b0efa95aa15969d512026dd52af1a8e1db637f54bb2a3e9c32ce58cdd70d8d29",
+    "b2a1fba1cbef240a91501bf822f171e1a4bd28da:tools/rhino_oracle/test_line_tangent_rays.py": "c8a1946943bde3e451002e007f69bbed8e3f89628793df44fcae9f822f6ff958"
+  },
+  "evidence_sha256": {
+    "docs/line-tangent-boundary-validation.json": "1366d3332b64f254bfc4d694ecf079a73a98c58e2ce61da3ac395efe04596092",
+    "docs/line-tangent-rays-proof/arc-extension-native.log.gz": "efebdeb9ecab87959e721f8420932325480833c91b06fee6b6a2f320ab53a92a",
+    "docs/line-tangent-rays-proof/arc-extension-portable.log.gz": "7556b2f4e84d6f513206de9b6542b936de14a041888706792650c98b6808aecf",
+    "docs/line-tangent-rays-proof/capture-line_tangent_mouse.log.gz": "8c5f2e8cb199f9ebaef70f43a23de94f4b12a84ac1886d434c973e1d6b81ff61",
+    "docs/line-tangent-rays-proof/capture-line_tangent_rays.log.gz": "e0e6ec3c60719d6721bc806b16c8a2704b24cdf1798a30fea3b02254338f9822",
+    "docs/line-tangent-rays-proof/capture-tangent_zero_sdk.log.gz": "03d243fb5ca12f2bf4c367960922d88745d59f96e282fd2b44af3f729797df6c",
+    "docs/line-tangent-rays-proof/captures.json": "72db047c0dfd0c8823312e0c736e2b096dd900f61070958eaba699ec63efcc6d",
+    "docs/line-tangent-rays-proof/checks.json": "807858789c6d255555f2b5fa40b175127965c08993315bb488c121bbb93e329a",
+    "docs/line-tangent-rays-proof/clippy-all-features.log.gz": "98f7efcb51f84fc1a546653a9d0224d4a6c20b07412fb9dc4c9bd31c5d3cb9b4",
+    "docs/line-tangent-rays-proof/clippy-portable.log.gz": "490a7923d5024c24ab9041ff3d390c2954db81a42ca6c67a63d6c5b716f382c5",
+    "docs/line-tangent-rays-proof/commands-native.log.gz": "70b74f8f1cafcfdcc1dbadc6d6d887fe9cb713bf96bbd6bebdc6d89d16f046bd",
+    "docs/line-tangent-rays-proof/commands-portable.log.gz": "3980a39db69082f26269105b24c90cdf40263641f1da1308cfd4ec962ff3e94e",
+    "docs/line-tangent-rays-proof/corners-native.log.gz": "1d8c9f1fe6d803e15d19d45b3f20c44d771f9c321c937b47d65d86048de27cbe",
+    "docs/line-tangent-rays-proof/corners-portable.log.gz": "610ba5d6570b622772a2af9a04a4259f8a5de1545978eee996e0373d3a2dbe81",
+    "docs/line-tangent-rays-proof/curves-native.log.gz": "51a45cfdfda37b277720edaf7276b89ee0f537ebb113f924d791e70ef637142f",
+    "docs/line-tangent-rays-proof/curves-portable.log.gz": "141a8ff29cc35f05c862508da4192dcce5874a231ccb53ec81b7cd7cccc27348",
+    "docs/line-tangent-rays-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/line-tangent-rays-proof/grid-native.log.gz": "c55b764223d39ca809ccf4728bae1036a5c59cf20fd79d05339d09c1e25875f0",
+    "docs/line-tangent-rays-proof/grid-portable.log.gz": "027bbc3398fcbc6f2b627499b90a286b1f238a96a28578fd3fc663e02f5a4f8a",
+    "docs/line-tangent-rays-proof/history.log.gz": "5fb0b9d93ce5928a359fb832bcdebce4f0619ed8af101939bed924e248b6d87f",
+    "docs/line-tangent-rays-proof/line-command-native.log.gz": "ffcbb9e1a1727f9af77130bb5c350fd3b0ec23bfd137ab1cc9bede009a5c27e8",
+    "docs/line-tangent-rays-proof/line-command-portable.log.gz": "ffede49369fce38a9366bbdc210e0057378574e90e7e8180a1c0c8f26f4e7c54",
+    "docs/line-tangent-rays-proof/line-ui-native.log.gz": "fc751675672a31150f62903455e8c68be2f81695c9036206c8463b44ab3872d9",
+    "docs/line-tangent-rays-proof/line-ui-portable.log.gz": "b9f0b50aad2c75a1360a180f9347ba407beefdb5687c4c32a4e257f357c3a139",
+    "docs/line-tangent-rays-proof/lines-command-native.log.gz": "9417316098ce3917122b58329f0cb1f1048d619c3cf9890e8415e10a369c46f4",
+    "docs/line-tangent-rays-proof/lines-command-portable.log.gz": "47b0ac9530a9c42d6f00eb09a58fa716feba936c8f114d7d8c0e0b9dd62a5e33",
+    "docs/line-tangent-rays-proof/lines-ui-native.log.gz": "0233499bc0d79737f44f6c9c97368765287342a4c397702d94069ebc901e0b22",
+    "docs/line-tangent-rays-proof/lines-ui-portable.log.gz": "9fdc80711d7a1ce1716cc33ec07af6e1486a9392647b440043ff03908af1b9ec",
+    "docs/line-tangent-rays-proof/move-normal-native.log.gz": "8d334693afc851b876044b3ecc8b22a671977107aad193880e0acbf7b2a5f840",
+    "docs/line-tangent-rays-proof/move-normal-portable.log.gz": "05eb4e4cf25167382ff76c789e43dc4eee08ecce761efa687c08dd68823e9a6d",
+    "docs/line-tangent-rays-proof/normal-command-native.log.gz": "9a6ef5efd15b9ec8dc59b931238395a783e8bf445afaebcc11de39461682e0d1",
+    "docs/line-tangent-rays-proof/normal-command-portable.log.gz": "bc2322a3fa28c3526bf35f0b47bd718762266da6ca29ee94045bc5de75a17a8f",
+    "docs/line-tangent-rays-proof/normal-ui-native.log.gz": "beb89c842ed3690dd3aceef1d5912cb0e42a49e962949a8baa50179a9801c73c",
+    "docs/line-tangent-rays-proof/normal-ui-portable.log.gz": "a15ee435188420cf1607cb8bcfcaa2ef4b6b6508575405cdf26759ba44c18bd2",
+    "docs/line-tangent-rays-proof/perpendicular-command-native.log.gz": "4776b1dc83ba89891dbba8de3f7cb14b04c22f10eca41766718ec28084f4c04c",
+    "docs/line-tangent-rays-proof/perpendicular-command-portable.log.gz": "80952ccd7fcca11f64476a7277babf83da679245954ae5d8bb4fc2588a89a159",
+    "docs/line-tangent-rays-proof/perpendicular-ui-native.log.gz": "09c9f2f782b0543bee6324ce457024554ce688757ac28064e59c5ed72e52ce31",
+    "docs/line-tangent-rays-proof/perpendicular-ui-portable.log.gz": "fa6701e0d0e4ac8f32e00c60b41e8051ee68404332cd3818e064bc6f853d338f",
+    "docs/line-tangent-rays-proof/plane-native.log.gz": "74a67bc4d36d382ecf203e5220945f91f688d93820e89156aacf09398c213670",
+    "docs/line-tangent-rays-proof/plane-portable.log.gz": "8652ef65a495926a3c2df1cc1b9af289ee04542fa6f4a5aba8a5f0b3259b1168",
+    "docs/line-tangent-rays-proof/points-native.log.gz": "296ccdd266eb20d81af4e88c936e064de60406eb556de14433e48757f472e9e4",
+    "docs/line-tangent-rays-proof/points-portable.log.gz": "4416d1216957acdf8a7daa286eaa458ce94181722121dec9587a2cdf7e530911",
+    "docs/line-tangent-rays-proof/polyline-native.log.gz": "52bb187813a87f760e47255696a0e5bbb7ff423880f5a5cc4f176c1467c3141f",
+    "docs/line-tangent-rays-proof/polyline-portable.log.gz": "30b15558591fd73a68a0c21de1a3feae741753e92a52f0f558dd04ac5515fd29",
+    "docs/line-tangent-rays-proof/primitive-input-native.log.gz": "2b740d361b7e7e99ec441e601c19142a353bf1a5288a1b3b5cb7e7175aa2cd16",
+    "docs/line-tangent-rays-proof/primitive-input-portable.log.gz": "21727c27828524860578af0cd5d08c0b70e7844bfa4413d60f79df2f49c072cb",
+    "docs/line-tangent-rays-proof/python.log.gz": "e0ea044af644bbc79fd3fd52ec62166dd3e53dcc9a5fa2172abd73310a54af37",
+    "docs/line-tangent-rays-proof/rectangle-native.log.gz": "32e81103a9611dff113b4fc24fe984bd5d388df428a93272945cc92b7ffa2274",
+    "docs/line-tangent-rays-proof/rectangle-portable.log.gz": "d66933487031ea2a6aa16457d631d6a3f5882fe9549a8561512082d11c6a73ea",
+    "docs/line-tangent-rays-proof/reference-command-native.log.gz": "afc75d7e3f89cc82ecbfb603b2eaa4a9f9d672ab96b26379501c4e013cdce0f1",
+    "docs/line-tangent-rays-proof/reference-command-portable.log.gz": "26391b18bead48df1fc35a02a67d9c1d938755847d89ba6457516349ffe4317e",
+    "docs/line-tangent-rays-proof/reference-ui-native.log.gz": "e1cbecff966e15187d4d5311616f208a2e55809340ac1cbed676ed2e5c432e32",
+    "docs/line-tangent-rays-proof/reference-ui-portable.log.gz": "dda672423d9f9d320790d72f3d1abf01d367a74508eecff75e242c9486734cbb",
+    "docs/line-tangent-rays-proof/registry.log.gz": "378e7f14b8c9160e67cf49a216cc940421045e6acc32fc20852cb7d746361480",
+    "docs/line-tangent-rays-proof/subd-native.log.gz": "4561423f0c5ce9a73045a82fba62ee45dd9a04052f1352aa64a040574aa3dd76",
+    "docs/line-tangent-rays-proof/tangent-boundary-command-native.log.gz": "0805b15e891cd3752c04264df59617c69556743c9c96e5d50702740778ac230b",
+    "docs/line-tangent-rays-proof/tangent-boundary-command-portable.log.gz": "316cbb6e7f864acba118c70034f073d4e1b9c4c7d9385d3de930da8bd3322a58",
+    "docs/line-tangent-rays-proof/tangent-boundary-ui-native.log.gz": "f85025dfd127c75bed31b0f081a465767f74c95e23a473c1263d019e341c651d",
+    "docs/line-tangent-rays-proof/tangent-boundary-ui-portable.log.gz": "e9a4b1bbc35cfb8fd248558d8e48eeea999a6692151df2d284bbfb37dfadcf87",
+    "docs/line-tangent-rays-proof/tangent-command-native.log.gz": "cfc1316d52e4ec92e3694dafacafbb35a114225f5efec33d9dc995731087ad96",
+    "docs/line-tangent-rays-proof/tangent-command-portable.log.gz": "ec333b819c511a4cbc2865487b14d5e565f929e4f9908bac6a2252a43b71a27c",
+    "docs/line-tangent-rays-proof/tangent-rays-command-native.log.gz": "f30aa28f3a68f6493a55f7a408a5fb47a9645efa183da1f2f19d29950bf8aeee",
+    "docs/line-tangent-rays-proof/tangent-rays-command-portable.log.gz": "fe5e5a89ff498873ce651cb1d2a2f626826bbbb7b96e5056567113e6ecd243ef",
+    "docs/line-tangent-rays-proof/tangent-rays-ui-native.log.gz": "fff147d5db25377bf29a4696c0056330534540dbd862ada0e90be97e74f175cc",
+    "docs/line-tangent-rays-proof/tangent-rays-ui-portable.log.gz": "9d2df106eb718faa777044a4a367c4ce93205a1544f2d5b76e7367a4ed4a1315",
+    "docs/line-tangent-rays-proof/tangent-ui-native.log.gz": "26ac8a16212ac9a25b4dc31bc52bfbe95907f8ecc0c210073a386841693d1ebf",
+    "docs/line-tangent-rays-proof/tangent-ui-portable.log.gz": "9f5ff9b64d43e8dd99ff3e1e977f52e07df1b72e9b85aa2fbd5409632fdd3421",
+    "docs/line-tangent-rays-proof/ui-native.log.gz": "075683cc051193fd134f6c9650c44d9879a577ccd22e9ae172c30653bb287c58",
+    "docs/line-tangent-rays-proof/ui-portable.log.gz": "50a8fe409a0febaa7c063c9758f52a16cea7cfab7d135362a668a6bdce1b695a",
+    "tools/rhino_oracle/fixtures/line_tangent_mouse.json": "4d66ae23fc79fe49162f8c8a4c0ac25c49d7ebd407cfa253a991db3c8c80582e",
+    "tools/rhino_oracle/fixtures/line_tangent_rays.json": "ea1e5f561b325167de4988343f6af10d6394569f510f09ab60b6eec0fc0bc1dd",
+    "tools/rhino_oracle/fixtures/line_tangent_rays_sources.json": "31647e974af66c72f8f1d83d1d5a180ad63a284923e5bed0fdaa1efb14728e39",
+    "tools/rhino_oracle/fixtures/tangent_zero_sdk.json": "08f6981ae76cf680a035705a50529d65abded5c295e5d88d98c45d5f7b295bb0",
+    "tools/rhino_oracle/observations/line_tangent_mouse.json.gz": "02e7ce0d2fd0babc21d8a5b076fa66732f9745049fd8ccdc1ef67628524cadb9",
+    "tools/rhino_oracle/observations/line_tangent_rays.json.gz": "bbe34feaa1992ab3a766a1d72c66168fde5ad89c63391b4c28cc05c92c189e9d",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/0e614d2a68afdd461f13c63bd9728fc62cb9af263c294de1c1add3a440f7cb05.gz": "9a8fc9933b415036284e2fac959126b9283ee2e5429318a0ef651ed33f7e2427",
+    "tools/rhino_oracle/observations/source_snapshots/1458e2517a26e55a21db55340fa51785f5eb911ca7c77b45f63d81c4ec55e280.gz": "c0e1f7edf4b4a442631beed8365486c5af541a509076476dfd151f8cdcd24098",
+    "tools/rhino_oracle/observations/source_snapshots/1a6d36d553c37cda4afba9817aa9f41e01365d970d9435b398e1b1eadcde54c7.gz": "6256a97b201be40450f06d92e6716a7bf604c4931d1a038ec339a9213b4a7510",
+    "tools/rhino_oracle/observations/source_snapshots/1ce60e8fae780d568d4c353e815dd8135eb1a38e6968def262fc2e481cb712bc.gz": "84c250e2005a848dada959493c8d8b251328aec521527901f468abe64be16b5a",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/272e21eb672e2c82e4c47f021d07542bb0b079e6c5253090ca025817cf2531b9.gz": "853c15565e01df2b5f770f37ade4b4bb3e428588c9680478825dd581757496c6",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2bbf10dec2d77184d864b56baec8d615c70f7718a07b53981a288813c0758c7b.gz": "37095bdcc45d693ec047c6645c0e717426bd374c59176abd0b62de40b5ad0287",
+    "tools/rhino_oracle/observations/source_snapshots/2d92433d5815e8a5d52cc9ce3efcf61c5101e6fd5a31ed575c82e06755e69266.gz": "e23cc1a90f530831589d4fe7b52ac9fc7a06456e401ff3953f358eee7fa7d2bb",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/441a04269f53cc52aa30fe70cde5c1d29209ec64049ce8cfea7f3349afc810d7.gz": "cf274a03f7f641d69a6822b21a16905f41e9b41883d3a9b2f40206c84a94b77b",
+    "tools/rhino_oracle/observations/source_snapshots/4683bb4761c92da70920b7402e3cce8f68e64283c407d2f1d384766a2071d3ea.gz": "270a9927c53d2fd0813a5dd006a2689be9d08994215772a6403c88a5c31faad1",
+    "tools/rhino_oracle/observations/source_snapshots/491a007eddac682f3ac387bc2549d35d72c2af6815107cb16575c6c8751c7459.gz": "2a5198308897b05437fbf15947e5c2f1bbf75be711d3b424107051bff802d8cf",
+    "tools/rhino_oracle/observations/source_snapshots/52ef6f3b79ce751d9202d816952eec870d32c754efb5a784fae19a1f69de66a8.gz": "c4a7cf576dddd2f233fd66ee5f0d9e0e49f78a3223e324ec5012411894a9e255",
+    "tools/rhino_oracle/observations/source_snapshots/612d4fb7e04d073c0605baa0daf77d8b581a97d555ecc62f1541026177f0c90c.gz": "6a61860435483df59c0b076326b6f00d582fffd9a0b27da19c9bed83132a2caa",
+    "tools/rhino_oracle/observations/source_snapshots/6e8898d61984e24413ea7ddb7e2aec7db363cd377fa6e52459def23cc0b10150.gz": "5829a15d0c588f71d74a3bf904d52e51107ce5fe92834fc1ea4e5c12274eed9f",
+    "tools/rhino_oracle/observations/source_snapshots/6ebad026f942e99fb208086684e4e4ed9462c1b274c1c6f6683d9464a90b5556.gz": "8fe04c88a0f0bee8ebaec0ca6a1aae028617be0b2f9e5af595f79240501ad41d",
+    "tools/rhino_oracle/observations/source_snapshots/8529c434069691c8ada77fcad1b73dc8f69e5355703b30c45f524481c4914c42.gz": "7cca0576fae91135bc96ce32d792cc5f5306e23262e01ffbf223c9c5533ed5fa",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8f29122054fd8fbeec63cdda214b5cca181083a27ff64f9d091930f31ad6d3dc.gz": "8e9b48f7757db1da618569e6ce49821098c1347e00d0353e2bce69f3566abfae",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/adc8899bb22ad763933a63e01e25bce575eafc558a8d7a34038f10d7de5141e3.gz": "0b7dca0969c9613ecf04ead793091467439290ec96813ab45f5f89ffef0b285f",
+    "tools/rhino_oracle/observations/source_snapshots/b3468f31e1d91360c0a96f2084bfa1a5d65d3922660aac5d29f5d41115599e53.gz": "2fc6352376ce0522abb19ab5b7abbd00d7d92eeae2cf9e358eeb7ae9028d8d83",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/bece832cf5ecb22c27a1e1331da32f65ab076771f5f3fce8e5afae4d64ff4bf5.gz": "b69029d1ca6ab25992ab44af5f1144279cf2816b63ac328acca40e3dc0ff76ae",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cccec6aa927940d3f0b601f72575d8c095422233cfb04a2aa18ad72efb218f2a.gz": "f1e1c9d1364f0a6be665d73cecb5414c62a5c152804d883518756ee5504b6bd0",
+    "tools/rhino_oracle/observations/source_snapshots/f5929822d63483ae9f9c01c175b1346e056d8b18d1b739da7d832bc55c441cac.gz": "0c3c0bc4ad1d0a07f98c9f772c10722e4db07d032e5920c94e85e191250b4fa2",
+    "tools/rhino_oracle/observations/tangent_zero_sdk.json.gz": "7a4b190fb98ed24bf4bb2c65838f46df421dd4dcfe36bad2009955f8050710a8"
+  }
+}
