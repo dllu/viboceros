@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_construction",
+      "id": "epsilon_below_complete",
+      "case": "epsilon_below_complete"
+    },
+    {
+      "op": "line_construction",
+      "id": "opposite_complete",
+      "case": "opposite_complete"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_1e12",
+      "case": "tiny_1e12"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_1e10",
+      "case": "tiny_1e10"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_zero_tolerance",
+      "case": "tiny_zero_tolerance"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_1e9",
+      "case": "tiny_1e9"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_repeat_then_end",
+      "case": "tiny_repeat_then_end"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_enter_angle",
+      "case": "angled_enter_angle"
+    },
+    {
+      "op": "line_construction",
+      "id": "macro_vertical",
+      "case": "macro_vertical"
+    },
+    {
+      "op": "line_construction",
+      "id": "macro_cancel",
+      "case": "macro_cancel"
+    }
+  ]
+}

@@ -829,6 +829,7 @@ impl eframe::App for VibocerosApp {
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
+                    .or_else(|| self.line_axis_constraint())
                     .or_else(|| {
                         self.refinement_prompt
                             .as_ref()
@@ -1059,6 +1060,9 @@ impl eframe::App for VibocerosApp {
                             point_filter,
                             point_constraint,
                             translation_constraint,
+                            line_input: self
+                                .line_input
+                                .filter(|_| model_input_active && self.plane_prompt.is_none()),
                             normal_surface,
                             mesh_constraint: self
                                 .mesh_polyline_session

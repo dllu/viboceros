@@ -125,6 +125,7 @@ mod interface;
 mod intersect_two_sets;
 mod length;
 mod length_measurement;
+mod line_construction;
 mod line_through_points;
 mod lines;
 mod loft_input;
@@ -333,6 +334,8 @@ pub(super) fn test_app() -> VibocerosApp {
         command_focus_requested: false,
         active_command: None,
         last_point: None,
+        line_input: None,
+        line_accepted_point: None,
         block_session: None,
         block_manager: Default::default(),
         drafting_plane: None,

@@ -1,7 +1,6 @@
 //! Point constraints use the actual finite endpoint representation of the line.
 use super::*;
-#[path = "../../../../third_party/opennurbs_rust/line_projection.rs"]
-mod line_projection;
+use crate::native_line_projection as line_projection;
 
 /// Vertical Plane's height getter projects onto the unbounded line from the
 /// second edge point to that point plus the rectangle's unit Y direction.

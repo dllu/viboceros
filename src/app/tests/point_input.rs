@@ -1306,33 +1306,61 @@ fn overflowing_endpoint_distances_preserve_typed_and_picked_drafts() {
 }
 
 #[test]
-fn typed_and_picked_endpoints_share_the_current_absolute_tolerance() {
-    for command in ["Line", "Sphere"] {
-        for typed in [false, true] {
-            let mut app = test_app();
-            enter(&mut app, "Tolerance Absolute=0.01");
-            enter(&mut app, command);
-            enter(&mut app, "0,0,0");
-            let active = app.active_command;
-            for distance in [0.005, 0.01] {
-                if typed {
-                    enter(&mut app, &format!("{distance},0,0"));
-                } else {
-                    assert!(!app.accept_drafting_point(point(distance, 0.0, 0.0)));
-                }
-                assert_eq!(app.active_command, active);
-                assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
-                assert_eq!(app.document.objects().len(), 0);
-            }
+fn typed_and_picked_sphere_endpoints_share_the_current_absolute_tolerance() {
+    for typed in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Tolerance Absolute=0.01");
+        enter(&mut app, "Sphere");
+        enter(&mut app, "0,0,0");
+        let active = app.active_command;
+        for distance in [0.005, 0.01] {
             if typed {
-                enter(&mut app, "1,0,0");
+                enter(&mut app, &format!("{distance},0,0"));
             } else {
-                assert!(app.accept_drafting_point(point(1.0, 0.0, 0.0)));
+                assert!(!app.accept_drafting_point(point(distance, 0., 0.)));
             }
-            assert!(app.active_command.is_none());
-            assert_eq!(app.document.objects().len(), 1);
-            assert_eq!(app.document.undo_label(), Some(command));
+            assert_eq!(app.active_command, active);
+            assert_eq!(app.last_point, Some(point(0., 0., 0.)));
+            assert_eq!(app.document.objects().len(), 0);
         }
+        if typed {
+            enter(&mut app, "1,0,0");
+        } else {
+            assert!(app.accept_drafting_point(point(1., 0., 0.)));
+        }
+        assert!(app.active_command.is_none());
+        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(app.document.undo_label(), Some("Sphere"));
+    }
+}
+
+#[test]
+fn typed_and_picked_short_lines_use_native_admission_independent_of_model_tolerance() {
+    // The native coarse_tolerance Line capture accepts a 1e-7 segment at 0.01.
+    for typed in [false, true] {
+        let mut app = test_app();
+        enter(&mut app, "Tolerance Absolute=0.01");
+        enter(&mut app, "Line");
+        enter(&mut app, "0,0,0");
+        if typed {
+            enter(&mut app, "0,0,0");
+        } else {
+            assert!(!app.accept_drafting_point(point(0., 0., 0.)));
+        }
+        assert!(app.active_command.is_some());
+        assert!(app.document.objects().next().is_none());
+        if typed {
+            enter(&mut app, "0.0000001,0,0");
+        } else {
+            assert!(app.accept_drafting_point(point(1e-7, 0., 0.)));
+        }
+        assert!(app.active_command.is_none());
+        let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(line.start(), point(0., 0., 0.));
+        assert_eq!(line.end(), point(1e-7, 0., 0.));
+        assert_eq!(app.document.undo_label(), Some("Line"));
     }
 }
 

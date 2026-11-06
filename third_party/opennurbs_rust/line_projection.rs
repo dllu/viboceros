@@ -16,18 +16,23 @@ pub(crate) fn closest_point(
     point: Point3,
 ) -> Result<(Point3, f64), GeometryError> {
     let d = from.vector_to(to)?;
-    let squared = d.dot(d)?;
-    if squared <= 0. {
+    // OpenNURBS uses ordinary left-associated products here. The kernel's
+    // compensated dot product can change a projected remote endpoint by an ulp.
+    let dot = |a: viboceros_geometry::Vector3, b: viboceros_geometry::Vector3| {
+        a.x() * b.x() + a.y() * b.y() + a.z() * b.z()
+    };
+    let squared = dot(d, d);
+    if !squared.is_finite() || squared <= 0. {
         return Err(GeometryError::Degenerate {
             context: "line projection endpoints",
         });
     }
     let a = from.vector_to(point)?;
     let b = to.vector_to(point)?;
-    let t = if a.dot(a)? <= b.dot(b)? {
-        a.dot(d)? / squared
+    let t = if dot(a, a) <= dot(b, b) {
+        dot(a, d) / squared
     } else {
-        1. + b.dot(d)? / squared
+        1. + dot(b, d) / squared
     };
     let projected = if t < 0.5 {
         from.translated(d.scaled(t)?)?

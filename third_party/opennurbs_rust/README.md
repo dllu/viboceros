@@ -4,13 +4,15 @@
 revision below, under the [MIT license](LICENSE). It retains component scaling,
 operation order and denormal handling. Corner-surface charts use this explicit
 entry point to preserve native parameter extents at remote coordinates; the
-general geometry distance functions retain their existing arithmetic.
+general geometry distance functions retain their existing arithmetic. Line and
+Polyline commands also use this policy for their parameter domains.
 
 `line_projection.rs` adapts `ON_Line::ClosestPointTo` and `PointAt` from
 `opennurbs_line.cpp` at the pinned revision below, under the [MIT license](LICENSE).
 It retains endpoint-conditioned parameter calculation/evaluation and uses validated
 Rust geometry types, rejecting unrepresentable or degenerate lines. Plane's
-Vertical point getter uses the actual rounded unit endpoints; the geometry
+Vertical point getter and Line construction use the actual finite endpoints
+and ordinary native dot-product order; the geometry
 kernel's ideal directional projection remains independent.
 
 `chord_adjust.rs` adapts the point-list/NURBS chord-adjustment policy from
@@ -44,6 +46,14 @@ Its margin switch supports the independently observed `ToEdge` command. The
 kernel computes tight runtime UV bounds independently (rather than using the
 archive's control-point box), crops exact NURBS surfaces, updates isoparametric
 flags, and validates retained topology. No proprietary Rhino source was used.
+
+`line_rotation.rs` adapts `ON_Xform::Rotation` and `ON_3dPoint::Transform` from
+`opennurbs_xform.cpp` / `opennurbs_point.cpp` at the same pinned revision under
+that [MIT license](LICENSE). This altered port retains ordinary matrix operation
+order and center translation when rotating both finite Line reference endpoints.
+It uses validated unit axes and Rust sine/cosine pairs; finite arithmetic failures
+return errors. The Line command independently follows the public `ON_LineCurve`
+constructor's unit-domain fallback at lengths no greater than `2^-32`.
 
 `rotation.rs` adapts cardinal-angle noise cleanup from `ON_Xform::Rotation` in
 `opennurbs_xform.cpp` at the same pinned revision under the [MIT license](LICENSE),

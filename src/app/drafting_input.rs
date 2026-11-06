@@ -276,15 +276,7 @@ impl VibocerosApp {
                 self.active_command = None;
                 self.execute_command(&format!("Point {}", format_model_point(point)));
             }
-            InteractiveCommand::Line { start: None } => {
-                self.active_command = Some(InteractiveCommand::Line { start: Some(point) });
-                self.push_log(format!("Start: {}", format_model_point(point)));
-                self.push_log(
-                    InteractiveCommand::Line { start: Some(point) }
-                        .prompt()
-                        .to_owned(),
-                );
-            }
+            InteractiveCommand::Line { .. } => return self.accept_line_point(point),
             InteractiveCommand::Distance {
                 start: None,
                 previous_last,
@@ -304,21 +296,6 @@ impl VibocerosApp {
                 ..
             } => {
                 return self.finish_distance(start, point, display_units, plane);
-            }
-            InteractiveCommand::Line { start: Some(start) } => {
-                if !start
-                    .distance_to(point)
-                    .is_ok_and(|distance| distance > self.document.tolerance().absolute())
-                {
-                    self.push_log("Error: line end must have a finite distance greater than tolerance from its start".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Line {} {}",
-                    format_model_point(start),
-                    format_model_point(point)
-                ));
             }
             InteractiveCommand::Circle { center: None } => {
                 let command = InteractiveCommand::Circle {

@@ -11,6 +11,8 @@ impl VibocerosApp {
         self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
+        self.line_input = None;
+        self.line_accepted_point = None;
         if self.inset_session.take().is_some() {
             self.component_selection.clear();
         }

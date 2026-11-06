@@ -11,6 +11,7 @@ previews stay in individual `src/app/` modules.
 | `interactive_state/` | Interactive command variants, names, prompts and drafting anchors |
 | `interactive_start` | Parse initial arguments and start command-specific sessions |
 | `drafting_input` | Dispatch accepted points and snaps to the active command |
+| `line_input` | Line construction getters and viewport constraints; pure geometry state lives in the command crate |
 | `interactive_cancel` | Complete or discard interactive sessions and release their picks |
 | `prompt_cancel` | Route Escape through transient prompts and selections |
 | `selection_input` | Selection clicks, ambiguity menus, fences and window regions |

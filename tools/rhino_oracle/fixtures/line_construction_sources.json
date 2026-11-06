@@ -1,0 +1,1233 @@
+{
+  "basic_xy": {
+    "actions": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        5,
+        3
+      ]
+    ]
+  },
+  "basic_spatial": {
+    "actions": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        -1,
+        7
+      ]
+    ]
+  },
+  "both_initial": {
+    "actions": [
+      "BothSides",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        5,
+        7
+      ]
+    ]
+  },
+  "both_late": {
+    "actions": [
+      [
+        1,
+        2,
+        3
+      ],
+      "BothSides",
+      [
+        5,
+        5,
+        7
+      ]
+    ]
+  },
+  "vertical_point": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "vertical_length": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      5
+    ]
+  },
+  "vertical_negative": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      -5
+    ]
+  },
+  "vertical_both": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      "BothSides",
+      5
+    ]
+  },
+  "four_point": {
+    "actions": [
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        6,
+        3
+      ]
+    ]
+  },
+  "four_reverse_pick": {
+    "actions": [
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        -2,
+        6,
+        3
+      ]
+    ]
+  },
+  "four_spatial": {
+    "actions": [
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        5
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        6,
+        7
+      ]
+    ]
+  },
+  "bisector_length": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        0
+      ],
+      5
+    ]
+  },
+  "bisector_point": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        0
+      ],
+      [
+        6,
+        1,
+        2
+      ]
+    ]
+  },
+  "angled_point": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      90,
+      [
+        3,
+        8,
+        6
+      ]
+    ]
+  },
+  "angled_length": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      30,
+      5
+    ]
+  },
+  "angled_spatial": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        7
+      ],
+      45,
+      [
+        6,
+        7,
+        8
+      ]
+    ]
+  },
+  "short_segment": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-07,
+        0,
+        0
+      ]
+    ]
+  },
+  "cancel_empty": {
+    "actions": [
+      "Cancel"
+    ]
+  },
+  "cancel_both": {
+    "actions": [
+      "BothSides",
+      [
+        1,
+        2,
+        3
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_vertical": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_four": {
+    "actions": [
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_bisector": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "cancel_angled": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      45,
+      "Cancel"
+    ]
+  },
+  "enter_anchor": {
+    "actions": [
+      [
+        1,
+        2,
+        3
+      ],
+      "Enter"
+    ]
+  },
+  "both_initial_prompt": {
+    "actions": [
+      "BothSides",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        5,
+        7
+      ]
+    ]
+  },
+  "cancel_both_prompt": {
+    "actions": [
+      "BothSides",
+      [
+        1,
+        2,
+        3
+      ],
+      "Cancel"
+    ]
+  },
+  "vertical_length_finish": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      5,
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "vertical_negative_finish": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      -5,
+      [
+        8,
+        9,
+        11
+      ]
+    ]
+  },
+  "vertical_both_finish": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      "BothSides",
+      5,
+      [
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "bisector_length_finish": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        0
+      ],
+      5,
+      [
+        6,
+        1,
+        2
+      ]
+    ]
+  },
+  "angled_length_finish": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      30,
+      5,
+      [
+        10,
+        10,
+        3
+      ]
+    ]
+  },
+  "four_length_finish": {
+    "actions": [
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      5,
+      [
+        4,
+        6,
+        3
+      ]
+    ]
+  },
+  "vertical_spatial_plane": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "both_vertical_plane": {
+    "actions": [
+      "BothSides",
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        8,
+        9,
+        10
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "four_oblique": {
+    "actions": [
+      "FourPoint",
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        13,
+        24,
+        30
+      ],
+      [
+        20,
+        20,
+        35
+      ],
+      [
+        11,
+        22,
+        31
+      ]
+    ]
+  },
+  "bisector_spatial": {
+    "actions": [
+      "Bisector",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        7
+      ],
+      [
+        1,
+        6,
+        7
+      ],
+      [
+        10,
+        8,
+        9
+      ]
+    ]
+  },
+  "angled_remote": {
+    "actions": [
+      "Angled",
+      [
+        1000000000000.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      [
+        1000000000010.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      30,
+      [
+        1000000000010.0,
+        1000000000010.0,
+        1000000000000.0
+      ]
+    ]
+  },
+  "angled_remote_long": {
+    "actions": [
+      "Angled",
+      [
+        1000000000000.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      [
+        1000000000100.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      30,
+      [
+        1000000000010.0,
+        1000000000010.0,
+        1000000000000.0
+      ]
+    ]
+  },
+  "four_remote": {
+    "actions": [
+      "FourPoint",
+      [
+        1000000000000.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      [
+        1000000000003.0,
+        1000000000004.0,
+        1000000000000.0
+      ],
+      [
+        1000000000010.0,
+        1000000000000.0,
+        1000000000005.0
+      ],
+      [
+        1000000000001.0,
+        1000000000002.0,
+        1000000000001.0
+      ]
+    ]
+  },
+  "bisector_remote": {
+    "actions": [
+      "Bisector",
+      [
+        1000000000000.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      [
+        1000000000004.0,
+        1000000000000.0,
+        1000000000000.0
+      ],
+      [
+        1000000000000.0,
+        1000000000003.0,
+        1000000000003.0
+      ],
+      [
+        1000000000010.0,
+        1000000000008.0,
+        1000000000004.0
+      ]
+    ]
+  },
+  "coarse_tolerance": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-07,
+        0,
+        0
+      ]
+    ],
+    "absolute_tolerance": 0.01
+  },
+  "native_epsilon_at": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1.490116119385e-08,
+        0,
+        0
+      ]
+    ]
+  },
+  "native_epsilon_below": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1.4901161193849996e-08,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ]
+  },
+  "repeated_point": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        2
+      ]
+    ]
+  },
+  "both_repeat": {
+    "actions": [
+      [
+        1,
+        2,
+        3
+      ],
+      "BothSides",
+      "BothSides",
+      [
+        5,
+        5,
+        7
+      ]
+    ]
+  },
+  "enter_empty": {
+    "actions": [
+      "Enter"
+    ]
+  },
+  "angled_negative": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      -90,
+      [
+        3,
+        -4,
+        6
+      ]
+    ]
+  },
+  "bisector_same_ray": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        8,
+        0,
+        0
+      ],
+      [
+        6,
+        2,
+        0
+      ]
+    ]
+  },
+  "bisector_opposite": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        -3,
+        0,
+        0
+      ],
+      [
+        2,
+        5,
+        0
+      ]
+    ]
+  },
+  "epsilon_below_complete": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1.4901161193849996e-08,
+        0,
+        0
+      ]
+    ]
+  },
+  "opposite_complete": {
+    "actions": [
+      "Bisector",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        -3,
+        0,
+        0
+      ]
+    ]
+  },
+  "tiny_1e12": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-12,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "tiny_1e10": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-10,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "tiny_zero_tolerance": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        2.3283064365386963e-10,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "tiny_1e9": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-09,
+        0,
+        0
+      ],
+      "Cancel"
+    ]
+  },
+  "tiny_repeat_then_end": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-12,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ]
+    ]
+  },
+  "angled_enter_angle": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      "Enter"
+    ]
+  },
+  "macro_vertical": {
+    "macro": "_Line _Vertical w1,2,3 5 w8,9,10\n_Point w7,8,9\n"
+  },
+  "macro_cancel": {
+    "macro": "_Line _BothSides w1,2,3 _Enter\n_Point w7,8,9\n"
+  },
+  "tiny_complete_1e12": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-12,
+        0,
+        0
+      ]
+    ]
+  },
+  "tiny_complete_1e10": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-10,
+        0,
+        0
+      ]
+    ]
+  },
+  "tiny_complete_zero_tolerance": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        2.3283064365386963e-10,
+        0,
+        0
+      ]
+    ]
+  },
+  "tiny_complete_1e9": {
+    "actions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1e-09,
+        0,
+        0
+      ]
+    ]
+  },
+  "both_four": {
+    "actions": [
+      "BothSides",
+      "FourPoint",
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        0
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        7,
+        5,
+        2
+      ]
+    ]
+  },
+  "both_bisector": {
+    "actions": [
+      "BothSides",
+      "Bisector",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        2,
+        3
+      ],
+      [
+        1,
+        6,
+        3
+      ],
+      [
+        8,
+        5,
+        3
+      ]
+    ]
+  },
+  "both_angled": {
+    "actions": [
+      "BothSides",
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        3
+      ],
+      30,
+      [
+        8,
+        6,
+        3
+      ]
+    ]
+  },
+  "angled_plane": {
+    "actions": [
+      "Angled",
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        6,
+        3
+      ],
+      30,
+      [
+        8,
+        8,
+        7
+      ]
+    ],
+    "construction_plane": [
+      [
+        10,
+        20,
+        30
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "vertical_reverse": {
+    "actions": [
+      "Vertical",
+      [
+        1,
+        2,
+        3
+      ],
+      5,
+      [
+        8,
+        9,
+        -10
+      ]
+    ]
+  }
+}

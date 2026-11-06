@@ -517,7 +517,12 @@ pub mod point_fitting;
 pub mod subcurve_input;
 pub mod tween_surfaces;
 use point_arguments::parse_point;
+pub mod line;
 pub mod lines;
+#[path = "../../../third_party/opennurbs_rust/length.rs"]
+mod native_length;
+#[path = "../../../third_party/opennurbs_rust/line_projection.rs"]
+mod native_line_projection;
 pub mod point_grid;
 mod point_matrix;
 mod points;
@@ -1198,7 +1203,7 @@ impl CommandRegistry {
             .register(point_matrix::PointMatrixCommand::default())
             .expect("unique built-in command");
         registry
-            .register(LineCommand)
+            .register(line::LineCommand)
             .expect("unique built-in command");
         registry
             .register(lines::LinesCommand)
@@ -3196,28 +3201,6 @@ impl Command for PointCommand {
         require_consumed(arguments, consumed, "Point x,y,z")?;
         let id = document.add_geometry(Geometry::Point(point))?;
         Ok(format!("Added point {id} at {}", format_point(point)))
-    }
-}
-
-struct LineCommand;
-
-impl Command for LineCommand {
-    fn name(&self) -> &'static str {
-        "Line"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["L"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (start, consumed) = parse_point(arguments)?;
-        let (end, end_consumed) = parse_point(&arguments[consumed..])?;
-        require_consumed(arguments, consumed + end_consumed, "Line x1,y1,z1 x2,y2,z2")?;
-        let line = LineSegment::try_new(start, end, document.tolerance())?;
-        let length = line.length()?;
-        let id = document.add_geometry(Geometry::Line(line))?;
-        Ok(format!("Added line {id} (length {length:.6})"))
     }
 }
 

@@ -304,7 +304,7 @@ impl VibocerosApp {
             {
                 self.drafting_plane.get_or_insert(plane);
             }
-            self.last_point = Some(point);
+            self.last_point = Some(self.line_accepted_point.take().unwrap_or(point));
             self.point_filter = None;
             self.point_constraint = None;
             self.command_input.clear();

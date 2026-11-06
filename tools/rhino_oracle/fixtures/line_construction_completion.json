@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_construction",
+      "id": "tiny_complete_1e12",
+      "case": "tiny_complete_1e12"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_complete_1e10",
+      "case": "tiny_complete_1e10"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_complete_zero_tolerance",
+      "case": "tiny_complete_zero_tolerance"
+    },
+    {
+      "op": "line_construction",
+      "id": "tiny_complete_1e9",
+      "case": "tiny_complete_1e9"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_four",
+      "case": "both_four"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_bisector",
+      "case": "both_bisector"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_angled",
+      "case": "both_angled"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_plane",
+      "case": "angled_plane"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_reverse",
+      "case": "vertical_reverse"
+    }
+  ]
+}

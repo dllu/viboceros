@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_construction",
+      "id": "basic_xy",
+      "case": "basic_xy"
+    },
+    {
+      "op": "line_construction",
+      "id": "basic_spatial",
+      "case": "basic_spatial"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_initial",
+      "case": "both_initial"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_late",
+      "case": "both_late"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_point",
+      "case": "vertical_point"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_length",
+      "case": "vertical_length"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_negative",
+      "case": "vertical_negative"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_both",
+      "case": "vertical_both"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_point",
+      "case": "four_point"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_reverse_pick",
+      "case": "four_reverse_pick"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_spatial",
+      "case": "four_spatial"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_length",
+      "case": "bisector_length"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_point",
+      "case": "bisector_point"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_point",
+      "case": "angled_point"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_length",
+      "case": "angled_length"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_spatial",
+      "case": "angled_spatial"
+    },
+    {
+      "op": "line_construction",
+      "id": "short_segment",
+      "case": "short_segment"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_both",
+      "case": "cancel_both"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_vertical",
+      "case": "cancel_vertical"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_four",
+      "case": "cancel_four"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_bisector",
+      "case": "cancel_bisector"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_angled",
+      "case": "cancel_angled"
+    },
+    {
+      "op": "line_construction",
+      "id": "enter_anchor",
+      "case": "enter_anchor"
+    }
+  ]
+}

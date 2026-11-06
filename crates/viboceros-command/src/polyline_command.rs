@@ -1,7 +1,6 @@
 //! Command polylines retain physical chord parameters, unlike SDK unit-span defaults.
 use super::*;
-#[path = "../../../third_party/opennurbs_rust/length.rs"]
-mod native_length;
+use crate::native_length;
 pub(super) struct PolylineCommand;
 
 impl Command for PolylineCommand {

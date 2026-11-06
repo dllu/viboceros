@@ -1,0 +1,50 @@
+[
+  {
+    "family": "line_construction",
+    "log": "capture-line_construction.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_construction"
+    ]
+  },
+  {
+    "family": "line_construction_holdouts",
+    "log": "capture-line_construction_holdouts.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_construction_holdouts"
+    ]
+  },
+  {
+    "family": "line_construction_precision",
+    "log": "capture-line_construction_precision.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_construction_precision"
+    ]
+  },
+  {
+    "family": "line_construction_completion",
+    "log": "capture-line_construction_completion.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_construction_completion"
+    ]
+  }
+]

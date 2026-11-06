@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_construction",
+      "id": "both_initial_prompt",
+      "case": "both_initial_prompt"
+    },
+    {
+      "op": "line_construction",
+      "id": "cancel_both_prompt",
+      "case": "cancel_both_prompt"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_length_finish",
+      "case": "vertical_length_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_negative_finish",
+      "case": "vertical_negative_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_both_finish",
+      "case": "vertical_both_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_length_finish",
+      "case": "bisector_length_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_length_finish",
+      "case": "angled_length_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_length_finish",
+      "case": "four_length_finish"
+    },
+    {
+      "op": "line_construction",
+      "id": "vertical_spatial_plane",
+      "case": "vertical_spatial_plane"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_vertical_plane",
+      "case": "both_vertical_plane"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_oblique",
+      "case": "four_oblique"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_spatial",
+      "case": "bisector_spatial"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_remote",
+      "case": "angled_remote"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_remote_long",
+      "case": "angled_remote_long"
+    },
+    {
+      "op": "line_construction",
+      "id": "four_remote",
+      "case": "four_remote"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_remote",
+      "case": "bisector_remote"
+    },
+    {
+      "op": "line_construction",
+      "id": "coarse_tolerance",
+      "case": "coarse_tolerance"
+    },
+    {
+      "op": "line_construction",
+      "id": "native_epsilon_at",
+      "case": "native_epsilon_at"
+    },
+    {
+      "op": "line_construction",
+      "id": "native_epsilon_below",
+      "case": "native_epsilon_below"
+    },
+    {
+      "op": "line_construction",
+      "id": "repeated_point",
+      "case": "repeated_point"
+    },
+    {
+      "op": "line_construction",
+      "id": "both_repeat",
+      "case": "both_repeat"
+    },
+    {
+      "op": "line_construction",
+      "id": "enter_empty",
+      "case": "enter_empty"
+    },
+    {
+      "op": "line_construction",
+      "id": "angled_negative",
+      "case": "angled_negative"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_same_ray",
+      "case": "bisector_same_ray"
+    },
+    {
+      "op": "line_construction",
+      "id": "bisector_opposite",
+      "case": "bisector_opposite"
+    }
+  ]
+}

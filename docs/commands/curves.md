@@ -11,6 +11,8 @@ creates an open control-point curve, defaults to degree three, accepts degrees
 through 11, and lowers the degree when too few controls are supplied.
 `Close=Smooth` creates a periodic seam (degree one remains linear and closed);
 `Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
+[Line construction](line.md) supports BothSides, Vertical, FourPoint, Bisector
+and Angled, with shared command/getter geometry and previews.
 [Lines](lines.md) creates adjoining independent line objects with Close and
 local Undo, then commits the completed set in one history entry.
 

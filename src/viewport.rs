@@ -367,6 +367,7 @@ pub struct ViewportInput<'a> {
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
+    pub line_input: Option<viboceros_command::line::Input>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
@@ -504,6 +505,7 @@ impl Default for ViewportInput<'_> {
             point_filter: None,
             point_constraint: None,
             translation_constraint: None,
+            line_input: None,
             normal_surface: None,
             mesh_constraint: None,
             surface_curve_close_point: None,
@@ -2538,8 +2540,31 @@ impl Viewport {
                 input.bend_preview.is_none()
                     && input.stretch_preview.is_none()
                     && input.taper_preview.is_none()
-                    && input.maelstrom_preview.is_none(),
+                    && input.maelstrom_preview.is_none()
+                    && input.line_input.is_none(),
             );
+        }
+        if let Some(getter) = input.line_input {
+            self.paint_draft_points(
+                &painter,
+                rect,
+                &getter.points().into_iter().flatten().collect::<Vec<_>>(),
+            );
+            if let Some(preview) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                if let (Some(a), Some(b)) = (
+                    self.project_selection_point(preview.line.start(), rect),
+                    self.project_selection_point(preview.line.end(), rect),
+                ) {
+                    painter.line_segment([a, b], Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
+            } else if let (Some(a), Some(b)) = (
+                getter
+                    .last_point()
+                    .and_then(|p| self.project_selection_point(p, rect)),
+                drafting_cursor.and_then(|c| self.project_selection_point(c.point, rect)),
+            ) {
+                painter.line_segment([a, b], Stroke::new(1., Color32::from_gray(130)));
+            }
         }
         if let Some(getter) = input.catenary_input {
             self.paint_draft_points(&painter, rect, &getter.markers());

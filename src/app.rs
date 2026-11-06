@@ -240,6 +240,7 @@ mod inset;
 mod intersect_two_sets;
 mod iplane;
 mod length;
+mod line_input;
 mod maelstrom_prompt;
 mod mesh_face_prompt;
 mod mirror;
@@ -410,6 +411,8 @@ pub struct VibocerosApp {
     block_session: Option<blocks::PendingBlock>,
     block_manager: block_manager::BlockManager,
     last_point: Option<Point3>,
+    line_input: Option<viboceros_command::line::Input>,
+    line_accepted_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     point_filter: Option<viboceros_drafting::PointFilterSession>,
     point_constraint: Option<viboceros_drafting::PointConstraintState>,
@@ -594,6 +597,8 @@ impl VibocerosApp {
             block_session: None,
             block_manager: Default::default(),
             last_point: None,
+            line_input: None,
+            line_accepted_point: None,
             drafting_plane: None,
             point_filter: None,
             point_constraint: None,
@@ -1007,6 +1012,7 @@ impl VibocerosApp {
             || self.try_continue_stretch(&input)
             || self.try_continue_taper(&input)
             || self.try_continue_maelstrom(&input)
+            || self.try_continue_line(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -1146,6 +1152,7 @@ impl VibocerosApp {
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
             || self.continue_surface_point_grid(input)
+            || self.try_continue_line(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
