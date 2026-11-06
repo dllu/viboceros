@@ -513,3 +513,7 @@ mod cap_charts;
 mod extrusion_splitting;
 #[path = "../../../crates/viboceros-oracle/tests/support/extrusion_splitting.rs"]
 mod extrusion_splitting_comparison;
+
+mod planar_regions;
+#[path = "../../../crates/viboceros-oracle/tests/support/planar_regions.rs"]
+mod planar_regions_comparison;

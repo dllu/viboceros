@@ -25,6 +25,36 @@ pub(super) fn stage(
             viboceros_smlib::Error::Kernel("Too many planar surface profiles".into()).into(),
         );
     }
+    if !independent_contacts {
+        let lookup = originals
+            .iter()
+            .enumerate()
+            .map(|(i, (id, _))| (*id, i))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        return super::portable::stage_with(
+            originals,
+            tolerance,
+            false,
+            |group, outer, tolerance| {
+                let refs = group
+                    .iter()
+                    .map(|(id, _)| &profiles[lookup[id]])
+                    .collect::<Vec<_>>();
+                let native = Shape::planar_faces(&refs, tolerance)
+                    .and_then(|s| s.to_brep(tolerance))
+                    .and_then(|b| b.explode_faces(tolerance).map_err(Into::into));
+                match native {
+                    Ok(output)
+                        if output.len() == 1
+                            && output[0].faces()[0].loops().len() == group.len() =>
+                    {
+                        Ok(output)
+                    }
+                    _ => super::portable::construct(group, outer, tolerance),
+                }
+            },
+        );
+    }
     let mut groups: Vec<Vec<usize>> = Vec::new();
     for i in 0..profiles.len() {
         let mut target = None;

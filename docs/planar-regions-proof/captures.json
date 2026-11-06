@@ -1,0 +1,57 @@
+{
+  "planar_regions_pilot": {
+    "results": 49,
+    "role": "primary region comparison",
+    "engine_version": "8.32.26160.13001",
+    "observation": "tools/rhino_oracle/observations/planar_regions_pilot.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_regions_pilot.json",
+    "raw_sha256": "eba959ef6b1435c4fcfe91b078b9f5833cd489f5c7cdf3a9b082fd8da9929998",
+    "raw_bytes": 10183364,
+    "gzip_sha256": "5d1b60f4c91593a5a25f19fc595becca492bce4bcb4dd529bd3ac11d4db42d02",
+    "gzip_bytes": 259679
+  },
+  "planar_regions_holdouts": {
+    "results": 69,
+    "role": "primary region comparison",
+    "engine_version": "8.32.26160.13001",
+    "observation": "tools/rhino_oracle/observations/planar_regions_holdouts.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_regions_holdouts.json",
+    "raw_sha256": "3f787f965d93eb0311bb6d5cf5fd42bd8fc878fb17243ab6765610d5d53309e5",
+    "raw_bytes": 12925823,
+    "gzip_sha256": "cb14d1ab27005f94257ac1c3a6522e158c1e32ff74f874469627c358a4917f5c",
+    "gzip_bytes": 322819
+  },
+  "planar_regions_transforms": {
+    "results": 32,
+    "role": "source-membership diagnostic; complete B-reps confirmed unchanged by confirmations",
+    "engine_version": "8.32.26160.13001",
+    "observation": "tools/rhino_oracle/observations/planar_regions_transforms.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_regions_transforms.json",
+    "raw_sha256": "7edc73bba2a0470ab318caf6a4ba3852931cd18cd5775365ced3f1920baf92af",
+    "raw_bytes": 6477841,
+    "gzip_sha256": "eef0dd6780a512ffc45c3784e0d264db33fda374ff2c9c0416b63341758be99d",
+    "gzip_bytes": 185022
+  },
+  "planar_regions_confirmations": {
+    "results": 32,
+    "role": "primary region comparison",
+    "engine_version": "8.32.26160.13001",
+    "observation": "tools/rhino_oracle/observations/planar_regions_confirmations.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_regions_confirmations.json",
+    "raw_sha256": "5d60f36c12ee5b6db2aef8bdb8e35a368eb16093fee7c46f2ded572c5e842a6d",
+    "raw_bytes": 6486680,
+    "gzip_sha256": "b7c6d1c29b77d40ab6481d438660144eaf2e582065a8ca7befa98711a18d1441",
+    "gzip_bytes": 184454
+  },
+  "planar_regions_planes": {
+    "results": 8,
+    "role": "primary region comparison",
+    "engine_version": "8.32.26160.13001",
+    "observation": "tools/rhino_oracle/observations/planar_regions_planes.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_regions_planes.json",
+    "raw_sha256": "1ec41bed2b06c8f764a227c50936b7baea14afcb9c484704faa3e0071e195612",
+    "raw_bytes": 1611917,
+    "gzip_sha256": "5a42b2a65ac837aecbe51a65107fde4c69bc3572f227abe0fbbae7b375c0d389",
+    "gzip_bytes": 41932
+  }
+}

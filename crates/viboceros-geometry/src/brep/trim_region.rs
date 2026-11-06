@@ -1,5 +1,7 @@
 //! Classify connected CDT regions, not nearly collinear boundary triangles.
 use super::*;
+mod coincident;
+pub(super) use coincident::{canonical_walk, unique_loops};
 
 pub(super) fn interior_faces(
     triangulation: &ConstrainedDelaunayTriangulation<TrimTriangulationVertex>,

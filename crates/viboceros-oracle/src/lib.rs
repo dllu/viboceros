@@ -289,6 +289,7 @@ mod ellipse_offset;
 mod extension_backend;
 mod knot_reduction;
 mod non_manifold_selection;
+pub mod planar_regions;
 mod planar_surface;
 mod volume_selection;
 pub use curve_approximation::{CubicApproximationFixture, CurveCorrespondenceFixture};
@@ -1048,6 +1049,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: curve_native::RevolveFixture,
+    },
+    PlanarRegions {
+        id: String,
+        #[serde(flatten)]
+        fixture: planar_regions::Fixture,
     },
     PlanarSurfaceCommand {
         id: String,
@@ -3059,6 +3065,7 @@ impl Operation {
             | Self::CurveApexCommand { id, .. }
             | Self::CurveAlongCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
+            | Self::PlanarRegions { id, .. }
             | Self::PlanarSurfaceCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
@@ -3887,6 +3894,9 @@ fn execute(
         }
         Operation::CurveRevolveCommand { fixture, .. } => {
             curve_native::revolve_command(fixture, iterations, tolerance)?
+        }
+        Operation::PlanarRegions { fixture, .. } => {
+            planar_regions::run(fixture, iterations, tolerance)?
         }
         Operation::PlanarSurfaceCommand { fixture, .. } => {
             planar_surface::run(fixture, iterations, tolerance)?

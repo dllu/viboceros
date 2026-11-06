@@ -67,13 +67,13 @@
   in the primary comparison; parameter/derivative parity is not claimed. See
   [retained comparison](../smlib-modeling-basis-comparison.json).
 
-- **Portable planar overlap policy differs from current Rhino.** The live
-  fixture with an outer rectangle, two competing inner rectangles and a separate
-  inner hole produces areas 83 and 16 in both Rhino and usd-brep. The previous
-  custom command policy detached both competing holes and produced areas 99, 16
-  and 16. Native PlanarSrf now uses the kernel region constructor directly;
-  portable builds retain the older policy pending correction. See
-  [planar qualification](../smlib-planar-surfaces.md).
+- **Fixed: planar overlap grouping differed between command adapters.** The
+  original outer/overlapping-hole fixture produced areas 99, 16 and 16 in the
+  portable command, versus Rhino's 83 and 16. Wider captures exposed native
+  input-order, seam and duplicate-encoding differences too. Both builds now use
+  measured seam parity and whole-loop hole admission, and native construction
+  receives each planned region separately. See [expanded validation](../planar-regions-validation.json)
+  for scope, raw definitions and remaining limits.
 
 - **Native Join is not raw Rhino parity.** The
   [92-case replay](../smlib-join-comparison.json) has no native execution errors but

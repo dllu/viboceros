@@ -14,6 +14,7 @@ B-rep output for eligible creators.
 - [Curvature-continuous edge blends](blend-edge.md)
 - [Blend complete surface edges](blend-srf.md)
 - [Rebuild surface control nets](rebuild-surfaces.md)
+- [Planar surfaces from closed curves](planar-srf.md)
 - [Surfaces and solids](surfaces.md)
 - [Fit a rectangular plane through points, clouds and grips](plane-through-points.md)
 - [Fit a sphere through points and grips](sphere-fit-points.md)

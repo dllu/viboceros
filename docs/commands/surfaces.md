@@ -7,13 +7,9 @@ outputs below describe its default `Extrusion` mode.
 
 ## Planar surfaces
 
-`PlanarSrf` creates exact single-face B-reps from selected closed planar curves.
-Wholly contained curves become inner trim loops, alternating nested regions
-become independent islands, and partially overlapping curves remain separate
-surfaces. Every original rational curve remains an exact boundary edge and
-parameter-space trim, so curved, concave, and holed regions shade and export
-without filling excluded areas. Inputs are retained by default;
-`DeleteInput=Yes` removes each successfully used boundary.
+`PlanarSrf` creates exact trimmed planar B-reps from selected closed curves.
+Nested, overlapping, touching and repeated boundaries follow the shared region
+planner in both builds. See [region grouping, source deletion and qualification](planar-srf.md).
 
 ## Primitives and bounding boxes
 

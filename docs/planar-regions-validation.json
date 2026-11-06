@@ -1,0 +1,79 @@
+{
+  "scope": "PlanarSrf stored-seam parity, coplanar source isolation, whole-loop hole admission, observed duplicate encodings, native per-region construction and coincident polygon-hole meshing.",
+  "baseline_revision": "6b7578ccdc718ac363fb98926221e3d7c37cbec3",
+  "passed": {
+    "native_command_workflows": 190,
+    "distinct_ordered_source_definitions": 105,
+    "primary_region_replays_per_build": 158,
+    "application_cases_per_build": 109,
+    "output_3dm_cases_per_build": 109,
+    "legacy_region_cases_per_build": 6,
+    "test_counts": {
+      "portable": {
+        "command_unit": 14,
+        "command_policy": 2,
+        "mesh_command": 3,
+        "oracle": 3,
+        "app": 1,
+        "mesh_app": 4
+      },
+      "native": {
+        "command_unit": 16,
+        "command_policy": 2,
+        "mesh_command": 3,
+        "oracle": 3,
+        "app": 1,
+        "mesh_app": 4,
+        "planar_faces": 3
+      },
+      "quality": {
+        "trim-regions": 8,
+        "tessellation": 23,
+        "triangulation": 4,
+        "final-command-options": 16,
+        "final-region-replay": 2,
+        "python": 13
+      }
+    }
+  },
+  "comparisons": {
+    "region_identity": "Original source membership of each outer/inner loop, preserving loop and output multiplicity; output and inner-loop ordering canonicalized.",
+    "sources": "Complete source NURBS definitions at absolute epsilon 1e-12 in the public OpenNURBS coefficient chart (x*w)*(1.0/w); retained Rust source objects also checked for exact equality.",
+    "area": {
+      "pilot_absolute_epsilon": 1e-05,
+      "precise_absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "legacy_absolute_epsilon": 1e-10
+    },
+    "membership": "Bidirectional spatial witnesses at 1e-7: native 33 stations per curve with checked closest-point refinement; Rust 33 source and 17 edge stations, or exact single-edge equality.",
+    "history": [
+      "before",
+      "after",
+      "undo",
+      "redo"
+    ],
+    "archive": "Persistent output UUID lookup, boundary membership, area and normal-mesh generation before and after 3DM serialization.",
+    "policies": "Local checks cover DeleteInput, all duplicate source consumption, attributes, layers, groups, selection, one Undo/Redo step and atomic 129-boundary budget failure.",
+    "excluded": "Complete used native B-rep definitions are retained in raw captures but excluded from the region comparison, along with output bounds, diagnostic Contains matrix, command text/events and native validity metadata. Capture tests independently check native success, command events and source/history preservation."
+  },
+  "evidence": {
+    "captures": "planar-regions-proof/captures.json",
+    "runs": "planar-regions-proof/runs.json",
+    "sha256": "planar-regions-proof/sha256.json",
+    "planar_mesh": "planar-mesh-qualification.json"
+  },
+  "headless": {
+    "native_captures": "Private Xvfb/i3 and private XDG_RUNTIME_DIR through tools/rhino_oracle/run_headless.sh; Wayland and compositor sockets unset; only owned Rhino closed.",
+    "application_tests": "test_app state with DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK and I3SOCK removed; no GUI event loop."
+  },
+  "limits": [
+    "Region identity and model area are qualified on the recorded cases, not complete B-rep parameterization, output/loop birth order or general shape parity.",
+    "The 109 application/archive cases include four repeated source scenes; 105 ordered source definitions are distinct across the full capture corpus.",
+    "The transforms capture preserves one unsuccessful large-circle source matcher result. Confirmations repeat all 32 scenes with refined witnesses and exactly unchanged native B-rep definitions.",
+    "Coincident polygon loops retain native model-area multiplicity while triangulation represents one geometric hole. Boundary audit sharing is limited to complete identical same-face degree-one paths.",
+    "Continuous contact completeness, crossing trim configurations, arbitrary self-intersections, near-tolerance plane grouping and further coincident curve encodings remain unqualified.",
+    "Open chains are skipped rather than joined; the command accepts at most 128 closed planar boundaries.",
+    "PlanarMesh retains its independent-contact policy; all 21 geometry outcomes and the existing 11 topology gaps remain unchanged in its refreshed report.",
+    "Comparative performance is unqualified."
+  ]
+}

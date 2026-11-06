@@ -1,6 +1,7 @@
 //! Naked mesh sides must belong to true naked edges on their source B-rep face.
 
 use super::*;
+mod coincident;
 
 struct NakedEdgeSamples {
     exact: BTreeSet<[u64; 3]>,
@@ -196,6 +197,15 @@ impl Brep {
             if !found {
                 return Ok(false);
             }
+        }
+        // Only complete identical same-face linear boundaries share a witness.
+        // A single shared segment cannot hide another missing hole.
+        if uses
+            .iter()
+            .enumerate()
+            .any(|(e, u)| u.0 == 1 && !matched[e])
+        {
+            coincident::mark(self, &naked_by_face, &mut matched);
         }
         // A missing hole or boundary component must not become acceptable just
         // because no unexpected naked side remains in the mesh.

@@ -333,7 +333,7 @@ fn planar_surface_keeps_partially_overlapping_curves_independent() {
         .select_objects_direct(inputs, SelectionMode::Replace)
         .unwrap();
 
-    let expected_count = if cfg!(feature = "native-smlib") { 2 } else { 3 };
+    let expected_count = 2;
     assert_eq!(
         registry.execute(&mut document, "PlanarSrf").unwrap(),
         format!("Created {expected_count} exact trimmed planar surface(s)")
@@ -349,11 +349,7 @@ fn planar_surface_keeps_partially_overlapping_curves_independent() {
         })
         .collect::<Vec<_>>();
     output_regions.sort_by(|left, right| left.1.total_cmp(&right.1));
-    let expected = if cfg!(feature = "native-smlib") {
-        vec![(1, 16.), (3, 83.)]
-    } else {
-        vec![(1, 16.), (1, 16.), (2, 99.)]
-    };
+    let expected = vec![(1, 16.), (3, 83.)];
     assert_eq!(output_regions.len(), expected.len());
     for ((loops, area), (expected_loops, expected_area)) in output_regions.into_iter().zip(expected)
     {

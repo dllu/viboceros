@@ -8697,6 +8697,9 @@ fn triangulate_trim_region_with_constraints(
     // branches touch. Spade requires one vertex per coordinate, so retain the
     // first sampled occurrence as the triangulation representative.
     let (vertices, representatives) = unique_trim_triangulation_vertices(&normalized, epsilon);
+    // Repeated input encodings remain separate B-rep loops. Their identical
+    // sampled polygon is one geometric hole for constraints and area audits.
+    let loop_ranges = trim_region::unique_loops(&loop_ranges, &representatives);
     let unique_vertex_count = vertices.len();
     let mut triangulation =
         match ConstrainedDelaunayTriangulation::<TrimTriangulationVertex>::bulk_load(vertices) {
