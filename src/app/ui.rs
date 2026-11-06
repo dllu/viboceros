@@ -425,6 +425,7 @@ impl eframe::App for VibocerosApp {
             .or_else(|| {
                 self.rectangle_session
                     .as_ref()
+                    .or_else(|| self.plane_surface_session.as_ref().map(|s| &s.rectangle))
                     .or_else(|| {
                         self.subd_primitive_session
                             .as_ref()

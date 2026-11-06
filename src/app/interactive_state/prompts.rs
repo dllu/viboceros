@@ -385,6 +385,9 @@ impl InteractiveCommand {
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"
             }
+            Self::Plane { .. } => {
+                "Plane: follow the rectangle and surface-option prompts (Esc cancels)"
+            }
             Self::Rectangle { first: Some(_) } => {
                 "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
             }

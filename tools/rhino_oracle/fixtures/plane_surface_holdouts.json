@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_0",
+      "case": "holdout_0"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_1",
+      "case": "holdout_1"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_2",
+      "case": "holdout_2"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_3",
+      "case": "holdout_3"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_4",
+      "case": "holdout_4"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_5",
+      "case": "holdout_5"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_6",
+      "case": "holdout_6"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_7",
+      "case": "holdout_7"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_8",
+      "case": "holdout_8"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_9",
+      "case": "holdout_9"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_10",
+      "case": "holdout_10"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_11",
+      "case": "holdout_11"
+    }
+  ]
+}

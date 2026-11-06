@@ -1,0 +1,266 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "corners",
+      "case": "corners"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "reversed",
+      "case": "reversed"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "three_point",
+      "case": "three_point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center",
+      "case": "center"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical",
+      "case": "vertical"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deformable",
+      "case": "deformable"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel",
+      "case": "cancel"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "negative_x",
+      "case": "negative_x"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "negative_y",
+      "case": "negative_y"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "dimensions",
+      "case": "dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "square_enter",
+      "case": "square_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center_dimensions",
+      "case": "center_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center_three",
+      "case": "center_three"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "edge_midpoint",
+      "case": "edge_midpoint"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "three_dimensions",
+      "case": "three_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_negative",
+      "case": "vertical_negative"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_dimensions",
+      "case": "vertical_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "around_line",
+      "case": "around_line"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "around_oblique",
+      "case": "around_oblique"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cplane",
+      "case": "cplane"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cplane_oblique",
+      "case": "cplane_oblique"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel_start",
+      "case": "cancel_start"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel_width",
+      "case": "cancel_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "zero_edge",
+      "case": "zero_edge"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "zero_width",
+      "case": "zero_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_default",
+      "case": "deform_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_linear",
+      "case": "deform_linear"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_mixed",
+      "case": "deform_mixed"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_high",
+      "case": "deform_high"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_one",
+      "case": "audit_degree_one"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_twelve",
+      "case": "audit_degree_twelve"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_low_count",
+      "case": "audit_low_count"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_count_then_degree",
+      "case": "audit_count_then_degree"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_then_count",
+      "case": "audit_degree_then_count"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_integer_getters",
+      "case": "audit_integer_getters"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_integer_defaults",
+      "case": "audit_integer_defaults"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_cancel_integer",
+      "case": "audit_cancel_integer"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_center",
+      "case": "audit_center"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_three_point",
+      "case": "audit_three_point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_0",
+      "case": "holdout_0"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_1",
+      "case": "holdout_1"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_2",
+      "case": "holdout_2"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_3",
+      "case": "holdout_3"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_4",
+      "case": "holdout_4"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_5",
+      "case": "holdout_5"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_6",
+      "case": "holdout_6"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_7",
+      "case": "holdout_7"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_8",
+      "case": "holdout_8"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_9",
+      "case": "holdout_9"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_10",
+      "case": "holdout_10"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "holdout_11",
+      "case": "holdout_11"
+    }
+  ]
+}

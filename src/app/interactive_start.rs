@@ -65,7 +65,7 @@ impl VibocerosApp {
         if self.start_subd_primitive(input) {
             return true;
         }
-        if self.try_start_rectangle(input) {
+        if self.try_start_plane_surface(input) || self.try_start_rectangle(input) {
             return true;
         }
         if self.try_start_surface_tapered_input(input)

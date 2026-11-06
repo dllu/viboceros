@@ -1,0 +1,98 @@
+[
+  {
+    "family": "plane_primitive_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_primitive_pilot"
+    ],
+    "owner_session": 15794,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_workflows",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_workflows"
+    ],
+    "owner_session": 97058,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_audit"
+    ],
+    "owner_session": 76426,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_holdouts"
+    ],
+    "owner_session": 91760,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_qualified",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_qualified"
+    ],
+    "owner_session": 71029,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_terminal",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_terminal"
+    ],
+    "owner_session": 91129,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_guides",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_guides"
+    ],
+    "owner_session": 88789,
+    "status": 0
+  },
+  {
+    "family": "plane_surface_vertical_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_plane_surface_vertical_audit"
+    ],
+    "owner_session": 4887,
+    "status": 0
+  }
+]

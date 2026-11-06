@@ -81,6 +81,7 @@ impl VibocerosApp {
         self.parabola_session = None;
         self.conic_session = None;
         self.rectangle_session = None;
+        self.plane_surface_session = None;
         self.subd_primitive_session = None;
         self.subd_axial_session = None;
         self.subd_sphere_session = None;

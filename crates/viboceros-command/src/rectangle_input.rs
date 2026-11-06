@@ -1,5 +1,6 @@
 //! Rectangle getters return geometry definitions without document edits.
 use viboceros_geometry::{Frame3, GeometryError, Point3, Polyline3, Real, Tolerance};
+mod height_line;
 const ZERO: Real = 2.3283064365386963e-10;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RectangleDefinition {
@@ -97,6 +98,7 @@ pub struct RectangleInput {
     width: Option<Real>,
     centered: bool,
     rounding: Option<crate::rectangle_rounding::Input>,
+    height_line_constraint: bool,
 }
 impl RectangleInput {
     pub fn new(plane: Frame3) -> Self {
@@ -108,7 +110,14 @@ impl RectangleInput {
             width: None,
             centered: false,
             rounding: None,
+            height_line_constraint: false,
         }
+    }
+    /// Plane's Vertical point getter uses an unbounded height constraint line.
+    /// Numeric dimensions and the other construction modes remain independent.
+    pub fn with_height_line_constraint(mut self) -> Self {
+        self.height_line_constraint = true;
+        self
     }
     /// Enable Rectangle's corner getter; surface-flow planes keep it disabled.
     pub fn with_rounding(mut self, options: crate::rectangle_rounding::Options) -> Self {
@@ -376,7 +385,11 @@ impl RectangleInput {
                     self.plane.z_axis().as_vector(),
                     Tolerance::NUMERICAL_VALIDATION,
                 )?;
-                let height = frame.coordinates_of(p)?[1];
+                let height = if self.height_line_constraint && self.width.is_none() {
+                    height_line::height(second, p, frame)?
+                } else {
+                    frame.coordinates_of(p)?[1]
+                };
                 let height = self.width.map_or(height, |width| width * height.signum());
                 RectangleDefinition::from_three_points(
                     first,

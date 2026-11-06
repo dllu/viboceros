@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_one",
+      "case": "audit_degree_one"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_twelve",
+      "case": "audit_degree_twelve"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_low_count",
+      "case": "audit_low_count"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_count_then_degree",
+      "case": "audit_count_then_degree"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_degree_then_count",
+      "case": "audit_degree_then_count"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_integer_getters",
+      "case": "audit_integer_getters"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_integer_defaults",
+      "case": "audit_integer_defaults"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_cancel_integer",
+      "case": "audit_cancel_integer"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_center",
+      "case": "audit_center"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "audit_three_point",
+      "case": "audit_three_point"
+    }
+  ]
+}

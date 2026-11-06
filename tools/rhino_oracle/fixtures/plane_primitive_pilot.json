@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "corners",
+      "case": "corners"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "reversed",
+      "case": "reversed"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "three_point",
+      "case": "three_point"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "center",
+      "case": "center"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "vertical",
+      "case": "vertical"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "deformable",
+      "case": "deformable"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "plain_option",
+      "case": "plain_option"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cancel",
+      "case": "cancel"
+    }
+  ]
+}

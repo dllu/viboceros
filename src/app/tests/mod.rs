@@ -199,6 +199,7 @@ mod trim_split_input;
 mod type_selection;
 mod use_extrusions;
 
+mod plane_surface;
 mod project;
 mod radius;
 mod rail_revolve;
@@ -406,6 +407,7 @@ pub(super) fn test_app() -> VibocerosApp {
         parabola_session: None,
         conic_session: None,
         rectangle_session: None,
+        plane_surface_session: None,
         subd_primitive_session: None,
         subd_axial_session: None,
         subd_sphere_session: None,

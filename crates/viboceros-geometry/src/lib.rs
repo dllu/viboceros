@@ -367,7 +367,8 @@ pub use nurbs::{
     knot_group_removal_knots, knot_removal_knots,
 };
 pub use nurbs_surface::{
-    NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection, SurfaceSoftEdit,
+    MAX_PLANE_CONTROL_POINTS, NurbsSurface, SurfaceExtensionEdge, SurfaceJet2,
+    SurfaceKnotDirection, SurfaceSoftEdit,
 };
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use parameter::ParameterSide;

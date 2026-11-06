@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "corners",
+      "case": "corners"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "reversed",
+      "case": "reversed"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "three_point",
+      "case": "three_point"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center",
+      "case": "center"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical",
+      "case": "vertical"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deformable",
+      "case": "deformable"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel",
+      "case": "cancel"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "negative_x",
+      "case": "negative_x"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "negative_y",
+      "case": "negative_y"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "dimensions",
+      "case": "dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "square_enter",
+      "case": "square_enter"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center_dimensions",
+      "case": "center_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "center_three",
+      "case": "center_three"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "edge_midpoint",
+      "case": "edge_midpoint"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "three_dimensions",
+      "case": "three_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_negative",
+      "case": "vertical_negative"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_dimensions",
+      "case": "vertical_dimensions"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "around_line",
+      "case": "around_line"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "around_oblique",
+      "case": "around_oblique"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cplane",
+      "case": "cplane"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cplane_oblique",
+      "case": "cplane_oblique"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel_start",
+      "case": "cancel_start"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "cancel_width",
+      "case": "cancel_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "zero_edge",
+      "case": "zero_edge"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "zero_width",
+      "case": "zero_width"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_default",
+      "case": "deform_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_linear",
+      "case": "deform_linear"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_mixed",
+      "case": "deform_mixed"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "deform_high",
+      "case": "deform_high"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_plain",
+      "case": "vertical_audit_plain"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_deform_minimum",
+      "case": "vertical_audit_deform_minimum"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_deform_cubic",
+      "case": "vertical_audit_deform_cubic"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_deform_default",
+      "case": "vertical_audit_deform_default"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_repeat",
+      "case": "vertical_audit_repeat"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_translated",
+      "case": "vertical_audit_translated"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "vertical_audit_small",
+      "case": "vertical_audit_small"
+    }
+  ]
+}

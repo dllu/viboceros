@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "plane_surface_command",
+      "id": "guide_cancel_before_pick",
+      "case": "guide_cancel_before_pick"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "guide_cancel_after_pick",
+      "case": "guide_cancel_after_pick"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "guide_cancel_after_center",
+      "case": "guide_cancel_after_center"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "guide_preselected",
+      "case": "guide_preselected"
+    },
+    {
+      "op": "plane_surface_command",
+      "id": "guide_preselected_cancel",
+      "case": "guide_preselected_cancel"
+    }
+  ]
+}

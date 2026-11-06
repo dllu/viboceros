@@ -253,6 +253,7 @@ mod parabola;
 mod pipe;
 mod planar_boolean;
 mod plane_primitives;
+mod plane_surface;
 mod point_deviation;
 mod point_grid;
 mod point_input;
@@ -485,6 +486,7 @@ pub struct VibocerosApp {
     parabola_session: Option<parabola::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
+    plane_surface_session: Option<plane_surface::Session>,
     subd_primitive_session: Option<subd_primitives::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
@@ -660,6 +662,7 @@ impl VibocerosApp {
             parabola_session: None,
             conic_session: None,
             rectangle_session: None,
+            plane_surface_session: None,
             subd_primitive_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
@@ -825,6 +828,7 @@ impl VibocerosApp {
             || self.continue_subd_sphere(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
+            || self.continue_plane_surface_option(&input)
             || self.try_continue_rectangle(&input)
         {
             return;

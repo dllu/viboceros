@@ -199,6 +199,7 @@ mod knot_refinement;
 pub mod shell;
 use extrude_apex::ExtrudeCurveToPointCommand;
 mod planar_surface;
+pub mod plane_surface;
 pub mod revolve;
 use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
@@ -739,6 +740,12 @@ pub trait Command: Send + Sync {
     }
     fn subd_plane_preferences(&self) -> Option<subd_plane::Preferences> {
         None
+    }
+    fn plane_preferences(&self) -> Option<plane_surface::Preferences> {
+        None
+    }
+    fn remember_plane_preferences(&self, _p: plane_surface::Preferences) -> bool {
+        false
     }
     fn remember_subd_plane_preferences(&self, _value: subd_plane::Preferences) -> bool {
         false
@@ -1305,6 +1312,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(PlanarSurfaceCommand)
+            .expect("unique built-in command");
+        registry
+            .register(plane_surface::PlaneCommand::default())
             .expect("unique built-in command");
         registry
             .register(PipeCommand(registry.use_extrusions.clone()))

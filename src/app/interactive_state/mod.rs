@@ -343,6 +343,9 @@ pub(super) enum InteractiveCommand {
     Rectangle {
         first: Option<Point3>,
     },
+    Plane {
+        first: Option<Point3>,
+    },
     SubDTorus {
         anchor: Option<Point3>,
     },

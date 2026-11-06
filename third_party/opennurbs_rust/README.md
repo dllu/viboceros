@@ -1,5 +1,12 @@
 # OpenNURBS Rust adaptations
 
+`line_projection.rs` adapts `ON_Line::ClosestPointTo` and `PointAt` from
+`opennurbs_line.cpp` at the pinned revision below, under the [MIT license](LICENSE).
+It retains endpoint-conditioned parameter calculation/evaluation and uses validated
+Rust geometry types, rejecting unrepresentable or degenerate lines. Plane's
+Vertical point getter uses the actual rounded unit endpoints; the geometry
+kernel's ideal directional projection remains independent.
+
 `chord_adjust.rs` adapts the point-list/NURBS chord-adjustment policy from
 `opennurbs_brep.cpp` (`AdjustPointListAlongChord`, `AdjustNurbsCurve`) in the
 pinned OpenNURBS submodule at `23fc677ba06e49212296ca75fab7fb6c2851b4ce`.

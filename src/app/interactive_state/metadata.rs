@@ -83,6 +83,7 @@ impl InteractiveCommand {
             Self::Parabola { kind, .. } => kind.name(),
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
+            Self::Plane { .. } => "Plane",
             Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
             Self::SubDTorus { .. } => "SubDTorus",
@@ -268,6 +269,7 @@ impl InteractiveCommand {
             | Self::Parabola { anchor: None, .. }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
+            | Self::Plane { first: None }
             | Self::Box { base: None, .. }
             | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
@@ -375,6 +377,7 @@ impl InteractiveCommand {
             | Self::Parabola { anchor: start, .. }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
+            | Self::Plane { first: start }
             | Self::Box { base: start, .. }
             | Self::SelBox { base: start, .. }
             | Self::PointGrid { base: start, .. }

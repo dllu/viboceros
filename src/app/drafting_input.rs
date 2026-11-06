@@ -198,6 +198,7 @@ impl VibocerosApp {
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
+            | InteractiveCommand::Plane { .. }
             | InteractiveCommand::SurfaceFlow { .. }
             | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
