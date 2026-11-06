@@ -9,6 +9,8 @@ pub(super) struct Prepared {
     pub profiles: Vec<NurbsCurve>,
     pub sources: Vec<Vec<ObjectId>>,
     recovered: Vec<bool>,
+    paths: Vec<NurbsCurve>,
+    source_inputs: Option<(Vec<ObjectId>, Vec<NurbsCurve>)>,
 }
 #[derive(Default)]
 struct Budget {
@@ -68,6 +70,7 @@ pub(super) fn prepare(
     let mut profiles = Vec::new();
     let mut guaranteed = Vec::new();
     let mut recovered = Vec::new();
+    let mut paths = Vec::new();
     let mut budget = Budget::default();
     for chain in joined {
         let members = if with_sources {
@@ -79,8 +82,9 @@ pub(super) fn prepare(
         let (curve, _) =
             curve.close(tolerance.absolute(), false, Tolerance::NUMERICAL_VALIDATION)?;
         let closed = curve.as_ref().is_closed()?;
-        let contours = match &curve {
-            Curve3::Polyline(p) => linear::contours(p, tolerance, &mut budget)?,
+        let mut network = Vec::new();
+        let mut contours = match &curve {
+            Curve3::Polyline(p) => linear::contours(p, tolerance, &mut budget, &mut network)?,
             Curve3::PolyCurve(p) if !closed => walks::contours(p, &mut budget)?,
             _ => {
                 let c = curve.as_ref().to_nurbs()?;
@@ -88,6 +92,19 @@ pub(super) fn prepare(
                 vec![c]
             }
         };
+        if !closed
+            && contours.is_empty()
+            && let Some(plane) = curve.as_ref().supporting_plane_frame(tolerance)?
+        {
+            contours = viboceros_geometry::planar_curve_network_boundaries(
+                &[curve.as_ref().to_nurbs()?],
+                plane,
+                tolerance,
+            )?;
+            for c in &contours {
+                budget.output(c.control_points().len())?;
+            }
+        }
         for contour in contours {
             if contour.is_closed()? && contour.is_planar(tolerance)? {
                 if profiles.len() == 128 {
@@ -117,7 +134,17 @@ pub(super) fn prepare(
                 }
             }
         }
+        paths.push(curve);
+        paths.extend(network);
     }
+    let paths = if recovered.iter().any(|r| *r) {
+        paths
+            .into_iter()
+            .map(|p| p.as_ref().to_nurbs())
+            .collect::<Result<Vec<_>, _>>()?
+    } else {
+        Vec::new()
+    };
     let sources = if with_sources {
         viboceros_geometry::curve_overlap_sources(&profiles, &originals, tolerance)?
             .into_iter()
@@ -139,6 +166,8 @@ pub(super) fn prepare(
         profiles,
         sources,
         recovered,
+        paths,
+        source_inputs: with_sources.then_some((ids, originals)),
     })
 }
 
@@ -146,11 +175,28 @@ impl Prepared {
     pub(super) fn stage(
         &self,
         tolerance: Tolerance,
-    ) -> Result<(Vec<Brep>, Vec<usize>), CommandError> {
-        if self.recovered.iter().any(|r| *r) {
+    ) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
+        let recovered = self.recovered.iter().any(|r| *r);
+        let (faces, used) = if recovered {
             filled::stage(self, tolerance)
         } else {
             stage_profiles(self.profiles.clone(), tolerance, false)
+        }?;
+        let mut consumed = used
+            .into_iter()
+            .flat_map(|i| self.sources.get(i).into_iter().flatten().copied())
+            .collect::<BTreeSet<_>>();
+        if recovered && let Some((ids, originals)) = &self.source_inputs {
+            let boundaries = faces
+                .iter()
+                .flat_map(|b| b.edges().iter().map(|e| e.curve().clone()))
+                .collect::<Vec<_>>();
+            for members in
+                viboceros_geometry::curve_overlap_sources(&boundaries, originals, tolerance)?
+            {
+                consumed.extend(members.into_iter().map(|i| ids[i]));
+            }
         }
+        Ok((faces, consumed.into_iter().collect()))
     }
 }

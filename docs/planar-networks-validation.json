@@ -1,0 +1,113 @@
+{
+  "scope": "PlanarSrf recovers open self-crossings and fills bounded source-network regions without clipping away connecting spans; the prior tangent gap is removed.",
+  "baseline_revision": "e31e173d521f9cd9317609b7946578ea4a7d5a2e",
+  "baseline_evidence": "planar-chains-validation.json retains the prior named tangent decline; its immutable observations are reused unchanged.",
+  "native": {
+    "workflows": 198,
+    "distinct_ordered_source_scenes": 195,
+    "additional_workflows": 62,
+    "additional_distinct_scenes": 59,
+    "new_capture_distinct_scenes": 62,
+    "successes": 184,
+    "failures": 14,
+    "output_breps": 222
+  },
+  "qualified_per_build": {
+    "workflows": 198,
+    "explicit_open_chain_exceptions": 0,
+    "successful_3dm_workflows": 184,
+    "output_breps": 222,
+    "application_workflows": 198,
+    "maximum_bidirectional_boundary_sample_error": {
+      "portable": 9.080395102500916e-09,
+      "native": 9.080395102500916e-09
+    }
+  },
+  "comparisons": {
+    "sources": "Exact retained document objects plus complete public NURBS definitions at 1e-12 in the native homogeneous getter chart.",
+    "regions": "Status, one-to-one surface/loop membership and multiplicity, areas at 1e-9 absolute plus 1e-12 relative, chronological Undo/Redo states; output order canonicalized.",
+    "boundaries": "Every used spatial C3 edge sampled at 17 stations per nonzero span, both directions with spatial witnesses, loop type and one-to-one pairing. Gate 1e-6; no continuous or encoding certificate.",
+    "archive": "All 184 successful workflows write/read 3DM; restored outputs compare native boundaries and area. All 222 live/restored output B-reps generate normal meshes.",
+    "application": "Pure test_app repeats all 198 workflows, with existing picking/delete/cancel prompt checks. New command tests delete attached U contributors and self-crossing sources while preserving unused objects, groups and one Undo/Redo step."
+  },
+  "architecture": {
+    "activation": "Complete joined loops keep ordinary seam parity. Individually recovered open walks activate the filled mode; unproductive U paths alone do not.",
+    "network": "Whole joined source paths and checked recovery closures enter a planar arrangement. Exterior walks omit dangling branches and bridges; covered nested outlines are removed. Existing native admission and per-result construction remain active in native builds.",
+    "predicates": "Local Bezier extraction avoids repeated whole-curve trimming. Exact stored-coordinate line cuts have checked C3 witnesses; rational inverse speed maps fractions to source parameters. Exact straight-ray determinant order avoids false curvature at nearly parallel junctions. Common-sign Bezier hulls certify endpoint-only contact when endpoints are already shared arrangement nodes within model tolerance.",
+    "unchanged_modes": "Shared rectangular surface cutting modes retain their existing dangling-end admission, tangent ordering and seam policies."
+  },
+  "resource_limits": {
+    "input_and_derived_network_controls": 100000,
+    "exterior_boundaries": 128,
+    "graph_storage_estimate_bytes": 67108864,
+    "curve_pair_comparisons": 16000000,
+    "existing_assembly_steps": 1000000,
+    "existing_source_candidate_comparisons": 1000000
+  },
+  "regressions": {
+    "closed_region_workflows_per_build": 247,
+    "closed_application_cases_per_build": 198,
+    "closed_output_3dm_cases_per_build": 198,
+    "legacy_region_cases_per_build": 6,
+    "existing_scalar_gap": "The prior crossing_circle10_small area exception remains exact and unchanged; no new area or status waiver was added.",
+    "planar_mesh": "Refreshed with fresh command and pre/postselection checks in both builds; 21 geometry matches, 10 full matches and 11 recorded topology gaps per stage."
+  },
+  "development_timing_diagnostic": {
+    "role": "Same 14-test shared-network suite during development, before/after endpoint-contact certificates. This is debug-run evidence, not a release benchmark or Rhino speed comparison.",
+    "runs": {
+      "before": {
+        "log": "docs/planar-networks-proof/endpoint-certificate-before.log.gz",
+        "elapsed_seconds": 335.31,
+        "raw_sha256": "7b72543ea8130369207c933cc85bfaf9a9aac9fa05303dd4a667b48b5d9b0f7e"
+      },
+      "after": {
+        "log": "docs/planar-networks-proof/endpoint-certificate-after.log.gz",
+        "elapsed_seconds": 4.58,
+        "raw_sha256": "981657f7f8513e61843dbd547a685d04b50f621eba213ecbc19a2fb14f949bad"
+      }
+    }
+  },
+  "unqualified": [
+    "Broader self-intersections, rational endpoint-to-interior recovery and further tolerance/branch configurations.",
+    "Continuous error bounds, full native B-rep parameterization, output birth order, render triangulation and comparative performance.",
+    "The normal-mesh audit proves successful internal generation; native mesh topology parity is not claimed."
+  ],
+  "execution": {
+    "native": "Three successful captures ran sequentially through private Xvfb/i3 and private XDG runtimes. Frozen requests, original outputs and producer snapshots remain byte-identical after verified lossless gzip compression.",
+    "rust": "DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK and I3SOCK removed; no GUI event loop launched.",
+    "workspace": "AGENTS.md unchanged; all nine original untracked files retain their hashes. README reviewed and remains accurate."
+  },
+  "test_counts": {
+    "portable": {
+      "command-unit": 14,
+      "command-policy": 5,
+      "mesh-command": 3,
+      "oracle": 7,
+      "app-regions": 1,
+      "app-chains": 2,
+      "mesh-app": 4
+    },
+    "native": {
+      "command-unit": 16,
+      "command-policy": 5,
+      "mesh-command": 3,
+      "oracle": 7,
+      "app-regions": 1,
+      "app-chains": 2,
+      "mesh-app": 4
+    },
+    "quality": {
+      "source-overlaps": 1,
+      "curve-network": 14,
+      "trim-regions": 11,
+      "planar-faces": 8,
+      "planar-cuts": 9,
+      "python": 25
+    }
+  },
+  "evidence": {
+    "captures": "planar-networks-proof/captures.json",
+    "runs": "planar-networks-proof/runs.json",
+    "sha256": "planar-networks-proof/sha256.json"
+  }
+}

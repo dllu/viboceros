@@ -1,6 +1,6 @@
 //! Recovered walks fill outlines on the first complete boundary's plane.
 use super::*;
-use viboceros_geometry::{BrepBooleanOperation, CurveRef, boolean_planar_breps};
+use viboceros_geometry::{CurveRef, planar_curve_network_boundaries};
 
 pub(super) fn stage(
     prepared: &Prepared,
@@ -13,7 +13,6 @@ pub(super) fn stage(
     let plane = CurveRef::NurbsCurve(reference)
         .supporting_plane_frame(tolerance)?
         .ok_or(GeometryError::InvalidPlanarFaceBoundary)?;
-    let mut faces = Vec::new();
     let mut used = Vec::new();
     for (i, profile) in prepared.profiles.iter().enumerate() {
         let coplanar = profile
@@ -27,18 +26,17 @@ pub(super) fn stage(
         if !coplanar {
             continue;
         }
-        faces.extend(stage_profiles(vec![profile.clone()], tolerance, false)?.0);
+        // Retain the selected adapter's admission checks on every profile.
+        stage_profiles(vec![profile.clone()], tolerance, false)?;
         used.push(i);
     }
-    if faces.len() == 1 {
-        return Ok((faces, used));
+    let boundaries = planar_curve_network_boundaries(&prepared.paths, plane, tolerance)?;
+    let mut faces = Vec::new();
+    for boundary in boundaries {
+        faces.extend(stage_profiles(vec![boundary], tolerance, false)?.0);
     }
-    Ok((
-        boolean_planar_breps(
-            &faces.iter().collect::<Vec<_>>(),
-            BrepBooleanOperation::Union,
-            tolerance,
-        )?,
-        used,
-    ))
+    if faces.is_empty() {
+        return Err(CommandError::NoPlanarSurfaceBoundaries);
+    }
+    Ok((faces, used))
 }

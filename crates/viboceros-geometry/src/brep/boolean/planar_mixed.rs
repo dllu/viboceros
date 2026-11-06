@@ -2,7 +2,7 @@
 use super::*;
 use crate::{Circle3, CircularArc3, CurveSegment3};
 use std::f64::consts::TAU;
-mod cuts;
+pub(super) mod cuts;
 #[derive(Clone)]
 struct Edge {
     owner: usize,

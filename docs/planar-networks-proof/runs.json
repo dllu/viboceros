@@ -1,0 +1,395 @@
+{
+  "portable": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-command-unit.log.gz",
+      "raw_sha256": "bdaae9d5c15fbab0e1ef08acf12d2ac65cadcb7834930307be6a102e8bdaac0e",
+      "raw_bytes": 2113
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-command-policy.log.gz",
+      "raw_sha256": "0a0f5f06b973cc65e658d3958de1b3397eb5665c5610753e59a57d521ce40a19",
+      "raw_bytes": 985
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-mesh-command.log.gz",
+      "raw_sha256": "8c2e11e86fc1469009ac0e802d2a0f2c2e93e1230c8c66edec327a906b654379",
+      "raw_bytes": 14053
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-oracle.log.gz",
+      "raw_sha256": "f5b1769820d071a526fc4f442462126ffe7421d1a31ca1704a3a5e0d05e93034",
+      "raw_bytes": 1726
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-app-regions.log.gz",
+      "raw_sha256": "005024723563557131a8223706852416516b52d4e35a86c412c1a2b478d6f905",
+      "raw_bytes": 978
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-app-chains.log.gz",
+      "raw_sha256": "82d97dfd67a6fde2c7c8b1657d677b80bd86ee92323dcb864c390c9576abc473",
+      "raw_bytes": 621
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/portable-mesh-app.log.gz",
+      "raw_sha256": "15a6385dcaf467fb940dcece6c4ef36b5ce4e9a82fd4db7634b9fe0d3fa73ceb",
+      "raw_bytes": 30451
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-command-unit.log.gz",
+      "raw_sha256": "5985b880c61c41a738db0259cda0dd6e0beb4f55771fde08f1cd04ffe2c92c18",
+      "raw_bytes": 2149
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-command-policy.log.gz",
+      "raw_sha256": "1045c8b51ba3cca939b7c7aecccfd644262f6d9352ae87d1b57965584e0180cd",
+      "raw_bytes": 985
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-mesh-command.log.gz",
+      "raw_sha256": "c96b73f2efc34d9709a7cf84afac6cd6be7285ad01cc57691181e6e42fade1d9",
+      "raw_bytes": 14051
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-oracle.log.gz",
+      "raw_sha256": "1dd70b8077f645b9fb9051aede00779b24ff324bb0c4e9f4729126ee5eda4d67",
+      "raw_bytes": 1727
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-app-regions.log.gz",
+      "raw_sha256": "27c5a7ee2b9c14dd689f30d9b6882c5c31bd53fe439bf100cac7a9b18138bc7d",
+      "raw_bytes": 844
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-app-chains.log.gz",
+      "raw_sha256": "ef6a1695432c362067a1e3c49566e96ed2f4be52bcba039c2fbad02fad1e5ea8",
+      "raw_bytes": 621
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/native-mesh-app.log.gz",
+      "raw_sha256": "1f3dba772a50e2acc80cbe07c3e1c7d53d02856896e3c971d451756103dbe23b",
+      "raw_bytes": 30447
+    }
+  ],
+  "quality": [
+    {
+      "label": "source-overlaps",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_sources"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-source-overlaps.log.gz",
+      "raw_sha256": "1114a1207c0c5ba8fbeae825ccfb8dbe8921254e3b202c631f82a2936effa800",
+      "raw_bytes": 466
+    },
+    {
+      "label": "curve-network",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_network"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-curve-network.log.gz",
+      "raw_sha256": "36fd7f68d6cab92a581b21e13ad6a3ce58584b0742df5931806f2aaee8d3e6ca",
+      "raw_bytes": 1824
+    },
+    {
+      "label": "trim-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "trim_region"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-trim-regions.log.gz",
+      "raw_sha256": "a358844b0264d74ea05d532f35a1e069703f3f68c72f6f347ff97981bd69e3f5",
+      "raw_bytes": 1431
+    },
+    {
+      "label": "planar-faces",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "planar_face"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-planar-faces.log.gz",
+      "raw_sha256": "61c94b894023254f630a15d19e5f8c7e4e550f75bb27467a28db160c942fdd3e",
+      "raw_bytes": 1070
+    },
+    {
+      "label": "planar-cuts",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "planar_mixed"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-planar-cuts.log.gz",
+      "raw_sha256": "63a9771d7afc9bc0f620659465994c69f3a165f380a3565dff2fcaf40a90f031",
+      "raw_bytes": 1324
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-clippy-default.log.gz",
+      "raw_sha256": "daec52e1b333ac0b56b01ea0794d99362d2dbe964165249385260c2705385537",
+      "raw_bytes": 758
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-clippy-all-features.log.gz",
+      "raw_sha256": "4f55508c5f69447399924365b81ff67e7615c23428e9d7432d056cd1bf295886",
+      "raw_bytes": 479
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-fmt.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_planar_chains",
+        "tools.rhino_oracle.test_planar_regions",
+        "tools.rhino_oracle.test_planar_crossings",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-networks-proof/quality-python.log.gz",
+      "raw_sha256": "58934abda3afbc48a389049313c4872dfc258a3f6ff5f6cdc667b2af9d1089a1",
+      "raw_bytes": 125
+    }
+  ]
+}

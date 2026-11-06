@@ -62,7 +62,7 @@ def validate(op):
         if isinstance(b,list):return isinstance(a,list)and len(a)==len(b)and all(same(x,y)for x,y in zip(a,b))
         if isinstance(b,(float,int)):return type(a)in (float,int)and a==b
         return type(a)==type(b)and a==b
-    owned=next((r for r in pilot()+holdouts()+contexts()+salvage()+filled()+modes()if isinstance(op,dict)and r['id']==op.get('id')),None)
+    owned=next((r for r in pilot()+holdouts()+contexts()+salvage()+filled()+modes()+networks()+network_holdouts()+network_crossings()if isinstance(op,dict)and r['id']==op.get('id')),None)
     if owned is None or not same(op,owned):raise ValueError('fixed owned planar-chain recipe required')
 
 
@@ -166,4 +166,79 @@ def modes():
     add('two_partial_planes',gap(0.,0.,10.,10.,0.)+gap(2.,2.,6.,6.,2.))
     add('hole_and_other_plane',closed+gap(2.,2.,6.,6.,2.))
     add('hole_and_incomplete_other_plane',closed+[polyline([[20.,0.,2.],[22.,0.,2.],[22.,2.,2.]])])
+    return rows
+
+
+def networks():
+    rows=[]
+    def add(name,curves):rows.append(dict(op='planar_chains',id='chains_network_'+name,curves=deepcopy(curves)))
+    outer=rectangle(0.,0.,10.,10.)
+    for gap in [0.,.5e-6,1e-6,1.01e-6,3e-6,1e-4,.1,1.,3.9,4.,5.]:
+        curves=edges(10.,2.,14.,6.);curves[-1]['control_points'][-1]['point'][0]+=gap
+        add('tangent_'+str(gap),[outer]+curves)
+    u=edges(10.,2.,14.,6.)[:3]
+    add('u', [outer]+u)
+    add('u_polyline',[outer,polyline([[10.,2.,0.],[14.,2.,0.],[14.,6.,0.],[10.,6.,0.]])])
+    add('u_first',u+[outer])
+    add('u_open_outer',edges(0.,0.,10.,10.)+u)
+    add('u_two_sides',[outer]+u[:2])
+    add('u_with_hole',[outer,rectangle(2.,2.,6.,6.)]+u)
+    add('u_other_plane',[outer,rectangle(2.,2.,6.,6.)]+[rectangle(0.,0.,10.,10.,2.)]+[polyline([[10.,2.,2.],[14.,2.,2.],[14.,6.,2.],[10.,6.,2.]])])
+    add('bridge_one',[outer,rectangle(12.,0.,16.,4.),polyline([[10.,0.,0.],[12.,0.,0.]])])
+    add('bridge_two',[outer,rectangle(12.,0.,16.,4.),polyline([[10.,0.,0.],[12.,0.,0.]]),polyline([[10.,4.,0.],[12.,4.,0.]])])
+    add('circle_u',[circle(0.,0.,10.),polyline([[0.,-10.,0.],[14.,-10.,0.],[14.,10.,0.],[0.,10.,0.]])])
+    add('u_isolated_line',[outer]+u+[polyline([[20.,0.,0.],[22.,0.,0.]])])
+    for shift in [-1.01e-6,-1e-6,-.5e-6,.5e-6,1e-6,1.01e-6]:
+        add('u_end_offset_'+str(shift),[outer,polyline([[10.+shift,2.,0.],[14.,2.,0.],[14.,6.,0.],[10.+shift,6.,0.]])])
+    for label in ['tilted','small','large','domain','gauge']:
+        row=deepcopy(rows[6]);row['id']='chains_network_context_'+label
+        for i,c in enumerate(row['curves']):
+            if label=='domain':c['knots']=[123.+i+(i+.25)*k for k in c['knots']]
+            for p in c['control_points']:
+                if label=='gauge':p['weight']*=7.
+                x,y,z=p['point']
+                if label=='tilted':p['point']=[.6*x+.8*z+31.,y-17.,-.8*x+.6*z+9.]
+                if label=='small':p['point']=[.001*x+2.,.001*y-3.,.001*z+4.]
+                if label=='large':p['point']=[1000.*x+1e6,1000.*y-2e6,1000.*z+3e6]
+        rows.append(row)
+    return rows
+
+
+def network_holdouts():
+    rows=[];outer=rectangle(0.,0.,10.,10.);hole=rectangle(2.,2.,6.,6.)
+    def add(name,curves):rows.append(dict(op='planar_chains',id='chains_network_holdout_'+name,curves=deepcopy(curves)))
+    gap=edges(20.,0.,24.,4.);gap[-1]['control_points'][-1]['point'][0]+=.1
+    u=edges(10.,2.,14.,6.)[:3]
+    add('recovered_and_u',[outer]+u+gap)
+    add('recovered_and_u_polyline',[outer,polyline([[10.,2.,0.],[14.,2.,0.],[14.,6.,0.],[10.,6.,0.]])]+gap)
+    for name,line in [('isolated',[[4.,8.,0.],[6.,8.,0.]]),('tail',[[0.,8.,0.],[5.,8.,0.]]),('chord',[[0.,8.,0.],[10.,8.,0.]]),('through_hole',[[0.,4.,0.],[10.,4.,0.]])]:
+        add('closed_'+name,[outer,hole,polyline(line)])
+        add('recovered_'+name,[outer,hole,polyline(line)]+gap)
+    other=edges(24.,4.,28.,8.);other[-1]['control_points'][-1]['point'][0]+=.1
+    add('touching_recovered',gap+other)
+    add('recovered_and_closed_touch',gap+[rectangle(24.,4.,28.,8.)])
+    quarters=next(r for r in pilot()if r['id']=='chains_quarters')['curves'];tail=polyline([[4.,0.,0.],[4.,2.,0.]])
+    add('rational_tail_point_touch',[tail]+quarters+[rectangle(4.,0.,8.,4.)])
+    add('rational_tail_nested',[tail]+quarters+[rectangle(-1.,-1.,1.,1.)])
+    add('rational_tail_outside',[tail]+quarters+[rectangle(20.,0.,24.,4.)])
+    add('bridge_nested_with_tail',edges(0.,0.,10.,10.)+edges(2.,2.,6.,6.)+[polyline([[0.,0.,0.],[2.,2.,0.]])])
+    add('near_tangent_with_closed_hole',[outer,hole]+deepcopy(next(r for r in networks()if r['id']=='chains_network_tangent_0.1')['curves'][1:]))
+    return rows
+
+
+def network_crossings():
+    rows=[]
+    def add(name,curves):rows.append(dict(op='planar_chains',id='chains_network_crossing_'+name,curves=deepcopy(curves)))
+    for delta in [5.,6.,10.]:
+        gap=edges(10.,2.,14.,6.);gap[-1]['control_points'][-1]['point'][0]+=delta
+        add('solo_'+str(delta),gap)
+    add('outer_10',[rectangle(0.,0.,10.,10.)]+gap)
+    bow=[[0.,0.,0.],[4.,4.,0.],[0.,4.,0.],[4.,0.,0.]]
+    add('bow_polyline',[polyline(bow)]);add('bow_reversed',[polyline(list(reversed(bow)))])
+    add('bow_lines',[polyline(bow[i:i+2])for i in range(3)])
+    add('bow_with_hole',[rectangle(-2.,-2.,6.,6.),rectangle(1.8,3.2,2.2,3.6),polyline(bow)])
+    add('two_bows',[polyline(bow+[[8.,0.,0.],[12.,4.,0.],[8.,4.,0.],[12.,0.,0.]])])
+    for dy in [.5e-6,.1e-6,1e-9]:
+        gap=edges(10.,2.,14.,6.);gap[-1]['control_points'][-1]['point']=[10.+3e-6,2.+dy,0.]
+        add('asymmetric_'+str(dy),[rectangle(0.,0.,10.,10.)]+gap)
     return rows

@@ -135,3 +135,70 @@ fn planar_chains_control_budget_failure_is_atomic_and_preserves_redo() {
     assert!(doc.is_selected(id));
     assert_eq!(doc.group(group).unwrap().members().len(), 1);
 }
+
+#[test]
+fn planar_network_deletes_attached_open_contributors_and_self_crossing_sources() {
+    for self_crossing in [false, true] {
+        let mut doc = Document::default();
+        let commands = CommandRegistry::with_builtins();
+        let mut geometries = if self_crossing {
+            vec![polyline(&[
+                [0., 0., 0.],
+                [4., 4., 0.],
+                [0., 4., 0.],
+                [4., 0., 0.],
+            ])]
+        } else {
+            vec![
+                polyline(&[
+                    [0., 0., 0.],
+                    [10., 0., 0.],
+                    [10., 10., 0.],
+                    [0., 10., 0.],
+                    [0., 0., 0.],
+                ]),
+                polyline(&[[10., 2., 0.], [14., 2., 0.], [14., 6., 0.], [10., 6., 0.]]),
+                polyline(&[
+                    [20., 0., 0.],
+                    [24., 0., 0.],
+                    [24., 4., 0.],
+                    [20., 4., 0.],
+                    [20.1, 0., 0.],
+                ]),
+            ]
+        };
+        geometries.push(polyline(&[[40., 0., 0.], [42., 0., 0.]]));
+        let ids = geometries
+            .into_iter()
+            .map(|g| doc.add_geometry(g).unwrap())
+            .collect::<Vec<_>>();
+        let group = doc.add_group(None, ids.iter().copied()).unwrap();
+        doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        commands
+            .execute(&mut doc, "PlanarSrf DeleteInput=Yes")
+            .unwrap();
+        for id in &ids[..ids.len() - 1] {
+            assert!(doc.object(*id).is_none());
+        }
+        assert!(doc.object(*ids.last().unwrap()).is_some());
+        assert_eq!(doc.group(group).unwrap().members().len(), 1);
+        let area = doc
+            .objects()
+            .filter_map(|o| match o.geometry() {
+                Geometry::Brep(b) => Some(b.area(doc.tolerance()).unwrap()),
+                _ => None,
+            })
+            .sum::<f64>();
+        assert!((area - if self_crossing { 4. } else { 131.8 }).abs() < 1e-9);
+        let after = doc.objects().cloned().collect::<Vec<_>>();
+        assert_eq!(doc.undo_label(), Some("PlanarSrf"));
+        commands.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(doc.group(group).unwrap().members().len(), ids.len());
+        commands.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+    }
+}

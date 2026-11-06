@@ -9,7 +9,8 @@ supports picking inputs after starting the command and setting `DeleteInput`.
 Native observations distinguish complete joined loops from recovered portions
 of an incomplete walk. Complete loops use the ordinary seam-based region
 planner. Repeated junctions can recover linear or rational closed walks from
-tails and bridges. A line-chain endpoint can also restrict a nonadjacent span
+tails and bridges. Open self-crossings can also recover bounded regions.
+A line-chain endpoint can restrict a nonadjacent span
 when its projection lies strictly inside that span and its residual is less
 than document tolerance. Closure depends on direction: a small perpendicular
 gap can fail even when a larger gap along a span can be restricted.
@@ -18,29 +19,40 @@ When a recovered loop participates, the observed command fills the union of
 outlines on the first complete profile's plane, or the first recovered plane
 if none is complete. This can fill existing nested holes. A stray line or
 incomplete chain without a recovered loop preserves ordinary hole behavior.
-These rules describe the captured scope; arbitrary self-intersections and
-rational endpoint-to-interior recovery need further qualification.
+The filled mode traverses the whole source network, including spans omitted
+from an individually recovered loop. Dangling branches and bridges do not add
+area, and nested outlines are covered once. An attached U path contributes to
+this mode; an isolated U path does not activate it. Complete joined loops retain
+the ordinary seam planner. Broader self-intersections and rational endpoint
+recovery need further qualification.
 
 Assembly limits input and derived controls to 100,000, admitted profiles to
 128, and charged traversal/source comparisons to one million each. Source
 membership for `DeleteInput=Yes` uses a conservative spatial index and checked
 positive overlap intervals; point contacts do not consume unused sources.
-Geometry staging finishes before document edits, including failure paths.
+The filled graph also uses a 64 MiB storage estimate and a 16-million curve-pair
+limit. Local Bezier extraction avoids repeated whole-spline trimming. Straight
+line cuts and ray ordering use exact stored-coordinate predicates with spatial
+witnesses. Positive Bezier hull certificates avoid endpoint-only tangent
+searches. Geometry staging finishes before document edits, including failure
+paths. Shared surface-cutting modes keep their existing admission and seam rules.
 
-The [validation record](../planar-chains-validation.json) covers 136 native
-workflows. In each build, 135 match command status, source membership, source
-definitions, areas and Undo/Redo. Successful qualified outputs also pass
-bidirectional spatial boundary samples, 3DM round trips and normal-mesh
-generation. Boundary samples use every nonzero span at 17 stations, with a
-`1e-6` model gate; this is not a continuous error certificate or native output
-encoding/triangulation parity. Application tests repeat the corpus without
-opening a window; prompt tests cover picking, deletion and cancellation.
+The [current validation record](../planar-networks-validation.json) covers
+198 native workflows (195 distinct ordered source scenes). Both builds match
+command status, source membership, complete source definitions, areas and
+Undo/Redo. All 184 successful workflows also pass 3DM round trips, sampled
+boundary comparison and normal-mesh generation, covering 222 output B-reps.
+Application tests repeat the corpus without opening a window; prompt tests
+cover picking, deletion and cancellation.
 
-One explicit gap remains: `chains_filled_outside_tangent` succeeds in Rhino
-(area 116), while the exact Boolean exporter declines its narrow tangent
-sliver. The comparison requires that decline and verifies unchanged objects
-and history. It is not counted as qualified compatibility. Comparative speed
-and broader branch configurations remain unqualified.
+Boundary comparison samples every nonzero span at 17 stations in both
+directions, with a `1e-6` model gate. It is not a continuous error certificate,
+native encoding or triangulation parity. The former
+`chains_filled_outside_tangent` gap is closed; its measured native area 116 and
+boundary now match without an exception. The earlier
+[validation record](../planar-chains-validation.json) retains the historical
+decline. Comparative speed and broader branch configurations remain
+unqualified.
 
 ```sh
 cargo test -p viboceros-oracle --test planar_chains -- --nocapture

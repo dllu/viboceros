@@ -10,6 +10,38 @@ pub(in crate::brep) fn build(
     maximum: usize,
     kink_angle: impl Fn(usize) -> Option<Real>,
 ) -> Result<SurfaceCutGraph, GeometryError> {
+    build_mode(
+        surface,
+        bounds,
+        cut_curves,
+        tolerance,
+        if network {
+            Mode::Network
+        } else {
+            Mode::Boundary
+        },
+        maximum,
+        kink_angle,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Mode {
+    Boundary,
+    Network,
+    Filled,
+}
+
+pub(super) fn build_mode(
+    surface: &NurbsSurface,
+    bounds: [[Real; 2]; 2],
+    cut_curves: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+    mode: Mode,
+    maximum: usize,
+    kink_angle: impl Fn(usize) -> Option<Real>,
+) -> Result<SurfaceCutGraph, GeometryError> {
+    let network = mode != Mode::Boundary;
     if cut_curves.len() > maximum || maximum < 4 {
         return invalid("a surface cutting arrangement exceeds its work limit");
     }
@@ -39,6 +71,15 @@ pub(in crate::brep) fn build(
                 return invalid("a surface cutting arrangement exceeds its pair-work limit");
             }
             if !index::may_duplicate(&candidate, existing, tolerance).unwrap_or(true) {
+                continue;
+            }
+            if mode == Mode::Filled
+                && let Some(same) = super::filled::same_line(&candidate.spatial, &existing.spatial)
+            {
+                if same {
+                    duplicate = true;
+                    break;
+                }
                 continue;
             }
             for event in candidate
@@ -132,6 +173,24 @@ pub(in crate::brep) fn build(
         }
     }
 
+    let projection_axes = if mode == Mode::Filled {
+        let controls = surface.control_points();
+        let normal = controls[0]
+            .point()
+            .vector_to(controls[1].point())?
+            .cross(controls[0].point().vector_to(controls[2].point())?)?
+            .to_array();
+        let omitted = (0..3)
+            .max_by(|&a, &b| normal[a].abs().total_cmp(&normal[b].abs()))
+            .unwrap();
+        let mut axes = [(omitted + 1) % 3, (omitted + 2) % 3];
+        if normal[omitted] < 0. {
+            axes.swap(0, 1);
+        }
+        axes
+    } else {
+        [0, 1]
+    };
     for first_index in 0..cuts.len() {
         for second_index in hull_index.candidates(hulls[first_index], tolerance) {
             if second_index <= first_index {
@@ -150,57 +209,63 @@ pub(in crate::brep) fn build(
             {
                 continue;
             }
-            let events = first
-                .spatial
-                .intersection_events_with_curve(&second.spatial, tolerance)?;
-            for event in events {
-                let contacts = match event {
-                    CurveCurveIntersectionEvent::Point(intersection) => [Some(intersection), None],
-                    CurveCurveIntersectionEvent::Overlap(overlap) => {
-                        [Some(overlap.start()), Some(overlap.end())]
-                    }
-                };
-                for intersection in contacts.into_iter().flatten() {
-                    let first_parameter = intersection.first_parameter();
-                    let second_parameter = intersection.second_parameter();
-                    let first_uv = first.parameter.evaluate(first_parameter)?;
-                    let second_uv = second.parameter.evaluate(second_parameter)?;
-                    if !parameter_points_near(
-                        first_uv,
-                        second_uv,
-                        parameter_tolerance.map(|value| value * 8.0),
-                    ) {
-                        return invalid(
-                            "a model-space cutter intersection is not shared in parameter space",
-                        );
-                    }
-                    let averaged = Point2::try_new(
-                        first_uv.x() * 0.5 + second_uv.x() * 0.5,
-                        first_uv.y() * 0.5 + second_uv.y() * 0.5,
-                    )?;
-                    let (parameter, _) = snap_surface_cut_arrangement_parameter(
-                        averaged,
-                        bounds,
-                        parameter_tolerance,
-                    )?;
-                    let node = node_index.node(
-                        &mut nodes,
-                        parameter,
-                        intersection.point(),
-                        parameter_tolerance,
-                        maximum,
-                    )?;
-                    // Bound contributor records even when many coincident
-                    // cutters reuse a small number of geometric nodes.
-                    let before = first.breaks.len() + second.breaks.len();
-                    push_surface_cut_arrangement_break(first, first_parameter, node)?;
-                    push_surface_cut_arrangement_break(second, second_parameter, node)?;
-                    check_break_budget(
-                        &mut break_count,
-                        first.breaks.len() + second.breaks.len() - before,
-                        maximum,
-                    )?;
+            if mode == Mode::Filled && super::filled::only_shared_ends(first, second, tolerance) {
+                continue;
+            }
+            let exact = if mode == Mode::Filled {
+                super::filled::line_contacts(first, second, tolerance, projection_axes)?
+            } else {
+                None
+            };
+            let contacts = match exact {
+                Some(contacts) => contacts,
+                None => first
+                    .spatial
+                    .intersection_events_with_curve(&second.spatial, tolerance)?
+                    .into_iter()
+                    .flat_map(|event| match event {
+                        CurveCurveIntersectionEvent::Point(p) => vec![p],
+                        CurveCurveIntersectionEvent::Overlap(o) => vec![o.start(), o.end()],
+                    })
+                    .collect(),
+            };
+            for intersection in contacts {
+                let first_parameter = intersection.first_parameter();
+                let second_parameter = intersection.second_parameter();
+                let first_uv = first.parameter.evaluate(first_parameter)?;
+                let second_uv = second.parameter.evaluate(second_parameter)?;
+                if !parameter_points_near(
+                    first_uv,
+                    second_uv,
+                    parameter_tolerance.map(|value| value * 8.0),
+                ) {
+                    return invalid(
+                        "a model-space cutter intersection is not shared in parameter space",
+                    );
                 }
+                let averaged = Point2::try_new(
+                    first_uv.x() * 0.5 + second_uv.x() * 0.5,
+                    first_uv.y() * 0.5 + second_uv.y() * 0.5,
+                )?;
+                let (parameter, _) =
+                    snap_surface_cut_arrangement_parameter(averaged, bounds, parameter_tolerance)?;
+                let node = node_index.node(
+                    &mut nodes,
+                    parameter,
+                    intersection.point(),
+                    parameter_tolerance,
+                    maximum,
+                )?;
+                // Bound contributor records even when many coincident
+                // cutters reuse a small number of geometric nodes.
+                let before = first.breaks.len() + second.breaks.len();
+                push_surface_cut_arrangement_break(first, first_parameter, node)?;
+                push_surface_cut_arrangement_break(second, second_parameter, node)?;
+                check_break_budget(
+                    &mut break_count,
+                    first.breaks.len() + second.breaks.len() - before,
+                    maximum,
+                )?;
             }
         }
     }
@@ -451,12 +516,24 @@ pub(in crate::brep) fn build(
             })
         })
         .collect::<Vec<_>>();
-    if network && outgoing.iter().any(|list| list.len() == 1) {
+    if mode == Mode::Network && outgoing.iter().any(|list| list.len() == 1) {
         return invalid("a surface cutting network contains a dangling endpoint");
     }
     let mut next = vec![usize::MAX; halfedge_count];
     for halfedges in &mut outgoing {
-        sort_surface_cut_outgoing_halfedges(halfedges, &halfedge_directions, tolerance.angular());
+        if mode != Mode::Filled
+            || !super::filled::sort_line_rays(halfedges, &edges, projection_axes)
+        {
+            sort_surface_cut_outgoing_halfedges(
+                halfedges,
+                &halfedge_directions,
+                if mode == Mode::Filled {
+                    0.
+                } else {
+                    tolerance.angular()
+                },
+            );
+        }
         for (index, &outgoing_halfedge) in halfedges.iter().enumerate() {
             let clockwise = halfedges[(index + halfedges.len() - 1) % halfedges.len()];
             next[outgoing_halfedge ^ 1] = clockwise;
@@ -499,6 +576,9 @@ pub(in crate::brep) fn build(
                 hole_cycles.push(cycle);
             }
         }
+    }
+    if mode == Mode::Filled {
+        return super::filled::from_cycles(nodes, edges, hole_cycles);
     }
     if outer_cycles.len() < 2 {
         return invalid("surface cutting arrangement did not divide the rectangular region");

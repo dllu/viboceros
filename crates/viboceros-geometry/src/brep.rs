@@ -43,6 +43,7 @@ mod wire_cage;
 pub use wire_cage::BrepWireCage;
 mod curve_network;
 use curve_network::build as surface_cut_graph;
+pub use curve_network::planar_curve_network_boundaries;
 mod edge_split;
 mod face_split;
 mod incidence;

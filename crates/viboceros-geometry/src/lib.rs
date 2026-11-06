@@ -81,6 +81,7 @@ mod curve_chain;
 mod curve_fit;
 mod curve_frame;
 mod curve_hull_index;
+pub use brep::planar_curve_network_boundaries;
 mod curve_sources;
 pub use curve_sources::curve_overlap_sources;
 mod curve_join;

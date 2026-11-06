@@ -3,7 +3,7 @@ use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::Zero;
 #[derive(Debug, PartialEq)]
-pub(super) enum LineCuts {
+pub(in crate::brep) enum LineCuts {
     None,
     Point([f64; 2]),
     Overlap { first: [f64; 2], second: [f64; 2] },
@@ -22,7 +22,10 @@ fn station(value: &Rational) -> Result<f64, GeometryError> {
     }
     Ok(result)
 }
-pub(super) fn line_line(a: [[f64; 2]; 2], b: [[f64; 2]; 2]) -> Result<LineCuts, GeometryError> {
+pub(in crate::brep) fn line_line(
+    a: [[f64; 2]; 2],
+    b: [[f64; 2]; 2],
+) -> Result<LineCuts, GeometryError> {
     let r = difference(a[1], a[0]);
     let s = difference(b[1], b[0]);
     let offset = difference(b[0], a[0]);

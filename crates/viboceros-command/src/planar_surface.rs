@@ -77,14 +77,7 @@ impl Command for PlanarSurfaceCommand {
         })?;
         let (faces, consumed) = if open {
             let prepared = chains::prepare(curves, document.tolerance(), delete_input)?;
-            let (faces, used) = prepared.stage(document.tolerance())?;
-            let consumed = used
-                .into_iter()
-                .flat_map(|id| prepared.sources.get(id).into_iter().flatten().copied())
-                .collect::<BTreeSet<_>>()
-                .into_iter()
-                .collect();
-            (faces, consumed)
+            prepared.stage(document.tolerance())?
         } else {
             stage_curves(curves, document.tolerance(), false)?
         };

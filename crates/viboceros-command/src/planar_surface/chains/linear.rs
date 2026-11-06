@@ -6,6 +6,7 @@ pub(super) fn contours(
     polyline: &Polyline3,
     tolerance: Tolerance,
     budget: &mut Budget,
+    network: &mut Vec<Curve3>,
 ) -> Result<Vec<NurbsCurve>, CommandError> {
     let walks = split(polyline.vertices(), budget)?;
     if polyline.is_closed() || !walks.is_empty() {
@@ -51,6 +52,13 @@ pub(super) fn contours(
                 cycle.push(joint);
             }
             result.extend(split(&cycle, budget)?);
+            // Add the checked closure without removing original source spans.
+            // Near-endpoint recovery may move the joint off the original span.
+            budget.output(cycle.len())?;
+            network.push(Curve3::Polyline(Polyline3::try_new(
+                cycle,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?));
         }
     }
     Ok(result)

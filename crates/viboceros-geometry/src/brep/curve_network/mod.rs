@@ -2,7 +2,9 @@
 
 use super::*;
 mod edges;
+mod filled;
 mod graph;
+pub use filled::planar_curve_network_boundaries;
 mod index;
 pub(super) use graph::build;
 

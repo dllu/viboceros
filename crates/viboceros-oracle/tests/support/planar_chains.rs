@@ -1,13 +1,16 @@
 //! Spatial checks against every used native C3 edge, independent of source labels.
 use serde_json::Value;
 use viboceros_geometry::{Brep, NurbsCurve, Point3, Tolerance, WeightedPoint3};
-pub const FAMILIES: [(&str, usize); 6] = [
+pub const FAMILIES: [(&str, usize); 9] = [
     ("planar_chains", 35),
     ("planar_chains_holdouts", 27),
     ("planar_chains_contexts", 52),
     ("planar_chains_salvage", 8),
     ("planar_chains_filled", 6),
     ("planar_chains_modes", 8),
+    ("planar_chain_networks", 33),
+    ("planar_chain_network_holdouts", 17),
+    ("planar_network_crossings", 12),
 ];
 pub fn rows(
     base: &std::path::Path,

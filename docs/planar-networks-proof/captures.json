@@ -1,0 +1,74 @@
+{
+  "planar_chain_networks": {
+    "family": "planar_chain_networks",
+    "path": "tools/rhino_oracle/observations/planar_chain_networks.json.gz",
+    "raw_sha256": "444663f2166fd39ed92034cf63858cd08494c18ec039721da68a522c1fe76244",
+    "raw_bytes": 7101416,
+    "gzip_sha256": "05cd254fc92d6eeef5ef610a207e1e350318110ee7526fa793d1fb5688897e2a",
+    "results": 33,
+    "native_successes": 33,
+    "request": "tools/rhino_oracle/fixtures/planar_chain_networks.json",
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_planar_chain_networks.py": "cf7f478a667d07c2ad58fd5d0c17b7339f06e877df6ffd7a22c752803a02c91a",
+      "planar_chains_cases.py": "6e339cd55a27c80c18dbde0821808ff80a67f720ba5e34ac4b4ab3f9ab516e91",
+      "planar_chains_probe.py": "6277fee0e43956a4779a25d2c3f63619ea9e789bb141ddb9b51da978382fcffa",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "planar_regions_probe.py": "017197c58fa5c2265d26d50382e6f41c896c78a6a1053659ac2098539deb4765",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "eaf31a4e1a4633c910d3da1648f80e05f6a4b83158cf291daad983122f5b219c",
+      "rhino_worker.py": "5a4145ffb7bf4660c2ffe6294c73207ccb191a75e0717f4649de068f31e32af3",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    }
+  },
+  "planar_chain_network_holdouts": {
+    "family": "planar_chain_network_holdouts",
+    "path": "tools/rhino_oracle/observations/planar_chain_network_holdouts.json.gz",
+    "raw_sha256": "6912811751a95e5c6084e4ff06116f6c9978e7245060cdb737a4bb8fa46e57fe",
+    "raw_bytes": 4718182,
+    "gzip_sha256": "18226fe43640edb7eda53db549e592a8de31f3c29483d150bcc59bbf8b73160e",
+    "results": 17,
+    "native_successes": 17,
+    "request": "tools/rhino_oracle/fixtures/planar_chain_network_holdouts.json",
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_planar_chain_network_holdouts.py": "c8937cf9eafd8f0ee86cccc73e3dade6ebbb2989ef317f3b1c111897623ee770",
+      "planar_chains_cases.py": "7325a027f85cb18bf938daabdccf4c314ffa2ff6241faaa445007a4a022477b5",
+      "planar_chains_probe.py": "6277fee0e43956a4779a25d2c3f63619ea9e789bb141ddb9b51da978382fcffa",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "planar_regions_probe.py": "017197c58fa5c2265d26d50382e6f41c896c78a6a1053659ac2098539deb4765",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "eaf31a4e1a4633c910d3da1648f80e05f6a4b83158cf291daad983122f5b219c",
+      "rhino_worker.py": "5a4145ffb7bf4660c2ffe6294c73207ccb191a75e0717f4649de068f31e32af3",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    }
+  },
+  "planar_network_crossings": {
+    "family": "planar_network_crossings",
+    "path": "tools/rhino_oracle/observations/planar_network_crossings.json.gz",
+    "raw_sha256": "9ca0a0eee5f2161986f83dd0a1905240844374a7a5866a0220c5f183b8307ec0",
+    "raw_bytes": 2071194,
+    "gzip_sha256": "52bf25bcf54c00e50e5a21753fd37421a4b4d919264e9a8ee1fff3b030b22a7a",
+    "results": 12,
+    "native_successes": 12,
+    "request": "tools/rhino_oracle/fixtures/planar_network_crossings.json",
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_planar_network_crossings.py": "ce9ef806ae7453bb1ed666913250c87d94168e0d2a8e6f6326b9852be53abaa3",
+      "planar_chains_cases.py": "c826a0afabd134d6969dd5f74dc340ee05615c364c186d9faadee9d9b27acb08",
+      "planar_chains_probe.py": "6277fee0e43956a4779a25d2c3f63619ea9e789bb141ddb9b51da978382fcffa",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "planar_regions_probe.py": "017197c58fa5c2265d26d50382e6f41c896c78a6a1053659ac2098539deb4765",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "eaf31a4e1a4633c910d3da1648f80e05f6a4b83158cf291daad983122f5b219c",
+      "rhino_worker.py": "5a4145ffb7bf4660c2ffe6294c73207ccb191a75e0717f4649de068f31e32af3",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    }
+  }
+}

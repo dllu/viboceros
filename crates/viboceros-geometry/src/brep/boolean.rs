@@ -37,6 +37,7 @@ pub use intersection::{
     BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,
 };
 pub use planar_circular::boolean_planar_breps;
+pub(in crate::brep) use planar_mixed::cuts::{LineCuts, line_line as exact_planar_line_cuts};
 mod convex_plan;
 mod union;
 pub use convex_plan::{BrepConvexBooleanPlan, BrepConvexRegion};

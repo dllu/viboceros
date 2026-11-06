@@ -14,7 +14,9 @@ from .subd_edge_analysis_replay import HERE, read
 
 FAMILIES = dict(planar_chains=cases.pilot, planar_chains_holdouts=cases.holdouts,
                 planar_chains_contexts=cases.contexts, planar_chains_salvage=cases.salvage,
-                planar_chains_filled=cases.filled, planar_chains_modes=cases.modes)
+                planar_chains_filled=cases.filled, planar_chains_modes=cases.modes,
+                planar_chain_networks=cases.networks, planar_chain_network_holdouts=cases.network_holdouts,
+                planar_network_crossings=cases.network_crossings)
 
 class PlanarChainsTests(unittest.TestCase):
     def test_requests_and_frozen_sources(self):
@@ -28,7 +30,7 @@ class PlanarChainsTests(unittest.TestCase):
             for name, sha in native['provenance']['sources'].items():
                 self.assertEqual(hashlib.sha256(gzip.decompress((HERE / 'observations/source_snapshots' / (sha + '.gz')).read_bytes())).hexdigest(), sha, name)
             count += len(make())
-        self.assertEqual(count, 136)
+        self.assertEqual(count, 198)
 
     def test_native_source_preservation_history_and_valid_outputs(self):
         failed = []

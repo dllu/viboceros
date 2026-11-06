@@ -6,7 +6,6 @@ mod boundaries;
 fn planar_chains_application_preserves_native_regions_and_history() {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/rhino_oracle");
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
-    let mut gaps = Vec::new();
     for (op, native) in boundaries::rows(&base, super::oracle_observation::read) {
         let f: Fixture = serde_json::from_value(op.clone()).unwrap();
         let (doc, ids) = f.setup(tolerance).unwrap();
@@ -27,12 +26,6 @@ fn planar_chains_application_preserves_native_regions_and_history() {
         );
         let success = app.document.undo_label() == Some("PlanarSrf");
         let after = snapshot_chains(&app.document, &ids, &sources).unwrap();
-        if op["id"] == "chains_filled_outside_tangent" {
-            assert!(!success);
-            assert_eq!(before, after);
-            gaps.push(op["id"].clone());
-            continue;
-        }
         let outputs = app
             .document
             .objects()
@@ -69,7 +62,6 @@ fn planar_chains_application_preserves_native_regions_and_history() {
             0
         );
     }
-    assert_eq!(gaps, [serde_json::json!("chains_filled_outside_tangent")]);
 }
 #[test]
 fn planar_chains_postselection_delete_option_and_escape_use_the_command_prompt() {
