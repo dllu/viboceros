@@ -4,9 +4,23 @@ use serde_json::{Value, json};
 use viboceros_document::{Document, Geometry, ObjectColorSource};
 
 pub fn check(doc: &Document, expected: &Value, archive: bool) -> f64 {
+    let comparison = compare(doc, expected, archive);
+    assert!(comparison.native_valid);
+    comparison.error
+}
+
+pub struct Comparison {
+    pub error: f64,
+    pub native_valid: bool,
+}
+
+/// Compare coefficients and metadata even for an explicitly unqualified native
+/// invalid-object diagnostic. `check` retains the ordinary strict validity gate.
+pub fn compare(doc: &Document, expected: &Value, archive: bool) -> Comparison {
     let expected = expected.as_array().unwrap();
     assert_eq!(doc.objects().len(), expected.len());
     let mut error = 0_f64;
+    let mut native_valid = true;
     for (object, target) in doc.objects().zip(expected) {
         let a = object.attributes();
         assert_eq!(
@@ -24,7 +38,7 @@ pub fn check(doc: &Document, expected: &Value, archive: bool) -> f64 {
                 target["selected"].clone()
             }
         );
-        assert_eq!(target["native_valid"], true);
+        native_valid &= target["native_valid"].as_bool().unwrap();
         match object.geometry() {
             Geometry::Point(p) => {
                 error = error.max(p.distance_to(native::point(&target["point"])).unwrap())
@@ -65,5 +79,8 @@ pub fn check(doc: &Document, expected: &Value, archive: bool) -> f64 {
             }
         }
     }
-    error
+    Comparison {
+        error,
+        native_valid,
+    }
 }

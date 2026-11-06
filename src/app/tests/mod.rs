@@ -126,6 +126,7 @@ mod intersect_two_sets;
 mod length;
 mod length_measurement;
 mod line_through_points;
+mod lines;
 mod loft_input;
 mod loft_options;
 mod loft_rebuild;

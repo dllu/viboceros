@@ -720,8 +720,7 @@ impl Document {
 
     /// Discards construction edits after a new document has been loaded.
     pub fn clear_history(&mut self) -> Result<(), DocumentError> {
-        self.ensure_no_transaction()?;
-        self.history = History::default();
+        self.clear_undo_records()?;
         self.last_changed_objects.clear();
         if !self.control_points.is_empty() {
             let existing = self
@@ -731,6 +730,14 @@ impl Document {
                 .collect::<BTreeSet<_>>();
             self.control_points.retain(|id, _| existing.contains(id));
         }
+        Ok(())
+    }
+
+    /// Drops Undo/Redo records while retaining selection recall and grip state.
+    /// Use `clear_history` to reset recall as well after loading a new document.
+    pub fn clear_undo_records(&mut self) -> Result<(), DocumentError> {
+        self.ensure_no_transaction()?;
+        self.history = History::default();
         Ok(())
     }
 

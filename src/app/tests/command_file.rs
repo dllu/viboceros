@@ -2,7 +2,7 @@ use super::plane_surface_native_support as native;
 use super::surface_point_grid::replay as grid;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/command_file.rs"]
-mod replay;
+pub(super) mod replay;
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

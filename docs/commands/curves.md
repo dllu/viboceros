@@ -4,13 +4,15 @@
 
 ## Construction and fitting
 
-Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
+Enter `Point`, `Line`, `Lines`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
 `InterpCrv`, `Rectangle`, `Polygon`, `SrfPt`, `Sphere`, or `Ellipsoid` without
 coordinates to pick points in the viewport; press Enter to finish a polyline or curve. `Curve`
 creates an open control-point curve, defaults to degree three, accepts degrees
 through 11, and lowers the degree when too few controls are supplied.
 `Close=Smooth` creates a periodic seam (degree one remains linear and closed);
 `Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
+[Lines](lines.md) creates adjoining independent line objects with Close and
+local Undo, then commits the completed set in one history entry.
 
 [Ellipse construction](ellipse.md) supports Default, Vertical, Diameter, Corner,
 FromFoci and AroundCurve input, deformable cubic output, numeric axis locks,

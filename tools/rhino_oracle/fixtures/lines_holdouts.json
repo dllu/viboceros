@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "lines_command",
+      "id": "closed_reversed",
+      "case": "closed_reversed"
+    },
+    {
+      "op": "lines_command",
+      "id": "nonplanar",
+      "case": "nonplanar"
+    },
+    {
+      "op": "lines_command",
+      "id": "translated",
+      "case": "translated"
+    },
+    {
+      "op": "lines_command",
+      "id": "short_segments",
+      "case": "short_segments"
+    },
+    {
+      "op": "lines_command",
+      "id": "tiny_cancel",
+      "case": "tiny_cancel"
+    },
+    {
+      "op": "lines_command",
+      "id": "redo_cancel",
+      "case": "redo_cancel"
+    },
+    {
+      "op": "lines_command",
+      "id": "redo_undo_all",
+      "case": "redo_undo_all"
+    },
+    {
+      "op": "lines_command",
+      "id": "undo_all_replace",
+      "case": "undo_all_replace"
+    },
+    {
+      "op": "lines_command",
+      "id": "spatial_plane",
+      "case": "spatial_plane"
+    },
+    {
+      "op": "lines_command",
+      "id": "relative_points",
+      "case": "relative_points"
+    }
+  ]
+}

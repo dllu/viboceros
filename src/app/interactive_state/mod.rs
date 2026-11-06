@@ -189,6 +189,7 @@ pub(super) enum InteractiveCommand {
         postselected: bool,
     },
     Points,
+    Lines,
     Line {
         start: Option<Point3>,
     },

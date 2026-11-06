@@ -517,6 +517,7 @@ pub mod point_fitting;
 pub mod subcurve_input;
 pub mod tween_surfaces;
 use point_arguments::parse_point;
+pub mod lines;
 pub mod point_grid;
 mod point_matrix;
 mod points;
@@ -1198,6 +1199,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(LineCommand)
+            .expect("unique built-in command");
+        registry
+            .register(lines::LinesCommand)
             .expect("unique built-in command");
         registry
             .register(CircleCommand::default())

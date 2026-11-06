@@ -33,6 +33,12 @@ impl VibocerosApp {
         else {
             return;
         };
+        if command == InteractiveCommand::Lines && self.curve_points.len() < 2 {
+            self.command_file_step_failed = self.executing_command_file;
+            self.cancel_interactive_command(false);
+            self.command_input.clear();
+            return;
+        }
         let minimum_point_count = match command {
             InteractiveCommand::SplitCurve => 1,
             InteractiveCommand::Curve {
@@ -153,6 +159,27 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_curve_option(&mut self, input: &str) -> bool {
+        if self.active_command == Some(InteractiveCommand::Lines)
+            && input
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Close")
+        {
+            match viboceros_command::lines::prepare(&self.curve_points, true) {
+                Ok(_) => {
+                    let first = self.curve_points[0];
+                    let append = self.curve_points.last() != Some(&first);
+                    if append {
+                        self.curve_points.push(first);
+                    }
+                    self.finish_interactive_curve();
+                    if self.active_command.is_some() && append {
+                        self.curve_points.pop();
+                    }
+                }
+                Err(e) => self.push_log(format!("Error: {e}")),
+            }
+            return true;
+        }
         let option = input.trim_start_matches(['_', '-']);
         if let Some(InteractiveCommand::InterpCrv { options }) = self.active_command
             && let Some((name, _)) = option.split_once('=')
@@ -287,6 +314,7 @@ impl VibocerosApp {
                 self.active_command,
                 Some(
                     InteractiveCommand::Polyline
+                        | InteractiveCommand::Lines
                         | InteractiveCommand::Curve { .. }
                         | InteractiveCommand::InterpCrv { .. }
                 )

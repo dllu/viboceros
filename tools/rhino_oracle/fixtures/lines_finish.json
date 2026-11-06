@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "lines_command",
+      "id": "explicit_return_finish",
+      "case": "explicit_return_finish"
+    },
+    {
+      "op": "lines_command",
+      "id": "enter_anchor_finish",
+      "case": "enter_anchor_finish"
+    },
+    {
+      "op": "lines_command",
+      "id": "enter_empty_finish",
+      "case": "enter_empty_finish"
+    },
+    {
+      "op": "lines_command",
+      "id": "epsilon_below",
+      "case": "epsilon_below"
+    },
+    {
+      "op": "lines_command",
+      "id": "epsilon_at",
+      "case": "epsilon_at"
+    },
+    {
+      "op": "lines_command",
+      "id": "epsilon_above",
+      "case": "epsilon_above"
+    },
+    {
+      "op": "lines_command",
+      "id": "epsilon_diagonal",
+      "case": "epsilon_diagonal"
+    },
+    {
+      "op": "lines_command",
+      "id": "nanometre",
+      "case": "nanometre"
+    },
+    {
+      "op": "lines_command",
+      "id": "coarse_tolerance",
+      "case": "coarse_tolerance"
+    },
+    {
+      "op": "lines_command",
+      "id": "coarse_epsilon",
+      "case": "coarse_epsilon"
+    },
+    {
+      "op": "lines_command",
+      "id": "fine_epsilon",
+      "case": "fine_epsilon"
+    }
+  ]
+}

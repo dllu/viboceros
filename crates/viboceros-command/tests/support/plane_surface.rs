@@ -71,6 +71,12 @@ pub fn frame(v: &Value) -> Frame3 {
     .unwrap()
 }
 pub fn setup(v: &Value) -> Document {
+    let mut doc = scene(v);
+    doc.clear_history().unwrap();
+    doc
+}
+/// Assemble the prescribed existing scene before choosing its history policy.
+pub fn scene(v: &Value) -> Document {
     let mut doc = Document::new(Tolerance::try_new(1e-6, 1e-9, 1e-6).unwrap());
     let input = doc.add_layer("Plane sources", ColorRgb::BLACK).unwrap();
     let output = doc.add_layer("Plane output", ColorRgb::BLACK).unwrap();
@@ -102,7 +108,6 @@ pub fn setup(v: &Value) -> Document {
         .unwrap();
     doc.set_transient_selection(selected).unwrap();
     doc.set_current_layer(output).unwrap();
-    doc.clear_history().unwrap();
     doc
 }
 /// Tokens are prescribed inputs recorded by the frozen producer, not derived

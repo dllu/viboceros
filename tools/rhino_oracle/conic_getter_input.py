@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic",start_script=None):
-    if command not in ("ReadCommandFile","SrfPtGrid","SrfControlPtGrid","SrfPt","Plane","TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Lines","ReadCommandFile","SrfPtGrid","SrfControlPtGrid","SrfPt","Plane","TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     if command=='InsertPoint' and op.get('view_target_offset_z'):
         target=vp.CameraTarget
@@ -48,6 +48,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
+    if command=='Lines':prefixes=('Start','End','Next','Point')
     if command=='ReadCommandFile':prefixes=('Start of line','End of line','Start of polyline','Next point','Location of point object')
     if command in('SrfPtGrid','SrfControlPtGrid'):prefixes=('Number','Point','First point','Next point','Degree','Row degree','Column degree','KeepPoints','Closed')
     if command=='SrfPt':prefixes=('First corner','Second corner','Third corner','Fourth corner')

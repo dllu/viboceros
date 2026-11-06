@@ -4,6 +4,8 @@ use uuid::Uuid;
 use super::{Document, DocumentError, Group, GroupId, Layer, LayerId, Object, ObjectId};
 
 #[cfg(test)]
+mod clear_tests;
+#[cfg(test)]
 mod tests;
 
 pub(super) const HISTORY_LIMIT: usize = 100;

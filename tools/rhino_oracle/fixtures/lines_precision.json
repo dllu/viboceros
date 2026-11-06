@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "lines_command",
+      "id": "zero_below",
+      "case": "zero_below"
+    },
+    {
+      "op": "lines_command",
+      "id": "zero_at",
+      "case": "zero_at"
+    },
+    {
+      "op": "lines_command",
+      "id": "zero_above",
+      "case": "zero_above"
+    },
+    {
+      "op": "lines_command",
+      "id": "zero_diagonal",
+      "case": "zero_diagonal"
+    },
+    {
+      "op": "lines_command",
+      "id": "translated_ulp",
+      "case": "translated_ulp"
+    },
+    {
+      "op": "lines_command",
+      "id": "translated_small",
+      "case": "translated_small"
+    },
+    {
+      "op": "lines_command",
+      "id": "close_two_cancel",
+      "case": "close_two_cancel"
+    },
+    {
+      "op": "lines_command",
+      "id": "close_anchor_cancel",
+      "case": "close_anchor_cancel"
+    },
+    {
+      "op": "lines_command",
+      "id": "explicit_return",
+      "case": "explicit_return"
+    },
+    {
+      "op": "lines_command",
+      "id": "enter_anchor",
+      "case": "enter_anchor"
+    },
+    {
+      "op": "lines_command",
+      "id": "enter_empty",
+      "case": "enter_empty"
+    }
+  ]
+}

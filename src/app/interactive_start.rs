@@ -2008,6 +2008,7 @@ impl VibocerosApp {
                 "angle" => InteractiveCommand::Angle { points: [None; 3] },
                 "point" | "pt" => InteractiveCommand::Point,
                 "points" => InteractiveCommand::Points,
+                "lines" => InteractiveCommand::Lines,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },

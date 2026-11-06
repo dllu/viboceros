@@ -1196,6 +1196,24 @@ impl VibocerosApp {
                     ));
                 }
             }
+            InteractiveCommand::Lines => {
+                if self.curve_points.len() > viboceros_command::lines::MAX_SEGMENTS {
+                    self.push_log("Error: Lines supports at most 100000 segments".into());
+                    return false;
+                }
+                if let Some(previous) = self.curve_points.last()
+                    && let Err(e) = viboceros_command::lines::segment(*previous, point)
+                {
+                    self.push_log(format!("Error: {e}"));
+                    return false;
+                }
+                self.curve_points.push(point);
+                if self.curve_points.len() >= 4 && self.curve_points[0] == point {
+                    self.finish_interactive_curve();
+                    return self.active_command.is_none();
+                }
+                self.push_log(command.prompt().to_owned());
+            }
             InteractiveCommand::Polyline => {
                 if let Some(previous) = self.curve_points.last()
                     && !previous

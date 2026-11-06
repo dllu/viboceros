@@ -45,6 +45,7 @@ impl InteractiveCommand {
             Self::LengthSubCrv { .. } => "Length",
             Self::Align { .. } => "Align",
             Self::Points => "Points",
+            Self::Lines => "Lines",
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
@@ -245,6 +246,7 @@ impl InteractiveCommand {
             | Self::DomainSubCrv { start: None }
             | Self::LengthSubCrv { start: None, .. }
             | Self::Points
+            | Self::Lines
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
@@ -607,7 +609,11 @@ impl InteractiveCommand {
     pub(in crate::app) const fn collects_curve_points(self) -> bool {
         matches!(
             self,
-            Self::Polyline | Self::Curve { .. } | Self::InterpCrv { .. } | Self::SplitCurve
+            Self::Lines
+                | Self::Polyline
+                | Self::Curve { .. }
+                | Self::InterpCrv { .. }
+                | Self::SplitCurve
         )
     }
 }

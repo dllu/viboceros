@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "lines_command",
+      "id": "open_two",
+      "case": "open_two"
+    },
+    {
+      "op": "lines_command",
+      "id": "open_four",
+      "case": "open_four"
+    },
+    {
+      "op": "lines_command",
+      "id": "closed_three",
+      "case": "closed_three"
+    },
+    {
+      "op": "lines_command",
+      "id": "undo_replace",
+      "case": "undo_replace"
+    },
+    {
+      "op": "lines_command",
+      "id": "undo_empty",
+      "case": "undo_empty"
+    },
+    {
+      "op": "lines_command",
+      "id": "undo_anchor",
+      "case": "undo_anchor"
+    },
+    {
+      "op": "lines_command",
+      "id": "repeated_point",
+      "case": "repeated_point"
+    },
+    {
+      "op": "lines_command",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    },
+    {
+      "op": "lines_command",
+      "id": "cancel_anchor",
+      "case": "cancel_anchor"
+    },
+    {
+      "op": "lines_command",
+      "id": "cancel_live",
+      "case": "cancel_live"
+    }
+  ]
+}

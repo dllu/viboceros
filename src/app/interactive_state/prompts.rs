@@ -166,6 +166,9 @@ impl InteractiveCommand {
                 "Align: pick an alignment point, or Enter for automatic alignment (Esc cancels)"
             }
             Self::Points => "Points: pick locations; Undo removes the last; Enter or Esc finishes",
+            Self::Lines => {
+                "Lines: pick adjoining endpoints; Close closes; Undo revises the last point; Enter finishes (Esc cancels)"
+            }
             Self::Line { start: None } => {
                 "Line: pick the start point in the viewport (Esc to cancel)"
             }
