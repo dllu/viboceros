@@ -3,10 +3,10 @@ use super::*;
 use viboceros_smlib::{KernelCurve, Shape};
 
 pub(super) fn stage(
-    curves: Vec<(ObjectId, NurbsCurve)>,
+    curves: Vec<(usize, NurbsCurve)>,
     tolerance: Tolerance,
     independent_contacts: bool,
-) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
+) -> Result<(Vec<Brep>, Vec<usize>), CommandError> {
     let mut profiles = Vec::new();
     let mut originals = Vec::new();
     let mut consumed = Vec::new();

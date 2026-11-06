@@ -1,0 +1,103 @@
+{
+  "scope": "PlanarSrf joins open pieces and recovers closed walks, with rational segments, source provenance, application picking, exact planar staging and 3DM round trips.",
+  "baseline_command_revision": "3bc8b31c88c3a525b7e3ba223c5f954140a4ba90",
+  "baseline": "New owned observation adapter with unchanged baseline command logic: three command successes among 35 pilot workflows. This is a status count, not a full parity count.",
+  "native": {
+    "workflows": 136,
+    "distinct_ordered_source_definitions": 136,
+    "successes": 122,
+    "failures": 14,
+    "output_breps": 143
+  },
+  "qualified_per_build": {
+    "workflows": 135,
+    "successful_workflows": 121,
+    "failure_workflows": 14,
+    "successful_output_breps": 142,
+    "output_3dm_cases": 121,
+    "application_workflows": 135,
+    "maximum_bidirectional_boundary_sample_error": {
+      "portable": 2.6031257322754127e-10,
+      "native": 2.6031257322754127e-10
+    }
+  },
+  "explicit_gap": {
+    "id": "chains_filled_outside_tangent",
+    "native_success": true,
+    "native_area": 116,
+    "local_result": "UnrepresentableBrepBoolean; command declines before editing",
+    "qualification": false,
+    "checks": "The oracle and application require the named decline and unchanged objects/history; the archive test skips that declared gap. All other status, area, source, boundary and history mismatches fail."
+  },
+  "comparisons": {
+    "sources": "Source object identity retained exactly; full public NURBS source definitions at 1e-12.",
+    "regions": "One-to-one output/loop membership and multiplicity, output order canonicalized; areas at 1e-9 absolute plus 1e-12 relative.",
+    "boundaries": "Bidirectional used native spatial C3 edge witnesses at 17 stations per nonzero span, loop type and one-to-one pairing; 1e-6 gate. Live and restored outputs also compare native area.",
+    "archive": "All 121 qualified successful workflows saved as 3DM, output boundaries and areas checked after readback; live and restored B-reps generate audited normal meshes.",
+    "application": "135 matching workflows plus the named gap; pure test_app with desktop display variables removed. Separate picking/delete/cancel test.",
+    "delete_and_failure": "Partial reversed aliases consumed; unused tails and diagonals retained; attributes, groups and one Undo/Redo step preserved. Oversized source controls decline atomically and preserve redo."
+  },
+  "regressions": {
+    "closed_region_replays_per_build": 247,
+    "closed_application_cases_per_build": 198,
+    "closed_output_3dm_cases_per_build": 198,
+    "legacy_region_cases_per_build": 6,
+    "existing_tiny_circle_area_gap": "crossing_circle10_small remains explicitly checked by its existing narrow exception; no widened area gate.",
+    "planar_mesh": "Fresh command and pre/postselection checks in both builds; qualification report keeps 21 geometric matches, 10 full matches and 11 topology gaps per stage."
+  },
+  "resource_limits": {
+    "source_controls": 100000,
+    "derived_control_upper_bound": 100000,
+    "admitted_profiles": 128,
+    "charged_assembly_steps": 1000000,
+    "source_candidate_comparisons": 1000000
+  },
+  "unqualified": [
+    "The named tangent Boolean gap.",
+    "Continuous curve-error bounds, native B-rep encoding and output birth order.",
+    "General rational endpoint-to-interior recovery, arbitrary self-intersections and broader branch networks.",
+    "Native render triangulation and comparative performance; normal-mesh generation is an internal audit."
+  ],
+  "execution": {
+    "native": "Six captures through tools/rhino_oracle/run_headless.sh exec, private Xvfb/i3 and private XDG runtime; successful observations never recaptured or rewritten before lossless compression.",
+    "rust": "DISPLAY, WAYLAND_DISPLAY, WAYLAND_SOCKET, SWAYSOCK and I3SOCK removed; no application event loop launched.",
+    "workspace": "Nine pre-existing untracked files retain their original SHA-256; AGENTS.md unchanged; README reviewed and remains accurate."
+  },
+  "test_counts": {
+    "portable": {
+      "command-unit": 14,
+      "command-policy": 4,
+      "mesh-command": 3,
+      "oracle": 7,
+      "app-regions": 1,
+      "app-chains": 2,
+      "mesh-app": 4,
+      "final-oracle-chains": 2,
+      "final-app-chains": 2
+    },
+    "native": {
+      "command-unit": 16,
+      "command-policy": 4,
+      "mesh-command": 3,
+      "oracle": 7,
+      "app-regions": 1,
+      "app-chains": 2,
+      "mesh-app": 4,
+      "final-oracle-chains": 2,
+      "final-app-chains": 2
+    },
+    "quality": {
+      "source-overlaps": 1,
+      "curve-network": 10,
+      "trim-regions": 11,
+      "planar-faces": 8,
+      "python": 25
+    }
+  },
+  "evidence": {
+    "captures": "planar-chains-proof/captures.json",
+    "runs": "planar-chains-proof/runs.json",
+    "sha256": "planar-chains-proof/sha256.json",
+    "baseline": "planar-chains-proof/baseline.json.gz"
+  }
+}

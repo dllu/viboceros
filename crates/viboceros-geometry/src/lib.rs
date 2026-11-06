@@ -80,6 +80,9 @@ pub use curve_fillet_operations::{
 mod curve_chain;
 mod curve_fit;
 mod curve_frame;
+mod curve_hull_index;
+mod curve_sources;
+pub use curve_sources::curve_overlap_sources;
 mod curve_join;
 pub use curve_chain::{
     ChainContinuation, ChainContinuity, ChainDirection, CurveChainIndex, CurveChainOptions,

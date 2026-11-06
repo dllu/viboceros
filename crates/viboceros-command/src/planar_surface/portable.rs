@@ -5,7 +5,7 @@ mod independent;
 mod regions;
 
 struct PlanarSurfaceBoundary {
-    id: ObjectId,
+    id: usize,
     curve: NurbsCurve,
     untrimmed_face: Brep,
     area: Real,
@@ -61,14 +61,14 @@ pub(super) fn curves_contact(
 }
 
 pub(super) fn stage(
-    curves: Vec<(ObjectId, NurbsCurve)>,
+    curves: Vec<(usize, NurbsCurve)>,
     tolerance: Tolerance,
     independent_contacts: bool,
-) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
+) -> Result<(Vec<Brep>, Vec<usize>), CommandError> {
     stage_with(curves, tolerance, independent_contacts, construct)
 }
 pub(super) fn construct(
-    profiles: &[(ObjectId, NurbsCurve)],
+    profiles: &[(usize, NurbsCurve)],
     outer: &Brep,
     tolerance: Tolerance,
 ) -> Result<Vec<Brep>, CommandError> {
@@ -85,15 +85,11 @@ pub(super) fn construct(
     )?])
 }
 pub(super) fn stage_with(
-    curves: Vec<(ObjectId, NurbsCurve)>,
+    curves: Vec<(usize, NurbsCurve)>,
     tolerance: Tolerance,
     independent_contacts: bool,
-    mut produce: impl FnMut(
-        &[(ObjectId, NurbsCurve)],
-        &Brep,
-        Tolerance,
-    ) -> Result<Vec<Brep>, CommandError>,
-) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
+    mut produce: impl FnMut(&[(usize, NurbsCurve)], &Brep, Tolerance) -> Result<Vec<Brep>, CommandError>,
+) -> Result<(Vec<Brep>, Vec<usize>), CommandError> {
     let mut boundaries = Vec::new();
     for (id, curve) in curves {
         if curve.is_closed()? && curve.is_planar(tolerance)? {

@@ -1050,6 +1050,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: curve_native::RevolveFixture,
     },
+    PlanarChains {
+        id: String,
+        #[serde(flatten)]
+        fixture: planar_regions::Fixture,
+    },
     PlanarRegions {
         id: String,
         #[serde(flatten)]
@@ -3065,6 +3070,7 @@ impl Operation {
             | Self::CurveApexCommand { id, .. }
             | Self::CurveAlongCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
+            | Self::PlanarChains { id, .. }
             | Self::PlanarRegions { id, .. }
             | Self::PlanarSurfaceCommand { id, .. }
             | Self::PolycurveNative { id, .. }
@@ -3894,6 +3900,9 @@ fn execute(
         }
         Operation::CurveRevolveCommand { fixture, .. } => {
             curve_native::revolve_command(fixture, iterations, tolerance)?
+        }
+        Operation::PlanarChains { fixture, .. } => {
+            planar_regions::run_chains(fixture, iterations, tolerance)?
         }
         Operation::PlanarRegions { fixture, .. } => {
             planar_regions::run(fixture, iterations, tolerance)?

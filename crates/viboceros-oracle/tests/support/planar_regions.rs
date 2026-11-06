@@ -55,6 +55,10 @@ fn normalized(mut v: Value) -> Value {
                 "contains_start",
                 "native_valid",
                 "coverage",
+                "centered_area",
+                "area_origin",
+                "unit_domain_area",
+                "unit_domain_brep",
             ] {
                 a.remove(key);
             }

@@ -1,14 +1,15 @@
 # PlanarSrf
 
-Select closed planar curves, then enter:
+Select planar boundary curves or connected open pieces, then enter:
 
 ```text
 PlanarSrf
 PlanarSurface DeleteInput=Yes
 ```
 
-Both builds create exact trimmed planar B-reps. Nested loops alternate between
-holes and independent islands. Overlapping loops use the measured Rhino seam
+Starting the command without preselection opens a curve selection prompt with
+a `DeleteInput` option. Both builds create exact trimmed planar B-reps. Nested
+loops alternate between holes and independent islands. Overlapping loops use the measured Rhino seam
 point parity, followed by whole-loop hole admission. Moving a closed curve's
 seam can therefore change which overlapping boundary becomes a hole. Curves on
 other planes cannot affect that parity. A curve touching its prospective outer
@@ -25,10 +26,14 @@ model loops while their displayed mesh excludes the holes' union.
 
 Outputs have fresh attributes on the current layer, remain unselected and
 ungrouped, and share one Undo/Redo step. Retained inputs keep their attributes,
-groups and selection. `DeleteInput=Yes` deletes every accepted boundary,
-including coalesced duplicates. It is an application extension; Rhino PlanarSrf
-retains its inputs. Open and nonplanar curves are skipped. Open chains are not
-joined by this command. At most 128 closed planar boundaries participate.
+groups and selection. `DeleteInput=Yes` deletes source pieces contributing to
+accepted profiles, including coalesced duplicates and partial overlaps; unused
+tails remain. It is an application extension; Rhino PlanarSrf retains its inputs.
+Connected open pieces use the existing batch curve joiner. Incomplete chains
+without a recovered planar loop and nonplanar profiles are skipped.
+[Open-chain behavior and qualification](planar-chains.md) include tolerance
+closure, branches and recovered filled regions. At most 128 closed planar
+boundaries participate.
 
 The shared planner computes source-plane containment and checks each proposed
 hole against its entire outer boundary. Contact proposals require a checked

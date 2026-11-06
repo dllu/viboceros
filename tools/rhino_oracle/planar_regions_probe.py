@@ -5,17 +5,18 @@ else:
     from planar_regions_cases import validate
 
 
-def run(op,host,iterations,tolerance):
-    validate(op)
+def run(op,host,iterations,tolerance,validator=validate,subset=False):
+    validator(op)
     from join_probe import observe_command
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects)or R.Commands.Command.InCommand():raise ValueError('empty owned idle document required')
     saved=(doc.ModelAbsoluteTolerance,doc.ModelRelativeTolerance,doc.ModelAngleToleranceRadians)
     curves=[];ids=[]
     def match(a,b):
+        epsilon=tolerance['absolute']if subset else 1e-7
         ba,bb=a.GetBoundingBox(True),b.GetBoundingBox(True)
-        if ba.Min.DistanceTo(bb.Min)>1e-7 or ba.Max.DistanceTo(bb.Max)>1e-7:return False
-        for first,second in [(a,b),(b,a)]:
+        if not subset and (ba.Min.DistanceTo(bb.Min)>epsilon or ba.Max.DistanceTo(bb.Max)>epsilon):return False
+        for first,second in ([(b,a)]if subset else[(a,b),(b,a)]):
             for i in range(33):
                 p=first.PointAt(first.Domain.ParameterAt(i/32.));success,t=second.ClosestPoint(p)
                 if not success:return False
@@ -29,7 +30,7 @@ def run(op,host,iterations,tolerance):
                     proposal=max(second.Domain.T0,min(second.Domain.T1,t-numerator/denominator))
                     if proposal==t:break
                     t=proposal
-                if p.DistanceTo(second.PointAt(t))>1e-7:return False
+                if p.DistanceTo(second.PointAt(t))>epsilon:return False
         return True
     def snapshot():
         rows=[]
@@ -92,7 +93,7 @@ def run(op,host,iterations,tolerance):
             R.RhinoApp.RunScript('_Undo',False);undo=snapshot();R.RhinoApp.RunScript('_Redo',False);redo=snapshot()
         else:undo=before;redo=after
         relationships=[]
-        for c in curves:
+        for c in ([]if subset else curves):
             ok,plane=c.TryGetPlane()
             relationships.append([str(c.Contains(other.PointAtStart,plane,tolerance['absolute']))if ok else None for other in curves])
         return dict(success=success,before=before,created=created,after=after,undo=undo,redo=redo,events=events,history=history,contains_start=relationships),0

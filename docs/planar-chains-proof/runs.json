@@ -1,0 +1,450 @@
+{
+  "portable": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-command-unit.log.gz",
+      "raw_sha256": "d59e298f7115d9901785d594134ca7c1b7060316e7f7dd8f705e7b6a7873ed0e",
+      "raw_bytes": 1753
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-command-policy.log.gz",
+      "raw_sha256": "5c6c410b9e5c09f5775966e048a83e0006b22d90d765bf0beb141ecd92d677e8",
+      "raw_bytes": 896
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-mesh-command.log.gz",
+      "raw_sha256": "0896584665683060009820f6f89d3293344fe93d27084f17ba4c0a0913c9710a",
+      "raw_bytes": 14053
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-oracle.log.gz",
+      "raw_sha256": "d7e8c91628c8fa0787e318e7b9a7f68543f0555733435f10330ab65abdc78609",
+      "raw_bytes": 1618
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-app-regions.log.gz",
+      "raw_sha256": "64b9613f8528964464b32a74f26a5e8c08f07cb726a5175d0eec5380b5b65951",
+      "raw_bytes": 527
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-app-chains.log.gz",
+      "raw_sha256": "c1af4a4038e925abf333a23379310607f01042cdd75578e32788a6895961d841",
+      "raw_bytes": 489
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-mesh-app.log.gz",
+      "raw_sha256": "70f7526081c7b79b7290fcf96faac0c6eac55b6b4c78080b62e5acfb20f18edc",
+      "raw_bytes": 30451
+    },
+    {
+      "label": "final-oracle-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-final-oracle-chains.log.gz",
+      "raw_sha256": "6679bf2f8d49f4e420eb8f53aa390d0948e557f74954b47279615de6a5a52b69",
+      "raw_bytes": 580
+    },
+    {
+      "label": "final-app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/portable-final-app-chains.log.gz",
+      "raw_sha256": "74a9f963d74f38dc73160a799ce6c0a29eeba11d6ea14d4e3389012b57db7289",
+      "raw_bytes": 548
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-command-unit.log.gz",
+      "raw_sha256": "14c8dc11a0c29e9fd859ba95c37ebd3061d5f6b4ec34a4ad5ce961541808d297",
+      "raw_bytes": 2149
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_chains"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-command-policy.log.gz",
+      "raw_sha256": "c5b0273d154d0c51f5a2f3e6cf8721dcf476fc477bb545346f50b66d1fdd96fe",
+      "raw_bytes": 897
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-mesh-command.log.gz",
+      "raw_sha256": "a57c20ce5cb8f72bfac8f21e9eed069c95daea053dd419fc872a2a7e94b98827",
+      "raw_bytes": 14051
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-oracle.log.gz",
+      "raw_sha256": "7ba50fe177b6597eb17c3a0e38f4a739f9c6f48b53eeb9f4822c3fa039befd5a",
+      "raw_bytes": 1618
+    },
+    {
+      "label": "app-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-app-regions.log.gz",
+      "raw_sha256": "6e8d5eddfe28f9e0127ae403ff78c2a152b588e344e1a51ccff97a66ee97b0a1",
+      "raw_bytes": 787
+    },
+    {
+      "label": "app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-app-chains.log.gz",
+      "raw_sha256": "e0ff49edb46c25e5a9891758a11b439b2c9c2eb0eb87ddf2a8557a1a6016ae1a",
+      "raw_bytes": 489
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-mesh-app.log.gz",
+      "raw_sha256": "d1fbf26f25a7de2f0662c8ed995f354770c995349c70d92a9d1d57b4000552f2",
+      "raw_bytes": 30447
+    },
+    {
+      "label": "final-oracle-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-final-oracle-chains.log.gz",
+      "raw_sha256": "8bd304a3cf03a4f0dfdda6a553208eb0ed2a593b8f341d873c755151493615ff",
+      "raw_bytes": 581
+    },
+    {
+      "label": "final-app-chains",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_chains",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/native-final-app-chains.log.gz",
+      "raw_sha256": "45146d13674deac664e4e108026e809abee5526d2168651bc9af1bb2d50dbf29",
+      "raw_bytes": 548
+    }
+  ],
+  "quality": [
+    {
+      "label": "source-overlaps",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_sources"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-source-overlaps.log.gz",
+      "raw_sha256": "d5a7abf8bf42466e74e6afbb27f540b572286dcae23d688c1e0dc4ca634a5c07",
+      "raw_bytes": 466
+    },
+    {
+      "label": "curve-network",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_network"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-curve-network.log.gz",
+      "raw_sha256": "309946c722870a3dbaf31afa12c0383cab049b6b407c5548c692e426ed3d1c34",
+      "raw_bytes": 1363
+    },
+    {
+      "label": "trim-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "trim_region"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-trim-regions.log.gz",
+      "raw_sha256": "9cf9792363123b9b06a2c054313ef464aa5688251275a1315f70ba9989e2e850",
+      "raw_bytes": 1431
+    },
+    {
+      "label": "planar-faces",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "planar_face"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-planar-faces.log.gz",
+      "raw_sha256": "e3d6f838cb9b66395f954e80e7b364969a5a09b79cbbbe1d06153bad52392fd3",
+      "raw_bytes": 1070
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-clippy-default.log.gz",
+      "raw_sha256": "8229933b66b3f6a2bea74d9350433b8bc2c2fedd76cc56aa17d6fb64600f7107",
+      "raw_bytes": 220
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-clippy-all-features.log.gz",
+      "raw_sha256": "85183d18b74b8386c3503dd0649afaac2421d1435712b82835629a452fa6e34a",
+      "raw_bytes": 479
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-fmt.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_planar_chains",
+        "tools.rhino_oracle.test_planar_crossings",
+        "tools.rhino_oracle.test_planar_regions",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-chains-proof/quality-python.log.gz",
+      "raw_sha256": "1b8c4da7e4a26e039d75cdc884804273733a94bba1123332264e4055ef738fcc",
+      "raw_bytes": 124
+    }
+  ]
+}
