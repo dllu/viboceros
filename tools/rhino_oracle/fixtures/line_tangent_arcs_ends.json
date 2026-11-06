@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_arc_top",
+      "case": "end_arc_top"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_arc_start",
+      "case": "end_arc_start"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_arc_below",
+      "case": "end_arc_below"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_arc_spatial",
+      "case": "end_arc_spatial"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_line_after",
+      "case": "end_line_after"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_line_before",
+      "case": "end_line_before"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_quadratic_start",
+      "case": "end_quadratic_start"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_quadratic_end",
+      "case": "end_quadratic_end"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "end_spatial",
+      "case": "end_spatial"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_scaled_corrected",
+      "case": "arc_scaled_corrected"
+    }
+  ]
+}

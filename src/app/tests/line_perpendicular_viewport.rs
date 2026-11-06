@@ -4,7 +4,7 @@ fn enter(app: &mut VibocerosApp, s: &str) {
     app.command_input = s.into();
     app.run_command();
 }
-fn frame(
+pub(super) fn frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,
@@ -40,7 +40,11 @@ fn frame(
         .drop_without_applying_deltas();
     (output, rect)
 }
-fn click(app: &mut VibocerosApp, context: &egui::Context, p: egui::Pos2) -> ViewportOutput {
+pub(super) fn click(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    p: egui::Pos2,
+) -> ViewportOutput {
     frame(app, context, vec![egui::Event::PointerMoved(p)]);
     frame(
         app,

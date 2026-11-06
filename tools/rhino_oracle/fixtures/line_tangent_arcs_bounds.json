@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_left01",
+      "case": "bounds_left01"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_left02",
+      "case": "bounds_left02"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_right095",
+      "case": "bounds_right095"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_right099",
+      "case": "bounds_right099"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_nurbs",
+      "case": "bounds_nurbs"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_refined",
+      "case": "bounds_refined"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_far_target",
+      "case": "bounds_far_target"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_near_target",
+      "case": "bounds_near_target"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "bounds_high_target",
+      "case": "bounds_high_target"
+    }
+  ]
+}

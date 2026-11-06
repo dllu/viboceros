@@ -2,7 +2,9 @@
 
 Start `Line Tangent`, or choose `Tangent` at Line's first prompt. Pick a curve,
 then locate the endpoint. The contact slides to a tangent reaching that point.
-An endpoint with no usable tangent keeps the getter open for another attempt.
+An open curve can supply an [endpoint tangent](line-tangent-boundaries.md)
+when no exact tangent reaches the requested point. Other unusable endpoints
+keep the getter open for another attempt.
 Picking different parameter branches of a closed curve can choose different
 contacts; the seam affects this choice.
 

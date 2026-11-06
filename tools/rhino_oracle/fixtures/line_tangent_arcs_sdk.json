@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_arc",
+      "case": "dense_arc"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_nurbs",
+      "case": "dense_nurbs"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_reparameterized",
+      "case": "dense_reparameterized"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_reversed",
+      "case": "dense_reversed"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_rotated45",
+      "case": "dense_rotated45"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_yz",
+      "case": "dense_yz"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_scaled",
+      "case": "dense_scaled"
+    },
+    {
+      "op": "line_tangent_arcs_sdk",
+      "id": "dense_other_target",
+      "case": "dense_other_target"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_0",
+      "case": "arc_station_0"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_1",
+      "case": "arc_station_1"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_2",
+      "case": "arc_station_2"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_3",
+      "case": "arc_station_3"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_4",
+      "case": "arc_station_4"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_5",
+      "case": "arc_station_5"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_6",
+      "case": "arc_station_6"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_7",
+      "case": "arc_station_7"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_station_8",
+      "case": "arc_station_8"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_middle_control",
+      "case": "arc_middle_control"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_reversed",
+      "case": "arc_reversed"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_as_nurbs",
+      "case": "arc_as_nurbs"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_translated",
+      "case": "arc_translated"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_rotated",
+      "case": "arc_rotated"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_scaled",
+      "case": "arc_scaled"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_hover_contact",
+      "case": "arc_hover_contact"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_hover_endpoint",
+      "case": "arc_hover_endpoint"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "arc_other_target",
+      "case": "arc_other_target"
+    }
+  ]
+}

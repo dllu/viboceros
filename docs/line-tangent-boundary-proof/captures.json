@@ -1,0 +1,62 @@
+[
+  {
+    "family": "line_tangent_arcs",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_arcs"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_arcs.log.gz"
+  },
+  {
+    "family": "line_tangent_arcs_sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_arcs_sdk"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_arcs_sdk.log.gz"
+  },
+  {
+    "family": "line_tangent_arcs_bounds",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_arcs_bounds"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_arcs_bounds.log.gz"
+  },
+  {
+    "family": "line_tangent_arcs_ends",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_arcs_ends"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_arcs_ends.log.gz"
+  },
+  {
+    "family": "line_tangent_arcs_controls",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_arcs_controls"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_arcs_controls.log.gz"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent_arcs",
+      "id": "boundary_positive_length",
+      "case": "boundary_positive_length"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "boundary_negative_length",
+      "case": "boundary_negative_length"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "boundary_bothsides",
+      "case": "boundary_bothsides"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "boundary_planar_spatial",
+      "case": "boundary_planar_spatial"
+    },
+    {
+      "op": "line_tangent_arcs",
+      "id": "boundary_zero_retry",
+      "case": "boundary_zero_retry"
+    }
+  ]
+}

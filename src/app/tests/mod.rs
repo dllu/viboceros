@@ -134,6 +134,7 @@ mod line_perpendicular_lifetime;
 mod line_perpendicular_viewport;
 mod line_reference;
 mod line_tangent;
+mod line_tangent_boundary;
 mod line_through_points;
 mod lines;
 mod loft_input;
