@@ -1,0 +1,196 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "srf_pt_command",
+      "id": "follow_tiny_negative",
+      "case": "follow_tiny_negative"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "follow_tiny_reverse",
+      "case": "follow_tiny_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "follow_tiny_translated",
+      "case": "follow_tiny_translated"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "follow_tiny_rotated",
+      "case": "follow_tiny_rotated"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "follow_relative_closed",
+      "case": "follow_relative_closed"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "follow_relative_closed_reverse",
+      "case": "follow_relative_closed_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_00_forward",
+      "case": "shift_00_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_00_reverse",
+      "case": "shift_00_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_01_forward",
+      "case": "shift_01_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_01_reverse",
+      "case": "shift_01_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_02_forward",
+      "case": "shift_02_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_02_reverse",
+      "case": "shift_02_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_03_forward",
+      "case": "shift_03_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_03_reverse",
+      "case": "shift_03_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_04_forward",
+      "case": "shift_04_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_04_reverse",
+      "case": "shift_04_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_05_forward",
+      "case": "shift_05_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_05_reverse",
+      "case": "shift_05_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_06_forward",
+      "case": "shift_06_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_06_reverse",
+      "case": "shift_06_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_07_forward",
+      "case": "shift_07_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_07_reverse",
+      "case": "shift_07_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_08_forward",
+      "case": "shift_08_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_08_reverse",
+      "case": "shift_08_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_09_forward",
+      "case": "shift_09_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_09_reverse",
+      "case": "shift_09_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_10_forward",
+      "case": "shift_10_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_10_reverse",
+      "case": "shift_10_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_11_forward",
+      "case": "shift_11_forward"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "shift_11_reverse",
+      "case": "shift_11_reverse"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e9_close",
+      "case": "relative_triangle_1e9_close"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e9_open",
+      "case": "relative_triangle_1e9_open"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e12_close",
+      "case": "relative_triangle_1e12_close"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e12_below",
+      "case": "relative_triangle_1e12_below"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e12_above",
+      "case": "relative_triangle_1e12_above"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_1e12_open",
+      "case": "relative_triangle_1e12_open"
+    },
+    {
+      "op": "srf_pt_command",
+      "id": "relative_triangle_near_second",
+      "case": "relative_triangle_near_second"
+    }
+  ]
+}

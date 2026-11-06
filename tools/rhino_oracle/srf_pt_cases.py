@@ -28,17 +28,20 @@ if __package__:
     from .srf_pt_admission import ADMISSION
     from .srf_pt_singular import SINGULAR
     from .srf_pt_origin import ORIGINS
+    from .srf_pt_followup_cases import FOLLOWUP
 else:
     from srf_pt_holdouts import HOLDOUTS
     from srf_pt_precision import PRECISION
     from srf_pt_admission import ADMISSION
     from srf_pt_singular import SINGULAR
     from srf_pt_origin import ORIGINS
+    from srf_pt_followup_cases import FOLLOWUP
 CASES.update(HOLDOUTS)
 CASES.update(PRECISION)
 CASES.update(ADMISSION)
 CASES.update(SINGULAR)
 CASES.update(ORIGINS)
+CASES.update(FOLLOWUP)
 
 def request(names=None):
     return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),

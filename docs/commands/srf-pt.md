@@ -23,9 +23,11 @@ triangle trims. The unused half of that supporting surface is outside the face.
 The normalized `NurbsSurface::try_bilinear` geometry API remains separate.
 
 Repeated adjacent corners are accepted when enough distinct corners remain.
-Triangular construction rejects coordinate-wise coincident corner pairs at
-`2^-32`, independently of document tolerance. Collinear corners can produce a
-valid stored surface with zero model-space area; meshing such geometry can
+Triangular construction rejects coordinate-wise coincident corner pairs using
+the OpenNURBS absolute (`2^-32`) and relative coincidence bounds, independently
+of document tolerance. This also rejects short edges at remote world origins.
+Collinear corners can produce a valid stored surface with zero model-space
+area; meshing such geometry can
 report an empty result. Native geometric coincidence can also close a very
 narrow chart. The command preserves its seam/singular topology in an explicit
 B-rep rather than flattening away the face orientation.
@@ -36,20 +38,24 @@ groups remain unchanged. One Undo removes the result; Redo restores it.
 Cancellation and invalid final geometry preserve pending Redo. A document or
 tolerance change invalidates an active draft.
 
-The [validation record](../srf-pt-validation.json) compares native control nets,
-knots, parameter grids, vertices, edges, trims, topology, attributes and history.
+The [validation record](../srf-pt-followup-validation.json) compares native
+control nets, knots, parameter grids, vertices, edges, trims, topology,
+attributes and history.
 Constructed interactive outputs also round-trip through 3DM. The geometry gate
 is `1e-6`; these finite comparisons are not a continuous distance certificate.
-One translated, coincidence-closed, zero-volume chart retains a different native
-face-orientation flag. Its geometry and topology match; this orientation case
-is recorded separately and remains unqualified. General mouse trajectories,
-every coordinate expression, restart behavior and comparative speed remain
-unqualified.
+Eight observations of coincidence-closed, zero-volume charts retain different
+native face-orientation flags, including repeated geometry under distinct IDs.
+Their geometry and topology match; these named orientation cases remain
+unqualified. Fresh public SDK conversions differ from command output in a way
+consistent with [document-admission flips](https://developer.rhino3d.com/api/rhinocommon/type/rhino.geometry.brep/?member=solidorientation),
+but do not establish where SrfPt applies them or a reliable classification rule.
+General mouse trajectories, every coordinate expression, restart behavior and
+comparative speed remain unqualified.
 
 ```sh
 cargo test -p viboceros-command --test srf_pt
 cargo test --bin viboceros app::tests::srf_pt
-python3 -m unittest tools.rhino_oracle.test_srf_pt
+python3 -m unittest tools.rhino_oracle.test_srf_pt tools.rhino_oracle.test_srf_pt_followup
 ```
 
 Reference: [Rhino SrfPt](https://docs.mcneel.com/rhino/8/help/en-us/commands/srfpt.htm).

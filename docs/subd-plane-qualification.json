@@ -639,7 +639,7 @@
     "src/app/point_input.rs": "37a651259d9cfd2c89aa935c791ae2b264047e09ef277e0c7856a49c56bc512a",
     "tools/rhino_oracle/subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
     "tools/rhino_oracle/generate_subd_box.py": "055f46a8b6ddcd56c52975e96b2e1166ae7bfceef2483f4044deed4eca7036c5",
-    "tools/rhino_oracle/structural_sdk.py": "f04871ff3c39636918aa108106afcfd67a1c291b5b02cf893ed14e482241d7c2",
+    "tools/rhino_oracle/structural_sdk.py": "e2960e3277ff77d399e3d0aeec82b7ef982589cdadce14cb2502d892b4ced479",
     "tools/rhino_oracle/rhino_worker.py": "3ca92e44bcf3eb0fe90912c6c986c8ea6745cea1982834e1db2f69b32e22acd4",
     "tools/rhino_oracle/fixtures/subd_box.json": "fb3bddad8c7d23347a25e31da1b7b702c18de1ddb0b2b4f63561fab073eabf23",
     "tools/rhino_oracle/observations/subd_box.json": "22740b74ce7b370b50148d7b4fbdfd4a20fcb07725926fa5a78d2d1f1c2e637a",

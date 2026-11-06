@@ -1,0 +1,12 @@
+{
+  "family": "srf_pt_followup",
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_srf_pt_followup"
+  ],
+  "status": "published",
+  "completion": "The capture published all frozen observations and its terminal Recorded marker. Its owner and private worker retired. The initial tool session ID was unavailable after context compaction; no process exit status is asserted."
+}

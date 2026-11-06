@@ -9,20 +9,34 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 
 #[test]
 fn corner_surface_getters_match_native_trimmed_geometry_history_and_archives() {
+    replay_families(
+        &[
+            "srf_pt_pilot",
+            "srf_pt_holdouts",
+            "srf_pt_precision",
+            "srf_pt_admission",
+            "srf_pt_singular",
+            "srf_pt_origin",
+        ],
+        60,
+        "SRF_PT_UI",
+    );
+}
+
+#[test]
+fn corner_surface_getters_remote_admission_and_degenerate_orientation_followup() {
+    replay_families(&["srf_pt_followup"], 37, "SRF_PT_FOLLOWUP_UI");
+}
+
+fn replay_families(families: &[&str], expected: usize, prefix: &str) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("corners.3dm");
     let mut count = 0;
-    for family in [
-        "srf_pt_pilot",
-        "srf_pt_holdouts",
-        "srf_pt_precision",
-        "srf_pt_admission",
-        "srf_pt_singular",
-        "srf_pt_origin",
-    ] {
+    for &family in families {
         let data = native::read(family);
         for row in data["results"].as_array().unwrap() {
             let v = &row["value"];
+            let allow_ambiguous = replay::FACE_SENSE_GAPS.contains(&row["id"].as_str().unwrap());
             let mut app = test_app();
             app.document = native::setup(v);
             let parents = app.document.objects().cloned().collect::<Vec<_>>();
@@ -47,12 +61,8 @@ fn corner_surface_getters_match_native_trimmed_geometry_history_and_archives() {
             assert!(app.active_command.is_none());
             assert!(app.drafting_plane.is_none());
             assert_eq!(app.viewports[0].construction_plane(), plane);
-            let (mut error, face_sense_matches) = replay::check_with_face_sense(
-                &app.document,
-                v,
-                "after",
-                family == "srf_pt_singular",
-            );
+            let (mut error, face_sense_matches) =
+                replay::check_with_face_sense(&app.document, v, "after", allow_ambiguous);
             let mut archive_objects = None;
             if v["success"] == true {
                 assert_eq!(app.document.undo_label(), Some("SrfPt"));
@@ -61,13 +71,7 @@ fn corner_surface_getters_match_native_trimmed_geometry_history_and_archives() {
                 assert!(app.document.undo().unwrap().is_none());
                 app.document.redo().unwrap();
                 error = error.max(
-                    replay::check_with_face_sense(
-                        &app.document,
-                        v,
-                        "redo",
-                        family == "srf_pt_singular",
-                    )
-                    .0,
+                    replay::check_with_face_sense(&app.document, v, "redo", allow_ambiguous).0,
                 );
                 app.commands
                     .execute(&mut app.document, &format!("SaveAs {}", path.display()))
@@ -81,13 +85,7 @@ fn corner_surface_getters_match_native_trimmed_geometry_history_and_archives() {
                     o["selected"] = serde_json::json!(0);
                 }
                 error = error.max(
-                    replay::check_with_face_sense(
-                        &restored,
-                        &archive,
-                        "after",
-                        family == "srf_pt_singular",
-                    )
-                    .0,
+                    replay::check_with_face_sense(&restored, &archive, "after", allow_ambiguous).0,
                 );
                 archive_objects = Some(restored.objects().len());
             } else {
@@ -106,14 +104,14 @@ fn corner_surface_getters_match_native_trimmed_geometry_history_and_archives() {
                 );
             }
             println!(
-                "SRF_PT_UI {}",
+                "{prefix} {}",
                 serde_json::json!({"id":row["id"],"maximum_coefficient_and_sample_error":error,"archive_objects":archive_objects,"face_sense_matches_native":face_sense_matches})
             );
             assert!(error <= 1e-6, "{} {error:e}", row["id"]);
             count += 1;
         }
     }
-    assert_eq!(count, 60);
+    assert_eq!(count, expected);
 }
 
 #[test]

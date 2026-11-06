@@ -26,6 +26,9 @@ def run(op,host,iterations,tolerance):
                 surface=g.Faces[0].UnderlyingSurface()
                 row.update(face_count=g.Faces.Count,surfaces=[host['_nurbs_surface_definition'](surface)],
                     singular=[bool(surface.IsSingular(i)) for i in range(4)],brep=host['_interchange_brep_record'](g,include_samples=False))
+                if case.get('diagnostics'):
+                    from srf_pt_diagnostics import record
+                    row['sdk']=record(g,host)
             rows.append(row)
         return rows
     try:

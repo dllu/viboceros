@@ -32,19 +32,33 @@ fn corner_surface_spaced_calculator_points_and_alias_keep_native_geometry() {
 
 #[test]
 fn corner_surfaces_match_native_charts_trims_topology_and_history() {
+    replay_families(
+        &[
+            "srf_pt_pilot",
+            "srf_pt_holdouts",
+            "srf_pt_precision",
+            "srf_pt_admission",
+            "srf_pt_singular",
+            "srf_pt_origin",
+        ],
+        60,
+        "SRF_PT_SCRIPT",
+    );
+}
+
+#[test]
+fn corner_surfaces_remote_admission_and_degenerate_orientation_followup() {
+    replay_families(&["srf_pt_followup"], 37, "SRF_PT_FOLLOWUP_SCRIPT");
+}
+
+fn replay_families(families: &[&str], expected: usize, prefix: &str) {
     let registry = CommandRegistry::with_builtins();
     let mut completed = 0;
-    for family in [
-        "srf_pt_pilot",
-        "srf_pt_holdouts",
-        "srf_pt_precision",
-        "srf_pt_admission",
-        "srf_pt_singular",
-        "srf_pt_origin",
-    ] {
+    for &family in families {
         let data = native::read(family);
         for row in data["results"].as_array().unwrap() {
             let v = &row["value"];
+            let allow_ambiguous = replay::FACE_SENSE_GAPS.contains(&row["id"].as_str().unwrap());
             let mut doc = native::setup(v);
             if v["success"] != true {
                 registry.execute(&mut doc, "Point 100,200,300").unwrap();
@@ -66,16 +80,15 @@ fn corner_surfaces_match_native_charts_trims_topology_and_history() {
                 row["id"]
             );
             let (mut error, face_sense_matches) =
-                replay::check_with_face_sense(&doc, v, "after", family == "srf_pt_singular");
+                replay::check_with_face_sense(&doc, v, "after", allow_ambiguous);
             if v["success"] == true {
                 assert_eq!(doc.undo_label(), Some("SrfPt"));
                 doc.undo().unwrap();
                 error = error.max(replay::check(&doc, v, "undo"));
                 assert!(doc.undo().unwrap().is_none());
                 doc.redo().unwrap();
-                error = error.max(
-                    replay::check_with_face_sense(&doc, v, "redo", family == "srf_pt_singular").0,
-                );
+                error =
+                    error.max(replay::check_with_face_sense(&doc, v, "redo", allow_ambiguous).0);
             } else {
                 assert!(!doc.can_undo());
                 assert!(doc.can_redo());
@@ -89,12 +102,12 @@ fn corner_surfaces_match_native_charts_trims_topology_and_history() {
                 );
             }
             println!(
-                "SRF_PT_SCRIPT {}",
+                "{prefix} {}",
                 serde_json::json!({"id":row["id"],"maximum_coefficient_and_sample_error":error,"face_sense_matches_native":face_sense_matches})
             );
             assert!(error <= 1e-6, "{} {error:e}", row["id"]);
             completed += 1;
         }
     }
-    assert_eq!(completed, 60);
+    assert_eq!(completed, expected);
 }

@@ -2,6 +2,7 @@
 use crate::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     GeometryError, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance,
+    curve_points_coincident,
 };
 #[path = "../../../third_party/opennurbs_rust/length.rs"]
 mod native_length;
@@ -37,15 +38,9 @@ impl Brep {
         p: [Point3; 3],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        const ZERO: f64 = 2.3283064365386963e-10;
         for i in 0..3 {
             for j in i + 1..3 {
-                if p[i]
-                    .to_array()
-                    .into_iter()
-                    .zip(p[j].to_array())
-                    .all(|(a, b)| (a - b).abs() <= ZERO)
-                {
+                if curve_points_coincident(p[i], p[j]) {
                     return Err(GeometryError::Degenerate {
                         context: "triangular surface corners coincide",
                     });
