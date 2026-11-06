@@ -26,7 +26,9 @@ class TwoViewEvidenceTests(unittest.TestCase):
     def test_validation_record_preserves_unqualified_geometry_and_all_source_hashes(self):
         from .report_curve_two_views import ROOT, build
         record = json.loads((ROOT / 'docs/curve-two-views-validation.json').read_text())
-        self.assertEqual(record, build(ROOT / 'docs/curve-two-views-proof'))
+        self.assertEqual(record, build(ROOT / 'docs/curve-two-views-proof',record.get('source_revision')))
+        from tools.verify_provenance import verify
+        self.assertGreaterEqual(verify(record),len(record['source_git_sha256']))
         self.assertFalse(record['command_registered'])
         self.assertFalse(record['full_native_parity'])
         self.assertEqual(record['model_epsilon'], 1e-6)

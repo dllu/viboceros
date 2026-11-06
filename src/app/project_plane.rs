@@ -5,67 +5,10 @@ use viboceros_command::{ObjectSelectionFilter, infinite_plane};
 use viboceros_document::ObjectId;
 use viboceros_geometry::Plane;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum PlaneMode {
-    Choose,
-    Rectangle,
-    ThreePoint,
-    Vertical,
-    Through,
-    Object,
-    AroundCurve,
-    Named,
-}
-
-impl PlaneMode {
-    pub(super) const fn point_hint(self, step: usize) -> &'static str {
-        match (self, step) {
-            (Self::Through, _) => "IP: pick the through point",
-            (Self::AroundCurve, _) => "IP: pick a point on the reference curve",
-            (_, 0) => "IP: pick the first corner",
-            (Self::Rectangle, _) => "IP: pick the opposite corner",
-            (_, 1) => "IP: pick the adjacent corner",
-            (Self::Vertical, _) => "IP: pick a height point",
-            _ => "IP: pick the third plane point",
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub(super) struct PlaneGetter {
-    mode: PlaneMode,
-    frame: Frame3,
-    points: Vec<Point3>,
-    curve: Option<ObjectId>,
-}
-impl PlaneGetter {
-    fn points_active(&self) -> bool {
-        matches!(
-            self.mode,
-            PlaneMode::Rectangle | PlaneMode::ThreePoint | PlaneMode::Vertical | PlaneMode::Through
-        ) || self.mode == PlaneMode::AroundCurve && self.curve.is_some()
-    }
-    pub(super) fn filter(&self) -> ObjectSelectionFilter {
-        if self.mode == PlaneMode::AroundCurve {
-            ObjectSelectionFilter::Curves
-        } else {
-            ObjectSelectionFilter::Any
-        }
-    }
-    pub(super) fn hint(&self) -> &'static str {
-        match self.mode {
-            PlaneMode::Choose => {
-                "IP: choose Object, Rectangle, 3Point, Vertical, ThroughPoint, AroundCurve, NamedCPlane or World/CPlane axes; Enter uses CPlaneXY"
-            }
-            PlaneMode::Object => {
-                "IP: select a planar object (id Face=index chooses a mesh/B-rep face)"
-            }
-            PlaneMode::Named => "IP: enter a saved CPlane name",
-            PlaneMode::AroundCurve if self.curve.is_none() => "IP: select the reference curve",
-            mode => mode.point_hint(self.points.len()),
-        }
-    }
-}
+mod points;
+mod reference;
+mod state;
+pub(super) use state::{PlaneGetter, PlaneMode};
 
 fn plane_value(plane: Plane) -> String {
     let [x, y, z] = plane.origin().to_array();
@@ -128,6 +71,15 @@ impl VibocerosApp {
         }
     }
     fn add_project_plane(&mut self, definition: String) {
+        if self
+            .intersection_prompt
+            .as_ref()
+            .and_then(|p| p.projection.as_ref())
+            .is_some_and(|p| p.is_interpolation())
+        {
+            self.finish_surface_interpolation_plane(&definition);
+            return;
+        }
         if let Some(partition) = self
             .intersection_prompt
             .as_mut()
@@ -197,6 +149,13 @@ impl VibocerosApp {
         ));
         self.log_intersection_prompt();
     }
+    fn accept_project_plane_frame(&mut self, frame: Frame3) {
+        if self.picking_surface_interpolation_plane() {
+            self.finish_surface_interpolation_frame(frame);
+        } else {
+            self.add_project_plane(plane_value(Plane::new(frame.origin(), frame.z_axis())));
+        }
+    }
     pub(super) fn begin_iplane_getter(&mut self) {
         let prompt = self.intersection_prompt.clone().unwrap();
         self.continue_project_plane(&prompt, "IP");
@@ -230,6 +189,9 @@ impl VibocerosApp {
             return false;
         };
         if word == "cancel" {
+            if self.discard_surface_interpolation_plane() {
+                return true;
+            }
             self.cancel_interactive_command(true);
             return true;
         }
@@ -245,6 +207,9 @@ impl VibocerosApp {
             return true;
         }
         if input.is_empty() {
+            if self.discard_surface_interpolation_plane() {
+                return true;
+            }
             if getter.mode == PlaneMode::Choose {
                 let p = infinite_plane::axis_plane(
                     "CPlaneXY",
@@ -252,7 +217,7 @@ impl VibocerosApp {
                 )
                 .unwrap();
                 self.add_project_plane(plane_value(p));
-            } else if prompt.projection.as_ref().is_some_and(|p| p.is_iplane()) {
+            } else if prompt.projection.as_ref().is_some_and(|p| p.single_plane()) {
                 self.begin_iplane_getter();
             } else {
                 self.intersection_prompt
@@ -269,9 +234,9 @@ impl VibocerosApp {
             let result = self
                 .named_cplanes
                 .get(input.trim_matches('"'))
-                .map(|p| Plane::new(p.plane.origin(), p.plane.z_axis()));
+                .map(|p| p.plane);
             match result {
-                Ok(p) => self.add_project_plane(plane_value(p)),
+                Ok(p) => self.accept_project_plane_frame(p),
                 Err(error) => self.push_log(format!("Error: {error}")),
             }
             return true;
@@ -280,7 +245,16 @@ impl VibocerosApp {
             input,
             self.viewports[self.active_viewport].construction_plane(),
         ) {
-            self.add_project_plane(plane_value(plane));
+            if self.picking_surface_interpolation_plane() {
+                let frame = infinite_plane::axis_frame(
+                    input,
+                    self.viewports[self.active_viewport].construction_plane(),
+                )
+                .unwrap();
+                self.accept_project_plane_frame(frame);
+            } else {
+                self.add_project_plane(plane_value(plane));
+            }
             return true;
         }
         let mode = match word.as_str() {
@@ -361,155 +335,5 @@ impl VibocerosApp {
         self.command_input.clear();
         self.log_intersection_prompt();
         true
-    }
-    fn accept_project_object_plane(&mut self, id: ObjectId, face: Option<usize>) {
-        match infinite_plane::object_plane(&self.document, id, face) {
-            Ok(_) => self.add_project_plane(format!(
-                "Object:{id}{}",
-                face.map(|n| format!(":{n}")).unwrap_or_default()
-            )),
-            Err(error) => self.push_log(format!("Error: {error}")),
-        }
-    }
-    pub(super) fn pick_project_plane_reference(&mut self, ids: &[ObjectId]) -> bool {
-        let Some(getter) = self
-            .intersection_prompt
-            .as_ref()
-            .and_then(|p| p.plane_getter())
-        else {
-            return false;
-        };
-        if getter.points_active() {
-            return true;
-        }
-        if !matches!(
-            getter.mode,
-            PlaneMode::Choose | PlaneMode::Object | PlaneMode::AroundCurve
-        ) {
-            return true;
-        }
-        let [id] = ids else {
-            self.push_log("Select one infinite-plane reference".into());
-            return true;
-        };
-        if getter.mode != PlaneMode::AroundCurve {
-            self.accept_project_object_plane(*id, None);
-            return true;
-        }
-        let valid = self.document.is_object_selectable(*id)
-            && self
-                .document
-                .object(*id)
-                .is_some_and(|o| o.geometry().curve_ref().is_some());
-        if valid {
-            self.intersection_prompt
-                .as_mut()
-                .unwrap()
-                .plane_getter_mut()
-                .unwrap()
-                .curve = Some(*id);
-            self.update_project_plane_marker();
-            self.log_intersection_prompt();
-        } else {
-            self.push_log("Select a reference curve".into());
-        }
-        true
-    }
-    pub(super) fn accept_project_plane_point(&mut self, point: Point3) -> bool {
-        let Some(mut getter) = self
-            .intersection_prompt
-            .as_ref()
-            .and_then(|p| p.plane_getter().cloned())
-        else {
-            return false;
-        };
-        let result = (|| -> Result<Option<String>, String> {
-            let tolerance = self.document.tolerance();
-            if getter.mode == PlaneMode::AroundCurve {
-                let id = getter.curve.unwrap();
-                let curve = self
-                    .document
-                    .object(id)
-                    .and_then(|o| o.geometry().curve_ref())
-                    .ok_or("Reference curve is unavailable")?;
-                let parameter = curve
-                    .closest_parameter(point, tolerance)
-                    .map_err(|e| e.to_string())?;
-                infinite_plane::around_curve(&self.document, id, parameter)
-                    .map_err(|e| e.to_string())?;
-                return Ok(Some(format!("AroundCurve:{id}:{parameter}")));
-            }
-            let frame = match (getter.mode, getter.points.as_slice()) {
-                (PlaneMode::Through, _) => Some(getter.frame.with_origin(point)),
-                (_, []) => {
-                    getter.points.push(point);
-                    None
-                }
-                (PlaneMode::Rectangle, [start]) => {
-                    let p = getter
-                        .frame
-                        .with_origin(*start)
-                        .coordinates_of(point)
-                        .map_err(|e| e.to_string())?;
-                    if p[0].abs() <= tolerance.absolute() || p[1].abs() <= tolerance.absolute() {
-                        return Err("Rectangle needs nonzero width and height".into());
-                    }
-                    Some(getter.frame.with_origin(*start))
-                }
-                (_, [start]) => {
-                    start.direction_to(point).map_err(|e| e.to_string())?;
-                    if getter.mode == PlaneMode::Vertical {
-                        viboceros_command::construction_plane::vertical(
-                            getter.frame,
-                            *start,
-                            point,
-                            tolerance,
-                        )
-                        .map_err(|e| e.to_string())?;
-                    }
-                    getter.points.push(point);
-                    None
-                }
-                (PlaneMode::Vertical, [start, end]) => {
-                    let frame = viboceros_command::construction_plane::vertical(
-                        getter.frame,
-                        *start,
-                        *end,
-                        tolerance,
-                    )
-                    .map_err(|e| e.to_string())?;
-                    let height = frame.coordinates_of(point).map_err(|e| e.to_string())?[1];
-                    if height.abs() <= tolerance.absolute() {
-                        return Err("Vertical rectangle needs nonzero height".into());
-                    }
-                    Some(frame)
-                }
-                (PlaneMode::ThreePoint, [start, end]) => Some(
-                    Frame3::try_from_points(*start, *end, point, tolerance)
-                        .map_err(|e| e.to_string())?,
-                ),
-                _ => return Err("Choose an infinite plane point mode".into()),
-            };
-            Ok(frame.map(|f| plane_value(Plane::new(f.origin(), f.z_axis()))))
-        })();
-        match result {
-            Ok(Some(definition)) => {
-                self.add_project_plane(definition);
-                true
-            }
-            Ok(None) => {
-                self.intersection_prompt
-                    .as_mut()
-                    .unwrap()
-                    .set_plane_getter(Some(getter));
-                self.update_project_plane_marker();
-                self.log_intersection_prompt();
-                true
-            }
-            Err(error) => {
-                self.push_log(format!("Error: {error}"));
-                false
-            }
-        }
     }
 }

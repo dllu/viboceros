@@ -77,7 +77,7 @@ fn project_rectangle_vertical_and_through_point_modes_use_shared_drafting() {
         ),
         (
             "Vertical",
-            vec!["w0,0,0", "w10,0,0", "w1,0,1"],
+            vec!["w0,0,0", "w10,0,0"],
             "0,1,0",
             point(5., 0., -3.),
         ),

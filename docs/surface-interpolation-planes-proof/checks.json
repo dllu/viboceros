@@ -1,0 +1,353 @@
+[
+  {
+    "name": "surface-sdk",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--test",
+      "surface_interpolation_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 278.51710407299106,
+    "log": "docs/surface-interpolation-planes-proof/surface-sdk.log.gz"
+  },
+  {
+    "name": "commands-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "surface_interpolation_plane",
+      "--test",
+      "surface_interpolation_plane_native",
+      "--test",
+      "surface_interpolation_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 47.55592931700812,
+    "log": "docs/surface-interpolation-planes-proof/commands-portable.log.gz"
+  },
+  {
+    "name": "interpolation-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "surface_interpolation",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 110.43600628399872,
+    "log": "docs/surface-interpolation-planes-proof/interpolation-ui-portable.log.gz"
+  },
+  {
+    "name": "project-picker-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "project_plane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.1511617659998592,
+    "log": "docs/surface-interpolation-planes-proof/project-picker-portable.log.gz"
+  },
+  {
+    "name": "iplane-picker-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "app::tests::iplane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.12478395199286751,
+    "log": "docs/surface-interpolation-planes-proof/iplane-picker-portable.log.gz"
+  },
+  {
+    "name": "boolean-picker-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "boolean_split_plane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.4717900619871216,
+    "log": "docs/surface-interpolation-planes-proof/boolean-picker-portable.log.gz"
+  },
+  {
+    "name": "planar-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "planar_mesh_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 14.338352655991912,
+    "log": "docs/surface-interpolation-planes-proof/planar-command-portable.log.gz"
+  },
+  {
+    "name": "planar-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--bin",
+      "viboceros",
+      "planar_mesh",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 16.717433493002318,
+    "log": "docs/surface-interpolation-planes-proof/planar-ui-portable.log.gz"
+  },
+  {
+    "name": "commands-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "surface_interpolation_plane",
+      "--test",
+      "surface_interpolation_plane_native",
+      "--test",
+      "surface_interpolation_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 48.401754459002404,
+    "log": "docs/surface-interpolation-planes-proof/commands-native.log.gz"
+  },
+  {
+    "name": "interpolation-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "surface_interpolation",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 130.3648299320048,
+    "log": "docs/surface-interpolation-planes-proof/interpolation-ui-native.log.gz"
+  },
+  {
+    "name": "project-picker-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "project_plane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.18720440000470262,
+    "log": "docs/surface-interpolation-planes-proof/project-picker-native.log.gz"
+  },
+  {
+    "name": "iplane-picker-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "app::tests::iplane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.14901709400874097,
+    "log": "docs/surface-interpolation-planes-proof/iplane-picker-native.log.gz"
+  },
+  {
+    "name": "boolean-picker-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "boolean_split_plane",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.4949645870074164,
+    "log": "docs/surface-interpolation-planes-proof/boolean-picker-native.log.gz"
+  },
+  {
+    "name": "planar-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "planar_mesh_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 15.02697581400571,
+    "log": "docs/surface-interpolation-planes-proof/planar-command-native.log.gz"
+  },
+  {
+    "name": "planar-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "--bin",
+      "viboceros",
+      "planar_mesh",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "elapsed_seconds": 16.933822848004638,
+    "log": "docs/surface-interpolation-planes-proof/planar-ui-native.log.gz"
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "elapsed_seconds": 19.261451177997515,
+    "log": "docs/surface-interpolation-planes-proof/clippy-portable.log.gz"
+  },
+  {
+    "name": "clippy-all-features",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "elapsed_seconds": 19.35030676900351,
+    "log": "docs/surface-interpolation-planes-proof/clippy-all-features.log.gz"
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "status": 0,
+    "elapsed_seconds": 7.111682935996214,
+    "log": "docs/surface-interpolation-planes-proof/fmt.log.gz"
+  },
+  {
+    "name": "geometry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "surface_interpolation"
+    ],
+    "status": 0,
+    "log": "docs/surface-interpolation-planes-proof/geometry.log.gz"
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_fixed_requests_and_all_frozen_producers",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_native_sources_history_and_acknowledged_escape",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_native_patch_clamping_empty_document_and_relative_coordinate_space",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_only_fixed_bounded_private_requests_can_launch",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_escape_driver_uses_only_owned_windows_and_requires_matching_receipts",
+      "tools.rhino_oracle.test_surface_interpolate_plane.PlaneInterpolationTests.test_staged_helper_closure",
+      "tools.rhino_oracle.test_surface_interpolation",
+      "tools.rhino_oracle.test_project_plane",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_curve_two_views",
+      "tools.rhino_oracle.test_planar_mesh"
+    ],
+    "status": 0,
+    "elapsed_seconds": 0.7475314039911609,
+    "log": "docs/surface-interpolation-planes-proof/python.log.gz"
+  }
+]

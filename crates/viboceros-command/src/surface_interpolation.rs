@@ -2,7 +2,9 @@
 use super::*;
 use crate::orient_surface::Target;
 use viboceros_geometry::{MAX_CURVE_INTERPOLATION_POINTS, Point2, SurfaceInterpolatedCurve};
-pub const USAGE: &str = "InterpCrvOnSrf points... [Surface=id] [Face=index] [Close=Yes|No] [AutoClose=Yes|No] [PersistentClose=Yes|No]";
+mod support;
+pub use support::Support;
+pub const USAGE: &str = "InterpCrvOnSrf points... [Surface=id Face=index|InfinitePlane=definition] [Close=Yes|No] [AutoClose=Yes|No] [PersistentClose=Yes|No]";
 pub const MAX_POINTS: usize = MAX_CURVE_INTERPOLATION_POINTS;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
@@ -21,6 +23,7 @@ impl Default for Options {
 pub struct Reference {
     pub surface: Option<ObjectId>,
     pub face: Option<usize>,
+    pub plane: Option<String>,
     pub close: bool,
 }
 pub fn input<'a>(
@@ -46,6 +49,7 @@ pub fn input<'a>(
                     refs.surface = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?)
                 }
                 "face" => refs.face = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?),
+                "infiniteplane" => refs.plane = Some(value.into()),
                 "close" => refs.close = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
                 "autoclose" => {
                     options.auto_close = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?
@@ -60,20 +64,35 @@ pub fn input<'a>(
             points.push(*arg);
         }
     }
+    if refs.plane.is_some() && (refs.surface.is_some() || refs.face.is_some()) {
+        return Err(CommandError::Usage(USAGE));
+    }
     Ok((points, refs, options))
+}
+impl Reference {
+    pub fn target(&self, doc: &Document, cplane: Frame3) -> Result<Option<Support>, CommandError> {
+        if let Some(plane) = &self.plane {
+            return Ok(Some(Support::capture_plane(doc, plane, cplane)?));
+        }
+        self.surface
+            .or_else(|| crate::short_path::selected_target(doc))
+            .map(|id| Target::capture(doc, id, self.face).map(Support::from))
+            .transpose()
+    }
 }
 #[derive(Clone, Debug)]
 pub struct Plan {
-    pub target: Target,
+    pub target: Support,
     pub interpolation: SurfaceInterpolatedCurve,
 }
 impl Plan {
     pub fn prepare(
         doc: &Document,
-        target: Target,
+        target: impl Into<Support>,
         points: &[Point3],
         closed: bool,
     ) -> Result<Self, CommandError> {
+        let target = target.into();
         if !target.current(doc) {
             return Err(CommandError::Usage(
                 "Select the interpolation surface again",
@@ -82,19 +101,7 @@ impl Plan {
         if points.len() > MAX_POINTS {
             return Err(CommandError::Usage("Too many interpolation points"));
         }
-        let uv = points
-            .iter()
-            .map(|p| {
-                let l = target.location(*p, false)?;
-                Ok(Point2::try_from(l.uv)?)
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        let interpolation = viboceros_geometry::try_interpolate_curve_on_surface(
-            &target.surface,
-            &uv,
-            closed,
-            doc.tolerance(),
-        )?;
+        let interpolation = target.interpolate(doc, points, closed)?;
         Ok(Self {
             target,
             interpolation,
@@ -136,6 +143,14 @@ impl Command for InterpolateCurveOnSurfaceCommand {
         "InterpCrvOnSrf"
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
+        self.run_in_context(doc, args, CommandContext::default())
+    }
+    fn run_in_context(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
         let (args, reference, options) = input(args, Options::default())?;
         let mut points = Vec::new();
         let mut consumed = 0;
@@ -147,14 +162,12 @@ impl Command for InterpolateCurveOnSurfaceCommand {
                 return Err(CommandError::Usage(USAGE));
             }
         }
-        let id = reference
-            .surface
-            .or_else(|| crate::short_path::selected_target(doc))
+        let target = reference
+            .target(doc, context.construction_plane)?
             .ok_or(CommandError::Usage(USAGE))?;
-        let target = Target::capture(doc, id, reference.face)?;
         let auto_closed = options.auto_close && points.len() >= 4 && {
-            let first = target.location(points[0], false)?.point;
-            let last = target.location(*points.last().unwrap(), false)?.point;
+            let first = target.point(points[0])?;
+            let last = target.point(*points.last().unwrap())?;
             first.distance_to(last)? <= 1.490116119385e-8
         };
         Plan::prepare(

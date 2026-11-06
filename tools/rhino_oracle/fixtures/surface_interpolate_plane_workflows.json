@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_xy_on",
+      "case": "managed_bounded_xy_on"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_xy_off",
+      "case": "managed_bounded_xy_off"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_two",
+      "case": "managed_bounded_two"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_close",
+      "case": "managed_bounded_close"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_vertical",
+      "case": "managed_bounded_vertical"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_yz",
+      "case": "managed_bounded_yz"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_zx",
+      "case": "managed_bounded_zx"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_through",
+      "case": "managed_bounded_through"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_three",
+      "case": "managed_bounded_three"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_oblique",
+      "case": "managed_bounded_oblique"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_object",
+      "case": "managed_bounded_object"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_around",
+      "case": "managed_bounded_around"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_named",
+      "case": "managed_bounded_named"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_cplane",
+      "case": "managed_bounded_cplane"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_managed_bounded_undo",
+      "case": "managed_bounded_undo"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_control_bounded_cancel_plane",
+      "case": "control_bounded_cancel_plane"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_control_bounded_cancel_three",
+      "case": "control_bounded_cancel_three"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_control_bounded_cancel_curve",
+      "case": "control_bounded_cancel_curve"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_control_bounded_enter",
+      "case": "control_bounded_enter"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_control_bounded_collinear",
+      "case": "control_bounded_collinear"
+    }
+  ]
+}

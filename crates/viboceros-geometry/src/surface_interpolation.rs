@@ -7,6 +7,8 @@ use crate::{
     remap_scalar, surface_geodesic::chart_closes,
 };
 const MAX_SEAMS: usize = 1024;
+mod plane;
+pub use plane::try_interpolate_curve_on_plane;
 #[derive(Clone, Debug)]
 pub struct SurfaceInterpolatedCurve {
     pub curve: NurbsCurve,

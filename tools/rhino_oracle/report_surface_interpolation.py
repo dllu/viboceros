@@ -13,7 +13,9 @@ SOURCES=[
     'crates/viboceros-command/src/surface_interpolation.rs',
     'crates/viboceros-command/tests/surface_interpolation_native.rs',
     'crates/viboceros-command/tests/support/surface_interpolation.rs',
-    'src/app/surface_interpolation.rs','src/app/tests/surface_interpolation.rs',
+    'src/app/surface_interpolation.rs','src/app/surface_interpolation/draft.rs',
+    'src/app/surface_interpolation/plane.rs','crates/viboceros-command/src/surface_interpolation/support.rs',
+    'src/app/tests/surface_interpolation.rs',
     'src/app.rs','src/viewport.rs',
     'tools/rhino_oracle/surface_interpolate_probe.py',
     'tools/rhino_oracle/surface_interpolate_command_probe.py',
@@ -52,7 +54,7 @@ def summarize(log):
         maximum_sample_difference=max(r.get('maximum_bidirectional_sample_error',0)for group in [sdk,command,getter]for r in group['cases']),
         maximum_surface_image_bound=max(r.get('surface_image_bound',0)for r in sdk['cases']),
         guarantees=['Immutable sources, interpolation locations within model tolerance and a continuous image certificate within half that tolerance.','Native UV chord metric, periodic covering-space winding, private support extension for open-boundary overshoot.','Captured command geometry, trim-constrained points, selection, current output layer and Undo/Redo.'],
-        limits=['The captured native build rejects the documented AutoClose and PersistentClose option tokens. Those option cases remain unqualified; local tests cover their behavior.','The World SDK overload differs from UV seam unwrapping. This report qualifies the UV SDK overload and public command.','The image certificate bounds position, not curvature; spatial fitting uses cubic endpoint tangents.','Edit history, InfinitePlane point input and unrestricted singular transitions are not implemented.'],
+        limits=['The captured native build rejects the documented AutoClose and PersistentClose option tokens. Those option cases remain unqualified; local tests cover their behavior.','The World SDK overload differs from UV seam unwrapping. This report qualifies the UV SDK overload and public command.','The image certificate bounds position, not curvature; spatial fitting uses cubic endpoint tangents.','This record covers finite faces; InfinitePlane has separate qualification. Edit history and unrestricted singular transitions remain pending.'],
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES})
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('logs',type=Path,nargs='+');a=p.parse_args()

@@ -250,6 +250,8 @@ mod subcurve_preview;
 mod surface_curve_offset;
 mod surface_flow;
 mod surface_interpolation;
+mod surface_interpolation_plane;
+mod surface_interpolation_plane_native;
 mod sweep_two_rails;
 mod taper;
 mod transform_copy;

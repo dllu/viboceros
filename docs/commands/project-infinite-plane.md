@@ -14,8 +14,8 @@ The picker offers:
 - `Rectangle`: first and opposite corners define a plane parallel to the
   construction plane through the first corner.
 - `3Point`: three noncollinear points define the plane.
-- `Vertical`: first and adjacent corners establish the vertical plane; a third
-  point supplies its nonzero height.
+- `Vertical`: two distinct points establish a plane perpendicular to the
+  construction plane.
 - `ThroughPoint`: one point defines a plane parallel to the captured CPlane.
 - `Object`: select a planar curve, surface or single polygon mesh. For a mesh
   or multi-face B-rep, type `object-id Face=index` to choose a planar face.
@@ -63,7 +63,9 @@ native getter parity and comparative performance remain unqualified.
 
 The current picker uses a text choice and typed named-plane selection. Named
 CPlane axis-icon/list picking and clipping-plane objects are pending.
-[Standalone IPlane](iplane.md) shares this picker and creates intersections. These local behaviors have not been captured from a live Rhino getter.
+[Standalone IPlane](iplane.md) shares this picker and creates intersections.
+Shared plane construction is captured through [InterpCrvOnSrf](../surface-interpolation-planes.md);
+Project and IPlane still need their own native getter qualification.
 
 The Python `project_curve_plane` operation accepts a NURBS `curve`, world
 `origin`, nonzero `normal` and nonparallel `direction`. It returns complete
@@ -72,8 +74,8 @@ projected curve definitions. Its SDK counterpart uses public
 and rejects the SDK's identity fallback. Parallel comparison inputs decline;
 the full Project command still treats parallel targets as misses. Four recipes
 retain native and portable outputs, checked against independent exact rational
-control-point projections. Fresh Rhino output remains unavailable because of
-the diagnosed Wine security-library failure.
+control-point projections. This projection corpus has not been refreshed for
+the current Rhino setup.
 
 ```sh
 cargo test -p viboceros-command --features native-smlib project::tests

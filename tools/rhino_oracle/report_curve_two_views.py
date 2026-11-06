@@ -5,13 +5,14 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 FAMILIES = ['', '_discovery', '_audit', '_fit_audit', '_surface_audit']
 
 
-def build(proof):
+def build(proof, source_revision=None):
     def read(name):
         return gzip.decompress((proof / (name + '.log.gz')).read_bytes()).decode()
 
@@ -77,7 +78,7 @@ def build(proof):
                     'tools/rhino_oracle/fixtures/curve_two_views*.json']:
         sources.update(str(p.relative_to(ROOT)) for p in ROOT.glob(pattern))
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    return dict(
+    result = dict(
         scope='Experimental two-view geometry and immutable preparation; command intentionally unregistered.',
         baseline_revision='07aba3100ac71b56e7646aaea8c2e6f6de826d03', command_registered=False, model_epsilon=1e-6,
         full_native_parity=False, continuous_coverage_qualified=False, performance_qualified=False,
@@ -97,13 +98,26 @@ def build(proof):
         source_sha256={p: sha(ROOT / p) for p in sorted(sources)},
         evidence_sha256={str(p.relative_to(ROOT)): sha(p) for p in sorted(proof.iterdir()) if p.is_file()},
     )
+    if source_revision is not None:
+        # This is a historical experiment. Later features must not relabel its
+        # old test logs as validation of the current shared source files.
+        if re.fullmatch(r'[0-9a-f]{40}', source_revision) is None:
+            raise ValueError('full replay source revision required')
+        result.pop('source_sha256')
+        result['source_revision'] = source_revision
+        result['source_git_sha256'] = {
+            source_revision + ':' + p: hashlib.sha256(subprocess.run(
+                ['git','cat-file','blob',source_revision+':'+p],cwd=ROOT,
+                check=True,capture_output=True).stdout).hexdigest() for p in sorted(sources)}
+    return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--proof-dir', type=Path, default=ROOT / 'docs/curve-two-views-proof')
+    parser.add_argument('--source-revision', default=None)
     args = parser.parse_args()
-    (ROOT / 'docs/curve-two-views-validation.json').write_text(json.dumps(build(args.proof_dir), indent=2, allow_nan=False) + '\n')
+    (ROOT / 'docs/curve-two-views-validation.json').write_text(json.dumps(build(args.proof_dir,args.source_revision), indent=2, allow_nan=False) + '\n')
 
 
 if __name__ == '__main__':

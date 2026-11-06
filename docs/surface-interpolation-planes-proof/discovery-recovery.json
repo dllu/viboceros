@@ -1,0 +1,26 @@
+[
+  {
+    "case": "interp_plane_cancel_plane",
+    "elapsed": 2.0707726630062098,
+    "action": "Escape",
+    "owned_pid": 1638989,
+    "private_display": ":99",
+    "note": "Discovery recovery only; excluded from final cancellation qualification."
+  },
+  {
+    "case": "interp_plane_cancel_three_point",
+    "elapsed": 4.340805693005677,
+    "action": "Escape",
+    "owned_pid": 1638989,
+    "private_display": ":99",
+    "note": "Discovery recovery only; excluded from final cancellation qualification."
+  },
+  {
+    "case": "interp_plane_cancel_curve",
+    "elapsed": 6.660833752001054,
+    "action": "Escape",
+    "owned_pid": 1638989,
+    "private_display": ":99",
+    "note": "Discovery recovery only; excluded from final cancellation qualification."
+  }
+]

@@ -26,6 +26,34 @@ pub fn axis_plane(value: &str, cplane: Frame3) -> Option<Plane> {
     Some(Plane::new(frame.origin(), normal))
 }
 
+/// Retain the selected plane's axes for consumers with finite UV extents.
+pub fn axis_frame(value: &str, cplane: Frame3) -> Option<Frame3> {
+    let value = value.trim_start_matches('_').to_ascii_lowercase();
+    let (frame, axis) = if let Some(axis) = value.strip_prefix("world") {
+        (construction_plane::WorldPlane::Top.frame(), axis)
+    } else {
+        (cplane, value.strip_prefix("cplane")?)
+    };
+    match axis {
+        "xy" => Some(frame),
+        "yz" => Frame3::try_from_unit_directions(
+            frame.origin(),
+            frame.y_axis(),
+            frame.z_axis(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .ok(),
+        "zx" => Frame3::try_from_unit_directions(
+            frame.origin(),
+            frame.z_axis(),
+            frame.x_axis(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .ok(),
+        _ => None,
+    }
+}
+
 pub fn object_plane(
     document: &Document,
     id: ObjectId,

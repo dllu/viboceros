@@ -1,7 +1,7 @@
 """Managed UI delegates drive bounded public getters while Python awaits RunScript."""
 import json,os
 
-def drive(op,host,guides,command="Conic"):
+def drive(op,host,guides,command="Conic",start_script=None):
     if command not in ("TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     if command=='InsertPoint' and op.get('view_target_offset_z'):
@@ -249,7 +249,7 @@ def drive(op,host,guides,command="Conic"):
         with environment(dict(persistent_snaps=op.get('persistent_snaps',[])if command=='Catenary'else[]),host):
             aid=R.ApplicationSettings.ModelAidSettings
             snap_settings=dict(enabled=bool(aid.Osnap),modes=int(aid.OsnapModes),project_to_cplane=bool(aid.ProjectSnapToCPlane),capture_radius=int(aid.OsnapPickboxRadius))
-            returned=R.RhinoApp.RunScript(('_-'+command if command in('ArrayCrv','TriangulateNonPlanarQuads')else '_'+command)+' _Pause',True)
+            returned=R.RhinoApp.RunScript(start_script if start_script is not None else ('_-'+command if command in('ArrayCrv','TriangulateNonPlanarQuads')else '_'+command)+' _Pause',True)
     finally:
         state[1]=0;timer.Dispose();timeout.Dispose()
         if mouse is not None:mouse.Enabled=False

@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_world_xy",
+      "case": "world_xy"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_world_yz",
+      "case": "world_yz"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_through",
+      "case": "through"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_three_point",
+      "case": "three_point"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_vertical",
+      "case": "vertical"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_default",
+      "case": "default"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_close",
+      "case": "close"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_undo",
+      "case": "undo"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_cancel_plane",
+      "case": "cancel_plane"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_cancel_three_point",
+      "case": "cancel_three_point"
+    },
+    {
+      "op": "surface_interpolate_plane",
+      "id": "interp_plane_cancel_curve",
+      "case": "cancel_curve"
+    }
+  ]
+}

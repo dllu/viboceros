@@ -1196,6 +1196,11 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('Grip aliases require a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'surface_interpolate_plane' for op in request.get('operations', [])):
+            from .surface_interpolate_plane_input import PlaneKeyboard
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Plane interpolation captures require a private Rhino settings scheme')
+            interaction = PlaneKeyboard(request)
         if any(op.get('op') == 'smooth_workflow' for op in request.get('operations', [])):
             from .smooth_workflow_probe import validate_request
             if self.settings_scheme is None:
@@ -2191,6 +2196,8 @@ Rhino.RhinoApp.Idle += execute_owned_controls
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino", request)
+        if any(op.get('op') == 'surface_interpolate_plane' for op in request.get('operations', [])):
+            interaction.record_diagnostics(response)
         if any(op.get("op") == "scale_by_plane" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)
         if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview','maelstrom_preview','scale_nu_reference') for op in request.get('operations', [])):

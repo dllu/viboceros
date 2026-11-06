@@ -3,6 +3,9 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn cancel_current_prompt_or_selection(&mut self) {
+        if self.discard_surface_interpolation_plane() {
+            return;
+        }
         if self.discard_curve_boolean_subcurve() {
             return;
         }

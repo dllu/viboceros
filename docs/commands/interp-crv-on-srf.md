@@ -1,7 +1,8 @@
 # InterpCrvOnSrf
 
 Enter `InterpCrvOnSrf`, select a surface or B-rep face, and pick or type points.
-A single preselected surface is accepted. Enter finishes; `Close` finishes a
+A single preselected surface is accepted. Type `IP`, `IPlane` or `InfinitePlane`
+at surface selection to define a temporary plane instead. Enter finishes; `Close` finishes a
 closed draft and `Undo` removes the last point. Escape discards the draft and
 preserves Redo. Points support relative coordinates and document units.
 
@@ -42,7 +43,8 @@ trimmed point constraints and boundary overshoot, is recorded in
 The installed Rhino 8.32 build reports AutoClose and PersistentClose as unknown
 options, although the current manual documents them. Their option behavior is
 covered by local tests and is not marked as native-qualified. `Edit` history
-and `InfinitePlane` point input are not implemented.
+is not implemented. [InfinitePlane input](../surface-interpolation-planes.md)
+has separate command, getter and archive qualification.
 
 References: [Rhino command manual](https://docs.mcneel.com/rhino/8/help/en-us/commands/interpcrvonsrf.htm),
 [public UV interpolation API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Surface_InterpolatedCurveOnSurfaceUV_1.htm).

@@ -17,6 +17,7 @@ pub(super) enum PlaneOperation {
     Project,
     Pull,
     IPlane,
+    InterpolateCurveOnSurface,
 }
 /// Shared source selection and plane getter state for Project, Pull and IPlane.
 #[derive(Clone, Debug)]
@@ -35,16 +36,23 @@ impl ProjectSession {
     pub(super) fn is_pull(&self) -> bool {
         self.operation == PlaneOperation::Pull
     }
+    pub(super) fn is_interpolation(&self) -> bool {
+        self.operation == PlaneOperation::InterpolateCurveOnSurface
+    }
+    pub(super) fn single_plane(&self) -> bool {
+        self.is_iplane() || self.is_interpolation()
+    }
     pub(super) fn name(&self) -> &'static str {
         match self.operation {
             PlaneOperation::Project => "Project",
             PlaneOperation::Pull => "Pull",
             PlaneOperation::IPlane => "IPlane",
+            PlaneOperation::InterpolateCurveOnSurface => "InterpCrvOnSrf",
         }
     }
     fn command(&self) -> String {
-        if self.is_iplane() {
-            return "IPlane".into();
+        if self.single_plane() {
+            return self.name().into();
         }
         if self.is_pull() {
             return self.options.pull_command();
@@ -270,6 +278,19 @@ impl VibocerosApp {
         true
     }
     pub(super) fn log_project_prompt(&mut self, prompt: &TwoSetsPrompt) {
+        if prompt
+            .projection
+            .as_ref()
+            .is_some_and(|p| p.is_interpolation())
+        {
+            self.push_log(format!(
+                "InterpCrvOnSrf: {}",
+                prompt
+                    .plane_getter()
+                    .map_or("Select a surface or face", |p| p.interpolation_hint())
+            ));
+            return;
+        }
         self.push_log(format!(
             "{}: {}",
             prompt.projection.as_ref().unwrap().command(),
@@ -290,6 +311,21 @@ impl VibocerosApp {
         input: &str,
     ) -> bool {
         if self.continue_project_plane(&prompt, input) {
+            return true;
+        }
+        if prompt.projection.as_ref().unwrap().is_interpolation() {
+            if self.commands.recognizes(
+                input
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("")
+                    .trim_start_matches(['_', '-']),
+            ) {
+                self.cancel_interactive_command(false);
+                return false;
+            }
+            self.log_intersection_prompt();
+            self.command_input.clear();
             return true;
         }
         if !prompt.projection.as_ref().unwrap().is_iplane()

@@ -1,0 +1,462 @@
+{
+  "scope": "InterpCrvOnSrf pseudo-infinite plane input, shared getter, immutable support and atomic history.",
+  "implementation_revision": null,
+  "baseline_revision": "b39bcb3988b3a367012b67606ab7ef3ac45e3327",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_native_distance_qualified": false,
+  "performance_qualified": false,
+  "native_observations": 43,
+  "qualified_workflows": 23,
+  "script_constructions": 18,
+  "interactive_controls": 5,
+  "maximum_sample_difference": 9.15589646315421e-07,
+  "interpolation_plane_control_hull_bound": 5e-07,
+  "bidirectional_samples_per_nonempty_span": 9,
+  "execution": "Native captures used private Xvfb displays and owned-window input. Application replays are windowless Rust tests.",
+  "captures": [
+    {
+      "family": "discovery",
+      "observations": 11,
+      "raw_sha256": "cfe49154715e2e985e97f39ed57d9e743352fd58cf841365f81ecc16ce5a8105",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "managed",
+      "observations": 4,
+      "raw_sha256": "1e2b337cecaaede053ec9b94056c583ecfc2a6e210ec1f057c5dee889f13eebe",
+      "engine_version": "8.32.26160.13001",
+      "role": "exploration"
+    },
+    {
+      "family": "bounded",
+      "observations": 5,
+      "raw_sha256": "a92594ab859c8ec5b9c508960ceb1c91268ad6a1c5d5d67c3f6a7f17600c19e0",
+      "engine_version": "8.32.26160.13001",
+      "role": "confirmation"
+    },
+    {
+      "family": "workflows",
+      "observations": 20,
+      "raw_sha256": "4b0496f88e29c616c4919e998b78bc50bf972425167de6d44aef1e3fb8b035da",
+      "engine_version": "8.32.26160.13001",
+      "role": "qualification"
+    },
+    {
+      "family": "audit",
+      "observations": 3,
+      "raw_sha256": "ff815f209968de2f7f31a67f7e76f08dc952059863d8d76e52ea014a39bd4aa0",
+      "engine_version": "8.32.26160.13001",
+      "role": "qualification"
+    }
+  ],
+  "cases": [
+    {
+      "id": "interp_plane_managed_bounded_xy_on",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_xy_off",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_two",
+      "success": true,
+      "portable_script_error": 0.0,
+      "portable_getter_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_managed_bounded_close",
+      "success": true,
+      "portable_script_error": 4.993453426193277e-07,
+      "portable_getter_error": 4.993453426193277e-07,
+      "archive_objects": 2,
+      "native_script_error": 4.993453426193277e-07,
+      "native_getter_error": 4.993453426193277e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_vertical",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957498582039e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957498582039e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_yz",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_zx",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_through",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_three",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_oblique",
+      "success": true,
+      "portable_script_error": 4.2090226928026085e-07,
+      "portable_getter_error": 4.209022675037253e-07,
+      "archive_objects": 2,
+      "native_script_error": 4.2090226928026085e-07,
+      "native_getter_error": 4.209022675037253e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_object",
+      "success": true,
+      "portable_script_error": 6.670957520390325e-07,
+      "portable_getter_error": 6.670957520390325e-07,
+      "archive_objects": 3,
+      "native_script_error": 6.670957520390325e-07,
+      "native_getter_error": 6.670957520390325e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_around",
+      "success": true,
+      "portable_script_error": 6.67095750316689e-07,
+      "portable_getter_error": 6.67095750316689e-07,
+      "archive_objects": 3,
+      "native_script_error": 6.67095750316689e-07,
+      "native_getter_error": 6.67095750316689e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_named",
+      "success": true,
+      "portable_script_error": 6.670957505845752e-07,
+      "portable_getter_error": 6.670957505845752e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957505845752e-07,
+      "native_getter_error": 6.670957505845752e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_cplane",
+      "success": true,
+      "portable_script_error": 6.670957506575015e-07,
+      "portable_getter_error": 6.670957506575015e-07,
+      "archive_objects": 2,
+      "native_script_error": 6.670957506575015e-07,
+      "native_getter_error": 6.670957506575015e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_undo",
+      "success": true,
+      "portable_script_error": 9.292432238733007e-08,
+      "portable_getter_error": 9.292432238733007e-08,
+      "archive_objects": 2,
+      "native_script_error": 9.292432238733007e-08,
+      "native_getter_error": 9.292432238733007e-08
+    },
+    {
+      "id": "interp_plane_control_bounded_cancel_plane",
+      "success": false,
+      "portable_script_error": null,
+      "portable_getter_error": 0.0,
+      "archive_objects": 1,
+      "native_script_error": null,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_control_bounded_cancel_three",
+      "success": false,
+      "portable_script_error": null,
+      "portable_getter_error": 0.0,
+      "archive_objects": 1,
+      "native_script_error": null,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_control_bounded_cancel_curve",
+      "success": false,
+      "portable_script_error": null,
+      "portable_getter_error": 0.0,
+      "archive_objects": 1,
+      "native_script_error": null,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_control_bounded_enter",
+      "success": false,
+      "portable_script_error": null,
+      "portable_getter_error": 0.0,
+      "archive_objects": 1,
+      "native_script_error": null,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_control_bounded_collinear",
+      "success": false,
+      "portable_script_error": null,
+      "portable_getter_error": 0.0,
+      "archive_objects": 1,
+      "native_script_error": null,
+      "native_getter_error": 0.0
+    },
+    {
+      "id": "interp_plane_managed_bounded_audit_far",
+      "success": true,
+      "portable_script_error": 3.468457585913687e-07,
+      "portable_getter_error": 3.468457585913687e-07,
+      "archive_objects": 2,
+      "native_script_error": 3.468457585913687e-07,
+      "native_getter_error": 3.468457585913687e-07
+    },
+    {
+      "id": "interp_plane_managed_bounded_audit_relative_yz",
+      "success": true,
+      "portable_script_error": 4.440892098500626e-16,
+      "portable_getter_error": 4.440892098500626e-16,
+      "archive_objects": 2,
+      "native_script_error": 4.440892098500626e-16,
+      "native_getter_error": 4.440892098500626e-16
+    },
+    {
+      "id": "interp_plane_managed_bounded_audit_empty",
+      "success": true,
+      "portable_script_error": 9.15589646315421e-07,
+      "portable_getter_error": 9.15589646315421e-07,
+      "archive_objects": 1,
+      "native_script_error": 9.15589646315421e-07,
+      "native_getter_error": 9.15589646315421e-07
+    }
+  ],
+  "finite_surface_regressions": [
+    {
+      "build": "portable",
+      "route": "commands",
+      "workflows": 12,
+      "qualified": 10,
+      "existing_native_option_gaps": [
+        "persistent",
+        "autoclose_no"
+      ]
+    },
+    {
+      "build": "portable",
+      "route": "interpolation-ui",
+      "workflows": 12,
+      "qualified": 10,
+      "existing_native_option_gaps": [
+        "persistent",
+        "autoclose_no"
+      ]
+    },
+    {
+      "build": "native",
+      "route": "commands",
+      "workflows": 12,
+      "qualified": 10,
+      "existing_native_option_gaps": [
+        "persistent",
+        "autoclose_no"
+      ]
+    },
+    {
+      "build": "native",
+      "route": "interpolation-ui",
+      "workflows": 12,
+      "qualified": 10,
+      "existing_native_option_gaps": [
+        "persistent",
+        "autoclose_no"
+      ]
+    }
+  ],
+  "surface_sdk_regressions": 23,
+  "limits": [
+    "Five cancellation/invalid-input controls are replayed through the UI; they have no constructive CLI execution.",
+    "Fifteen early exploration observations are excluded from qualification. Three discovery cancellations required external recovery recorded in the proof directory.",
+    "Independent bounded captures confirm five constructions; they are not counted again in the 23 qualified workflows.",
+    "Mixed hidden-object bounds, general reference orientation at clamped borders, mouse/pixel input and comparative speed remain unqualified.",
+    "Named-plane icon/list picking, clipping-plane objects, Edit history and newer AutoClose/PersistentClose native behavior remain pending."
+  ],
+  "checks": [
+    {
+      "name": "surface-sdk",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "interpolation-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "project-picker-portable",
+      "status": 0
+    },
+    {
+      "name": "iplane-picker-portable",
+      "status": 0
+    },
+    {
+      "name": "boolean-picker-portable",
+      "status": 0
+    },
+    {
+      "name": "planar-command-portable",
+      "status": 0
+    },
+    {
+      "name": "planar-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "interpolation-ui-native",
+      "status": 0
+    },
+    {
+      "name": "project-picker-native",
+      "status": 0
+    },
+    {
+      "name": "iplane-picker-native",
+      "status": 0
+    },
+    {
+      "name": "boolean-picker-native",
+      "status": 0
+    },
+    {
+      "name": "planar-command-native",
+      "status": 0
+    },
+    {
+      "name": "planar-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "geometry",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "evidence_sha256": {
+    "docs/surface-interpolation-planes-proof/boolean-picker-native.log.gz": "b6faee29ef8b3ca21662f990e11f039b5095cfcebe7dc89fc767464b5496526f",
+    "docs/surface-interpolation-planes-proof/boolean-picker-portable.log.gz": "4890140a355801ff4f39c555b4209ad5294c22880224c520db92dd889a985133",
+    "docs/surface-interpolation-planes-proof/capture-audit.log.gz": "5cc57b90614d9fb7e659648cefc33e4a94f1fde2ff14e375d8f9c4d6375187c8",
+    "docs/surface-interpolation-planes-proof/capture-bounded.log.gz": "39b7b18763a1be3e5171c80ae9f733c6d814cd995de209d831c7d2e754f11486",
+    "docs/surface-interpolation-planes-proof/capture-discovery.log.gz": "ff3248abaecf57c39294c6c91d3d2c630bc17aaf6a5970214b393228236088e5",
+    "docs/surface-interpolation-planes-proof/capture-managed.log.gz": "8d35497a369b2e891e007e2149ab7619494793717ae3c6f3f9798034a76ed380",
+    "docs/surface-interpolation-planes-proof/capture-workflows.log.gz": "bd2cdfb1907e26b8ce177d1b44cc791110285a054c20040124bf3095627ff428",
+    "docs/surface-interpolation-planes-proof/checks.json": "69b9ab2878b6d93be3a3804c5014a3463773850166c0addaef6738dd798d8678",
+    "docs/surface-interpolation-planes-proof/clippy-all-features.log.gz": "0bb0545f4f91a82185af9fd698d419b54d28d772e8609a498cfb398ff24366a4",
+    "docs/surface-interpolation-planes-proof/clippy-portable.log.gz": "aecf4bf8017db1a626341efa5e8ced72d761efb4dbc24c8dd53c2fbb543e9c13",
+    "docs/surface-interpolation-planes-proof/commands-native.log.gz": "44c052af989b56e97a29916ac1c62eb7e22a3d2ad0a7d8b6c4c1e2e3aadc3df8",
+    "docs/surface-interpolation-planes-proof/commands-portable.log.gz": "4d86b0fa3e6e36b4430babd430ae0527f7948b2b6ed95d32749ad9b864303c9c",
+    "docs/surface-interpolation-planes-proof/discovery-recovery.json": "ffaf1fedf21142bdbdfe0efef2141de924411bb5612e95b17ac1ad2cef87fdbb",
+    "docs/surface-interpolation-planes-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-interpolation-planes-proof/geometry.log.gz": "ec646d302a3976b4416bc9838ff51fda569a88ebc7338559e6b05b93a7260435",
+    "docs/surface-interpolation-planes-proof/interpolation-ui-native.log.gz": "c2785101aa7358e624b31199c212b2add16142a741dfbbbd92a65fc3478ef9a7",
+    "docs/surface-interpolation-planes-proof/interpolation-ui-portable.log.gz": "5a88bb8755532ef9be7cfe7651e14577b4d55a397d87821562fd97cf6250f89c",
+    "docs/surface-interpolation-planes-proof/iplane-picker-native.log.gz": "a08038c1634b8cb937915cdb33825e12e620c6c90c03ced50f6fc0d7fe1e5051",
+    "docs/surface-interpolation-planes-proof/iplane-picker-portable.log.gz": "4fbf7b0faf577178066d9441edb55cc2b671d1f02d321a76d8d16a5627704a2c",
+    "docs/surface-interpolation-planes-proof/planar-command-native.log.gz": "32df2951457031f6dec05a33ace6064bc4023d6e8785238f01cca80114824721",
+    "docs/surface-interpolation-planes-proof/planar-command-portable.log.gz": "1efc99b84ef62d16f567a5c2496dd61fddf81bb87b15c87c95f840b0117059de",
+    "docs/surface-interpolation-planes-proof/planar-ui-native.log.gz": "b181f8f38ed976d2daee0c9706d6c843fc1112a9cd7f05bf8413625e5b1da078",
+    "docs/surface-interpolation-planes-proof/planar-ui-portable.log.gz": "33b5f99b32d892c41b66f29bb717b96f581f86ceb37eff22ce7a1dd9875c8da3",
+    "docs/surface-interpolation-planes-proof/project-picker-native.log.gz": "72f2a50c2c42216c13991a89c6916757330ee365035d97a1826c41e6c1679c79",
+    "docs/surface-interpolation-planes-proof/project-picker-portable.log.gz": "45ac7c2bb1ecd47a5977f4b1fc86963dece8898e6c166b337527502e9fd9b2b9",
+    "docs/surface-interpolation-planes-proof/python.log.gz": "ed347125dc57eebf60b8c3ff407ae9ea4e957adf1f48f59caccf937d392e9033",
+    "docs/surface-interpolation-planes-proof/surface-sdk.log.gz": "0d4901df57f28ab0b78bf2772bbd8b13c219fd2a0fdb6f1fac24e2d584685e6e",
+    "tools/rhino_oracle/fixtures/surface_interpolate_plane_audit.json": "d4af9396f4c781ebc19acef8b518c9877e11038e74b254fb8cc7e02bbf911901",
+    "tools/rhino_oracle/fixtures/surface_interpolate_plane_bounded.json": "7fca23246f9fd65be0d490312ca47337260a1e8c26785494e6538f5f8ac8e842",
+    "tools/rhino_oracle/fixtures/surface_interpolate_plane_discovery.json": "922f2a7761be4ca580cf2e7b61ce71e356fd257ae2ba0ab70c165c126a04560c",
+    "tools/rhino_oracle/fixtures/surface_interpolate_plane_managed.json": "0920f4140b2d628bf6d9190c3b7641297fa5b26189b98cee5bc435a8ffd66835",
+    "tools/rhino_oracle/fixtures/surface_interpolate_plane_workflows.json": "1352572b0eba26bed0899068c4a0841d8327de45c31877752eedcbed09edd1c6",
+    "tools/rhino_oracle/observations/source_snapshots/099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821.gz": "3731942f701270d8234fa63d8590e44c4dab38685a2428aac5e9d62fc478768a",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/247edac9a40c85cbadd067ec790c537b49a6e27c12078179e4949d81335fbffa.gz": "a1cd31f7570f2681e7848ed71b1f317d024fe10f2c8dd5e890dada7dc9e84535",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2bdb32ba29d355cc2719d5c53ca593de5eb6a191cf14b1796ae1fe5aaea58a64.gz": "1999ea59a7e685acc2f674acc4cb446c7b18627e76210728b332e2cbeee86f2f",
+    "tools/rhino_oracle/observations/source_snapshots/44eea926e7e3ee7b9bbfc1d42a5062f6b8143ba4be2b66c6d574eb5d2adac46c.gz": "08516bfdb69c91398a3ae33261480026f424588a808843ba72cdc346cd82885b",
+    "tools/rhino_oracle/observations/source_snapshots/5286c896c8a9a62cc509600acf99f3cbfad42715ef9a864c82f07ae00166412e.gz": "eaeb90a8fbcc3f26223f0dfaeac8911939b6e27d6a351be5311b8a0b439e2c9b",
+    "tools/rhino_oracle/observations/source_snapshots/5cd876dda0499f0f06d3d93370dc0c90aaccee77d31b855bd234548dab19bea9.gz": "82e2bc2ad7a9a38a9f75a7cc0b5eab3e1e5f7494e27087263069624ba6899b32",
+    "tools/rhino_oracle/observations/source_snapshots/5d0ea9635ddc70f1bfd61c28e1dce190e5e732b1612e6f398243ed265c861d01.gz": "566f9564961746483e7feeb2024b9186f47813ac563fcfe6b56d6176072fc289",
+    "tools/rhino_oracle/observations/source_snapshots/5dd56b87c60ce08a20f54dab53b3b94e226411967ccf2005bbaa6d1e59876aee.gz": "fae27b45cc846083487829adb6a4837cff76d71490c657aa83d608c7be7040de",
+    "tools/rhino_oracle/observations/source_snapshots/62208b2cc52513c90cefd8b7dbd64d9ce06f672179b13a8f7650e53daf9b0e3b.gz": "054c3c8e7692c157029d55d0de923935edb6b0e6fa3b3037e3a87cc8e57ff7b3",
+    "tools/rhino_oracle/observations/source_snapshots/7454932958b6bced3e059352e7092b0269af05b199d79c8d9af13decd2e0445c.gz": "022e095d898df982c45bdbb789152e5250f006f63a30d474b279bc5c68b00e97",
+    "tools/rhino_oracle/observations/source_snapshots/7a56310cfcf2fd5866dbcef3ce76002d203c9a36d98ca40e55b160e4fc68600e.gz": "7b444199313bbb80fb93bfcdf65c168433e93a820606ffc112400075d7886131",
+    "tools/rhino_oracle/observations/source_snapshots/7f2d6f7c7774cf411129a566c5013c488b64e02ce667ead62ec84ac8da44f0da.gz": "874309041d79507a37a771e1c50f89449e73e7e30259012ce8766d389aa225c2",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/9e53d8c1db5e0ca2a147313503a5402118ba1ee925e234669ce958026c2fde02.gz": "a7b723c64d963653f55e04396a41b48ae80f6263cafca69e4ac97e6b36d5da22",
+    "tools/rhino_oracle/observations/source_snapshots/b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf.gz": "06e67b87762a9ee45014e8188574adc6e06cd84952f50ecd927e8f3221d224cf",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d93fb31276c567427bca7be0b8027cc33ec298aac0f456626e859054aeb74685.gz": "6ab6676bea6abae12d469e958852bfe16e1f361a0cbc9ff10493601f8d7caf56",
+    "tools/rhino_oracle/observations/source_snapshots/e214bebc15030b80a5d7c977824996a1e11625cdb6207a1c2dec778450808dcb.gz": "a24ecdef48b3786b78007b595d1e3936682ab6140a0ee7c23d77c00e0ecb80cd",
+    "tools/rhino_oracle/observations/source_snapshots/ee8862c76fb35d654e4d291661bc3ec77c83c410ac21015970c1b622776e3f70.gz": "2e3148318c32485403a9e0cf8db02ec3f34a8c12512b3c2f0b73d8212fcf70bb",
+    "tools/rhino_oracle/observations/source_snapshots/eef1ee82156cc02dfc95514459bc025400bed88a57e86a313106eb09dad9fb18.gz": "03bf2f7396a6719326dc5a4e0a88b87f6faa686221203ea2cf0099ec010b412c",
+    "tools/rhino_oracle/observations/source_snapshots/f0de230510d1ffdc7ca5600fa09548cfee475f2a09e082cf5e46580c55b3ad70.gz": "384d1e7b2d08e727d77242cc0b4ee891038f599794615875bf6b53d3d9942025",
+    "tools/rhino_oracle/observations/source_snapshots/f3be14fc40ab0ce530b16516d5eb1ee1c50b8a3720de77c376451e8c215f3f0d.gz": "d8565bc1f2a9951453091266d86f8c7c52a598b0ccb3490bed06b45500de5a32",
+    "tools/rhino_oracle/observations/source_snapshots/f432e5f84ee6d6d3b872faeabcc59b6e17c67e9a047a58c37c4a20fb7ae5bade.gz": "1b42421735b88446116d7d5ccb8190e85032207dd94735482e42812e705353bc",
+    "tools/rhino_oracle/observations/surface_interpolate_plane_audit.json.gz": "27aaca5be35d1ab9fe4dcf22ba278e87f9986c1a6b84f2a332605c74bb19b60e",
+    "tools/rhino_oracle/observations/surface_interpolate_plane_bounded.json.gz": "49b783e7e80e1cf6d3d8bc03b326ba48a1845fa1bceda8134348a989f9305103",
+    "tools/rhino_oracle/observations/surface_interpolate_plane_discovery.json.gz": "328f7ab141676aa0abc174f7e07649178ceda28bcdb21e7997e63d0882c544b8",
+    "tools/rhino_oracle/observations/surface_interpolate_plane_managed.json.gz": "b4fd1aa67a06f3d949587e627927fae205f33939b5518bd5c519f81a52e72324",
+    "tools/rhino_oracle/observations/surface_interpolate_plane_workflows.json.gz": "b2d63244bd70df73e644da3a738816ae2b419e8b530338fb076c830826657ea7"
+  }
+}
