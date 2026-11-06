@@ -1,8 +1,8 @@
-//! Curve endpoint snaps and previews for the shared perpendicular getter.
+//! Curve endpoint snaps and previews for the shared curve-contact getter.
 use super::*;
-use viboceros_command::line::perpendicular::Input;
+use viboceros_command::line::curve_input::Input;
 impl Viewport {
-    pub(super) fn perpendicular_curve_hit(
+    pub(super) fn curve_line_hit(
         &self,
         pointer: Pos2,
         rect: Rect,
@@ -37,7 +37,7 @@ impl Viewport {
         )?;
         Some((target.0, target.1, point))
     }
-    pub(super) fn paint_perpendicular(
+    pub(super) fn paint_curve_line(
         &self,
         painter: &egui::Painter,
         rect: Rect,

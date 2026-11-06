@@ -14,7 +14,8 @@ through 11, and lowers the degree when too few controls are supplied.
 [Line construction](line.md) supports BothSides, Vertical, FourPoint, Bisector
 and Angled, with shared command/getter geometry and previews.
 [Extension](line-extension.md) follows an endpoint tangent; [Normal](line-normal.md)
-uses a curve or surface reference. [Perpendicular](line-perpendicular.md) slides
+uses a curve or surface reference. [Tangent](line-tangent.md) supports tangent
+contacts and common tangents. [Perpendicular](line-perpendicular.md) slides
 or fixes curve contacts and supports two-curve constructions.
 [Lines](lines.md) creates adjoining independent line objects with Close and
 local Undo, then commits the completed set in one history entry.

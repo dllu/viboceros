@@ -1,37 +1,7 @@
 //! Local branches of bounded curve normals, including common perpendiculars.
-use crate::{CurveRef, GeometryError, Point3, Real, Tolerance, UnitVector3, Vector3};
+use crate::{CurveRef, GeometryError, Point3, Real, Tolerance, UnitVector3};
 
-fn project(v: Vector3, normal: Option<UnitVector3>) -> Result<Vector3, GeometryError> {
-    let Some(n) = normal else {
-        return Ok(v);
-    };
-    let d = v.dot(n.as_vector())?;
-    Vector3::try_from(std::array::from_fn(|i| {
-        v.to_array()[i] - d * n.as_vector().to_array()[i]
-    }))
-}
-#[derive(Clone, Copy)]
-struct Domain {
-    a: Real,
-    b: Real,
-    closed: bool,
-}
-impl Domain {
-    fn new(c: CurveRef<'_>) -> Result<Self, GeometryError> {
-        Ok(Self {
-            a: *c.domain().start(),
-            b: *c.domain().end(),
-            closed: c.is_closed()?,
-        })
-    }
-    fn bound(self, t: Real) -> Real {
-        if self.closed {
-            self.a + (t - self.a).rem_euclid(self.b - self.a)
-        } else {
-            t.clamp(self.a, self.b)
-        }
-    }
-}
+use crate::curve_contact::{Domain, project};
 fn root(
     c: CurveRef<'_>,
     domain: Domain,

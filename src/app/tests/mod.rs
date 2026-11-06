@@ -133,6 +133,7 @@ mod line_perpendicular;
 mod line_perpendicular_lifetime;
 mod line_perpendicular_viewport;
 mod line_reference;
+mod line_tangent;
 mod line_through_points;
 mod lines;
 mod loft_input;
@@ -344,7 +345,7 @@ pub(super) fn test_app() -> VibocerosApp {
         line_input: None,
         line_reference: None,
         line_normal: None,
-        line_perpendicular: None,
+        curve_line: None,
         line_accepted_point: None,
         block_session: None,
         block_manager: Default::default(),

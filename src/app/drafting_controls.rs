@@ -25,7 +25,7 @@ impl VibocerosApp {
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
                 && !self.picking_line_normal()
-                && !self.picking_line_perpendicular()
+                && !self.picking_curve_line()
                 && !self.picking_line_curve()
                 && !self.picking_arc_extension_curve()
                 && self

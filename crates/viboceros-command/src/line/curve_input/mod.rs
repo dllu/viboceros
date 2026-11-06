@@ -1,11 +1,35 @@
-//! Read-only Line Perpendicular getter, shared by scripts and the viewport.
+//! Read-only curve-contact line getters, shared by scripts and viewports.
 use crate::{CommandError, curve_reference::CapturedCurve};
 use viboceros_document::{Document, ObjectId};
 use viboceros_geometry::{CurveRef, Frame3, Point3, Real, Tolerance, UnitVector3};
 mod arguments;
+mod construction;
 mod options;
 pub use arguments::requested;
 pub(super) use arguments::run;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Kind {
+    Perpendicular,
+    Tangent,
+}
+impl Kind {
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Perpendicular => "Perpendicular",
+            Self::Tangent => "Tangent",
+        }
+    }
+    pub fn parse(word: &str) -> Option<Self> {
+        let word = word.trim_start_matches(['_', '-']);
+        if word.eq_ignore_ascii_case("Perpendicular") {
+            Some(Self::Perpendicular)
+        } else if word.eq_ignore_ascii_case("Tangent") {
+            Some(Self::Tangent)
+        } else {
+            None
+        }
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Stage {
     Curve,
@@ -22,6 +46,7 @@ struct Guide {
 }
 #[derive(Clone, Debug)]
 pub struct Input {
+    kind: Kind,
     plane: Frame3,
     tolerance: Tolerance,
     stage: Stage,
@@ -37,7 +62,11 @@ pub struct Input {
 }
 impl Input {
     pub fn new(plane: Frame3, tolerance: Tolerance) -> Self {
+        Self::with_kind(Kind::Perpendicular, plane, tolerance)
+    }
+    pub fn with_kind(kind: Kind, plane: Frame3, tolerance: Tolerance) -> Self {
         Self {
+            kind,
             plane,
             tolerance,
             stage: Stage::Curve,
@@ -51,6 +80,9 @@ impl Input {
             end_point: false,
             planar: false,
         }
+    }
+    pub fn kind(&self) -> Kind {
+        self.kind
     }
     pub fn set_drafting(&mut self, plane: Frame3, planar: bool) {
         self.plane = plane;
@@ -114,7 +146,7 @@ impl Input {
     ) -> Result<Option<super::Definition>, CommandError> {
         if !self.accepts_curve() {
             return Err(CommandError::Usage(
-                "Line Perpendicular is waiting for a point",
+                "Curve-contact Line is waiting for a point",
             ));
         }
         let source = CapturedCurve::capture(doc, id, edge)?;
@@ -122,16 +154,37 @@ impl Input {
         let point = source.curve_ref().evaluate(parameter)?;
         if self.stage == Stage::Endpoint {
             let origin = self.start.unwrap();
-            let t = source.curve_ref().perpendicular_parameter_near(
-                origin,
-                parameter,
-                None,
-                self.tolerance,
-            )?;
-            let mut end = source.curve_ref().evaluate(t)?;
-            let tangent = source.curve_ref().evaluate_with_tangent(t)?.tangent();
-            if end.vector_to(origin)?.dot(tangent.as_vector())?.abs()
-                > 1e-9 * end.distance_to(origin)?.max(1.)
+            let t = if self.kind == Kind::Tangent {
+                source.curve_ref().tangent_parameter_near(
+                    origin,
+                    parameter,
+                    None,
+                    self.tolerance,
+                )?
+            } else {
+                Some(source.curve_ref().perpendicular_parameter_near(
+                    origin,
+                    parameter,
+                    None,
+                    self.tolerance,
+                )?)
+            };
+            let mut end = t
+                .map(|t| source.curve_ref().evaluate(t))
+                .transpose()?
+                .unwrap_or(point);
+            if self.kind == Kind::Perpendicular
+                && end
+                    .vector_to(origin)?
+                    .dot(
+                        source
+                            .curve_ref()
+                            .evaluate_with_tangent(t.unwrap())?
+                            .tangent()
+                            .as_vector(),
+                    )?
+                    .abs()
+                    > 1e-9 * end.distance_to(origin)?.max(1.)
             {
                 // A failed forced perpendicular snap falls back to the curve
                 // point under the pointer, rather than inventing an extension.
@@ -141,7 +194,11 @@ impl Input {
         }
         if self.stage == Stage::SecondOfTwo {
             let first = &self.guides[0];
-            let pair = viboceros_geometry::common_perpendicular_near(
+            let solve = match self.kind {
+                Kind::Perpendicular => viboceros_geometry::common_perpendicular_near,
+                Kind::Tangent => viboceros_geometry::common_tangent_near,
+            };
+            let pair = solve(
                 first.source.curve_ref(),
                 first.parameter,
                 source.curve_ref(),
@@ -149,7 +206,7 @@ impl Input {
                 self.tolerance,
             )?
             .ok_or(CommandError::Usage(
-                "No common perpendicular in the selected curve domains",
+                "No common line contact in the selected curve domains",
             ))?;
             return self.definition(pair[0], pair[1]).map(Some);
         }
@@ -183,10 +240,13 @@ impl Input {
                 p,
                 (self.planar && !self.fixed).then_some(self.plane.z_axis()),
             ),
-            _ => Err(CommandError::Usage("Pick a curve for Line Perpendicular")),
+            _ => Err(CommandError::Usage("Pick a curve for the Line start")),
         }
     }
     pub fn enter(&mut self) -> bool {
+        if self.kind == Kind::Tangent && self.endpoint() && self.end_point {
+            return true;
+        }
         if self.endpoint() && !self.fixed && !self.guides.is_empty() && !self.end_point {
             self.fixed = true;
             true
@@ -194,118 +254,26 @@ impl Input {
             false
         }
     }
-    pub fn number(&mut self, n: Real) -> Result<(), CommandError> {
+    pub fn number(&mut self, n: Real) -> Result<Option<super::Definition>, CommandError> {
         if !self.endpoint() || !n.is_finite() || n == 0. {
             return Err(CommandError::Usage(
-                "Line Perpendicular needs a finite nonzero length at the endpoint prompt",
+                "Curve-contact Line needs a finite nonzero length at the endpoint prompt",
             ));
         }
         self.length = Some(n);
-        Ok(())
-    }
-    fn contact(
-        &self,
-        p: Point3,
-        normal: Option<UnitVector3>,
-    ) -> Result<Option<(Point3, UnitVector3)>, CommandError> {
-        let Some(g) = self.guides.first() else {
-            return Ok(None);
-        };
-        let c = g.source.curve_ref();
-        let t = if self.fixed {
-            g.parameter
-        } else {
-            c.perpendicular_parameter_near(p, g.parameter, normal, self.tolerance)?
-        };
-        let s = c.evaluate_with_tangent(t)?;
-        Ok(Some((s.point(), s.tangent())))
-    }
-    fn definition(
-        &self,
-        origin: Point3,
-        mut end: Point3,
-    ) -> Result<super::Definition, CommandError> {
-        if let Some(n) = self.length {
-            end = origin.translated(origin.direction_to(end)?.as_vector().scaled(n)?)?;
+        if self.kind == Kind::Tangent && self.fixed && self.both {
+            let origin = self.start.unwrap();
+            let g = &self.guides[0];
+            let tangent = g
+                .source
+                .curve_ref()
+                .evaluate_with_tangent(g.parameter)?
+                .tangent();
+            return self
+                .definition(origin, origin.translated(tangent.as_vector())?)
+                .map(Some);
         }
-        let start = if self.both {
-            origin.translated(end.vector_to(origin)?)?
-        } else {
-            origin
-        };
-        Ok(super::Definition {
-            line: super::segment(start, end)?,
-            accepted_point: end,
-        })
-    }
-    fn resolve(
-        &self,
-        p: Point3,
-        normal: Option<UnitVector3>,
-    ) -> Result<Option<super::Definition>, CommandError> {
-        if !self.endpoint() {
-            return Ok(None);
-        }
-        if let Some((origin, tangent)) = self.contact(p, normal)? {
-            let delta = origin.vector_to(p)?;
-            let end = if let Some(normal) = normal {
-                if let Ok(direction) = tangent
-                    .as_vector()
-                    .cross(normal.as_vector())?
-                    .normalized_nonzero()
-                {
-                    let distance = delta.dot(direction.as_vector())?;
-                    origin.translated(direction.as_vector().scaled(distance)?)?
-                } else {
-                    p.translated(normal.as_vector().scaled(-delta.dot(normal.as_vector())?)?)?
-                }
-            } else {
-                p.translated(
-                    tangent
-                        .as_vector()
-                        .scaled(-delta.dot(tangent.as_vector())?)?,
-                )?
-            };
-            self.definition(origin, end).map(Some)
-        } else {
-            self.definition(self.start.unwrap(), p).map(Some)
-        }
-    }
-    pub fn preview(&self, p: Point3) -> Option<super::Definition> {
-        self.resolve(
-            p,
-            (self.planar && !self.fixed).then_some(self.plane.z_axis()),
-        )
-        .ok()
-        .flatten()
-    }
-    /// Sliding contacts honor Planar; a fixed normal plane takes precedence.
-    pub fn cursor_point(&self, p: Point3, planar: bool) -> Option<Point3> {
-        if !self.endpoint() {
-            return Some(p);
-        }
-        if !self.guides.is_empty() && (planar || self.fixed) {
-            let mut geometry_only = self.clone();
-            geometry_only.length = None;
-            geometry_only
-                .resolve(p, (planar && !self.fixed).then_some(self.plane.z_axis()))
-                .ok()
-                .flatten()
-                .map(|d| d.accepted_point)
-        } else {
-            Some(p)
-        }
-    }
-
-    pub fn mouse_plane(&self) -> Option<Frame3> {
-        self.fixed.then_some(())?;
-        let (_, tangent) = self.contact(self.start?, None).ok()??;
-        Frame3::try_from_normal(
-            self.start?,
-            tangent.as_vector(),
-            Tolerance::NUMERICAL_VALIDATION,
-        )
-        .ok()
+        Ok(None)
     }
     pub fn curve_ref(&self) -> Option<CurveRef<'_>> {
         self.guides.first().map(|g| g.source.curve_ref())

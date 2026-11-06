@@ -4,7 +4,7 @@ use viboceros_command::line::Input;
 
 impl VibocerosApp {
     pub(super) fn try_start_line(&mut self, text: &str) -> bool {
-        if self.try_start_line_perpendicular(text) {
+        if self.try_start_curve_line(text) {
             return true;
         }
         let mut words = text.split_whitespace();
@@ -49,7 +49,7 @@ impl VibocerosApp {
         ));
     }
     pub(super) fn try_continue_line(&mut self, text: &str) -> bool {
-        if self.try_continue_line_perpendicular(text) || self.choose_line_perpendicular(text) {
+        if self.try_continue_curve_line(text) || self.choose_curve_line(text) {
             return true;
         }
         if self.line_input.is_none() || self.plane_prompt.is_some() || self.object_prompt.is_some()
@@ -143,8 +143,8 @@ impl VibocerosApp {
         false
     }
     pub(super) fn accept_line_point(&mut self, point: Point3) -> bool {
-        if self.line_perpendicular.is_some() {
-            return self.accept_line_perpendicular_point(point);
+        if self.curve_line.is_some() {
+            return self.accept_curve_line_point(point);
         }
         self.validate_line_normal();
         self.validate_line_reference();
@@ -195,7 +195,7 @@ impl VibocerosApp {
         let input = self.line_input;
         let reference = self.line_reference.clone();
         let normal = self.line_normal.clone();
-        let perpendicular = self.line_perpendicular.clone();
+        let curve_line = self.curve_line.clone();
         let command = format!(
             "Line {} {}",
             format_model_point(definition.line.start()),
@@ -205,9 +205,9 @@ impl VibocerosApp {
             self.line_input = input;
             self.line_reference = reference;
             self.line_normal = normal;
-            self.line_perpendicular = perpendicular;
-            if self.line_perpendicular.is_some() {
-                self.line_perpendicular_prompt();
+            self.curve_line = curve_line;
+            if self.curve_line.is_some() {
+                self.curve_line_prompt();
             } else {
                 self.line_prompt();
             }

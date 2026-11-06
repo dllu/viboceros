@@ -1,31 +1,25 @@
 use super::*;
 use crate::{CommandContext, parse_finite_real, parse_point};
 use viboceros_document::Geometry;
-pub fn requested(args: &[&str]) -> bool {
+pub fn requested(args: &[&str]) -> Option<Kind> {
     args.iter()
         .take_while(|s| !s.contains(',') && !s.chars().next().is_some_and(|c| c.is_ascii_digit()))
-        .any(|w| {
-            w.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("Perpendicular")
-        })
+        .find_map(|w| Kind::parse(w))
 }
 pub(crate) fn run(
     doc: &mut Document,
     args: &[&str],
     context: CommandContext,
 ) -> Result<String, CommandError> {
-    let mut input = Input::new(context.construction_plane, doc.tolerance());
+    let kind = requested(args).ok_or(CommandError::Usage(super::super::USAGE))?;
+    let mut input = Input::with_kind(kind, context.construction_plane, doc.tolerance());
     let mut i = 0;
     let mut result = None;
     while i < args.len() {
         if result.is_some() {
             return Err(CommandError::Usage(super::super::USAGE));
         }
-        if args[i]
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case("Perpendicular")
-            || input.option(args[i])?
-        {
+        if Kind::parse(args[i]) == Some(kind) || input.option(args[i])? {
             i += 1;
             continue;
         }
@@ -34,7 +28,7 @@ pub(crate) fn run(
             .eq_ignore_ascii_case("Enter")
         {
             if !input.enter() {
-                return Err(CommandError::Usage("Line Perpendicular cancelled"));
+                return Err(CommandError::Usage("Curve-contact Line cancelled"));
             }
             i += 1;
             continue;
@@ -54,9 +48,7 @@ pub(crate) fn run(
                 super::super::normal::Component::Object => None,
                 super::super::normal::Component::Edge(e) => Some(e),
                 _ => {
-                    return Err(CommandError::Usage(
-                        "Perpendicular Curve=id|Edge=id,index pick",
-                    ));
+                    return Err(CommandError::Usage("Curve=id|Edge=id,index pick"));
                 }
             };
             let (point, n) = parse_point(&args[i + 1..])?;
@@ -68,7 +60,7 @@ pub(crate) fn run(
                 || args[i + 1].parse::<f64>().is_err()
                 || args[i + 2].parse::<f64>().is_err())
         {
-            input.number(parse_finite_real(args[i])?)?;
+            result = input.number(parse_finite_real(args[i])?)?;
             i += 1;
         } else {
             let (point, n) = parse_point(&args[i..])?;
@@ -77,7 +69,7 @@ pub(crate) fn run(
         }
     }
     let definition = result.ok_or(CommandError::Usage(
-        "Line Perpendicular [BothSides] Curve=id pick end",
+        "Line Perpendicular|Tangent [BothSides] Curve=id pick end",
     ))?;
     if input.clears_selection() {
         doc.clear_selection();

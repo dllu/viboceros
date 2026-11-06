@@ -111,7 +111,7 @@ impl Input {
             }
             (Mode::Extension, 0) => "pick a curve or surface edge near its end",
             (Mode::Default | Mode::Vertical, 0) => {
-                "start point; BothSides, Vertical, FourPoint, Bisector, Angled, Extension, Normal or Perpendicular"
+                "start point; BothSides, Vertical, FourPoint, Bisector, Angled, Extension, Normal, Perpendicular or Tangent"
             }
             (Mode::FourPoint, 0) => "start of reference line",
             (Mode::FourPoint, 1) => "end of reference line",

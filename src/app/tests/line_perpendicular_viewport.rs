@@ -9,15 +9,15 @@ fn frame(
     context: &egui::Context,
     events: Vec<egui::Event>,
 ) -> (ViewportOutput, egui::Rect) {
-    let curve = app.line_perpendicular_curve().cloned();
-    let picking = app.picking_line_perpendicular();
+    let curve = app.curve_line_base_curve().cloned();
+    let picking = app.picking_curve_line();
     let input = ViewportInput {
         drafting: app.viewport_drafting_input(false, false),
         object_filter: picking.then_some(viboceros_command::ObjectSelectionFilter::Curves),
         edge_pick: picking,
         curve_or_edge_pick: picking,
         edge_curve: curve.as_ref(),
-        perpendicular_input: app.line_perpendicular.as_ref().map(|s| &s.input),
+        curve_line_input: app.curve_line.as_ref().map(|s| &s.input),
         ..Default::default()
     };
     let mut output = ViewportOutput::default();
@@ -98,34 +98,31 @@ fn scene() -> (VibocerosApp, ObjectId, ObjectId) {
 }
 #[test]
 fn sliding_and_fixed_contacts_commit_the_exact_mouse_preview_without_editing_sources() {
+    mouse_preview("Perpendicular");
+}
+pub(super) fn mouse_preview(mode: &str) {
     for fixed in [false, true] {
         let (mut app, id, sentinel) = scene();
         let parent = app.document.object(id).unwrap().clone();
         let context = egui::Context::default();
         let (_, rect) = frame(&mut app, &context, vec![]);
-        enter(&mut app, "Line Perpendicular");
-        assert!(app.picking_line_perpendicular());
+        enter(&mut app, &format!("Line {mode}"));
+        assert!(app.picking_curve_line());
         assert!(!app.viewport_drafting_input(false, false).active);
         let p = app.viewports[0].project(point(5., 0., 0.), rect).unwrap();
         let output = click(&mut app, &context, p);
         assert_eq!(output.selection_click.unwrap().object_id, Some(id));
         app.handle_viewport_action(output);
-        assert!(app.line_perpendicular.as_ref().unwrap().input.endpoint());
+        assert!(app.curve_line.as_ref().unwrap().input.endpoint());
         assert!(app.document.is_selected(sentinel));
-        let initial = app
-            .line_perpendicular
-            .as_ref()
-            .unwrap()
-            .input
-            .anchor()
-            .unwrap();
+        let initial = app.curve_line.as_ref().unwrap().input.anchor().unwrap();
         if fixed {
             enter(&mut app, "FromFirstPoint");
         }
         let p = app.viewports[0].project(point(8., 6., 0.), rect).unwrap();
         let (hover, _) = frame(&mut app, &context, vec![egui::Event::PointerMoved(p)]);
         let preview = app
-            .line_perpendicular
+            .curve_line
             .as_ref()
             .unwrap()
             .input
@@ -133,6 +130,10 @@ fn sliding_and_fixed_contacts_commit_the_exact_mouse_preview_without_editing_sou
             .unwrap();
         if fixed {
             assert!(preview.line.start().distance_to(initial).unwrap() < 1e-10);
+        } else if mode == "Tangent" {
+            let radius = point(0., 0., 0.).vector_to(preview.line.start()).unwrap();
+            let delta = preview.line.start().vector_to(preview.line.end()).unwrap();
+            assert!(radius.dot(delta).unwrap().abs() < 1e-8);
         } else {
             assert!(preview.line.start().distance_to(point(4., 3., 0.)).unwrap() < 0.05);
         }
@@ -161,28 +162,22 @@ fn a_mouse_base_on_a_constrained_curve_is_the_relative_input_origin() {
     let context = egui::Context::default();
     let (_, rect) = frame(&mut app, &context, vec![]);
     enter(&mut app, "Line Perpendicular PointOnCurve");
-    assert!(app.picking_line_perpendicular());
+    assert!(app.picking_curve_line());
     let p = app.viewports[0].project(point(5., 0., 0.), rect).unwrap();
     let output = click(&mut app, &context, p);
     app.handle_viewport_action(output);
-    assert!(app.line_perpendicular_curve().is_some());
+    assert!(app.curve_line_base_curve().is_some());
     let p = app.viewports[0].project(point(3., 4., 0.), rect).unwrap();
     let output = click(&mut app, &context, p);
     assert!(output.edge_parameter.is_some());
     app.handle_viewport_action(output);
-    let base = app
-        .line_perpendicular
-        .as_ref()
-        .unwrap()
-        .input
-        .anchor()
-        .unwrap();
+    let base = app.curve_line.as_ref().unwrap().input.anchor().unwrap();
     assert_eq!(app.last_point, Some(base));
     let target = base
         .translated(viboceros_geometry::Vector3::try_new(4., 2., 2.).unwrap())
         .unwrap();
     let expected = app
-        .line_perpendicular
+        .curve_line
         .as_ref()
         .unwrap()
         .input
@@ -208,7 +203,7 @@ fn a_free_point_can_snap_to_either_perpendicular_branch_on_a_curve() {
             .project(point(if far { -5. } else { 5. }, 0.2, 0.), rect)
             .unwrap();
         let output = click(&mut app, &context, p);
-        assert!(output.perpendicular_curve_click.is_some());
+        assert!(output.curve_line_click.is_some());
         app.handle_viewport_action(output);
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         let Geometry::Line(line) = app.document.objects().last().unwrap().geometry() else {
@@ -266,7 +261,7 @@ fn planar_mouse_tracking_slides_in_height_while_a_fixed_contact_keeps_its_normal
         let p = app.viewports[0].project(point(9., 8., 6.), rect).unwrap();
         let (hover, _) = frame(&mut app, &context, vec![egui::Event::PointerMoved(p)]);
         let preview = app
-            .line_perpendicular
+            .curve_line
             .as_ref()
             .unwrap()
             .input

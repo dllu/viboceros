@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent",
+      "id": "circle_retry_spatial",
+      "case": "circle_retry_spatial"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_retry_inside",
+      "case": "circle_retry_inside"
+    },
+    {
+      "op": "line_tangent",
+      "id": "line_retry_offaxis",
+      "case": "line_retry_offaxis"
+    },
+    {
+      "op": "line_tangent",
+      "id": "quadratic_retry_spatial",
+      "case": "quadratic_retry_spatial"
+    },
+    {
+      "op": "line_tangent",
+      "id": "spatial_retry",
+      "case": "spatial_retry"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_right",
+      "case": "arc_right"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_left_pick_end",
+      "case": "arc_left_pick_end"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_left_pick_start",
+      "case": "arc_left_pick_start"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_fixed",
+      "case": "arc_fixed"
+    },
+    {
+      "op": "line_tangent",
+      "id": "quadratic_outside",
+      "case": "quadratic_outside"
+    },
+    {
+      "op": "line_tangent",
+      "id": "line_fixed",
+      "case": "line_fixed"
+    },
+    {
+      "op": "line_tangent",
+      "id": "planar_circle",
+      "case": "planar_circle"
+    },
+    {
+      "op": "line_tangent",
+      "id": "planar_fixed",
+      "case": "planar_fixed"
+    },
+    {
+      "op": "line_tangent",
+      "id": "oncurve_both_length",
+      "case": "oncurve_both_length"
+    },
+    {
+      "op": "line_tangent",
+      "id": "two_both",
+      "case": "two_both"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_free_both",
+      "case": "point_free_both"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_to_bottom_curve",
+      "case": "point_to_bottom_curve"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_end_fixed",
+      "case": "point_end_fixed"
+    },
+    {
+      "op": "line_tangent",
+      "id": "cancel_length",
+      "case": "cancel_length"
+    },
+    {
+      "op": "line_tangent",
+      "id": "two_nested",
+      "case": "two_nested"
+    }
+  ]
+}

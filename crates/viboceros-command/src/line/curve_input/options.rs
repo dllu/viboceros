@@ -9,8 +9,8 @@ impl Input {
             Stage::Endpoint if self.fixed || self.end_point => "end point or signed length",
             Stage::Endpoint if self.guides.is_empty() => "end point or curve; Point",
             Stage::Endpoint => "end point or signed length; Point or FromFirstPoint",
-            Stage::FirstOfTwo => "first curve near the perpendicular contact",
-            Stage::SecondOfTwo => "second curve near the perpendicular contact",
+            Stage::FirstOfTwo => "first curve near the line contact",
+            Stage::SecondOfTwo => "second curve near the line contact",
         }
     }
     pub fn option(&mut self, text: &str) -> Result<bool, CommandError> {

@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent",
+      "id": "circle_pick_top",
+      "case": "circle_pick_top"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_pick_bottom",
+      "case": "circle_pick_bottom"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_end_upper_left",
+      "case": "circle_end_upper_left"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_end_lower_right",
+      "case": "circle_end_lower_right"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_end_lower_left",
+      "case": "circle_end_lower_left"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_hover_upper",
+      "case": "circle_hover_upper"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_hover_lower",
+      "case": "circle_hover_lower"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_mouse",
+      "case": "circle_mouse"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_planar_tangent",
+      "case": "arc_planar_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "quadratic_planar_tangent",
+      "case": "quadratic_planar_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "spatial_exact_tangent",
+      "case": "spatial_exact_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "line_collinear_tangent",
+      "case": "line_collinear_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "numeric_planar",
+      "case": "numeric_planar"
+    },
+    {
+      "op": "line_tangent",
+      "id": "numeric_planar_negative",
+      "case": "numeric_planar_negative"
+    },
+    {
+      "op": "line_tangent",
+      "id": "fixed_numeric_point",
+      "case": "fixed_numeric_point"
+    },
+    {
+      "op": "line_tangent",
+      "id": "enter_fixed",
+      "case": "enter_fixed"
+    },
+    {
+      "op": "line_tangent",
+      "id": "both_planar",
+      "case": "both_planar"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_to_planar_curve",
+      "case": "point_to_planar_curve"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_to_far_planar_curve",
+      "case": "point_to_far_planar_curve"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_end_planar",
+      "case": "point_end_planar"
+    }
+  ]
+}

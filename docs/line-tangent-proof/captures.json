@@ -1,0 +1,50 @@
+[
+  {
+    "family": "line_tangent",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent.log.gz"
+  },
+  {
+    "family": "line_tangent_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_holdouts.log.gz"
+  },
+  {
+    "family": "line_tangent_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_final"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_final.log.gz"
+  },
+  {
+    "family": "line_tangent_completion",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_tangent_completion"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_tangent_completion.log.gz"
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent",
+      "id": "arc_middle_repeat_a",
+      "case": "arc_middle_repeat_a"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_middle_repeat_b",
+      "case": "arc_middle_repeat_b"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_middle_other_side",
+      "case": "arc_middle_other_side"
+    },
+    {
+      "op": "line_tangent",
+      "id": "planar_circle_complete",
+      "case": "planar_circle_complete"
+    },
+    {
+      "op": "line_tangent",
+      "id": "planar_circle_elevated",
+      "case": "planar_circle_elevated"
+    },
+    {
+      "op": "line_tangent",
+      "id": "planar_spatial_exact",
+      "case": "planar_spatial_exact"
+    },
+    {
+      "op": "line_tangent",
+      "id": "oncurve_both_negative",
+      "case": "oncurve_both_negative"
+    },
+    {
+      "op": "line_tangent",
+      "id": "oncurve_both_positive",
+      "case": "oncurve_both_positive"
+    },
+    {
+      "op": "line_tangent",
+      "id": "oncurve_negative",
+      "case": "oncurve_negative"
+    },
+    {
+      "op": "line_tangent",
+      "id": "fixed_negative",
+      "case": "fixed_negative"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_end_enter",
+      "case": "point_end_enter"
+    }
+  ]
+}

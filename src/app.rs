@@ -235,6 +235,7 @@ use interactive_state::{
 };
 #[cfg(test)]
 mod crease_native_tests;
+mod curve_line;
 mod extrude_subd;
 mod inset;
 mod intersect_two_sets;
@@ -242,7 +243,6 @@ mod iplane;
 mod length;
 mod line_input;
 mod line_normal;
-mod line_perpendicular;
 mod line_reference;
 mod maelstrom_prompt;
 mod mesh_face_prompt;
@@ -417,7 +417,7 @@ pub struct VibocerosApp {
     line_input: Option<viboceros_command::line::Input>,
     line_reference: Option<line_reference::Session>,
     line_normal: Option<line_normal::Session>,
-    line_perpendicular: Option<line_perpendicular::Session>,
+    curve_line: Option<curve_line::Session>,
     line_accepted_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -606,7 +606,7 @@ impl VibocerosApp {
             line_input: None,
             line_reference: None,
             line_normal: None,
-            line_perpendicular: None,
+            curve_line: None,
             line_accepted_point: None,
             drafting_plane: None,
             point_filter: None,
@@ -888,7 +888,7 @@ impl VibocerosApp {
         if self.continue_sweep_point_option(&input) || self.continue_loft_point_option(&input) {
             return;
         }
-        if self.line_perpendicular.is_some() && self.try_continue_line_perpendicular(&input) {
+        if self.curve_line.is_some() && self.try_continue_curve_line(&input) {
             return;
         }
         if self.try_one_shot_snap(&input) {

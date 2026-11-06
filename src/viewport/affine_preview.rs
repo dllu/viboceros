@@ -325,7 +325,8 @@ impl Viewport {
         let line = input
             .stretch_preview
             .and_then(|p| p.mouse_line())
-            .or_else(|| definition.and_then(|p| p.mouse_line(document.tolerance())));
+            .or_else(|| definition.and_then(|p| p.mouse_line(document.tolerance())))
+            .or_else(|| input.curve_line_input.and_then(|g| g.mouse_line()));
         let cursor = self.translation_drafting_cursor(
             pointer,
             rect,
@@ -338,9 +339,7 @@ impl Viewport {
             },
         );
         if drafting.planar
-            && let Some(getter) = input
-                .perpendicular_input
-                .filter(|g| g.mouse_plane().is_none())
+            && let Some(getter) = input.curve_line_input.filter(|g| g.mouse_plane().is_none())
         {
             return cursor.and_then(|mut c| {
                 c.point = getter.cursor_point(c.source_point, true)?;
@@ -358,7 +357,7 @@ impl Viewport {
             })
             .or_else(|| {
                 input
-                    .perpendicular_input?
+                    .curve_line_input?
                     .mouse_plane()
                     .map(|p| (p.origin(), p.z_axis()))
             })
@@ -378,7 +377,7 @@ impl Viewport {
                 cursor.point = getter.resolve_point(cursor.point).ok()?;
                 return Some(cursor);
             }
-            if let Some(getter) = input.perpendicular_input {
+            if let Some(getter) = input.curve_line_input {
                 let mut cursor = cursor?;
                 cursor.point = getter.cursor_point(cursor.source_point, false)?;
                 cursor.source_point = cursor.point;

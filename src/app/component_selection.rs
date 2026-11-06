@@ -464,9 +464,9 @@ impl VibocerosApp {
             }
             return;
         }
-        if self.picking_line_perpendicular() {
+        if self.picking_curve_line() {
             if let [pick] = picks.as_slice() {
-                self.pick_line_perpendicular_curve(Some(pick.object), Some(pick.index));
+                self.pick_curve_line_base_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

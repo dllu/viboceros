@@ -49,6 +49,5 @@ base and endpoint picking, preview/commit equality and relative coordinates.
 
 Arbitrary singular curves, global completeness of common-perpendicular solutions,
 native component-edge picking, independent native PointAt samples, continuous
-distance and comparative speed remain unqualified. Line Tangent is still
-unsupported. Run `python3 -m tools.rhino_oracle.check_line_perpendicular`.
+distance and comparative speed remain unqualified. [Line Tangent](line-tangent.md) has separate input rules and validation. Run `python3 -m tools.rhino_oracle.check_line_perpendicular`.
 See the public [Rhino Line reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/line.htm).

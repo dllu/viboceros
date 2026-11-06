@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_tangent",
+      "id": "line_tangent",
+      "case": "line_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_near",
+      "case": "circle_near"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_far",
+      "case": "circle_far"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_spatial_end",
+      "case": "circle_spatial_end"
+    },
+    {
+      "op": "line_tangent",
+      "id": "circle_inside",
+      "case": "circle_inside"
+    },
+    {
+      "op": "line_tangent",
+      "id": "arc_tangent",
+      "case": "arc_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "quadratic_tangent",
+      "case": "quadratic_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "spatial_tangent",
+      "case": "spatial_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "fixed_tangent",
+      "case": "fixed_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "oncurve_tangent",
+      "case": "oncurve_tangent"
+    },
+    {
+      "op": "line_tangent",
+      "id": "tangent_both",
+      "case": "tangent_both"
+    },
+    {
+      "op": "line_tangent",
+      "id": "numeric_then_point",
+      "case": "numeric_then_point"
+    },
+    {
+      "op": "line_tangent",
+      "id": "numeric_only",
+      "case": "numeric_only"
+    },
+    {
+      "op": "line_tangent",
+      "id": "fixed_numeric",
+      "case": "fixed_numeric"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_free",
+      "case": "point_free"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_to_curve",
+      "case": "point_to_curve"
+    },
+    {
+      "op": "line_tangent",
+      "id": "point_to_far_curve",
+      "case": "point_to_far_curve"
+    },
+    {
+      "op": "line_tangent",
+      "id": "two_circles_outer",
+      "case": "two_circles_outer"
+    },
+    {
+      "op": "line_tangent",
+      "id": "two_circles_inner",
+      "case": "two_circles_inner"
+    },
+    {
+      "op": "line_tangent",
+      "id": "two_skew_lines",
+      "case": "two_skew_lines"
+    },
+    {
+      "op": "line_tangent",
+      "id": "cancel_picked",
+      "case": "cancel_picked"
+    },
+    {
+      "op": "line_tangent",
+      "id": "cancel_empty",
+      "case": "cancel_empty"
+    }
+  ]
+}

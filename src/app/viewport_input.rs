@@ -53,7 +53,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.array_curve_surface_session {
                 s.pointer = output.selection_pointer;
             }
-            if let Some(s) = &mut self.line_perpendicular {
+            if let Some(s) = &mut self.curve_line {
                 s.pointer = output.selection_pointer;
             }
             if let Some(s) = &mut self.line_normal {
@@ -69,8 +69,8 @@ impl VibocerosApp {
                 s.pointer = output.selection_pointer;
             }
         }
-        if let Some((id, edge, point)) = output.perpendicular_curve_click.take() {
-            self.pick_line_perpendicular_at(id, edge, point);
+        if let Some((id, edge, point)) = output.curve_line_click.take() {
+            self.pick_curve_line_at(id, edge, point);
             self.line_accepted_point = None;
             return true;
         }
@@ -276,7 +276,7 @@ impl VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
-                || self.picking_line_perpendicular()
+                || self.picking_curve_line()
                 || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
@@ -313,8 +313,8 @@ impl VibocerosApp {
                 || self.accept_array_curve_surface_parameter(parameter)
                 || self.accept_curve_array_parameter(parameter)
             {
-            } else if self.line_perpendicular_curve().is_some() {
-                self.accept_line_perpendicular_parameter(parameter);
+            } else if self.curve_line_base_curve().is_some() {
+                self.accept_curve_line_parameter(parameter);
             } else if self.line_normal_curve().is_some() {
                 self.accept_line_normal_parameter(parameter);
             } else if self.move_normal_curve().is_some() {

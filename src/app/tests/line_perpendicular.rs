@@ -36,11 +36,10 @@ fn perpendicular_getters_match_native_selection_geometry_history_and_archives() 
                 if action.get("curve").is_some() {
                     let object =
                         inputs::guide(&app.document, action["curve"].as_u64().unwrap() as usize);
-                    app.pick_line_perpendicular_at(object, None, inputs::pick(v, i, action));
+                    app.pick_curve_line_at(object, None, inputs::pick(v, i, action));
                 } else if action.get("click").is_some() {
-                    let p =
-                        inputs::click_point(v, i, &app.line_perpendicular.as_ref().unwrap().input);
-                    app.accept_line_perpendicular_point(p);
+                    let p = inputs::click_point(v, i, &app.curve_line.as_ref().unwrap().input);
+                    app.accept_curve_line_point(p);
                 } else {
                     let value = inputs::token(action);
                     let value = if action.is_array() {

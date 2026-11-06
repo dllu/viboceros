@@ -16,6 +16,7 @@
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)
 - [Line BothSides, Vertical, FourPoint, Bisector and Angled](line.md)
+- [Line Tangent with sliding/fixed contacts and common tangents](line-tangent.md)
 - [Line Perpendicular with sliding and fixed contacts or two curves](line-perpendicular.md)
 - [Line Normal from curves, surfaces and Brep faces](line-normal.md)
 - [Line Extension from immutable curve and edge references](line-extension.md)

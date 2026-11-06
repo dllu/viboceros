@@ -1,0 +1,3132 @@
+{
+  "line_tangent": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "circle_near": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_far": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_spatial_end": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "circle_inside": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        1,
+        1,
+        2
+      ]
+    ]
+  },
+  "arc_tangent": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "quadratic_tangent": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        9,
+        8,
+        4
+      ]
+    ]
+  },
+  "spatial_tangent": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ]
+    ]
+  },
+  "fixed_tangent": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "oncurve_tangent": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "tangent_both": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "numeric_then_point": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "numeric_only": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      5
+    ]
+  },
+  "fixed_numeric": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      5
+    ]
+  },
+  "point_free": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      [
+        1,
+        1,
+        3
+      ]
+    ]
+  },
+  "point_to_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "point_to_far_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "two_circles_outer": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          12,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          0,
+          5,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          12,
+          2,
+          0
+        ]
+      }
+    ]
+  },
+  "two_circles_inner": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          12,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          0,
+          5,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          12,
+          -2,
+          0
+        ]
+      }
+    ]
+  },
+  "two_skew_lines": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "type": "line",
+        "start": [
+          2,
+          -3,
+          5
+        ],
+        "end": [
+          2,
+          9,
+          5
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          2,
+          6,
+          5
+        ]
+      }
+    ]
+  },
+  "cancel_picked": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Cancel"
+    ]
+  },
+  "cancel_empty": {
+    "actions": [
+      "Tangent",
+      "Cancel"
+    ]
+  },
+  "circle_pick_top": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          4.99,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_pick_bottom": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          -4.99,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_end_upper_left": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_end_lower_right": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        -6,
+        0
+      ]
+    ]
+  },
+  "circle_end_lower_left": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        -8,
+        -6,
+        0
+      ]
+    ]
+  },
+  "circle_hover_upper": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      {
+        "hover": [
+          -0.6,
+          4.96,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_hover_lower": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      {
+        "hover": [
+          4.6,
+          -1.96,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_mouse": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      {
+        "click": [
+          8,
+          6,
+          0
+        ]
+      }
+    ]
+  },
+  "arc_planar_tangent": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "quadratic_planar_tangent": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        9,
+        8,
+        0
+      ]
+    ]
+  },
+  "spatial_exact_tangent": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        8.32,
+        4.08,
+        3.16
+      ]
+    ]
+  },
+  "line_collinear_tangent": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        12,
+        0,
+        0
+      ]
+    ]
+  },
+  "numeric_planar": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      5,
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "numeric_planar_negative": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      -5,
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "fixed_numeric_point": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "enter_fixed": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Enter",
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "both_planar": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "point_to_planar_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        0
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "point_to_far_planar_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        0
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          -4.99,
+          0.2,
+          0
+        ]
+      }
+    ]
+  },
+  "point_end_planar": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Point",
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_retry_spatial": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ],
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "circle_retry_inside": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        1,
+        1,
+        0
+      ],
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "line_retry_offaxis": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      [
+        7,
+        4,
+        0
+      ],
+      [
+        12,
+        0,
+        0
+      ]
+    ]
+  },
+  "quadratic_retry_spatial": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        9,
+        8,
+        4
+      ],
+      [
+        9,
+        8,
+        0
+      ]
+    ]
+  },
+  "spatial_retry": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        9,
+        8,
+        6
+      ],
+      [
+        8.32,
+        4.08,
+        3.16
+      ]
+    ]
+  },
+  "arc_right": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "arc_left_pick_end": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          4.99,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "arc_left_pick_start": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "arc_fixed": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      [
+        8,
+        6,
+        3
+      ]
+    ]
+  },
+  "quadratic_outside": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          0
+        ]
+      },
+      [
+        15,
+        -3,
+        0
+      ]
+    ]
+  },
+  "line_fixed": {
+    "curves": [
+      {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          5,
+          0,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      [
+        7,
+        4,
+        3
+      ]
+    ]
+  },
+  "planar_circle": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ],
+      [
+        8,
+        6,
+        0
+      ]
+    ],
+    "planar": true
+  },
+  "planar_fixed": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      [
+        8,
+        6,
+        2
+      ]
+    ],
+    "planar": true
+  },
+  "oncurve_both_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "BothSides",
+      [
+        3,
+        4,
+        0
+      ],
+      -5,
+      [
+        8,
+        6,
+        2
+      ]
+    ]
+  },
+  "two_both": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          12,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Tangent",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          0,
+          5,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          12,
+          2,
+          0
+        ]
+      }
+    ]
+  },
+  "point_free_both": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "BothSides",
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        2
+      ],
+      [
+        1,
+        1,
+        3
+      ]
+    ]
+  },
+  "point_to_bottom_curve": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "Point",
+      [
+        8,
+        6,
+        0
+      ],
+      {
+        "curve": 0,
+        "pick": [
+          0.2,
+          -4.99,
+          0
+        ]
+      }
+    ]
+  },
+  "point_end_fixed": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Point",
+      "Enter",
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  },
+  "cancel_length": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      5,
+      "Cancel"
+    ]
+  },
+  "two_nested": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "2Curves",
+      {
+        "curve": 0,
+        "pick": [
+          0,
+          5,
+          0
+        ]
+      },
+      {
+        "curve": 1,
+        "pick": [
+          0,
+          2,
+          0
+        ]
+      }
+    ]
+  },
+  "arc_middle_repeat_a": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "arc_middle_repeat_b": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        -8,
+        6,
+        0
+      ]
+    ]
+  },
+  "arc_middle_other_side": {
+    "curves": [
+      {
+        "type": "arc",
+        "points": [
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            3.5355339059327378,
+            3.5355339059327378,
+            0
+          ],
+          [
+            0,
+            5,
+            0
+          ]
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          3.5355339059327378,
+          3.5355339059327378,
+          0
+        ]
+      },
+      [
+        -6,
+        8,
+        0
+      ]
+    ]
+  },
+  "planar_circle_complete": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        8,
+        6,
+        2
+      ]
+    ],
+    "planar": true
+  },
+  "planar_circle_elevated": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          3
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          3
+        ]
+      },
+      [
+        8,
+        6,
+        9
+      ]
+    ],
+    "planar": true
+  },
+  "planar_spatial_exact": {
+    "curves": [
+      {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              6,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.5,
+          3,
+          2
+        ]
+      },
+      [
+        8.32,
+        4.08,
+        3.16
+      ]
+    ],
+    "planar": true
+  },
+  "oncurve_both_negative": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "BothSides",
+      [
+        3,
+        4,
+        0
+      ],
+      -5
+    ]
+  },
+  "oncurve_both_positive": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "BothSides",
+      [
+        3,
+        4,
+        0
+      ],
+      5
+    ]
+  },
+  "oncurve_negative": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      "PointOnCurve",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      [
+        3,
+        4,
+        0
+      ],
+      -5
+    ]
+  },
+  "fixed_negative": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "FromFirstPoint",
+      -5
+    ]
+  },
+  "point_end_enter": {
+    "curves": [
+      {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    ],
+    "actions": [
+      "Tangent",
+      {
+        "curve": 0,
+        "pick": [
+          4.99,
+          0.2,
+          0
+        ]
+      },
+      "Point",
+      "Enter",
+      [
+        8,
+        6,
+        0
+      ]
+    ]
+  }
+}

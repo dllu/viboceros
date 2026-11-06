@@ -95,6 +95,7 @@ mod curve_join;
 pub use curve_chain::{
     ChainContinuation, ChainContinuity, ChainDirection, CurveChainIndex, CurveChainOptions,
 };
+mod curve_contact;
 mod curve_length_subcurve;
 mod curve_match;
 mod curve_offset;
@@ -104,9 +105,11 @@ mod curve_perpendicular;
 mod curve_rebuild;
 mod curve_segment;
 mod curve_shortness;
+mod curve_tangent;
 mod curve_through;
 mod curve_trim;
 pub use curve_perpendicular::common_perpendicular_near;
+pub use curve_tangent::common_tangent_near;
 mod curve_tween;
 mod point_neighbors;
 mod surface_curve_offset;

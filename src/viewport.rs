@@ -26,9 +26,9 @@ const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod clipping;
+mod curve_line;
 pub(crate) mod direction;
 mod drafting;
-mod line_perpendicular;
 mod named_view;
 mod navigation;
 mod normal_point;
@@ -369,7 +369,7 @@ pub struct ViewportInput<'a> {
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
     pub line_input: Option<viboceros_command::line::Input>,
-    pub perpendicular_input: Option<&'a viboceros_command::line::perpendicular::Input>,
+    pub curve_line_input: Option<&'a viboceros_command::line::curve_input::Input>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
@@ -508,7 +508,7 @@ impl Default for ViewportInput<'_> {
             point_constraint: None,
             translation_constraint: None,
             line_input: None,
-            perpendicular_input: None,
+            curve_line_input: None,
             normal_surface: None,
             mesh_constraint: None,
             surface_curve_close_point: None,
@@ -599,7 +599,7 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
-    pub perpendicular_curve_click: Option<(ObjectId, Option<usize>, Point3)>,
+    pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub direction_click: Option<ObjectId>,
     pub insert_point: Option<(
         viboceros_geometry::PolygonEdgePoint,
@@ -2546,16 +2546,16 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none()
                     && input.line_input.is_none()
-                    && input.perpendicular_input.is_none(),
+                    && input.curve_line_input.is_none(),
             );
         }
-        let perpendicular_hit = input.perpendicular_input.and_then(|getter| {
+        let perpendicular_hit = input.curve_line_input.and_then(|getter| {
             response
                 .hover_pos()
-                .and_then(|p| self.perpendicular_curve_hit(p, rect, document, getter))
+                .and_then(|p| self.curve_line_hit(p, rect, document, getter))
         });
-        if let Some(getter) = input.perpendicular_input {
-            self.paint_perpendicular(
+        if let Some(getter) = input.curve_line_input {
+            self.paint_curve_line(
                 &painter,
                 rect,
                 document,
@@ -3186,7 +3186,7 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
-            perpendicular_curve_click: response
+            curve_line_click: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(perpendicular_hit)
                 .flatten(),
