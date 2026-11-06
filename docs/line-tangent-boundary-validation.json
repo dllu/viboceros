@@ -1,0 +1,2225 @@
+{
+  "scope": "Line Tangent fallback to an open curve boundary, with signed lengths, BothSides, Planar projection, atomic zero-length rejection and mouse preview/relative input.",
+  "baseline_revision": "450350ed985684ad050056bf5f41248ae0ad8645",
+  "implementation_revision": "b5db107c98081943b82e830de3399b54d0f573f4",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "native_observations": 50,
+  "complete_native_ui_inputs": 33,
+  "matching_native_ui_inputs_per_build": 24,
+  "archive_round_trips_per_build": 48,
+  "native_physical_curve_picks_in_matching_inputs": 24,
+  "native_public_sdk_queries": 34728,
+  "public_sdk_queries_covered_per_build": 34708,
+  "successful_public_sdk_points_evaluated_per_build": 33415,
+  "native_public_sdk_failures_in_covered_inputs": 1293,
+  "maximum_coefficient_and_sample_difference": 5.985767437266531e-08,
+  "maximum_public_sdk_evaluation_difference": 1.8290892867908573e-07,
+  "cases": [
+    {
+      "id": "arc_station_0",
+      "portable_command_error": 6.417867527497669e-11,
+      "portable_ui_error": 6.417867527497669e-11,
+      "native_command_error": 6.417867527497669e-11,
+      "native_ui_error": 6.417867527497669e-11
+    },
+    {
+      "id": "arc_station_1",
+      "portable_command_error": 3.24627791743694e-08,
+      "portable_ui_error": 3.24627791743694e-08,
+      "native_command_error": 3.24627791743694e-08,
+      "native_ui_error": 3.24627791743694e-08
+    },
+    {
+      "id": "arc_station_2",
+      "portable_command_error": 8.122773564878116e-09,
+      "portable_ui_error": 8.122773564878116e-09,
+      "native_command_error": 8.122773564878116e-09,
+      "native_ui_error": 8.122773564878116e-09
+    },
+    {
+      "id": "arc_station_3",
+      "portable_command_error": 2.9314706711846747e-09,
+      "portable_ui_error": 2.9314706711846747e-09,
+      "native_command_error": 2.9314706711846747e-09,
+      "native_ui_error": 2.9314706711846747e-09
+    },
+    {
+      "id": "arc_station_4",
+      "portable_command_error": 9.088907636844048e-10,
+      "portable_ui_error": 9.088907636844048e-10,
+      "native_command_error": 9.088907636844048e-10,
+      "native_ui_error": 9.088907636844048e-10
+    },
+    {
+      "id": "arc_station_6",
+      "portable_command_error": 1.5060130920119263e-10,
+      "portable_ui_error": 1.5060130920119263e-10,
+      "native_command_error": 1.5060130920119263e-10,
+      "native_ui_error": 1.5060130920119263e-10
+    },
+    {
+      "id": "arc_station_7",
+      "portable_command_error": 3.642737489428782e-08,
+      "portable_ui_error": 3.642737489428782e-08,
+      "native_command_error": 3.642737489428782e-08,
+      "native_ui_error": 3.642737489428782e-08
+    },
+    {
+      "id": "arc_station_8",
+      "portable_command_error": 5.985767437266531e-08,
+      "portable_ui_error": 5.985767437266531e-08,
+      "native_command_error": 5.985767437266531e-08,
+      "native_ui_error": 5.985767437266531e-08
+    },
+    {
+      "id": "arc_rotated",
+      "portable_command_error": 9.085932048448949e-10,
+      "portable_ui_error": 9.085932048448949e-10,
+      "native_command_error": 9.085932048448949e-10,
+      "native_ui_error": 9.085932048448949e-10
+    },
+    {
+      "id": "arc_other_target",
+      "portable_command_error": 1.182331176481769e-10,
+      "portable_ui_error": 1.182331176481769e-10,
+      "native_command_error": 1.182331176481769e-10,
+      "native_ui_error": 1.182331176481769e-10
+    },
+    {
+      "id": "end_arc_top",
+      "portable_command_error": 1.8488927466117464e-31,
+      "portable_ui_error": 1.8488927466117464e-31,
+      "native_command_error": 1.8488927466117464e-31,
+      "native_ui_error": 1.8488927466117464e-31
+    },
+    {
+      "id": "end_arc_start",
+      "portable_command_error": 1.8488927466117464e-31,
+      "portable_ui_error": 1.8488927466117464e-31,
+      "native_command_error": 1.8488927466117464e-31,
+      "native_ui_error": 1.8488927466117464e-31
+    },
+    {
+      "id": "end_arc_below",
+      "portable_command_error": 1.8488927466117464e-31,
+      "portable_ui_error": 1.8488927466117464e-31,
+      "native_command_error": 1.8488927466117464e-31,
+      "native_ui_error": 1.8488927466117464e-31
+    },
+    {
+      "id": "end_arc_spatial",
+      "portable_command_error": 1.8488927466117464e-31,
+      "portable_ui_error": 1.8488927466117464e-31,
+      "native_command_error": 1.8488927466117464e-31,
+      "native_ui_error": 1.8488927466117464e-31
+    },
+    {
+      "id": "end_line_after",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "end_line_before",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "end_quadratic_start",
+      "portable_command_error": 1.1102230246251565e-15,
+      "portable_ui_error": 1.1102230246251565e-15,
+      "native_command_error": 1.1102230246251565e-15,
+      "native_ui_error": 1.1102230246251565e-15
+    },
+    {
+      "id": "end_quadratic_end",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "end_spatial",
+      "portable_command_error": 7.993605777301127e-15,
+      "portable_ui_error": 7.993605777301127e-15,
+      "native_command_error": 7.993605777301127e-15,
+      "native_ui_error": 7.993605777301127e-15
+    },
+    {
+      "id": "boundary_positive_length",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "boundary_negative_length",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "boundary_bothsides",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "boundary_planar_spatial",
+      "portable_command_error": 7.944109290391274e-15,
+      "portable_ui_error": 7.944109290391274e-15,
+      "native_command_error": 7.944109290391274e-15,
+      "native_ui_error": 7.944109290391274e-15
+    },
+    {
+      "id": "boundary_zero_retry",
+      "portable_command_error": 0.0,
+      "portable_ui_error": 0.0,
+      "native_command_error": 0.0,
+      "native_ui_error": 0.0
+    }
+  ],
+  "sdk_profiles": [
+    {
+      "id": "arc_station_0",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_1",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_2",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_3",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_4",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_5",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_6",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_7",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_station_8",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0367633844726187e-07,
+      "native_point_tangent_and_residual_error": 1.0367633844726187e-07
+    },
+    {
+      "id": "arc_middle_control",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_reversed",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.617812237613679e-08,
+      "native_point_tangent_and_residual_error": 1.617812237613679e-08
+    },
+    {
+      "id": "arc_as_nurbs",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0821316183073961e-07,
+      "native_point_tangent_and_residual_error": 1.0821316183073961e-07
+    },
+    {
+      "id": "arc_translated",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.12866429465918e-08,
+      "native_point_tangent_and_residual_error": 9.12866429465918e-08
+    },
+    {
+      "id": "arc_rotated",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_hover_contact",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_hover_endpoint",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 9.128665409614166e-08,
+      "native_point_tangent_and_residual_error": 9.128665409614166e-08
+    },
+    {
+      "id": "arc_other_target",
+      "family": "line_tangent_arcs",
+      "queries": 20,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 2.800468221888827e-08,
+      "native_point_tangent_and_residual_error": 2.800468221888827e-08
+    },
+    {
+      "id": "end_arc_top",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_arc_start",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_arc_below",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_arc_spatial",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              7.853981633974482
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_line_after",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_line_before",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_quadratic_start",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_quadratic_end",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "end_spatial",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "arc_scaled_corrected",
+      "family": "line_tangent_arcs_ends",
+      "queries": 20,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 5.410658014266736e-08,
+      "native_point_tangent_and_residual_error": 5.410658014266736e-08
+    },
+    {
+      "id": "boundary_positive_length",
+      "family": "line_tangent_arcs_controls",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "boundary_negative_length",
+      "family": "line_tangent_arcs_controls",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "boundary_bothsides",
+      "family": "line_tangent_arcs_controls",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "boundary_planar_spatial",
+      "family": "line_tangent_arcs_controls",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "boundary_zero_retry",
+      "family": "line_tangent_arcs_controls",
+      "queries": 20,
+      "failures": 20,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.0,
+              10.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 0.0,
+      "native_point_tangent_and_residual_error": 0.0
+    },
+    {
+      "id": "dense_arc",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 30,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.076216468032757
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.02909257822891
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0181358193345314e-07,
+      "native_point_tangent_and_residual_error": 1.0181358193345314e-07
+    },
+    {
+      "id": "dense_nurbs",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 24,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.502,
+              0.513
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.502,
+              0.513
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.8271792639816412e-07,
+      "native_point_tangent_and_residual_error": 1.8271792639816412e-07
+    },
+    {
+      "id": "dense_reparameterized",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 24,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              1502.0,
+              1513.0
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              1502.0,
+              1513.0
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.8290892867908573e-07,
+      "native_point_tangent_and_residual_error": 1.8290892867908573e-07
+    },
+    {
+      "id": "dense_reversed",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 30,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.7777651659417266,
+              3.911282853719293
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.8248890557455733,
+              3.911282853719293
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 2.052488785527999e-08,
+      "native_point_tangent_and_residual_error": 2.052488785527999e-08
+    },
+    {
+      "id": "dense_rotated45",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 30,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.076216468032757
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.02909257822891
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0181358345012524e-07,
+      "native_point_tangent_and_residual_error": 1.0181358345012524e-07
+    },
+    {
+      "id": "dense_yz",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 30,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.076216468032757
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.02909257822891
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0181358193345314e-07,
+      "native_point_tangent_and_residual_error": 1.0181358193345314e-07
+    },
+    {
+      "id": "dense_scaled",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 30,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              1.9713493901275954,
+              2.0381082340163785
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              1.9713493901275954,
+              2.014546289114455
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 5.933227399884339e-08,
+      "native_point_tangent_and_residual_error": 5.933227399884339e-08
+    },
+    {
+      "id": "dense_other_target",
+      "family": "line_tangent_arcs_sdk",
+      "queries": 2004,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 8.772303024328463e-08,
+      "native_point_tangent_and_residual_error": 8.772303024328463e-08
+    },
+    {
+      "id": "bounds_left01",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 8,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              4.33382706562712,
+              4.376238566450582
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              4.33382706562712,
+              4.33382706562712
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0625431761695401e-07,
+      "native_point_tangent_and_residual_error": 1.0625431761695401e-07
+    },
+    {
+      "id": "bounds_left02",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0628762329663474e-07,
+      "native_point_tangent_and_residual_error": 1.0628762329663474e-07
+    },
+    {
+      "id": "bounds_right095",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 360,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.745563841242431,
+              4.342466445424492
+            ],
+            [
+              4.611072617306419,
+              5.0811334180997925
+            ],
+            [
+              5.394507285295374,
+              5.685497304834128
+            ],
+            [
+              6.028716302238814,
+              6.133174257970674
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.745563841242431,
+              4.282776185006285
+            ],
+            [
+              4.611072617306419,
+              5.006520592577035
+            ],
+            [
+              5.394507285295374,
+              5.6034231967590955
+            ],
+            [
+              6.028716302238814,
+              6.051100149895641
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0545811548727003e-07,
+      "native_point_tangent_and_residual_error": 1.0545811548727003e-07
+    },
+    {
+      "id": "bounds_right099",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 60,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9032717924526388,
+              4.136535046981681
+            ],
+            [
+              4.805223043298268,
+              4.836324810568807
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9032717924526388,
+              4.082106954258238
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0544287869035282e-07,
+      "native_point_tangent_and_residual_error": 1.0544287869035282e-07
+    },
+    {
+      "id": "bounds_nurbs",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 2,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.5518,
+              0.5518
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.5518,
+              0.5518
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.8185561681845667e-07,
+      "native_point_tangent_and_residual_error": 1.8185561681845667e-07
+    },
+    {
+      "id": "bounds_refined",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 24,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              0.502,
+              0.513
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              0.502,
+              0.513
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.8271792639816412e-07,
+      "native_point_tangent_and_residual_error": 1.8271792639816412e-07
+    },
+    {
+      "id": "bounds_far_target",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 90,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.233296100712247
+            ],
+            [
+              4.8537606497962305,
+              4.948008429403925
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.1861722109084
+            ],
+            [
+              4.8537606497962305,
+              4.900884539600078
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.3119502684278706e-07,
+      "native_point_tangent_and_residual_error": 1.3119502684278706e-07
+    },
+    {
+      "id": "bounds_near_target",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 255,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.461061568097507
+            ],
+            [
+              4.8537606497962305,
+              5.215043804959057
+            ],
+            [
+              5.678428721363551,
+              5.835508354043041
+            ]
+          ]
+        },
+        {
+          "representation": "nurbs",
+          "ranges": [
+            [
+              3.9426987802551907,
+              4.429645641561608
+            ],
+            [
+              4.8537606497962305,
+              5.175773896789185
+            ],
+            [
+              5.678428721363551,
+              5.788384464239194
+            ]
+          ]
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0599339465852135e-07,
+      "native_point_tangent_and_residual_error": 1.0599339465852135e-07
+    },
+    {
+      "id": "bounds_high_target",
+      "family": "line_tangent_arcs_bounds",
+      "queries": 2004,
+      "failures": 0,
+      "failure_intervals": [
+        {
+          "representation": "analytic",
+          "ranges": []
+        },
+        {
+          "representation": "nurbs",
+          "ranges": []
+        }
+      ],
+      "portable_point_tangent_and_residual_error": 1.0734685542535393e-07,
+      "native_point_tangent_and_residual_error": 1.0734685542535393e-07
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "arc_scaled",
+      "reason": "The pilot divided integer coordinates by 2 under IronPython 2, producing a different arc from the Python 3 recipe. Retained as an input diagnostic; arc_scaled_corrected uses float multiplication."
+    }
+  ],
+  "known_geometry_differences": [
+    {
+      "id": "arc_station_5",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          7.999999999999997
+        ],
+        "control_points": [
+          {
+            "point": [
+              -2.461709589537496e-15,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          7.999999999999997,
+          7.999999999999997
+        ]
+      }
+    },
+    {
+      "id": "arc_middle_control",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          7.999999999999997
+        ],
+        "control_points": [
+          {
+            "point": [
+              -2.461709589537496e-15,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          7.999999999999997,
+          7.999999999999997
+        ]
+      }
+    },
+    {
+      "id": "arc_reversed",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          8.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          8.0,
+          8.0
+        ]
+      }
+    },
+    {
+      "id": "arc_as_nurbs",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          8.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          8.0,
+          8.0
+        ]
+      }
+    },
+    {
+      "id": "arc_translated",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          8.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              20.0,
+              -25.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.0,
+              -25.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          8.0,
+          8.0
+        ]
+      }
+    },
+    {
+      "id": "arc_hover_contact",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          7.999999999999997
+        ],
+        "control_points": [
+          {
+            "point": [
+              -2.461709589537496e-15,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          7.999999999999997,
+          7.999999999999997
+        ]
+      }
+    },
+    {
+      "id": "arc_hover_endpoint",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "domain": [
+          0.0,
+          7.999999999999997
+        ],
+        "control_points": [
+          {
+            "point": [
+              -2.461709589537496e-15,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -8.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          7.999999999999997,
+          7.999999999999997
+        ]
+      }
+    },
+    {
+      "id": "arc_scaled_corrected",
+      "reason": "The public local tangent query fails from the measured station although an interior tangent exists. Native Line falls back to its closest endpoint tangent; the independent solver finds the interior tangent.",
+      "native_curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          3.9999999999999982,
+          3.9999999999999982
+        ],
+        "domain": [
+          0.0,
+          3.9999999999999982
+        ],
+        "control_points": [
+          {
+            "point": [
+              -1.230854794768748e-15,
+              2.5,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.9999999999999996,
+              2.4999999999999982,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      }
+    }
+  ],
+  "captures": [
+    {
+      "family": "line_tangent_arcs",
+      "observations": 18,
+      "raw_sha256": "9c4a7a87bb1d375f62f519ef6a9c07c0241897cf41b0b8553eef07c6ac90e72a",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_tangent_arcs_ends",
+      "observations": 10,
+      "raw_sha256": "d05d647f96da41ff6452ab4fbfa60660a75a4515464e42d1e9afe56590db8fee",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_tangent_arcs_controls",
+      "observations": 5,
+      "raw_sha256": "ca0ebefba8a045c578333c66b52914aa58c33bbf3ee34346cced9629cba72673",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_tangent_arcs_sdk",
+      "observations": 8,
+      "raw_sha256": "8852e7114f16cc071f01697a7978ce85ee11517fff21be45c13b4ace1bc35c62",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_tangent_arcs_bounds",
+      "observations": 9,
+      "raw_sha256": "e1ce2257ab3dbac782e166fd18cc8c507ca4b366e03ca6543d64cb3346793d1a",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-native",
+      "status": 0
+    },
+    {
+      "name": "normal-command-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "move-normal-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-command-native",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-native",
+      "status": 0
+    },
+    {
+      "name": "move-normal-native",
+      "status": 0
+    },
+    {
+      "name": "reference-command-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-command-native",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-native",
+      "status": 0
+    },
+    {
+      "name": "line-command-portable",
+      "status": 0
+    },
+    {
+      "name": "line-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "line-command-native",
+      "status": 0
+    },
+    {
+      "name": "line-ui-native",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "lines-command-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "points-portable",
+      "status": 0
+    },
+    {
+      "name": "curves-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-command-native",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-native",
+      "status": 0
+    },
+    {
+      "name": "points-native",
+      "status": 0
+    },
+    {
+      "name": "curves-native",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "grid-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "polyline-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "grid-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "polyline-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "input_calibration": "Physical source stations are measured from public viewport-ray queries before click acknowledgement. Prescribed trigonometric aims permit two ulps across Python runtimes; recorded geometry is not used to fit input stations.",
+  "execution": "Native captures used private Xvfb sessions; application tests used windowless egui events.",
+  "limits": [
+    "Eight complete native workflows retain the seed-sensitive local tangent search mismatch. Their SDK query fails despite an interior tangent; they are excluded from passing construction counts. One integer-division source diagnostic is also excluded.",
+    "Public SDK success points, tangents and tangent residuals are evaluated on independently prescribed analytic/NURBS curves. Native SDK failure parity is not claimed; dense seed sweeps are investigation evidence, not fitted production lookup tables.",
+    "Control points, weights, knots, domains and 33 locally evaluated samples are compared for matching constructions. Independent native PointAt sampling of constructed outputs, continuous distance, arbitrary singular curves, all local-search branches and comparative speed remain unqualified.",
+    "Native command and UI recipes cover the recorded typed inputs. Mouse preview/commit equality, relative origins, atomic rejection and reference storage have Rust checks; spatial native mouse rays and additional settings combinations remain unqualified."
+  ],
+  "implementation_git_sha256": {
+    "b5db107c98081943b82e830de3399b54d0f573f4:crates/viboceros-command/src/line/curve_input/construction.rs": "eaba7bfc2414b66da21f89f91f9a53862ce5fd61adc7c0e33970365b455de904",
+    "b5db107c98081943b82e830de3399b54d0f573f4:crates/viboceros-command/tests/line_tangent_boundary.rs": "8d15becf032f6615412c44b469a2d522c9b15000db105bbd122211faba1aca43",
+    "b5db107c98081943b82e830de3399b54d0f573f4:crates/viboceros-command/tests/support/line_tangent_arcs.rs": "f20ab725d7f3e76247367bc5c106a10340ae9e9b017f2c4a2b4f78d68a3ac546",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/commands/line-tangent-boundaries.md": "6bdd55aa3366fa3ccf0aa54352b707379c211202d3c30aaa6525f233412b8791",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/commands/line-tangent.md": "8e8deb1291f18efa73e9d019c6528307fb52f0fb0257952a8c86c2da3b1963ab",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/arc-extension-native.log.gz": "c955616662a8f5abd8d6059f2228752373b0cf15bf3018685d2adfd0c34bf186",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/arc-extension-portable.log.gz": "22a7d2ccc5b0b81fa48d1fba4d70f208b38b31021e38ac5083fb333faab57575",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/capture-line_tangent_arcs.log.gz": "bf5ba58febcf5d84cbaa5c25df6956d940307af66deca8198566e8ad3c238201",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/capture-line_tangent_arcs_bounds.log.gz": "2ee5270cb92b6a33afe99ce129f511b6c5d188098cc547f9275311f3c4a6c3c3",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/capture-line_tangent_arcs_controls.log.gz": "7a19fa0dea1d3994a0555fa4f41b9537e8a5561829ea8c1caf16a416edc702d8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/capture-line_tangent_arcs_ends.log.gz": "851aed9a6b6907916afdd5aa11322423c11f751f20b204a92302a1b137d55d82",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/capture-line_tangent_arcs_sdk.log.gz": "34238a420b30faa4aee406aeeffdbf0b9d0811b1558618b35a8ffb0c11c08d6d",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/captures.json": "14159f3b7063435dea1388e25ab5545797bbbdc010c7131ba48ab2e78cbfb250",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/checks.json": "5ebcb4b5ff79823ffe6fb3eeb361a45aba0712591c8688ceccbba2ecf8b98bcc",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/clippy-all-features.log.gz": "9298c2145ed35e1cbcdb5babdeef2f7d2d351875eacc17ab5c9bb501b4a3ec10",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/clippy-portable.log.gz": "ce19ceaf4f9ea4fb7c440f486432b925ad18c34b4dee33916fd15a9552f11a00",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/commands-native.log.gz": "bfaa061711f4f18c9493727c92485782573d41e46e90b5a0d6479fafbfcd72c2",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/commands-portable.log.gz": "6ff3ece008d599f9aff4a07588c0b016f561d9142fc212d9302605ae0ba27346",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/corners-native.log.gz": "2b6b010af4617c52ba59cb839a72034aab8f8578a58a8a1ce8d25d4b9f858030",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/corners-portable.log.gz": "40500cb680bd7331a72941cf98b23345127ea11e7484e0212d959e465c22940c",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/curves-native.log.gz": "07d0957ff0f8458d9aaa6846bb43ef43fd9590a353ac7246abce60178665a136",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/curves-portable.log.gz": "1edd71cb49577f1af9c34438bd21d59b01c3f6cd061ea1b1a3cbe24b0344008c",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/failed-attempt-idle.log.gz": "5fe0352c880ff182bd6e8abae61de9a0483a2da4406b21dd907769c6ac247827",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/failed-attempt-syntax.log.gz": "b415796d00d8b06460746c2395c2c59d0bf3438dbcee48b9a5fde8dde9e6fe82",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/grid-native.log.gz": "fd7bfe4abc6fe1d2a82e80ec52e89a68004929bd715f337f8abd5877c123f266",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/grid-portable.log.gz": "20eec7da22b9b3cabe72de382f36aeff2d6928ba1a940a15432d9395217f047b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/history.log.gz": "15c472d57c3d1cb090e7b74590e51fa7b2a831177ab2bf82b28d89bcef69ddaf",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/line-command-native.log.gz": "666b0d7fb1ce388071162f0c0f1f373d9e1c0c8d0ec445879c04a35342a5503d",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/line-command-portable.log.gz": "20df4e93b2057c6d0570669f00b29d581298a434c7d387b57da62ac58c7d0800",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/line-ui-native.log.gz": "dcfc35b97a056dd509b13d1c6fdca831b81adba12959e6e43c5ac00b26f9590d",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/line-ui-portable.log.gz": "2cc04377ffd793a51f7cae921c52011902b3d5be056e33dcc80ea2b541b1018f",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/lines-command-native.log.gz": "8b492968fc5aac6abca504ce1d338b5037ff3090976c70f4905e62bfd155169b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/lines-command-portable.log.gz": "bd32b4afc7adbff77135ec5f0308ed0259fbb5a6877660cf454a4442359a52dd",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/lines-ui-native.log.gz": "e038e5209d4d6c9f6aeae2db7f5513d5bda7d4dc99c4020b8bfb4caec742a521",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/lines-ui-portable.log.gz": "f2433a7f370256f89d2313ebfb11b885f17e8a14b47affa3b9950867469a3a72",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/move-normal-native.log.gz": "5ca79d4bf35be2ba66bb93bf7fe0dec1a879e76c71047656b64ba2b1835ded39",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/move-normal-portable.log.gz": "28819da20138bbb3ff23929f753ebf63dd050d81053b3524674041c705a4cdf8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/normal-command-native.log.gz": "30cda8c15839aebb79452bf0fdd052342d1ac184eab7d1ad2cbd3eb447d54df7",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/normal-command-portable.log.gz": "ad77ecb044da71d4029a2549195f9d4853c80d9d06837ecd3f7b6c42cd479d45",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/normal-ui-native.log.gz": "dd4e36f42ed8138dd0e8b618c89f4a2cabc736d562c8876c379f2b3eedaef719",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/normal-ui-portable.log.gz": "8e0ded685c506ec68e4922308d171da9ba064cd27f51aab5a5eb26b91ee7ac6b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/perpendicular-command-native.log.gz": "fc8bfb89e5f4817a7b55c9bdba789a313721880e2e878979ad3712d96207ede6",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/perpendicular-command-portable.log.gz": "a05f14a9e124a2d3576d2c988831d73037ab58dc63b642c37970e8e78bdf9024",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/perpendicular-ui-native.log.gz": "e621ad1f63f5402272371f7fcc2eb9ec35d7ce7df4b89cd07e80b93065a5ad2a",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/perpendicular-ui-portable.log.gz": "c86fc0ebda85c9b953499ae6d13a27a69a0dbdd3e58598f4fea0412279d632b7",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/plane-native.log.gz": "cbcf6f4eba3e5dd48da5b883e32842d66a1b6b42e35d9d03f4089462a4f70c21",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/plane-portable.log.gz": "10683fd2629262f7fabe3213cd96dd7034ae939504c78922dc4621d2e6610205",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/points-native.log.gz": "6f3a66beccea74fc2b9daae3fa96096030b8cd97fc0f3bff5987dcc50a7c83cd",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/points-portable.log.gz": "645e4d2cd1f88d9d5485e32509a7d81248c4de98d7cb0a206e2cb14225874b7e",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/polyline-native.log.gz": "19046198e820021b7d2515227b14252594e932be478f23f2a55617d3f75fd8c7",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/polyline-portable.log.gz": "8607406c05d7c993d19c5c0cbf4ac9fe2bff8380c67ec8dc1d181a62867bfff8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/primitive-input-native.log.gz": "6a522f5a2e6991f6ab9f25cbe5ad19fc3b4ba33f802d81de4d6ec2ed180c7b76",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/primitive-input-portable.log.gz": "9de3f07beb28057382a018a1bdb04b23c1a5ba935d82b6c85b9f8f4944116c12",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/python.log.gz": "14217cec972f3ef86f8416967058197dce5f100d499658f90e748f6c0c67f523",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/rectangle-native.log.gz": "98fc9d08083b49a24b72c9df88223682f40c479db5535fda50507f034021f1ad",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/rectangle-portable.log.gz": "ce81fc935502e8baad4c86f2b64c70e8e343cb7200e4ec7b66ee473c1f09aa6e",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/reference-command-native.log.gz": "afe8226dc67948af2d13a56332cc68e2ad1026194f195b3425f23f046fc64806",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/reference-command-portable.log.gz": "90d17475292d29e6126989358c5603d9a675a70ffef9251d4f3ad4d3b8af2542",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/reference-ui-native.log.gz": "1a69bc26b21e59c43d1ab42044fb903f1dba6d6257c7b08d8b12997619f912bb",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/reference-ui-portable.log.gz": "6744546e8508306929ff1a03d3aece46810e5b849fa88cd8c7e579b53d7f045b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/registry.log.gz": "08831a739949dc5980d15feb0e7cb29da4484ef6edc6e53be875065fdd18d575",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/subd-native.log.gz": "d62996447689a1c43eb9637a1ab78399cb59a6367f13532f3824a31905c6c1fa",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-boundary-command-native.log.gz": "aeaf4b1e98078aa926096d49ccc8f38d1cd39395705800c1105a68a33a2807fe",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-boundary-command-portable.log.gz": "e1d26472014d6c1cf298dac1dbe78331d22712a2626e3d025afbfeec4f072c1f",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-boundary-ui-native.log.gz": "d674b66e68073f194c5e8fb7fce663e07b53f37a374fa2bfe0aff151b31819d4",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-boundary-ui-portable.log.gz": "da4d27a77c411f501b7d2564524cf6d741eeb26ce0413fdb0566c1c635e25c5a",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-command-native.log.gz": "872590fc340418763329f11b8a1459c3e457b54442d8721b3bbe2676855b8e30",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-command-portable.log.gz": "39ce1c5df8149e8641d549298610f6978accd6cbb3a5487d8e3fd9e9f6ea0125",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-ui-native.log.gz": "40576ddb2ea4df42fe5a88ab7ce12292c887c5007839f4de4fca51efe86167e4",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/tangent-ui-portable.log.gz": "d9d3fbfe4a6af37f7d09780183d610f649a7beba5ebb7fbe3f374cc3af590952",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/ui-native.log.gz": "5fb5088a97c94e377a99ab706624308a559ee2fe93b8ddee4805399d285a59fb",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/line-tangent-boundary-proof/ui-portable.log.gz": "53ad3ef4d2ebb102ffbf5f88e460aa26fd666ab3fad531ddbbd688f1508a5ee8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/subd-box-qualification.json": "ac54d68ee6441062359987d1d52a5770a898227549c2b0063237151f35276f12",
+    "b5db107c98081943b82e830de3399b54d0f573f4:docs/subd-plane-qualification.json": "a75049b8e106cb12599662fef97952de72c5b1b2b5fe4cdc0b40b7beadd8e3a6",
+    "b5db107c98081943b82e830de3399b54d0f573f4:src/app/tests/line_perpendicular_viewport.rs": "ac79fe22f28d958cf676572e0f9f5453bc425e23884bbc4806def76227cb956f",
+    "b5db107c98081943b82e830de3399b54d0f573f4:src/app/tests/line_tangent.rs": "a0b13c01d033e61583874d82869aa401e04db5f8a187b91ed84139c00d29bb70",
+    "b5db107c98081943b82e830de3399b54d0f573f4:src/app/tests/line_tangent_boundary.rs": "fbb586757bfa54ff52d4f5ecebd32db0c4d31f1117dcbb766750fd4270b390a6",
+    "b5db107c98081943b82e830de3399b54d0f573f4:src/app/tests/mod.rs": "a64cc2a3603e4428115420f12b687d24e445010251567143c644da5cb1051232",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/check_line_tangent_boundary.py": "0f13d2d5ff97c39f1b12efbd3a17b432c7a81225e042a984fa1ea76c13f699c0",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/client.py": "a9a2654c8af4c70b0405265f2608e63681d44a6bf6daae0cb54aeb832c3f2990",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/conic_getter_input.py": "83d52b7d8d3f83bcf3760f5ff3ddc0c2a1f5d0e06713b403792f52c96975b7d2",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs.json": "1bc5c25cdf0ca8081a78f9e89bfafa26fbecf4584c6a713e430c421c3f7a2582",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_bounds.json": "41aef2f2defe78a147b14c4d549cb16d63ae78626131b9164a30ab9d73ad1534",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_controls.json": "9d9e8a56e774bdbe5ed341216a9569cc48b59555fc1a561bd4e8a6f40059e475",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_ends.json": "a24d1c056b493a9e973a335ca341335b3bf453baafeb590c7814e25863894bf2",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_sdk.json": "625253c1b5dd5080c5ef843a1030d8ccb5951878804be48c1bcfef00368893a8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_sdk_sources.json": "c12c9bdbb092bbed545cdae9664bdc0a29877042345af6f7b29aa50e938d1766",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/fixtures/line_tangent_arcs_sources.json": "ee63693bb98a50945b4c7211d6bd896b49a1b22c6896e52f1581a3231ae85654",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/generate_line_tangent_arcs.py": "3ea42e596bec58d6ea60805b9214a42bf31be10bdf422c5441bcfaad4aec0d24",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/generate_line_tangent_arcs_bounds.py": "fbe0d4304adcefe83418bef178c07af662cb0ec5174a215f99dc73b27299293e",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/generate_line_tangent_arcs_controls.py": "826870d6766f2beb1c0a3c3b3f23c8c9d5302777e2ffb6facc1dc2bf229d76eb",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/generate_line_tangent_arcs_ends.py": "a6f020fb936a5172280e9699fe9606771df216a6308a8bbac2ddae310fd9f28b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/generate_line_tangent_arcs_sdk.py": "a68358f0dfeee8d0b4bb5b4238e622ccc103fe95b10326473b11a3f259f49c7d",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/line_tangent_arcs.py": "c8d377061414e951e83f35e8fa65e67aa76089b49f1b310e5974d1e10eb47743",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/line_tangent_arcs_controls.py": "64b6359a638f67bef901ab574eb638427b109f23e7646ee56f55647c777f6dfc",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/line_tangent_arcs_ends.py": "ab7d91ab9f32232e1528cb694819e9a393040168d785586868eda0b9580ad6d2",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/line_tangent_arcs_probe.py": "9dd98f2c584ad649116bee2b4ffcc7b3080f771c3a5735931480f6365793af96",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/line_tangent_arcs_sdk.py": "379f6d521cb110367e7f345d994cdcc56b5252f7aafe8dbe8d895bd11a05209b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/line_tangent_arcs.json.gz": "43eb916551b6bfebfccb5dcf03b399e3d520070f72fdf1d43caa8d8be83a0bde",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/line_tangent_arcs_bounds.json.gz": "8f75043dd5c1173de3c8fbfee9eddc90daa06fc3f4b6dc6477db26131a515841",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/line_tangent_arcs_controls.json.gz": "75e7feef147af5454d61c760daa9caff3ba4fecf4c417c474de03fced20fdd4f",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/line_tangent_arcs_ends.json.gz": "f22c128c35b4f9b2c8e050b7ef427648d750e8bf13976488ffefc58c84c91fc4",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/line_tangent_arcs_sdk.json.gz": "24927983acb8361945172993a3285ae9df1dfd01d2b0fe480ca21c7e4f2b3ed4",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/0518f20754eea92c0ab3d6c51a742d493507c0af76ad5e5045ca750d59363049.gz": "650460754f257b1a0c5e2c1f1f4795f4f89e2a8354915f0d74340f9057b2bee2",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/0a6381cd05eb2686c1f0d12796cfb0b18f2c74feded83ae316eba8bfd7e75287.gz": "e3fdb621fc868f6a339d9059230c51e8d65bd25361b8abc8bb42d0e943e4c88b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/16532a47b2547a039b75b814b56b97bdd97ec84f1eed9bc929dc67982a188597.gz": "62dc6209d0fe52882b7aa707fd20350cd92356494127ff3cd0cc184838ca080e",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/191d4fb37e1710db12fb1c78c36bf0d4ac3db7acb1aebdddd1fe3aee13a83011.gz": "9844cfe248fae81ae3712edbd3ee8471749f38b0af0b55a52b3d2900fd022ad5",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/2841c1b5eea2a4c4669c531f5ad3b62797b48681485f402707d71aa5083f5bea.gz": "30c3bca396a599e663f99f6b2d25975fd486053fde5a6b86b813ba57e96244f6",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/2e9eae10abba2ae7389c95bf6f97e5e974b5666dd576685c3eaa1b965c3ec767.gz": "0ff34f95a218f115206f67265917a8b601057d77a83fd7f353cce43cb78481a3",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/3dfde35b01ab3e7f2513bd18c2ae24a96222c8a752352d07c7168001d8f3194e.gz": "8e9ebce41749c2426458f266c4ae487a76790aa31467025dd36e6ec4b090b118",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/3ea42e596bec58d6ea60805b9214a42bf31be10bdf422c5441bcfaad4aec0d24.gz": "a927f5cea57add9dcd68ab1e9c9cd2df5f6a253a03bb719fd62dee186db26534",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/597b582bdd95127fd9c88c70a532f8b495e9b0dcc9859de391ba3ecf6904cca9.gz": "c3019b176c2156965646eb820419f87412832c21525b0aaab5109097852cf9cf",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/5e20fbbddee98f44151a1b3c8d2f22c3eccda1a5533908943f16cca46ef898a5.gz": "f1937d22971053a365d4d2fc292e45229422fa300aa69e264cdd96f7bbbcb822",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/621c87ab683fd2ad105d58722297acb610ac07e505e0d96612ff9b9e9950f89f.gz": "1118614eecba49352ad86142e0c1e84631d004de1b68437a0849d277427c8c98",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/64b6359a638f67bef901ab574eb638427b109f23e7646ee56f55647c777f6dfc.gz": "569a22204bf741259fb343d793e4647a7de44d1c239c171be903d88d31c9d2b9",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/826870d6766f2beb1c0a3c3b3f23c8c9d5302777e2ffb6facc1dc2bf229d76eb.gz": "7befed9e013bc4d6f67ab346143d748d0cb32dd7a5c35d9d0465929d96493ce6",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/83d52b7d8d3f83bcf3760f5ff3ddc0c2a1f5d0e06713b403792f52c96975b7d2.gz": "5136e07453195e20fd1f5835d0363d5ebb6bed4ca0d4d44f10a7df4b5534292f",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/9dd98f2c584ad649116bee2b4ffcc7b3080f771c3a5735931480f6365793af96.gz": "352b0f94077fd11289d7477b84400ff72d7c2335660fafc6e35306ab67472da4",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a5761fcfcc03e92353ed2679fc00b34cb0267f997c0fdadf9cc530816e1afe5b.gz": "cd0dcfec762bf984457169f6803e8c76fbac8d33ddb97df63650fcacfd0c1715",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a68358f0dfeee8d0b4bb5b4238e622ccc103fe95b10326473b11a3f259f49c7d.gz": "b0b2ac48c0aab0f66581a332e68580827a28737bdc6b32ba49f00327ea23bf7a",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a6a3fb25e75ae69a9cfc730abc01c1b5c9260fb8e51a643c54a3bb634afaf1b1.gz": "bf5c679f8b38e382b424e6a7b12b5b8f3392aa8811792421236172176855359b",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a6f020fb936a5172280e9699fe9606771df216a6308a8bbac2ddae310fd9f28b.gz": "27df92d19f8def66651d5ebddf011302f757bf20301798a362f49f3243b45f64",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a871f7a2c881cd4e72d110c9b2ddad008de40fba0531e01afcf5fbfeb751c794.gz": "d635700b63fe263b9027ce6a94d737e07580c12d30aff7fbe00e7ca82cd8d3a3",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/a9a2654c8af4c70b0405265f2608e63681d44a6bf6daae0cb54aeb832c3f2990.gz": "f28bc5c6031bd7fce7a6a099b2ca8f462bb418a934ce03ce09dd8baa2cada235",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/ab7d91ab9f32232e1528cb694819e9a393040168d785586868eda0b9580ad6d2.gz": "63aada4f062e9c0c9a0f936f4073fe82a3e9a2da61de17cbe36cbd89fb3526b5",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/b5e30cc47607848561bbe399990c10a7e5dfa840a4360dc34a6d4162bb31b454.gz": "d0cf33ee2a18f9e83e917d12afbed5063c6e471f367efcebffc5a9516a1b1500",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/cda9f9d9e642792cb61021fae3ee05e0b4be9621830b782827634981dec3da1e.gz": "f4f21c720c17a2d0c06e103836a3baa0fb62773999a3b9a30085411300b2b161",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/observations/source_snapshots/fbe0d4304adcefe83418bef178c07af662cb0ec5174a215f99dc73b27299293e.gz": "1fc5b3607c59b772f87d66dbc0623ebc57ba3c6a51b044ee40122d7bb4962309",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/report_line_tangent_boundary.py": "0ca34072d4db9546adca4a19b820b7ea9615eb269962c7728a962e1f7fcd66e9",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/rhino_worker.py": "191d4fb37e1710db12fb1c78c36bf0d4ac3db7acb1aebdddd1fe3aee13a83011",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/structural_sdk.py": "cda9f9d9e642792cb61021fae3ee05e0b4be9621830b782827634981dec3da1e",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/tangent_boundary_evidence.py": "c1ae2eabccc3158bd88abb33d97ee13e1f84045e5cf2fa8ee5b31a8b5c7901f8",
+    "b5db107c98081943b82e830de3399b54d0f573f4:tools/rhino_oracle/test_line_tangent_boundary.py": "6cd466671078ac942cddc04a114997dc2c1abc674509d1d7aabba5c407aa9aa8"
+  },
+  "evidence_sha256": {
+    "docs/line-tangent-boundary-proof/arc-extension-native.log.gz": "c955616662a8f5abd8d6059f2228752373b0cf15bf3018685d2adfd0c34bf186",
+    "docs/line-tangent-boundary-proof/arc-extension-portable.log.gz": "22a7d2ccc5b0b81fa48d1fba4d70f208b38b31021e38ac5083fb333faab57575",
+    "docs/line-tangent-boundary-proof/capture-line_tangent_arcs.log.gz": "bf5ba58febcf5d84cbaa5c25df6956d940307af66deca8198566e8ad3c238201",
+    "docs/line-tangent-boundary-proof/capture-line_tangent_arcs_bounds.log.gz": "2ee5270cb92b6a33afe99ce129f511b6c5d188098cc547f9275311f3c4a6c3c3",
+    "docs/line-tangent-boundary-proof/capture-line_tangent_arcs_controls.log.gz": "7a19fa0dea1d3994a0555fa4f41b9537e8a5561829ea8c1caf16a416edc702d8",
+    "docs/line-tangent-boundary-proof/capture-line_tangent_arcs_ends.log.gz": "851aed9a6b6907916afdd5aa11322423c11f751f20b204a92302a1b137d55d82",
+    "docs/line-tangent-boundary-proof/capture-line_tangent_arcs_sdk.log.gz": "34238a420b30faa4aee406aeeffdbf0b9d0811b1558618b35a8ffb0c11c08d6d",
+    "docs/line-tangent-boundary-proof/captures.json": "14159f3b7063435dea1388e25ab5545797bbbdc010c7131ba48ab2e78cbfb250",
+    "docs/line-tangent-boundary-proof/checks.json": "68c1ad591d2516a6b7d11965ed30015f47b3f71276923220dcb6496bd92faa34",
+    "docs/line-tangent-boundary-proof/clippy-all-features.log.gz": "9298c2145ed35e1cbcdb5babdeef2f7d2d351875eacc17ab5c9bb501b4a3ec10",
+    "docs/line-tangent-boundary-proof/clippy-portable.log.gz": "ce19ceaf4f9ea4fb7c440f486432b925ad18c34b4dee33916fd15a9552f11a00",
+    "docs/line-tangent-boundary-proof/commands-native.log.gz": "bfaa061711f4f18c9493727c92485782573d41e46e90b5a0d6479fafbfcd72c2",
+    "docs/line-tangent-boundary-proof/commands-portable.log.gz": "6ff3ece008d599f9aff4a07588c0b016f561d9142fc212d9302605ae0ba27346",
+    "docs/line-tangent-boundary-proof/corners-native.log.gz": "2b6b010af4617c52ba59cb839a72034aab8f8578a58a8a1ce8d25d4b9f858030",
+    "docs/line-tangent-boundary-proof/corners-portable.log.gz": "40500cb680bd7331a72941cf98b23345127ea11e7484e0212d959e465c22940c",
+    "docs/line-tangent-boundary-proof/curves-native.log.gz": "07d0957ff0f8458d9aaa6846bb43ef43fd9590a353ac7246abce60178665a136",
+    "docs/line-tangent-boundary-proof/curves-portable.log.gz": "1edd71cb49577f1af9c34438bd21d59b01c3f6cd061ea1b1a3cbe24b0344008c",
+    "docs/line-tangent-boundary-proof/failed-attempt-idle.log.gz": "5fe0352c880ff182bd6e8abae61de9a0483a2da4406b21dd907769c6ac247827",
+    "docs/line-tangent-boundary-proof/failed-attempt-syntax.log.gz": "b415796d00d8b06460746c2395c2c59d0bf3438dbcee48b9a5fde8dde9e6fe82",
+    "docs/line-tangent-boundary-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/line-tangent-boundary-proof/grid-native.log.gz": "fd7bfe4abc6fe1d2a82e80ec52e89a68004929bd715f337f8abd5877c123f266",
+    "docs/line-tangent-boundary-proof/grid-portable.log.gz": "20eec7da22b9b3cabe72de382f36aeff2d6928ba1a940a15432d9395217f047b",
+    "docs/line-tangent-boundary-proof/history.log.gz": "15c472d57c3d1cb090e7b74590e51fa7b2a831177ab2bf82b28d89bcef69ddaf",
+    "docs/line-tangent-boundary-proof/line-command-native.log.gz": "666b0d7fb1ce388071162f0c0f1f373d9e1c0c8d0ec445879c04a35342a5503d",
+    "docs/line-tangent-boundary-proof/line-command-portable.log.gz": "20df4e93b2057c6d0570669f00b29d581298a434c7d387b57da62ac58c7d0800",
+    "docs/line-tangent-boundary-proof/line-ui-native.log.gz": "dcfc35b97a056dd509b13d1c6fdca831b81adba12959e6e43c5ac00b26f9590d",
+    "docs/line-tangent-boundary-proof/line-ui-portable.log.gz": "2cc04377ffd793a51f7cae921c52011902b3d5be056e33dcc80ea2b541b1018f",
+    "docs/line-tangent-boundary-proof/lines-command-native.log.gz": "8b492968fc5aac6abca504ce1d338b5037ff3090976c70f4905e62bfd155169b",
+    "docs/line-tangent-boundary-proof/lines-command-portable.log.gz": "bd32b4afc7adbff77135ec5f0308ed0259fbb5a6877660cf454a4442359a52dd",
+    "docs/line-tangent-boundary-proof/lines-ui-native.log.gz": "e038e5209d4d6c9f6aeae2db7f5513d5bda7d4dc99c4020b8bfb4caec742a521",
+    "docs/line-tangent-boundary-proof/lines-ui-portable.log.gz": "f2433a7f370256f89d2313ebfb11b885f17e8a14b47affa3b9950867469a3a72",
+    "docs/line-tangent-boundary-proof/move-normal-native.log.gz": "5ca79d4bf35be2ba66bb93bf7fe0dec1a879e76c71047656b64ba2b1835ded39",
+    "docs/line-tangent-boundary-proof/move-normal-portable.log.gz": "28819da20138bbb3ff23929f753ebf63dd050d81053b3524674041c705a4cdf8",
+    "docs/line-tangent-boundary-proof/normal-command-native.log.gz": "30cda8c15839aebb79452bf0fdd052342d1ac184eab7d1ad2cbd3eb447d54df7",
+    "docs/line-tangent-boundary-proof/normal-command-portable.log.gz": "ad77ecb044da71d4029a2549195f9d4853c80d9d06837ecd3f7b6c42cd479d45",
+    "docs/line-tangent-boundary-proof/normal-ui-native.log.gz": "dd4e36f42ed8138dd0e8b618c89f4a2cabc736d562c8876c379f2b3eedaef719",
+    "docs/line-tangent-boundary-proof/normal-ui-portable.log.gz": "8e0ded685c506ec68e4922308d171da9ba064cd27f51aab5a5eb26b91ee7ac6b",
+    "docs/line-tangent-boundary-proof/perpendicular-command-native.log.gz": "fc8bfb89e5f4817a7b55c9bdba789a313721880e2e878979ad3712d96207ede6",
+    "docs/line-tangent-boundary-proof/perpendicular-command-portable.log.gz": "a05f14a9e124a2d3576d2c988831d73037ab58dc63b642c37970e8e78bdf9024",
+    "docs/line-tangent-boundary-proof/perpendicular-ui-native.log.gz": "e621ad1f63f5402272371f7fcc2eb9ec35d7ce7df4b89cd07e80b93065a5ad2a",
+    "docs/line-tangent-boundary-proof/perpendicular-ui-portable.log.gz": "c86fc0ebda85c9b953499ae6d13a27a69a0dbdd3e58598f4fea0412279d632b7",
+    "docs/line-tangent-boundary-proof/plane-native.log.gz": "cbcf6f4eba3e5dd48da5b883e32842d66a1b6b42e35d9d03f4089462a4f70c21",
+    "docs/line-tangent-boundary-proof/plane-portable.log.gz": "10683fd2629262f7fabe3213cd96dd7034ae939504c78922dc4621d2e6610205",
+    "docs/line-tangent-boundary-proof/points-native.log.gz": "6f3a66beccea74fc2b9daae3fa96096030b8cd97fc0f3bff5987dcc50a7c83cd",
+    "docs/line-tangent-boundary-proof/points-portable.log.gz": "645e4d2cd1f88d9d5485e32509a7d81248c4de98d7cb0a206e2cb14225874b7e",
+    "docs/line-tangent-boundary-proof/polyline-native.log.gz": "19046198e820021b7d2515227b14252594e932be478f23f2a55617d3f75fd8c7",
+    "docs/line-tangent-boundary-proof/polyline-portable.log.gz": "8607406c05d7c993d19c5c0cbf4ac9fe2bff8380c67ec8dc1d181a62867bfff8",
+    "docs/line-tangent-boundary-proof/primitive-input-native.log.gz": "6a522f5a2e6991f6ab9f25cbe5ad19fc3b4ba33f802d81de4d6ec2ed180c7b76",
+    "docs/line-tangent-boundary-proof/primitive-input-portable.log.gz": "9de3f07beb28057382a018a1bdb04b23c1a5ba935d82b6c85b9f8f4944116c12",
+    "docs/line-tangent-boundary-proof/python.log.gz": "ed9d3b982ffd894bc5e5afef20b9887c0b20d1bbb49ded0de054045383c8d7e6",
+    "docs/line-tangent-boundary-proof/rectangle-native.log.gz": "98fc9d08083b49a24b72c9df88223682f40c479db5535fda50507f034021f1ad",
+    "docs/line-tangent-boundary-proof/rectangle-portable.log.gz": "ce81fc935502e8baad4c86f2b64c70e8e343cb7200e4ec7b66ee473c1f09aa6e",
+    "docs/line-tangent-boundary-proof/reference-command-native.log.gz": "afe8226dc67948af2d13a56332cc68e2ad1026194f195b3425f23f046fc64806",
+    "docs/line-tangent-boundary-proof/reference-command-portable.log.gz": "90d17475292d29e6126989358c5603d9a675a70ffef9251d4f3ad4d3b8af2542",
+    "docs/line-tangent-boundary-proof/reference-ui-native.log.gz": "1a69bc26b21e59c43d1ab42044fb903f1dba6d6257c7b08d8b12997619f912bb",
+    "docs/line-tangent-boundary-proof/reference-ui-portable.log.gz": "6744546e8508306929ff1a03d3aece46810e5b849fa88cd8c7e579b53d7f045b",
+    "docs/line-tangent-boundary-proof/registry.log.gz": "08831a739949dc5980d15feb0e7cb29da4484ef6edc6e53be875065fdd18d575",
+    "docs/line-tangent-boundary-proof/subd-native.log.gz": "d62996447689a1c43eb9637a1ab78399cb59a6367f13532f3824a31905c6c1fa",
+    "docs/line-tangent-boundary-proof/tangent-boundary-command-native.log.gz": "aeaf4b1e98078aa926096d49ccc8f38d1cd39395705800c1105a68a33a2807fe",
+    "docs/line-tangent-boundary-proof/tangent-boundary-command-portable.log.gz": "e1d26472014d6c1cf298dac1dbe78331d22712a2626e3d025afbfeec4f072c1f",
+    "docs/line-tangent-boundary-proof/tangent-boundary-ui-native.log.gz": "d674b66e68073f194c5e8fb7fce663e07b53f37a374fa2bfe0aff151b31819d4",
+    "docs/line-tangent-boundary-proof/tangent-boundary-ui-portable.log.gz": "da4d27a77c411f501b7d2564524cf6d741eeb26ce0413fdb0566c1c635e25c5a",
+    "docs/line-tangent-boundary-proof/tangent-command-native.log.gz": "872590fc340418763329f11b8a1459c3e457b54442d8721b3bbe2676855b8e30",
+    "docs/line-tangent-boundary-proof/tangent-command-portable.log.gz": "39ce1c5df8149e8641d549298610f6978accd6cbb3a5487d8e3fd9e9f6ea0125",
+    "docs/line-tangent-boundary-proof/tangent-ui-native.log.gz": "40576ddb2ea4df42fe5a88ab7ce12292c887c5007839f4de4fca51efe86167e4",
+    "docs/line-tangent-boundary-proof/tangent-ui-portable.log.gz": "d9d3fbfe4a6af37f7d09780183d610f649a7beba5ebb7fbe3f374cc3af590952",
+    "docs/line-tangent-boundary-proof/ui-native.log.gz": "5fb5088a97c94e377a99ab706624308a559ee2fe93b8ddee4805399d285a59fb",
+    "docs/line-tangent-boundary-proof/ui-portable.log.gz": "53ad3ef4d2ebb102ffbf5f88e460aa26fd666ab3fad531ddbbd688f1508a5ee8",
+    "docs/line-tangent-validation.json": "a598c3fe05424f759b906ad5969a12822eee5964613f7d027fdf91655fa7d3e0",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs.json": "1bc5c25cdf0ca8081a78f9e89bfafa26fbecf4584c6a713e430c421c3f7a2582",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_bounds.json": "41aef2f2defe78a147b14c4d549cb16d63ae78626131b9164a30ab9d73ad1534",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_controls.json": "9d9e8a56e774bdbe5ed341216a9569cc48b59555fc1a561bd4e8a6f40059e475",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_ends.json": "a24d1c056b493a9e973a335ca341335b3bf453baafeb590c7814e25863894bf2",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_sdk.json": "625253c1b5dd5080c5ef843a1030d8ccb5951878804be48c1bcfef00368893a8",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_sdk_sources.json": "c12c9bdbb092bbed545cdae9664bdc0a29877042345af6f7b29aa50e938d1766",
+    "tools/rhino_oracle/fixtures/line_tangent_arcs_sources.json": "ee63693bb98a50945b4c7211d6bd896b49a1b22c6896e52f1581a3231ae85654",
+    "tools/rhino_oracle/observations/line_tangent_arcs.json.gz": "43eb916551b6bfebfccb5dcf03b399e3d520070f72fdf1d43caa8d8be83a0bde",
+    "tools/rhino_oracle/observations/line_tangent_arcs_bounds.json.gz": "8f75043dd5c1173de3c8fbfee9eddc90daa06fc3f4b6dc6477db26131a515841",
+    "tools/rhino_oracle/observations/line_tangent_arcs_controls.json.gz": "75e7feef147af5454d61c760daa9caff3ba4fecf4c417c474de03fced20fdd4f",
+    "tools/rhino_oracle/observations/line_tangent_arcs_ends.json.gz": "f22c128c35b4f9b2c8e050b7ef427648d750e8bf13976488ffefc58c84c91fc4",
+    "tools/rhino_oracle/observations/line_tangent_arcs_sdk.json.gz": "24927983acb8361945172993a3285ae9df1dfd01d2b0fe480ca21c7e4f2b3ed4",
+    "tools/rhino_oracle/observations/source_snapshots/0518f20754eea92c0ab3d6c51a742d493507c0af76ad5e5045ca750d59363049.gz": "650460754f257b1a0c5e2c1f1f4795f4f89e2a8354915f0d74340f9057b2bee2",
+    "tools/rhino_oracle/observations/source_snapshots/0a6381cd05eb2686c1f0d12796cfb0b18f2c74feded83ae316eba8bfd7e75287.gz": "e3fdb621fc868f6a339d9059230c51e8d65bd25361b8abc8bb42d0e943e4c88b",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/16532a47b2547a039b75b814b56b97bdd97ec84f1eed9bc929dc67982a188597.gz": "62dc6209d0fe52882b7aa707fd20350cd92356494127ff3cd0cc184838ca080e",
+    "tools/rhino_oracle/observations/source_snapshots/191d4fb37e1710db12fb1c78c36bf0d4ac3db7acb1aebdddd1fe3aee13a83011.gz": "9844cfe248fae81ae3712edbd3ee8471749f38b0af0b55a52b3d2900fd022ad5",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/2841c1b5eea2a4c4669c531f5ad3b62797b48681485f402707d71aa5083f5bea.gz": "30c3bca396a599e663f99f6b2d25975fd486053fde5a6b86b813ba57e96244f6",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2e9eae10abba2ae7389c95bf6f97e5e974b5666dd576685c3eaa1b965c3ec767.gz": "0ff34f95a218f115206f67265917a8b601057d77a83fd7f353cce43cb78481a3",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3dfde35b01ab3e7f2513bd18c2ae24a96222c8a752352d07c7168001d8f3194e.gz": "8e9ebce41749c2426458f266c4ae487a76790aa31467025dd36e6ec4b090b118",
+    "tools/rhino_oracle/observations/source_snapshots/3ea42e596bec58d6ea60805b9214a42bf31be10bdf422c5441bcfaad4aec0d24.gz": "a927f5cea57add9dcd68ab1e9c9cd2df5f6a253a03bb719fd62dee186db26534",
+    "tools/rhino_oracle/observations/source_snapshots/4683bb4761c92da70920b7402e3cce8f68e64283c407d2f1d384766a2071d3ea.gz": "270a9927c53d2fd0813a5dd006a2689be9d08994215772a6403c88a5c31faad1",
+    "tools/rhino_oracle/observations/source_snapshots/597b582bdd95127fd9c88c70a532f8b495e9b0dcc9859de391ba3ecf6904cca9.gz": "c3019b176c2156965646eb820419f87412832c21525b0aaab5109097852cf9cf",
+    "tools/rhino_oracle/observations/source_snapshots/5e20fbbddee98f44151a1b3c8d2f22c3eccda1a5533908943f16cca46ef898a5.gz": "f1937d22971053a365d4d2fc292e45229422fa300aa69e264cdd96f7bbbcb822",
+    "tools/rhino_oracle/observations/source_snapshots/621c87ab683fd2ad105d58722297acb610ac07e505e0d96612ff9b9e9950f89f.gz": "1118614eecba49352ad86142e0c1e84631d004de1b68437a0849d277427c8c98",
+    "tools/rhino_oracle/observations/source_snapshots/64b6359a638f67bef901ab574eb638427b109f23e7646ee56f55647c777f6dfc.gz": "569a22204bf741259fb343d793e4647a7de44d1c239c171be903d88d31c9d2b9",
+    "tools/rhino_oracle/observations/source_snapshots/826870d6766f2beb1c0a3c3b3f23c8c9d5302777e2ffb6facc1dc2bf229d76eb.gz": "7befed9e013bc4d6f67ab346143d748d0cb32dd7a5c35d9d0465929d96493ce6",
+    "tools/rhino_oracle/observations/source_snapshots/83d52b7d8d3f83bcf3760f5ff3ddc0c2a1f5d0e06713b403792f52c96975b7d2.gz": "5136e07453195e20fd1f5835d0363d5ebb6bed4ca0d4d44f10a7df4b5534292f",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/9dd98f2c584ad649116bee2b4ffcc7b3080f771c3a5735931480f6365793af96.gz": "352b0f94077fd11289d7477b84400ff72d7c2335660fafc6e35306ab67472da4",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/a5761fcfcc03e92353ed2679fc00b34cb0267f997c0fdadf9cc530816e1afe5b.gz": "cd0dcfec762bf984457169f6803e8c76fbac8d33ddb97df63650fcacfd0c1715",
+    "tools/rhino_oracle/observations/source_snapshots/a68358f0dfeee8d0b4bb5b4238e622ccc103fe95b10326473b11a3f259f49c7d.gz": "b0b2ac48c0aab0f66581a332e68580827a28737bdc6b32ba49f00327ea23bf7a",
+    "tools/rhino_oracle/observations/source_snapshots/a6a3fb25e75ae69a9cfc730abc01c1b5c9260fb8e51a643c54a3bb634afaf1b1.gz": "bf5c679f8b38e382b424e6a7b12b5b8f3392aa8811792421236172176855359b",
+    "tools/rhino_oracle/observations/source_snapshots/a6f020fb936a5172280e9699fe9606771df216a6308a8bbac2ddae310fd9f28b.gz": "27df92d19f8def66651d5ebddf011302f757bf20301798a362f49f3243b45f64",
+    "tools/rhino_oracle/observations/source_snapshots/a871f7a2c881cd4e72d110c9b2ddad008de40fba0531e01afcf5fbfeb751c794.gz": "d635700b63fe263b9027ce6a94d737e07580c12d30aff7fbe00e7ca82cd8d3a3",
+    "tools/rhino_oracle/observations/source_snapshots/a9a2654c8af4c70b0405265f2608e63681d44a6bf6daae0cb54aeb832c3f2990.gz": "f28bc5c6031bd7fce7a6a099b2ca8f462bb418a934ce03ce09dd8baa2cada235",
+    "tools/rhino_oracle/observations/source_snapshots/ab7d91ab9f32232e1528cb694819e9a393040168d785586868eda0b9580ad6d2.gz": "63aada4f062e9c0c9a0f936f4073fe82a3e9a2da61de17cbe36cbd89fb3526b5",
+    "tools/rhino_oracle/observations/source_snapshots/b5e30cc47607848561bbe399990c10a7e5dfa840a4360dc34a6d4162bb31b454.gz": "d0cf33ee2a18f9e83e917d12afbed5063c6e471f367efcebffc5a9516a1b1500",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cda9f9d9e642792cb61021fae3ee05e0b4be9621830b782827634981dec3da1e.gz": "f4f21c720c17a2d0c06e103836a3baa0fb62773999a3b9a30085411300b2b161",
+    "tools/rhino_oracle/observations/source_snapshots/fbe0d4304adcefe83418bef178c07af662cb0ec5174a215f99dc73b27299293e.gz": "1fc5b3607c59b772f87d66dbc0623ebc57ba3c6a51b044ee40122d7bb4962309"
+  }
+}
