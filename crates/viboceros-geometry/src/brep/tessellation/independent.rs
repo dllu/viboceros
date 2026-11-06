@@ -278,7 +278,7 @@ impl Brep {
                     .any(|p| !p.is_empty());
             let triangles = if has_creases {
                 creases::triangulate(
-                    &parameters,
+                    &mut parameters,
                     &[boundary_vertex_count],
                     &face.surface,
                     face_index,
@@ -287,18 +287,18 @@ impl Brep {
             } else if let Some(triangles) = triangulate_simple_trim_polygon(&mut parameters)? {
                 triangles
             } else {
-                triangulate_trim_region(&parameters, &[boundary_vertex_count])?
+                trim_region::triangulate(&mut parameters, &[boundary_vertex_count], &[])?
                     .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?
             };
             (parameters, boundary_vertex_count, triangles)
         } else {
             let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
-            let parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
+            let mut parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
             let boundary_vertex_count = parameters.len();
             let triangles = if retain_parameters {
-                creases::triangulate(&parameters, &loop_lengths, &face.surface, face_index)?
+                creases::triangulate(&mut parameters, &loop_lengths, &face.surface, face_index)?
             } else {
-                triangulate_trim_region(&parameters, &loop_lengths)?
+                trim_region::triangulate(&mut parameters, &loop_lengths, &[])?
             }
             .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
             (parameters, boundary_vertex_count, triangles)
@@ -343,9 +343,9 @@ impl Brep {
             sampling.grid(face_index),
         )?;
         let triangles = if retain_parameters {
-            creases::triangulate(&parameters, &loop_lengths, &face.surface, face_index)?
+            creases::triangulate(&mut parameters, &loop_lengths, &face.surface, face_index)?
         } else {
-            triangulate_trim_region(&parameters, &loop_lengths)?
+            trim_region::triangulate(&mut parameters, &loop_lengths, &[])?
         }
         .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
         let mut face_vertices = parameters

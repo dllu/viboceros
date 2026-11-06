@@ -240,9 +240,9 @@ impl Brep {
                 sampling.grid(index),
             )?;
             let face_triangles = if retain_parameters {
-                creases::triangulate(&parameters, &lengths, &face.surface, index)?
+                creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
             } else {
-                triangulate_trim_region(&parameters, &lengths)?
+                trim_region::triangulate(&mut parameters, &lengths, &[])?
             }
             .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
             let offset =

@@ -28,6 +28,8 @@ Repeated polygon hole loops remain in the model. Triangulation coalesces only
 identical sampled polygon walks, keeping constraints and area audits on their
 geometric region. The boundary audit shares a witness only between complete
 identical same-face linear edges; a shared segment cannot hide a missing hole.
+For crossing sibling holes, a constrained arrangement adds mesh intersection
+vertices while retaining every exact model loop. See [crossing-hole qualification](commands/planar-crossings.md).
 
 The [original six-case comparison](smlib-planar-comparison.json) remains immutable
 and now replays in both builds. The [expanded validation](planar-regions-validation.json)

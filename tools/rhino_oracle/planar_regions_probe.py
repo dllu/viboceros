@@ -52,6 +52,28 @@ def run(op,host,iterations,tolerance):
                     if area:area.Dispose()
                 row.update(kind='brep',faces=int(g.Faces.Count),loops=loops,area=value,native_valid=bool(g.IsValid),
                            brep=host['_interchange_brep_record'](g,include_samples=False))
+                centered=g.DuplicateBrep();origin=g.GetBoundingBox(True).Center
+                try:
+                    if not centered.Transform(G.Transform.Translation(-origin.X,-origin.Y,-origin.Z)):raise ValueError('area translation failed')
+                    area=G.AreaMassProperties.Compute(centered,True,False,False,False,1e-12,1e-12)
+                    try:row.update(centered_area=float(area.Area)if area else None,area_origin=host['_xyz'](origin))
+                    finally:
+                        if area:area.Dispose()
+                finally:centered.Dispose()
+                unit=g.DuplicateBrep()
+                try:
+                    for face in unit.Faces:
+                        for axis in range(2):
+                            if not face.SetDomain(axis,G.Interval(0.,1.)):raise ValueError('unit face domain failed')
+                    area=G.AreaMassProperties.Compute(unit,True,False,False,False,1e-12,1e-12)
+                    try:row.update(unit_domain_area=float(area.Area)if area else None,
+                                   unit_domain_brep=host['_interchange_brep_record'](unit,include_samples=False))
+                    finally:
+                        if area:area.Dispose()
+                finally:unit.Dispose()
+                if 'samples'in op:
+                    from planar_crossings_probe import details
+                    row['coverage']=details(g,op['samples'],host)
             else:raise ValueError('unexpected PlanarSrf output')
             rows.append(row)
         return rows

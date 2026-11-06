@@ -73,7 +73,9 @@
   input-order, seam and duplicate-encoding differences too. Both builds now use
   measured seam parity and whole-loop hole admission, and native construction
   receives each planned region separately. See [expanded validation](../planar-regions-validation.json)
-  for scope, raw definitions and remaining limits.
+  for scope and raw definitions. [Crossing-hole qualification](../commands/planar-crossings.md)
+  adds retained intersecting inner loops and union meshing, with one explicitly
+  recorded tiny-circle area-reporting discrepancy.
 
 - **Native Join is not raw Rhino parity.** The
   [92-case replay](../smlib-join-comparison.json) has no native execution errors but

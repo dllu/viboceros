@@ -2,6 +2,8 @@
 use super::*;
 mod coincident;
 pub(super) use coincident::{canonical_walk, unique_loops};
+mod crossing;
+pub(super) use crossing::triangulate;
 
 pub(super) fn interior_faces(
     triangulation: &ConstrainedDelaunayTriangulation<TrimTriangulationVertex>,

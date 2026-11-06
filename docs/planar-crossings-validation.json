@@ -1,0 +1,80 @@
+{
+  "scope": "PlanarSrf retains crossing sibling hole loops and their model-area contributions; a constrained mesh arrangement excludes their geometric union, preserves normal channels and survives 3DM serialization.",
+  "baseline_revision": "e967d3cd2575e392d6b2f13309e8b206315b3d6e",
+  "passed": {
+    "new_native_command_workflows": 155,
+    "new_primary_workflows": 89,
+    "new_corpus_distinct_ordered_source_definitions": 85,
+    "additional_distinct_ordered_source_definitions": 78,
+    "combined_distinct_ordered_source_definitions": 183,
+    "region_replays_per_build": 247,
+    "application_cases_per_build": 198,
+    "output_3dm_cases_per_build": 198,
+    "legacy_region_cases_per_build": 6,
+    "native_mesh_coverage_scenes_per_build": 8,
+    "coverage_stations_per_scene": 64,
+    "test_counts": {
+      "portable": {
+        "command_unit": 14,
+        "command_policy": 2,
+        "mesh_command": 3,
+        "oracle": 5,
+        "app": 1,
+        "mesh_app": 4
+      },
+      "native": {
+        "command_unit": 16,
+        "command_policy": 2,
+        "mesh_command": 3,
+        "oracle": 5,
+        "app": 1,
+        "mesh_app": 4
+      },
+      "quality": {
+        "trim_regions": 11,
+        "planar_faces": 8,
+        "tessellation": 23,
+        "triangulation": 4,
+        "python": 21
+      }
+    }
+  },
+  "native_area_gap": {
+    "id": "crossing_circle10_small",
+    "native_area": 0.00021362720231357302,
+    "analytic_area": 0.00021362830044410595,
+    "difference": 1.0981305329307595e-09,
+    "geometry": "Complete positive boundary bases in each build, and native spatial/affinely lifted UV control definitions checked at 1e-12. Local analytic area checked at 1e-15.",
+    "history": "The primary and application comparisons require exactly two occurrences (after/redo); archive comparison requires exactly one. Every other area mismatch fails.",
+    "diagnostics": "The 33 holdouts repeat twice with byte-for-byte unchanged original B-rep definitions. Translation and unit-domain reparameterization preserve this scalar discrepancy. Unit-domain copies retain identical spatial controls and topology, and their UV control charts are independently checked."
+  },
+  "comparisons": {
+    "sources": "Complete NURBS source definitions at 1e-12 in the public homogeneous getter chart; retained Rust source objects checked for exact equality.",
+    "regions": "Original outer/inner boundary membership, counts and multiplicity; output and inner-loop order canonicalized.",
+    "area": "Pilot 1e-5 absolute; precise 1e-9 absolute plus 1e-12 relative; legacy six cases 1e-10 absolute. The single named scalar gap above is reported explicitly.",
+    "membership": "Bidirectional spatial witnesses at 1e-7, with complete positive-basis coefficient checks for the tiny-circle area discrepancy.",
+    "meshes": "Eight scenes compare 64 spatial coverage stations to native default render meshes at 1e-6; polygonal mesh area at 1e-9. Raw native mesh definitions retained.",
+    "archive": "Persistent UUID lookup, output region comparison and audited normal-mesh generation before and after output 3DM round trips.",
+    "excluded": "Full native B-rep parameterization and output birth order are not primary comparison gates. Native face-membership metadata is preserved separately from mesh coverage."
+  },
+  "architecture": "Planar face construction extracted from brep.rs. The ordinary disjoint-hole constructor retains its validation; an explicit overlapping-hole constructor admits each hole independently. Native builds retain usd-brep profile admission and construction with exact fallback.",
+  "headless": {
+    "native_captures": "Private Xvfb/i3/runtime directory through tools/rhino_oracle/run_headless.sh; Wayland/compositor sockets unset; only owned Rhino closed.",
+    "application_tests": "test_app state with desktop display/compositor variables removed; no GUI event loop."
+  },
+  "limits": [
+    "One tiny-circle native area-reporting discrepancy remains explicit; full scalar parity is not claimed.",
+    "Curved mesh intersections use sampled chords; continuous curve-error bounds, native triangulation topology, arbitrary self-intersections and comparative performance remain unqualified.",
+    "Native face-membership diagnostics differ from native mesh coverage at some crossing-hole stations; face-membership API parity is not established.",
+    "Original full used B-rep definitions are retained; complete native parameterization and ordering are not qualified.",
+    "The fallback retains the 131072-vertex limit and bounds constraint traversal/recovery to four million steps. Thin facets use exact binary64-coordinate determinants when floating area is uncertain."
+  ],
+  "evidence": {
+    "captures": "planar-crossings-proof/captures.json",
+    "runs": "planar-crossings-proof/runs.json",
+    "sha256": "planar-crossings-proof/sha256.json",
+    "baseline": "planar-crossings-proof/baseline-audit.json.gz",
+    "prior_regions": "planar-regions-validation.json",
+    "planar_mesh": "planar-mesh-qualification.json"
+  }
+}

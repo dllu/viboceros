@@ -6,6 +6,9 @@ fn planar_regions_application_commands_match_native_regions_and_history() {
     family("planar_regions_holdouts", 69);
     family("planar_regions_confirmations", 32);
     family("planar_regions_planes", 8);
+    family("planar_crossings", 48);
+    family("planar_crossings_details", 8);
+    family("planar_crossings_holdouts", 33);
 }
 fn family(family: &str, expected_count: usize) {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/rhino_oracle");
@@ -15,6 +18,7 @@ fn family(family: &str, expected_count: usize) {
     .unwrap();
     let native = super::oracle_observation::read(&base, family);
     let mut count = 0;
+    let mut area_gaps = 0;
     for (op, row) in request["operations"]
         .as_array()
         .unwrap()
@@ -47,8 +51,16 @@ fn family(family: &str, expected_count: usize) {
         app.command_input = "Redo".into();
         app.run_command();
         let redo = snapshot(&app.document, &ids, &sources).unwrap();
-        comparison::compare(&serde_json::json!({"success":true,"before":before,"after":after,"undo":undo,"redo":redo}),&row["value"],1e-9).unwrap_or_else(|e|panic!("{}: {e}",op["id"]));
+        area_gaps += comparison::compare(&serde_json::json!({"success":true,"before":before,"after":after,"undo":undo,"redo":redo}),&row["value"],1e-9,op["id"].as_str().unwrap()).unwrap_or_else(|e|panic!("{}: {e}",op["id"]));
         assert!(app.active_command.is_none());
     }
     assert_eq!(count, expected_count);
+    assert_eq!(
+        area_gaps,
+        if family == "planar_crossings_holdouts" {
+            2
+        } else {
+            0
+        }
+    );
 }

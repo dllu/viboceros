@@ -4,14 +4,18 @@ mod comparison;
 mod observation;
 use serde_json::Value;
 #[test]
-fn planar_regions_match_native_membership_area_sources_and_history() {
+fn planar_regions_match_native_boundaries_sources_history_and_record_area_evidence() {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     let mut failures = Vec::new();
+    let mut area_gaps = Vec::new();
     for (family, count, epsilon) in [
         ("planar_regions_pilot", 49, 1e-5),
         ("planar_regions_holdouts", 69, 1e-9),
         ("planar_regions_confirmations", 32, 1e-9),
         ("planar_regions_planes", 8, 1e-9),
+        ("planar_crossings", 48, 1e-9),
+        ("planar_crossings_details", 8, 1e-9),
+        ("planar_crossings_holdouts", 33, 1e-9),
     ] {
         let request: Value = serde_json::from_slice(
             &std::fs::read(base.join(format!("fixtures/{family}.json"))).unwrap(),
@@ -30,12 +34,15 @@ fn planar_regions_match_native_membership_area_sources_and_history() {
             let report = viboceros_oracle::run_request(&serde_json::from_value(q).unwrap())
                 .unwrap_or_else(|e| panic!("{}: {e:?}", op["id"]));
             let actual = serde_json::to_value(report).unwrap()["results"][0]["value"].clone();
-            if let Err(e) = comparison::compare(&actual, &row["value"], epsilon) {
-                failures.push(format!("{}: {e}", op["id"]));
+            match comparison::compare(&actual, &row["value"], epsilon, op["id"].as_str().unwrap()) {
+                Ok(0) => {}
+                Ok(count) => area_gaps.push((op["id"].as_str().unwrap().to_owned(), count)),
+                Err(e) => failures.push(format!("{}: {e}", op["id"])),
             }
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
+    assert_eq!(area_gaps, vec![("crossing_circle10_small".to_owned(), 2)]);
 }
 
 #[test]

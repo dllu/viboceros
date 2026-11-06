@@ -7,10 +7,13 @@ use viboceros_document::{Document, Geometry};
 use viboceros_geometry::Tolerance;
 use viboceros_oracle::planar_regions::{Fixture, snapshot};
 #[test]
-fn planar_regions_archives_preserve_native_boundaries_area_and_normal_meshes() {
+fn planar_regions_archives_preserve_boundaries_area_evidence_and_normal_meshes() {
     family("planar_regions_holdouts", 69);
     family("planar_regions_confirmations", 32);
     family("planar_regions_planes", 8);
+    family("planar_crossings", 48);
+    family("planar_crossings_details", 8);
+    family("planar_crossings_holdouts", 33);
 }
 fn family(family: &str, expected_count: usize) {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
@@ -22,6 +25,7 @@ fn family(family: &str, expected_count: usize) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("regions.3dm");
     let mut count = 0;
+    let mut area_gaps = 0;
     for (op, row) in request["operations"]
         .as_array()
         .unwrap()
@@ -82,12 +86,21 @@ fn family(family: &str, expected_count: usize) {
             let matches = expected
                 .iter()
                 .enumerate()
-                .filter_map(|(i, e)| comparison::compare(&actual, e, 1e-9).is_ok().then_some(i))
+                .filter_map(|(i, e)| {
+                    comparison::compare(&actual, e, 1e-9, op["id"].as_str().unwrap())
+                        .ok()
+                        .map(|gaps| (i, gaps))
+                })
                 .collect::<Vec<_>>();
             assert!(!matches.is_empty(), "{}: {actual}", op["id"]);
-            expected.remove(matches[0]);
+            area_gaps += matches[0].1;
+            expected.remove(matches[0].0);
         }
         assert!(expected.is_empty());
     }
     assert_eq!(count, expected_count);
+    assert_eq!(
+        area_gaps,
+        usize::from(family == "planar_crossings_holdouts")
+    );
 }

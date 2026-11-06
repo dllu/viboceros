@@ -91,14 +91,14 @@ fn homogeneous_c1(surface: &NurbsSurface, axis: usize, first: usize, degree: usi
 }
 
 pub(super) fn triangulate(
-    parameters: &[Point2],
+    parameters: &mut Vec<Point2>,
     lengths: &[usize],
     surface: &NurbsSurface,
     face: usize,
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
     let creases = self::parameters(surface);
     if creases.iter().all(Vec::is_empty) {
-        return triangulate_trim_region(parameters, lengths);
+        return trim_region::triangulate(parameters, lengths, &[]);
     }
     let Some(normalization) = TrimParameterNormalization::try_for_triangulation(parameters)? else {
         return Ok(None);
@@ -173,7 +173,7 @@ pub(super) fn triangulate(
             }
         }
     }
-    let triangles = triangulate_trim_region_with_constraints(parameters, lengths, &constraints)?;
+    let triangles = trim_region::triangulate(parameters, lengths, &constraints)?;
     if let Some(triangles) = &triangles {
         validate(parameters, triangles, &creases, face)?;
     }

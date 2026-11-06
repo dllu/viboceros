@@ -1,0 +1,57 @@
+{
+  "planar_crossings": {
+    "results": 48,
+    "role": "primary region comparison",
+    "observation": "tools/rhino_oracle/observations/planar_crossings.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_crossings.json",
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "3bc57aa3a9c3f8db87036a2ffdd13600287b727706a0fc3d680c9ed76a4daa3c",
+    "raw_bytes": 8694376,
+    "gzip_sha256": "99ef35473d5139b032e726b5c3dcaad91fe45520301cafd6bd8f980d1f28f900",
+    "gzip_bytes": 255873
+  },
+  "planar_crossings_details": {
+    "results": 8,
+    "role": "primary region comparison",
+    "observation": "tools/rhino_oracle/observations/planar_crossings_details.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_crossings_details.json",
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "9ffdd9c6d96bdb973cb1d34b4e3a50113688d273b92a49e91d8990818c7d6f53",
+    "raw_bytes": 2785875,
+    "gzip_sha256": "ed7bba08fd809a602f2039b67fac870a3c93c5ca20f8ebe1439b3ae0fcc29e9a",
+    "gzip_bytes": 101398
+  },
+  "planar_crossings_holdouts": {
+    "results": 33,
+    "role": "primary region comparison",
+    "observation": "tools/rhino_oracle/observations/planar_crossings_holdouts.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_crossings_holdouts.json",
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "80e7ac9bd7ac05dcd04fa1dff41473e4ddfce9265f49645907eeb3379605d77c",
+    "raw_bytes": 6008341,
+    "gzip_sha256": "e4ff9e22de862b71c60de3d6d143d800ca62987b652e907127092cfd8e2ac609",
+    "gzip_bytes": 196024
+  },
+  "planar_crossings_confirmations": {
+    "results": 33,
+    "role": "area diagnostic; unchanged original B-reps",
+    "observation": "tools/rhino_oracle/observations/planar_crossings_confirmations.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_crossings_confirmations.json",
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "37ef21c31911c3350027da71d0e2f56094ecd3944da9f6839c404f9f12b3ad1a",
+    "raw_bytes": 6028362,
+    "gzip_sha256": "e7eb401bec8f8d0a2096876b4d4de84051afa80bb304edcd8711b35dc91f7bd1",
+    "gzip_bytes": 195179
+  },
+  "planar_crossings_unit_domains": {
+    "results": 33,
+    "role": "area diagnostic; unchanged original B-reps",
+    "observation": "tools/rhino_oracle/observations/planar_crossings_unit_domains.json.gz",
+    "request": "tools/rhino_oracle/fixtures/planar_crossings_unit_domains.json",
+    "engine_version": "8.32.26160.13001",
+    "raw_sha256": "11b343c31c8a5f72a31446ee496a9d9ad5ac3058ec06ccd28e45ec01b80fe3ba",
+    "raw_bytes": 10732885,
+    "gzip_sha256": "884a30a437358c2a3c67f7580afecad5f5812dc9f2d11932c8368c943e71fcee",
+    "gzip_bytes": 319215
+  }
+}

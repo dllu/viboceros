@@ -117,10 +117,14 @@ def planes():
 
 
 def validate(op):
+    if __package__:
+        from .planar_crossings_cases import pilot as crossings,details,holdouts as crossing_holdouts
+    else:
+        from planar_crossings_cases import pilot as crossings,details,holdouts as crossing_holdouts
     def same(a,b):
         if isinstance(b,dict):return isinstance(a,dict)and set(a)==set(b)and all(same(a[k],v)for k,v in b.items())
         if isinstance(b,list):return isinstance(a,list)and len(a)==len(b)and all(same(x,y)for x,y in zip(a,b))
         if isinstance(b,(float,int)):return type(a)in (float,int)and a==b
         return type(a)==type(b)and a==b
-    owned=next((r for r in pilot()+holdouts()+transforms()+planes()if isinstance(op,dict)and r['id']==op.get('id')),None)
+    owned=next((r for r in pilot()+holdouts()+transforms()+planes()+crossings()+details()+crossing_holdouts()if isinstance(op,dict)and r['id']==op.get('id')),None)
     if owned is None or not same(op,owned):raise ValueError('fixed owned planar-region recipe required')

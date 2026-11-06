@@ -75,7 +75,7 @@ pub(super) fn construct(
     if profiles.len() == 1 {
         return Ok(vec![outer.clone()]);
     }
-    Ok(vec![Brep::try_planar_face_with_holes(
+    Ok(vec![Brep::try_planar_face_with_overlapping_holes(
         &profiles[0].1,
         &profiles[1..]
             .iter()

@@ -114,6 +114,14 @@ impl TrimParameterNormalization {
         Ok(normalized)
     }
 
+    pub(super) fn denormalize(self, parameter: [Real; 2]) -> Result<Point2, GeometryError> {
+        let point: [Real; 2] = std::array::from_fn(|axis| {
+            parameter[axis].mul_add(self.relative_scale[axis], self.origin[axis])
+                * self.coordinate_scale[axis]
+        });
+        Point2::try_new(point[0], point[1])
+    }
+
     /// Logarithm of the area multiplier from normalized to original units.
     /// Avoids overflowing or underflowing products when ordering loop areas.
     pub(super) fn log_area_scale(self) -> Real {

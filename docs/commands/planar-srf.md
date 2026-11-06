@@ -20,7 +20,8 @@ separate coincident hole loops. Equivalent full-circle encodings coalesce. These
 rules preserve the selected source curves and their parameterization. Coincident
 polygon walks contribute one geometric mesh hole while their original B-rep
 loops remain intact. Reported model area can count repeated loops, as Rhino's
-area calculation does.
+area calculation does. [Crossing holes](planar-crossings.md) also retain separate
+model loops while their displayed mesh excludes the holes' union.
 
 Outputs have fresh attributes on the current layer, remain unselected and
 ungrouped, and share one Undo/Redo step. Retained inputs keep their attributes,
@@ -46,8 +47,9 @@ Precise areas use absolute epsilon `1e-9` plus relative `1e-12`. Boundary identi
 uses spatially checked samples at `1e-7`. Raw captures retain full used B-rep
 definitions. Complete native B-rep parameterization, output/loop birth order,
 continuous curve-contact completeness and comparative performance remain
-unqualified. Crossing trim configurations, arbitrary self-intersections and
-further coincident curve encodings need broader qualification.
+unqualified. Crossing sibling holes have
+[additional qualification](planar-crossings.md); arbitrary self-intersections
+and further coincident curve encodings need broader qualification.
 
 ```sh
 cargo test -p viboceros-oracle --test planar_regions --test planar_regions_archive

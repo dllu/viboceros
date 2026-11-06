@@ -1,0 +1,333 @@
+{
+  "portable": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-command-unit.log.gz",
+      "raw_sha256": "bfd1d195a865d08fb9c3bc8919bcd22d52376761a7fd5310b7782df14fc4333a",
+      "raw_bytes": 1753
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-command-policy.log.gz",
+      "raw_sha256": "a0065a09414c6f33acd661863abeb14aade7f3dcd8b53ce6159108636c2d2c58",
+      "raw_bytes": 573
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-mesh-command.log.gz",
+      "raw_sha256": "9c2881530d80e7d8f277cadf6b1c2a8ebfe793f8ffc2c90f3295f9d09f9c09cb",
+      "raw_bytes": 14111
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-oracle.log.gz",
+      "raw_sha256": "ad44a1a549738366f4e3ed931bff454da239d3ecde488a29eca1638d09bde782",
+      "raw_bytes": 1257
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-app.log.gz",
+      "raw_sha256": "7814291f1454e34686a6d7ce95e3a0540ba8e4a4ca4e081a23689d3b17ba149d",
+      "raw_bytes": 1035
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/portable-mesh-app.log.gz",
+      "raw_sha256": "f916c68a9b6bd3ab80e6e600b6425e5dcd0bb9cefd74d8c3e9e4c4f45b13177a",
+      "raw_bytes": 30509
+    }
+  ],
+  "native": [
+    {
+      "label": "command-unit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "planar_surface"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-command-unit.log.gz",
+      "raw_sha256": "8c552876606373c64515ee574233ad2e22e76397957f221eefbf6c8e8adff8e7",
+      "raw_bytes": 2362
+    },
+    {
+      "label": "command-policy",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-command-policy.log.gz",
+      "raw_sha256": "679448752ab797a22c8857a5ac0fe729f40abef98159efae8882df8622af80ec",
+      "raw_bytes": 573
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-mesh-command.log.gz",
+      "raw_sha256": "2794980794cedff48d61e66ef2046cf539ce968b2666a69f535a60d34285fad6",
+      "raw_bytes": 14109
+    },
+    {
+      "label": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_regions",
+        "--test",
+        "planar_regions_archive",
+        "--test",
+        "planar_crossings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-oracle.log.gz",
+      "raw_sha256": "f8cbbaeb95af469a0077f42ab1cd7cbc5b0d6823c47546f2c062001c03a4dc62",
+      "raw_bytes": 1257
+    },
+    {
+      "label": "app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_regions"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-app.log.gz",
+      "raw_sha256": "aedeb32a1ba331ded0a0b4b1cdd351e1033b64a6bb21c6265f31826ab09a2198",
+      "raw_bytes": 844
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/native-mesh-app.log.gz",
+      "raw_sha256": "3b6a309c0d4186fcc84fa24765f43b2be7698dca77388989faca01b4ac54cf30",
+      "raw_bytes": 30447
+    }
+  ],
+  "quality": [
+    {
+      "label": "trim-regions",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "trim_region"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-trim-regions.log.gz",
+      "raw_sha256": "ce3e2475d5e5771a780ba37e4ae327db3a922cb482bd8c20ac96eaabc4954658",
+      "raw_bytes": 1738
+    },
+    {
+      "label": "planar-faces",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "planar_face"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-planar-faces.log.gz",
+      "raw_sha256": "9bda6652106346e923781822d704448d5ad05651c872f34661f23cf3f00f30db",
+      "raw_bytes": 1128
+    },
+    {
+      "label": "tessellation",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::tessellation"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-tessellation.log.gz",
+      "raw_sha256": "97424398bebea76886c20dbf56be7fa433a879093f012fe9d82c138cc762b414",
+      "raw_bytes": 2857
+    },
+    {
+      "label": "triangulation",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "triangulat"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-triangulation.log.gz",
+      "raw_sha256": "613b93dc3f643147c77a1ab93cbf24f894189f033d7500098b3114d7c04a8ec0",
+      "raw_bytes": 736
+    },
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-clippy-default.log.gz",
+      "raw_sha256": "566c86f53bac70bdc49d9f79693fc4f419e1d6f93bf74339e017b3c70a1a1f52",
+      "raw_bytes": 758
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-clippy-all-features.log.gz",
+      "raw_sha256": "831e2986410eca9a49ff1a3b1fc410bc8008d6089f5cd219eef303d88dd527c1",
+      "raw_bytes": 533
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-fmt.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_planar_crossings",
+        "tools.rhino_oracle.test_planar_regions",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "exit_code": 0,
+      "log": "docs/planar-crossings-proof/quality-python.log.gz",
+      "raw_sha256": "8b666c2c4a18837c31c6bd26f16c6d7778f36e759bb5962d27aff0a6bed11081",
+      "raw_bytes": 120
+    }
+  ]
+}
