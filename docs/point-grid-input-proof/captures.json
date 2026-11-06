@@ -1,0 +1,38 @@
+[
+  {
+    "family": "point_grid_input",
+    "log": "point_grid_input-capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_point_grid_input"
+    ],
+    "exit_status": 0
+  },
+  {
+    "family": "point_grid_input_holdouts",
+    "log": "point_grid_input_holdouts-capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_point_grid_input_holdouts"
+    ],
+    "exit_status": 0
+  },
+  {
+    "family": "point_grid_input_prompts",
+    "log": "point_grid_input_prompts-capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_point_grid_input_prompts"
+    ],
+    "exit_status": 0
+  }
+]

@@ -223,7 +223,7 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
-        for operation_kind, label in [('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
+        for operation_kind, label in [('point_grid_input','Point-grid'),('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
             if any(op.get('op') == operation_kind for op in request.get('operations', [])):
                 operations = request['operations']
                 if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int

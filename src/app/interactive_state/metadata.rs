@@ -103,6 +103,13 @@ impl InteractiveCommand {
             Self::MeshEllipsoid { .. } => "MeshEllipsoid",
             Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
+            Self::SurfacePointGrid { control, .. } => {
+                if control {
+                    "SrfControlPtGrid"
+                } else {
+                    "SrfPtGrid"
+                }
+            }
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::Curvature { .. } => "Curvature",
@@ -192,7 +199,7 @@ impl InteractiveCommand {
             Self::OrientPoints { last, .. }
             | Self::OrientOnSurface { last }
             | Self::Splop { last } => last,
-            Self::ProjectPlane { anchor, .. } => anchor,
+            Self::SurfacePointGrid { anchor, .. } | Self::ProjectPlane { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
                 base,

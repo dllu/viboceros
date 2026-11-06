@@ -1007,6 +1007,11 @@ impl eframe::App for VibocerosApp {
             self.chain_prompt.is_none() && self.length_chain_available() && model_input_active;
         let length_highlights = self.length_choice_highlights().to_vec();
         let srf_pt_input = model_input_active.then(|| self.srf_pt_input()).flatten();
+        let surface_point_grid = self
+            .surface_point_grid_session
+            .as_ref()
+            .filter(|_| model_input_active)
+            .and_then(surface_point_grid::Session::preview);
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1254,6 +1259,7 @@ impl eframe::App for VibocerosApp {
                             conic_reference,
                             rectangle_input,
                             srf_pt_input,
+                            surface_point_grid,
                             surface_flow_preview: self
                                 .surface_flow_session
                                 .as_ref()

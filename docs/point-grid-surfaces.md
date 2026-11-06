@@ -21,13 +21,14 @@ SrfPtGrid DegreeU=1 2 DegreeV=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
 SrfControlPtGrid Degree=1 2 Degree=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
 ```
 
-Native command degrees default to three, with open directions and
-`KeepPoints=No`. `SrfControlPtGrid` uses `Degree` separately before each count;
+New command instances start at degree two for `SrfPtGrid` and degree three for
+`SrfControlPtGrid`, with open directions and `KeepPoints=No`. `SrfControlPtGrid` uses `Degree` separately before each count;
 `SrfPtGrid` uses the distinct `DegreeU` and `DegreeV` options.
 Degrees must be 1–11 and each command count must exceed its
 requested degree. `ClosedU` and `ClosedV` apply only to `SrfPtGrid`; closed
-directions require at least three stations. Complete coordinates are required;
-incremental viewport picking and loading a command file are not implemented.
+directions require at least three stations. Enter either command alone or with options/counts to start [incremental count and point entry](commands/point-grid-input.md),
+including viewport picks, per-point Undo and remembered counts/degrees.
+Loading a command file is not implemented.
 
 The geometry APIs `NurbsSurface::try_control_point_grid` and
 `NurbsSurface::try_through_point_grid` independently clamp degrees to

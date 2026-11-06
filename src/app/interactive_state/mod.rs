@@ -442,6 +442,10 @@ pub(super) enum InteractiveCommand {
         side_count: usize,
         center: Option<Point3>,
     },
+    SurfacePointGrid {
+        control: bool,
+        anchor: Option<Point3>,
+    },
     SrfPt {
         corners: [Option<Point3>; 3],
     },

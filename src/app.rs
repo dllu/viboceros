@@ -302,6 +302,7 @@ mod subdivision_native_tests;
 mod surface_curve_offset;
 mod surface_flow;
 mod surface_interpolation;
+mod surface_point_grid;
 mod surface_rebuild;
 mod taper_prompt;
 mod toolbar;
@@ -489,6 +490,7 @@ pub struct VibocerosApp {
     rectangle_session: Option<rectangle::InputSession>,
     plane_surface_session: Option<plane_surface::Session>,
     srf_pt_session: Option<srf_pt::Session>,
+    surface_point_grid_session: Option<surface_point_grid::Session>,
     subd_primitive_session: Option<subd_primitives::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
@@ -666,6 +668,7 @@ impl VibocerosApp {
             rectangle_session: None,
             plane_surface_session: None,
             srf_pt_session: None,
+            surface_point_grid_session: None,
             subd_primitive_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
@@ -831,6 +834,7 @@ impl VibocerosApp {
             || self.continue_subd_sphere(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
+            || self.continue_surface_point_grid(&input)
             || self.continue_srf_pt(&input)
             || self.continue_plane_surface_option(&input)
             || self.try_continue_rectangle(&input)
@@ -1110,6 +1114,7 @@ impl VibocerosApp {
             || self.try_continue_stretch(input)
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
+            || self.continue_surface_point_grid(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "point_grid_input",
+      "id": "through_prime",
+      "case": "through_prime"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_enter_counts",
+      "case": "through_enter_counts"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_prime",
+      "case": "control_prime"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_enter_counts",
+      "case": "control_enter_counts"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_count_below_degree",
+      "case": "through_count_below_degree"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_count_below_degree",
+      "case": "control_count_below_degree"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_enter_point",
+      "case": "through_enter_point"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_enter_point",
+      "case": "control_enter_point"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_separate_degree",
+      "case": "through_separate_degree"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_separate_degree",
+      "case": "control_separate_degree"
+    }
+  ]
+}

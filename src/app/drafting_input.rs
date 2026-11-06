@@ -1883,6 +1883,9 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::SurfacePointGrid { .. } => {
+                return self.accept_surface_point_grid(point);
+            }
             InteractiveCommand::SrfPt { corners } => return self.accept_srf_pt(corners, point),
             InteractiveCommand::Curvature { mark } => {
                 self.active_command = None;

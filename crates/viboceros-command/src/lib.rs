@@ -516,7 +516,7 @@ pub mod point_fitting;
 pub mod subcurve_input;
 pub mod tween_surfaces;
 use point_arguments::parse_point;
-mod point_grid;
+pub mod point_grid;
 mod point_matrix;
 mod points;
 mod visibility_selection;
@@ -737,6 +737,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_subd_cylinder_preferences(&self, _p: subd_cylinder::Preferences) -> bool {
+        false
+    }
+    fn surface_point_grid_preferences(&self) -> Option<point_grid::Preferences> {
+        None
+    }
+    fn remember_surface_point_grid_preferences(&self, _value: point_grid::Preferences) -> bool {
         false
     }
     fn subd_plane_preferences(&self) -> Option<subd_plane::Preferences> {
@@ -1540,7 +1546,7 @@ impl CommandRegistry {
             .expect("unique built-in command");
         for control in [false, true] {
             registry
-                .register(point_grid::PointGridCommand { control })
+                .register(point_grid::PointGridCommand::new(control))
                 .expect("unique built-in command");
         }
         registry

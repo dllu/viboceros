@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "point_grid_input",
+      "id": "through_open",
+      "case": "through_open"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_open",
+      "case": "control_open"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_mixed",
+      "case": "through_mixed"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_mixed",
+      "case": "control_mixed"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_closed_u",
+      "case": "through_closed_u"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_closed_v",
+      "case": "through_closed_v"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_undo",
+      "case": "through_undo"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_undo",
+      "case": "control_undo"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_cancel_points",
+      "case": "through_cancel_points"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_cancel_count",
+      "case": "control_cancel_count"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "through_cubic",
+      "case": "through_cubic"
+    },
+    {
+      "op": "point_grid_input",
+      "id": "control_cubic",
+      "case": "control_cubic"
+    }
+  ]
+}

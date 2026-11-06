@@ -65,7 +65,8 @@ impl VibocerosApp {
         if self.start_subd_primitive(input) {
             return true;
         }
-        if self.try_start_srf_pt(input)
+        if self.start_surface_point_grid(input)
+            || self.try_start_srf_pt(input)
             || self.try_start_plane_surface(input)
             || self.try_start_rectangle(input)
         {

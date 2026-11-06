@@ -580,6 +580,9 @@ impl InteractiveCommand {
             Self::Polygon {
                 center: Some(_), ..
             } => "Polygon: pick the first vertex in the viewport (Esc to cancel)",
+            Self::SurfacePointGrid { .. } => {
+                "Point-grid: enter counts, then ordered points (Undo removes the last point; Esc cancels)"
+            }
             Self::SrfPt { corners } => match corners {
                 [None, _, _] => "SrfPt: pick the first corner in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {

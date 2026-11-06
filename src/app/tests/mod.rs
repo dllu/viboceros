@@ -258,6 +258,7 @@ mod surface_flow;
 mod surface_interpolation;
 mod surface_interpolation_plane;
 mod surface_interpolation_plane_native;
+mod surface_point_grid;
 mod sweep_two_rails;
 mod taper;
 mod transform_copy;
@@ -414,6 +415,7 @@ pub(super) fn test_app() -> VibocerosApp {
         rectangle_session: None,
         plane_surface_session: None,
         srf_pt_session: None,
+        surface_point_grid_session: None,
         subd_primitive_session: None,
         subd_axial_session: None,
         subd_sphere_session: None,

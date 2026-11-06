@@ -417,6 +417,7 @@ pub struct ViewportInput<'a> {
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
     pub srf_pt_input: Option<viboceros_command::srf_pt::Input>,
+    pub surface_point_grid: Option<(&'a [Point3], usize)>,
     pub flow_preview: Option<FlowPreview<'a>>,
     pub flow_local_preview: Option<FlowLocalPreview>,
     pub twist_preview: Option<TwistPreview<'a>>,
@@ -547,6 +548,7 @@ impl Default for ViewportInput<'_> {
             conic_reference: None,
             rectangle_input: None,
             srf_pt_input: None,
+            surface_point_grid: None,
             flow_preview: None,
             flow_local_preview: None,
             twist_preview: None,
@@ -2727,6 +2729,30 @@ impl Viewport {
                 self.add_projected_nurbs_curve(&mut projected, rect, &curve);
                 for segment in projected.segments {
                     painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
+            }
+        }
+        if let Some((points, count_v)) = input.surface_point_grid.filter(|(_, count)| *count > 0) {
+            self.paint_draft_points(&painter, rect, points);
+            for (index, point) in points
+                .iter()
+                .copied()
+                .chain(drafting_cursor.map(|c| c.point))
+                .enumerate()
+            {
+                for previous in [
+                    (index % count_v > 0).then(|| index - 1),
+                    index.checked_sub(count_v),
+                ]
+                .into_iter()
+                .flatten()
+                {
+                    if let Some(segment) = self.project_segment(points[previous], point, rect) {
+                        painter.line_segment(
+                            segment,
+                            Stroke::new(2., Color32::from_rgb(20, 115, 190)),
+                        );
+                    }
                 }
             }
         }
