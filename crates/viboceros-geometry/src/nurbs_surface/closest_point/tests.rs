@@ -190,11 +190,12 @@ fn closest_point_boundary_candidates_use_the_original_surface_image() {
             })
             .collect(),
         vec![0., 0., 0., 1., 1., 1.],
-        vec![0., 0., 1., 1.],
+        vec![-1., 0., 1., 2.],
     )
     .unwrap();
     let target = p(x + 2., 0., 0.);
-    // Column normalization during extraction changes the first Cartesian
+    // The nonclamped fixed axis exercises column normalization rather than
+    // the exact clamped-endpoint copy. Extraction changes the first Cartesian
     // control by one ulp. This is NOT the surface image at the same UV.
     let edge = surface.isocurve_u(0.).unwrap();
     assert_eq!(edge.evaluate(0.).unwrap(), target);
