@@ -69,7 +69,7 @@ impl VibocerosApp {
                             || self
                                 .curve_boolean_prompt
                                 .as_ref()
-                                .is_some_and(|p| !p.selecting())
+                                .is_some_and(curve_boolean::Prompt::wants_point)
                             || self
                                 .refinement_prompt
                                 .as_ref()

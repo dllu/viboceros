@@ -14,6 +14,11 @@ fn curve_boolean_native_corpus_uses_prompt_picks_cancel_history_and_3dm() {
     for (op, native) in comparison::rows(&base, observation::read) {
         let f: Fixture = serde_json::from_value(op.clone()).unwrap();
         let (doc, ids) = f.setup(tolerance).unwrap();
+        let temporary = f
+            .temporary_ids(&ids)
+            .into_iter()
+            .map(|id| doc.object(id).unwrap().clone())
+            .collect::<Vec<_>>();
         let mut app = test_app();
         app.document = doc;
         app.viewports[app.active_viewport]
@@ -27,13 +32,56 @@ fn curve_boolean_native_corpus_uses_prompt_picks_cancel_history_and_3dm() {
             .join(" ");
         enter(&mut app, &format!("CurveBoolean {start}"));
         if !f.preselect {
-            for id in &ids {
-                app.apply_selection_click(SelectionClick {
-                    object_id: Some(*id),
-                    mode: SelectionMode::Replace,
-                });
+            if let Some(selections) = &f.selections {
+                if let Some(phase) = &f.cancel_subcurve {
+                    enter(&mut app, "SubCrv");
+                    if phase != "source" {
+                        enter(&mut app, &ids[selections[0].source].to_string());
+                    }
+                    if phase == "end" {
+                        app.apply_drafting_point(
+                            Point3::try_from(selections[0].range.unwrap()[0]).unwrap(),
+                        );
+                    }
+                    app.cancel_current_prompt_or_selection();
+                    assert!(app.curve_boolean_prompt.as_ref().unwrap().selecting());
+                    app.cancel_current_prompt_or_selection();
+                } else {
+                    for selection in selections {
+                        if let Some(points) = selection.range {
+                            enter(&mut app, "SubCrv");
+                            if let Some(edge) = selection.edge {
+                                assert!(app.picking_subcurve_edge());
+                                assert!(app.pick_subcurve_edge(crate::viewport::EdgePick {
+                                    object: ids[selection.source],
+                                    edge,
+                                }));
+                            } else {
+                                enter(&mut app, &ids[selection.source].to_string());
+                            }
+                            app.apply_drafting_point(Point3::try_from(points[0]).unwrap());
+                            if let Some(length) = selection.length {
+                                enter(&mut app, &length.to_string());
+                            }
+                            if selection.confirmation.unwrap_or(true) {
+                                app.apply_drafting_point(Point3::try_from(points[1]).unwrap());
+                            }
+                        } else {
+                            enter(&mut app, &ids[selection.source].to_string());
+                        }
+                    }
+                }
+            } else {
+                for id in &ids {
+                    app.apply_selection_click(SelectionClick {
+                        object_id: Some(*id),
+                        mode: SelectionMode::Replace,
+                    });
+                }
             }
-            enter(&mut app, "");
+            if f.cancel_subcurve.is_none() {
+                enter(&mut app, "");
+            }
         }
         let enclosed = app
             .curve_boolean_prompt
@@ -60,10 +108,19 @@ fn curve_boolean_native_corpus_uses_prompt_picks_cancel_history_and_3dm() {
             } else {
                 enter(&mut app, "");
             }
-        } else {
+        } else if app.curve_boolean_prompt.is_some() {
             app.cancel_current_prompt_or_selection();
         }
         let after = snapshot(&app.document, &ids).unwrap();
+        for original in &temporary {
+            let current = app.document.object(original.id()).unwrap();
+            assert_eq!(current, original, "{} temporary parent", op["id"]);
+            assert!(
+                current
+                    .geometry_snapshot()
+                    .shares_storage_with(original.geometry_snapshot())
+            );
+        }
         if app.document.can_undo() {
             enter(&mut app, "Undo");
         }

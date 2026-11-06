@@ -1,7 +1,8 @@
 //! Source selection, repeatable region picks and cancellable region previews.
 use super::*;
 use std::collections::BTreeSet;
-use viboceros_command::curve_boolean::{Options, Session, parse, prepare};
+use viboceros_command::curve_boolean::{Options, Session, Source, parse, prepare_with_inputs};
+mod subcurve;
 #[derive(Debug)]
 pub(super) struct Prompt {
     options: Options,
@@ -10,8 +11,12 @@ pub(super) struct Prompt {
     prior: Vec<ObjectId>,
     cplane: Frame3,
     postselected: bool,
+    pub(super) subcurves: crate::app::uv_subcurve_input::SubcurveInputs,
 }
 impl Prompt {
+    pub(super) fn subcurve_hover(&self) -> Option<f64> {
+        self.subcurves.pending.as_ref()?.hover_parameter
+    }
     pub(super) fn selecting(&self) -> bool {
         self.session.is_none()
     }
@@ -21,7 +26,18 @@ impl Prompt {
     pub(super) fn plane(&self) -> Option<Frame3> {
         self.session.as_ref().map(Session::plane)
     }
+    pub(super) fn wants_point(&self) -> bool {
+        self.session.is_some()
+            || self
+                .subcurves
+                .pending
+                .as_ref()
+                .is_some_and(|p| p.object.is_some())
+    }
     pub(super) fn hint(&self) -> String {
+        if let Some(hint) = self.subcurves.hint() {
+            return hint.into();
+        }
         if let Some(session) = &self.session {
             format!(
                 "Click inside regions to keep ({} of {}); AllRegions; DeleteInput={} CombineRegions={} Output={} SimplifyCurves={}; Enter accepts, Esc cancels",
@@ -43,11 +59,33 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
+        self.select_curve_boolean_source_ids(ids, mode, true);
+    }
+    fn select_curve_boolean_source_ids(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        mode: SelectionMode,
+        expand_groups: bool,
+    ) {
         if self
             .curve_boolean_prompt
             .as_ref()
             .is_none_or(|p| !p.selecting())
         {
+            return;
+        }
+        let ids = ids.into_iter().collect::<Vec<_>>();
+        if self
+            .curve_boolean_prompt
+            .as_ref()
+            .unwrap()
+            .subcurves
+            .pending
+            .is_some()
+        {
+            if let [id] = ids.as_slice() {
+                self.pick_curve_boolean_subcurve(*id, None);
+            }
             return;
         }
         let requested = ids.into_iter().collect::<BTreeSet<_>>();
@@ -59,6 +97,7 @@ impl VibocerosApp {
             .collect::<BTreeSet<_>>();
         let groups = seeds
             .iter()
+            .filter(|_| expand_groups)
             .filter_map(|id| self.document.object(*id)?.top_group())
             .collect::<BTreeSet<_>>();
         let expanded = groups
@@ -117,7 +156,10 @@ impl VibocerosApp {
         }
         let parsed = match parse(&words[1..], self.commands.curve_boolean_options()) {
             Ok(input)
-                if input.sources.is_some() || input.all_regions || !input.points.is_empty() =>
+                if input.sources.is_some()
+                    || input.all_regions
+                    || !input.points.is_empty()
+                    || !input.subcurves.is_empty() =>
             {
                 return false;
             }
@@ -139,6 +181,7 @@ impl VibocerosApp {
             scene: None,
             prior,
             postselected,
+            subcurves: Default::default(),
             cplane: self.viewports[self.active_viewport].construction_plane(),
         });
         self.commands.remember_curve_boolean_options(parsed.options);
@@ -159,6 +202,7 @@ impl VibocerosApp {
         }
     }
     pub(super) fn cancel_curve_boolean(&mut self) {
+        self.discard_curve_boolean_subcurve();
         if let Some(p) = self.curve_boolean_prompt.take() {
             let ids = p
                 .prior
@@ -169,14 +213,24 @@ impl VibocerosApp {
         }
     }
     fn prepare_curve_boolean(&mut self) {
-        let p = self.curve_boolean_prompt.as_ref().unwrap();
+        self.validate_curve_boolean();
+        let Some(p) = self.curve_boolean_prompt.as_ref() else {
+            return;
+        };
         let ids = self
             .document
             .selected_objects()
             .filter(|o| o.geometry().curve_ref().is_some())
             .map(|o| o.id())
             .collect::<Vec<_>>();
-        match prepare(&self.document, &ids, p.cplane) {
+        let mut inputs = ids.into_iter().map(Source::Whole).collect::<Vec<_>>();
+        inputs.extend(p.subcurves.ranges.iter().map(|r| Source::Subcurve {
+            object: r.object,
+            edge: r.edge_reference.as_ref().and_then(|r| r.source().1),
+            parameters: r.parameters,
+            wrap_edge: r.edge_wrap,
+        }));
+        match prepare_with_inputs(&self.document, &inputs, p.cplane) {
             Ok(mut session) => {
                 if p.postselected {
                     session.set_postselected();
@@ -188,9 +242,10 @@ impl VibocerosApp {
     }
     pub(super) fn validate_curve_boolean(&mut self) {
         if self.curve_boolean_prompt.as_ref().is_some_and(|p| {
-            p.session
-                .as_ref()
-                .is_some_and(|s| !s.is_current(&self.document))
+            !p.subcurves.ranges.iter().all(|r| r.current(&self.document))
+                || p.session
+                    .as_ref()
+                    .is_some_and(|s| !s.is_current(&self.document))
                 || p.cplane != self.viewports[self.active_viewport].construction_plane()
         }) {
             self.cancel_curve_boolean();
@@ -232,6 +287,9 @@ impl VibocerosApp {
         Some(true)
     }
     pub(super) fn continue_curve_boolean(&mut self, input: &str) -> bool {
+        if self.continue_curve_boolean_subcurve(input) {
+            return true;
+        }
         let Some(p) = self.curve_boolean_prompt.as_ref() else {
             return false;
         };
@@ -280,7 +338,7 @@ impl VibocerosApp {
         if p.selecting()
             && let Ok(id) = input.parse::<ObjectId>()
         {
-            self.select_prompt_objects([id], SelectionMode::Add);
+            self.select_curve_boolean_source_ids([id], SelectionMode::Add, false);
             self.command_input.clear();
             return true;
         }

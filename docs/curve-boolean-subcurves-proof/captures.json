@@ -1,0 +1,95 @@
+{
+  "curve_boolean_subcurves": {
+    "request": "tools/rhino_oracle/fixtures/curve_boolean_subcurves.json",
+    "request_sha256": "0d132be1f16279b15818a982f1415e94616af41e6bf87922277974fdfe1f6259",
+    "observation": "tools/rhino_oracle/observations/curve_boolean_subcurves.json.gz",
+    "raw_sha256": "250a9b0a76650d8563a741d5dbd71dd43056c396d7de62482a79ffe8a588dd12",
+    "raw_bytes": 836149,
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_curve_boolean_subcurves.py": "5d00aebf23eb2e313aa9fa63ea17cc97352141ada5614c8040603f02f30f3d1b",
+      "curve_boolean_subcurve_cases.py": "a8ac30614a616625876802608bcde73e1a2abd372440e31cb008c8c49c9e3d5e",
+      "curve_boolean_cases.py": "bd6d0d58a6fc3c6ead049f0f61d4fe1b653e54f91231afa77f775071de65ed1b",
+      "curve_boolean_probe.py": "7cdea09675998a19f4e8f0c71e89c721f8f2255d62e28175a93fb5cccf471722",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "39b1282010bf19fd34677c1dea63ff9fbcf44ee0c7cb1df9b0a11698d1aea0c2",
+      "rhino_worker.py": "401090367a204b219fd80e3a01e9a6b43ffd4466d6cc1b2b261ea77d892fa4df",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    },
+    "capture_log": "docs/curve-boolean-subcurves-proof/curve_boolean_subcurves-capture.log.gz"
+  },
+  "curve_boolean_subcurve_holdouts": {
+    "request": "tools/rhino_oracle/fixtures/curve_boolean_subcurve_holdouts.json",
+    "request_sha256": "ec49b012b1785f4e6da9905656bbdf43d776f36446b69be1d8c474c3fbe9076a",
+    "observation": "tools/rhino_oracle/observations/curve_boolean_subcurve_holdouts.json.gz",
+    "raw_sha256": "3f267757ac7db7875ffdd7152e1116d16d2ce22694f656c9aa8e66482d943688",
+    "raw_bytes": 431921,
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_curve_boolean_subcurve_holdouts.py": "69bebd0be1b5dd9d70b9ddace3553a451829a52982edb1d5a3287f70148eb1de",
+      "curve_boolean_subcurve_cases.py": "b8e38525707c78d0459ecaaa4e443757385b36f4415de495d087df0c15a6fe57",
+      "curve_boolean_cases.py": "f6d65afb3f2a5db461b8302c2f375e4270118c6581a105cbeb1f08c4247a2149",
+      "curve_boolean_probe.py": "31e63a94f0394541a883c1f26f5123bd3cd4db52b08712332c4fcc6c7f676b1c",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "39b1282010bf19fd34677c1dea63ff9fbcf44ee0c7cb1df9b0a11698d1aea0c2",
+      "rhino_worker.py": "401090367a204b219fd80e3a01e9a6b43ffd4466d6cc1b2b261ea77d892fa4df",
+      "client.py": "60c42a69a23a969869e00f16edb1fc049c1b7755d2414d8ea4587eca77d1578e",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    },
+    "capture_log": "docs/curve-boolean-subcurves-proof/curve_boolean_subcurve_holdouts-capture.log.gz"
+  },
+  "curve_boolean_subcurve_edges": {
+    "request": "tools/rhino_oracle/fixtures/curve_boolean_subcurve_edges.json",
+    "request_sha256": "6ded4e892242037d23919326b00c973631f67cbf5a01299114785e4b14eac6b1",
+    "observation": "tools/rhino_oracle/observations/curve_boolean_subcurve_edges.json.gz",
+    "raw_sha256": "6bbe3f01ba3f0812f745c34173fb79b0444083ae45e9e989533c0fce32a5006e",
+    "raw_bytes": 707032,
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_curve_boolean_subcurve_edges.py": "10618340c5655814ab7387593c80cc3f5af5da29b8ab55ef2a56109345698e12",
+      "curve_boolean_subcurve_cases.py": "888815b2f81384e6a25c6539b69bd5ffdddc2388630ac0f696ff833f5fba9dc7",
+      "curve_boolean_cases.py": "9c4b060cc804feda07b6418f942b3cb18c955549b607f0e3cffa00ad38dfad5f",
+      "curve_boolean_probe.py": "13dddaed7b27aeb880347302837373c584592caf5a8dec2132638b6a3795fcb0",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "1c9d682eaaa135adddb94f72820e68dcddd91a2e642fc6e3b46189dd2a1ea5d8",
+      "rhino_worker.py": "401090367a204b219fd80e3a01e9a6b43ffd4466d6cc1b2b261ea77d892fa4df",
+      "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    },
+    "capture_log": "docs/curve-boolean-subcurves-proof/curve_boolean_subcurve_edges-capture.log.gz"
+  },
+  "curve_boolean_subcurve_edge_receipt": {
+    "request": "tools/rhino_oracle/fixtures/curve_boolean_subcurve_edge_receipt.json",
+    "request_sha256": "6ded4e892242037d23919326b00c973631f67cbf5a01299114785e4b14eac6b1",
+    "observation": "tools/rhino_oracle/observations/curve_boolean_subcurve_edge_receipt.json.gz",
+    "raw_sha256": "df32df1c779f61078eda004be6419023d445070c50477dddfbfc2ae9ddcf16de",
+    "raw_bytes": 707528,
+    "engine_version": "8.32.26160.13001",
+    "frozen_sources": {
+      "generate_curve_boolean_subcurve_edge_receipt.py": "0b0678aac9a4e90eae370714f747b32f7653ae58b38fc080db8b3f5051d2a397",
+      "curve_boolean_subcurve_cases.py": "888815b2f81384e6a25c6539b69bd5ffdddc2388630ac0f696ff833f5fba9dc7",
+      "curve_boolean_cases.py": "9c4b060cc804feda07b6418f942b3cb18c955549b607f0e3cffa00ad38dfad5f",
+      "curve_boolean_probe.py": "13dddaed7b27aeb880347302837373c584592caf5a8dec2132638b6a3795fcb0",
+      "curve_boolean_edge_input.py": "caff41d96d903bd46698e579e5a18949d8e42675a56fd0c33c895b5b37e5dcc8",
+      "owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
+      "component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
+      "hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "planar_regions_cases.py": "2219042f84150f43e0e55792a158d1352c128c11e8b8bd01222fbd3161b5f255",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "1c9d682eaaa135adddb94f72820e68dcddd91a2e642fc6e3b46189dd2a1ea5d8",
+      "rhino_worker.py": "401090367a204b219fd80e3a01e9a6b43ffd4466d6cc1b2b261ea77d892fa4df",
+      "client.py": "b50c0ef0d269e137e12bfcdf5a56b697c58f575ae08b5f7292c4f2da3defdcbf",
+      "capture_family.py": "099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821"
+    },
+    "capture_log": "docs/curve-boolean-subcurves-proof/curve_boolean_subcurve_edge_receipt-capture.log.gz"
+  }
+}

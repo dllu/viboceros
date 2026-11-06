@@ -6,7 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
-    'curve_boolean': ('curve_boolean_probe', ('curve_boolean_cases','planar_regions_cases','join_probe','merge_edges_probe')),
+    'curve_boolean': ('curve_boolean_probe', ('curve_boolean_cases','curve_boolean_subcurve_cases','curve_boolean_edge_input','owned_brep_command','planar_regions_cases','join_probe','merge_edges_probe')),
     'planar_chains': ('planar_chains_probe', ('planar_chains_cases','planar_regions_probe','planar_regions_cases','join_probe','merge_edges_probe')),
     'planar_regions': ('planar_regions_probe', ('planar_regions_cases','planar_crossings_cases','planar_crossings_probe','join_probe','merge_edges_probe')),
     'extrusion_splitting': ('extrusion_splitting_probe', ('extrusion_splitting_cases','extrude_apex_subd_cases','revolve_subd_cases','revolve_splitting_cases','subd_box_probe','join_probe','merge_edges_probe')),

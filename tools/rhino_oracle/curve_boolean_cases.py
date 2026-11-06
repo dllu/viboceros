@@ -111,10 +111,14 @@ def weighted_deletion():
 
 
 def validate(op):
+    if __package__:
+        from .curve_boolean_subcurve_cases import pilot as subcurves,holdouts as subcurve_holdouts,edges as subcurve_edges
+    else:
+        from curve_boolean_subcurve_cases import pilot as subcurves,holdouts as subcurve_holdouts,edges as subcurve_edges
     def same(a,b):
         if isinstance(b,dict):return isinstance(a,dict)and set(a)==set(b)and all(same(a[k],v)for k,v in b.items())
         if isinstance(b,list):return isinstance(a,list)and len(a)==len(b)and all(same(x,y)for x,y in zip(a,b))
         if type(b)in (float,int):return type(a)in (float,int)and a==b
         return type(a)==type(b)and a==b
-    own=next((r for r in pilot()+holdouts()+interactions()+confirmations()+weighted_deletion()if isinstance(op,dict)and r['id']==op.get('id')),None)
+    own=next((r for r in pilot()+holdouts()+interactions()+confirmations()+weighted_deletion()+subcurves()+subcurve_holdouts()+subcurve_edges()if isinstance(op,dict)and r['id']==op.get('id')),None)
     if own is None or not same(op,own):raise ValueError('fixed owned CurveBoolean recipe required')

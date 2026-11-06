@@ -64,7 +64,7 @@ impl PendingSubcurve {
     pub(in crate::app) fn edge(&self) -> Option<usize> {
         self.edge_reference.as_ref().and_then(|r| r.source().1)
     }
-    pub(super) fn curve<'a>(
+    pub(in crate::app) fn curve<'a>(
         &'a self,
         document: &'a Document,
     ) -> Option<viboceros_geometry::CurveRef<'a>> {

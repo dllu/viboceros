@@ -1,0 +1,352 @@
+{
+  "scope": "CurveBoolean temporary SubCrv input through command references, interactive curve/edge picks, numeric lengths, direction previews, nested cancellation and atomic source ownership.",
+  "baseline_revision": "93d02d3b7be4a9095ba2881eb6ea8b9c59112c5a",
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "native": {
+    "new_unique_workflows": 21,
+    "completed": 18,
+    "cancelled": 3,
+    "output_breps": 19,
+    "unchanged_prior_workflows_replayed": 62,
+    "edge_confirmation_workflows": 4
+  },
+  "per_build": {
+    "portable-curve-oracle": {
+      "workflows": 83,
+      "geometry_qualified_workflows": 77,
+      "geometry_and_topology_summary_matches": 75,
+      "new_workflows": 21,
+      "new_geometry_and_topology_summary_matches": 21,
+      "maximum_new_model_error": 3.552713678800501e-15,
+      "geometry_gaps": [
+        {
+          "area_error": 4.954021574121725e-05,
+          "id": "curve_boolean_holdout_circles_False",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 1.2499527338899678e-06,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 1.0623905723150529e-05,
+          "id": "curve_boolean_holdout_circles_True",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 9.045782072396737e-08,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 4.947355552786803e-05,
+          "id": "curve_boolean_confirmation_precise_circles_False",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 1.248270825269448e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 1.0575553559988293e-05,
+          "id": "curve_boolean_confirmation_precise_circles_True",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 9.004612361172601e-08,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 5.134256622696398e-05,
+          "id": "curve_boolean_confirmation_three_circles",
+          "model_error": 2.191540413136497e-05,
+          "relative_area_error": 2.354596714855858e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 49.47355754673481,
+          "id": "curve_boolean_confirmation_scaled_large",
+          "model_error": 0.0042179577103524935,
+          "relative_area_error": 1.24827087620762e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        }
+      ],
+      "topology_gaps": [
+        "curve_boolean_holdout_dangling",
+        "curve_boolean_confirmation_precise_circles_False",
+        "curve_boolean_confirmation_precise_circles_True",
+        "curve_boolean_confirmation_three_circles",
+        "curve_boolean_confirmation_scaled_small",
+        "curve_boolean_confirmation_scaled_large"
+      ]
+    },
+    "portable-curve-app": {
+      "workflows": 83,
+      "geometry_qualified_workflows": 77,
+      "geometry_and_topology_summary_matches": 75,
+      "new_workflows": 21,
+      "new_geometry_and_topology_summary_matches": 21,
+      "maximum_new_model_error": 3.552713678800501e-15,
+      "geometry_gaps": [
+        {
+          "archive_objects": 5,
+          "area_error": 4.954021574121725e-05,
+          "id": "curve_boolean_holdout_circles_False",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 1.2499527338899678e-06,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 3,
+          "area_error": 1.0623905723150529e-05,
+          "id": "curve_boolean_holdout_circles_True",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 9.045782072396737e-08,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 5,
+          "area_error": 4.947355552786803e-05,
+          "id": "curve_boolean_confirmation_precise_circles_False",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 1.248270825269448e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 3,
+          "area_error": 1.0575553559988293e-05,
+          "id": "curve_boolean_confirmation_precise_circles_True",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 9.004612361172601e-08,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 10,
+          "area_error": 5.134256622696398e-05,
+          "id": "curve_boolean_confirmation_three_circles",
+          "model_error": 2.191540413136497e-05,
+          "relative_area_error": 2.354596714855858e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 5,
+          "area_error": 49.47355754673481,
+          "id": "curve_boolean_confirmation_scaled_large",
+          "model_error": 0.0042179577103524935,
+          "relative_area_error": 1.24827087620762e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        }
+      ],
+      "topology_gaps": [
+        "curve_boolean_holdout_dangling",
+        "curve_boolean_confirmation_precise_circles_False",
+        "curve_boolean_confirmation_precise_circles_True",
+        "curve_boolean_confirmation_three_circles",
+        "curve_boolean_confirmation_scaled_small",
+        "curve_boolean_confirmation_scaled_large"
+      ]
+    },
+    "native-curve-oracle": {
+      "workflows": 83,
+      "geometry_qualified_workflows": 77,
+      "geometry_and_topology_summary_matches": 75,
+      "new_workflows": 21,
+      "new_geometry_and_topology_summary_matches": 21,
+      "maximum_new_model_error": 3.552713678800501e-15,
+      "geometry_gaps": [
+        {
+          "area_error": 4.954021574121725e-05,
+          "id": "curve_boolean_holdout_circles_False",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 1.2499527338899678e-06,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 1.0623905723150529e-05,
+          "id": "curve_boolean_holdout_circles_True",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 9.045782072396737e-08,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 4.947355552786803e-05,
+          "id": "curve_boolean_confirmation_precise_circles_False",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 1.248270825269448e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 1.0575553559988293e-05,
+          "id": "curve_boolean_confirmation_precise_circles_True",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 9.004612361172601e-08,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 5.134256622696398e-05,
+          "id": "curve_boolean_confirmation_three_circles",
+          "model_error": 2.191540413136497e-05,
+          "relative_area_error": 2.354596714855858e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "area_error": 49.47355754673481,
+          "id": "curve_boolean_confirmation_scaled_large",
+          "model_error": 0.0042179577103524935,
+          "relative_area_error": 1.24827087620762e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        }
+      ],
+      "topology_gaps": [
+        "curve_boolean_holdout_dangling",
+        "curve_boolean_confirmation_precise_circles_False",
+        "curve_boolean_confirmation_precise_circles_True",
+        "curve_boolean_confirmation_three_circles",
+        "curve_boolean_confirmation_scaled_small",
+        "curve_boolean_confirmation_scaled_large"
+      ]
+    },
+    "native-curve-app": {
+      "workflows": 83,
+      "geometry_qualified_workflows": 77,
+      "geometry_and_topology_summary_matches": 75,
+      "new_workflows": 21,
+      "new_geometry_and_topology_summary_matches": 21,
+      "maximum_new_model_error": 3.552713678800501e-15,
+      "geometry_gaps": [
+        {
+          "archive_objects": 5,
+          "area_error": 4.954021574121725e-05,
+          "id": "curve_boolean_holdout_circles_False",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 1.2499527338899678e-06,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 3,
+          "area_error": 1.0623905723150529e-05,
+          "id": "curve_boolean_holdout_circles_True",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 9.045782072396737e-08,
+          "topology_gap": false,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 5,
+          "area_error": 4.947355552786803e-05,
+          "id": "curve_boolean_confirmation_precise_circles_False",
+          "model_error": 4.217957713770217e-06,
+          "relative_area_error": 1.248270825269448e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 3,
+          "area_error": 1.0575553559988293e-05,
+          "id": "curve_boolean_confirmation_precise_circles_True",
+          "model_error": 4.217957714658394e-06,
+          "relative_area_error": 9.004612361172601e-08,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 10,
+          "area_error": 5.134256622696398e-05,
+          "id": "curve_boolean_confirmation_three_circles",
+          "model_error": 2.191540413136497e-05,
+          "relative_area_error": 2.354596714855858e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        },
+        {
+          "archive_objects": 5,
+          "area_error": 49.47355754673481,
+          "id": "curve_boolean_confirmation_scaled_large",
+          "model_error": 0.0042179577103524935,
+          "relative_area_error": 1.24827087620762e-06,
+          "topology_gap": true,
+          "geometry_qualified": false
+        }
+      ],
+      "topology_gaps": [
+        "curve_boolean_holdout_dangling",
+        "curve_boolean_confirmation_precise_circles_False",
+        "curve_boolean_confirmation_precise_circles_True",
+        "curve_boolean_confirmation_three_circles",
+        "curve_boolean_confirmation_scaled_small",
+        "curve_boolean_confirmation_scaled_large"
+      ]
+    }
+  },
+  "comparisons": {
+    "model_epsilon": 1e-06,
+    "area_absolute_epsilon": 1e-08,
+    "area_relative_epsilon": 1e-12,
+    "objects": "Strict one-to-one pairing of source identity, selection, attributes, groups, object and geometry text, closure and loop counts across before/after/Undo/Redo.",
+    "temporary_parents": "Native before/after records remain exactly equal for temporary-only parents. Command and app replays require the original object and shared geometry storage to survive unchanged.",
+    "boundaries": "Nine stations per C3 span, measured in both directions against exact rational curves; no continuous error certificate.",
+    "archive": "Every UI workflow saves and reopens 3DM; every restored B-rep generates an audited normal mesh. Attributes, groups, text, selected output identities, sampled boundaries and topology summaries match local outputs.",
+    "topology": "Vertex/edge counts, outer/inner flags and trim type multiplicities; complete B-rep topology, UV supports, chart and seam equality are unqualified."
+  },
+  "behavior": [
+    "Temporary ranges never inherit whole-source deletion ownership. Whole and partial references may share the same parent.",
+    "Repeated temporary ranges, open reverse picks and closed seam traversal use the shared SubCrv restriction helpers.",
+    "Numeric interactive input uses magnitude and existing direction confirmation; zero and full closed lengths add no temporary curve. Explicit SubCrvLength uses sign for direction.",
+    "Escape from source/start/end returns to the parent source getter without geometry or history changes.",
+    "Captured curves, length/direction previews and parent snapshots reuse the existing input and native trim adapters; whole-source projections are cached across option changes."
+  ],
+  "evidence_notes": [
+    "The first surface-edge capture omitted two transitive worker dependencies and the host input driver from its frozen-source list. It remains immutable. A separate confirmation capture freezes the complete driver and matches all original command-status and before/after/Undo/Redo snapshots exactly.",
+    "The earlier 62-case validation remains historical evidence; this record replays those cases alongside the 21 new workflows."
+  ],
+  "unqualified": [
+    "Six existing circle constructions still exceed the unchanged geometry gates, and six workflows retain topology summary differences. Their previously recorded bounded gaps are unchanged.",
+    "New native edge cases cover planar rectangular B-rep boundaries. Other edge representations, additional numeric direction configurations, representation classes and comparative speed need further qualification.",
+    "General Rhino command compatibility remains in progress; sampled agreement does not establish universal geometry parity."
+  ],
+  "execution": {
+    "native": "Private Xvfb/i3 sessions with private XDG runtimes and owned component picks. No desktop windows were opened.",
+    "rust": "GUI display and compositor variables removed; tests do not launch a GUI event loop.",
+    "workspace": "AGENTS.md and the nine original untracked files unchanged. README reviewed and still accurate."
+  },
+  "test_counts": {
+    "portable": {
+      "curve-command": 6,
+      "curve-oracle": 1,
+      "curve-app": 4,
+      "subcurve-command": 36,
+      "subcurve-app": 46,
+      "mesh-command": 3,
+      "mesh-app": 4
+    },
+    "native": {
+      "curve-command": 6,
+      "curve-oracle": 1,
+      "curve-app": 4,
+      "subcurve-command": 37,
+      "subcurve-app": 46,
+      "mesh-command": 3,
+      "mesh-app": 4
+    },
+    "quality": {
+      "python": 38
+    }
+  },
+  "evidence": {
+    "captures": "curve-boolean-subcurves-proof/captures.json",
+    "runs": "curve-boolean-subcurves-proof/runs.json",
+    "comparisons": "curve-boolean-subcurves-proof/comparisons.json",
+    "sha256": "curve-boolean-subcurves-proof/sha256.json"
+  }
+}

@@ -202,7 +202,8 @@ impl eframe::App for VibocerosApp {
             None
         };
         let subcurve_preview = if model_input_active {
-            self.subcurve_draft_preview()
+            self.curve_boolean_subcurve_preview()
+                .or_else(|| self.subcurve_draft_preview())
         } else {
             None
         };

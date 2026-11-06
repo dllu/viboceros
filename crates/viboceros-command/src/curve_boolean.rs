@@ -2,11 +2,13 @@
 use super::*;
 use viboceros_geometry::{PlanarCurveArrangement, Plane, curve_overlap_source_intervals};
 mod options;
+mod sources;
 mod used;
 pub use options::{DeleteInput, Input, Options, Output, parse};
+pub use sources::Source;
 #[cfg(test)]
 mod tests;
-const USAGE: &str = "CurveBoolean [Sources=id,...] [AllRegions | world-point ...] [CombineRegions=Yes|No] [Output=Curves|Surfaces] [SimplifyCurves=Yes|No] [DeleteInput=None|All|Used]";
+const USAGE: &str = "CurveBoolean [Sources=id,...] [SubCrv=id,start,end | SubCrv=id,Edge,index,start,end | SubCrvLength=id,start,length] [AllRegions | world-point ...] [CombineRegions=Yes|No] [Output=Curves|Surfaces] [SimplifyCurves=Yes|No] [DeleteInput=None|All|Used]";
 fn failure(message: &'static str) -> CommandError {
     CommandError::Usage(message)
 }
@@ -14,8 +16,8 @@ fn failure(message: &'static str) -> CommandError {
 /// Prepared intersection graph, reusable across picks and option changes.
 pub struct Session {
     sources: Vec<viboceros_document::Object>,
-    curves: Vec<NurbsCurve>,
-    projected: Vec<NurbsCurve>,
+    whole: Vec<sources::Whole>,
+    projected_whole: Vec<NurbsCurve>,
     arrangement: PlanarCurveArrangement,
     selected: Vec<bool>,
     tolerance: Tolerance,
@@ -32,26 +34,21 @@ impl std::fmt::Debug for Session {
     }
 }
 pub fn prepare(doc: &Document, ids: &[ObjectId], cplane: Frame3) -> Result<Session, CommandError> {
-    let mut seen = BTreeSet::new();
-    let sources = ids
-        .iter()
-        .map(|id| {
-            if !seen.insert(*id) || !doc.is_object_selectable(*id) {
-                return Err(failure("CurveBoolean requires distinct selectable curves"));
-            }
-            doc.object(*id)
-                .filter(|o| o.geometry().curve_ref().is_some())
-                .cloned()
-                .ok_or(failure("CurveBoolean requires curve inputs"))
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    if sources.is_empty() {
-        return Err(failure("CurveBoolean requires selected curves"));
-    }
-    let curves = sources
-        .iter()
-        .map(|o| o.geometry().curve_ref().unwrap().to_nurbs())
-        .collect::<Result<Vec<_>, _>>()?;
+    prepare_with_inputs(
+        doc,
+        &ids.iter().copied().map(Source::Whole).collect::<Vec<_>>(),
+        cplane,
+    )
+}
+
+pub fn prepare_with_inputs(
+    doc: &Document,
+    inputs: &[Source],
+    cplane: Frame3,
+) -> Result<Session, CommandError> {
+    let resolved = sources::resolve(doc, inputs)?;
+    let curves = resolved.inputs;
+    let sources = resolved.parents;
     // Coplanar inputs retain their common plane. Noncoplanar sources are
     // projected onto the active construction plane, preserving parameter charts.
     let points = curves
@@ -71,6 +68,15 @@ pub fn prepare(doc: &Document, ids: &[ObjectId], cplane: Frame3) -> Result<Sessi
         .iter()
         .map(|c| c.transformed(projection))
         .collect::<Result<Vec<_>, _>>()?;
+    let whole = resolved
+        .whole
+        .into_iter()
+        .map(|(parent, curve)| sources::Whole { parent, curve })
+        .collect::<Vec<_>>();
+    let projected_whole = whole
+        .iter()
+        .map(|w| w.curve.transformed(projection))
+        .collect::<Result<Vec<_>, _>>()?;
     let arrangement = PlanarCurveArrangement::try_new(&projected, plane, doc.tolerance())?;
     if arrangement.cells().is_empty() {
         return Err(failure("CurveBoolean inputs do not enclose a region"));
@@ -78,8 +84,8 @@ pub fn prepare(doc: &Document, ids: &[ObjectId], cplane: Frame3) -> Result<Sessi
     let selected = vec![false; arrangement.cells().len()];
     Ok(Session {
         sources,
-        curves,
-        projected,
+        whole,
+        projected_whole,
         arrangement,
         selected,
         tolerance: doc.tolerance(),
@@ -157,26 +163,22 @@ impl Session {
         if !boundaries.is_empty() && options.delete_input != DeleteInput::None {
             if options.delete_input == DeleteInput::All {
                 edits = self
-                    .sources
+                    .whole
                     .iter()
-                    .enumerate()
-                    .map(|(i, _)| (i, Vec::new()))
+                    .map(|input| (input.parent, Vec::new()))
                     .collect();
             } else {
-                let intervals =
-                    curve_overlap_source_intervals(&boundaries, &self.projected, self.tolerance)?;
-                for (i, ((_, curve), used)) in self
-                    .sources
-                    .iter()
-                    .zip(&self.curves)
-                    .zip(intervals)
-                    .enumerate()
-                {
+                let intervals = curve_overlap_source_intervals(
+                    &boundaries,
+                    &self.projected_whole,
+                    self.tolerance,
+                )?;
+                for (input, used) in self.whole.iter().zip(intervals) {
                     if used.is_empty() {
                         continue;
                     }
-                    let pieces = used::remnants(curve, used)?;
-                    edits.push((i, pieces));
+                    let pieces = used::remnants(&input.curve, used)?;
+                    edits.push((input.parent, pieces));
                 }
             }
         }
@@ -288,7 +290,9 @@ impl CurveBooleanCommand {
                 .map(|o| o.id())
                 .collect()
         });
-        let mut session = prepare(doc, &ids, context.construction_plane)?;
+        let mut inputs = ids.into_iter().map(Source::Whole).collect::<Vec<_>>();
+        inputs.extend(input.subcurves);
+        let mut session = prepare_with_inputs(doc, &inputs, context.construction_plane)?;
         if postselected {
             session.set_postselected();
         }

@@ -20,6 +20,18 @@ Options also accept `Name Value` during interactive input:
 | `SimplifyCurves` | `Yes` | Simplify curve output using the existing SimplifyCrv adapter. |
 | `DeleteInput` | `None` | Keep inputs, delete `All` inputs, or remove `Used` boundary portions. |
 
+While selecting inputs, type `SubCrv`, pick a curve or surface edge, then pick
+its temporary start and end. Closed curves can cross the seam. A numeric length
+uses its magnitude; move along the curve to choose the direction, or use `D`
+to toggle direction locking. Zero and full closed lengths contribute no input.
+Escape returns from the nested picker; another Escape cancels CurveBoolean.
+Temporary parents stay unchanged under every deletion mode. Selecting the same
+parent as a whole curve also makes it subject to the chosen deletion policy.
+
+Scripts can repeat `SubCrv=id,start,end` using curve parameters, or use
+`SubCrv=id,Edge,index,start,end` for a B-rep edge. `SubCrvLength=id,start,length`
+uses a signed length to choose direction. Temporary references can share a parent.
+
 Coplanar inputs retain their common plane. Noncoplanar inputs project onto the
 active CPlane. Open curves can enclose regions together; dangling branches add
 no area. Holes, bridges, duplicate curves, self-crossings and rational curves
@@ -38,8 +50,10 @@ UI, history and output archive checks in both builds. The comparison gate is
 `1e-6`. Six circle cases remain outside it: Rhino's computed intersection ends
 differ from the exact circles, with a larger absolute gap in the scaled case.
 Surface edge/vertex counts and trim types also differ in recorded cases.
-Native curve classes, seams, parameter charts, full B-rep topology and comparative
-speed remain unqualified. Hidden `SubCrv` input is not implemented. Sampling
+The [temporary-input validation](../curve-boolean-subcurves-validation.json)
+adds ordinary and wrapped ranges, numeric lengths, repeated parents, nested
+cancellation and planar surface edges. Native curve classes, seams, parameter
+charts, full B-rep topology and comparative speed remain unqualified. Sampling
 checks do not prove a continuous error bound for arbitrary curves.
 
 Input and derived storage are bounded by the planar graph's resource checks,

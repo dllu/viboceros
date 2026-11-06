@@ -10,6 +10,9 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if let Some(accepted) = self.accept_curve_boolean_subcurve_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_curve_boolean_point(point) {
             return accepted;
         }

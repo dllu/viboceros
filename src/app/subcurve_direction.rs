@@ -87,7 +87,8 @@ impl VibocerosApp {
         true
     }
     pub(super) fn update_subcurve_hover(&mut self, point: Point3) {
-        if self.update_refinement_subcurve_hover(point)
+        if self.update_curve_boolean_subcurve_hover(point)
+            || self.update_refinement_subcurve_hover(point)
             || self.update_edge_subcurve_hover(point)
             || self.update_conic_subcurve_hover(point)
             || self.update_orient_subcurve_hover(point)

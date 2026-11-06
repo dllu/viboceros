@@ -1,0 +1,322 @@
+{
+  "portable": [
+    {
+      "label": "curve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "curve_boolean"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-curve-command.log.gz",
+      "elapsed_seconds": 30.998,
+      "raw_sha256": "08ee68fbec358116a7a20392dbc697940149d89c24638432f3c96509866781d1",
+      "raw_bytes": 970
+    },
+    {
+      "label": "curve-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-curve-oracle.log.gz",
+      "raw_sha256": "a342fe5f0252f16a9c7d98ad07961ade85a8b127b9cea90b17bac11457080179",
+      "raw_bytes": 15483
+    },
+    {
+      "label": "curve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-curve-app.log.gz",
+      "elapsed_seconds": 279.0,
+      "raw_sha256": "31e742e168c33eda08d1f557616d853e402335d4e0fa18cc7d47b8963f38d350",
+      "raw_bytes": 17526
+    },
+    {
+      "label": "subcurve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "subcurve"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-subcurve-command.log.gz",
+      "elapsed_seconds": 26.512,
+      "raw_sha256": "882c386c164e10eee9dca1f09a7df30eee6ecd922c2d369977dd378178631772",
+      "raw_bytes": 4015
+    },
+    {
+      "label": "subcurve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "subcurve_"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-subcurve-app.log.gz",
+      "elapsed_seconds": 3.541,
+      "raw_sha256": "3a6f0bef2e6c495b10b77fd2666ddabb23d3cf4e978a0ddf4465dfeb10cae67f",
+      "raw_bytes": 5483
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-mesh-command.log.gz",
+      "elapsed_seconds": 14.657,
+      "raw_sha256": "c889233df1b81d991272337afe12243a81b62dec76240cbd49ddaa67f0541639",
+      "raw_bytes": 14053
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/portable-mesh-app.log.gz",
+      "elapsed_seconds": 16.453,
+      "raw_sha256": "d3c1974131cd61c2b18d869465f20407fa92ee862e252024ab1aed48b12b72ab",
+      "raw_bytes": 30451
+    }
+  ],
+  "native": [
+    {
+      "label": "curve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "curve_boolean"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-curve-command.log.gz",
+      "elapsed_seconds": 33.309,
+      "raw_sha256": "e40818cf9efae9f906d9de8b86f5ebfd97b2f9e051183f9e37971e950692d72b",
+      "raw_bytes": 970
+    },
+    {
+      "label": "curve-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-curve-oracle.log.gz",
+      "elapsed_seconds": 113.443,
+      "raw_sha256": "8023d412e42b61ef0ea508757f0b6c11b2717e80c48f2d98d175a2fb94cad031",
+      "raw_bytes": 15537
+    },
+    {
+      "label": "curve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "curve_boolean",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-curve-app.log.gz",
+      "elapsed_seconds": 291.283,
+      "raw_sha256": "9d9d08d00c61ead3159915dbde54535b108a4dde03a4883e09c2807f56c6349a",
+      "raw_bytes": 17523
+    },
+    {
+      "label": "subcurve-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "subcurve"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-subcurve-command.log.gz",
+      "elapsed_seconds": 0.603,
+      "raw_sha256": "a87aaf94a65c0fe7bc619127ea7b4fece6883394ad6d0c6bc664969f99df3cc8",
+      "raw_bytes": 4059
+    },
+    {
+      "label": "subcurve-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "subcurve_"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-subcurve-app.log.gz",
+      "elapsed_seconds": 3.521,
+      "raw_sha256": "6b7e7981648aee3ad4c4ffcdd1cc7f39c766901232ee1e429ee5f78b46527528",
+      "raw_bytes": 5483
+    },
+    {
+      "label": "mesh-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "planar_mesh_native",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-mesh-command.log.gz",
+      "elapsed_seconds": 15.314,
+      "raw_sha256": "63d3ed9cd4a291effa14905a137317a76aa66720b9e728a94489af43c19ff9e0",
+      "raw_bytes": 14051
+    },
+    {
+      "label": "mesh-app",
+      "command": [
+        "cargo",
+        "test",
+        "--bin",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "planar_mesh",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/native-mesh-app.log.gz",
+      "elapsed_seconds": 16.757,
+      "raw_sha256": "81dfe305ef00b76f8372add7f263e69a306f3eec7c4ad66eeca89e58925e34b6",
+      "raw_bytes": 30447
+    }
+  ],
+  "quality": [
+    {
+      "label": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/quality-clippy-default.log.gz",
+      "elapsed_seconds": 52.233,
+      "raw_sha256": "90cecf263c11bb9f5907aa46aad92746655b8cc747738f136b238a27b42bf705",
+      "raw_bytes": 365
+    },
+    {
+      "label": "clippy-all-features",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/quality-clippy-all-features.log.gz",
+      "elapsed_seconds": 36.949,
+      "raw_sha256": "894a9938097faf82f84b39ab8df395693bff9820a7bbd10d5b8a3aa441be8373",
+      "raw_bytes": 311
+    },
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/quality-fmt.log.gz",
+      "elapsed_seconds": 6.983,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "label": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_curve_boolean",
+        "tools.rhino_oracle.test_component_picking",
+        "tools.rhino_oracle.test_planar_chains",
+        "tools.rhino_oracle.test_planar_regions",
+        "tools.rhino_oracle.test_planar_crossings",
+        "tools.rhino_oracle.test_planar_mesh"
+      ],
+      "exit_code": 0,
+      "log": "docs/curve-boolean-subcurves-proof/quality-python.log.gz",
+      "raw_sha256": "57f6b42f2779e2f82e0cb9d37af5936a864d61d926993f7c4eaa9bfc59c8cbff",
+      "raw_bytes": 138
+    }
+  ]
+}

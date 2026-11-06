@@ -1353,6 +1353,11 @@ class OracleClient:
                 raise OracleProtocolError('edge loop picking requires a private settings scheme')
             from .component_picking import ComponentPicker
             interaction = ComponentPicker()
+        if any(op.get('op') == 'curve_boolean' and any('edge' in s for s in op.get('selections', [])) for op in request.get('operations', [])):
+            if self.settings_scheme is None:
+                raise OracleProtocolError('CurveBoolean edge picking requires a private settings scheme')
+            from .component_picking import ComponentPicker
+            interaction = ComponentPicker()
         if any(op.get('op') in ('chain_selection','length_chain') for op in request.get('operations', [])):
             from .chain_selection_input import ChainPicker
             interaction = ChainPicker()

@@ -545,7 +545,7 @@ impl VibocerosApp {
             return None;
         }
         if let Some(p) = &self.curve_boolean_prompt {
-            return p.selecting().then_some(ObjectSelectionFilter::Curves);
+            return (p.selecting() && !p.wants_point()).then_some(ObjectSelectionFilter::Curves);
         }
         if self.blend_surface_prompt.is_some() || self.fillet_surface_prompt.is_some() {
             return None;

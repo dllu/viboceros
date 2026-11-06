@@ -3,6 +3,8 @@ use super::*;
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
     pub curves: Vec<NurbsCurveDefinition>,
+    #[serde(default)]
+    pub surfaces: Vec<NurbsSurfaceDefinition>,
     pub options: BTreeMap<String, Value>,
     pub points: Vec<[Real; 3]>,
     pub all_regions: bool,
@@ -12,6 +14,21 @@ pub struct Fixture {
     pub cancel: bool,
     #[serde(default)]
     pub cplane: Option<ConstructionPlane>,
+    #[serde(default)]
+    pub selections: Option<Vec<Selection>>,
+    #[serde(default)]
+    pub cancel_subcurve: Option<String>,
+}
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct Selection {
+    pub source: usize,
+    #[serde(default)]
+    pub edge: Option<usize>,
+    pub range: Option<[[Real; 3]; 2]>,
+    #[serde(default)]
+    pub length: Option<Real>,
+    #[serde(default)]
+    pub confirmation: Option<bool>,
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct ConstructionPlane {
@@ -24,6 +41,99 @@ fn yes() -> bool {
     true
 }
 impl Fixture {
+    pub fn temporary_ids(&self, ids: &[ObjectId]) -> Vec<ObjectId> {
+        let whole = self
+            .whole_ids(ids)
+            .into_iter()
+            .collect::<std::collections::BTreeSet<_>>();
+        self.selections
+            .as_ref()
+            .into_iter()
+            .flatten()
+            .filter(|s| s.range.is_some() && !whole.contains(&ids[s.source]))
+            .map(|s| ids[s.source])
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect()
+    }
+    pub fn whole_ids(&self, ids: &[ObjectId]) -> Vec<ObjectId> {
+        self.selections.as_ref().map_or_else(
+            || ids.to_vec(),
+            |selections| {
+                selections
+                    .iter()
+                    .filter(|s| s.range.is_none())
+                    .map(|s| ids[s.source])
+                    .collect()
+            },
+        )
+    }
+    pub fn command_with_sources(
+        &self,
+        doc: &Document,
+        ids: &[ObjectId],
+    ) -> Result<String, ProbeError> {
+        let mut command = self.command()?;
+        if let Some(selections) = &self.selections {
+            let whole = self.whole_ids(ids);
+            if !whole.is_empty() {
+                command.push_str(&format!(
+                    " Sources={}",
+                    whole
+                        .iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>()
+                        .join(",")
+                ));
+            }
+            for selection in selections {
+                if let Some(picks) = selection.range {
+                    let id = ids[selection.source];
+                    let reference = viboceros_command::curve_reference::CapturedCurve::capture(
+                        doc,
+                        id,
+                        selection.edge,
+                    )?;
+                    let curve = reference.curve_ref();
+                    let a =
+                        curve.closest_parameter(Point3::try_from(picks[0])?, doc.tolerance())?;
+                    let b =
+                        curve.closest_parameter(Point3::try_from(picks[1])?, doc.tolerance())?;
+                    let range = if let Some(length) = selection.length {
+                        if length == 0. {
+                            None
+                        } else {
+                            viboceros_command::subcurve_input::interval(
+                                curve,
+                                a,
+                                b,
+                                length.abs(),
+                                doc.tolerance(),
+                            )?
+                        }
+                    } else {
+                        viboceros_command::subcurve_input::point_parameters(
+                            curve, a, b, None, true,
+                        )?
+                    };
+                    let Some([a, b]) = range else {
+                        continue;
+                    };
+                    if let Some(edge) = selection.edge {
+                        let kind = if selection.length.is_some() {
+                            "EdgeWrap"
+                        } else {
+                            "Edge"
+                        };
+                        command.push_str(&format!(" SubCrv={id},{kind},{edge},{a},{b}"));
+                    } else {
+                        command.push_str(&format!(" SubCrv={id},{a},{b}"));
+                    }
+                }
+            }
+        }
+        Ok(command)
+    }
     pub fn context(
         &self,
         tolerance: Tolerance,
@@ -42,7 +152,15 @@ impl Fixture {
         })
     }
     pub fn setup(&self, tolerance: Tolerance) -> Result<(Document, Vec<ObjectId>), ProbeError> {
-        if self.curves.is_empty() || self.curves.len() > 1000 || self.points.len() > 1000 {
+        let count = self.curves.len() + self.surfaces.len();
+        if count == 0
+            || count > 1000
+            || self.points.len() > 1000
+            || self
+                .selections
+                .as_ref()
+                .is_some_and(|s| s.len() > 1000 || s.iter().any(|s| s.source >= count))
+        {
             return Err(ProbeError::FixtureInvariant(
                 "bounded owned CurveBoolean inputs required",
             ));
@@ -51,7 +169,17 @@ impl Fixture {
         let layer = doc.add_layer("CurveBoolean Input", ColorRgb::BLACK)?;
         let output = doc.add_layer("CurveBoolean Output", ColorRgb::BLACK)?;
         let mut ids = Vec::new();
-        for (i, curve) in self.curves.iter().enumerate() {
+        let geometry = self
+            .curves
+            .iter()
+            .map(|curve| Ok(Geometry::NurbsCurve(nurbs_curve_from_definition(curve)?)))
+            .chain(self.surfaces.iter().map(|surface| {
+                Ok::<_, ProbeError>(Geometry::Brep(Brep::try_surface_face(
+                    nurbs_surface_from_definition(surface)?,
+                    tolerance,
+                )?))
+            }));
+        for (i, geometry) in geometry.enumerate() {
             let name = format!("source-{i}");
             let attrs = ObjectAttributes::on_layer(layer)
                 .with_name(&name)
@@ -61,10 +189,7 @@ impl Fixture {
                     (109 + i) as u8,
                 ))
                 .try_with_user_text("attribute-origin", &name)?;
-            let id = doc.add_geometry_with_attributes(
-                Geometry::NurbsCurve(nurbs_curve_from_definition(curve)?),
-                attrs,
-            )?;
+            let id = doc.add_geometry_with_attributes(geometry?, attrs)?;
             doc.set_object_geometry_user_text([id], "geometry-origin", Some(&name))?;
             ids.push(id);
         }
@@ -115,9 +240,16 @@ pub(super) fn run(
         ));
     }
     let (mut doc, ids) = f.setup(tolerance)?;
+    let temporary = f
+        .temporary_ids(&ids)
+        .into_iter()
+        .map(|id| doc.object(id).unwrap().clone())
+        .collect::<Vec<_>>();
     let commands = CommandRegistry::with_builtins();
     let before = snapshot(&doc, &ids)?;
-    let success = if f.cancel {
+    let success = if f.cancel_subcurve.is_some() {
+        false
+    } else if f.cancel {
         // Exercise the same staged preview used by the UI, then discard it.
         let input = viboceros_command::curve_boolean::parse(
             &f.command()?.split_whitespace().skip(1).collect::<Vec<_>>(),
@@ -138,16 +270,27 @@ pub(super) fn run(
         false
     } else {
         if !f.preselect {
-            doc.set_transient_selection(ids.iter().copied())?;
+            doc.set_transient_selection(f.whole_ids(&ids))?;
         }
+        let command = f.command_with_sources(&doc, &ids)?;
         let result = if f.preselect {
-            commands.execute_in_context(&mut doc, &f.command()?, f.context(tolerance)?)
+            commands.execute_in_context(&mut doc, &command, f.context(tolerance)?)
         } else {
-            commands.execute_postselected(&mut doc, &f.command()?, f.context(tolerance)?)
+            commands.execute_postselected(&mut doc, &command, f.context(tolerance)?)
         };
         result.is_ok()
     };
     let after = snapshot(&doc, &ids)?;
+    for original in &temporary {
+        if doc.object(original.id()).is_none_or(|current| {
+            current != original
+                || !current
+                    .geometry_snapshot()
+                    .shares_storage_with(original.geometry_snapshot())
+        }) {
+            return Err(ProbeError::FixtureInvariant("temporary parent changed"));
+        }
+    }
     if doc.can_undo() {
         commands.execute(&mut doc, "Undo")?;
     }

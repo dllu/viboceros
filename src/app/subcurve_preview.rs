@@ -250,6 +250,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(prompt) = &self.curve_boolean_prompt {
+            return prompt.subcurve_hover();
+        }
         if let Some(s) = &self.orient_edge_session {
             return s.subcurve_hover();
         }

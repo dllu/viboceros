@@ -51,6 +51,7 @@ pub struct Input {
     pub sources: Option<Vec<ObjectId>>,
     pub all_regions: bool,
     pub points: Vec<Point3>,
+    pub subcurves: Vec<Source>,
 }
 pub fn parse(args: &[&str], defaults: Options) -> Result<Input, CommandError> {
     let mut input = Input {
@@ -58,6 +59,7 @@ pub fn parse(args: &[&str], defaults: Options) -> Result<Input, CommandError> {
         sources: None,
         all_regions: false,
         points: Vec::new(),
+        subcurves: Vec::new(),
     };
     let mut seen = BTreeSet::new();
     for arg in args {
@@ -82,6 +84,12 @@ pub fn parse(args: &[&str], defaults: Options) -> Result<Input, CommandError> {
         };
         let key = key.trim_start_matches('_').to_ascii_lowercase();
         let value = value.trim_start_matches('_');
+        if matches!(key.as_str(), "subcrv" | "subcrvlength") {
+            input
+                .subcurves
+                .push(Source::parse(value, key == "subcrvlength")?);
+            continue;
+        }
         if !seen.insert(key.clone()) {
             return Err(CommandError::Usage(USAGE));
         }

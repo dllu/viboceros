@@ -104,9 +104,13 @@ impl VibocerosApp {
             .as_ref()
             .is_some_and(|p| !p.delete && p.source.is_none())
             || self.picking_uv_subcurve_edge()
+            || self.picking_curve_boolean_subcurve_edge()
     }
 
     pub(super) fn pick_subcurve_edge(&mut self, pick: crate::viewport::EdgePick) -> bool {
+        if self.picking_curve_boolean_subcurve_edge() {
+            return self.pick_curve_boolean_subcurve(pick.object, Some(pick.edge));
+        }
         if self.picking_uv_subcurve_edge() {
             return self.pick_uv_subcurve_edge(pick);
         }

@@ -1,12 +1,15 @@
 //! Unordered object matching with strict metadata and sampled rational loci.
 use serde_json::Value;
 use viboceros_geometry::{NurbsCurve, Point3, Tolerance, WeightedPoint3};
-pub const FAMILIES: [(&str, usize); 5] = [
+pub const FAMILIES: [(&str, usize); 8] = [
     ("curve_boolean_pilot", 13),
     ("curve_boolean_holdouts", 15),
     ("curve_boolean_interactions", 18),
     ("curve_boolean_confirmations", 13),
     ("curve_boolean_weighted", 3),
+    ("curve_boolean_subcurves", 10),
+    ("curve_boolean_subcurve_holdouts", 7),
+    ("curve_boolean_subcurve_edges", 4),
 ];
 pub fn rows(
     base: &std::path::Path,
