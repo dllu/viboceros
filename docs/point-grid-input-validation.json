@@ -1,0 +1,389 @@
+{
+  "scope": "Incremental SrfPtGrid and SrfControlPtGrid count/degree/point getters, remembered preferences, local Undo and atomic creation.",
+  "baseline_revision": "f1bd2fcbfd29abad588ba80c3ea23b4194038f83",
+  "implementation_revision": "421470b3f101c3b903b4549d32472a601918ba71",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_native_distance_qualified": false,
+  "performance_qualified": false,
+  "native_observations": 25,
+  "qualified_workflows_per_build": 24,
+  "constructions_per_build": 18,
+  "controls_per_build": 6,
+  "archive_round_trips_per_build": 18,
+  "maximum_coefficient_and_sample_difference": 1.1957467920563633e-14,
+  "parameter_grid": [
+    9,
+    9
+  ],
+  "captures": [
+    {
+      "family": "point_grid_input",
+      "observations": 12,
+      "raw_sha256": "7e4c3eea4279356ef557b863a09c5b26879671f3e31302be76fdfa96e9181e24",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "point_grid_input_holdouts",
+      "observations": 10,
+      "raw_sha256": "419af12aa8a9e98b4c0be9c5a524182797867f6dc7c6441e64b2e599ba4456e0",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "point_grid_input_prompts",
+      "observations": 3,
+      "raw_sha256": "5da617670ab8a7203a60af638d69720ffa952ab10e68c5ebc60ddeaf544286f5",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "cases": [
+    {
+      "id": "through_open",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "control_open",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_mixed",
+      "success": true,
+      "portable_error": 2.6645352591003757e-15,
+      "native_error": 4.070144838902081e-15
+    },
+    {
+      "id": "control_mixed",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_closed_u",
+      "success": true,
+      "portable_error": 1.4217791915866692e-15,
+      "native_error": 1.4217791915866692e-15
+    },
+    {
+      "id": "through_closed_v",
+      "success": true,
+      "portable_error": 1.4217791915866692e-15,
+      "native_error": 1.4217791915866692e-15
+    },
+    {
+      "id": "through_undo",
+      "success": true,
+      "portable_error": 2.0350724194510405e-15,
+      "native_error": 2.0350724194510405e-15
+    },
+    {
+      "id": "control_undo",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_cancel_points",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "control_cancel_count",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_cubic",
+      "success": true,
+      "portable_error": 9.930136612989092e-15,
+      "native_error": 1.1957467920563633e-14
+    },
+    {
+      "id": "control_cubic",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_prime",
+      "success": true,
+      "portable_error": 6.280369834735101e-16,
+      "native_error": 6.280369834735101e-16
+    },
+    {
+      "id": "through_enter_counts",
+      "success": true,
+      "portable_error": 6.280369834735101e-16,
+      "native_error": 6.280369834735101e-16
+    },
+    {
+      "id": "control_prime",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "control_enter_counts",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_count_below_degree",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "control_count_below_degree",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_enter_point",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "control_enter_point",
+      "success": false,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_separate_degree",
+      "success": true,
+      "portable_error": 6.280369834735101e-16,
+      "native_error": 6.280369834735101e-16
+    },
+    {
+      "id": "control_degree_prompt",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    },
+    {
+      "id": "through_degree_enter",
+      "success": true,
+      "portable_error": 6.280369834735101e-16,
+      "native_error": 6.280369834735101e-16
+    },
+    {
+      "id": "control_degree_enter",
+      "success": true,
+      "portable_error": 0.0,
+      "native_error": 0.0
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "control_separate_degree",
+      "errors": [
+        "owned SrfControlPtGrid input timeout",
+        "incomplete owned SrfControlPtGrid input"
+      ],
+      "qualified": false
+    }
+  ],
+  "execution": "Rhino ran in private Xvfb sessions. Application and egui tests created no desktop windows.",
+  "limits": [
+    "One frozen probe missed the Row degree prompt and timed out. It is retained as an unqualified diagnostic; a corrected fresh capture covers that workflow.",
+    "Every face control net, knot vector, face sense and finite parameter grid is checked. Topology counts, vertices and trim types are checked, but complete trim-index ordering and curve-domain parity are not qualified here.",
+    "Native cancellation Undo/Redo fields are passive snapshots; local cancellation, invalid geometry and count-Undo tests separately retain pending Redo.",
+    "A wire preview connects entered grid points. The fitted surface is constructed only after the required final point.",
+    "Existing solver conditioning, 256-station and 4096-face limits remain. Continuous distance, arbitrary mouse trajectories, application-restart persistence and comparative speed are unqualified."
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "command-unit",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "421470b3f101c3b903b4549d32472a601918ba71:crates/viboceros-command/src/lib.rs": "1c67aeb6111ff218c767038613839a719caa896630c00d5f0c4c339406bd423c",
+    "421470b3f101c3b903b4549d32472a601918ba71:crates/viboceros-command/src/point_grid.rs": "c9a4f68d9e6e9ed8bd49a1c0b5510be5c710c79624392e2397c1fc0e8fe0f8f5",
+    "421470b3f101c3b903b4549d32472a601918ba71:crates/viboceros-command/tests/support/plane_surface.rs": "42718cfc457a7b624662a2fbbb2f9fedbbb936c4e9e7faa7e3f47d6376a8b638",
+    "421470b3f101c3b903b4549d32472a601918ba71:crates/viboceros-command/tests/support/point_grid_input.rs": "ce0545c2faa055c0dde8c7a4e36aa1d67a7157c82209fd65026c0b0fb658bdc6",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/commands/point-grid-input.md": "2fe932556b754142ddffae22ec037eea7fe719f27522b002f54a10de72e82d9c",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/captures.json": "10ff859ef034f2b39201654aac2a9fa68bb3e5d08b962cfa56d4fee79ae313d4",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/checks.json": "b8761fc66a098306b26ddde11ef4d71d7b9371ce0f846c3906bfac277c3e80e8",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/clippy-all-features.log.gz": "0c1f8019e578ebea89d5e019b5e2e9dea3ebc22ad717d6f4be429ccdcbd0747e",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/clippy-portable.log.gz": "02acb8169d6da05450fdb975c288599ef67c7689aae5eaa49b91d93402c9200d",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/command-unit.log.gz": "91872c597b3aad28c2a0c9698a1882de420524cd9273af5b8acb53fad7a066f5",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/commands-native.log.gz": "f5ffbabfee18d31d62d6d054254c26578b311d3ade922d881c47c3b1a5c54d8c",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/commands-portable.log.gz": "525f39ff520e4a7b1b02904800ceba450129bb9cfbd612e6b867d012a523e090",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/corners-native.log.gz": "d1d068473579a4d6bbb769a6a489623cfc5f1c3ea65f729d2fd79349aaf7b55e",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/corners-portable.log.gz": "485ab486fbf2a45a62240ad1dadd638d9dbb91382681f83357e43278b18274d5",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/plane-native.log.gz": "26fafb976e4bed16dc9d21458009d81e9055810d5f1760c3a9d93461cb4e6fc7",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/plane-portable.log.gz": "649c925214303d3cc5e294a172f029d6b6a6080b6ce63d85b4dfcc577cedc5c4",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/point_grid_input-capture.log.gz": "59328c5b9516f98989dda90f9010452849bc54fa424e3b759ee7cd32dc4a99bc",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/point_grid_input_holdouts-capture.log.gz": "5cca1f46865c386870f85937f63c1b8c8a59a7b818e21290cb8d4a357323d192",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/point_grid_input_prompts-capture.log.gz": "8d80178be453b3a7cc1ef0a667c34ea178eb66afe214d3f5eeddf18c01502835",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/python.log.gz": "7b91c2d37ae16bb468c85a52e8ea7efbff5088271de9de534bce87cf937ed8e8",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/subd-native.log.gz": "aa6058dee32ca659ad72aced404074f9fe21f12ff970c53a7dad915424a36f70",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/ui-native.log.gz": "40ac71bc6e6c8b6305b7b0d35818dc5921c81c050d610cd11537a331791ba156",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-input-proof/ui-portable.log.gz": "6c235760db726c250cb5468e9314a0e87c384c01d77ecb0249fffcb4dbf2d16b",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/point-grid-surfaces.md": "9aab74093d93b393cb3bbac5700e71145ec67ebb319193590d647c2e66e4254c",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/subd-box-qualification.json": "2bdf76620b9cea536ca7140cdc708cc0a30b1434f43b176112ca08bd0bbfb17e",
+    "421470b3f101c3b903b4549d32472a601918ba71:docs/subd-plane-qualification.json": "8b689a7f94d25e757bd9438e66ca89e7884445f58945f6964e0cbd7547bf9185",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app.rs": "6e1afebb48bab6d957d987ca4b4d367c74b11bce776412e67493cc000ea14773",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/drafting_controls.rs": "ef09800fd952294d5aae85ca30052ffe94414a1873568558194948dc8fc5b0c1",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/drafting_input.rs": "9e743cf0f49742731733a3b957b731d770259dd454f3b2c14bac7e0703789922",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/interactive_cancel.rs": "62e92521356c9432db354441a01529422085c3d325067582a769ab886fac5dc3",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/interactive_start.rs": "943d4a2f1912a1c19867d0e7b6dd951b3cc5c5ec00aeb5b4c3232f2e7398af89",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/interactive_state/metadata.rs": "80a1e15ea8d1ed7fc9603d39ad98f755af295f3088921e4ff28dc1bbdf44d4e3",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/interactive_state/mod.rs": "60a5b22de4a1e554d2ce91f9a361439007eee0d60944aca7d7f4e2fc6fb2b08f",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/interactive_state/prompts.rs": "b967c83a74d81eb7385026c2cb8429bbd8292f424671c80232d72dec6ce77ec1",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/surface_point_grid.rs": "2b3b72a22f8ebfb50a347b1d21b2310eed23cc0f796308a6b372e257215bd132",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/surface_point_grid/parameters.rs": "60b2e3c3cef6f6eb03a186b20c33e250b3fb462c5b7607b718c4fa423e246a2a",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/tests/mod.rs": "d6f50e712157f1aed3a9c1cf53518a0d4c66bb52d4cf73ec6173f481997eb78b",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/tests/surface_point_grid.rs": "72b324a9e68bcfc6f88e824a595a24eccfb385461908ee801b7e7f6b10913232",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/app/ui.rs": "9467d67b7dbf1b5cb6fd2253b7c9f232de480dd95b042b7a664d7d67e83557b2",
+    "421470b3f101c3b903b4549d32472a601918ba71:src/viewport.rs": "dd4fe46bf0f3faffa57e19befcf4caaf5baaa6a09826ed72d8d433b3ccbf210f",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/check_point_grid_input.py": "ac7bd8397618189173c24939948fd88d6ff85f88a8d8b9c749897467c946108a",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/client.py": "04681afdab67868ba9a3ee482774a4eabbb48fbd21253df687667a0d2fd175ff",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/conic_getter_input.py": "939c60b46db7399b0e0d4670317172b1225243878f1abc33ebdbfcaf716e28b5",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/fixtures/point_grid_input.json": "13cd9fa537af1e9f3c435cbf7e9676e29c5a667bf376c0cc4d96e8d451b3d22f",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/fixtures/point_grid_input_holdouts.json": "a8fb710de34c5ae3216c1ca21c5118a94e4cea03965ebb93266b3882041860d5",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/fixtures/point_grid_input_prompts.json": "b6238c996a9a867d4957ede9a236a9af8e43fce6dfb06796a38fc6f517e5e3da",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/generate_point_grid_input.py": "1c97bd93dbb73bc90c58260e2172575913c429f369d6cd04208ffd3169ee87c4",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/generate_point_grid_input_holdouts.py": "0e6cb83549a7603fd103b4aea572ed6da16d702052aa5eb7b231c86f6bbf78c8",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/generate_point_grid_input_prompts.py": "76f94fc7b8c879fc91a016dadc336e2ead5259c465faa5f8d2119661d87e049b",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/point_grid_input.json.gz": "f1c45adb5f153051d1a483f43e4c02e4ce2bfdfa3e22d046ccec7a903c56bebb",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/point_grid_input_holdouts.json.gz": "2c01707ab59f50907e676d18dbea567dd21f85c863cc93aa712db2631ad85b1b",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/point_grid_input_prompts.json.gz": "2a896766f30dc2f1d4a2a83b500c4d84cc468565b2e953dd6bdc64b893cec792",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/040812a7dc677596f227121b006dfd3db4fdaa335a597fd925d4de9cd58bfd6b.gz": "105dcd4199e24db3ef56d0dd0134c4f0b686ad0a142a0276c21612c3747eb6f1",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/04681afdab67868ba9a3ee482774a4eabbb48fbd21253df687667a0d2fd175ff.gz": "b3305a8aa8b3609efba00dde31ff810b25b4648834a4fd206ee243c866fb048a",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/0e6cb83549a7603fd103b4aea572ed6da16d702052aa5eb7b231c86f6bbf78c8.gz": "8ade4527e94a0eea14d2289b08a61696c691e8fa523b532ddc8bcf348e9176f9",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/1124d81ebb0ceeb10dfda72015977c5eb3f7415417992beb79eefed101f4201c.gz": "fa6ae07f1797d554fb54ca9728a151313658c33de63afb24c3b6d11060ab0a3c",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/1c97bd93dbb73bc90c58260e2172575913c429f369d6cd04208ffd3169ee87c4.gz": "d97ff1f958edb9125753eb91303303b65a7ae41450e58658cf8f3f8d6a995ac0",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/270fc827c1a048553c9d7e9736382a40f6fd05ced149b3a242684a83aadade90.gz": "21ac69b1253c7f92f5b698f89e1ca9609c0359bcb4cf09a73b15ad0ee1b539ee",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/30310550ece9a7787ea0e41917f82208e4ededb9f7bf4476da3a95de341c8aa5.gz": "58ee5579083a7c001b83469e76298489ff857dfe05abfff92c4876446617a4ef",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/30b1099614505d9ffd5aba5e7a38aea10a5aeb5432d2f567f46b73422f5b785a.gz": "09afec5c67f96446eedcee52f6c5d7f2bea69a14884b7b7142106cb47882a0e7",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/432ef73879e7b19598657d160d7d44bcf26e4b6f726c048362b98df517035fcb.gz": "e9fffbf0ab1d8251a8e73687c1f2afa2c4b2ad54bd251f892dd35083c80f85d7",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/76f94fc7b8c879fc91a016dadc336e2ead5259c465faa5f8d2119661d87e049b.gz": "7ac9ca2b58aaac2970ad0322910a5494f4847c719f35acd8ce8e3f3f4c89c507",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/939c60b46db7399b0e0d4670317172b1225243878f1abc33ebdbfcaf716e28b5.gz": "01ed1fc4be333ea1e15e606fe32ffc25acc1c4f067744f5ee8f2fc2a1a7b1e41",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/c3de23b212a2c4abcf1b2d2449026af6ce35b33cb8aa9a367844d00bbb5dc5dd.gz": "7c34e0fe3c600b0cdaf0b7ad72958121ce0ffb6fc693aef38b80b451318c7052",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/e21910843b8a1871350888b278e7024bf301e947dbf202dabe5245bfd780d1ac.gz": "7023fcdc130b641e47b2e7113132cbfdd67b9d775c525bce722d815bbfe16b1c",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/e68a47ba6cc2b93d09e51f876a5d96ad6424878753616e8a3037b97fbbd7a9ab.gz": "ca3a3a18c68f48c02f0d8a81efdee01f5cc47b6bf12fea21d3abf2d2453cc51d",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/ea822882ab072df32096fcf4dbeef195dc1fcff1d26420945a64f79c9907cbe4.gz": "a15df3b21faded27c1b6f0b7e02193243b8d0cd163b10bfdbceed16ff6a4935d",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/observations/source_snapshots/f178ef167587330dac754700ea6cce73264c37192bdba461cf99f6b7bd35544a.gz": "a496c9becd0779fdd201d7cb016ec7fad10681d10308006e5a61841b8c80e62b",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/point_grid_input_cases.py": "432ef73879e7b19598657d160d7d44bcf26e4b6f726c048362b98df517035fcb",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/point_grid_input_holdouts.py": "e21910843b8a1871350888b278e7024bf301e947dbf202dabe5245bfd780d1ac",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/point_grid_input_probe.py": "30b1099614505d9ffd5aba5e7a38aea10a5aeb5432d2f567f46b73422f5b785a",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/point_grid_input_prompts.py": "c3de23b212a2c4abcf1b2d2449026af6ce35b33cb8aa9a367844d00bbb5dc5dd",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/report_point_grid_input.py": "a1af03e74659d66ef9f3e8f5f66db8afc4bef4b6a17f22a91a7144835e3b6cce",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/rhino_worker.py": "040812a7dc677596f227121b006dfd3db4fdaa335a597fd925d4de9cd58bfd6b",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/structural_sdk.py": "1124d81ebb0ceeb10dfda72015977c5eb3f7415417992beb79eefed101f4201c",
+    "421470b3f101c3b903b4549d32472a601918ba71:tools/rhino_oracle/test_point_grid_input.py": "394a049feac0f8496fab35d2dc11e8ab46ede680a159123787d5578e7f620ff9"
+  },
+  "evidence_sha256": {
+    "docs/point-grid-input-proof/captures.json": "10ff859ef034f2b39201654aac2a9fa68bb3e5d08b962cfa56d4fee79ae313d4",
+    "docs/point-grid-input-proof/checks.json": "17692707df91ba569bbe34e896cfaa2f2b1727b161d346a75c73043e368a96cb",
+    "docs/point-grid-input-proof/clippy-all-features.log.gz": "0c1f8019e578ebea89d5e019b5e2e9dea3ebc22ad717d6f4be429ccdcbd0747e",
+    "docs/point-grid-input-proof/clippy-portable.log.gz": "02acb8169d6da05450fdb975c288599ef67c7689aae5eaa49b91d93402c9200d",
+    "docs/point-grid-input-proof/command-unit.log.gz": "91872c597b3aad28c2a0c9698a1882de420524cd9273af5b8acb53fad7a066f5",
+    "docs/point-grid-input-proof/commands-native.log.gz": "f5ffbabfee18d31d62d6d054254c26578b311d3ade922d881c47c3b1a5c54d8c",
+    "docs/point-grid-input-proof/commands-portable.log.gz": "525f39ff520e4a7b1b02904800ceba450129bb9cfbd612e6b867d012a523e090",
+    "docs/point-grid-input-proof/corners-native.log.gz": "d1d068473579a4d6bbb769a6a489623cfc5f1c3ea65f729d2fd79349aaf7b55e",
+    "docs/point-grid-input-proof/corners-portable.log.gz": "485ab486fbf2a45a62240ad1dadd638d9dbb91382681f83357e43278b18274d5",
+    "docs/point-grid-input-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/point-grid-input-proof/plane-native.log.gz": "26fafb976e4bed16dc9d21458009d81e9055810d5f1760c3a9d93461cb4e6fc7",
+    "docs/point-grid-input-proof/plane-portable.log.gz": "649c925214303d3cc5e294a172f029d6b6a6080b6ce63d85b4dfcc577cedc5c4",
+    "docs/point-grid-input-proof/point_grid_input-capture.log.gz": "59328c5b9516f98989dda90f9010452849bc54fa424e3b759ee7cd32dc4a99bc",
+    "docs/point-grid-input-proof/point_grid_input_holdouts-capture.log.gz": "5cca1f46865c386870f85937f63c1b8c8a59a7b818e21290cb8d4a357323d192",
+    "docs/point-grid-input-proof/point_grid_input_prompts-capture.log.gz": "8d80178be453b3a7cc1ef0a667c34ea178eb66afe214d3f5eeddf18c01502835",
+    "docs/point-grid-input-proof/python.log.gz": "f754e8a917518da5da441bf4b360530cc7a776764f3f39a6bb324865d2776103",
+    "docs/point-grid-input-proof/subd-native.log.gz": "aa6058dee32ca659ad72aced404074f9fe21f12ff970c53a7dad915424a36f70",
+    "docs/point-grid-input-proof/ui-native.log.gz": "40ac71bc6e6c8b6305b7b0d35818dc5921c81c050d610cd11537a331791ba156",
+    "docs/point-grid-input-proof/ui-portable.log.gz": "6c235760db726c250cb5468e9314a0e87c384c01d77ecb0249fffcb4dbf2d16b",
+    "tools/rhino_oracle/fixtures/point_grid_input.json": "13cd9fa537af1e9f3c435cbf7e9676e29c5a667bf376c0cc4d96e8d451b3d22f",
+    "tools/rhino_oracle/fixtures/point_grid_input_holdouts.json": "a8fb710de34c5ae3216c1ca21c5118a94e4cea03965ebb93266b3882041860d5",
+    "tools/rhino_oracle/fixtures/point_grid_input_prompts.json": "b6238c996a9a867d4957ede9a236a9af8e43fce6dfb06796a38fc6f517e5e3da",
+    "tools/rhino_oracle/observations/point_grid_input.json.gz": "f1c45adb5f153051d1a483f43e4c02e4ce2bfdfa3e22d046ccec7a903c56bebb",
+    "tools/rhino_oracle/observations/point_grid_input_holdouts.json.gz": "2c01707ab59f50907e676d18dbea567dd21f85c863cc93aa712db2631ad85b1b",
+    "tools/rhino_oracle/observations/point_grid_input_prompts.json.gz": "2a896766f30dc2f1d4a2a83b500c4d84cc468565b2e953dd6bdc64b893cec792",
+    "tools/rhino_oracle/observations/source_snapshots/040812a7dc677596f227121b006dfd3db4fdaa335a597fd925d4de9cd58bfd6b.gz": "105dcd4199e24db3ef56d0dd0134c4f0b686ad0a142a0276c21612c3747eb6f1",
+    "tools/rhino_oracle/observations/source_snapshots/04681afdab67868ba9a3ee482774a4eabbb48fbd21253df687667a0d2fd175ff.gz": "b3305a8aa8b3609efba00dde31ff810b25b4648834a4fd206ee243c866fb048a",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/0e6cb83549a7603fd103b4aea572ed6da16d702052aa5eb7b231c86f6bbf78c8.gz": "8ade4527e94a0eea14d2289b08a61696c691e8fa523b532ddc8bcf348e9176f9",
+    "tools/rhino_oracle/observations/source_snapshots/1124d81ebb0ceeb10dfda72015977c5eb3f7415417992beb79eefed101f4201c.gz": "fa6ae07f1797d554fb54ca9728a151313658c33de63afb24c3b6d11060ab0a3c",
+    "tools/rhino_oracle/observations/source_snapshots/1c97bd93dbb73bc90c58260e2172575913c429f369d6cd04208ffd3169ee87c4.gz": "d97ff1f958edb9125753eb91303303b65a7ae41450e58658cf8f3f8d6a995ac0",
+    "tools/rhino_oracle/observations/source_snapshots/270fc827c1a048553c9d7e9736382a40f6fd05ced149b3a242684a83aadade90.gz": "21ac69b1253c7f92f5b698f89e1ca9609c0359bcb4cf09a73b15ad0ee1b539ee",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/30310550ece9a7787ea0e41917f82208e4ededb9f7bf4476da3a95de341c8aa5.gz": "58ee5579083a7c001b83469e76298489ff857dfe05abfff92c4876446617a4ef",
+    "tools/rhino_oracle/observations/source_snapshots/30b1099614505d9ffd5aba5e7a38aea10a5aeb5432d2f567f46b73422f5b785a.gz": "09afec5c67f96446eedcee52f6c5d7f2bea69a14884b7b7142106cb47882a0e7",
+    "tools/rhino_oracle/observations/source_snapshots/432ef73879e7b19598657d160d7d44bcf26e4b6f726c048362b98df517035fcb.gz": "e9fffbf0ab1d8251a8e73687c1f2afa2c4b2ad54bd251f892dd35083c80f85d7",
+    "tools/rhino_oracle/observations/source_snapshots/76f94fc7b8c879fc91a016dadc336e2ead5259c465faa5f8d2119661d87e049b.gz": "7ac9ca2b58aaac2970ad0322910a5494f4847c719f35acd8ce8e3f3f4c89c507",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/939c60b46db7399b0e0d4670317172b1225243878f1abc33ebdbfcaf716e28b5.gz": "01ed1fc4be333ea1e15e606fe32ffc25acc1c4f067744f5ee8f2fc2a1a7b1e41",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c3de23b212a2c4abcf1b2d2449026af6ce35b33cb8aa9a367844d00bbb5dc5dd.gz": "7c34e0fe3c600b0cdaf0b7ad72958121ce0ffb6fc693aef38b80b451318c7052",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/e21910843b8a1871350888b278e7024bf301e947dbf202dabe5245bfd780d1ac.gz": "7023fcdc130b641e47b2e7113132cbfdd67b9d775c525bce722d815bbfe16b1c",
+    "tools/rhino_oracle/observations/source_snapshots/e68a47ba6cc2b93d09e51f876a5d96ad6424878753616e8a3037b97fbbd7a9ab.gz": "ca3a3a18c68f48c02f0d8a81efdee01f5cc47b6bf12fea21d3abf2d2453cc51d",
+    "tools/rhino_oracle/observations/source_snapshots/ea822882ab072df32096fcf4dbeef195dc1fcff1d26420945a64f79c9907cbe4.gz": "a15df3b21faded27c1b6f0b7e02193243b8d0cd163b10bfdbceed16ff6a4935d",
+    "tools/rhino_oracle/observations/source_snapshots/f178ef167587330dac754700ea6cce73264c37192bdba461cf99f6b7bd35544a.gz": "a496c9becd0779fdd201d7cb016ec7fad10681d10308006e5a61841b8c80e62b"
+  }
+}
