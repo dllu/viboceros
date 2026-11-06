@@ -1,0 +1,876 @@
+{
+  "scope": "Plane rectangle and guide input, deformable affine bases, source policy and atomic history.",
+  "baseline_revision": "b2e698eea942f3a29732bde0ae4169c4d5d4eeca",
+  "implementation_revision": "006aaf1558936c37f4bcd3ec23a67b241f6b2795",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "continuous_native_distance_qualified": false,
+  "performance_qualified": false,
+  "native_observations": 173,
+  "qualified_workflows": 63,
+  "script_constructions": 48,
+  "ui_constructions": 53,
+  "ui_controls": 10,
+  "recovered_invalid_option_workflows": 5,
+  "archive_round_trips_per_build": 53,
+  "maximum_coefficient_and_sample_difference": 3.0369955157444796e-09,
+  "parameter_grid": [
+    9,
+    9
+  ],
+  "captures": [
+    {
+      "family": "plane_primitive_pilot",
+      "observations": 8,
+      "raw_sha256": "c5aea40cbebecc09fdfd8fbbc7718c50504c6aecbcee7f7183f92c8a00043279",
+      "role": "exploration",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_workflows",
+      "observations": 29,
+      "raw_sha256": "d47093c0df8dd41fd282a669048ebd2d6b474459ce39ede9dd744292a851c685",
+      "role": "exploration",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_audit",
+      "observations": 10,
+      "raw_sha256": "02c7fd8aab228c35b1b1a06d7ac576e757ad7ca886cf1a43d218b97d82ebaad5",
+      "role": "exploration",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_holdouts",
+      "observations": 12,
+      "raw_sha256": "809a8b50989314a5d1b9e1e64b7e96ce885812b6eb2bb1bda26d8b6e2b4c0ebd",
+      "role": "exploration",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_qualified",
+      "observations": 51,
+      "raw_sha256": "3f4fe8fd2fe694421bee09934bb22192d80dbf877d3a78a176fda43f26e04df1",
+      "role": "exploration",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_terminal",
+      "observations": 51,
+      "raw_sha256": "65bbccd9d7018bde5e1f2e44551abfbfcbf31839ba4d24b677ce44c9c8077794",
+      "role": "qualification",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_guides",
+      "observations": 5,
+      "raw_sha256": "34f1b8211526bf631986cb6138f6814ed45d27d3a0f32c2d7ba3afd6499a677d",
+      "role": "qualification",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "plane_surface_vertical_audit",
+      "observations": 7,
+      "raw_sha256": "dc7a08ab24c82df210472b05f03f0d3e46e6f34d03583155bfc14e488e3e2565",
+      "role": "qualification",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "cases": [
+    {
+      "id": "corners",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "reversed",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "three_point",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.035072419451041e-15,
+      "portable_ui_error": 4.550560269027492e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.035072419451041e-15,
+      "native_ui_error": 4.550560269027492e-15
+    },
+    {
+      "id": "center",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "vertical",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.0350724194510405e-15,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.0350724194510405e-15,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "deformable",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.9860273225978185e-15,
+      "portable_ui_error": 1.9860273225978185e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.9860273225978185e-15,
+      "native_ui_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "cancel",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "negative_x",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "negative_y",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "dimensions",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "square_enter",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "center_dimensions",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "center_three",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.9790409838967277e-15,
+      "portable_ui_error": 4.577566798522238e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.9790409838967277e-15,
+      "native_ui_error": 4.577566798522238e-15
+    },
+    {
+      "id": "edge_midpoint",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.197930934883577e-15,
+      "portable_ui_error": 6.7787275892400296e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.197930934883577e-15,
+      "native_ui_error": 6.7787275892400296e-15
+    },
+    {
+      "id": "three_dimensions",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.617333549722722e-15,
+      "portable_ui_error": 5.708749087754957e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.617333549722722e-15,
+      "native_ui_error": 5.708749087754957e-15
+    },
+    {
+      "id": "vertical_negative",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 9.930136612989092e-16,
+      "portable_ui_error": 9.930136612989092e-16,
+      "archive_objects": 2,
+      "native_script_error": 9.930136612989092e-16,
+      "native_ui_error": 9.930136612989092e-16
+    },
+    {
+      "id": "vertical_dimensions",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 8.881784197001252e-16,
+      "portable_ui_error": 8.881784197001252e-16,
+      "archive_objects": 2,
+      "native_script_error": 8.881784197001252e-16,
+      "native_ui_error": 8.881784197001252e-16
+    },
+    {
+      "id": "around_line",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 3,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "around_oblique",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.3322676295501878e-15,
+      "portable_ui_error": 2.0350724194510405e-15,
+      "archive_objects": 3,
+      "native_script_error": 1.3322676295501878e-15,
+      "native_ui_error": 2.0350724194510405e-15
+    },
+    {
+      "id": "cplane",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 2,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "cplane_oblique",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 9.729507111180988e-15,
+      "portable_ui_error": 9.769962616701378e-15,
+      "archive_objects": 2,
+      "native_script_error": 9.729507111180988e-15,
+      "native_ui_error": 9.769962616701378e-15
+    },
+    {
+      "id": "cancel_start",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "cancel_width",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_edge",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "zero_width",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "deform_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.66205343881779e-15,
+      "portable_ui_error": 3.66205343881779e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.66205343881779e-15,
+      "native_ui_error": 3.66205343881779e-15
+    },
+    {
+      "id": "deform_linear",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 3.9968028886505635e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 3.9968028886505635e-15
+    },
+    {
+      "id": "deform_mixed",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.5121479338940403e-15,
+      "portable_ui_error": 2.5121479338940403e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.5121479338940403e-15,
+      "native_ui_error": 2.5121479338940403e-15
+    },
+    {
+      "id": "deform_high",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.6399468654192618e-11,
+      "portable_ui_error": 1.6399468654192618e-11,
+      "archive_objects": 2,
+      "native_script_error": 1.6399468654192618e-11,
+      "native_ui_error": 1.6399468654192618e-11
+    },
+    {
+      "id": "audit_degree_one",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 3.66205343881779e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 3.66205343881779e-15
+    },
+    {
+      "id": "audit_degree_twelve",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 3.66205343881779e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 3.66205343881779e-15
+    },
+    {
+      "id": "audit_low_count",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 3.66205343881779e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 3.66205343881779e-15
+    },
+    {
+      "id": "audit_count_then_degree",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.2989928370877494e-14,
+      "portable_ui_error": 2.2989928370877494e-14,
+      "archive_objects": 2,
+      "native_script_error": 2.2989928370877494e-14,
+      "native_ui_error": 2.2989928370877494e-14
+    },
+    {
+      "id": "audit_degree_then_count",
+      "success": true,
+      "recovered_invalid_option": true,
+      "portable_script_error": null,
+      "portable_ui_error": 5.515473566030869e-15,
+      "archive_objects": 2,
+      "native_script_error": null,
+      "native_ui_error": 5.515473566030869e-15
+    },
+    {
+      "id": "audit_integer_getters",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.035072419451041e-15,
+      "portable_ui_error": 2.035072419451041e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.035072419451041e-15,
+      "native_ui_error": 2.035072419451041e-15
+    },
+    {
+      "id": "audit_integer_defaults",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.66205343881779e-15,
+      "portable_ui_error": 3.66205343881779e-15,
+      "archive_objects": 2,
+      "native_script_error": 3.66205343881779e-15,
+      "native_ui_error": 3.66205343881779e-15
+    },
+    {
+      "id": "audit_cancel_integer",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "audit_center",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.3603665272841412e-15,
+      "portable_ui_error": 2.3603665272841412e-15,
+      "archive_objects": 2,
+      "native_script_error": 2.3603665272841412e-15,
+      "native_ui_error": 2.3603665272841412e-15
+    },
+    {
+      "id": "audit_three_point",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.197930934883577e-15,
+      "portable_ui_error": 5.407139474782739e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.197930934883577e-15,
+      "native_ui_error": 5.407139474782739e-15
+    },
+    {
+      "id": "holdout_0",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.280369834735101e-16,
+      "portable_ui_error": 6.280369834735101e-16,
+      "archive_objects": 2,
+      "native_script_error": 6.280369834735101e-16,
+      "native_ui_error": 6.280369834735101e-16
+    },
+    {
+      "id": "holdout_1",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 6.217248937900877e-15,
+      "portable_ui_error": 6.217248937900877e-15,
+      "archive_objects": 2,
+      "native_script_error": 6.217248937900877e-15,
+      "native_ui_error": 6.217248937900877e-15
+    },
+    {
+      "id": "holdout_2",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 4.074536263942719e-10,
+      "portable_ui_error": 4.074536263942719e-10,
+      "archive_objects": 2,
+      "native_script_error": 4.074536263942719e-10,
+      "native_ui_error": 4.074536263942719e-10
+    },
+    {
+      "id": "holdout_3",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.472877282518059e-15,
+      "portable_ui_error": 1.472877282518059e-15,
+      "archive_objects": 2,
+      "native_script_error": 1.472877282518059e-15,
+      "native_ui_error": 1.472877282518059e-15
+    },
+    {
+      "id": "holdout_4",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.329070518200751e-15,
+      "portable_ui_error": 5.329070518200751e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.329070518200751e-15,
+      "native_ui_error": 5.329070518200751e-15
+    },
+    {
+      "id": "holdout_5",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 9.313225746154785e-10,
+      "portable_ui_error": 9.313225746154785e-10,
+      "archive_objects": 2,
+      "native_script_error": 9.313225746154785e-10,
+      "native_ui_error": 9.313225746154785e-10
+    },
+    {
+      "id": "holdout_6",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.168404344971009e-19,
+      "portable_ui_error": 2.168404344971009e-19,
+      "archive_objects": 2,
+      "native_script_error": 2.168404344971009e-19,
+      "native_ui_error": 2.168404344971009e-19
+    },
+    {
+      "id": "holdout_7",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.5045652704989467e-10,
+      "portable_ui_error": 3.5045652704989467e-10,
+      "archive_objects": 2,
+      "native_script_error": 3.5045652704989467e-10,
+      "native_ui_error": 3.5045652704989467e-10
+    },
+    {
+      "id": "holdout_8",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 7.182221556578918e-10,
+      "portable_ui_error": 7.362751430292566e-10,
+      "archive_objects": 2,
+      "native_script_error": 7.182221556578918e-10,
+      "native_ui_error": 7.362751430292566e-10
+    },
+    {
+      "id": "holdout_9",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 7.135262720173924e-10,
+      "portable_ui_error": 7.135262720173924e-10,
+      "archive_objects": 2,
+      "native_script_error": 7.135262720173924e-10,
+      "native_ui_error": 7.135262720173924e-10
+    },
+    {
+      "id": "holdout_10",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.1641532182693481e-10,
+      "portable_ui_error": 1.1647215137477994e-10,
+      "archive_objects": 2,
+      "native_script_error": 1.1641532182693481e-10,
+      "native_ui_error": 1.1647215137477994e-10
+    },
+    {
+      "id": "holdout_11",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 9.4037354117047e-10,
+      "portable_ui_error": 9.4037354117047e-10,
+      "archive_objects": 2,
+      "native_script_error": 9.4037354117047e-10,
+      "native_ui_error": 9.4037354117047e-10
+    },
+    {
+      "id": "guide_cancel_before_pick",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "guide_cancel_after_pick",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "guide_cancel_after_center",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "guide_preselected",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 0.0,
+      "portable_ui_error": 0.0,
+      "archive_objects": 3,
+      "native_script_error": 0.0,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "guide_preselected_cancel",
+      "success": false,
+      "recovered_invalid_option": false,
+      "portable_script_error": null,
+      "portable_ui_error": 0.0,
+      "archive_objects": null,
+      "native_script_error": null,
+      "native_ui_error": 0.0
+    },
+    {
+      "id": "vertical_audit_plain",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 2.399963341663627e-10,
+      "portable_ui_error": 2.399963341663627e-10,
+      "archive_objects": 2,
+      "native_script_error": 2.399963341663627e-10,
+      "native_ui_error": 2.399963341663627e-10
+    },
+    {
+      "id": "vertical_audit_deform_minimum",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.0369955157444796e-09,
+      "portable_ui_error": 3.0369955157444796e-09,
+      "archive_objects": 2,
+      "native_script_error": 3.0369955157444796e-09,
+      "native_ui_error": 3.0369955157444796e-09
+    },
+    {
+      "id": "vertical_audit_deform_cubic",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 1.1786153034374925e-09,
+      "portable_ui_error": 1.1786153034374925e-09,
+      "archive_objects": 2,
+      "native_script_error": 1.1786153034374925e-09,
+      "native_ui_error": 1.1786153034374925e-09
+    },
+    {
+      "id": "vertical_audit_deform_default",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 4.808741983101444e-10,
+      "portable_ui_error": 4.808741983101444e-10,
+      "archive_objects": 2,
+      "native_script_error": 4.808741983101444e-10,
+      "native_ui_error": 4.808741983101444e-10
+    },
+    {
+      "id": "vertical_audit_repeat",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 9.4037354117047e-10,
+      "portable_ui_error": 9.4037354117047e-10,
+      "archive_objects": 2,
+      "native_script_error": 9.4037354117047e-10,
+      "native_ui_error": 9.4037354117047e-10
+    },
+    {
+      "id": "vertical_audit_translated",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 3.3940607069789553e-10,
+      "portable_ui_error": 3.4924596548080444e-10,
+      "archive_objects": 2,
+      "native_script_error": 3.3940607069789553e-10,
+      "native_ui_error": 3.4924596548080444e-10
+    },
+    {
+      "id": "vertical_audit_small",
+      "success": true,
+      "recovered_invalid_option": false,
+      "portable_script_error": 5.8167634697480146e-15,
+      "portable_ui_error": 5.8167634697480146e-15,
+      "archive_objects": 2,
+      "native_script_error": 5.8167634697480146e-15,
+      "native_ui_error": 5.8167634697480146e-15
+    }
+  ],
+  "execution": "Native captures used private Xvfb displays. Rust command and application tests created no windows.",
+  "limits": [
+    "Earlier 110 observations are exploratory. Appended idle Cancel commands affected selection, runtime random recipes differed across Python hosts, and the first consolidated family did not resolve both issues.",
+    "The 63 qualified recipes use literal holdout coordinates, explicit native model tolerances and no idle cleanup in the measured macro.",
+    "CLI replays execute 48 valid constructions. Five recovered-invalid-setting constructions and ten cancellation/invalid-point workflows are UI-only.",
+    "Cancellation undo/redo fields are passive producer snapshots, not executed native history operations. Local tests separately check pending Redo preservation.",
+    "Native command-end telemetry retains temporary guide selection; post-script snapshots record its release. Persistent preselection and guide-picker cleanup are checked separately.",
+    "3DM preserves geometry, attributes and groups. Object selection is transient and is checked as cleared on archive restore.",
+    "Assignment-form Deformable=Yes|No tokens remain unsupported. The pilot preserves the native Deformable=No menu-switch result; current command syntax uses bare Deformable.",
+    "General curved guides, edge-frame parity, all Enter defaults, multiple preselected guide choices, mouse/pixel input, restart persistence, reactive History and comparative speed remain unqualified."
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "geometry",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "subd-portable",
+      "status": 0
+    },
+    {
+      "name": "surface-flow-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "surface-flow-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-input",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "plane-primitives",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "evidence_sha256": {
+    "docs/plane-surface-proof/capture-plane_primitive_pilot.log.gz": "4a70c0f008c536975422a1f9ded55a8411ca81c478ac3b0b14b855d2204b32f7",
+    "docs/plane-surface-proof/capture-plane_surface_audit.log.gz": "dbdc3872091f31553ce152459adff6915b1e462c3d741cef9f19dbe7163de1ef",
+    "docs/plane-surface-proof/capture-plane_surface_guides.log.gz": "d3d2d5342ba58df432e8fdfd826534f532f9a5855dad90d37b2e8d73a15c3c03",
+    "docs/plane-surface-proof/capture-plane_surface_holdouts.log.gz": "af7ac07318b717e7c3536a6cb11d2d9bf1ae5ce38f070c4d235fa58b11880091",
+    "docs/plane-surface-proof/capture-plane_surface_qualified.log.gz": "ae2553da68c679bd1557b052d819dc6b1e00b28fbdca7ad7649751ee4fff0f7c",
+    "docs/plane-surface-proof/capture-plane_surface_terminal.log.gz": "ff400fa8fbfe8e3b883cf95125ccadb929b14715a66722e81f53f6f899d44677",
+    "docs/plane-surface-proof/capture-plane_surface_vertical_audit.log.gz": "8b66473c9d7fc8fabb36ee66eecdbce9575e288a7985943bc45acafade2f6eba",
+    "docs/plane-surface-proof/capture-plane_surface_workflows.log.gz": "e88484acf74fb1825ce843262cfa81ff99236945365e07096cceef0c8f51f91a",
+    "docs/plane-surface-proof/captures.json": "dc79e83d901b522be25df679883d90f6ecd87658f4d191bacaa5fe39f7e5746d",
+    "docs/plane-surface-proof/checks.json": "1cb37d862c949ea6fc0482f083f0308275d564db44c98b789b89aee10177f3b2",
+    "docs/plane-surface-proof/clippy-all-features.log.gz": "d4eb46982180c9cd22d91fdbb6d49a0005a0d09579ef2b30bdbe00e6e849d0bb",
+    "docs/plane-surface-proof/clippy-portable.log.gz": "82cb04cd86da7fd1916f1e2edbefd1c85147e5b5c199c2ff12a67548610c0fbb",
+    "docs/plane-surface-proof/commands-native.log.gz": "c90f1cc6050843038ef1e588b3efce7a1e73886d159deeb72b36a90f21c52bc3",
+    "docs/plane-surface-proof/commands-portable.log.gz": "d05ca40d066898df35708a3ece0a47066c39b42a2bd5c81cbb114e61c2fbf32a",
+    "docs/plane-surface-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/plane-surface-proof/geometry.log.gz": "23b8bbeca7c3e031662ee1b3fe4707db2b32dfd57d0ec77cffc0b3730403b1e6",
+    "docs/plane-surface-proof/plane-primitives.log.gz": "4decac91698963341c21f1dbf541d468e400829ede63426d0a26004af646ebc1",
+    "docs/plane-surface-proof/python.log.gz": "4dc51dd53a9c0e9d895b5645824cadd7866e4597979dd5922faae1cfe0c24d62",
+    "docs/plane-surface-proof/rectangle-input.log.gz": "e32cf232606f970e38a79c7dc6c403bf9b94e8860518a688de455a646f089885",
+    "docs/plane-surface-proof/rectangle-native.log.gz": "01926f96b99ea3806fb5190e6cd0bab055d891edf0ba24340c263f21ac32df38",
+    "docs/plane-surface-proof/rectangle-portable.log.gz": "025ebc867e7ed99700fd18d0f0058b68b1846039d8363130960ec582290c010b",
+    "docs/plane-surface-proof/registry.log.gz": "fd7c88e1e5fbde106e239f208c8b8f500ad4c9967bc2da95555f5cf884621a85",
+    "docs/plane-surface-proof/subd-native.log.gz": "aaa4530fc259b708603776216e3d50c04cea1e4c2039d77cb5a32d75c896e1ab",
+    "docs/plane-surface-proof/subd-portable.log.gz": "5f59a270d8cfd5ad5d2ab9773bca397408bd5d20b340f2b3e2a95275cafddeae",
+    "docs/plane-surface-proof/surface-flow-native.log.gz": "c3e2b6130538e093f55ee1e7e2da401022ee9534d4091a031b8d68012d5d7d23",
+    "docs/plane-surface-proof/surface-flow-portable.log.gz": "bcdf2add489802cb38f69750857828aa86010cd4afa79d34cf2231cba2903751",
+    "docs/plane-surface-proof/ui-native.log.gz": "de0e7257a9c08c1fc8d28bd4db9a6cac471f6687b85c5082d6c5b4e74baf0916",
+    "docs/plane-surface-proof/ui-portable.log.gz": "cc63d5080212aaa0bf07bda652af569863cfbe59635029c673c868956eeb14bd",
+    "tools/rhino_oracle/fixtures/plane_primitive_pilot.json": "308c75d28925979e0b1da4d03f15dd1a69e978d67545de3600dc7bd2e1feddc2",
+    "tools/rhino_oracle/fixtures/plane_surface_audit.json": "e4745352c7a29fd2b49bcd40c51e8f7576b314c9d6a8dd5fd9d6f4f1014ba8ab",
+    "tools/rhino_oracle/fixtures/plane_surface_guides.json": "684fdfa209e47d147d4a65c77b84b0d9858717591758d1390bf143ecf1ab21b8",
+    "tools/rhino_oracle/fixtures/plane_surface_holdouts.json": "159545c28622cec7b29185a9c00ea487faffcc527ad68278fba40109dad92801",
+    "tools/rhino_oracle/fixtures/plane_surface_qualified.json": "6f8037aea32e6ae4cd96c5b1616acf53c7c79de5c1619e3f9b5d0530c2ec3443",
+    "tools/rhino_oracle/fixtures/plane_surface_terminal.json": "6f8037aea32e6ae4cd96c5b1616acf53c7c79de5c1619e3f9b5d0530c2ec3443",
+    "tools/rhino_oracle/fixtures/plane_surface_vertical_audit.json": "cd7261dff305eac41f165fd0fcf6df17018dc02d1eadf25654ef32851e5cc5ba",
+    "tools/rhino_oracle/fixtures/plane_surface_workflows.json": "7e1ceed7836e10afbbfbd7042a61c8d9ae46efc20ee0e2f655401d0515e22a12",
+    "tools/rhino_oracle/observations/plane_primitive_pilot.json.gz": "0efab77fc0e545f36c72571f91351f877d054b6b5fc2676864ed21ff6979d2c8",
+    "tools/rhino_oracle/observations/plane_surface_audit.json.gz": "03846e8ee7cae5315384d5d0af3dfacab6f3d8112371f54aa5de6d36b7a40f69",
+    "tools/rhino_oracle/observations/plane_surface_guides.json.gz": "b789d2ea221a8e844aa177af1692ad7c9d5199f2ad5e756938029182667e3406",
+    "tools/rhino_oracle/observations/plane_surface_holdouts.json.gz": "a1aed4d08dcc818a9c8db6471ca1a775d38672aab2651fe9a39a76955105d8fa",
+    "tools/rhino_oracle/observations/plane_surface_qualified.json.gz": "1c83ed47a41fbd9b675c02adeea46de7e1818c3ad3ef9071a0692b0c7ab6bb62",
+    "tools/rhino_oracle/observations/plane_surface_terminal.json.gz": "d5b1b45485dc7ce055daba70398632520d53f61dba3d4bc08f59c1d01ff940a9",
+    "tools/rhino_oracle/observations/plane_surface_vertical_audit.json.gz": "93f232e4ea904eb9fd415bc93ed6cda175f5e3b68ee94e6bedfa2f22d7c92c4a",
+    "tools/rhino_oracle/observations/plane_surface_workflows.json.gz": "e5dbea0743cbb4d097a1a8c366d833423c0d8187e70bb37f62bea942b9285d10",
+    "tools/rhino_oracle/observations/source_snapshots/05433f7eecbf4039bd5c9c137785662829ca0a4705435c9c9e013d3dfc5ac098.gz": "79fd18f58d5a756905c1d885c3529514d9eaf0b8d9e65d42a3f4bb15559f6c42",
+    "tools/rhino_oracle/observations/source_snapshots/07e2e872d13c587274fc633bcf02ed9958eff508ff3ac043cf2dcb58a638fd24.gz": "28cb1032add2587b98b146b4d93a2a24ae94ed2f10c71da7ba7b3afcb1566c0a",
+    "tools/rhino_oracle/observations/source_snapshots/099f42cbfaf0255e1a71e6f4cb8293750c801d6cb53bd0aa05188264cbc8a821.gz": "3731942f701270d8234fa63d8590e44c4dab38685a2428aac5e9d62fc478768a",
+    "tools/rhino_oracle/observations/source_snapshots/0c364115de8e6812e827e6447e659eacba0019e0104098b08f46eaa855651f8d.gz": "71ed8de985b6f3908b2026bfa694386314d07aa4c76d2ff6d7ff42d534605e05",
+    "tools/rhino_oracle/observations/source_snapshots/17943bd9857df1537bbec79e8c95fdd8a864c80cfdfcf051501b1c812bd7102b.gz": "c81b11ca8eb02787867bbdfe39c145e609c55cfa3cd39da6666751fee8047164",
+    "tools/rhino_oracle/observations/source_snapshots/19b13c397d7e36f44bf7969e000cd304f8113e8e4c1bfe4d3c003d7101d5be81.gz": "355d15125a69d908d2d777db70396b3c334f20ebf49beddffbab4a675b9d8631",
+    "tools/rhino_oracle/observations/source_snapshots/1b23ea106738a7217e5584561a4fb8e99b3b0e041a07e3cdbf0637d3d240dcab.gz": "1ce822c600a5138374766ed8c002eac7c75db6e50c090feef403b796b34e3ce1",
+    "tools/rhino_oracle/observations/source_snapshots/1cadde3c01cc9a5244103b773e3f20ccc8142552fadfb58f097d153ac1701043.gz": "babb230acea0707f6e8ec19dc3efb588a257c590ed4faf9b626c45daff355155",
+    "tools/rhino_oracle/observations/source_snapshots/2c5fd63e77914640e3163a48efabc0d459dd00974dca497fde6f018a65d34233.gz": "fcd5c3e54286559ec3878919a8406c4883e0ce3583c678ad4c56add61b09b2fc",
+    "tools/rhino_oracle/observations/source_snapshots/3567a606d62691474ac62c420e01c461335b928cc78c364588452a53336d57aa.gz": "5d984505c6674b1a66a5a0ec940962b7dbe89ee4c1b61fbb4eb4130f4cda0600",
+    "tools/rhino_oracle/observations/source_snapshots/4547367a60209db697c12b7115a987f0b61c8475f4dde04ac1cb6858a20c3a32.gz": "39ee5c4e68f4e4618195aba6b28e09758addf73cf5dca387b79b47307aea18d7",
+    "tools/rhino_oracle/observations/source_snapshots/4d9f18af7698767861849c2ef4e217ea9d5b0597821cd6fd05b67933a56ea109.gz": "2ae7e9d235996fc7984e460a4c48153f57755c1e4ec8e0f8fa8f5df61d936815",
+    "tools/rhino_oracle/observations/source_snapshots/51c6a6241ae0cc2e1be4bf83b4c0f478048dc85b766f3869aaa61ec556289b30.gz": "770780b649f132331aa815555d10de61e3ee30dd8f235658e1400d17e05bb0f1",
+    "tools/rhino_oracle/observations/source_snapshots/6749aecca4542ca094cbb8ca891081e276a4c1c1403f1820ffdf202f885fe591.gz": "92399da8cf0c0ef1babafc9670f2679cb392edd65ee156cf81cf3ac6a826e188",
+    "tools/rhino_oracle/observations/source_snapshots/68e41b42cdd19a88ac22c884a71c3a90364d7a3d093d921eebe4c8a64633e2f3.gz": "84f9bf7a342a135fc25381d7c536cabb68e4005843d4e08a57037d65f2b7fba3",
+    "tools/rhino_oracle/observations/source_snapshots/70beda7ae697e188511c805c62a32a1fe6f52eaa2a99ebaff9a659d35b02e242.gz": "f09d4d6b845669bfc6d14caccd47dc72dcd9dc3b1d5eb67cdc8c83b4cab0fb42",
+    "tools/rhino_oracle/observations/source_snapshots/75b2698f89d30b8eee3cd9fc325486b77a4216879ec4e9885e4c83846b7295ec.gz": "be39a3d26fa9e63099166cdaa4080cf107f5213a5098cc02668b317783f3d072",
+    "tools/rhino_oracle/observations/source_snapshots/82e993d41a312ed2fd5dcf1b249d9c848f73eaa6a456bfe9c89454030dee64e6.gz": "0a0a77de69283ee1749277120a34a93b626bd61a6b92dae1396de072e3e70148",
+    "tools/rhino_oracle/observations/source_snapshots/8eede5a7cef9cf29957bb3a5bf7f5517a99dc51a0742b3a6f936b3960f36a858.gz": "6ee96b6bca28e6fa3e1d6f31a3e35f9385f36f025bd8e5a19a0887fe44c75fe4",
+    "tools/rhino_oracle/observations/source_snapshots/93e0d56de713a60e247237c878b50ef73e3f11ca378fb8f01fcba48407db23ee.gz": "1c9c68aacdf7acfdea6fd1894d84596f26ba46602f91f38367ac757269aa33ae",
+    "tools/rhino_oracle/observations/source_snapshots/a989f5240c723833c8ea2348ec351797f31f7fd7c67e0f20b7175f0d3f9765b3.gz": "35fdcb9406cd96c50c1f54edd9677766d08f3bc314193e94ac8326afa8743b49",
+    "tools/rhino_oracle/observations/source_snapshots/ad38dbf8eb652387abf80248493a8836fd96f666a12d7444f35fee23fd2f76f9.gz": "1b71e75871e4d2be460c90e6a5b118378e29e30fea78d33699c688f53a35151e",
+    "tools/rhino_oracle/observations/source_snapshots/b0b76be5a3af4900ff61ed6dab32d00075572281a21b18a94b684ebad90cce84.gz": "d891988c41227af98a81b5b582b7cad04c84538897a85d41ef4056c711397375",
+    "tools/rhino_oracle/observations/source_snapshots/b61faaafc85cc241ea23d441cf68846afd3f0c81d31f4b66a196c76972ee55da.gz": "715941cf4d58327992d310256d7de18e858fca18d9dfb87e422dca8ae759c250",
+    "tools/rhino_oracle/observations/source_snapshots/b93e51ad686d91f654fa183acf3ea51deb3892555354e594876fec33cb7e140a.gz": "19404771f4bdb3a40291b3da1ce07c1356df976abaaf78301484afa373299742",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c2a36b52498f1bf1a514882d2593e945b84e221f6e552989f41c43d2f66e51f4.gz": "2f3a8675b6eb368f984a7dc15343da158807fbb6eb3ea49d721a4246858688f0",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d30aa11403094b3c98d6d555babbfbcb9e956644c08e3be6bb2f603d155236f8.gz": "473d0c559e92bb81bc5e61ac383e4648b226b19ac8e50ebed0a6d082ff6b2e5a",
+    "tools/rhino_oracle/observations/source_snapshots/d871ed58bcab2b82db65750a900e7865d410d0e029c830f8d71fbbd7221a8eb5.gz": "7f19b2afbcf3cea13a271e9d2b018bbecd5a5c6058f97d210315c91b63743ee0",
+    "tools/rhino_oracle/observations/source_snapshots/d910b678eca4a9cf9032e9a2fa607e0e312925b35e05892531bc6e05a4a07459.gz": "f12a57d7bb7b993b2afa38d672d34e24bf007abf024f0e8cb089646df9b315a3",
+    "tools/rhino_oracle/observations/source_snapshots/d93fb31276c567427bca7be0b8027cc33ec298aac0f456626e859054aeb74685.gz": "6ab6676bea6abae12d469e958852bfe16e1f361a0cbc9ff10493601f8d7caf56",
+    "tools/rhino_oracle/observations/source_snapshots/e78fc45bd3b3e4a84aba546fe0a58231676e67432bfdf8daf29554f53997fcd4.gz": "efd524c9a0d5a834a32de58b48af0518b7bab3167a40856cb66012e394c5b450",
+    "tools/rhino_oracle/observations/source_snapshots/f1a4458cfbd6adffd91a62c689f59d5373e8d41cd4ac85f92ac31d1500d18911.gz": "ab592bc93b606af593112b4291aceeae8631909ed1ebfc76cbf23e649797d375"
+  }
+}

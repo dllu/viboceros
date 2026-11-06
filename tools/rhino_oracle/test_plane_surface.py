@@ -6,6 +6,7 @@ import json
 import math
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import struct
 import sys
@@ -28,6 +29,35 @@ def observed(name):
 
 
 class PlaneSurfaceTests(unittest.TestCase):
+    def test_qualification_requires_complete_executed_evidence_and_keeps_the_gate(self):
+        from .report_plane_surface import ROOT, build
+        proof = ROOT / 'docs/plane-surface-proof'
+        record = json.loads((ROOT / 'docs/plane-surface-validation.json').read_text())
+        self.assertRegex(record['implementation_revision'], r'\A[0-9a-f]{40}\Z')
+        self.assertEqual(record, build(proof, record['implementation_revision']))
+        self.assertEqual(record['model_epsilon'], 1e-6)
+        self.assertEqual((record['qualified_workflows'], record['script_constructions'], record['archive_round_trips_per_build']), (63, 48, 53))
+        self.assertFalse(record['full_native_parity'])
+        with self.assertRaisesRegex(ValueError, 'full implementation revision'):
+            build(proof, 'HEAD')
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / 'proof'
+            shutil.copytree(proof, copied)
+            path = copied / 'ui-portable.log.gz'
+            text = gzip.decompress(path.read_bytes()).decode()
+            lines = text.splitlines(keepends=True)
+            index = next(i for i, line in enumerate(lines) if line.startswith('PLANE_UI '))
+            missing = ''.join(lines[:index] + lines[index+1:])
+            path.write_bytes(gzip.compress(missing.encode(), mtime=0))
+            with self.assertRaisesRegex(ValueError, 'incomplete CLI or UI execution'):
+                build(copied, record['implementation_revision'])
+            row = json.loads(lines[index].split(' ', 1)[1])
+            row['maximum_coefficient_and_sample_error'] = 1.1e-6
+            lines[index] = 'PLANE_UI ' + json.dumps(row) + '\n'
+            path.write_bytes(gzip.compress(''.join(lines).encode(), mtime=0))
+            with self.assertRaisesRegex(ValueError, 'geometry gate failed'):
+                build(copied, record['implementation_revision'])
+
     def test_fixed_factories_and_every_frozen_producer(self):
         factories = dict(plane_surface_workflows=cases.request,
                          plane_surface_audit=lambda: cases.request(cases.AUDIT),
