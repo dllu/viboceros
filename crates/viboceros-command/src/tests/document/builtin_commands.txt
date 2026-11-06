@@ -71,6 +71,7 @@ CurvatureAnalysisOff
 CurvatureGraph
 CurvatureGraphOff
 Curve
+CurveBoolean
 CurveThroughPolyline
 CurveThroughPt
 Cylinder
@@ -429,6 +430,7 @@ UntrimHoles
 Unweld
 UnweldEdge
 UnweldVertex
+UseExtrusions
 Volume
 VolumeCentroid
 Weight
