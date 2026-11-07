@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "circle_line_arc",
+      "case": "circle_line_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "circle_line_parts",
+      "case": "circle_line_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "circle_line_joined",
+      "case": "circle_line_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "two_circles_arc",
+      "case": "two_circles_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "two_circles_parts",
+      "case": "two_circles_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "two_circles_joined",
+      "case": "two_circles_joined"
+    }
+  ]
+}

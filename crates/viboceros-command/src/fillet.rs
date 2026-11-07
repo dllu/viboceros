@@ -3,6 +3,7 @@ use super::*;
 use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle, CurveFilletExtensionStyles, CurveOtherExtensionStyle,
 };
+mod closed;
 mod options;
 mod prepare;
 pub use options::{Arguments, Preferences, parse, parse_radius};

@@ -76,6 +76,21 @@ FINAL = {k: v for k, v in VERIFICATION.items() if k != 'curved_contact'}
 FINAL['curved_contact_separated'] = case(explicit(True, radius=.2) + [pick(0, [1.5, .5625, 0.]), pick(1, [2., 1.9, 0.]), 'Enter'], curves=VERIFICATION['curved_contact']['curves'])
 CASES.update(FINAL)
 
+if __package__:
+    from .fillet_closed_cases import pilot, holdouts
+else:
+    from fillet_closed_cases import pilot, holdouts
+CLOSED_PILOT = pilot(case, explicit, pick)
+CASES.update(CLOSED_PILOT)
+CLOSED_HOLDOUTS = holdouts(case, explicit, pick)
+CASES.update(CLOSED_HOLDOUTS)
+from copy import deepcopy
+CLOSED_FINAL = deepcopy(CLOSED_HOLDOUTS)
+CLOSED_FINAL['circle_line_spatial'] = dict(CLOSED_FINAL['circle_line_spatial'], view='Top')
+# Keep the failed request immutable and give the corrected spatial pick a new ID.
+CLOSED_FINAL['circle_line_spatial_top'] = CLOSED_FINAL.pop('circle_line_spatial')
+CASES.update(CLOSED_FINAL)
+
 
 def validate(op):
     if not isinstance(op, dict) or set(op) != {'op', 'id', 'case'} or op.get('op') != 'fillet_command' or not isinstance(op.get('case'), str) or op.get('case') not in CASES or op.get('id') != op['case']:

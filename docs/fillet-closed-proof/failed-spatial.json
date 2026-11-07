@@ -1,0 +1,38 @@
+{
+  "family": "fillet_closed_holdouts",
+  "native_observations": 0,
+  "request_sha256": "8edc7d1ac5c66d5d0b2ee46ffbf204b721a2f55395e092f2fa0800922aeab781",
+  "sources": {
+    "generate_fillet_closed_holdouts.py": "a12be7e82f5cd6baea8b8a38c9848b4a84cc630821a0b9c7a5903a083b34253e",
+    "structural_sdk.py": "e20779cfd4962b4c35341403a0ca6ee00016f147855f7ab0ff592e43a8ef97a4",
+    "rhino_worker.py": "63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9",
+    "client.py": "ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "fillet_command_probe.py": "cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de",
+    "fillet_command.py": "1d7b01bdbc454a24267e746e1c76f9bc63da44a0c1ca96f8f23f5c14715b3c4d",
+    "fillet_closed_cases.py": "c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae",
+    "blend_curve_display_capture.py": "987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56",
+    "line_scene_probe.py": "591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "error": "Perspective projection put picks within four pixels and opened Selection Menu. No observations published. Owned Rhino PID and settings scheme verified before SIGTERM; no desktop interaction.",
+  "owned_pid": 4129508,
+  "exit_status": 1,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_closed_holdouts"
+  ],
+  "settings_scheme": "VibocerosOracleFilletClosedHoldouts20261107"
+}

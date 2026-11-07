@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/fillet.htm)
 
-Enter `Fillet` and pick two open curves near the ends to connect. Radius starts
+Enter `Fillet` and pick two distinct curves near the intended contacts. Radius starts
 at 1, Join at No, Trim at Yes, and Dynamic at No. Enter `Radius`, then a number
 or two distance points to change the radius. Typed values accept document units
 and arithmetic. Options remain available between the source picks.
@@ -14,7 +14,7 @@ The original sources remain highlighted while prospective pieces are drawn in
 all viewports and display modes. Escape cancels without a geometry edit or loss
 of pending Redo. Source/settings changes invalidate the getter.
 
-`Trim=Yes` changes the sources in place, preserving their IDs, attributes and
+For two open sources, `Trim=Yes` changes them in place, preserving their IDs, attributes and
 groups. `Join=Yes` additionally combines both sources and the arc into a
 polycurve, retaining the first picked source's identity and metadata. A separate
 fillet arc is new, unnamed, ungrouped geometry on the current layer. Results are
@@ -26,6 +26,13 @@ until Trim is restored. Radius, Join, Trim and extension choices persist for the
 application session, including after cancellation. Dynamic resets to No for each
 invocation. See [getter evidence and limits](../fillet-getter.md).
 
+Closed planar sources, including circles and smooth closed NURBS, remain complete.
+Picks choose their local tangent contacts. Trim changes only the open partner,
+retaining the side picked. Join includes the arc and any retained open piece,
+leaving closed parents intact. An open first source keeps its identity and groups;
+a closed first source supplies attributes to a new, ungrouped polycurve. With
+Join=No, the new arc uses the current layer. See [closed-source evidence](../fillet-closed.md).
+
 Headless commands accept two selected curves, with nearest ends as the default,
 or explicit ordered bindings:
 
@@ -34,7 +41,7 @@ Fillet 0.5 Join=Yes Trim=Yes
 Fillet Sources=id1,id2 Pick1=3.7,0,0 Pick2=4,0.3,0 Radius=0.5 Join=No
 ```
 
-The picks identify an end; they do not need to lie exactly on a curve. Line ends may be
+For open sources, picks identify an end; they do not need to lie exactly on a curve. Line ends may be
 extended to their supporting-line intersection. `ExtendArcsBy=Arc|Line`
 continues nonmeeting arcs on their supporting circle or adds a tangent line.
 `ExtendOtherCurvesBy=Line|Smooth` adds a tangent line or smoothly continues a
@@ -51,8 +58,10 @@ in a normalized geometry frame, with independent radius and tangency checks.
 
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
-fillets that consume an entire added segment can still be rejected. Closed or
-self-source fillets are not supported. Smooth rational NURBS extension can differ
+fillets that consume an entire added segment can still be rejected. Self-source
+fillets are not supported. The closed-source solver currently requires a radius
+above the document's absolute tolerance; zero radius, corner contacts and extension
+of open curved partners remain unqualified. Smooth rational NURBS extension can differ
 from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.

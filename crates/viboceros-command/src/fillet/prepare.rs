@@ -6,10 +6,24 @@ use viboceros_document::{LayerId, Object};
 #[derive(Clone, Debug)]
 pub struct Prepared {
     sources: [Object; 2],
-    preferences: Preferences,
     tolerance: Tolerance,
     layer: LayerId,
     outputs: Arc<[Geometry]>,
+    targets: Vec<Target>,
+    deleted: Vec<usize>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(super) enum Target {
+    Source(usize),
+    New,
+    FirstAttributes,
+}
+
+pub(super) struct Plan {
+    pub outputs: Vec<Geometry>,
+    pub targets: Vec<Target>,
+    pub deleted: Vec<usize>,
 }
 
 pub fn prepare(
@@ -41,49 +55,87 @@ pub fn prepare(
     };
     let first = curve(0)?;
     let second = curve(1)?;
-    let outputs = if preferences.join && preferences.trim {
-        let joined = super::super::curve_connections::fillet_joined(
-            (&first, picks[0].1),
-            (&second, picks[1].1),
-            preferences.radius,
-            preferences.styles,
+    let closed = [first.as_ref().is_closed()?, second.as_ref().is_closed()?];
+    let plan = if closed.iter().any(|c| *c) {
+        super::closed::prepare(
+            [&first, &second],
+            picks.map(|(_, p)| p),
+            closed,
+            preferences,
             document.tolerance(),
-        )?;
-        let source = first.as_ref();
-        let domain = source.domain();
-        let a = source.evaluate(*domain.start())?;
-        let b = source.evaluate(*domain.end())?;
-        let origin = if picks[0].1.distance_to(b)? < picks[0].1.distance_to(a)? {
-            *domain.start()
-        } else {
-            -*domain.end()
-        };
-        let width = *joined.domain().end() - *joined.domain().start();
-        vec![Geometry::PolyCurve(
-            joined.try_reparameterized(origin..=origin + width)?,
-        )]
+        )?
     } else {
-        let mut parts = super::super::curve_connections::fillet_parts(
-            (&first, picks[0].1),
-            (&second, picks[1].1),
-            preferences.radius,
-            preferences.trim,
-            preferences.styles,
-            document.tolerance(),
-        )?;
-        if preferences.trim {
-            for (source, result) in [&first, &second].into_iter().zip(parts.iter_mut()) {
-                retain_line_domain(source, result, document.tolerance())?;
+        let outputs = if preferences.join && preferences.trim {
+            let joined = super::super::curve_connections::fillet_joined(
+                (&first, picks[0].1),
+                (&second, picks[1].1),
+                preferences.radius,
+                preferences.styles,
+                document.tolerance(),
+            )?;
+            let source = first.as_ref();
+            let domain = source.domain();
+            let a = source.evaluate(*domain.start())?;
+            let b = source.evaluate(*domain.end())?;
+            let origin = if picks[0].1.distance_to(b)? < picks[0].1.distance_to(a)? {
+                *domain.start()
+            } else {
+                -*domain.end()
+            };
+            let width = *joined.domain().end() - *joined.domain().start();
+            vec![Geometry::PolyCurve(
+                joined.try_reparameterized(origin..=origin + width)?,
+            )]
+        } else {
+            let mut parts = super::super::curve_connections::fillet_parts(
+                (&first, picks[0].1),
+                (&second, picks[1].1),
+                preferences.radius,
+                preferences.trim,
+                preferences.styles,
+                document.tolerance(),
+            )?;
+            if preferences.trim {
+                for (source, result) in [&first, &second].into_iter().zip(parts.iter_mut()) {
+                    retain_line_domain(source, result, document.tolerance())?;
+                }
             }
+            parts.into_iter().map(Geometry::from).collect()
+        };
+        let targets = if preferences.trim {
+            if preferences.join {
+                vec![Target::Source(0)]
+            } else {
+                (0..outputs.len())
+                    .map(|i| {
+                        if i < 2 {
+                            Target::Source(i)
+                        } else {
+                            Target::New
+                        }
+                    })
+                    .collect()
+            }
+        } else {
+            vec![Target::New; outputs.len()]
+        };
+        Plan {
+            outputs,
+            targets,
+            deleted: if preferences.trim && preferences.join {
+                vec![1]
+            } else {
+                vec![]
+            },
         }
-        parts.into_iter().map(Geometry::from).collect()
     };
     Ok(Prepared {
         sources,
-        preferences,
         tolerance: document.tolerance(),
         layer: document.current_layer_id(),
-        outputs: outputs.into(),
+        outputs: plan.outputs.into(),
+        targets: plan.targets,
+        deleted: plan.deleted,
     })
 }
 
@@ -140,8 +192,6 @@ impl Prepared {
                 "Fillet sources or document settings changed; pick again",
             ));
         }
-        let first = self.sources[0].id();
-        let second = self.sources[1].id();
         let selected = document
             .selected_objects()
             .map(|o| o.id())
@@ -149,25 +199,22 @@ impl Prepared {
         document.release_command_selection_on_history_replay(selected)?;
         document.clear_selection();
         let mut outputs = Vec::new();
-        if self.preferences.trim {
-            if self.preferences.join {
-                document.replace_object_geometries([(first, self.outputs[0].clone())])?;
-                document.delete_object(second)?;
-                outputs.push(first);
-            } else {
-                document.replace_object_geometries([
-                    (first, self.outputs[0].clone()),
-                    (second, self.outputs[1].clone()),
-                ])?;
-                outputs.extend([first, second]);
-                for geometry in &self.outputs[2..] {
-                    outputs.push(document.add_geometry(geometry.clone())?);
+        for (target, geometry) in self.targets.iter().zip(self.outputs.iter()) {
+            outputs.push(match *target {
+                Target::Source(i) => {
+                    let id = self.sources[i].id();
+                    document.replace_object_geometries([(id, geometry.clone())])?;
+                    id
                 }
-            }
-        } else {
-            for geometry in self.outputs.iter() {
-                outputs.push(document.add_geometry(geometry.clone())?);
-            }
+                Target::New => document.add_geometry(geometry.clone())?,
+                Target::FirstAttributes => document.add_geometry_with_attributes(
+                    geometry.clone(),
+                    self.sources[0].attributes().clone(),
+                )?,
+            });
+        }
+        for &index in &self.deleted {
+            document.delete_object(self.sources[index].id())?;
         }
         document.clear_selection();
         Ok(outputs)

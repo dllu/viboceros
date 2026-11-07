@@ -90,30 +90,61 @@ pub fn picks(doc: &Document, value: &Value) -> [(ObjectId, Point3); 2] {
         .map(|c| {
             (
                 reference_inputs::guide(doc, c["curve"].as_u64().unwrap() as usize),
-                native::point(&c["projected_point"]),
+                input_point(c),
             )
         })
         .collect::<Vec<_>>()
         .try_into()
         .unwrap()
 }
+pub fn input_point(click: &Value) -> Point3 {
+    // A source need not lie in the viewport's construction plane. This public
+    // pre-command witness measures the curve against the actual mouse ray.
+    native::point(
+        click
+            .get("sight_point")
+            .unwrap_or(&click["projected_point"]),
+    )
+}
 pub fn setup(value: &Value) -> Document {
     reference_inputs::setup(value, &value["prescribed_case"])
 }
 
 pub fn check(doc: &Document, target: &Value, archive: bool) -> f64 {
-    let rows: BTreeMap<_, _> = target
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|row| (row["attributes"]["name"].as_str().unwrap(), row))
-        .collect();
-    assert_eq!(rows.len(), target.as_array().unwrap().len());
+    let mut rows: Vec<_> = target.as_array().unwrap().iter().collect();
     assert_eq!(doc.objects().len(), rows.len());
     let mut error = 0_f64;
     for object in doc.objects() {
         let a = object.attributes();
-        let target = rows[a.name().unwrap_or("")];
+        // A joined fillet can copy the first closed source's name onto a new
+        // object while retaining that source. Pair by name and start location.
+        let start = match object.geometry() {
+            Geometry::Point(p) => *p,
+            g => {
+                let c = g.curve_ref().unwrap();
+                c.evaluate(*c.domain().start()).unwrap()
+            }
+        };
+        let index = rows
+            .iter()
+            .enumerate()
+            .filter(|(_, row)| row["attributes"]["name"] == a.name().unwrap_or(""))
+            .min_by(|(_, a), (_, b)| {
+                let point = |r: &&Value| {
+                    if r.get("point").is_some() {
+                        native::point(&r["point"])
+                    } else {
+                        native::point(&r["samples"][0]["point"])
+                    }
+                };
+                start
+                    .distance_to(point(a))
+                    .unwrap()
+                    .total_cmp(&start.distance_to(point(b)).unwrap())
+            })
+            .expect("Native object with matching name")
+            .0;
+        let target = rows.remove(index);
         assert_eq!(
             json!({"name":a.name().unwrap_or(""), "layer":doc.layer(a.layer_id()).unwrap().name(),
             "color_source":if a.color_source()==ObjectColorSource::Object {"ColorFromObject"} else {"ColorFromLayer"},
@@ -198,24 +229,20 @@ impl State {
     fn identities(&self, doc: &Document, target: &Value) {
         for row in target.as_array().unwrap() {
             let name = row["attributes"]["name"].as_str().unwrap();
-            let id = doc
-                .objects()
-                .find(|o| o.attributes().name().unwrap_or("") == name)
-                .unwrap()
-                .id();
             if row["guide"] == true || row["source"] == true {
-                assert_eq!(id, self.ids[name]);
+                assert!(doc.object(self.ids[name]).is_some());
             } else {
-                assert!(!self.ids.values().any(|old| *old == id));
+                assert!(
+                    doc.objects()
+                        .any(|o| o.attributes().name().unwrap_or("") == name
+                            && !self.ids.values().any(|old| *old == o.id()))
+                );
             }
         }
         for (name, id) in &self.ids {
-            if !target
-                .as_array()
-                .unwrap()
-                .iter()
-                .any(|r| r["attributes"]["name"] == *name)
-            {
+            if !target.as_array().unwrap().iter().any(|r| {
+                r["attributes"]["name"] == *name && (r["guide"] == true || r["source"] == true)
+            }) {
                 assert!(doc.object(*id).is_none());
             }
         }

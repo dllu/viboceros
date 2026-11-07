@@ -3,17 +3,21 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/fillet_getter.rs"]
 #[allow(dead_code)]
-mod inputs;
+pub(super) mod inputs;
 
-fn enter(app: &mut VibocerosApp, text: &str) {
+pub(super) fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();
 }
 
 #[test]
 fn ordered_picks_dynamic_numbers_distances_and_cancellation_match_native() {
+    assert_eq!(replay(&inputs::FAMILIES, "FILLET_GETTER_UI"), 25);
+}
+
+pub(super) fn replay(families: &[&str], marker: &str) -> usize {
     let mut count = 0;
-    for family in inputs::FAMILIES {
+    for family in families {
         let mut previous = viboceros_command::fillet::Preferences::default();
         for row in native::read(family)["results"].as_array().unwrap() {
             let value = &row["value"];
@@ -62,7 +66,7 @@ fn ordered_picks_dynamic_numbers_distances_and_cancellation_match_native() {
                         .unwrap();
                     app.pick_curve_fillet_at(
                         reference_inputs::guide(&app.document, i as usize),
-                        native::point(&click["projected_point"]),
+                        inputs::input_point(click),
                     );
                 } else {
                     let token = reference_inputs::token(action);
@@ -92,11 +96,11 @@ fn ordered_picks_dynamic_numbers_distances_and_cancellation_match_native() {
             );
             let mut result = state.verify(&mut app.document, value);
             result["id"] = serde_json::json!(id);
-            println!("FILLET_GETTER_UI {result}");
+            println!("{marker} {result}");
             count += 1;
         }
     }
-    assert!(count >= 20);
+    count
 }
 
 fn ready() -> (VibocerosApp, [ObjectId; 2]) {
@@ -114,20 +118,27 @@ fn ready() -> (VibocerosApp, [ObjectId; 2]) {
     app.document.clear_history().unwrap();
     app.viewports[0] = Viewport::new(ViewKind::Top);
     enter(&mut app, "Fillet Radius=0.5 Dynamic=Yes");
+    mouse_picks(
+        &mut app,
+        ids,
+        [
+            Point3::try_new(3.2, 0., 0.).unwrap(),
+            Point3::try_new(4., 0.8, 0.).unwrap(),
+        ],
+    );
+    println!("FILLET_MOUSE_SOURCE_PICKS 2");
+    (app, ids)
+}
+
+pub(super) fn mouse_picks(app: &mut VibocerosApp, ids: [ObjectId; 2], points: [Point3; 2]) {
     let context = egui::Context::default();
-    let (_, rect) = mouse_frame(&mut app, &context, Vec::new());
-    for (index, world) in [
-        Point3::try_new(3.2, 0., 0.).unwrap(),
-        Point3::try_new(4., 0.8, 0.).unwrap(),
-    ]
-    .into_iter()
-    .enumerate()
-    {
+    let (_, rect) = mouse_frame(app, &context, Vec::new());
+    for (index, world) in points.into_iter().enumerate() {
         let pos = app.viewports[0].project(world, rect).unwrap();
-        mouse_frame(&mut app, &context, vec![egui::Event::PointerMoved(pos)]);
+        mouse_frame(app, &context, vec![egui::Event::PointerMoved(pos)]);
         for pressed in [true, false] {
             let (output, _) = mouse_frame(
-                &mut app,
+                app,
                 &context,
                 vec![egui::Event::PointerButton {
                     pos,
@@ -146,8 +157,6 @@ fn ready() -> (VibocerosApp, [ObjectId; 2]) {
         }
     }
     assert!(app.curve_fillet_session.as_ref().unwrap().scene().is_some());
-    println!("FILLET_MOUSE_SOURCE_PICKS 2");
-    (app, ids)
 }
 
 fn mouse_frame(

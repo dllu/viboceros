@@ -1,0 +1,30 @@
+[
+  {
+    "family": "fillet_closed_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_closed_pilot"
+    ],
+    "exit_status": 0,
+    "log": "capture-pilot.log.gz",
+    "request_sha256": "4e6ce657eedf09b6f244ca43b25b7a48169604d46449cd75fb920aca84c69150",
+    "observation_sha256": "fff3e59fd2de43de52e63a3d3f6747778bff5a275149ccab57b2f62c2b66b3c9"
+  },
+  {
+    "family": "fillet_closed_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_closed_final"
+    ],
+    "exit_status": 0,
+    "log": "capture-final.log.gz",
+    "request_sha256": "fbe1ead67e0a7f1e08434f13c8b1e627c7a207d09dce2e7de1d3e90551720f40",
+    "observation_sha256": "c624d6f550948288e1ffbc34e3bf782e44eceb1e1b629c3bb108e532127db283"
+  }
+]

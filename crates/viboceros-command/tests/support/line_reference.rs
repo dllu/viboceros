@@ -4,7 +4,7 @@ use serde_json::Value;
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{
-    Circle3, CircularArc3, CurveSegment3, LineSegment, NurbsCurve, PolyCurve3, Polyline3,
+    Circle3, CircularArc3, CurveSegment3, Ellipse3, LineSegment, NurbsCurve, PolyCurve3, Polyline3,
     Tolerance, Vector3, WeightedPoint3,
 };
 pub const FAMILIES: [&str; 4] = [
@@ -23,6 +23,25 @@ pub fn geometry(v: &Value) -> Geometry {
     let p = native::point;
     let t = Tolerance::NUMERICAL_VALIDATION;
     match v["type"].as_str().unwrap() {
+        "ellipse" => Geometry::NurbsCurve(
+            Ellipse3::try_new(
+                p(&v["center"]),
+                v["radius_x"].as_f64().unwrap(),
+                v["radius_y"].as_f64().unwrap(),
+                Vector3::try_from(p(&v["x_axis"]).to_array())
+                    .unwrap()
+                    .normalized_nonzero()
+                    .unwrap(),
+                Vector3::try_from(p(&v["y_axis"]).to_array())
+                    .unwrap()
+                    .normalized_nonzero()
+                    .unwrap(),
+                t,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap(),
+        ),
         "polycurve" => {
             let segments: Vec<CurveSegment3> = v["segments"]
                 .as_array()

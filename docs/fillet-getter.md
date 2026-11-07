@@ -9,7 +9,7 @@ and draws prospective pieces separately. It creates no model objects or history
 entries. Candidate geometry is reused when an accepted distance matches the hover,
 and the same prepared geometry commits in one atomic edit.
 
-Trimmed sources keep their IDs and attributes. Joining retains the first picked
+For two open curves, trimmed sources keep their IDs and attributes. Joining retains the first picked
 source; a separate arc gets fresh attributes on the current layer. Results are
 deselected. Retained lines keep their source parameter charts, and joined curves
 retain the oriented first source's domain origin. The shared portable/usd-brep
@@ -49,7 +49,7 @@ python3 -m tools.rhino_oracle.check_fillet_getter
 
 Rhino captures run on private Xvfb displays; application tests are windowless.
 Saved pixels establish the observed composition, without a pixel-equality claim.
-Closed/self-source fillets, arbitrary branch choices, complete invalid-input
+Closed sources have [separate coverage](fillet-closed.md). Self-source fillets, arbitrary branch choices, complete invalid-input
 trajectories, alternate Native display settings, continuous-distance bounds and
 comparative performance remain unqualified. Existing rational-extension and
 fully consumed added-segment limits remain. A changed preview constructs a

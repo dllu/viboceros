@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "circle_line_joined_reverse",
+      "case": "circle_line_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "two_circles_joined_reverse",
+      "case": "two_circles_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "circle_line_lower",
+      "case": "circle_line_lower"
+    },
+    {
+      "op": "fillet_command",
+      "id": "circle_line_inner",
+      "case": "circle_line_inner"
+    },
+    {
+      "op": "fillet_command",
+      "id": "nurbs_circle_line",
+      "case": "nurbs_circle_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "ellipse_line",
+      "case": "ellipse_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "closed_dynamic_enter",
+      "case": "closed_dynamic_enter"
+    },
+    {
+      "op": "fillet_command",
+      "id": "closed_dynamic_radius",
+      "case": "closed_dynamic_radius"
+    },
+    {
+      "op": "fillet_command",
+      "id": "closed_dynamic_cancel",
+      "case": "closed_dynamic_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "circle_line_spatial_top",
+      "case": "circle_line_spatial_top"
+    }
+  ]
+}

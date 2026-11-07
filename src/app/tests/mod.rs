@@ -582,3 +582,4 @@ mod planar_regions;
 mod planar_regions_comparison;
 
 mod curve_fillet;
+mod fillet_closed;
