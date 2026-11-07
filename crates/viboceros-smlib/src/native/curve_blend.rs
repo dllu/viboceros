@@ -34,3 +34,17 @@ pub fn blend_curve_from_jets(
         &mut super::knot_refinement::interpolate_endpoints,
     )
 }
+
+/// Higher-order curve jets share the native derivative-basis solve.
+pub fn blend_curve_from_endpoint_jets(
+    jets: [viboceros_geometry::CurveBlendJet; 2],
+    options: viboceros_geometry::CurveBlendJetOptions,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::try_blend_curve_from_endpoint_jets_with_interpolation(
+        jets,
+        options,
+        tolerance,
+        &mut super::knot_refinement::interpolate_endpoints,
+    )
+}

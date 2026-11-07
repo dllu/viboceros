@@ -9,6 +9,15 @@ pub const FAMILIES: [&str; 4] = [
     "blend_curve_holdouts",
     "blend_curve_adjustments",
 ];
+pub const HIGH_FAMILIES: [&str; 4] = [
+    "blend_curve_discovery",
+    "blend_curve_holdouts",
+    "blend_curve_high_discovery",
+    "blend_curve_high_holdouts",
+];
+pub fn high(name: &str) -> bool {
+    name.starts_with("g3_") || name.starts_with("g4_") || name.starts_with("high_")
+}
 pub fn diagnostic(name: &str) -> bool {
     name.starts_with("g3_")
         || name.starts_with("g4_")
@@ -137,4 +146,87 @@ pub fn samples(doc: &Document, value: &Value) -> (f64, usize) {
         );
     }
     (error, target.len())
+}
+
+/// Geometry on matching parameter charts; separately retain the native
+/// approximate length used as its domain (not a model-space distance).
+pub fn check_high(doc: &Document, target: &Value, archive: bool) -> (f64, f64) {
+    let mut target = target.clone();
+    let mut domain_error = 0_f64;
+    for row in target.as_array_mut().unwrap() {
+        if row.get("curve").is_none() {
+            continue;
+        }
+        let object = doc
+            .objects()
+            .find(|o| {
+                o.attributes().name().unwrap_or("") == row["attributes"]["name"].as_str().unwrap()
+            })
+            .unwrap();
+        let actual = object.geometry().curve_ref().unwrap().to_nurbs().unwrap();
+        let [a, b]: [f64; 2] = serde_json::from_value(row["curve"]["domain"].clone()).unwrap();
+        let domain = actual.domain();
+        domain_error = domain_error
+            .max((domain.start() - a).abs())
+            .max((domain.end() - b).abs());
+        for knot in row["curve"]["knots"].as_array_mut().unwrap() {
+            let fraction = (knot.as_f64().unwrap() - a) / (b - a);
+            *knot = serde_json::json!(domain.start() + (domain.end() - domain.start()) * fraction);
+        }
+        row["curve"]["domain"] = serde_json::json!([domain.start(), domain.end()]);
+    }
+    (super::inputs::check(doc, &target, archive), domain_error)
+}
+
+/// Public Native derivatives, including the analytic source charts, evaluated
+/// on equal fractions and expressed on the same normalized parameter interval.
+pub fn derivatives(doc: &Document, target: &Value) -> (f64, f64, usize) {
+    use viboceros_geometry::ParameterSide;
+    let mut absolute = 0_f64;
+    let mut relative = 0_f64;
+    let mut stations = 0;
+    for row in target.as_array().unwrap() {
+        let Some(samples) = row.get("derivative_samples") else {
+            continue;
+        };
+        let object = doc
+            .objects()
+            .find(|o| {
+                o.attributes().name().unwrap_or("") == row["attributes"]["name"].as_str().unwrap()
+            })
+            .unwrap();
+        let c = object.geometry().curve_ref().unwrap();
+        let [a, b]: [f64; 2] = serde_json::from_value(row["curve"]["domain"].clone()).unwrap();
+        let domain = c.domain();
+        for sample in samples.as_array().unwrap() {
+            let fraction = (sample["parameter"].as_f64().unwrap() - a) / (b - a);
+            let t = c.parameter_at(fraction).unwrap();
+            let (point, jet) = c
+                .evaluate_with_fourth_derivatives_on_side(
+                    t,
+                    if fraction == 1. {
+                        ParameterSide::Left
+                    } else {
+                        ParameterSide::Right
+                    },
+                )
+                .unwrap();
+            let values = std::iter::once(point.to_array()).chain(jet.map(|d| d.to_array()));
+            for (order, (actual, expected)) in values
+                .zip(sample["derivatives"].as_array().unwrap())
+                .enumerate()
+            {
+                let expected: [f64; 3] = serde_json::from_value(expected.clone()).unwrap();
+                for k in 0..3 {
+                    let actual = actual[k] * (domain.end() - domain.start()).powi(order as i32);
+                    let expected = expected[k] * (b - a).powi(order as i32);
+                    let error = (actual - expected).abs();
+                    absolute = absolute.max(error);
+                    relative = relative.max(error / actual.abs().max(expected.abs()).max(1.));
+                }
+            }
+            stations += 1;
+        }
+    }
+    (absolute, relative, stations)
 }

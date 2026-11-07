@@ -65,3 +65,13 @@ ADJUSTMENTS={
  'pick_point_near_start':held(start='PickPoint',picks=[[-4.,0.,0.],[14.,3.,0.]]),
 }
 CASES.update(ADJUSTMENTS)
+
+if __package__:from .blend_curve_high_cases import discovery as high_discovery
+else:from blend_curve_high_cases import discovery as high_discovery
+HIGH_DISCOVERY=high_discovery(held,ARC_A,CUBIC_A,B)
+CASES.update(HIGH_DISCOVERY)
+
+if __package__:from .blend_curve_high_cases import holdouts as high_holdouts
+else:from blend_curve_high_cases import holdouts as high_holdouts
+HIGH_HOLDOUTS=high_holdouts(held,ARC_A,B)
+CASES.update(HIGH_HOLDOUTS)

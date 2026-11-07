@@ -11,18 +11,53 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 #[test]
 fn adjustable_previews_contacts_handles_and_history_match_native() {
+    replay_workflows(false);
+}
+#[test]
+fn higher_order_blends_match_native_sources_shape_edits_and_history() {
+    replay_workflows(true);
+}
+fn replay_workflows(high: bool) {
     let directory = tempfile::tempdir().unwrap();
+    let domain_error = std::cell::Cell::new(0_f64);
+    let check = |doc: &Document, target: &serde_json::Value, archive| {
+        if high {
+            let (error, domain) = blend::check_high(doc, target, archive);
+            domain_error.set(domain_error.get().max(domain));
+            assert!(
+                domain <= 2e-6,
+                "native approximate length domain: {domain:e}"
+            );
+            error
+        } else {
+            inputs::check(doc, target, archive)
+        }
+    };
     let mut count = 0;
-    for family in blend::FAMILIES {
+    for family in if high {
+        blend::HIGH_FAMILIES
+    } else {
+        blend::FAMILIES
+    } {
         for row in native::read(family)["results"].as_array().unwrap() {
             let name = row["id"].as_str().unwrap();
-            if blend::diagnostic(name) {
+            if if high {
+                !blend::high(name)
+            } else {
+                blend::diagnostic(name)
+            } {
                 continue;
             }
             let id = format!("{family}/{name}");
+            domain_error.set(0.);
             let v = &row["value"];
             let mut app = test_app();
             app.document = reference_inputs::setup(v, &v["prescribed_case"]);
+            let before_jets = if high {
+                blend::derivatives(&app.document, &v["before"])
+            } else {
+                (0., 0., 0)
+            };
             enter(&mut app, "BlendCrv");
             for (index, a) in v["prescribed_case"]["actions"]
                 .as_array()
@@ -64,18 +99,28 @@ fn adjustable_previews_contacts_handles_and_history_match_native() {
             } else {
                 (0., 0)
             };
-            let mut error = inputs::check(&app.document, &v["after"], false);
+            let after_jets = if high {
+                blend::derivatives(&app.document, &v["after"])
+            } else {
+                (0., 0., 0)
+            };
+            let derivative_error = before_jets.1.max(after_jets.1);
+            assert!(
+                derivative_error <= 1e-6,
+                "{id}: normalized derivative error {derivative_error:e}"
+            );
+            let mut error = check(&app.document, &v["after"], false);
             if accepted {
                 app.document.undo().unwrap();
-                error = error.max(inputs::check(&app.document, &v["undo"], false));
+                error = error.max(check(&app.document, &v["undo"], false));
                 assert!(!app.document.can_undo());
                 app.document.redo().unwrap();
-                error = error.max(inputs::check(&app.document, &v["redo"], false));
+                error = error.max(check(&app.document, &v["redo"], false));
             } else {
                 assert!(!app.document.can_undo());
                 assert!(app.document.can_redo());
                 app.document.redo().unwrap();
-                error = error.max(inputs::check(&app.document, &v["pending_redo"], false));
+                error = error.max(check(&app.document, &v["pending_redo"], false));
                 app.document.undo().unwrap();
             }
             let path = directory.path().join("blend.3dm");
@@ -86,10 +131,15 @@ fn adjustable_previews_contacts_handles_and_history_match_native() {
             app.commands
                 .execute(&mut restored, &format!("Open3dm {}", path.display()))
                 .unwrap();
-            error = error.max(inputs::check(&restored, &v["after"], true));
+            error = error.max(check(&restored, &v["after"], true));
             println!(
-                "BLEND_CURVE_UI {}",
-                serde_json::json!({"id":id,"maximum_coefficient_and_sample_error":error,"maximum_native_sample_error":samples,"native_stations":stations,"archives":1,"accepted":accepted})
+                "{} {}",
+                if high {
+                    "BLEND_CURVE_UI_HIGH"
+                } else {
+                    "BLEND_CURVE_UI"
+                },
+                serde_json::json!({"id":id,"maximum_coefficient_and_sample_error":error,"maximum_native_sample_error":samples,"maximum_parameter_domain_error":domain_error.get(),"maximum_normalized_derivative_error":derivative_error,"maximum_absolute_derivative_error":before_jets.0.max(after_jets.0),"derivative_stations":before_jets.2+after_jets.2,"native_stations":stations,"archives":1,"accepted":accepted})
             );
             assert!(
                 error <= 1e-6 && samples <= 1e-6,
@@ -102,6 +152,11 @@ fn adjustable_previews_contacts_handles_and_history_match_native() {
 }
 #[test]
 fn windowless_source_clicks_shape_hover_and_acceptance_create_one_history_record() {
+    for order in 2..=4 {
+        windowless_handles(order);
+    }
+}
+fn windowless_handles(order: u8) {
     use super::arc_blend::{click, frame, scene};
     use viboceros_command::blend_curve::Handle;
     let (mut app, ids) = scene();
@@ -110,6 +165,8 @@ fn windowless_source_clicks_shape_hover_and_acceptance_create_one_history_record
     app.viewports[0].zoom_out(0.5).unwrap();
     let (_, rect) = frame(&mut app, &context, vec![]);
     enter(&mut app, "BlendCrv");
+    enter(&mut app, &format!("Continuity_1=G{order}"));
+    enter(&mut app, &format!("Continuity_2=G{order}"));
     for world in [
         Point3::try_new(-0.25, 0., 0.).unwrap(),
         Point3::try_new(5., 4.25, 0.).unwrap(),
@@ -220,7 +277,7 @@ fn cancelled_adjustments_invalid_lengths_and_stale_sources_preserve_model_histor
             .unwrap()
             .input
             .continuities(),
-        [viboceros_geometry::CurveBlendContinuity::Curvature; 2]
+        [2; 2]
     );
     app.pick_blend_curve_at(ids[0], None, Point3::try_new(-1., 0., 0.).unwrap());
     app.document

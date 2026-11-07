@@ -18,15 +18,45 @@ use viboceros_command::{CommandRegistry, blend_curve::Input};
 use viboceros_document::Document;
 #[test]
 fn adjustable_curve_blends_match_native_sources_continuity_and_history() {
+    replay_workflows(false);
+}
+#[test]
+fn higher_order_blends_match_native_sources_shape_edits_and_history() {
+    replay_workflows(true);
+}
+fn replay_workflows(high: bool) {
     let directory = tempfile::tempdir().unwrap();
+    let domain_error = std::cell::Cell::new(0_f64);
+    let check = |doc: &Document, target: &serde_json::Value, archive| {
+        if high {
+            let (error, domain) = blend::check_high(doc, target, archive);
+            domain_error.set(domain_error.get().max(domain));
+            assert!(
+                domain <= 2e-6,
+                "native approximate length domain: {domain:e}"
+            );
+            error
+        } else {
+            inputs::check(doc, target, archive)
+        }
+    };
     let mut count = 0;
-    for family in blend::FAMILIES {
+    for family in if high {
+        blend::HIGH_FAMILIES
+    } else {
+        blend::FAMILIES
+    } {
         for row in native::read(family)["results"].as_array().unwrap() {
             let name = row["id"].as_str().unwrap();
-            if blend::diagnostic(name) {
+            if if high {
+                !blend::high(name)
+            } else {
+                blend::diagnostic(name)
+            } {
                 continue;
             }
             let id = format!("{family}/{name}");
+            domain_error.set(0.);
             let value = &row["value"];
             assert_eq!(
                 value["input_trace"][0]["errors"],
@@ -37,6 +67,11 @@ fn adjustable_curve_blends_match_native_sources_continuity_and_history() {
             doc.clear_selection();
             let mut input = Input::new(doc.tolerance());
             blend::replay(&mut input, &doc, value);
+            let before_jets = if high {
+                blend::derivatives(&doc, &value["before"])
+            } else {
+                (0., 0., 0)
+            };
             let registry = CommandRegistry::with_builtins();
             let accepted = blend::accepted(value);
             if accepted {
@@ -49,18 +84,28 @@ fn adjustable_curve_blends_match_native_sources_continuity_and_history() {
             } else {
                 (0., 0)
             };
-            let mut error = inputs::check(&doc, &value["after"], false);
+            let after_jets = if high {
+                blend::derivatives(&doc, &value["after"])
+            } else {
+                (0., 0., 0)
+            };
+            let derivative_error = before_jets.1.max(after_jets.1);
+            assert!(
+                derivative_error <= 1e-6,
+                "{id}: normalized derivative error {derivative_error:e}"
+            );
+            let mut error = check(&doc, &value["after"], false);
             if accepted {
                 doc.undo().unwrap();
-                error = error.max(inputs::check(&doc, &value["undo"], false));
+                error = error.max(check(&doc, &value["undo"], false));
                 assert!(!doc.can_undo());
                 doc.redo().unwrap();
-                error = error.max(inputs::check(&doc, &value["redo"], false));
+                error = error.max(check(&doc, &value["redo"], false));
             } else {
                 assert!(!doc.can_undo());
                 assert!(doc.can_redo());
                 doc.redo().unwrap();
-                error = error.max(inputs::check(&doc, &value["pending_redo"], false));
+                error = error.max(check(&doc, &value["pending_redo"], false));
                 doc.undo().unwrap();
             }
             let path = directory.path().join("blend.3dm");
@@ -71,10 +116,15 @@ fn adjustable_curve_blends_match_native_sources_continuity_and_history() {
             registry
                 .execute(&mut restored, &format!("Open3dm {}", path.display()))
                 .unwrap();
-            error = error.max(inputs::check(&restored, &value["after"], true));
+            error = error.max(check(&restored, &value["after"], true));
             println!(
-                "BLEND_CURVE_COMMAND {}",
-                serde_json::json!({"id":id,"maximum_coefficient_and_sample_error":error,"maximum_native_sample_error":samples,"native_stations":stations,"archives":1,"accepted":accepted})
+                "{} {}",
+                if high {
+                    "BLEND_CURVE_COMMAND_HIGH"
+                } else {
+                    "BLEND_CURVE_COMMAND"
+                },
+                serde_json::json!({"id":id,"maximum_coefficient_and_sample_error":error,"maximum_native_sample_error":samples,"maximum_parameter_domain_error":domain_error.get(),"maximum_normalized_derivative_error":derivative_error,"maximum_absolute_derivative_error":before_jets.0.max(after_jets.0),"derivative_stations":before_jets.2+after_jets.2,"native_stations":stations,"archives":1,"accepted":accepted})
             );
             assert!(
                 error <= 1e-6 && samples <= 1e-6,
@@ -110,7 +160,7 @@ fn unit_aware_handles_and_invalid_edits_preserve_sources_and_pending_history() {
         "Handle1=NaN",
         "Handle1=1/0",
         "Parameter1=99",
-        "Continuity_1=G4",
+        "Continuity_1=G5",
     ] {
         let base = input.arguments().unwrap();
         assert!(

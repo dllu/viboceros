@@ -160,7 +160,9 @@ fn endpoint_tangent(curve: &Curve3, at_end: bool) -> Result<UnitVector3, Geometr
 
 mod jets;
 pub use jets::{
-    CurveBlendJet, try_blend_curve_from_jets, try_blend_curve_from_jets_with_interpolation,
+    CurveBlendJet, CurveBlendJetOptions, try_blend_curve_from_endpoint_jets,
+    try_blend_curve_from_endpoint_jets_with_interpolation, try_blend_curve_from_jets,
+    try_blend_curve_from_jets_with_interpolation,
 };
 #[cfg(test)]
 mod tests;

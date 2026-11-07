@@ -5,6 +5,7 @@ use crate::{CurveRef, GeometryError, ParameterSide, Point3, Real, Vector3};
 use std::f64::consts::{FRAC_1_SQRT_2, TAU};
 use std::ops::RangeInclusive;
 
+mod higher;
 #[cfg(test)]
 mod sides;
 #[cfg(test)]
@@ -188,10 +189,11 @@ fn angular_derivative(
     let sweep = angles.end() - angles.start();
     let angle = map_parameter(parameter, domain.clone(), angles)?;
     let (sine, cosine) = crate::circular::curve_sin_cos(angle);
-    let mut vector = if order == 1 {
-        combine(x, y, -sine, cosine)?
-    } else {
-        combine(x, y, -cosine, -sine)?
+    let mut vector = match order % 4 {
+        0 => combine(x, y, cosine, sine)?,
+        1 => combine(x, y, -sine, cosine)?,
+        2 => combine(x, y, -cosine, -sine)?,
+        _ => combine(x, y, sine, -cosine)?,
     }
     .scaled(radius)?;
     for _ in 0..order {

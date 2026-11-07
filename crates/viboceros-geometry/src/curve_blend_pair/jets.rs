@@ -1,17 +1,20 @@
 //! Interpolate oriented endpoint jets with independent shape controls.
-use super::{CurveBlendContinuity, CurveBlendOptions, continuity_control_count};
+use super::{CurveBlendOptions, continuity_control_count};
 use crate::{
     EndpointInterpolation, GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance,
     UnitVector3, Vector3,
 };
 
-/// An endpoint position, the tangent in the blend's direction, and its geometric
-/// curvature vector. Position-only endpoints may omit the tangent.
+mod normalized;
+
+/// An endpoint position, oriented tangent, geometric curvature, and optional
+/// normalized third/fourth targets. Position-only ends may omit the tangent.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CurveBlendJet {
     position: Point3,
     tangent: Option<UnitVector3>,
     curvature: Vector3,
+    higher: [Option<Vector3>; 2],
 }
 impl CurveBlendJet {
     pub fn new(position: Point3, tangent: Option<UnitVector3>, curvature: Vector3) -> Self {
@@ -19,6 +22,7 @@ impl CurveBlendJet {
             position,
             tangent,
             curvature,
+            higher: [None; 2],
         }
     }
 }
@@ -44,6 +48,60 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
     tolerance: Tolerance,
     interpolate: &mut impl FnMut(&EndpointInterpolation<'_>) -> Result<Vec<[Real; 4]>, E>,
 ) -> Result<NurbsCurve, E> {
+    try_blend_curve_from_endpoint_jets_with_interpolation(
+        jets,
+        options.into(),
+        tolerance,
+        interpolate,
+    )
+}
+
+/// Shape controls with independent derivative orders, from zero through four.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveBlendJetOptions {
+    pub orders: [u8; 2],
+    pub handles: [Option<Real>; 2],
+    pub bulges: [Real; 2],
+    pub endpoint_specific: bool,
+}
+impl From<CurveBlendOptions> for CurveBlendJetOptions {
+    fn from(options: CurveBlendOptions) -> Self {
+        Self {
+            orders: options
+                .continuity
+                .map(|c| (continuity_control_count(c) - 1) as u8),
+            handles: options.handles,
+            bulges: options.bulges,
+            endpoint_specific: options.endpoint_specific,
+        }
+    }
+}
+
+pub fn try_blend_curve_from_endpoint_jets(
+    jets: [CurveBlendJet; 2],
+    options: CurveBlendJetOptions,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    try_blend_curve_from_endpoint_jets_with_interpolation(
+        jets,
+        options,
+        tolerance,
+        &mut crate::try_interpolate_endpoints,
+    )
+}
+
+pub fn try_blend_curve_from_endpoint_jets_with_interpolation<E: From<GeometryError>>(
+    jets: [CurveBlendJet; 2],
+    options: CurveBlendJetOptions,
+    tolerance: Tolerance,
+    interpolate: &mut impl FnMut(&EndpointInterpolation<'_>) -> Result<Vec<[Real; 4]>, E>,
+) -> Result<NurbsCurve, E> {
+    if options.orders.iter().any(|&o| o > 4) {
+        return Err(GeometryError::InvalidEndpointInterpolation {
+            context: "unsupported curve blend derivative order",
+        }
+        .into());
+    }
     let [start, end] = jets.map(|j| j.position);
     let endpoint_specific = options.endpoint_specific;
     let chord = start.vector_to(end)?;
@@ -54,10 +112,10 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
         }
         .into());
     }
-    let default_handle = |continuity| match continuity {
-        CurveBlendContinuity::Position => chord_length / 3.0,
-        CurveBlendContinuity::Tangency => chord_length,
-        CurveBlendContinuity::Curvature => chord_length * 0.4,
+    let default_handle = |order| match order {
+        0 => chord_length / 3.,
+        1 => chord_length,
+        _ => chord_length * 0.4,
     };
     if options
         .bulges
@@ -69,10 +127,8 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
         }
         .into());
     }
-    let mut first_handle =
-        options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
-    let mut second_handle =
-        options.handles[1].unwrap_or_else(|| default_handle(options.continuity[1]));
+    let mut first_handle = options.handles[0].unwrap_or_else(|| default_handle(options.orders[0]));
+    let mut second_handle = options.handles[1].unwrap_or_else(|| default_handle(options.orders[1]));
     if !first_handle.is_finite()
         || !second_handle.is_finite()
         || first_handle <= 0.0
@@ -83,16 +139,14 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
         }
         .into());
     }
-    if options.continuity == [CurveBlendContinuity::Position; 2] {
+    if options.orders == [0; 2] {
         let domain_end = if endpoint_specific { 1.0 } else { chord_length };
         return NurbsCurve::try_new(1, vec![start, end], vec![0.0, 0.0, domain_end, domain_end])
             .map_err(E::from);
     }
-    let degree = continuity_control_count(options.continuity[0])
-        + continuity_control_count(options.continuity[1])
-        - 1;
-    for (jet, continuity) in jets.iter().zip(options.continuity) {
-        if continuity != CurveBlendContinuity::Position && jet.tangent.is_none() {
+    let degree = usize::from(options.orders[0]) + usize::from(options.orders[1]) + 1;
+    for (jet, continuity) in jets.iter().zip(options.orders) {
+        if continuity != 0 && jet.tangent.is_none() {
             return Err(GeometryError::Degenerate {
                 context: "constrained curve blend tangent",
             }
@@ -129,9 +183,7 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
         }
         .into());
     }
-    let orders = options
-        .continuity
-        .map(|g| (continuity_control_count(g) - 1) as u8);
+    let orders = options.orders;
     let mut targets = vec![[0.; 4]; degree + 1];
     targets[0] = [0., 0., 0., 1.];
     let xyz = chord.to_array();
@@ -149,10 +201,28 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
             .to_array();
         let row = if side == 0 { 1 } else { degree - 1 };
         targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
-        if orders[side] == 2 {
+        if orders[side] >= 2 {
             let speed = degree as Real * handle;
             let derivative = jet.curvature.to_array().map(|c| c * speed * speed);
             let row = if side == 0 { 2 } else { degree - 2 };
+            targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
+        }
+        for order in 3..=orders[side] {
+            let value = jet.higher[usize::from(order - 3)].ok_or(
+                GeometryError::InvalidEndpointInterpolation {
+                    context: "missing higher curve endpoint derivative",
+                },
+            )?;
+            let mut derivative = value.to_array();
+            let speed = degree as Real * handle;
+            for _ in 0..order {
+                derivative = derivative.map(|v| v * speed);
+            }
+            let row = if side == 0 {
+                usize::from(order)
+            } else {
+                degree - usize::from(order)
+            };
             targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
         }
     }
@@ -191,6 +261,18 @@ pub fn try_blend_curve_from_jets_with_interpolation<E: From<GeometryError>>(
             },
         )?;
         let actual = [point.to_array(), first.to_array(), second.to_array()];
+        let mut actual = actual.to_vec();
+        if end_order > 2 {
+            let (_, derivatives) = local.evaluate_with_fourth_derivatives_on_side(
+                end as Real,
+                if end == 0 {
+                    ParameterSide::Right
+                } else {
+                    ParameterSide::Left
+                },
+            )?;
+            actual.extend([derivatives[2].to_array(), derivatives[3].to_array()]);
+        }
         for order in 0..=usize::from(end_order) {
             let row = if end == 0 { order } else { degree - order };
             for (k, actual) in actual[order].into_iter().enumerate() {

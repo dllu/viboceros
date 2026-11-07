@@ -60,17 +60,24 @@ impl Guide {
             t.opposite()
         })
     }
-    pub(super) fn jet(
-        &self,
-        i: usize,
-        continuity: Continuity,
-    ) -> Result<CurveBlendJet, CommandError> {
+    pub(super) fn jet(&self, i: usize, continuity: u8) -> Result<CurveBlendJet, CommandError> {
+        if continuity >= 3 {
+            let (_, derivatives) = self
+                .source
+                .curve_ref()
+                .evaluate_with_fourth_derivatives_on_side(self.parameter, self.side())?;
+            let reversed = !(((i == 0) == self.end) ^ self.flip);
+            let jet = CurveBlendJet::from_curve_derivatives(self.point()?, derivatives, reversed)?;
+            // The captured Native G4 default has a zero fourth derivative,
+            // including on nonzero-fourth-derivative rational/quintic sources.
+            return Ok(jet.with_fourth_derivative(Vector3::try_new(0., 0., 0.)?));
+        }
         let direction = match self.direction(i) {
             Ok(d) => Some(d),
-            Err(_) if continuity == Continuity::Position => None,
+            Err(_) if continuity == 0 => None,
             Err(e) => return Err(e),
         };
-        let curvature = if continuity == Continuity::Curvature {
+        let curvature = if continuity >= 2 {
             self.source
                 .curve_ref()
                 .curvature_vector_on_side(self.parameter, self.side())?

@@ -2,6 +2,7 @@ use super::*;
 use crate::{ParameterSide, UnitVector3};
 
 mod exact;
+mod higher;
 mod jet;
 mod query;
 mod scaled_first;

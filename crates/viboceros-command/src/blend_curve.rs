@@ -5,15 +5,15 @@ use crate::{
 };
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{
-    CurveBlendContinuity as Continuity, CurveBlendJet, CurveBlendOptions, NurbsCurve,
-    ParameterSide, Point3, Real, Tolerance, UnitVector3, Vector3,
+    CurveBlendJet, CurveBlendJetOptions, NurbsCurve, ParameterSide, Point3, Real, Tolerance,
+    UnitVector3, Vector3,
 };
 mod arguments;
 mod commit;
 mod guide;
 mod options;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv Curve=id point Curve=id point [Continuity_1=G0|G1|G2] [Continuity_2=G0|G1|G2] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
+pub const USAGE: &str = "BlendCrv Curve=id point Curve=id point [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
@@ -31,7 +31,7 @@ pub enum Handle {
 pub struct Input {
     guides: Vec<Guide>,
     preferences: Preferences,
-    continuity: [Continuity; 2],
+    continuity: [u8; 2],
     handles: [Option<Real>; 2],
     bulges: [Real; 2],
     tolerance: Tolerance,
@@ -46,7 +46,7 @@ impl Input {
         Self {
             guides: vec![],
             preferences,
-            continuity: [Continuity::Curvature; 2],
+            continuity: [2; 2],
             handles: [None; 2],
             bulges: [1.; 2],
             tolerance,
@@ -54,7 +54,7 @@ impl Input {
             active: None,
         }
     }
-    pub fn continuities(&self) -> [Continuity; 2] {
+    pub fn continuities(&self) -> [u8; 2] {
         self.continuity
     }
     pub fn preferences(&self) -> Preferences {
@@ -124,17 +124,26 @@ impl Input {
             self.guides[0].jet(0, self.continuity[0])?,
             self.guides[1].jet(1, self.continuity[1])?,
         ];
-        let options = CurveBlendOptions {
-            continuity: self.continuity,
+        let options = CurveBlendJetOptions {
+            orders: self.continuity,
             handles: self.handles,
             bulges: self.bulges,
             endpoint_specific: true,
         };
         #[cfg(feature = "native-smlib")]
-        let curve = viboceros_smlib::blend_curve_from_jets(jets, options, self.tolerance)?;
+        let curve = viboceros_smlib::blend_curve_from_endpoint_jets(jets, options, self.tolerance)?;
         #[cfg(not(feature = "native-smlib"))]
-        let curve = viboceros_geometry::try_blend_curve_from_jets(jets, options, self.tolerance)?;
-        let length = curve.length(self.tolerance)?;
+        let curve =
+            viboceros_geometry::try_blend_curve_from_endpoint_jets(jets, options, self.tolerance)?;
+        // The resulting parameter domain is a numerical length measurement,
+        // not a modelling predicate. A coarse document tolerance must not
+        // coarsen the script-visible knot interval of a high-degree blend.
+        let measurement = Tolerance::try_new(
+            self.tolerance.absolute().min(Tolerance::DEFAULT.absolute()),
+            self.tolerance.relative().min(Tolerance::DEFAULT.relative()),
+            self.tolerance.angular(),
+        )?;
+        let length = curve.length(measurement)?;
         self.preview = Some(curve.try_reparameterized(0. ..=length)?);
         Ok(())
     }
@@ -186,10 +195,10 @@ impl Input {
             (Handle::Start, p[0].point()),
             (Handle::End, p[p.len() - 1].point()),
         ];
-        if self.continuity[0] != Continuity::Position {
+        if self.continuity[0] != 0 {
             out.push((Handle::StartShape, p[1].point()));
         }
-        if self.continuity[1] != Continuity::Position {
+        if self.continuity[1] != 0 {
             out.push((Handle::EndShape, p[p.len() - 2].point()));
         }
         out
@@ -273,7 +282,7 @@ impl Input {
         .into_iter()
         .enumerate()
         {
-            if self.continuity[i] != Continuity::Position && self.handles[i].is_none() {
+            if self.continuity[i] != 0 && self.handles[i].is_none() {
                 self.handles[i] = a.distance_to(b).ok();
             }
         }

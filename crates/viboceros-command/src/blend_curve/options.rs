@@ -1,18 +1,23 @@
 use super::*;
-pub(super) fn continuity_name(c: Continuity) -> &'static str {
+pub(super) fn continuity_name(c: u8) -> &'static str {
     match c {
-        Continuity::Position => "G0",
-        Continuity::Tangency => "G1",
-        Continuity::Curvature => "G2",
+        0 => "G0",
+        1 => "G1",
+        2 => "G2",
+        3 => "G3",
+        4 => "G4",
+        _ => unreachable!("validated curve blend derivative order"),
     }
 }
-fn continuity(value: &str) -> Result<Continuity, CommandError> {
+fn continuity(value: &str) -> Result<u8, CommandError> {
     match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-        "g0" | "position" => Ok(Continuity::Position),
-        "g1" | "tangency" | "tangent" => Ok(Continuity::Tangency),
-        "g2" | "curvature" => Ok(Continuity::Curvature),
+        "g0" | "position" => Ok(0),
+        "g1" | "tangency" | "tangent" => Ok(1),
+        "g2" | "curvature" => Ok(2),
+        "g3" | "curvaturederivative" => Ok(3),
+        "g4" | "curvaturesecondderivative" => Ok(4),
         _ => Err(CommandError::Usage(
-            "BlendCrv currently supports G0, G1 and G2 continuity",
+            "BlendCrv continuity must be G0 through G4",
         )),
     }
 }

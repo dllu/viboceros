@@ -256,7 +256,8 @@ pub use curve::{
     CurveDivisionPoint, CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS, try_control_polygon_plane,
 };
 pub use curve_blend_pair::{
-    CurveBlendContinuity, CurveBlendJet, CurveBlendOptions, try_blend_curve,
+    CurveBlendContinuity, CurveBlendJet, CurveBlendJetOptions, CurveBlendOptions, try_blend_curve,
+    try_blend_curve_from_endpoint_jets, try_blend_curve_from_endpoint_jets_with_interpolation,
     try_blend_curve_from_jets, try_blend_curve_from_jets_with_interpolation,
     try_blend_curve_with_interpolation,
 };

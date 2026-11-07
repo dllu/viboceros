@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "high_quartic_g3",
+      "case": "high_quartic_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_quartic_g4",
+      "case": "high_quartic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_quintic_g3",
+      "case": "high_quintic_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_quintic_g4",
+      "case": "high_quintic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_rational_g3",
+      "case": "high_rational_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_rational_g4",
+      "case": "high_rational_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_arc_g4",
+      "case": "high_arc_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_cubic_g4",
+      "case": "high_cubic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_mixed_g3_g1",
+      "case": "high_mixed_g3_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "high_mixed_g2_g4",
+      "case": "high_mixed_g2_g4"
+    }
+  ]
+}

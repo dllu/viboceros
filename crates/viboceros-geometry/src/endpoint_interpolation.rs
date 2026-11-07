@@ -3,7 +3,7 @@ use crate::{GeometryError, Real};
 
 const MAX_COLUMNS: usize = 4096;
 
-/// Position and optional first/second derivatives on a normalized [0,1] chart.
+/// Position and derivatives through fourth order on a normalized [0,1] chart.
 /// Rows at the first endpoint have ascending derivative order; rows at the
 /// second have descending order. Each row contains `column_count` quadruples
 /// of independent channels, which can represent homogeneous spline controls.
@@ -17,7 +17,7 @@ impl EndpointInterpolation<'_> {
         usize::from(self.orders[0]) + usize::from(self.orders[1]) + 1
     }
     pub fn validate(&self) -> Result<(), GeometryError> {
-        if self.orders.iter().any(|order| *order > 2)
+        if self.orders.iter().any(|order| *order > 4)
             || self.column_count == 0
             || self.column_count > MAX_COLUMNS
             || self.targets.len() != self.column_count * (self.degree() + 1)
@@ -67,7 +67,28 @@ pub fn try_interpolate_endpoints(
                                 + input.targets[row * count + u][k]
                                     / (degree * (degree - 1)) as Real
                         }
-                        _ => unreachable!(),
+                        _ => {
+                            let mut value = h[k];
+                            let mut falling = 1.;
+                            let mut choose = 1.;
+                            for derivative in 1..=order {
+                                falling *= (degree + 1 - derivative) as Real;
+                                choose *= (order + 1 - derivative) as Real / derivative as Real;
+                                let target_row = if end == 0 {
+                                    derivative
+                                } else {
+                                    degree - derivative
+                                };
+                                let sign = if end == 1 && derivative % 2 == 1 {
+                                    -1.
+                                } else {
+                                    1.
+                                };
+                                value += sign * choose * input.targets[target_row * count + u][k]
+                                    / falling;
+                            }
+                            value
+                        }
                     };
                 }
             }
@@ -83,7 +104,7 @@ mod tests {
     fn invalid_endpoint_orders_and_dimensions_are_rejected_without_overflow() {
         for (orders, column_count) in [
             ([255, 255], usize::MAX),
-            ([3, 0], 1),
+            ([5, 0], 1),
             ([0, 0], 0),
             ([2, 2], MAX_COLUMNS + 1),
             ([2, 2], usize::MAX),

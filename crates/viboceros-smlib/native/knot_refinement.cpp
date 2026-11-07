@@ -914,7 +914,7 @@ namespace { struct InterpolationBandFailure {}; }
 static void solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count,bool periodic_band) {
     const bool hermite=input.derivative_orders!=nullptr;
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=(hermite?6:input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=(hermite?16384:2048) && input.columns%4==0
+        && input.parameter_count<=(hermite?10:input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=(hermite?16384:2048) && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
         && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
         && (input.uniform_periodic==0 || input.uniform_periodic==1)
@@ -923,7 +923,7 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
         && (input.point_grid==0 || input.point_grid==1)
         && (input.nonuniform_periodic==0 || input.nonuniform_periodic==1)
         && (!hermite || (!input.closed && !input.handles && !input.fixed_rows && !input.point_grid
-            && input.degree<=5 && input.parameter_count==input.degree+1 && input.derivative_count==input.parameter_count))
+            && input.degree<=9 && input.parameter_count==input.degree+1 && input.derivative_count==input.parameter_count))
         && (hermite || input.derivative_count==0)
         && (!input.nonuniform_periodic || (input.closed && !input.uniform_periodic && !input.handles && !input.fixed_rows && !input.point_grid)),
         "Invalid interpolation dimensions");
@@ -942,7 +942,7 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
     if(hermite) {
         size_t first=0;
         while(first<input.parameter_count && input.parameters[first]==0.) ++first;
-        require(first>=1 && first<=3 && input.parameter_count>first && input.parameter_count-first<=3,
+        require(first>=1 && first<=5 && input.parameter_count>first && input.parameter_count-first<=5,
                 "Invalid Hermite endpoint constraint counts");
         for(size_t i=0;i<input.parameter_count;++i)
             require(input.parameters[i]==(i<first?0.:1.)
@@ -1005,7 +1005,7 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
             require(input.fixed_rows[i]<=1,"Invalid fixed interpolation row");
             if(input.fixed_rows[i]) {values[i][half_width]=1.;continue;}
         }
-        double derivatives[3][NL_MAXDEG+1],*rows[]={derivatives[0],derivatives[1],derivatives[2]};
+        double derivatives[5][NL_MAXDEG+1],*rows[]={derivatives[0],derivatives[1],derivatives[2],derivatives[3],derivatives[4]};
         const size_t order=hermite?input.derivative_orders[i]:0;
         NL_INDEX span;
         const double parameter=chart.scaled(input.parameters[i]);

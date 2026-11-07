@@ -242,6 +242,26 @@ impl PolyCurve3 {
         ))
     }
 
+    pub fn evaluate_with_fourth_derivatives_on_side(
+        &self,
+        parameter: Real,
+        side: ParameterSide,
+    ) -> Result<(Point3, [Vector3; 4]), GeometryError> {
+        let index = self.segment_index(parameter, side)?;
+        let (point, mut derivatives) = self.segments[index]
+            .as_ref()
+            .evaluate_with_fourth_derivatives_on_side(
+                self.segment_parameter(index, parameter)?,
+                side,
+            )?;
+        for (order, derivative) in derivatives.iter_mut().enumerate() {
+            for _ in 0..=order {
+                *derivative = self.scale_derivative(index, *derivative)?;
+            }
+        }
+        Ok((point, derivatives))
+    }
+
     fn scale_derivative(
         &self,
         index: usize,
