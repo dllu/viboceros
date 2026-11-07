@@ -91,6 +91,21 @@ CLOSED_FINAL['circle_line_spatial'] = dict(CLOSED_FINAL['circle_line_spatial'], 
 CLOSED_FINAL['circle_line_spatial_top'] = CLOSED_FINAL.pop('circle_line_spatial')
 CASES.update(CLOSED_FINAL)
 
+if __package__:
+    from .fillet_self_cases import pilot as self_pilot, discovery as self_discovery, holdouts as self_holdouts, branches as self_branches, limits as self_limits
+else:
+    from fillet_self_cases import pilot as self_pilot, discovery as self_discovery, holdouts as self_holdouts, branches as self_branches, limits as self_limits
+SELF_PILOT = self_pilot(case, explicit, pick, shot)
+CASES.update(SELF_PILOT)
+SELF_DISCOVERY = self_discovery(case, explicit, pick)
+CASES.update(SELF_DISCOVERY)
+SELF_HOLDOUTS = self_holdouts(case, explicit, pick)
+CASES.update(SELF_HOLDOUTS)
+SELF_BRANCHES = self_branches(case, explicit, pick)
+CASES.update(SELF_BRANCHES)
+SELF_LIMITS = self_limits(case, explicit, pick)
+CASES.update(SELF_LIMITS)
+
 
 def validate(op):
     if not isinstance(op, dict) or set(op) != {'op', 'id', 'case'} or op.get('op') != 'fillet_command' or not isinstance(op.get('case'), str) or op.get('case') not in CASES or op.get('id') != op['case']:

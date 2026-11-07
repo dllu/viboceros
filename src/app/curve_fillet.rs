@@ -164,10 +164,6 @@ impl VibocerosApp {
             return;
         };
         let s = self.curve_fillet_session.as_mut().unwrap();
-        if s.picks.iter().any(|(o, _)| o.id() == id) {
-            self.push_log("Select a different source curve".into());
-            return;
-        }
         s.picks.push((object, point));
         self.document
             .set_transient_selection(s.picks.iter().map(|(o, _)| o.id()))
@@ -234,13 +230,23 @@ impl VibocerosApp {
             return;
         };
         let Some(prepared) = &s.preview else {
-            self.push_log("No valid fillet; change the radius or cancel".into());
+            if !s.options.dynamic {
+                self.cancel_interactive_command(false);
+                self.push_log("Unable to fillet these curves".into());
+            } else {
+                self.push_log("No valid fillet; change the radius or cancel".into());
+            }
             return;
+        };
+        let message = if prepared.geometries().is_empty() {
+            "No fillet could be constructed; sources unchanged"
+        } else {
+            "Filleted curves"
         };
         match prepared.commit(&mut self.document) {
             Ok(_) => {
                 self.cancel_interactive_command(false);
-                self.push_log("Filleted two curves".into());
+                self.push_log(message.into());
             }
             Err(e) => self.push_log(format!("Error: {e}")),
         }

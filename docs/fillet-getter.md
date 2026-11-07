@@ -49,7 +49,8 @@ python3 -m tools.rhino_oracle.check_fillet_getter
 
 Rhino captures run on private Xvfb displays; application tests are windowless.
 Saved pixels establish the observed composition, without a pixel-equality claim.
-Closed sources have [separate coverage](fillet-closed.md). Self-source fillets, arbitrary branch choices, complete invalid-input
+Closed sources and [same-parent picks](fillet-self.md) have separate coverage.
+Arbitrary branch choices, complete invalid-input
 trajectories, alternate Native display settings, continuous-distance bounds and
 comparative performance remain unqualified. Existing rational-extension and
 fully consumed added-segment limits remain. A changed preview constructs a

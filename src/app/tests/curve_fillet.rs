@@ -94,6 +94,30 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 "{id}: {:?}",
                 app.command_log
             );
+            if family.starts_with("fillet_self_") {
+                let outcome = value["events"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|e| e["name"] == "Fillet")
+                    .unwrap()["result"]
+                    .as_str()
+                    .unwrap();
+                if outcome == "Failure" {
+                    assert_eq!(
+                        app.command_log.back().unwrap(),
+                        "Unable to fillet these curves"
+                    );
+                }
+                if outcome == "Success" && value["history_changed"] == false {
+                    assert!(
+                        app.command_log
+                            .back()
+                            .unwrap()
+                            .contains("sources unchanged")
+                    );
+                }
+            }
             let mut result = state.verify(&mut app.document, value);
             result["id"] = serde_json::json!(id);
             println!("{marker} {result}");

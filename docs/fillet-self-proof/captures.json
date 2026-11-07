@@ -1,0 +1,72 @@
+[
+  {
+    "family": "fillet_self_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_self_pilot"
+    ],
+    "exit_status": 0,
+    "log": "capture-pilot.log.gz",
+    "request_sha256": "96ffdd8030c5ce16ae043121594e9512b0175c3c80764edb25714cbc2fbea48f",
+    "observation_sha256": "965f3c099fe9ca9f17d105f44e9d650560b4fef69626df9f3e56224645b500a3"
+  },
+  {
+    "family": "fillet_self_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_self_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz",
+    "request_sha256": "3cf9e70854a35f05ab5ffeb1409ac58557b94b0c4ef4c3ccac10dc52b9c0a3ff",
+    "observation_sha256": "4054344d2bb8bc1475f8e969b067d37f34068e8e2ef0a4f7b98e5f126fd02cd1"
+  },
+  {
+    "family": "fillet_self_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_self_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz",
+    "request_sha256": "e7634b486ed86e8ca0f0e7ca27d69907a61fd41d7325bfaf143a6c4c05b40733",
+    "observation_sha256": "5f859dae34d69ff3386f53826acfdf9e24bb33702f37d294f6cb522daead982e"
+  },
+  {
+    "family": "fillet_self_branches",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_self_branches"
+    ],
+    "exit_status": 0,
+    "log": "capture-branches.log.gz",
+    "request_sha256": "953ac4b1231c2dc3c442f90d4eca01563fe127a3c2ce3785eee3420dd2e13d3d",
+    "observation_sha256": "058c9122a3bc814750e36c385c92f68b7194a700069c0ec38926d86223562759"
+  },
+  {
+    "family": "fillet_self_limits",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_self_limits"
+    ],
+    "exit_status": 0,
+    "log": "capture-limits.log.gz",
+    "request_sha256": "adca95735600ee2eb25986614ceecae22b0b6a17ee94aa6ecb5c579c0c3d17fb",
+    "observation_sha256": "6351e878198b6a3e1db74df8eb093c49342f0c8e01134d1db86bd3c5cf35d8bf"
+  }
+]

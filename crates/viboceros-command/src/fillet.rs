@@ -4,8 +4,10 @@ use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle, CurveFilletExtensionStyles, CurveOtherExtensionStyle,
 };
 mod closed;
+mod contacts;
 mod options;
 mod prepare;
+mod same_source;
 pub use options::{Arguments, Preferences, parse, parse_radius};
 pub use prepare::{Prepared, prepare};
 const USAGE: &str = "Fillet [Radius=distance] [Sources=id,id] [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [Dynamic=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
@@ -19,12 +21,15 @@ impl Command for FilletCommand {
         let ids = if let Some(ids) = options.sources {
             ids
         } else {
-            document
+            let selected = document
                 .selected_objects()
                 .map(|o| o.id())
-                .collect::<Vec<_>>()
-                .try_into()
-                .map_err(|_| CommandError::FilletRequiresTwoCurves)?
+                .collect::<Vec<_>>();
+            match selected.as_slice() {
+                [id] if options.picks.iter().all(Option::is_some) => [*id, *id],
+                [first, second] => [*first, *second],
+                _ => return Err(CommandError::FilletRequiresTwoCurves),
+            }
         };
         let curves = ids.map(|id| {
             document
@@ -45,7 +50,12 @@ impl Command for FilletCommand {
             dynamic: false,
             ..options.preferences
         });
-        Ok("Filleted two curves".into())
+        Ok(if prepared.geometries().is_empty() {
+            "No fillet could be constructed; sources unchanged"
+        } else {
+            "Filleted curves"
+        }
+        .into())
     }
     fn object_selection_prompt(
         &self,

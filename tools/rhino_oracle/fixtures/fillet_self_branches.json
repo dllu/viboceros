@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "self_open_joined_backward_source",
+      "case": "self_open_joined_backward_source"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_closed_joined_backward_source",
+      "case": "self_closed_joined_backward_source"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_near_corner",
+      "case": "self_near_corner"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_far_origin",
+      "case": "self_far_origin"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_folded_path",
+      "case": "self_folded_path"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_oversized",
+      "case": "self_oversized"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_dynamic_untrimmed",
+      "case": "self_dynamic_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_dynamic_zero_cancel",
+      "case": "self_dynamic_zero_cancel"
+    }
+  ]
+}

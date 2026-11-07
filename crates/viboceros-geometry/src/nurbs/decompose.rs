@@ -6,6 +6,47 @@ use super::{GeometryError, NurbsCurve, Real};
 mod tests;
 
 impl NurbsCurve {
+    /// Extract clamped pieces at selected interior knots of multiplicity at
+    /// least the degree. C0 joins share one control; full-order breaks share
+    /// none. Copies only the output control blocks, without repeated whole-
+    /// curve trimming. Returns `None` when a cut needs knot insertion.
+    pub fn try_split_at_c0_parameters(
+        &self,
+        parameters: &[Real],
+    ) -> Result<Option<Vec<Self>>, GeometryError> {
+        let cuts = self.checked_split_parameters(parameters)?;
+        let source = self.clamped_to_active_domain()?;
+        let mut boundaries = Vec::with_capacity(cuts.len() + 1);
+        for &cut in &cuts {
+            let first = source.knots.partition_point(|k| *k < cut);
+            let end = source.knots.partition_point(|k| *k <= cut);
+            if end - first < source.degree {
+                return Ok(None);
+            }
+            boundaries.push((first, usize::from(end - first == source.degree), cut));
+        }
+        boundaries.push((source.control_points.len(), 0, *source.domain().end()));
+        let mut start = 0;
+        let mut lower = *source.domain().start();
+        let mut pieces = Vec::with_capacity(boundaries.len());
+        for (end, shared, upper) in boundaries {
+            let mut knots = source.knots[start..end + source.degree + 1].to_vec();
+            knots[..source.degree + 1].fill(lower);
+            let last = knots.len() - source.degree - 1;
+            knots[last..].fill(upper);
+            let mut piece = Self::try_new_rational(
+                source.degree,
+                source.control_points[start..end].to_vec(),
+                knots,
+            )?;
+            piece.rational_representation = self.rational_representation;
+            pieces.push(piece);
+            start = end - shared;
+            lower = upper;
+        }
+        Ok(Some(pieces))
+    }
+
     /// Interior knots of multiplicity `degree + 1`. These separate independent
     /// control blocks, which may or may not meet geometrically.
     pub fn full_order_knots(&self) -> impl Iterator<Item = Real> + '_ {

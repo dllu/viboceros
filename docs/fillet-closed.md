@@ -41,7 +41,8 @@ python3 -m tools.rhino_oracle.check_fillet_closed
 
 All captures use private Xvfb displays; application tests create no windows.
 The model gate is 1e-6. These are sampled finite cases, without a continuous distance,
-pixel-equality or comparative performance claim. Self-source fillets, zero radius
+pixel-equality or comparative performance claim. [Same-parent fillets](fillet-self.md)
+have separate coverage. Zero radius
 with closed sources, nonplanar closed curves, corner contacts and extension of
 open curved partners remain unqualified. The current closed-source solver rejects
 radii at or below the document's absolute tolerance.

@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "self_open_cancel",
+      "case": "self_open_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_closed_cancel",
+      "case": "self_closed_cancel"
+    }
+  ]
+}

@@ -3,10 +3,7 @@ use super::{
     prepare::{Plan, Target},
     *,
 };
-use viboceros_geometry::{
-    CircleTangentConstraint, CircularArc3, CurveSegment3, LineSegment, PolyCurve3,
-    try_circle_tangent,
-};
+use viboceros_geometry::{CurveSegment3, LineSegment, PolyCurve3};
 
 pub(super) fn prepare(
     curves: [&Curve3; 2],
@@ -25,22 +22,8 @@ pub(super) fn prepare(
         .ok_or(CommandError::Usage(
             "Closed-source fillet requires a planar contact",
         ))?;
-    let constraints = [0, 1].map(|i| CircleTangentConstraint::Curve {
-        curve: curves[i].as_ref(),
-        parameter: seed[i],
-        fixed: false,
-    });
-    let solution = try_circle_tangent(&constraints, Some(options.radius), plane, tolerance)?
-        .ok_or(CommandError::Usage(
-            "No tangent fillet satisfies these picks",
-        ))?;
-    let circle = solution.circle;
-    let radial = circle.center().vector_to(solution.contact_points[1])?;
-    let sweep = radial
-        .dot(circle.y_axis().as_vector())?
-        .atan2(radial.dot(circle.x_axis().as_vector())?)
-        .rem_euclid(std::f64::consts::TAU);
-    let arc = CircularArc3::try_from_circle_sweep(circle, sweep)?;
+    let solution = super::contacts::solve(curves, seed, options.radius, plane, tolerance)?;
+    let arc = solution.arc;
     let mut plan = Plan {
         outputs: Vec::new(),
         targets: Vec::new(),
@@ -52,7 +35,7 @@ pub(super) fn prepare(
             if closed[i] {
                 continue;
             }
-            let contact = solution.parameters[i].expect("curve constraint has a parameter");
+            let contact = solution.parameters[i];
             let domain = curves[i].as_ref().domain();
             let keep_end = seed[i] > contact;
             let interval = if keep_end {
@@ -64,9 +47,9 @@ pub(super) fn prepare(
                 // A line support can reach the contact outside its old domain;
                 // retain the far endpoint and the original parameter chart.
                 let (a, b) = if keep_end {
-                    (solution.contact_points[i], line.end())
+                    (solution.points[i], line.end())
                 } else {
-                    (line.start(), solution.contact_points[i])
+                    (line.start(), solution.points[i])
                 };
                 Curve3::Line(
                     LineSegment::try_new(a, b, Tolerance::NUMERICAL_VALIDATION)?

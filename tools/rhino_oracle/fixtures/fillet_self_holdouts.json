@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "self_open_parts_reversed",
+      "case": "self_open_parts_reversed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_closed_joined_reversed",
+      "case": "self_closed_joined_reversed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_closed_parts_reversed",
+      "case": "self_closed_parts_reversed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_closed_seam_reversed",
+      "case": "self_closed_seam_reversed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_seam_parts",
+      "case": "self_seam_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_interior_corner",
+      "case": "self_interior_corner"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_spatial",
+      "case": "self_spatial"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_nonadjacent",
+      "case": "self_nonadjacent"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_smooth_nurbs",
+      "case": "self_smooth_nurbs"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_kinked_nurbs",
+      "case": "self_kinked_nurbs"
+    },
+    {
+      "op": "fillet_command",
+      "id": "self_same_leaf",
+      "case": "self_same_leaf"
+    }
+  ]
+}

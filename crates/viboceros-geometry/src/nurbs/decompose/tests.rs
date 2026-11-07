@@ -165,3 +165,92 @@ fn many_independent_blocks_are_sliced_once_in_parameter_order() {
         );
     }
 }
+
+#[test]
+fn c0_batch_splits_shared_and_independent_controls_without_changing_evaluation() {
+    let controls = (0..8)
+        .map(|i| {
+            WeightedPoint3::try_new(
+                point(i as Real, (i % 3) as Real),
+                if i % 3 == 1 { 0.7 } else { 1. },
+            )
+            .unwrap()
+        })
+        .collect();
+    let source = NurbsCurve::try_new_rational(
+        2,
+        controls,
+        vec![0., 0., 0., 1., 1., 2., 2., 2., 3., 3., 3.],
+    )
+    .unwrap();
+    let before = source.clone();
+    let pieces = source
+        .try_split_at_c0_parameters(&[1., 2.])
+        .unwrap()
+        .unwrap();
+    assert_eq!(pieces.len(), 3);
+    assert_eq!(
+        pieces
+            .iter()
+            .map(|p| p.control_points().len())
+            .sum::<usize>(),
+        source.control_points().len() + 1
+    );
+    for (index, piece) in pieces.iter().enumerate() {
+        assert_eq!(piece.domain(), index as Real..=index as Real + 1.);
+        for i in 0..=32 {
+            let t = piece.parameter_at(i as Real / 32.).unwrap();
+            let side = if i == 32 {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            };
+            let expected = source
+                .evaluate_with_second_derivative_on_side(t, side)
+                .unwrap();
+            let actual = piece.evaluate_with_second_derivative(t).unwrap();
+            assert!(expected.0.distance_to(actual.0).unwrap() < 1e-12);
+            for (a, b) in expected
+                .1
+                .to_array()
+                .into_iter()
+                .chain(expected.2.to_array())
+                .zip(actual.1.to_array().into_iter().chain(actual.2.to_array()))
+            {
+                assert!((a - b).abs() < 1e-10);
+            }
+        }
+    }
+    assert!(source.try_split_at_c0_parameters(&[0.5]).unwrap().is_none());
+    assert_eq!(source, before);
+}
+
+#[test]
+fn c0_batch_keeps_closed_curve_domain_order_and_exact_weight_gauges() {
+    let circle = crate::Circle3::try_new(
+        point(0., 0.),
+        5.,
+        crate::Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        crate::Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let d = circle.domain();
+    let width = *d.end() - *d.start();
+    let cuts = [0.25, 0.5, 0.75].map(|f| *d.start() + f * width);
+    let pieces = circle.try_split_at_c0_parameters(&cuts).unwrap().unwrap();
+    assert_eq!(pieces.len(), 4);
+    assert_eq!(*pieces[0].domain().start(), *d.start());
+    assert_eq!(*pieces[3].domain().end(), *d.end());
+    for (i, p) in pieces.iter().enumerate() {
+        assert_eq!(
+            p.control_points(),
+            &circle.control_points()[2 * i..2 * i + 3]
+        );
+        assert!(p.has_rational_representation());
+    }
+}
