@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_rational_g3_lengths",
+      "case": "symmetric_rational_g3_lengths"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_unequal_rational_lengths",
+      "case": "symmetric_unequal_rational_lengths"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_reverse_quintic_g4_lengths",
+      "case": "symmetric_reverse_quintic_g4_lengths"
+    }
+  ]
+}

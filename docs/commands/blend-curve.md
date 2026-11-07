@@ -4,7 +4,7 @@
 
 Enter `BlendCrv`, pick two open curves near the desired ends, then adjust the
 preview and press Enter. The source curves stay unchanged unless Trim or Join
-is enabled. The result is a minimum-degree NURBS curve with an arc-length domain.
+is enabled. The result is a minimum-degree NURBS curve with a domain scaled to its measured length.
 
 `Continuity_1=G0|G1|G2|G3|G4` and `Continuity_2=G0|G1|G2|G3|G4` independently
 set endpoint constraints. G0/G1/G2 use position, tangency and curvature; G3/G4
@@ -34,6 +34,11 @@ points project onto the constraint. Shape lengths also accept numbers with
 units, fractions and arithmetic. Moving a contact preserves handle lengths.
 Esc discards the local adjustment; another Esc cancels the command. `!` aborts
 immediately. Previews leave geometry and undo/redo untouched.
+
+Hold Shift while selecting a shape handle to set both handle lengths together.
+Both ends must have the same G1–G4 continuity. Each handle stays on its own tangent
+constraint; contacts and mixed/G0 constraints edit independently. Pairing lasts
+for that adjustment, including when Shift is released before mouse-up.
 
 Enter `Flip` and pick a source to reverse its blend tangent, or press Enter to
 flip both. `Trim=Yes` retains the chosen source portions. `Join=Yes` combines
@@ -67,16 +72,13 @@ without native edge qualification. Point endpoints have no curve parameter,
 shape handle or flip direction. Changed source geometry or tolerance clears
 the editor and requests new picks.
 
-[G0–G2 validation](../blend-curve-validation.json) retains 34 observations:
-25 matched workflows and nine historical diagnostics. The
-[higher-order qualification](../blend-curve-high.md) adds 19 captures and matches
-six historical G3/G4 observations. [Point endpoint validation](../blend-curve-points.md)
-adds 42 observations, with 41 matched workflows and one retained input diagnostic.
-[Temporary-source qualification](../blend-curve-portions.md) adds 36 matched
-workflows. Both builds verify geometry, source attributes,
-selection, history, 3DM round trips and independent native evaluations. Rhino
-reports `Nothing` with success=false after accepting these blends; the records
-retain that result alongside the actual document changes.
+Validation: [G0–G2](../blend-curve-validation.json),
+[G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
+[temporary sources](../blend-curve-portions.md), and [Shift editing](../blend-curve-symmetry.md).
+Both builds check geometry, attributes, identities, selection, history, 3DM round
+trips and independent Native evaluations. Rhino reports `Nothing` with
+success=false after accepting these blends; records retain the actual document
+changes and separate geometry, derivative and domain-precision gates.
 
 G3 uses the normal third source jet. Native G4 defaults use a **zero fourth
 blend derivative**, including on sources with nonzero fourth derivatives.
@@ -85,11 +87,11 @@ G4 continuity for arbitrary sources. Default degrees are seven for G3/G3 and
 nine for G4/G4; mixed endpoints use degree `order1 + order2 + 1`.
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_portions
+python3 -m tools.rhino_oracle.check_blend_curve_symmetry
 ```
 
 Captures use private Xvfb; application tests are windowless. Whole closed sources,
-zero-retained-side joins, symmetry/Alt edits, curvature display and
+zero-retained-side joins, surface-edge Alt edits, curvature display and
 history-based re-editing remain pending. Exact hit-box/depth ranking, native
 numeric/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

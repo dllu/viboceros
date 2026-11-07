@@ -608,6 +608,7 @@ pub struct ViewportOutput {
     pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
     pub arc_blend_hover: Option<Real>,
     pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
+    pub blend_curve_symmetric: bool,
     pub blend_curve_hover: Option<Real>,
     pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
@@ -744,6 +745,7 @@ pub struct Viewport {
     last_pointer: Option<Pos2>,
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
+    blend_curve_press: Option<(viboceros_command::blend_curve::Handle, bool)>,
     lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
     navigation_drag_start: Option<CameraSnapshot>,
@@ -811,6 +813,7 @@ impl Viewport {
             last_pointer: None,
             selection_drag_start: None,
             component_drag: None,
+            blend_curve_press: None,
             lasso_drag_path: Vec::new(),
             zoom_window_start: None,
             navigation_drag_start: None,
@@ -3104,6 +3107,8 @@ impl Viewport {
         if let Some(edges) = input.insert_edges {
             self.paint_insert_edges(&painter, rect, edges, insert_cursor);
         }
+        let blend_curve_selection =
+            self.blend_curve_selection(ui, &response, rect, input.blend_curve);
         ViewportOutput {
             insert_point: response
                 .clicked_by(PointerButton::Primary)
@@ -3230,17 +3235,8 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
-            blend_curve_handle: (response.clicked_by(PointerButton::Primary)
-                || response.drag_started_by(PointerButton::Primary))
-            .then(|| {
-                let pointer = if response.drag_started_by(PointerButton::Primary) {
-                    ui.input(|i| i.pointer.press_origin())?
-                } else {
-                    response.interact_pointer_pos()?
-                };
-                self.pick_blend_curve_handle(pointer, rect, input.blend_curve?)
-            })
-            .flatten(),
+            blend_curve_handle: blend_curve_selection.map(|p| p.0),
+            blend_curve_symmetric: blend_curve_selection.is_some_and(|p| p.1),
             blend_curve_hover: response.hovered().then_some(blend_parameter).flatten(),
             blend_curve_parameter: (response.clicked_by(PointerButton::Primary)
                 || response.drag_stopped_by(PointerButton::Primary))

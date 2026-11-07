@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_quartic_g4",
+      "case": "symmetric_quartic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_mixed_reverse",
+      "case": "symmetric_mixed_reverse"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_unequal_rational",
+      "case": "symmetric_unequal_rational"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_contact_after_shape",
+      "case": "symmetric_contact_after_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_new_selection_independent",
+      "case": "symmetric_new_selection_independent"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_pointer_release",
+      "case": "symmetric_pointer_release"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_cubic_join",
+      "case": "symmetric_cubic_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_g4_join",
+      "case": "symmetric_g4_join"
+    }
+  ]
+}

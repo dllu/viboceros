@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_g1",
+      "case": "symmetric_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_g3",
+      "case": "symmetric_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_g4_end",
+      "case": "symmetric_g4_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_mixed_g3_g4",
+      "case": "symmetric_mixed_g3_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_perpendicular",
+      "case": "symmetric_perpendicular"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_reversed",
+      "case": "symmetric_reversed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_arc",
+      "case": "symmetric_arc"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_rational_g3",
+      "case": "symmetric_rational_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_reverse_quintic_g4",
+      "case": "symmetric_reverse_quintic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_point_shape",
+      "case": "symmetric_point_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_g0_peer",
+      "case": "symmetric_g0_peer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_then_independent",
+      "case": "symmetric_then_independent"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_pointer_target",
+      "case": "symmetric_pointer_target"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_portions_join",
+      "case": "symmetric_portions_join"
+    }
+  ]
+}

@@ -90,9 +90,19 @@ impl Getter {
                     .unwrap();
             }
         } else if let Some(p) = a.get("click") {
-            input
-                .select_handle(handle(input, native::point(p)))
-                .unwrap();
+            if input.active_handle().is_some() {
+                input
+                    .adjust_shape_length(shape_parameter(input, value, index))
+                    .unwrap();
+                input.finish_adjustment();
+            } else {
+                input
+                    .select_handle_with_symmetry(
+                        handle(input, native::point(p)),
+                        a["shift"].as_bool().unwrap_or(false),
+                    )
+                    .unwrap();
+            }
         } else if a.is_array() {
             if self.point_prompt {
                 input.pick_point(native::point(a)).unwrap();
@@ -122,6 +132,33 @@ impl Getter {
         true
     }
 }
+/// Project the public Native click ray onto the active shape constraint.
+/// Its measured output curve is not used to construct the edit.
+pub fn shape_parameter(input: &Input, value: &Value, index: usize) -> f64 {
+    let c = input
+        .shape_constraint()
+        .expect("physical target requires a shape constraint");
+    let click = value["input_trace"][0]["clicks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["action"].as_u64() == Some(index as u64))
+        .unwrap();
+    let from = native::point(&click["ray"][0]);
+    let to = native::point(&click["ray"][1]);
+    let point = c
+        .project_view_line(
+            c.anchor.vector_to(from).unwrap(),
+            from.vector_to(to).unwrap(),
+        )
+        .unwrap();
+    c.anchor
+        .vector_to(point)
+        .unwrap()
+        .dot(c.direction.unwrap().as_vector())
+        .unwrap()
+}
+
 pub fn samples(doc: &Document, value: &Value) -> (f64, usize) {
     let output = value["after"]
         .as_array()

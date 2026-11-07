@@ -25,6 +25,7 @@ mod bezier_selection;
 mod blend_curve;
 mod blend_curve_points;
 mod blend_curve_portions;
+mod blend_curve_symmetry;
 mod blend_edge;
 mod blend_surface;
 mod block_manager;

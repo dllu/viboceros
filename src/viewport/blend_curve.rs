@@ -47,6 +47,49 @@ impl Viewport {
             .min_by(|a, b| a.0.total_cmp(&b.0))
             .map(|(_, h)| h)
     }
+    /// Use the press event's modifiers even when Shift is released before up.
+    pub(super) fn blend_curve_selection(
+        &mut self,
+        ui: &egui::Ui,
+        response: &egui::Response,
+        rect: Rect,
+        input: Option<&Input>,
+    ) -> Option<(Handle, bool)> {
+        let Some(input) = input.filter(|i| i.active_handle().is_none()) else {
+            self.blend_curve_press = None;
+            return None;
+        };
+        if response.hovered()
+            && let Some((point, shift)) = ui.input(|i| {
+                i.events.iter().rev().find_map(|event| match event {
+                    egui::Event::PointerButton {
+                        pos,
+                        button: PointerButton::Primary,
+                        pressed: true,
+                        modifiers,
+                    } => Some((*pos, modifiers.shift)),
+                    _ => None,
+                })
+            })
+        {
+            self.blend_curve_press = self
+                .pick_blend_curve_handle(point, rect, input)
+                .map(|h| (h, shift));
+        }
+        let selected = if response.clicked_by(PointerButton::Primary)
+            || response.drag_started_by(PointerButton::Primary)
+        {
+            self.blend_curve_press
+        } else {
+            None
+        };
+        if response.drag_started_by(PointerButton::Primary)
+            || ui.input(|i| i.pointer.button_released(PointerButton::Primary))
+        {
+            self.blend_curve_press = None;
+        }
+        selected
+    }
     pub(super) fn paint_blend_curve_handles(
         &self,
         painter: &egui::Painter,
@@ -68,7 +111,9 @@ impl Viewport {
                 painter.circle_filled(
                     p,
                     4.,
-                    if input.active_handle() == Some(handle) {
+                    if input.active_handle() == Some(handle)
+                        || input.paired_handle() == Some(handle)
+                    {
                         Color32::YELLOW
                     } else {
                         Color32::WHITE

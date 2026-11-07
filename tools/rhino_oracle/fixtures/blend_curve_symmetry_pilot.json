@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_shape_baseline",
+      "case": "symmetric_shape_baseline"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_shape_start",
+      "case": "symmetric_shape_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_shape_end",
+      "case": "symmetric_shape_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_mixed_shape",
+      "case": "symmetric_mixed_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_contact_start",
+      "case": "symmetric_contact_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_contact_end",
+      "case": "symmetric_contact_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_unequal_handles",
+      "case": "symmetric_unequal_handles"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "symmetric_point_contact",
+      "case": "symmetric_point_contact"
+    }
+  ]
+}

@@ -128,3 +128,24 @@ if __package__:from .blend_curve_portion_holdouts import holdouts as portion_hol
 else:from blend_curve_portion_holdouts import holdouts as portion_holdouts
 PORTION_HOLDOUTS=portion_holdouts(case,pick,ARC_A,B,POINT_RATIONAL,POINT_QUINTIC)
 CASES.update(PORTION_HOLDOUTS)
+
+if __package__:from .blend_curve_symmetry_cases import pilot as symmetry_pilot
+else:from blend_curve_symmetry_cases import pilot as symmetry_pilot
+SYMMETRY_PILOT=symmetry_pilot(held,case,pick)
+CASES.update(SYMMETRY_PILOT)
+
+if __package__:from .blend_curve_symmetry_cases import discovery as symmetry_discovery
+else:from blend_curve_symmetry_cases import discovery as symmetry_discovery
+SYMMETRY_DISCOVERY=symmetry_discovery(held,case,pick,ARC_A,B,POINT_RATIONAL,POINT_QUINTIC)
+CASES.update(SYMMETRY_DISCOVERY)
+
+if __package__:from .blend_curve_symmetry_cases import holdouts as symmetry_holdouts
+else:from blend_curve_symmetry_cases import holdouts as symmetry_holdouts
+SYMMETRY_HOLDOUTS=symmetry_holdouts(held,case,pick,POINT_QUARTIC,POINT_RATIONAL,CUBIC_A,CUBIC_B)
+CASES.update(SYMMETRY_HOLDOUTS)
+
+SYMMETRY_LENGTHS={}
+for source,name in [(SYMMETRY_DISCOVERY,'symmetric_rational_g3'),(SYMMETRY_HOLDOUTS,'symmetric_unequal_rational'),(SYMMETRY_DISCOVERY,'symmetric_reverse_quintic_g4')]:
+ recipe=dict(source[name]);recipe['measure_lengths']=True
+ SYMMETRY_LENGTHS[name+'_lengths']=recipe
+CASES.update(SYMMETRY_LENGTHS)

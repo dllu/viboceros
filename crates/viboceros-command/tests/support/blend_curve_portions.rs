@@ -6,6 +6,7 @@ mod portion;
 pub use portion::pointer_parameter;
 #[path = "blend_curve_portion_families.rs"]
 mod families;
+#[allow(unused_imports)]
 pub use families::FAMILIES;
 
 pub fn replay(

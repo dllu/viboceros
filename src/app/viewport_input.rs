@@ -76,7 +76,7 @@ impl VibocerosApp {
             }
         }
         if let Some(handle) = output.blend_curve_handle.take() {
-            self.select_blend_curve_handle(handle);
+            self.select_blend_curve_handle_with_symmetry(handle, output.blend_curve_symmetric);
             return true;
         }
         if let Some(t) = output.blend_curve_hover {

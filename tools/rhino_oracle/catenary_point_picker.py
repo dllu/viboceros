@@ -16,6 +16,11 @@ class CatenaryPointPicker(IdlePicker):
             for i, action in enumerate(op['actions'])
             if isinstance(action, dict) and 'click' in action
         }
+        self.shift_clicks = {
+            '@catenary-click:' + op['id'] + '-' + str(i)
+            for op in request['operations'] for i,a in enumerate(op['actions'])
+            if isinstance(a,dict) and 'click'in a and a.get('shift',False)
+        }
         self.moved = {}
 
     def __call__(self, job, pids):
@@ -36,9 +41,16 @@ class CatenaryPointPicker(IdlePicker):
             return False
         if json.loads(ready.read_text()) != name:
             raise OracleProtocolError('foreign Catenary motion acknowledgement')
-        subprocess.run([
-            'xdotool', 'windowactivate', '--sync', window, 'click', '1',
-        ], check=True, timeout=10)
+        if name in self.shift_clicks:
+            subprocess.run(['xdotool','windowactivate','--sync',window,'keydown','Shift_L'],check=True,timeout=10)
+            try:
+                subprocess.run(['xdotool','click','1'],check=True,timeout=10)
+            finally:
+                subprocess.run(['xdotool','keyup','Shift_L'],check=True,timeout=10)
+        else:
+            subprocess.run([
+                'xdotool', 'windowactivate', '--sync', window, 'click', '1',
+            ], check=True, timeout=10)
         return True
 
     def record_diagnostics(self, response):

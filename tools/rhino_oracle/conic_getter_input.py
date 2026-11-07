@@ -81,6 +81,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select surface to splop on' if command=='Splop' else 'Select' if command in ('SubDTorus','SubDTruncatedCone','SubDCone','SubDCylinder') else 'Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
+    click_shift=S.Array[S.Int32]([-1]*len(actions))
     pointer_plane=vp.GetConstructionPlane().Plane
     arc_pointer_path=S.Array[S.Int32]([0]*384);arc_pointer_count=S.Array[S.Int32]([0])
     arc_pointer_initial=S.Array[S.Int32]([0]*(2*len(actions)))
@@ -272,6 +273,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(gate,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
             advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]
+            if command=='BlendCrv':
+                expected=bool(actions[i].get('shift',False))
+                condition=E.AndAlso(condition,E.Equal(E.Property(event,'ShiftKeyDown'),E.Constant(expected)))
+                advance.append(E.Assign(item(click_shift,i),E.Condition(E.Property(event,'ShiftKeyDown'),integer(1),integer(0))))
             if command!='Reparameterize':advance.append(E.Assign(stage,integer(i+1)))
             handlers.append(E.IfThen(condition,block(advance)))
         return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
@@ -295,6 +300,8 @@ def drive(op,host,guides,command="Conic",start_script=None):
     if plan_view is not None:trace['aligned_construction_plane_view']=plan_view
     if clicks:
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]>=9)for c in clicks]
+        if command=='BlendCrv':
+            for c in trace['clicks']:c['shift_key_down']=bool(click_shift[c['action']]==1)if click_shift[c['action']]>=0 else None
         if command=='Reparameterize':trace['selection_enter_sent']=any(counts[c['action']]==10 for c in clicks)
         trace['snap_settings']=snap_settings
         if op.get('op')=='arc_command':trace['pointer_path']=[dict(action=int(arc_pointer_path[3*i]),pixel=[int(arc_pointer_path[3*i+1]),int(arc_pointer_path[3*i+2])])for i in range(arc_pointer_count[0])]

@@ -40,6 +40,7 @@ pub struct Input {
     tolerance: Tolerance,
     preview: Option<NurbsCurve>,
     active: Option<Handle>,
+    symmetric: bool,
 }
 impl Input {
     pub fn new(tolerance: Tolerance) -> Self {
@@ -55,6 +56,7 @@ impl Input {
             tolerance,
             preview: None,
             active: None,
+            symmetric: false,
         }
     }
     pub fn continuities(&self) -> [u8; 2] {
@@ -81,6 +83,9 @@ impl Input {
     pub fn prompt(&self) -> &'static str {
         match self.active {
             Some(Handle::Start | Handle::End) => "Select blend contact location",
+            Some(_) if self.paired_handle().is_some() => {
+                "Set paired blend shape handle length or location"
+            }
             Some(_) => "Set blend shape handle length or location",
             None if self.endpoints.is_empty() => {
                 "Select first curve near blend end; Point or SubCrv"
@@ -189,6 +194,9 @@ impl Input {
         }
         let mut next = self.clone();
         next.handles[i] = Some(length);
+        if next.paired_handle().is_some() {
+            next.handles[1 - i] = Some(length);
+        }
         next.rebuild()?;
         *self = next;
         Ok(())

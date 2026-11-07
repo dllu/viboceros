@@ -1,7 +1,15 @@
 //! Candidate hover geometry never edits accepted handles or the document.
 use super::*;
 impl VibocerosApp {
+    #[cfg(test)]
     pub(in crate::app) fn select_blend_curve_handle(&mut self, handle: Handle) {
+        self.select_blend_curve_handle_with_symmetry(handle, false);
+    }
+    pub(in crate::app) fn select_blend_curve_handle_with_symmetry(
+        &mut self,
+        handle: Handle,
+        symmetric: bool,
+    ) {
         self.validate_blend_curve();
         let Some(s) = &mut self.blend_curve_session else {
             return;
@@ -9,7 +17,7 @@ impl VibocerosApp {
         if s.flip || s.subcurve.is_some() {
             return;
         }
-        match s.input.select_handle(handle) {
+        match s.input.select_handle_with_symmetry(handle, symmetric) {
             Ok(()) => {
                 s.candidate = None;
                 self.blend_curve_prompt();

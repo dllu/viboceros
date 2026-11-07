@@ -19,14 +19,35 @@ impl Input {
         out
     }
     pub fn select_handle(&mut self, handle: Handle) -> Result<(), CommandError> {
+        self.select_handle_with_symmetry(handle, false)
+    }
+    /// Shift selection pairs shape handles when both continuities match.
+    /// Contact edits and mismatched endpoint constraints remain independent.
+    pub fn select_handle_with_symmetry(
+        &mut self,
+        handle: Handle,
+        symmetric: bool,
+    ) -> Result<(), CommandError> {
         if !self.control_points().iter().any(|(h, _)| *h == handle) {
             return Err(CommandError::Usage(USAGE));
         }
         self.active = Some(handle);
+        self.symmetric = symmetric;
         Ok(())
+    }
+    pub fn paired_handle(&self) -> Option<Handle> {
+        if !self.symmetric || self.continuity[0] == 0 || self.continuity[0] != self.continuity[1] {
+            return None;
+        }
+        match self.active? {
+            Handle::StartShape => Some(Handle::EndShape),
+            Handle::EndShape => Some(Handle::StartShape),
+            _ => None,
+        }
     }
     pub fn finish_adjustment(&mut self) {
         self.active = None;
+        self.symmetric = false;
     }
     pub fn adjustment_curve(&self) -> Option<&NurbsCurve> {
         let i = match self.active? {
@@ -75,12 +96,7 @@ impl Input {
                 .anchor
                 .vector_to(point)?
                 .dot(c.direction.unwrap().as_vector())?;
-            let i = if self.active == Some(Handle::StartShape) {
-                1
-            } else {
-                2
-            };
-            return self.option(&format!("Handle{i}={length}")).map(|_| ());
+            return self.adjust_shape_length(length);
         }
         let i = match self.active {
             Some(Handle::Start) => 0,
