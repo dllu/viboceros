@@ -1,5 +1,5 @@
 #[path = "../../../crates/viboceros-command/tests/support/blend_curve_measurements.rs"]
-mod measurements;
+pub(super) mod measurements;
 use super::arc_blend_subcurves::subcurves::pointer_parameter;
 use super::blend_curve::blend;
 use super::blend_curve_points::points;

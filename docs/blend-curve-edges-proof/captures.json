@@ -1,0 +1,58 @@
+[
+  {
+    "family": "blend_curve_edge_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_edge_pilot"
+    ],
+    "exit_status": 0,
+    "log": "capture-pilot.log.gz",
+    "observation_sha256": "7d7bdb96d86c43562c308e2d3567f782ae44072ae2c2b6f4aa249508958d7054",
+    "request_sha256": "afbc3cc62f6b8cff83e4d879abd891a3b327d9293ea39f5d5f5815b2b5838141"
+  },
+  {
+    "family": "blend_curve_edge_selection",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_edge_selection"
+    ],
+    "exit_status": 0,
+    "log": "capture-selection.log.gz",
+    "observation_sha256": "06623977ed9aa5ba38e6cd50b774fd6c2961fd0a3f738340277336dc7afe6e5f",
+    "request_sha256": "47da42c90fa5421df94585fc0d3e113eafcf96ba01e7a35930a081ee1df17d4f"
+  },
+  {
+    "family": "blend_curve_edge_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_edge_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz",
+    "observation_sha256": "5299fac93e3cb19d149d6cb7fea9dba53834fc10e99288cfe479391f0ec63ea9",
+    "request_sha256": "521fa85c794b176412d33b8ce5251c389fc13f6ed835242bab517a63c72e841d"
+  },
+  {
+    "family": "blend_curve_edge_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_edge_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz",
+    "observation_sha256": "2e1cbd07082b2e27e8af329e9b186b49733e7faa06f45f1e2006dce0133410e6",
+    "request_sha256": "34f1e48496eb77b76b5defa9907b27412bf1d3967dde5638039468f80b6a754e"
+  }
+]

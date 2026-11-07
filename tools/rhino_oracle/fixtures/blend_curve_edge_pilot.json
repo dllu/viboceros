@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_end",
+      "case": "edge_plane_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_pick",
+      "case": "edge_plane_pick"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_second",
+      "case": "edge_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_point",
+      "case": "edge_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_two_planes",
+      "case": "edge_two_planes"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_g0",
+      "case": "edge_plane_g0"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_g1",
+      "case": "edge_plane_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_g3",
+      "case": "edge_plane_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "edge_plane_g4",
+      "case": "edge_plane_g4"
+    }
+  ]
+}

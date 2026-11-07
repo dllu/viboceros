@@ -35,7 +35,7 @@ pub fn accepted(value: &Value) -> bool {
 }
 #[path = "blend_curve/picks.rs"]
 mod picks;
-pub use picks::source_pick;
+pub use picks::{source_edge, source_pick};
 pub fn handle(input: &Input, point: viboceros_geometry::Point3) -> Handle {
     input
         .control_points()
@@ -84,7 +84,7 @@ impl Getter {
                     .pick_curve(
                         doc,
                         reference_inputs::guide(doc, i as usize),
-                        None,
+                        source_edge(value, index, a),
                         source_pick(value, index, a, input),
                     )
                     .unwrap();

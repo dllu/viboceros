@@ -149,3 +149,23 @@ for source,name in [(SYMMETRY_DISCOVERY,'symmetric_rational_g3'),(SYMMETRY_HOLDO
  recipe=dict(source[name]);recipe['measure_lengths']=True
  SYMMETRY_LENGTHS[name+'_lengths']=recipe
 CASES.update(SYMMETRY_LENGTHS)
+
+if __package__:from .blend_curve_edge_cases import pilot as edge_pilot
+else:from blend_curve_edge_cases import pilot as edge_pilot
+EDGE_PILOT=edge_pilot(case,pick,B)
+CASES.update(EDGE_PILOT)
+
+if __package__:from .blend_curve_edge_cases import selection as edge_selection
+else:from blend_curve_edge_cases import selection as edge_selection
+EDGE_SELECTION=edge_selection(case,pick,B)
+CASES.update(EDGE_SELECTION)
+
+if __package__:from .blend_curve_edge_cases import discovery as edge_discovery
+else:from blend_curve_edge_cases import discovery as edge_discovery
+EDGE_DISCOVERY=edge_discovery(case,pick,B)
+CASES.update(EDGE_DISCOVERY)
+
+if __package__:from .blend_curve_edge_holdouts import holdouts as edge_holdouts
+else:from blend_curve_edge_holdouts import holdouts as edge_holdouts
+EDGE_HOLDOUTS=edge_holdouts(case,pick,B)
+CASES.update(EDGE_HOLDOUTS)

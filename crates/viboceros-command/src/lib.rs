@@ -69,6 +69,7 @@ pub mod subd_spin_edge;
 pub mod subd_torus;
 pub mod subd_truncated_cone;
 pub mod subdivide;
+mod surface_edge_reference;
 pub mod surface_flow;
 pub mod surface_reference;
 pub mod to_subd;

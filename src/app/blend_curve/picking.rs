@@ -1,6 +1,13 @@
 //! Curve references and free point drafting use distinct picking modes.
 use super::*;
 impl VibocerosApp {
+    pub(in crate::app) fn picking_blend_surface_edge(&self) -> bool {
+        self.picking_blend_curve()
+            && self
+                .blend_curve_session
+                .as_ref()
+                .is_some_and(|s| s.input.surface_edges_only())
+    }
     pub(in crate::app) fn picking_blend_curve(&self) -> bool {
         self.plane_prompt.is_none()
             && self.blend_curve_session.as_ref().is_some_and(|s| {

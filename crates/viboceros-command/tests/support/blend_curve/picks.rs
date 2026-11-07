@@ -1,5 +1,37 @@
 //! Input picks come from public pre-command receipts and prescribed source geometry.
 use super::*;
+fn edge_candidate(value: &Value, index: usize) -> &Value {
+    let click = value["input_trace"][0]["clicks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["action"].as_u64() == Some(index as u64))
+        .unwrap();
+    let candidates = click["edge_pick_context"]["candidates"].as_array().unwrap();
+    let mut ranked = candidates.iter().collect::<Vec<_>>();
+    ranked.sort_by(|a, b| {
+        a["distance"]
+            .as_f64()
+            .unwrap()
+            .total_cmp(&b["distance"].as_f64().unwrap())
+    });
+    assert!(!ranked.is_empty(), "prescribed edge was captured");
+    if ranked.len() > 1 {
+        assert!(
+            ranked[1]["distance"].as_f64().unwrap() - ranked[0]["distance"].as_f64().unwrap()
+                > 1e-8,
+            "prescribed edge has a unique nearest screen hit"
+        );
+    }
+    ranked[0]
+}
+/// The physical click chooses the edge; authored indices in discovery recipes
+/// are only intent metadata and never override a passive input receipt.
+pub fn source_edge(value: &Value, index: usize, action: &Value) -> Option<usize> {
+    action
+        .get("edge")
+        .map(|_| edge_candidate(value, index)["edge"].as_u64().unwrap() as usize)
+}
 fn measured(click: &Value) -> Option<viboceros_geometry::Point3> {
     let context = click.get("pick_context")?;
     assert_eq!(context["success"], true);
@@ -14,6 +46,9 @@ pub fn source_pick(
     action: &Value,
     input: &Input,
 ) -> viboceros_geometry::Point3 {
+    if action.get("edge").is_some() {
+        return native::point(&edge_candidate(value, index)["point"]);
+    }
     if !input.preferences().pick_point {
         return native::point(&action["pick"]);
     }

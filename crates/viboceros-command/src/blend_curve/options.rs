@@ -32,6 +32,11 @@ impl Input {
         Ok(true)
     }
     pub(super) fn apply_option(&mut self, text: &str) -> Result<bool, CommandError> {
+        let word = text.trim_start_matches(['_', '-']);
+        if option_name_eq(word, "Edges") || option_name_eq(word, "Curves") {
+            self.surface_edges = option_name_eq(word, "Edges");
+            return Ok(true);
+        }
         let Some((key, value)) = text.split_once('=') else {
             return Ok(false);
         };
@@ -87,6 +92,18 @@ impl Input {
                     next.handles[i] = None;
                     next.bulges[i] = v;
                 }
+            } else if option_name_eq(stem, "AtAngle") {
+                let angle = parse_finite_real(value)?;
+                next.freeze_handles();
+                let surface = next
+                    .endpoints
+                    .get_mut(i)
+                    .and_then(Endpoint::curve_mut)
+                    .and_then(|g| g.surface.as_mut())
+                    .ok_or(CommandError::Usage(
+                        "AtAngle requires a captured surface edge",
+                    ))?;
+                std::sync::Arc::make_mut(surface).angle = angle;
             } else if option_name_eq(stem, "Parameter") {
                 let t = parse_finite_real(value)?;
                 next.freeze_handles();
@@ -101,14 +118,20 @@ impl Input {
             } else if option_name_eq(stem, "Flip") {
                 let v = crate::parse_yes_no(value.trim_start_matches('_'))
                     .ok_or(CommandError::Usage(USAGE))?;
-                next.endpoints
+                let guide = next
+                    .endpoints
                     .get_mut(i)
                     .ok_or(CommandError::Usage(
                         "Pick the blend sources before flipping",
                     ))?
                     .curve_mut()
-                    .ok_or(CommandError::Usage("A point endpoint cannot flip"))?
-                    .flip = v;
+                    .ok_or(CommandError::Usage("A point endpoint cannot flip"))?;
+                if v && guide.surface.is_some() {
+                    return Err(CommandError::Usage(
+                        "Surface-edge direction is controlled by AtAngle",
+                    ));
+                }
+                guide.flip = v;
             } else {
                 return Ok(false);
             }

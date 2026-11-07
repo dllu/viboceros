@@ -14,6 +14,14 @@ uses the selected natural end; `BlendStart=PickPoint` uses the picked location,
 initially pointing toward the source start. Flip reverses that direction.
 BlendStart, Trim and Join persist for the application session.
 
+Enter `Edges` to constrain a blend across a supporting surface. Contacts use the
+clicked locations, independently of BlendStart. Default tangents point outward,
+perpendicular to each boundary. `AtAngle_1=degrees` and `AtAngle_2=degrees` turn
+those tangents within the surface tangent plane while retaining handle lengths.
+Enter `Curves` to select an ordinary curve next. Ordinary boundary picks in
+Curves mode follow the boundary curve instead. Surface constraints support
+G0–G2 on regular faces and G3/G4 on planar faces; curved-face G3/G4 is guarded.
+
 For one endpoint, enter `Point` and pick or type a location instead of selecting
 a curve. The point is locked to G0; the curve can use G0–G4. At least one endpoint
 must be a curve. Point placement and movement use ordinary drafting, object
@@ -51,6 +59,8 @@ input sharing that parent still participates normally. If none participates, it 
 a new PolyCurve containing the blend and any participating temporary portions,
 on the current layer. The entire
 result commits in one undo entry and is deselected.
+Surface parents remain unchanged; mixed blends trim/join or flip only their
+ordinary curve input. Two surface constraints expose angle controls instead.
 
 Explicit scripting bindings use world points and native contact parameters:
 
@@ -59,6 +69,7 @@ BlendCrv Curve=id1 0,0,0 Curve=id2 10,3,0 Continuity_1=G1 Continuity_2=G2
 BlendCrv Curve=id1 0,0,0 Curve=id2 10,3,0 Handle1=0.3cm Trim=Yes Join=Yes
 BlendCrv Point=0,0,0 Curve=id2 10,3,0 Continuity_2=G2
 BlendCrv SubCrv=id1,1,4 Curve=id2 10,3,0 Trim=Yes Join=Yes
+BlendCrv Edges Edge=id1,2 0,-2.5,0 Curves Curve=id2 10,3,0 AtAngle_1=30
 ```
 
 `SubCrv[Wrap]=id,start,end` uses native parent parameters; `Wrap` selects a
@@ -67,31 +78,30 @@ also accepts private edge portions, without native edge qualification.
 
 `Parameter1/2`, `Handle1/2`, `Bulge1/2` and `Flip1/2=Yes|No` are Viboceros
 scripting options. Bulges multiply default handles; an explicit handle replaces
-the factor. `Edge=id,index` accepts a read-only edge with Trim and Join disabled,
-without native edge qualification. Point endpoints have no curve parameter,
+the factor. `Edge=id,index` in Curves mode accepts a read-only boundary curve
+with Trim and Join disabled. Point endpoints have no curve parameter,
 shape handle or flip direction. Changed source geometry or tolerance clears
 the editor and requests new picks.
 
 Validation: [G0–G2](../blend-curve-validation.json),
 [G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
-[temporary sources](../blend-curve-portions.md), and [Shift editing](../blend-curve-symmetry.md).
+[temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
+and [surface edges](../blend-curve-edges.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document
 changes and separate geometry, derivative and domain-precision gates.
 
-G3 uses the normal third source jet. Native G4 defaults use a **zero fourth
-blend derivative**, including on sources with nonzero fourth derivatives.
-This reproduces the measured command behavior; it does not establish mathematical
-G4 continuity for arbitrary sources. Default degrees are seven for G3/G3 and
-nine for G4/G4; mixed endpoints use degree `order1 + order2 + 1`.
+Ordinary G3 uses the normal third curve jet. Native G4 defaults use a zero fourth
+blend derivative; this does not establish general mathematical G4 continuity.
+See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_symmetry
+python3 -m tools.rhino_oracle.check_blend_curve_edges
 ```
 
 Captures use private Xvfb; application tests are windowless. Whole closed sources,
-zero-retained-side joins, surface-edge Alt edits, curvature display and
+zero-retained-side joins, shared/seam surface edges, Alt edits, curvature display and
 history-based re-editing remain pending. Exact hit-box/depth ranking, native
 numeric/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

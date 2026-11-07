@@ -102,6 +102,9 @@ impl Input {
         if self.ready() {
             return Err(CommandError::Usage(USAGE));
         }
+        if self.surface_edges {
+            return Err(CommandError::Usage("Enter Curves before selecting SubCrv"));
+        }
         self.endpoints.push(Endpoint::Curve(Guide::capture(
             doc,
             id,
@@ -109,6 +112,7 @@ impl Input {
             None,
             self.preferences.pick_point,
             Some((parameters, wrap)),
+            false,
         )?));
         Ok(())
     }

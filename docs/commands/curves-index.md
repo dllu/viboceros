@@ -31,7 +31,7 @@
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
 - [Connect two curves](connect.md)
-- [BlendCrv, G0-G4 curve/point blends, temporary portions and joining](blend-curve.md)
+- [BlendCrv, curve/point/surface-edge blends, portions and joining](blend-curve.md)
 - [Blend two curves](blend.md)
 - [Match curve ends](match.md)
 - [Polyline corner fillets](fillet-corners.md)

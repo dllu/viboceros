@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "surface_rational_g2",
+      "case": "surface_rational_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_nonorthogonal_g2",
+      "case": "surface_nonorthogonal_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_curved_angle",
+      "case": "surface_curved_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_nonorthogonal_angle",
+      "case": "surface_nonorthogonal_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_angle_g3",
+      "case": "surface_angle_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_angle_g4",
+      "case": "surface_angle_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_cancel_complete",
+      "case": "surface_cancel_complete"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_spatial_plane",
+      "case": "surface_spatial_plane"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_spatial_curved",
+      "case": "surface_spatial_curved"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_trim",
+      "case": "surface_mixed_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_join",
+      "case": "surface_mixed_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_join_whole",
+      "case": "surface_mixed_join_whole"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_flip",
+      "case": "surface_mixed_flip"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_trim_second",
+      "case": "surface_mixed_trim_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_join_second",
+      "case": "surface_mixed_join_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_join_whole_second",
+      "case": "surface_mixed_join_whole_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_flip_second",
+      "case": "surface_mixed_flip_second"
+    }
+  ]
+}

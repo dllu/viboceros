@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_g0",
+      "case": "surface_plane_g0"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_g1",
+      "case": "surface_plane_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_g2",
+      "case": "surface_plane_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_g3",
+      "case": "surface_plane_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_g4",
+      "case": "surface_plane_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_angles",
+      "case": "surface_plane_angles"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_point",
+      "case": "surface_plane_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed",
+      "case": "surface_mixed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_mixed_second",
+      "case": "surface_mixed_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_slide",
+      "case": "surface_plane_slide"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_shape",
+      "case": "surface_plane_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_plane_symmetry",
+      "case": "surface_plane_symmetry"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_cancel",
+      "case": "surface_cancel"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_curved_g1",
+      "case": "surface_curved_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_curved_g2",
+      "case": "surface_curved_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_curved_g3",
+      "case": "surface_curved_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_curved_g4",
+      "case": "surface_curved_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_skew_g2",
+      "case": "surface_skew_g2"
+    }
+  ]
+}

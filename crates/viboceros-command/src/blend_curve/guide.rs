@@ -9,6 +9,7 @@ pub(super) struct Guide {
     pub parameter: Real,
     pub end: bool,
     pub flip: bool,
+    pub surface: Option<Arc<super::surface::SurfaceGuide>>,
 }
 impl Guide {
     pub(super) fn capture(
@@ -18,8 +19,19 @@ impl Guide {
         pick: Option<Point3>,
         at_pick: bool,
         range: Option<([Real; 2], bool)>,
+        surface_mode: bool,
     ) -> Result<Self, CommandError> {
         let source = CapturedCurve::capture(doc, id, edge)?;
+        let surface = surface_mode
+            .then(|| {
+                super::surface::SurfaceGuide::capture(
+                    doc,
+                    id,
+                    edge.ok_or(CommandError::Usage("Select a surface edge"))?,
+                )
+            })
+            .transpose()?
+            .map(Arc::new);
         let portion = range
             .map(|(parameters, wrap)| {
                 CurvePortion::prepare(source.curve_ref(), parameters, wrap).map(Arc::new)
@@ -28,12 +40,14 @@ impl Guide {
         let c = portion
             .as_ref()
             .map_or_else(|| source.curve_ref(), |p| p.curve_ref());
-        if c.is_closed()? {
+        if surface.is_none() && c.is_closed()? {
             return Err(CommandError::Usage(
                 "BlendCrv requires an open source curve",
             ));
         }
-        let end = if portion.is_some() {
+        let end = if surface.is_some() {
+            false
+        } else if portion.is_some() {
             !at_pick
         } else {
             let pick = pick.ok_or(CommandError::Usage(USAGE))?;
@@ -41,7 +55,7 @@ impl Guide {
                 && pick.distance_to(c.evaluate(*c.domain().end())?)?
                     < pick.distance_to(c.evaluate(*c.domain().start())?)?
         };
-        let parameter = if at_pick && portion.is_none() {
+        let parameter = if surface.is_some() || (at_pick && portion.is_none()) {
             let pick = pick.ok_or(CommandError::Usage(USAGE))?;
             c.closest_parameter(pick, doc.tolerance())?
         } else if end || portion.is_some() {
@@ -55,6 +69,7 @@ impl Guide {
             parameter,
             end,
             flip: false,
+            surface,
         })
     }
     pub(super) fn temporary(&self) -> bool {
@@ -81,6 +96,9 @@ impl Guide {
         }
     }
     pub(super) fn direction(&self, i: usize) -> Result<UnitVector3, CommandError> {
+        if let Some(surface) = &self.surface {
+            return surface.direction(self, i);
+        }
         let t = self
             .curve_ref()
             .evaluate_with_tangent_on_side(self.parameter, self.side())?
@@ -92,6 +110,9 @@ impl Guide {
         })
     }
     pub(super) fn jet(&self, i: usize, continuity: u8) -> Result<CurveBlendJet, CommandError> {
+        if let Some(surface) = &self.surface {
+            return surface.jet(self, i, continuity);
+        }
         if continuity >= 3 {
             let (_, derivatives) = self
                 .curve_ref()
@@ -116,6 +137,14 @@ impl Guide {
         Ok(CurveBlendJet::new(self.point()?, direction, curvature))
     }
     pub(super) fn binding(&self) -> Result<String, CommandError> {
+        if self.surface.is_some() {
+            return Ok(format!(
+                "Edges Edge={},{} {} Curves",
+                self.source.object_id(),
+                self.source.source().1.unwrap(),
+                self.point()?.to_array().map(|v| v.to_string()).join(",")
+            ));
+        }
         if let Some(portion) = &self.portion {
             let binding = portion.argument(&self.source);
             // arguments() starts ordinary bindings in CurveEnd mode. Restore the

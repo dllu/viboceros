@@ -1,0 +1,46 @@
+[
+  {
+    "family": "blend_curve_edge_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_edge_pilot"
+    ],
+    "exit_status": 1,
+    "log": "capture-pilot-api-attempt.log.gz",
+    "reason": "Passive input receipt used an unsupported ObjRef method before the first physical source pick.",
+    "request_sha256": "afbc3cc62f6b8cff83e4d879abd891a3b327d9293ea39f5d5f5815b2b5838141",
+    "sources": {
+      "generate_blend_curve_edge_pilot.py": "6c763e87c0d8261899d769e5b35c8aa5abe4c79c7787dd3e06f48f5109229378",
+      "structural_sdk.py": "cb4a4de82e57d515f3bfb7a78703067fde3471ba36c9f9308f90cae678c4d42d",
+      "rhino_worker.py": "dc9ef1af1cbabfd4fa141e2b6963c626ddcd52d8253f9f07e816ca84ca52667d",
+      "client.py": "e484d0667f813db685dccb4810bc86e1a785a64dd61ba4a30f5ecf553591d93d",
+      "catenary_point_picker.py": "86500d93fcc76af6ea1bef615fae5b5c5e00e740769ed6fdb8c2071bff129256",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+      "blend_curve_command_probe.py": "8cb5187cb6d9b2ebae6d8a83ff1cc32526b699324ab837e3c5f4aad92b3258fb",
+      "blend_curve_command.py": "f200e243ea4b69c6aec345dbc171855003a37582aef699dac5d3d7edbd3b189a",
+      "blend_curve_high_cases.py": "01923d916450745f1a144b3ec9a4ced0d5c15ad2c3c92e228a5748562197d00a",
+      "blend_curve_point_cases.py": "013e642f663f9c3a68cbf165f2223b55289b0f561c11194c98ec8a29cea0980f",
+      "blend_curve_pick_context.py": "b8b19a5b6854f9707049b08f3c8b4450b7bd696c31c7abbd9fad3aa8d04803a8",
+      "blend_curve_portion_cases.py": "9177dfba5865800c6aa3835fda70f167e563326dd70b52a07ea36add29ab560e",
+      "blend_curve_portion_holdouts.py": "279a2b03890858282daae526693df3d8caf957c32fabca7b788946ae00436930",
+      "blend_curve_symmetry_cases.py": "5363318207a23e52261f38729583f6fb42d853fd781804d474fdaf8f17364e76",
+      "blend_curve_edge_cases.py": "52e5a56515c275acb5ac6458808c37f8ca0542b16670e99dcb54210d2c251988",
+      "blend_curve_edge_pick.py": "f29ae90e902b50fce4a9baa2a9e2dcde1e030143b145deda2c5cf54e18ab50c9",
+      "arc_blend_subcurve_cases.py": "75d6ce4da16779bb740b6a6c7ff48a295d2c09d8254bd5cf8c85c243cca9e8a8",
+      "arc_blend_source_cases.py": "68d699e4b751649ec9ea70f0eb56d57eefe9e42ff60d40c4fadc4f32de539e5d",
+      "line_scene_probe.py": "5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "c88699f3928752106f4c92ba072f7be82e42d15680d39d9038181397b17d3c68",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+    }
+  }
+]

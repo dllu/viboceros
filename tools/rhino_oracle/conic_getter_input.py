@@ -171,6 +171,9 @@ def drive(op,host,guides,command="Conic",start_script=None):
                 if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if located:
                 clicks[-1]['curve']=a['curve'];clicks[-1]['edge']=a.get('edge')
+                if op.get('op')=='blend_curve_command'and'edge'in a:
+                    from blend_curve_edge_pick import measure as measure_edge
+                    clicks[-1]['edge_pick_context']=measure_edge(doc.Objects.FindId(guides[a['curve']]).Geometry,vp,view,pixel,host,guides[a['curve']])
                 if 'edge'not in a or op.get('op')in('arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge'):
                     source=doc.Objects.FindId(guides[a['curve']]).Geometry
                     if 'edge'in a:source=source.Edges[a['edge']]

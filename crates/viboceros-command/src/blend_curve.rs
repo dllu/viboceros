@@ -13,10 +13,11 @@ mod arguments;
 mod commit;
 mod endpoint;
 mod guide;
+mod surface;
 use endpoint::Endpoint;
 mod options;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv source source (Curve=id point|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
+pub const USAGE: &str = "BlendCrv source source (Curve=id point|Edges Edge=id,index point Curves|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [AtAngle_1=degrees] [AtAngle_2=degrees] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
@@ -41,6 +42,7 @@ pub struct Input {
     preview: Option<NurbsCurve>,
     active: Option<Handle>,
     symmetric: bool,
+    surface_edges: bool,
 }
 impl Input {
     pub fn new(tolerance: Tolerance) -> Self {
@@ -57,6 +59,7 @@ impl Input {
             preview: None,
             active: None,
             symmetric: false,
+            surface_edges: false,
         }
     }
     pub fn continuities(&self) -> [u8; 2] {
@@ -64,6 +67,10 @@ impl Input {
     }
     pub fn preferences(&self) -> Preferences {
         self.preferences
+    }
+    /// Surface-edge mode uses supporting-face constraints at the clicked point.
+    pub fn surface_edges_only(&self) -> bool {
+        self.surface_edges
     }
     pub fn ready(&self) -> bool {
         self.endpoints.len() == 2
@@ -87,6 +94,7 @@ impl Input {
                 "Set paired blend shape handle length or location"
             }
             Some(_) => "Set blend shape handle length or location",
+            None if !self.ready() && self.surface_edges => "Select a surface edge; Curves or Point",
             None if self.endpoints.is_empty() => {
                 "Select first curve near blend end; Point or SubCrv"
             }
@@ -94,6 +102,14 @@ impl Input {
                 "Select second curve near blend end; Point or SubCrv"
             }
             None if !self.ready() => "Select a curve near the blend end or SubCrv",
+            None if self
+                .endpoints
+                .iter()
+                .filter_map(Endpoint::curve)
+                .any(|g| g.surface.is_some()) =>
+            {
+                "Select a blend control point or set AtAngle_1/2; Enter accepts"
+            }
             None => "Select a blend control point or change continuity; Enter accepts",
         }
     }
@@ -107,6 +123,9 @@ impl Input {
         if self.ready() {
             return Err(CommandError::Usage(USAGE));
         }
+        if self.surface_edges && edge.is_none() {
+            return Err(CommandError::Usage("Select a surface edge or enter Curves"));
+        }
         self.endpoints.push(Endpoint::Curve(Guide::capture(
             doc,
             id,
@@ -114,6 +133,7 @@ impl Input {
             Some(pick),
             self.preferences.pick_point,
             None,
+            self.surface_edges,
         )?));
         Ok(())
     }
@@ -169,6 +189,11 @@ impl Input {
             .filter_map(Endpoint::curve_mut)
             .find(|g| g.source.object_id() == id)
             .ok_or(CommandError::Usage("Select one of the blend sources"))?;
+        if g.surface.is_some() {
+            return Err(CommandError::Usage(
+                "Surface-edge direction is controlled by AtAngle",
+            ));
+        }
         g.flip = !g.flip;
         next.rebuild()?;
         *self = next;
@@ -177,7 +202,9 @@ impl Input {
     pub fn flip_both(&mut self) -> Result<(), CommandError> {
         let mut next = self.clone();
         for g in next.endpoints.iter_mut().filter_map(Endpoint::curve_mut) {
-            g.flip = !g.flip;
+            if g.surface.is_none() {
+                g.flip = !g.flip;
+            }
         }
         next.rebuild()?;
         *self = next;
@@ -223,6 +250,9 @@ impl Input {
             };
             words.push(format!("Parameter{}={}", i + 1, guide.parameter));
             words.push(format!("Flip{}={}", i + 1, yes(guide.flip)));
+            if let Some(surface) = &guide.surface {
+                words.push(format!("AtAngle_{}={}", i + 1, surface.angle));
+            }
             words.push(if let Some(h) = self.handles[i] {
                 format!("Handle{}={h}", i + 1)
             } else {
