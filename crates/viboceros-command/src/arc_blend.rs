@@ -11,6 +11,7 @@ mod handles;
 mod options;
 mod preferences;
 pub use handles::Handle;
+pub use options::parse_number;
 pub use preferences::Preferences;
 pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=nonnegative|RadiusDifference=number] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
 #[derive(Clone, Debug)]

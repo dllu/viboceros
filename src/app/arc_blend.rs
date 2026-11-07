@@ -49,7 +49,7 @@ impl VibocerosApp {
         )
         .expect("registry stores finite ArcBlend settings");
         for w in &words[1..] {
-            match input.option(w) {
+            match input.option_with_units(w, self.document.units()) {
                 Ok(true) => {}
                 Ok(false) => return false,
                 Err(e) => {
@@ -239,7 +239,7 @@ impl VibocerosApp {
         }
         let mut next = self.arc_blend_session.as_ref().unwrap().input.clone();
         for word in words {
-            match next.option(word) {
+            match next.option_with_units(word, self.document.units()) {
                 Ok(true) => {}
                 Ok(false) => {
                     self.push_log(format!("Error: unknown ArcBlend input {word}"));

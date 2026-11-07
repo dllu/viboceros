@@ -37,7 +37,7 @@ pub(super) fn parse(
         return Err(CommandError::Usage(USAGE));
     }
     for option in options {
-        if !input.apply_option(option)? {
+        if !input.apply_option(&options::normalized_option(option, doc.units())?)? {
             return Err(CommandError::Usage(USAGE));
         }
     }

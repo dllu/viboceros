@@ -123,6 +123,7 @@ impl PointInput {
             .chars()
             .next()
             .is_some_and(|c| c.is_ascii_digit() || c == '.')
+            || numeric_head.starts_with('(')
             || body.starts_with([',', '<'])
             || text
                 .split_whitespace()

@@ -1,0 +1,50 @@
+[
+  {
+    "family": "arc_blend_length_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_length_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-length-discovery.log.gz"
+  },
+  {
+    "family": "arc_blend_sources",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_sources"
+    ],
+    "exit_status": 0,
+    "log": "capture-sources.log.gz"
+  },
+  {
+    "family": "arc_blend_source_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_source_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-source-holdouts.log.gz"
+  },
+  {
+    "family": "arc_blend_point_quantities",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_point_quantities"
+    ],
+    "exit_status": 0,
+    "log": "capture-point-quantities.log.gz"
+  }
+]

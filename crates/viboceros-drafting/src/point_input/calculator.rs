@@ -9,12 +9,24 @@ pub(super) fn evaluate(text: &str) -> Option<Real> {
 }
 
 pub(super) fn evaluate_in_units(text: &str, units: &LengthUnitSystem) -> Option<Real> {
+    // A final length suffix qualifies the complete calculator expression.
+    // Treating it as a factor changes 2+3cm into 32mm instead of 50mm.
+    let suffix = text
+        .as_bytes()
+        .iter()
+        .rposition(|b| !b.is_ascii_alphabetic())
+        .map_or(0, |i| i + 1);
+    let (text, scale) = if let Some(source) = length_unit(&text[suffix..].to_ascii_lowercase()) {
+        (&text[..suffix], source.scale_to(units).ok()?)
+    } else {
+        (text, 1.)
+    };
     let mut parser = Parser {
         text: text.as_bytes(),
         offset: 0,
         units,
     };
-    let value = parser.expression(0)?;
+    let value = parser.expression(0)? * scale;
     (parser.offset == parser.text.len() && value.is_finite()).then_some(value)
 }
 
@@ -107,14 +119,9 @@ impl Parser<'_> {
                 "d" | "degrees" => Some(std::f64::consts::PI / 180.0),
                 "radians" => Some(1.0),
                 "gradians" => Some(std::f64::consts::PI / 200.0),
-                _ => {
-                    // Rhino's point prompt accepts a length suffix at the end
-                    // of a value, but rejects `1m+20` and `1m+20cm`.
-                    if matches!(self.peek(), Some(b'+' | b'-' | b'*' | b'/')) {
-                        return None;
-                    }
-                    length_unit(&suffix).and_then(|source| source.scale_to(self.units).ok())
-                }
+                // Length units are allowed only as the overall suffix above,
+                // so embedded units such as 2*(.25cm) remain invalid.
+                _ => None,
             };
             Some(value * factor?)
         } else {

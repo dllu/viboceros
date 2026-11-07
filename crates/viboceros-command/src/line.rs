@@ -120,7 +120,27 @@ impl Command for LineCommand {
                 result = input.number(parse_finite_real(args[i])?)?;
                 i += 1;
             } else {
-                let (p, n) = parse_point(&args[i..])?;
+                let (p, n) = match parse_point(&args[i..]) {
+                    Ok(parsed) => parsed,
+                    Err(error) if args[i].contains(',') => {
+                        // Script points are world-space. Retain the fast
+                        // numeric path and share calculator/unit semantics
+                        // with interactive coordinates when it cannot parse.
+                        let word = if args[i].starts_with(['w', 'W']) {
+                            std::borrow::Cow::Borrowed(args[i])
+                        } else {
+                            std::borrow::Cow::Owned(format!("w{}", args[i]))
+                        };
+                        let point =
+                            viboceros_drafting::PointInput::parse_with_units(&word, doc.units())
+                                .ok_or(error)?
+                                .map_err(|_| CommandError::Usage(USAGE))?
+                                .resolve(context.construction_plane, None)
+                                .map_err(|_| CommandError::Usage(USAGE))?;
+                        (point, 1)
+                    }
+                    Err(error) => return Err(error),
+                };
                 result = input.point(p)?;
                 if input.cancelled() {
                     return Err(CommandError::Usage("Line bisector has opposite rays"));

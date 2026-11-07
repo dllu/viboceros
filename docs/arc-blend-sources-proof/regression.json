@@ -1,0 +1,14 @@
+{
+  "baseline_revision": "62225eb7bd4579d392ae9212992cd2ee77e73e2d",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-command",
+    "--test",
+    "arc_blend_sources",
+    "--",
+    "--nocapture"
+  ],
+  "exit_status": 101
+}

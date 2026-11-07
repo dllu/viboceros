@@ -38,6 +38,8 @@ An interactive source can also be entered as `Curve=id`, followed by a point.
 drafting point syntax applies to interactive typed picks. Closed sources,
 degenerate two-arc solutions, joined self-blends and surface-edge trimming
 are rejected. Source geometry or tolerance changes invalidate stored picks.
+[Curved contacts and numeric input](arc-blend-contacts.md) cover arcs, NURBS,
+polycurves and polylines, including source trimming and joining.
 
 The geometry API is `viboceros_geometry::try_arc_blend`, with
 `ArcBlendOptions { ratio, alternate }`. It normalizes direction vectors and
@@ -59,8 +61,9 @@ The radius target, Trim and Join survive subsequent commands and cancellation
 for the application session. Ratio and AlternateSolution reset for each command.
 See [settings validation](../arc-blend-preferences-validation.json).
 
-This is a first implementation. SubCrv remains unsupported. Native command
-comparisons cover endpoint and interior contacts on lines; nonlinear source contacts and edge references lack native qualification.
+SubCrv remains unsupported, and B-rep edge references lack native qualification.
+Curved-source coverage has its own
+[validation record](../arc-blend-sources-validation.json).
 Three raw non-unit SDK direction cases have discontinuous native join
 tangents and are retained as diagnostics. Seven command discovery cases
 contain incomplete inputs, rejected options or unattained radius targets.

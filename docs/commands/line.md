@@ -1,8 +1,15 @@
 # Line construction
 
 `Line` (`L`) creates one line object. Pick or type its start and end, or use a
-complete command such as `Line 1,2,3 5,5,7`. Choose a construction mode before
-the first point:
+complete command such as `Line 1,2,3 5,5,7`.
+
+Comma-separated scripted points also accept fractions, calculator expressions
+and length suffixes, while retaining world coordinates. For example,
+`Line w2+3cm,0,0 w0,1,0` starts at `(50,0,0)` in a millimeter model. A final
+length suffix qualifies the whole expression. [Input validation](../arc-blend-sources-validation.json)
+compares both scripted and interactive coordinates with native Line getters.
+
+Choose a construction mode before the first point:
 
 | Mode | Inputs and behavior |
 | --- | --- |

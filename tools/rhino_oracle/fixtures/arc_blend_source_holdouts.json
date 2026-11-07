@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_mouse",
+      "case": "source_arc_mouse"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_mouse_join",
+      "case": "source_arc_mouse_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_polycurve_arc",
+      "case": "source_polycurve_arc"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_polycurve_arc_mouse",
+      "case": "source_polycurve_arc_mouse"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_clamp",
+      "case": "source_arc_clamp"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_mixed_fraction",
+      "case": "quantity_mixed_fraction"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_scientific",
+      "case": "quantity_scientific"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_trailing_sum",
+      "case": "quantity_trailing_sum"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_trailing_division",
+      "case": "quantity_trailing_division"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_nested_unit",
+      "case": "quantity_nested_unit"
+    }
+  ]
+}

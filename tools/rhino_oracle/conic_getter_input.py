@@ -214,6 +214,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             tokens.append(None)
         else:
             if isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
+            elif command in('ArcBlend','Line')and isinstance(a,dict)and set(a)=={'number'}:token=a['number'];gate=base
             elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else selection
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base

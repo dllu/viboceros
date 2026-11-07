@@ -45,9 +45,11 @@ projection matrices. Output coordinates do not seed the Rust construction.
 
 Zero ratio and end snaps restore the last radius target within the command,
 initially zero. The [general radius search](arc-blend-radius.md) also reproduces
-failed-target previews for nonparallel tangents and alternate solutions. Native endpoint comparisons cover line
-sources. Nonlinear contacts, edge adjustments, exact hit-box/depth ranking,
-SubCrv and remembered defaults remain unqualified or unsupported.
+failed-target previews for nonparallel tangents and alternate solutions.
+[Curved contacts](arc-blend-contacts.md) add arc, NURBS, polycurve and polyline
+comparisons, including planar mouse-constrained arc contacts. Radius targets,
+Trim and Join are remembered across commands. Edge adjustments, exact
+hit-box/depth ranking and SubCrv remain unqualified or unsupported.
 
 Rhino keeps source IDs while assigning new runtime serials to trimmed
 objects. The controlled comparison matches its unique source names; object

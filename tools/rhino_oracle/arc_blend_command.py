@@ -201,6 +201,29 @@ PREFERENCE_CANCELLATION={
 PREFERENCE_CANCELLATION['prefs_numeric_twice']['actions'].pop()
 PREFERENCE_CANCELLATION={k:dict(v,measure_arcs=True)for k,v in PREFERENCE_CANCELLATION.items()}
 CASES.update(PREFERENCE_CANCELLATION)
+LENGTH_DISCOVERY={}
+for name,text in [('centimeters','0.5cm'),('negative_mm','-5mm'),('meters','0.005m'),('fraction','1/2'),('sum','2+3'),('unit_sum','2mm+3mm')]:
+ LENGTH_DISCOVERY['length_'+name]=dict(recipe(*S_SHAPE,options=['Trim=No','RadiusDifference',dict(number=text),'Enter']),measure_arcs=True,model_units='Millimeters')
+LENGTH_DISCOVERY['length_control']=dict(recipe(*S_SHAPE,options=['RadiusDifference',5.]),measure_arcs=True,model_units='Millimeters')
+CASES.update(LENGTH_DISCOVERY)
+if __package__:from .arc_blend_source_cases import CURVED_SOURCES,SOURCE_HOLDOUTS
+else:from arc_blend_source_cases import CURVED_SOURCES,SOURCE_HOLDOUTS
+CASES.update(CURVED_SOURCES)
+LENGTH_INPUT={}
+for name,text in [('centimeters','0.5cm'),('negative_mm','-5mm'),('meters','0.005m'),('fraction','1/2'),('sum','2+3'),('inches','0.1in')]:
+ LENGTH_INPUT['quantity_'+name]=dict(recipe(*S_SHAPE,options=['Trim=No','RadiusDifference',dict(number=text)]),measure_arcs=True,model_units='Millimeters')
+LENGTH_INPUT['quantity_model_meters']=dict(recipe(*S_SHAPE,options=['RadiusDifference',dict(number='5mm')]),measure_arcs=True,model_units='Meters')
+LENGTH_INPUT['quantity_model_inches']=dict(recipe(*S_SHAPE,options=['RadiusDifference',dict(number='1.27cm')]),measure_arcs=True,model_units='Inches')
+LENGTH_INPUT['quantity_nested']=dict(recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),'RadiusDifference',dict(number='0.5cm'),0.]),measure_arcs=True,model_units='Millimeters')
+for name,text in [('fraction','1/4'),('function','sqrt(4)'),('units','0.25cm')]:
+ LENGTH_INPUT['ratio_'+name]=dict(recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),dict(number=text)]),measure_arcs=True,model_units='Millimeters')
+CASES.update(LENGTH_INPUT)
+SOURCE_INPUT_HOLDOUTS=dict(SOURCE_HOLDOUTS)
+for name,text in [('mixed_fraction','-1-1/2mm'),('scientific','1e-3m'),('trailing_sum','2+3cm'),('trailing_division','(1+1)/400m'),('nested_unit','2*(.25cm)')]:
+ SOURCE_INPUT_HOLDOUTS['quantity_'+name]=dict(recipe(*S_SHAPE,options=['Trim=No','RadiusDifference',dict(number=text)]),measure_arcs=True,model_units='Millimeters')
+CASES.update(SOURCE_INPUT_HOLDOUTS)
+
+
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

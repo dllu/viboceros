@@ -36,10 +36,17 @@ CASES.update(PRECISION)
 if __package__:from .line_construction_completion import COMPLETION
 else:from line_construction_completion import COMPLETION
 CASES.update(COMPLETION)
+QUANTITY_INPUT={
+ 'quantity_coordinate_sum':dict(actions=[dict(number='w2+3cm,0,0'),dict(number='w0,1,0')],model_units='Millimeters'),
+ 'quantity_coordinate_division':dict(actions=[dict(number='w(1+1)/400m,0,0'),dict(number='w0,1,0')],model_units='Millimeters'),
+}
+# Keep the historical 68-case source inventory immutable. New point-input
+# investigations have their own catalog, requests and qualification.
+
 def request(names=None):
     return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),
         operations=[dict(op='line_construction',id=n,case=n) for n in (PILOT if names is None else names)])
 def validate(op):
-    if not isinstance(op,dict) or set(op)!={'op','id','case'} or op.get('op')!='line_construction' or not isinstance(op.get('case'),str) or op['case'] not in CASES or op.get('id')!=op['case']:
+    if not isinstance(op,dict) or set(op)!={'op','id','case'} or op.get('op')!='line_construction' or not isinstance(op.get('case'),str) or op['case'] not in CASES and op['case'] not in QUANTITY_INPUT or op.get('id')!=op['case']:
         raise ValueError('invalid fixed Line construction recipe')
-def recipe(name):return deepcopy(CASES[name])
+def recipe(name):return deepcopy((QUANTITY_INPUT if name in QUANTITY_INPUT else CASES)[name])

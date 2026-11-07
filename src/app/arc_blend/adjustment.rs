@@ -36,7 +36,10 @@ impl VibocerosApp {
             return;
         }
         let mut next = s.input.clone();
-        s.candidate = next.adjust_parameter(t).is_ok().then_some((t, next));
+        s.candidate = next
+            .adjust_constraint_parameter(t)
+            .is_ok()
+            .then_some((t, next));
     }
     pub(in crate::app) fn accept_arc_blend_parameter(&mut self, t: f64) -> bool {
         if self.plane_prompt.is_some()
@@ -96,8 +99,12 @@ impl VibocerosApp {
         }
         let s = self.arc_blend_session.as_ref().unwrap();
         let mut next = s.input.clone();
-        let result = if next.active_handle() == Some(Handle::Ratio) && text.parse::<f64>().is_ok() {
-            next.option(&format!("Ratio={text}")).map(|_| ())
+        let result = if next.active_handle() == Some(Handle::Ratio)
+            && viboceros_drafting::PointInput::parse_length_with_units(text, self.document.units())
+                .is_some()
+        {
+            next.option_with_units(&format!("Ratio={text}"), self.document.units())
+                .map(|_| ())
         } else {
             let point =
                 viboceros_drafting::PointInput::parse_with_units(text, self.document.units())

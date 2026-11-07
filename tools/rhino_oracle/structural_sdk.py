@@ -6,7 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
-    'arc_blend_command': ('arc_blend_command_probe', ('arc_blend_command','arc_blend_measure','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
+    'arc_blend_command': ('arc_blend_command_probe', ('arc_blend_command','arc_blend_source_cases','arc_blend_measure','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'arc_blend_sdk': ('arc_blend_sdk', ('merge_edges_probe','arc_blend_roundoff','arc_blend_search_rules')),
     'line_pick_context': ('line_pick_context_probe', ('line_pick_context','line_tangent_rays','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'line_tangent_mouse': ('line_tangent_rays_probe', ('line_tangent_rays','line_scene_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),

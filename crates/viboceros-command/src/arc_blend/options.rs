@@ -1,5 +1,32 @@
 use super::*;
+use std::borrow::Cow;
+use viboceros_geometry::LengthUnitSystem;
+
+pub fn parse_number(text: &str, units: &LengthUnitSystem) -> Result<Real, CommandError> {
+    viboceros_drafting::PointInput::parse_length_with_units(text, units)
+        .and_then(Result::ok)
+        .ok_or(CommandError::Usage("Expected a finite ArcBlend number"))
+}
+
+pub(super) fn normalized_option<'a>(
+    word: &'a str,
+    units: &LengthUnitSystem,
+) -> Result<Cow<'a, str>, CommandError> {
+    if let Some((key, value)) = word.split_once('=')
+        && (option_name_eq(key, "RadiusDifference") || option_name_eq(key, "Ratio"))
+    {
+        return Ok(format!("{key}={}", parse_number(value, units)?).into());
+    }
+    Ok(word.into())
+}
 impl Input {
+    pub fn option_with_units(
+        &mut self,
+        word: &str,
+        units: &LengthUnitSystem,
+    ) -> Result<bool, CommandError> {
+        self.option(&normalized_option(word, units)?)
+    }
     pub fn option(&mut self, word: &str) -> Result<bool, CommandError> {
         let mut next = self.clone();
         if !next.apply_option(word)? {

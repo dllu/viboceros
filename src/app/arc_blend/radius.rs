@@ -6,23 +6,19 @@ impl VibocerosApp {
         let s = self.arc_blend_session.as_mut().unwrap();
         if s.radius_prompt {
             let value = if text.is_empty() {
-                Some(s.input.last_radius_difference())
+                Ok(s.input.last_radius_difference())
             } else {
-                text.parse::<f64>().ok()
+                viboceros_command::arc_blend::parse_number(text, self.document.units())
             };
-            let result = value
-                .ok_or(viboceros_command::CommandError::Usage(
-                    "Expected a finite arc blend radius difference",
-                ))
-                .and_then(|value| {
-                    if s.input.active_handle() == Some(Handle::Ratio) {
-                        s.input.remember_radius_difference(value)
-                    } else {
-                        s.input
-                            .option(&format!("RadiusDifference={value}"))
-                            .map(|_| ())
-                    }
-                });
+            let result = value.and_then(|value| {
+                if s.input.active_handle() == Some(Handle::Ratio) {
+                    s.input.remember_radius_difference(value)
+                } else {
+                    s.input
+                        .option(&format!("RadiusDifference={value}"))
+                        .map(|_| ())
+                }
+            });
             match result {
                 Ok(()) => {
                     s.radius_prompt = false;

@@ -8,6 +8,12 @@ second. Negative targets request a smaller first radius. The scripting form is
 Planar and spatial tangents, backward directions and AlternateSolution are
 supported. The result remains two exact circular arcs.
 
+Numeric entry accepts fractions, calculator expressions and length suffixes in
+model units. A final suffix applies to the whole expression: `2+3cm` means
+50 mm in a millimeter model. Parenthesized arithmetic works; embedded named-unit expressions
+such as `2*(.25cm)` are rejected. Ratio entry uses the same numeric syntax,
+including unit conversion. See [input validation](arc-blend-contacts.md).
+
 A positive ratio releases the target. With the ratio handle selected, zero
 or snapping to a chord end restores the last requested target, initially
 zero. The target, Trim and Join are remembered across commands, including
@@ -55,7 +61,7 @@ coefficient differences remain explicit diagnostics, and ratio-handle station
 parity is unqualified for those two cases.
 Captures use private Xvfb; application and egui tests are windowless.
 Historical [parallel qualification](../arc-blend-radius-validation.json)
-keeps its original scope. Nonlinear source contacts, larger scaling,
+keeps its original scope. Curved contacts have [separate coverage](arc-blend-contacts.md). Larger scaling,
 comparative speed and continuous distance outside the same-circle cases
 remain unqualified.
 

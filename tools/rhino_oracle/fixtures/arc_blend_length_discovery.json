@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "length_centimeters",
+      "case": "length_centimeters"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_negative_mm",
+      "case": "length_negative_mm"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_meters",
+      "case": "length_meters"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_fraction",
+      "case": "length_fraction"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_sum",
+      "case": "length_sum"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_unit_sum",
+      "case": "length_unit_sum"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "length_control",
+      "case": "length_control"
+    }
+  ]
+}

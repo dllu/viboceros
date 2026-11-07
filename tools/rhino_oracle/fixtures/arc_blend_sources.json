@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_default",
+      "case": "source_cubic_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_start",
+      "case": "source_cubic_start"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_end",
+      "case": "source_cubic_end"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_trim",
+      "case": "source_cubic_trim"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_join",
+      "case": "source_cubic_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_cubic_radius",
+      "case": "source_cubic_radius"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_rational_spatial",
+      "case": "source_rational_spatial"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_rational_ratio",
+      "case": "source_rational_ratio"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_default",
+      "case": "source_arc_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_start",
+      "case": "source_arc_start"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_arc_join",
+      "case": "source_arc_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_polycurve_trim",
+      "case": "source_polycurve_trim"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "source_polyline_corner",
+      "case": "source_polyline_corner"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_centimeters",
+      "case": "quantity_centimeters"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_negative_mm",
+      "case": "quantity_negative_mm"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_meters",
+      "case": "quantity_meters"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_fraction",
+      "case": "quantity_fraction"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_sum",
+      "case": "quantity_sum"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_inches",
+      "case": "quantity_inches"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_model_meters",
+      "case": "quantity_model_meters"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_model_inches",
+      "case": "quantity_model_inches"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "quantity_nested",
+      "case": "quantity_nested"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "ratio_fraction",
+      "case": "ratio_fraction"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "ratio_function",
+      "case": "ratio_function"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "ratio_units",
+      "case": "ratio_units"
+    }
+  ]
+}

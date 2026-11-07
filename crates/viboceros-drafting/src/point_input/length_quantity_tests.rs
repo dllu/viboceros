@@ -9,6 +9,10 @@ fn scalar_lengths_keep_zero_calculator_expressions_and_explicit_units() {
         ("-2", -2.),
         ("1/2", 0.5),
         ("sqrt(4)", 2.),
+        ("(2-2)", 0.),
+        ("2+3cm", 50.),
+        ("(1+1)/400m", 5.),
+        ("(1+0.2)m", 1200.),
         ("2mm", 2.),
     ] {
         assert_eq!(
@@ -24,7 +28,7 @@ fn scalar_lengths_keep_zero_calculator_expressions_and_explicit_units() {
             .unwrap(),
         0.002
     );
-    for text in ["NaN", "inf", "1/0", "2 + 3"] {
+    for text in ["NaN", "inf", "1/0", "2 + 3", "2*(.25cm)", "1m+20cm"] {
         assert!(
             PointInput::parse_length_with_units(text, &LengthUnitSystem::Millimeters)
                 .unwrap()

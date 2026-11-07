@@ -1,0 +1,37 @@
+[
+  {
+    "family": "arc_blend_sources",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_sources"
+    ],
+    "exit_status": 1,
+    "log": "capture-sources-attempt1.log.gz",
+    "reason": "IronPython rejected starred list elements before the first operation; no native observations were retained.",
+    "sources": {
+      "generate_arc_blend_sources.py": "a02ea17b1b2714449c9ed44fc826ea455e06903ca4b11b1fd5e194c863cbe028",
+      "structural_sdk.py": "79bcbf1bf1256ebf16a974b56df4190565b4dee3b2e7ef74549b686793d8c71a",
+      "rhino_worker.py": "5928215b3f0b6ea8604ebe805b9ef9c7c972773a7340867e3e0c93ad3aa32bb8",
+      "client.py": "82b39169d45fc3693b76f6ad4aeb3c85f03599877f2be558092476261cac909f",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "arc_blend_command_probe.py": "b7f0aa817ec64c47aa0453fd2456d88c5ac767398682e11bfd08f8f1fd193ff7",
+      "arc_blend_command.py": "4f0c46fc340bf884a36805b8e0fb98a802ed2b1feb8fca5b103749b808798a81",
+      "arc_blend_source_cases.py": "e0cdfeb1af3361b645f648bb1d5bdf231317dcfa5c9f8f88839b795407ad8569",
+      "arc_blend_measure.py": "7662c0330ed8808cbcef7a1af92226cddd8611d5cabb6dbb1a32add963c8a897",
+      "line_scene_probe.py": "5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "d6b7a11455960a7c337e7256ee836d5e6327029ecbe9ae24e2f7749499028ee7",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+    }
+  }
+]

@@ -104,9 +104,36 @@ impl Input {
         *self = next;
         Ok(())
     }
+    /// Viewport constraints expose the rational display curve's parameters.
+    /// Map those back before evaluating the original source's contact jet.
+    pub fn adjust_constraint_parameter(&mut self, parameter: Real) -> Result<(), CommandError> {
+        let parameter = match self
+            .adjustment_curve
+            .as_ref()
+            .ok_or(CommandError::Usage(USAGE))?
+        {
+            AdjustmentCurve::Source(i) => self.guides[*i]
+                .source
+                .curve_ref()
+                .parameter_from_nurbs(parameter)?,
+            AdjustmentCurve::Chord(_) => parameter,
+        };
+        self.adjust_parameter(parameter)
+    }
     pub fn adjust_point(&mut self, point: Point3) -> Result<(), CommandError> {
-        let c = self.adjustment_curve().ok_or(CommandError::Usage(USAGE))?;
-        let t = c.closest_parameter(point, Tolerance::NUMERICAL_VALIDATION)?;
+        let t = match self
+            .adjustment_curve
+            .as_ref()
+            .ok_or(CommandError::Usage(USAGE))?
+        {
+            AdjustmentCurve::Source(i) => self.guides[*i]
+                .source
+                .curve_ref()
+                .closest_parameter(point, Tolerance::NUMERICAL_VALIDATION)?,
+            AdjustmentCurve::Chord(c) => {
+                c.closest_parameter(point, Tolerance::NUMERICAL_VALIDATION)?
+            }
+        };
         self.adjust_parameter(t)
     }
 }
