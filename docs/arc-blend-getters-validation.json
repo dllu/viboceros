@@ -1,0 +1,1033 @@
+{
+  "scope": "RadiusDifference inside the ratio getter, Enter defaults, remembered targets within the active command, numeric pointer suppression and preserved previews when active targets change.",
+  "baseline_revision": "ded6c738aef28dc52c7e2562e121846d941d6618",
+  "implementation_revision": "e3b1a775e533b71c507bb81ea1851a57615a9efb",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "matched_native_workflows_per_build": 9,
+  "retained_partition_research_observations": 14,
+  "native_physical_picks": 28,
+  "archive_round_trips_per_build": 18,
+  "independent_native_point_tangent_stations": 891,
+  "maximum_coefficient_and_native_sample_difference": 1.0658141036401503e-14,
+  "cases": [
+    {
+      "id": "arc_blend_radius_getter_holdouts/radius_active_option_then_enter",
+      "portable_command_error": 2.6645352591003757e-15,
+      "portable_command_native_sample_error": 7.105427357601002e-15,
+      "portable_ui_error": 2.6645352591003757e-15,
+      "portable_ui_native_sample_error": 7.105427357601002e-15,
+      "native_command_error": 2.6645352591003757e-15,
+      "native_command_native_sample_error": 7.105427357601002e-15,
+      "native_ui_error": 2.6645352591003757e-15,
+      "native_ui_native_sample_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_getter_holdouts/radius_default_zero",
+      "portable_command_error": 1.831026719408895e-15,
+      "portable_command_native_sample_error": 5.329070518200751e-15,
+      "portable_ui_error": 1.831026719408895e-15,
+      "portable_ui_native_sample_error": 5.329070518200751e-15,
+      "native_command_error": 1.831026719408895e-15,
+      "native_command_native_sample_error": 5.329070518200751e-15,
+      "native_ui_error": 1.831026719408895e-15,
+      "native_ui_native_sample_error": 5.329070518200751e-15
+    },
+    {
+      "id": "arc_blend_radius_getter_holdouts/radius_nested_negative",
+      "portable_command_error": 1.831026719408895e-15,
+      "portable_command_native_sample_error": 8.881784197001252e-15,
+      "portable_ui_error": 1.831026719408895e-15,
+      "portable_ui_native_sample_error": 8.881784197001252e-15,
+      "native_command_error": 1.831026719408895e-15,
+      "native_command_native_sample_error": 8.881784197001252e-15,
+      "native_ui_error": 1.831026719408895e-15,
+      "native_ui_native_sample_error": 8.881784197001252e-15
+    },
+    {
+      "id": "arc_blend_radius_getter_holdouts/radius_option_then_enter",
+      "portable_command_error": 1.831026719408895e-15,
+      "portable_command_native_sample_error": 5.329070518200751e-15,
+      "portable_ui_error": 1.831026719408895e-15,
+      "portable_ui_native_sample_error": 5.329070518200751e-15,
+      "native_command_error": 1.831026719408895e-15,
+      "native_command_native_sample_error": 5.329070518200751e-15,
+      "native_ui_error": 1.831026719408895e-15,
+      "native_ui_native_sample_error": 5.329070518200751e-15
+    },
+    {
+      "id": "arc_blend_radius_getters/radius_getter_default",
+      "portable_command_error": 2.6645352591003757e-15,
+      "portable_command_native_sample_error": 7.105427357601002e-15,
+      "portable_ui_error": 2.6645352591003757e-15,
+      "portable_ui_native_sample_error": 7.105427357601002e-15,
+      "native_command_error": 2.6645352591003757e-15,
+      "native_command_native_sample_error": 7.105427357601002e-15,
+      "native_ui_error": 2.6645352591003757e-15,
+      "native_ui_native_sample_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_getters/radius_getter_option",
+      "portable_command_error": 2.6645352591003757e-15,
+      "portable_command_native_sample_error": 7.105427357601002e-15,
+      "portable_ui_error": 2.6645352591003757e-15,
+      "portable_ui_native_sample_error": 7.105427357601002e-15,
+      "native_command_error": 2.6645352591003757e-15,
+      "native_command_native_sample_error": 7.105427357601002e-15,
+      "native_ui_error": 2.6645352591003757e-15,
+      "native_ui_native_sample_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_getters/radius_getter_option_then_ratio",
+      "portable_command_error": 3.552713678800501e-15,
+      "portable_command_native_sample_error": 1.0658141036401503e-14,
+      "portable_ui_error": 3.552713678800501e-15,
+      "portable_ui_native_sample_error": 1.0658141036401503e-14,
+      "native_command_error": 3.552713678800501e-15,
+      "native_command_native_sample_error": 1.0658141036401503e-14,
+      "native_ui_error": 3.552713678800501e-15,
+      "native_ui_native_sample_error": 1.0658141036401503e-14
+    },
+    {
+      "id": "arc_blend_radius_getters/radius_main_default",
+      "portable_command_error": 2.6645352591003757e-15,
+      "portable_command_native_sample_error": 7.105427357601002e-15,
+      "portable_ui_error": 2.6645352591003757e-15,
+      "portable_ui_native_sample_error": 7.105427357601002e-15,
+      "native_command_error": 2.6645352591003757e-15,
+      "native_command_native_sample_error": 7.105427357601002e-15,
+      "native_ui_error": 2.6645352591003757e-15,
+      "native_ui_native_sample_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_getters/radius_spatial_getter",
+      "portable_command_error": 5.329070518200751e-15,
+      "portable_command_native_sample_error": 9.880984919163893e-15,
+      "portable_ui_error": 5.329070518200751e-15,
+      "portable_ui_native_sample_error": 9.880984919163893e-15,
+      "native_command_error": 5.329070518200751e-15,
+      "native_command_native_sample_error": 9.880984919163893e-15,
+      "native_ui_error": 5.329070518200751e-15,
+      "native_ui_native_sample_error": 9.880984919163893e-15
+    }
+  ],
+  "research_observations": [
+    "arc_blend_radius_getter_holdouts/circle_repeat_negative",
+    "arc_blend_radius_getter_holdouts/circle_repeat_positive",
+    "arc_blend_roundoff/roundoff_circle_0",
+    "arc_blend_roundoff/roundoff_circle_1",
+    "arc_blend_roundoff/roundoff_circle_2",
+    "arc_blend_roundoff/roundoff_corner_0",
+    "arc_blend_roundoff/roundoff_corner_1",
+    "arc_blend_roundoff/roundoff_near_circle_0",
+    "arc_blend_roundoff/roundoff_skew_0",
+    "arc_blend_roundoff/roundoff_skew_1",
+    "arc_blend_search_rules/rules_circle_0",
+    "arc_blend_search_rules/rules_circle_1",
+    "arc_blend_search_rules/rules_corner_1",
+    "arc_blend_search_rules/rules_near_circle_0"
+  ],
+  "captures": [
+    {
+      "family": "arc_blend_radius_getters",
+      "observations": 5,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "0f235dd690207620bb9daa87f4010c8ba58024d4d1e34ec315298ef9e53d20a9"
+    },
+    {
+      "family": "arc_blend_radius_getter_holdouts",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c9427e2006425d97057c827c6059f2f5f481f765b41e44a762229b9169982f49"
+    },
+    {
+      "family": "arc_blend_roundoff",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c5cc15efecc17f95d693aa9a2b69b3cdf2fc3f7db5c40d649a3e928084db29f4"
+    },
+    {
+      "family": "arc_blend_search_rules",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "267cd0d9582df4ece763f71109fdd7714fe32194fb359a822aba19edc1eac2f2"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "getter-command-portable",
+      "status": 0
+    },
+    {
+      "name": "getter-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "getter-command-native",
+      "status": 0
+    },
+    {
+      "name": "getter-ui-native",
+      "status": 0
+    },
+    {
+      "name": "radius-search-sdk",
+      "status": 0
+    },
+    {
+      "name": "general-command-portable",
+      "status": 0
+    },
+    {
+      "name": "general-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "general-command-native",
+      "status": 0
+    },
+    {
+      "name": "general-ui-native",
+      "status": 0
+    },
+    {
+      "name": "radius-command-portable",
+      "status": 0
+    },
+    {
+      "name": "radius-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "radius-command-native",
+      "status": 0
+    },
+    {
+      "name": "radius-ui-native",
+      "status": 0
+    },
+    {
+      "name": "handles-command-portable",
+      "status": 0
+    },
+    {
+      "name": "handles-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "handles-command-native",
+      "status": 0
+    },
+    {
+      "name": "handles-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-geometry",
+      "status": 0
+    },
+    {
+      "name": "arc-command-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-command-native",
+      "status": 0
+    },
+    {
+      "name": "arc-ui-native",
+      "status": 0
+    },
+    {
+      "name": "projection-geometry",
+      "status": 0
+    },
+    {
+      "name": "pick-command-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-command-native",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-native",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-native",
+      "status": 0
+    },
+    {
+      "name": "normal-command-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "move-normal-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-command-native",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-native",
+      "status": 0
+    },
+    {
+      "name": "move-normal-native",
+      "status": 0
+    },
+    {
+      "name": "reference-command-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-command-native",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-native",
+      "status": 0
+    },
+    {
+      "name": "line-command-portable",
+      "status": 0
+    },
+    {
+      "name": "line-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "line-command-native",
+      "status": 0
+    },
+    {
+      "name": "line-ui-native",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "lines-command-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "points-portable",
+      "status": 0
+    },
+    {
+      "name": "curves-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-command-native",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-native",
+      "status": 0
+    },
+    {
+      "name": "points-native",
+      "status": 0
+    },
+    {
+      "name": "curves-native",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "grid-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "polyline-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "grid-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "polyline-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "construction": "Only accepted input values configure the live ratio/target state. An option may defer an active target while retaining the preview; serialized final arguments then preserve the accepted ratio. Native output is expected data only.",
+  "execution": "Private Xvfb captures and windowless application/egui tests; no desktop window.",
+  "limits": [
+    "The two same-circle command partitions repeat exactly. Recovered searches through the public SDK, dimensional/normalized join formulas, bounds, tie and midpoint variants do not reproduce those command partitions; all fourteen investigations remain explicit research rather than matched representation claims.",
+    "Native qualification covers the active command and explicit targets. Remembered values between commands, unit-suffixed radius entry, SubCrv and exact hit-box/depth ranking remain unsupported or unqualified.",
+    "Nested Escape returns one local prompt level and stale references reset the editor in windowless tests. Native Escape timing and every pointer trajectory are unqualified.",
+    "Historical general-search and creation records retain their original scopes. General continuous distance, comparative speed and same-circle ratio-handle station parity remain unqualified."
+  ],
+  "implementation_git_sha256": {
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:crates/viboceros-command/src/arc_blend.rs": "25b96095a48af88586e25d5ba596cb57cf2f21edeb77075d16ca2b312d604956",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:crates/viboceros-command/src/arc_blend/options.rs": "184852480bf16f2ae3276b0bb61163adeb645b79ff08bfa3995758bc9eba21df",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:crates/viboceros-command/tests/arc_blend_radius_getters.rs": "a15fdfb982d11aa79f6e16258e91446cf37eebeeaeadb6cf60affe27fd3325d8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:crates/viboceros-command/tests/support/arc_blend_radius_getters.rs": "5cac0e9c4f116a4cde069e2536a9f07c7ca98ce26b4068a25bbce82cd08cf8af",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-command-native.log.gz": "8614c6f8bcf957c2eb7c2351dcb56c4ce5e6ebd8290927538df8618df989fd8e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-command-portable.log.gz": "6b3b1e2ea15b47bbfe8e57a9c947d1f05e1db455ed3fc562f6b4413e642fc65f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-extension-native.log.gz": "4f9fe8db42b23008a811264524380c9dc2484cd741a681a68f5e8faf07e80a48",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-extension-portable.log.gz": "2ef4f851aa50980f03abc40b07727fb077fa40b4a5a400b1e349b3eadd8fa8d2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-geometry.log.gz": "fb671dfe80bb8af08b9981e65432b9125354362a9e883c33eb9034e03707b292",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-ui-native.log.gz": "ed9cc8252f95671fb870a5f23fc07ffabd78b03269d950e407f4b27a8e3d36db",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/arc-ui-portable.log.gz": "c0fdd524cb522f8bb77cad6736b4e8838ae0c234fbab457ab3ce68cb2657e92f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/capture-arc_blend_radius_getter_holdouts.log.gz": "f0bca023683ef3795f6007ea7a38a02148d7d6b4df3829c280aad04e72a035bf",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/capture-arc_blend_radius_getters.log.gz": "813180918b3ce75a472ef426346f26e22b945d060956ffcaa685ef68fb051e24",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/captures.json": "25ca13f27372b3b53f484d69fb93267bc3718716d96f98dc80fe7a9ba1bdf163",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/checks.json": "51cccfbd9136ae7e699b017f31b7604eff251b73179e0650cd452f766b07e300",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/clippy-all-features.log.gz": "c68b67c39351623716b6155bc8c15f4ed412cff87965c4b26491507a68e36c3b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/clippy-portable.log.gz": "7b09c174c6272432b06f9d176c789c7e1cd30a06735c4bdbdbcfed4c63d41d03",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/commands-native.log.gz": "4e83030f5185538acbef9512fa01c39d769c3a4c8c3510dd80760f8dc3165c14",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/commands-portable.log.gz": "1b8b36c2a1acdf642ea21942bb6c5ac3653e11054416553ea84b7dac22c41276",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/corners-native.log.gz": "1f2ae6109732f579dd6dcefc017fa1bf3e9fa28d81ef7504504e8f43e6ab2bcd",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/corners-portable.log.gz": "7ca1275af74c1c5b1ccc9eb4926012c691be34ac19825c65a00ec351ee6d64d8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/curves-native.log.gz": "2ab375f88c4eab371ae70dc7a7811e3fb28b37213887f242e656dadefefcb704",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/curves-portable.log.gz": "b7cab65c8333405c2ebf47935572372213f1bc21e060637c3f3e0c63e46cb21e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/general-command-native.log.gz": "3b1d08765410f654dcf5456ddfe251c10bafd4eadc28fb4b35d2b297085511fb",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/general-command-portable.log.gz": "1d67e270d361ac3b2b0381b8aa8693a33fd89b96ad36fc1efae6d7ed640c575f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/general-ui-native.log.gz": "6c4334f2617458f28e420c2c687b9179af56260822844713b7c9d53c91cd38b2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/general-ui-portable.log.gz": "d1067264ea4343f9db3ba52cc56f5f4e58744fb7d9cc737b7494c237570fd471",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/getter-command-native.log.gz": "2f562399180cff7b98ceb530e9d7d043ea3b22d4610e231d84e2ab983ee56824",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/getter-command-portable.log.gz": "2a0ba106e845e1e39e06aa069a723694a131be105b1e6525c2e663f6c2dd5d18",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/getter-ui-native.log.gz": "3a0fbfe26012db496e43a9d60e1774b7c0d6a300ff9abdfeafb24622f0dbed20",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/getter-ui-portable.log.gz": "710ff3a794dcedf3972a1b157c979954d786102366e1a572b5d7f8862528e7c0",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/grid-native.log.gz": "4cdcafb4036a36370b26199f8c5ba77b4177271b8ef81653b77f54a4e927d0aa",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/grid-portable.log.gz": "315e66bd3ab314e0b9f3248dcbf13cf72a8410ad52320091e7d4a155ee55d579",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/handles-command-native.log.gz": "26400134f754fa35c6c464193204b5aac21b8db282e7c2109b60e29d0163b112",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/handles-command-portable.log.gz": "5715f42913f8d760470f24b47db828366bbdf4f75020ecfc2c6da6f7708ca437",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/handles-ui-native.log.gz": "7b4ab8a07f2765ebdc31bf47433bc3f167ccc931417152bd3325d6cde10e22cf",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/handles-ui-portable.log.gz": "fa2f74d85176339b0691e57d9fd30672f0c9af4d38bf2e43033596a5988bce67",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/history.log.gz": "468b93f729c40fa987fd342f80c2ff2c0ae3bc4b737257ddf765e2ca61fac763",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/line-command-native.log.gz": "a3f92ac2389d6604256aa1f645026003f7b92eac712798320f1d596ad87e09c1",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/line-command-portable.log.gz": "aa16148204357e1795a49412792b7f3f9327553e12800305ee6414784366bc91",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/line-ui-native.log.gz": "cf52778859eee79793d66686e915dad109af390ffb3c28ab521dab253bb8d4d5",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/line-ui-portable.log.gz": "4834cee2181fb00a2af8da2b96aaa940b6cc6c1e742d0bb61650fe37e4bde734",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/lines-command-native.log.gz": "72de349b0f871430b02180cad68361827cf44d90c0a17477b36a97773d0c94d9",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/lines-command-portable.log.gz": "e741593bd4d1390baa835a90abfb2cab5936c81863c6f64325a7333687bb7a74",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/lines-ui-native.log.gz": "d57577cc4ee5d65cc6b756b3661871edec3f5e5fbcbfaa0d9213f95d1b4404fc",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/lines-ui-portable.log.gz": "22c5b6b841affff4d791705f5736dcbfa4cbbdc506f4d74189fdf7cc4e2ef484",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/move-normal-native.log.gz": "2cde16181a85798ff447e1ec9393a366c052394bf1cf25112f33eb7923dd3a9c",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/move-normal-portable.log.gz": "e3766a46cad82c26b492c1305e8c10b8b6e45499ac8399ad743f1bf4d2415699",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/normal-command-native.log.gz": "4b7b28fb8ebb14559f28d95a12fe839b342928c92bb5b4a36e337655f50fd320",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/normal-command-portable.log.gz": "efdeee43a4fb86e7cdc6f91d6017e3aa9e3bd5a8f800d43b8d8e42c0d2b6e25a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/normal-ui-native.log.gz": "54f0c90c466e3f2be0fd51176d6c0398dc147efd279fb392708ade84f95f3ff6",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/normal-ui-portable.log.gz": "5a82bf0cf854dbb0310ba5eee08636537d2b47dfe14c93b0de71ae84724c173b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/perpendicular-command-native.log.gz": "e55246783081476a28177ff359744f842446522173a089dc2c8cddb0ec4ead8e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/perpendicular-command-portable.log.gz": "1235406b85480053c0dc6d66f7999c457359742dd6c893c0179bfdf08d9f681c",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/perpendicular-ui-native.log.gz": "f22c7cc6aeadff2fff9e4172ff27f6d35f55f1b8df028c32b2e82cd9fe98ded7",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/perpendicular-ui-portable.log.gz": "3a142c7d616d99693f364f29e079da878e3146dba5a2ba6c5ae5389889a8b4b2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-command-native.log.gz": "4da2745fe69db8ceeee93db3348fa26eb1af95d60c7a2a90e3a52cb760fae0f8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-command-portable.log.gz": "2adc39b59c18bb0bde235c439ef2f1d84f8949227256b65e25768a2f5c360e47",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-ui-native.log.gz": "24246e78425e5535b55a134880d539b57308e5d8b57569af943f7d99cca19c85",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-ui-portable.log.gz": "517fbf1f3a75a9cc2a853ce936c5138803b9c97032828032dcef399c99956093",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-viewport-native.log.gz": "dd1ae9d0132170ad427a325e65e29038643da7172d4e57ba7222833fdfa6a5c2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/pick-viewport-portable.log.gz": "87c0a0a811c3d707f18ff63fe2e91613007bf6f69893a0898898aad995d538e0",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/plane-native.log.gz": "498918f675db07198610f9f581a9966455fec24460210f057e1d6a0052637556",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/plane-portable.log.gz": "a7482b73ab0e93564e5f8f528cd3c7d4cedafc0fad25dcc8081f8aebf3dec08f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/points-native.log.gz": "a3e46256d12f9075271f40f09d7c8b6a17a126ff9050e8402805e826b06a7353",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/points-portable.log.gz": "6757024f1b647541cb6e0851f5f46fe2853345616895c66656a6393efa6aeabd",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/polyline-native.log.gz": "530a78af59fd6385ff8897b68f7a32f5906c56edfaaab48bc73075d987c19a32",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/polyline-portable.log.gz": "090baa615bed987b0a93303218ebdcf7101695cdfe796e44450a0737f7e33c89",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/primitive-input-native.log.gz": "2b9606d1da70125c103334bd484f3febce2139734eb884525595535afed13835",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/primitive-input-portable.log.gz": "b2ffc1a45f5f4a0d06cfdd51db38b1eff3aefb6e75a13b35412782780e91bf9b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/projection-geometry.log.gz": "f78becec1916c4046c32d2569bdb7e5a5cd800251be3478c6d23f7b5f87755bb",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/python.log.gz": "39c0c59b2f3918a041082c72b29a38ca878bbfafcf51701617d4e2ce7a549ff8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/radius-command-native.log.gz": "f188f7ea87c0ded56804d6ab81eef7b35b8c938c8163155c2feea52d0a631ce2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/radius-command-portable.log.gz": "44610ca9b4e350b2323f5853b76e1df633bc2de9fb026c42763fc5ad1699443a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/radius-search-sdk.log.gz": "66c450006e27708c3349cd9e3dd437f780df516d449bc4411ff47eb0a7028328",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/radius-ui-native.log.gz": "2d5149b34bea7614564725c96ff40f60a5f72454628b86d58c3283f124c1cd6b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/radius-ui-portable.log.gz": "c3753fcfd45da077696b0bc3c4d457021f22c128d8b458191b8ba8af3b7c2be2",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/rectangle-native.log.gz": "879539cdc14f474cabc4cd630ba578e2b2de5a9c1edf01e565afc4f05ceb9049",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/rectangle-portable.log.gz": "e47efe8a9686fc6eb9640421317f0b4d1e303281234f061b44a9a052a01e72ba",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/reference-command-native.log.gz": "18b6146f3d16af6a5fcde08d5c02dde4f3314efaa8199ebb29a12ab0c4a04f0a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/reference-command-portable.log.gz": "e880a255ae7d5b05211ab6e438115c984f9cb0d09ea58828c4a07234af0f4ccc",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/reference-ui-native.log.gz": "f2738e0b4c5de43923a88a970c970ec55a21245aa96ee7fdf234ba308c0cabc4",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/reference-ui-portable.log.gz": "e63e24cc1258fe0cda5ba74ae4e52a7bb94349b85ea08dc6b67d6d9ffc95cafe",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/registry.log.gz": "922ee32bbfe4d3f757b6d0607c5c580688b533c46d43787c8f0f84c77d9eff25",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/subd-native.log.gz": "0e4089a397511cf74b9949c4fc1bc1f50f5d354618a6b040692bf04bc9c4f0d3",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-boundary-command-native.log.gz": "f371c822742286a8dea91dd1ffad9a9154ade1db77328edbe967ad4a1764fed6",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-boundary-command-portable.log.gz": "d050e8dc689fcef4b2647db03946616cf552bb1874a858350e5478dc516a4182",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-boundary-ui-native.log.gz": "67a88d6d17203d5e64e3c5afe940b9addd918644d9250cfa0ece4d9d10d7087c",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-boundary-ui-portable.log.gz": "c519bc8bdc629b29d1c90d4b7bb96d16a442504082cf3bad06c96747d0b00a88",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-command-native.log.gz": "6fe87c3678be8295d5d396b4af82c653187ae46b5df81714c2252c685f900c84",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-command-portable.log.gz": "d482fb833d03f8ed1457a8634f321194db920433f60c33686e063382105facea",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-rays-command-native.log.gz": "79011c900267d3b9cf86a2730dc5ba86e2afa849bad02064899d7c3d94d9e4f7",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-rays-command-portable.log.gz": "685080ebb969d83778539a6593b6f930d1aef12d886cb582d49a5f75a363b76c",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-rays-ui-native.log.gz": "b6e8fd7b6641d0344635285fd9b7f12216137d719dd59b3c5246e58e3dbde656",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-rays-ui-portable.log.gz": "eb2d646c8aaaaae02e8469f57e409a46ffc4457fcc957b6bac4edb3f8939e813",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-ui-native.log.gz": "c033846b19b67018edbd363fd2fd104e6883f4ef78d345b010f344b888512964",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/tangent-ui-portable.log.gz": "8b2738e743cb9af67e6be37731cf8a5f96bc238d8f7c4c6ca978c323bfe5b9d8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/ui-native.log.gz": "210dd63521c7ae3db1b2a12246a5751b98ec4ce8bc3d61efc3292f7d34229ecd",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-getters-proof/ui-portable.log.gz": "850a3673411dd677afd805884bdebcc9c8bc0a5f5aa98bcc104377d98845d1cd",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-partition-proof/capture-arc_blend_roundoff.log.gz": "9257e3fa8ca7fdc295907e5a5defddb669f2626e732c6bf239b7f27bd95f7775",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-partition-proof/capture-arc_blend_search_rules.log.gz": "f203a989e0e9358149c46dcf5db5e69c6fd4ba673f53024c1786fbce8065300c",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/arc-blend-partition-proof/captures.json": "d60daa7fb1050ee420cf0260c81307bd5c9038dfb4b3f2efe548ec90682b2a83",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/commands/arc-blend-handles.md": "7b08c1504d4286c6ef392592129bee607d21f988bbb5198a7298036c05f68077",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/commands/arc-blend-radius.md": "d91d7b79f2dbee65a1894c5f5908c4bc6ed5480af96a8cf62f7c6bfd544da999",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/subd-box-qualification.json": "198b7620a47d5a3be120e73f94c05f95ee1cfec6973e5c1d5bcd2abcef88f8ef",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:docs/subd-plane-qualification.json": "903b4b2d4e1405bf10177a5839ae6fa7a591e4a8cbbd48447e6ee66b27f4714e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:src/app/arc_blend.rs": "9e2c5126bb6c63683961c6116d0bbd7d2b82b0174e469fd89c87a37c3940bc8e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:src/app/arc_blend/adjustment.rs": "46af2377d96918187a0784308631262ecf66c363410a5b4c63649b865fddf0d8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:src/app/arc_blend/radius.rs": "d7496416f3a2c751a7ba7761b69ffc4490f034c2d2781263b9d29393338bf35b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:src/app/tests/arc_blend_radius_getters.rs": "223525053263121f9948dc890bf40b48352e7f4400bb5ccd54ef696d6c6baa16",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:src/app/tests/mod.rs": "a0a942b769608a8098408099c6945087ddb5f03b09c811cab7ae9723daf4fcd5",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/arc_blend_command.py": "daa5a0a60631552755408c19cd187f7cd510d29c3dc00441b7487d08373c81c8",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/arc_blend_getter_evidence.py": "77b3f8ce32cbc371fcf23cb94b51bf8d4fbbe9f43999b7f77373e234a8bc1309",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/arc_blend_roundoff.py": "00815b9a9f39868652deb4c2d511ba126ddf3ab27057acfbefcd55238f04fa64",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/arc_blend_sdk.py": "98538f4134468154e29f8616575cfc2e30ebc3091a0b088855241bb3cfe7fd3b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/arc_blend_search_rules.py": "ab5dd7c625914d0ac6b2033f23c6f1dce8c69ad64d4c637ec85cb553a5b95049",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/check_arc_blend_getters.py": "ce3a3d9371154ef0a429108c03e7806ac4228631424aedef5c3044b8155efa6b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/fixtures/arc_blend_radius_getter_holdouts.json": "614a382e33d9e5d03a4e3bc95c6d661aa4a7e5a7e61e0df9dcb10d69f1ff9108",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/fixtures/arc_blend_radius_getters.json": "7c0c63c63f3aebaa78a267b6afada36aebdaeb14a37b913502145bef5e09ae6d",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/fixtures/arc_blend_roundoff.json": "4e8320a6313e2d2247544292cf532d85991d0d78fbaff1085e2d2b761d74be8f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/fixtures/arc_blend_search_rules.json": "a700424fd8d85454d85cbbed33f5c32175774e0ebd51853db8243a154757c7e0",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/generate_arc_blend_radius_getter_holdouts.py": "a66869a807c83047a067ab6699d057caa2ebde11b27521e13f40b3076d484d5d",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/generate_arc_blend_radius_getters.py": "95b0e11d4f0e630bf24e9609c3a1f454efe8c7c285e444ac7c8a66a5dc721e47",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/generate_arc_blend_roundoff.py": "bd4967712194e01fd86c04bbfc564a6cb0592440a3a9c5d5302e44d932358f8b",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/generate_arc_blend_search_rules.py": "9a5026c1d9d5a4c6bce34d9ddf85271de991cb500b0f367045497b2671c6173a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/arc_blend_radius_getter_holdouts.json.gz": "b8ab996e56ccc4d827b858d39953c62d3e743e8227e9461f911367fd0f134922",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/arc_blend_radius_getters.json.gz": "b6d58536ab2df92e4cfaddfef5c03265f0117c25bc7445fb5529985cea119a1a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/arc_blend_roundoff.json.gz": "da76af74dac0c7948bc10719de86a37ae7a2db487af340b19f6e7605f67c7075",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/arc_blend_search_rules.json.gz": "4e7fde041b6000b801196cc8810a22512f1efd6fb4379fa39864f340c01e92e4",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/00815b9a9f39868652deb4c2d511ba126ddf3ab27057acfbefcd55238f04fa64.gz": "fb9627983b722175bff453813f6f8fbf560384aa9adcec34488848bb30350d24",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/052b18908ce938efa0941503fd4940d24a2164a1f3bd401b192a39c23670a493.gz": "a8d99bc2ad794ec32fb9e4f728535b004c383cdbd10057fc37302d9de4dc9e56",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/063088de757c303315417a06ace7e0585602c0fecc55737eb638b3be8ac8da94.gz": "7ef22e2ef792348a6a4073372655829fa0278d8f67f8630a6e2187fa6fe0411e",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/856c771179808de6cfe8d71144b399c6dfccdd793e536f578f6e3b70706eb895.gz": "2fbd3e2398e2092b811ccaa56f3b9012251589ae895af5abba29eab46838a3a7",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/95b0e11d4f0e630bf24e9609c3a1f454efe8c7c285e444ac7c8a66a5dc721e47.gz": "1821601817d8a47737587436f39cb1cc690aebb78971226449936d8fd001c66f",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/98538f4134468154e29f8616575cfc2e30ebc3091a0b088855241bb3cfe7fd3b.gz": "2cb872aca05f4b1f7ea1a34d2daad69a30f788361c05d0a3de709823c1dada78",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/9a5026c1d9d5a4c6bce34d9ddf85271de991cb500b0f367045497b2671c6173a.gz": "b9138fac9a17afb905293b238b1b6415fb541b626067ba20aabc5ea431caf7ee",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/a66869a807c83047a067ab6699d057caa2ebde11b27521e13f40b3076d484d5d.gz": "9e43f08908fa07e190d5f96f0ccce04c9bf02bd717716a654fbc8897f897b7e4",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/ab5dd7c625914d0ac6b2033f23c6f1dce8c69ad64d4c637ec85cb553a5b95049.gz": "d12f1a11e89731effe7b04c74f63eca6d43c8281bcff5a791925588bb8741665",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/bd4967712194e01fd86c04bbfc564a6cb0592440a3a9c5d5302e44d932358f8b.gz": "3719b93a6cd83620bd9c7ae2ed70efb413480850948d102e5aa614218583aded",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/c4b871928a8388619652b1dc9d5b4716c8d1e8978d2ae2f2500f06628bf9250e.gz": "0aa9c7011871edc74b20017ac102582fab48bcd6f08b46a2c2d0421d1b423949",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/daa5a0a60631552755408c19cd187f7cd510d29c3dc00441b7487d08373c81c8.gz": "804a004edbcc285ecc748ccb026331ff488806cd254e4b2a5a910155dba069f4",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/observations/source_snapshots/e5817ce3495fc9861258d7689f07554853794b8b1831ac66b84c1ffdb53e1e64.gz": "d4d65feb8264efc57cff96bbb3757b30b4daebf60dd647cf54a9863b39a44bef",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/report_arc_blend_getters.py": "a8415b823b15899c47ef30e5d1277febe3a02832f2cc06698d3ef84ec504357a",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/structural_sdk.py": "e5817ce3495fc9861258d7689f07554853794b8b1831ac66b84c1ffdb53e1e64",
+    "e3b1a775e533b71c507bb81ea1851a57615a9efb:tools/rhino_oracle/test_arc_blend_getters.py": "ae5048ba0e9fc57f568c63787ae72128b6930e2ea2319ee756d8458b65230279"
+  },
+  "evidence_sha256": {
+    "docs/arc-blend-getters-proof/arc-command-native.log.gz": "8614c6f8bcf957c2eb7c2351dcb56c4ce5e6ebd8290927538df8618df989fd8e",
+    "docs/arc-blend-getters-proof/arc-command-portable.log.gz": "6b3b1e2ea15b47bbfe8e57a9c947d1f05e1db455ed3fc562f6b4413e642fc65f",
+    "docs/arc-blend-getters-proof/arc-extension-native.log.gz": "4f9fe8db42b23008a811264524380c9dc2484cd741a681a68f5e8faf07e80a48",
+    "docs/arc-blend-getters-proof/arc-extension-portable.log.gz": "2ef4f851aa50980f03abc40b07727fb077fa40b4a5a400b1e349b3eadd8fa8d2",
+    "docs/arc-blend-getters-proof/arc-geometry.log.gz": "fb671dfe80bb8af08b9981e65432b9125354362a9e883c33eb9034e03707b292",
+    "docs/arc-blend-getters-proof/arc-ui-native.log.gz": "ed9cc8252f95671fb870a5f23fc07ffabd78b03269d950e407f4b27a8e3d36db",
+    "docs/arc-blend-getters-proof/arc-ui-portable.log.gz": "c0fdd524cb522f8bb77cad6736b4e8838ae0c234fbab457ab3ce68cb2657e92f",
+    "docs/arc-blend-getters-proof/capture-arc_blend_radius_getter_holdouts.log.gz": "f0bca023683ef3795f6007ea7a38a02148d7d6b4df3829c280aad04e72a035bf",
+    "docs/arc-blend-getters-proof/capture-arc_blend_radius_getters.log.gz": "813180918b3ce75a472ef426346f26e22b945d060956ffcaa685ef68fb051e24",
+    "docs/arc-blend-getters-proof/captures.json": "25ca13f27372b3b53f484d69fb93267bc3718716d96f98dc80fe7a9ba1bdf163",
+    "docs/arc-blend-getters-proof/checks.json": "583128ab38bc9c187e7fc36b4183162059349e5400c9b63ac03d464e088c493b",
+    "docs/arc-blend-getters-proof/clippy-all-features.log.gz": "c68b67c39351623716b6155bc8c15f4ed412cff87965c4b26491507a68e36c3b",
+    "docs/arc-blend-getters-proof/clippy-portable.log.gz": "7b09c174c6272432b06f9d176c789c7e1cd30a06735c4bdbdbcfed4c63d41d03",
+    "docs/arc-blend-getters-proof/commands-native.log.gz": "4e83030f5185538acbef9512fa01c39d769c3a4c8c3510dd80760f8dc3165c14",
+    "docs/arc-blend-getters-proof/commands-portable.log.gz": "1b8b36c2a1acdf642ea21942bb6c5ac3653e11054416553ea84b7dac22c41276",
+    "docs/arc-blend-getters-proof/corners-native.log.gz": "1f2ae6109732f579dd6dcefc017fa1bf3e9fa28d81ef7504504e8f43e6ab2bcd",
+    "docs/arc-blend-getters-proof/corners-portable.log.gz": "7ca1275af74c1c5b1ccc9eb4926012c691be34ac19825c65a00ec351ee6d64d8",
+    "docs/arc-blend-getters-proof/curves-native.log.gz": "2ab375f88c4eab371ae70dc7a7811e3fb28b37213887f242e656dadefefcb704",
+    "docs/arc-blend-getters-proof/curves-portable.log.gz": "b7cab65c8333405c2ebf47935572372213f1bc21e060637c3f3e0c63e46cb21e",
+    "docs/arc-blend-getters-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/arc-blend-getters-proof/general-command-native.log.gz": "3b1d08765410f654dcf5456ddfe251c10bafd4eadc28fb4b35d2b297085511fb",
+    "docs/arc-blend-getters-proof/general-command-portable.log.gz": "1d67e270d361ac3b2b0381b8aa8693a33fd89b96ad36fc1efae6d7ed640c575f",
+    "docs/arc-blend-getters-proof/general-ui-native.log.gz": "6c4334f2617458f28e420c2c687b9179af56260822844713b7c9d53c91cd38b2",
+    "docs/arc-blend-getters-proof/general-ui-portable.log.gz": "d1067264ea4343f9db3ba52cc56f5f4e58744fb7d9cc737b7494c237570fd471",
+    "docs/arc-blend-getters-proof/getter-command-native.log.gz": "2f562399180cff7b98ceb530e9d7d043ea3b22d4610e231d84e2ab983ee56824",
+    "docs/arc-blend-getters-proof/getter-command-portable.log.gz": "2a0ba106e845e1e39e06aa069a723694a131be105b1e6525c2e663f6c2dd5d18",
+    "docs/arc-blend-getters-proof/getter-ui-native.log.gz": "3a0fbfe26012db496e43a9d60e1774b7c0d6a300ff9abdfeafb24622f0dbed20",
+    "docs/arc-blend-getters-proof/getter-ui-portable.log.gz": "710ff3a794dcedf3972a1b157c979954d786102366e1a572b5d7f8862528e7c0",
+    "docs/arc-blend-getters-proof/grid-native.log.gz": "4cdcafb4036a36370b26199f8c5ba77b4177271b8ef81653b77f54a4e927d0aa",
+    "docs/arc-blend-getters-proof/grid-portable.log.gz": "315e66bd3ab314e0b9f3248dcbf13cf72a8410ad52320091e7d4a155ee55d579",
+    "docs/arc-blend-getters-proof/handles-command-native.log.gz": "26400134f754fa35c6c464193204b5aac21b8db282e7c2109b60e29d0163b112",
+    "docs/arc-blend-getters-proof/handles-command-portable.log.gz": "5715f42913f8d760470f24b47db828366bbdf4f75020ecfc2c6da6f7708ca437",
+    "docs/arc-blend-getters-proof/handles-ui-native.log.gz": "7b4ab8a07f2765ebdc31bf47433bc3f167ccc931417152bd3325d6cde10e22cf",
+    "docs/arc-blend-getters-proof/handles-ui-portable.log.gz": "fa2f74d85176339b0691e57d9fd30672f0c9af4d38bf2e43033596a5988bce67",
+    "docs/arc-blend-getters-proof/history.log.gz": "468b93f729c40fa987fd342f80c2ff2c0ae3bc4b737257ddf765e2ca61fac763",
+    "docs/arc-blend-getters-proof/line-command-native.log.gz": "a3f92ac2389d6604256aa1f645026003f7b92eac712798320f1d596ad87e09c1",
+    "docs/arc-blend-getters-proof/line-command-portable.log.gz": "aa16148204357e1795a49412792b7f3f9327553e12800305ee6414784366bc91",
+    "docs/arc-blend-getters-proof/line-ui-native.log.gz": "cf52778859eee79793d66686e915dad109af390ffb3c28ab521dab253bb8d4d5",
+    "docs/arc-blend-getters-proof/line-ui-portable.log.gz": "4834cee2181fb00a2af8da2b96aaa940b6cc6c1e742d0bb61650fe37e4bde734",
+    "docs/arc-blend-getters-proof/lines-command-native.log.gz": "72de349b0f871430b02180cad68361827cf44d90c0a17477b36a97773d0c94d9",
+    "docs/arc-blend-getters-proof/lines-command-portable.log.gz": "e741593bd4d1390baa835a90abfb2cab5936c81863c6f64325a7333687bb7a74",
+    "docs/arc-blend-getters-proof/lines-ui-native.log.gz": "d57577cc4ee5d65cc6b756b3661871edec3f5e5fbcbfaa0d9213f95d1b4404fc",
+    "docs/arc-blend-getters-proof/lines-ui-portable.log.gz": "22c5b6b841affff4d791705f5736dcbfa4cbbdc506f4d74189fdf7cc4e2ef484",
+    "docs/arc-blend-getters-proof/move-normal-native.log.gz": "2cde16181a85798ff447e1ec9393a366c052394bf1cf25112f33eb7923dd3a9c",
+    "docs/arc-blend-getters-proof/move-normal-portable.log.gz": "e3766a46cad82c26b492c1305e8c10b8b6e45499ac8399ad743f1bf4d2415699",
+    "docs/arc-blend-getters-proof/normal-command-native.log.gz": "4b7b28fb8ebb14559f28d95a12fe839b342928c92bb5b4a36e337655f50fd320",
+    "docs/arc-blend-getters-proof/normal-command-portable.log.gz": "efdeee43a4fb86e7cdc6f91d6017e3aa9e3bd5a8f800d43b8d8e42c0d2b6e25a",
+    "docs/arc-blend-getters-proof/normal-ui-native.log.gz": "54f0c90c466e3f2be0fd51176d6c0398dc147efd279fb392708ade84f95f3ff6",
+    "docs/arc-blend-getters-proof/normal-ui-portable.log.gz": "5a82bf0cf854dbb0310ba5eee08636537d2b47dfe14c93b0de71ae84724c173b",
+    "docs/arc-blend-getters-proof/perpendicular-command-native.log.gz": "e55246783081476a28177ff359744f842446522173a089dc2c8cddb0ec4ead8e",
+    "docs/arc-blend-getters-proof/perpendicular-command-portable.log.gz": "1235406b85480053c0dc6d66f7999c457359742dd6c893c0179bfdf08d9f681c",
+    "docs/arc-blend-getters-proof/perpendicular-ui-native.log.gz": "f22c7cc6aeadff2fff9e4172ff27f6d35f55f1b8df028c32b2e82cd9fe98ded7",
+    "docs/arc-blend-getters-proof/perpendicular-ui-portable.log.gz": "3a142c7d616d99693f364f29e079da878e3146dba5a2ba6c5ae5389889a8b4b2",
+    "docs/arc-blend-getters-proof/pick-command-native.log.gz": "4da2745fe69db8ceeee93db3348fa26eb1af95d60c7a2a90e3a52cb760fae0f8",
+    "docs/arc-blend-getters-proof/pick-command-portable.log.gz": "2adc39b59c18bb0bde235c439ef2f1d84f8949227256b65e25768a2f5c360e47",
+    "docs/arc-blend-getters-proof/pick-ui-native.log.gz": "24246e78425e5535b55a134880d539b57308e5d8b57569af943f7d99cca19c85",
+    "docs/arc-blend-getters-proof/pick-ui-portable.log.gz": "517fbf1f3a75a9cc2a853ce936c5138803b9c97032828032dcef399c99956093",
+    "docs/arc-blend-getters-proof/pick-viewport-native.log.gz": "dd1ae9d0132170ad427a325e65e29038643da7172d4e57ba7222833fdfa6a5c2",
+    "docs/arc-blend-getters-proof/pick-viewport-portable.log.gz": "87c0a0a811c3d707f18ff63fe2e91613007bf6f69893a0898898aad995d538e0",
+    "docs/arc-blend-getters-proof/plane-native.log.gz": "498918f675db07198610f9f581a9966455fec24460210f057e1d6a0052637556",
+    "docs/arc-blend-getters-proof/plane-portable.log.gz": "a7482b73ab0e93564e5f8f528cd3c7d4cedafc0fad25dcc8081f8aebf3dec08f",
+    "docs/arc-blend-getters-proof/points-native.log.gz": "a3e46256d12f9075271f40f09d7c8b6a17a126ff9050e8402805e826b06a7353",
+    "docs/arc-blend-getters-proof/points-portable.log.gz": "6757024f1b647541cb6e0851f5f46fe2853345616895c66656a6393efa6aeabd",
+    "docs/arc-blend-getters-proof/polyline-native.log.gz": "530a78af59fd6385ff8897b68f7a32f5906c56edfaaab48bc73075d987c19a32",
+    "docs/arc-blend-getters-proof/polyline-portable.log.gz": "090baa615bed987b0a93303218ebdcf7101695cdfe796e44450a0737f7e33c89",
+    "docs/arc-blend-getters-proof/primitive-input-native.log.gz": "2b9606d1da70125c103334bd484f3febce2139734eb884525595535afed13835",
+    "docs/arc-blend-getters-proof/primitive-input-portable.log.gz": "b2ffc1a45f5f4a0d06cfdd51db38b1eff3aefb6e75a13b35412782780e91bf9b",
+    "docs/arc-blend-getters-proof/projection-geometry.log.gz": "f78becec1916c4046c32d2569bdb7e5a5cd800251be3478c6d23f7b5f87755bb",
+    "docs/arc-blend-getters-proof/python.log.gz": "6c1e8a28a0e311a3ccaf2410a12035dd978902be3e7f1ccf70d047ece8e5bfc8",
+    "docs/arc-blend-getters-proof/radius-command-native.log.gz": "f188f7ea87c0ded56804d6ab81eef7b35b8c938c8163155c2feea52d0a631ce2",
+    "docs/arc-blend-getters-proof/radius-command-portable.log.gz": "44610ca9b4e350b2323f5853b76e1df633bc2de9fb026c42763fc5ad1699443a",
+    "docs/arc-blend-getters-proof/radius-search-sdk.log.gz": "66c450006e27708c3349cd9e3dd437f780df516d449bc4411ff47eb0a7028328",
+    "docs/arc-blend-getters-proof/radius-ui-native.log.gz": "2d5149b34bea7614564725c96ff40f60a5f72454628b86d58c3283f124c1cd6b",
+    "docs/arc-blend-getters-proof/radius-ui-portable.log.gz": "c3753fcfd45da077696b0bc3c4d457021f22c128d8b458191b8ba8af3b7c2be2",
+    "docs/arc-blend-getters-proof/rectangle-native.log.gz": "879539cdc14f474cabc4cd630ba578e2b2de5a9c1edf01e565afc4f05ceb9049",
+    "docs/arc-blend-getters-proof/rectangle-portable.log.gz": "e47efe8a9686fc6eb9640421317f0b4d1e303281234f061b44a9a052a01e72ba",
+    "docs/arc-blend-getters-proof/reference-command-native.log.gz": "18b6146f3d16af6a5fcde08d5c02dde4f3314efaa8199ebb29a12ab0c4a04f0a",
+    "docs/arc-blend-getters-proof/reference-command-portable.log.gz": "e880a255ae7d5b05211ab6e438115c984f9cb0d09ea58828c4a07234af0f4ccc",
+    "docs/arc-blend-getters-proof/reference-ui-native.log.gz": "f2738e0b4c5de43923a88a970c970ec55a21245aa96ee7fdf234ba308c0cabc4",
+    "docs/arc-blend-getters-proof/reference-ui-portable.log.gz": "e63e24cc1258fe0cda5ba74ae4e52a7bb94349b85ea08dc6b67d6d9ffc95cafe",
+    "docs/arc-blend-getters-proof/registry.log.gz": "922ee32bbfe4d3f757b6d0607c5c580688b533c46d43787c8f0f84c77d9eff25",
+    "docs/arc-blend-getters-proof/subd-native.log.gz": "0e4089a397511cf74b9949c4fc1bc1f50f5d354618a6b040692bf04bc9c4f0d3",
+    "docs/arc-blend-getters-proof/tangent-boundary-command-native.log.gz": "f371c822742286a8dea91dd1ffad9a9154ade1db77328edbe967ad4a1764fed6",
+    "docs/arc-blend-getters-proof/tangent-boundary-command-portable.log.gz": "d050e8dc689fcef4b2647db03946616cf552bb1874a858350e5478dc516a4182",
+    "docs/arc-blend-getters-proof/tangent-boundary-ui-native.log.gz": "67a88d6d17203d5e64e3c5afe940b9addd918644d9250cfa0ece4d9d10d7087c",
+    "docs/arc-blend-getters-proof/tangent-boundary-ui-portable.log.gz": "c519bc8bdc629b29d1c90d4b7bb96d16a442504082cf3bad06c96747d0b00a88",
+    "docs/arc-blend-getters-proof/tangent-command-native.log.gz": "6fe87c3678be8295d5d396b4af82c653187ae46b5df81714c2252c685f900c84",
+    "docs/arc-blend-getters-proof/tangent-command-portable.log.gz": "d482fb833d03f8ed1457a8634f321194db920433f60c33686e063382105facea",
+    "docs/arc-blend-getters-proof/tangent-rays-command-native.log.gz": "79011c900267d3b9cf86a2730dc5ba86e2afa849bad02064899d7c3d94d9e4f7",
+    "docs/arc-blend-getters-proof/tangent-rays-command-portable.log.gz": "685080ebb969d83778539a6593b6f930d1aef12d886cb582d49a5f75a363b76c",
+    "docs/arc-blend-getters-proof/tangent-rays-ui-native.log.gz": "b6e8fd7b6641d0344635285fd9b7f12216137d719dd59b3c5246e58e3dbde656",
+    "docs/arc-blend-getters-proof/tangent-rays-ui-portable.log.gz": "eb2d646c8aaaaae02e8469f57e409a46ffc4457fcc957b6bac4edb3f8939e813",
+    "docs/arc-blend-getters-proof/tangent-ui-native.log.gz": "c033846b19b67018edbd363fd2fd104e6883f4ef78d345b010f344b888512964",
+    "docs/arc-blend-getters-proof/tangent-ui-portable.log.gz": "8b2738e743cb9af67e6be37731cf8a5f96bc238d8f7c4c6ca978c323bfe5b9d8",
+    "docs/arc-blend-getters-proof/ui-native.log.gz": "210dd63521c7ae3db1b2a12246a5751b98ec4ce8bc3d61efc3292f7d34229ecd",
+    "docs/arc-blend-getters-proof/ui-portable.log.gz": "850a3673411dd677afd805884bdebcc9c8bc0a5f5aa98bcc104377d98845d1cd",
+    "docs/arc-blend-partition-proof/capture-arc_blend_roundoff.log.gz": "9257e3fa8ca7fdc295907e5a5defddb669f2626e732c6bf239b7f27bd95f7775",
+    "docs/arc-blend-partition-proof/capture-arc_blend_search_rules.log.gz": "f203a989e0e9358149c46dcf5db5e69c6fd4ba673f53024c1786fbce8065300c",
+    "docs/arc-blend-partition-proof/captures.json": "d60daa7fb1050ee420cf0260c81307bd5c9038dfb4b3f2efe548ec90682b2a83",
+    "docs/arc-blend-radius-general-proof/arc-command-native.log.gz": "0fdc945d18e3ce51d84ec799d339f2e7f9904b9012d71690a3c171af8a043bb0",
+    "docs/arc-blend-radius-general-proof/arc-command-portable.log.gz": "7d33522ee9983b2a86a540ad6e1f93e31968f23f3e1f1dbbd990610ccf68d193",
+    "docs/arc-blend-radius-general-proof/arc-extension-native.log.gz": "daeb19a99ccc7df6345e713d7ef7526e572dfa43270a60cab2e3c940a8850661",
+    "docs/arc-blend-radius-general-proof/arc-extension-portable.log.gz": "144f92ebc9b58b6c76fe2bd77e26b4ab7eac18be3e2a7f3a73f88eeb59060e28",
+    "docs/arc-blend-radius-general-proof/arc-geometry.log.gz": "66ef0d3f40f92a4cb97a6244c4324aa5e82d8a1cc8253f582c948f7c99314a35",
+    "docs/arc-blend-radius-general-proof/arc-ui-native.log.gz": "cfb4a671cd89e0cef5a0190add1712dcb907d7e45419a1398fbc4c17533bb6b0",
+    "docs/arc-blend-radius-general-proof/arc-ui-portable.log.gz": "16c0678671699aeb5e80f5eed53db6689d10b4726c711bd3f1067896b616722b",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_cocircular.log.gz": "ed7d09b503479b23f28e4c9a926d542863a1540d8a779aea0ab9986a81e7be3d",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general.log.gz": "ddf5bebf0c0e4fe6070d9cea6088056c12e131cfb572458d1fd967a3a91bfb4a",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general_holdouts.log.gz": "7904602ab0b013922d08369047980c7a4c3d69740a88848e52a2de1ec8040437",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_sdk.log.gz": "d77ac7f94f9dc10e3cc9b02128b1f9da28d8c6eac25db5f2da5e3ae339eb3b64",
+    "docs/arc-blend-radius-general-proof/captures.json": "552eeb74616bdca48c6924f20a85ba9292eec06942c55bfa328886971eeb7f80",
+    "docs/arc-blend-radius-general-proof/checks.json": "c766a86eaeb77f1e864b6db78e9d2715a6e1feee977fa293c29e1b4e77c6d98f",
+    "docs/arc-blend-radius-general-proof/clippy-all-features.log.gz": "119663139ab1db75248633fd52e388d834df7440cacb24c798a5818325528dfa",
+    "docs/arc-blend-radius-general-proof/clippy-portable.log.gz": "151f57e7c1df193bec2503afbf651197866e9b4a7c8432ffae3bee64254988dd",
+    "docs/arc-blend-radius-general-proof/commands-native.log.gz": "23f8565c8f4fbdb014d56cc644aae9e6724ac8e76f202c41eae1cfdf032fb8d4",
+    "docs/arc-blend-radius-general-proof/commands-portable.log.gz": "cf737c7c580563338fd51af7c9b10dfd2b1136e04827c51354c548526c0ce9ec",
+    "docs/arc-blend-radius-general-proof/corners-native.log.gz": "f5c864d690fe4f5ebd0f48ccc153fe9b4b91a840c55a15bfca19d904ef48b3cc",
+    "docs/arc-blend-radius-general-proof/corners-portable.log.gz": "644e96baec5aeba68fac7bfddce74b73b5206e0ade8557732ae2800e15a55b22",
+    "docs/arc-blend-radius-general-proof/curves-native.log.gz": "161dc4007b89dd2c84f02124d08b49fbe5c0d2edd1ef33e47c8de71e232a6a3f",
+    "docs/arc-blend-radius-general-proof/curves-portable.log.gz": "6583d685b1d4f8ce773514ed753ba325e0374d888294bfef046c101f7f5944ee",
+    "docs/arc-blend-radius-general-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/arc-blend-radius-general-proof/general-command-native.log.gz": "fda004fea32fa9891009bebe253b8003755e8824d8afce2ca31616ab53d2f0c7",
+    "docs/arc-blend-radius-general-proof/general-command-portable.log.gz": "14e946a331dd8a739a31320852f739404bcf16b39854af52c9a7e6b13ad4d214",
+    "docs/arc-blend-radius-general-proof/general-ui-native.log.gz": "07ba1d06b6f7f7fbe039363b65e566efca68314cf676f7d5a0032169ccb13861",
+    "docs/arc-blend-radius-general-proof/general-ui-portable.log.gz": "a4b19d9868e3b1c73bb016852c059689f6497985eabce84ac482f8ef903729ad",
+    "docs/arc-blend-radius-general-proof/grid-native.log.gz": "a6fa1a8e969f518c4381a21b6a5c09ed48cf0821e6f557cb170439baabe84a7e",
+    "docs/arc-blend-radius-general-proof/grid-portable.log.gz": "992d65606a0248f296d9d5218deb928b99e1d053b0be1c38c559e72b57fe4218",
+    "docs/arc-blend-radius-general-proof/handles-command-native.log.gz": "1aa870a8ae0378387d7357d328fbedc1034a79b893a6b1bcdf3b9ed53c144713",
+    "docs/arc-blend-radius-general-proof/handles-command-portable.log.gz": "e77766ca0c8f15d298a66759363d0479624110d525485ef556472ec2baaaa993",
+    "docs/arc-blend-radius-general-proof/handles-ui-native.log.gz": "0e606af1eb3b208624e3c449b1645f36fdc94d5ebfc553b8cb5f2b2ddca1dddb",
+    "docs/arc-blend-radius-general-proof/handles-ui-portable.log.gz": "3effb89235cf67cfb29b258d1d0578bac154709a45a8f80ad136d7befdb8f5c4",
+    "docs/arc-blend-radius-general-proof/history.log.gz": "111f7d3513c5f89aa37307c58ca82f95ba45921641ef465b07be3dcb2eeb4957",
+    "docs/arc-blend-radius-general-proof/line-command-native.log.gz": "57ae920ee6fc5fe1239456602ce88bc87a2bd5f558df47220df5c38ab81f2335",
+    "docs/arc-blend-radius-general-proof/line-command-portable.log.gz": "e0b384ef7126046535536ca1e16f3ee82f64e778c857fd364ad95f61c1ec931f",
+    "docs/arc-blend-radius-general-proof/line-ui-native.log.gz": "1f87ec4b115f31ce39d48a0ee97d1f5eec71a99f324452a321e92701d8bd1c48",
+    "docs/arc-blend-radius-general-proof/line-ui-portable.log.gz": "8bf880a736d5f8b5e538d8961364c436d24225bfc51a738e8fb9ff07000b5096",
+    "docs/arc-blend-radius-general-proof/lines-command-native.log.gz": "4adca0380a6d42ccb8bcec4efaf0d205de218d615391c3048c2ffce4e1095265",
+    "docs/arc-blend-radius-general-proof/lines-command-portable.log.gz": "47adf0673a4c19e08494130dbc59715944af7c23faf4dc01651e21930df4018f",
+    "docs/arc-blend-radius-general-proof/lines-ui-native.log.gz": "5d395e689676aa88bd9ed4b70db94e3577c522c9cb72e277f1ea79bfa8ce5464",
+    "docs/arc-blend-radius-general-proof/lines-ui-portable.log.gz": "e7b737f67f0894bb8584540b7c9ecb83f56e050f8cb38cd2a65a76cdb84d13f1",
+    "docs/arc-blend-radius-general-proof/move-normal-native.log.gz": "c1c20d0866ca71eb1a4007ec212fded2e6a33e214b2ec6b821e931f692aeae7e",
+    "docs/arc-blend-radius-general-proof/move-normal-portable.log.gz": "0f6a297595c7297504e1753164d63abd6f9468f7743fac3cb5d481c96246ef64",
+    "docs/arc-blend-radius-general-proof/normal-command-native.log.gz": "7b9d73ace4abb0c4576e643f8707afbba2417945c824240e939fd73eacbaa93c",
+    "docs/arc-blend-radius-general-proof/normal-command-portable.log.gz": "ecd74d9adc05b27c4a15463a9b5539338d2b7d38e997ff08b0f2836203122475",
+    "docs/arc-blend-radius-general-proof/normal-ui-native.log.gz": "388da6b30a2505ed61bd7dde4ad3523ed771e0150983a35a10ac3ced49e55cc8",
+    "docs/arc-blend-radius-general-proof/normal-ui-portable.log.gz": "18ffa908f57732067f9bff0277b0075b833197ad197fa83fa025034a6d7a8575",
+    "docs/arc-blend-radius-general-proof/perpendicular-command-native.log.gz": "cd23af9fd5321ada8a8a67022268ea94092a8c2d173e402d095e0b4fe344b4c4",
+    "docs/arc-blend-radius-general-proof/perpendicular-command-portable.log.gz": "af30377054cb2548621e8cb29c3c46ad01bfd952140a9f6445579b5dc9e153b8",
+    "docs/arc-blend-radius-general-proof/perpendicular-ui-native.log.gz": "7af436c0766100d45b5f6ded19884772d0ea71679913cf78926e00e7b9bad188",
+    "docs/arc-blend-radius-general-proof/perpendicular-ui-portable.log.gz": "7580caabb8913241029ab1cfc4f0195c3dba1063f4fd08fb2cb2ccbdbd71783b",
+    "docs/arc-blend-radius-general-proof/pick-command-native.log.gz": "9ed463ba6ae8371a88956a8b5487a93d6802c5f9f74ee72eea4808f82f1d00cb",
+    "docs/arc-blend-radius-general-proof/pick-command-portable.log.gz": "a2e31e135ef0e2f782aafa58a7c27a4c5ca331bde221996d37bb19b579e62222",
+    "docs/arc-blend-radius-general-proof/pick-ui-native.log.gz": "3f84d8e8d9c8f01d3080f58c422970a2e6364b349daf17d78858e944c720ba0f",
+    "docs/arc-blend-radius-general-proof/pick-ui-portable.log.gz": "e060f272fa1f336b3911d17fb3b26260fface29aa9cc2c7fe019b6b8b751ca93",
+    "docs/arc-blend-radius-general-proof/pick-viewport-native.log.gz": "28bb4a6f3afbe683a396e49b4e4bd5b422b28bc4aaad37591c4fcefa435653db",
+    "docs/arc-blend-radius-general-proof/pick-viewport-portable.log.gz": "7c698d3c50c88782ff749b411cdc8225748fb6069a548b5dacf97f0f31aefd1b",
+    "docs/arc-blend-radius-general-proof/plane-native.log.gz": "4d73a7592fce50092b665abf783834f95c750f0ad0c87fc90e55bed5fdfd31e6",
+    "docs/arc-blend-radius-general-proof/plane-portable.log.gz": "f0396b2ac3a0b856a1fc74ef238fe6d8bbd764e26536dc934c77bccdf636122f",
+    "docs/arc-blend-radius-general-proof/points-native.log.gz": "77fdf952a9ed16d0fc37a999bad524ef61b134ecea3911d60e252e490fd9bc1d",
+    "docs/arc-blend-radius-general-proof/points-portable.log.gz": "d8b3673f781c814c32e5d9163a9d4ecee397b8d06d146440e867184b7db2ca2b",
+    "docs/arc-blend-radius-general-proof/polyline-native.log.gz": "f81f782f176afed5c0bd3e125006a032743d28bfb2fead210f9df9779a2be293",
+    "docs/arc-blend-radius-general-proof/polyline-portable.log.gz": "8e5e1c408289572efd8a24ebce2acdfdf8e0ac3b100e7cd4b0356efc7befaed4",
+    "docs/arc-blend-radius-general-proof/primitive-input-native.log.gz": "80a3b63d7fe5b15bd142b45ee159cbaa36ebea66d070e92c85b401bb3c1b5b53",
+    "docs/arc-blend-radius-general-proof/primitive-input-portable.log.gz": "4a1da3120027f15d567719e9e9be476fd525e34d31418ab0f8efd203f93e9ecc",
+    "docs/arc-blend-radius-general-proof/projection-geometry.log.gz": "ce6b282455f3f3f115fc789a9b818ff21d6d4934e01d75d0bb0fff7bb12be9a5",
+    "docs/arc-blend-radius-general-proof/python.log.gz": "420021e8448e151526f196ec921a52afc437b48fa43de6d2f2e9717b79ccf6ff",
+    "docs/arc-blend-radius-general-proof/radius-command-native.log.gz": "ae1eaf5a82cb1a72c3289932af98d1fe9f86a42cb6bfae99b361677ea23adb4c",
+    "docs/arc-blend-radius-general-proof/radius-command-portable.log.gz": "2b9418c3fda52bab2afd32e3563849e182ed78c7372611dd86072b6738f580c8",
+    "docs/arc-blend-radius-general-proof/radius-search-sdk.log.gz": "b632bd526c30b72f280811297bfae284856e4cd2066d5523a8039588f67d72b3",
+    "docs/arc-blend-radius-general-proof/radius-ui-native.log.gz": "e7f48174ff89e99756887ef0cff9d289008bedace50527b81ea87c415a691634",
+    "docs/arc-blend-radius-general-proof/radius-ui-portable.log.gz": "add229f085ffe9e9576fba9c8f94f0f76702a30000ee2788d1f4ea5a20489eef",
+    "docs/arc-blend-radius-general-proof/rectangle-native.log.gz": "faf4eff353e7a49657d92abbc091b06a467bc9873469ca90434a0bb4b2ffdf11",
+    "docs/arc-blend-radius-general-proof/rectangle-portable.log.gz": "c513baf5094152c6dd260dfdea349c5568e75335ef1a45b6198cda6281a60097",
+    "docs/arc-blend-radius-general-proof/reference-command-native.log.gz": "1dbd151a072a3906d0f1513dabcc2ec766b7217da6afd1c9262ecb19b7124f98",
+    "docs/arc-blend-radius-general-proof/reference-command-portable.log.gz": "803f53fb439e040b5a54b4f01c68b9c3da86fbb25f990e77e53a59abc186d02b",
+    "docs/arc-blend-radius-general-proof/reference-ui-native.log.gz": "d06563d9fbccce1ed7a3b8354d0fe20c01e553b0fbb5d6fbd6e3bc4230da549e",
+    "docs/arc-blend-radius-general-proof/reference-ui-portable.log.gz": "e5aabc5429088d56c0cd6873591cde236bdbb0be44623d55c9e1cbfa5310c509",
+    "docs/arc-blend-radius-general-proof/registry.log.gz": "470e92d7e437fe4848d506a7765e82d93af4a883a488905e4446a4a46f4aa51b",
+    "docs/arc-blend-radius-general-proof/subd-native.log.gz": "72f59b6f7be68d8f2714bbdbaa110bf8127387a4eced2a8a86c0687577d55ee6",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-command-native.log.gz": "e02ba6570a2757f1d9a2ca2aaf164fe5a57f5406376784538594d62248a1d86a",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-command-portable.log.gz": "ef2b73737df473d98e2f35d35697cbe5c2fa189a2559a7183d54c2debdf1dfc5",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-ui-native.log.gz": "30e9760183727deff8bed776fef0efd2f5b2adc5b958c750cb2512da5725694a",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-ui-portable.log.gz": "8982bc337192874559b7e32a6c2b9765171668580fbaad1473232fe60e4ffa47",
+    "docs/arc-blend-radius-general-proof/tangent-command-native.log.gz": "9e3fbeee07333665d8edb18d2a54395202b5fb6d122a17c86af5cbbdb37ffa1e",
+    "docs/arc-blend-radius-general-proof/tangent-command-portable.log.gz": "a7eb3245d729f75b86b36efb8724db35a42abecd1f67040a03f1e37e3f6dad96",
+    "docs/arc-blend-radius-general-proof/tangent-rays-command-native.log.gz": "8ab87323d3b2c4b1ba99c52e46efb2d41dbdb94f50dbdce11c690d1b0e06f21f",
+    "docs/arc-blend-radius-general-proof/tangent-rays-command-portable.log.gz": "144bcb81f2f010b2557926acee4adae7e360ffcbb07cab4f78c7486a7d691757",
+    "docs/arc-blend-radius-general-proof/tangent-rays-ui-native.log.gz": "a7c102cdb5dfed3ba7b20ee6a186254953701f2427cd0bf2154db52aacb1de47",
+    "docs/arc-blend-radius-general-proof/tangent-rays-ui-portable.log.gz": "872026e04e251dc2fc8672fb6f782e07f503bf677967dd3a98f8b5bc2ff6af6f",
+    "docs/arc-blend-radius-general-proof/tangent-ui-native.log.gz": "900d18e751e1b2c15deb644c73eb6736d3384ea99ec25cae452a53ce0829e672",
+    "docs/arc-blend-radius-general-proof/tangent-ui-portable.log.gz": "7e6ba08848b6f0b01440f562ca4ac6fb67a558016e811507649c19445ccf0c61",
+    "docs/arc-blend-radius-general-proof/ui-native.log.gz": "824ebc408c4d5a43e249925ac28dfe426f16c284bdfeded96f8ec43570cd799b",
+    "docs/arc-blend-radius-general-proof/ui-portable.log.gz": "ad20ba7f8a8e6e062b76dd40fcf4213e137e3a5a10b03535d73f4e067b083e46",
+    "docs/arc-blend-radius-general-validation.json": "f9a3e3b2104434bf96238982a573f3f847105aa7d6f8bde6f108e627c0ae52ad",
+    "docs/arc-blend-radius-proof/arc-command-native.log.gz": "56ed6e6a8bde7972bf0a6489f450cdc70e1d58fcec7ba601c00463d64463ca94",
+    "docs/arc-blend-radius-proof/arc-command-portable.log.gz": "84bf04b62c88eec223616e6548d6426c21b910d2c5909d4c805e96bd3eec25ff",
+    "docs/arc-blend-radius-proof/arc-extension-native.log.gz": "4a829d071da00eb97324ac165da1a7d12798e8a26f4ee9b6244302b345a16a31",
+    "docs/arc-blend-radius-proof/arc-extension-portable.log.gz": "bd5ee59e10d34bdd47bc1778a9aeebc0d775bf161ba4182b094ec0e3b505ff42",
+    "docs/arc-blend-radius-proof/arc-geometry.log.gz": "246f7d4fd11d309c36f0bd5a91c7329a976fb146b23cd0b6a9848e4625384f7e",
+    "docs/arc-blend-radius-proof/arc-ui-native.log.gz": "5f619e4dbf6a01c3b6bb3fda49dec87146a3f22fe0daf84156de86889b5472f2",
+    "docs/arc-blend-radius-proof/arc-ui-portable.log.gz": "130e9e15180ed343cf854edd04d04c90f9fef17c67a18ff4ca44510f0cccf807",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_parallel.log.gz": "73a5cc62af89a46c387cdb1109c384995152c61bbce94ee22f01c837d07556d2",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_recall.log.gz": "a0af650e1a531c486985ef323ebbced02833bc63a71da007aa9a6a99e9fbd6bd",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_targets.log.gz": "6b2a0e84b235f35e3e418aa53de3c9f4b8be880da813d320b300c47d19543ee9",
+    "docs/arc-blend-radius-proof/captures.json": "5d6bd49cf8f6d5d6b0c1b5942c2a144faa6741a9c93c3b56523c098b0bf54a66",
+    "docs/arc-blend-radius-proof/checks.json": "241896d6b3a1eaac78919babc9ff112a412fa2497ba0c9facec066d44b6ec85f",
+    "docs/arc-blend-radius-proof/clippy-all-features.log.gz": "71571f99ade85a163081e51c6d2dbdad1b6bc873175181f258daf12437cf6b96",
+    "docs/arc-blend-radius-proof/clippy-portable.log.gz": "fda471ee2aeb8d069cf8fe1866480a214f771abc0404a2847a62b73ca96240bd",
+    "docs/arc-blend-radius-proof/commands-native.log.gz": "5994572990a24dec6fa1f3b33f6bd1b6899fa1890d63c810a2fa76b758f65aca",
+    "docs/arc-blend-radius-proof/commands-portable.log.gz": "486d2477c0a3f614147e586a703171a72eaafbba4ed91cbd58f24960d9d1bf16",
+    "docs/arc-blend-radius-proof/corners-native.log.gz": "fa9d9bb53103c5283da469da330dd48615821fdb220f0eb1493b0375e6abc09a",
+    "docs/arc-blend-radius-proof/corners-portable.log.gz": "94ea182bf8346595bc190b1daf196a12099ccc4e12fa5b06b900d9ff4f4bdf78",
+    "docs/arc-blend-radius-proof/curves-native.log.gz": "bd89ec9b905b6ad3248bc53e084df1cf35b1a85fd945a6e1ff528858e635557e",
+    "docs/arc-blend-radius-proof/curves-portable.log.gz": "589c98503ff548e4355cf83c0ff41172998758af0e00d5fd487b2171dff16b31",
+    "docs/arc-blend-radius-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/arc-blend-radius-proof/grid-native.log.gz": "0ffc00a9077ef8803607d336917bd3ad55a2186a1398cec9f6157514b09199c4",
+    "docs/arc-blend-radius-proof/grid-portable.log.gz": "b52b67acdf4710ffcbd7f33dec1a5487d4123d4607decbf2bd89fb1b1c889072",
+    "docs/arc-blend-radius-proof/handles-command-native.log.gz": "f757a414048b2ecb3aa6f13c1efa32a415157eb0f6c50a8fa52026fd071f27b8",
+    "docs/arc-blend-radius-proof/handles-command-portable.log.gz": "7884d3b7798912a4b87b7528232f5c8619dfce55f7b86435bb146565358c311e",
+    "docs/arc-blend-radius-proof/handles-ui-native.log.gz": "cad7e3b58d9af3eaab9db6f75de3abf6ca6f1c3ee8418496615c2c0030d1dce5",
+    "docs/arc-blend-radius-proof/handles-ui-portable.log.gz": "729409c6d5c248d033040ec9cebe97f5331a25dfc963d98177927129648ed22a",
+    "docs/arc-blend-radius-proof/history.log.gz": "fd02eb0c78348b5d4194201019f66f6df4d026bb7d3bffdd55ebb3fb0435105e",
+    "docs/arc-blend-radius-proof/line-command-native.log.gz": "ddef6dc88ed25b923d375de51257d0b156cef611b6cf3aef1616a65aebe2cbab",
+    "docs/arc-blend-radius-proof/line-command-portable.log.gz": "90345726f3ef2149f972bc8b7d16c223125439670a06cbfa60bdb6e44286419d",
+    "docs/arc-blend-radius-proof/line-ui-native.log.gz": "2c6ec01982be90c49183452a42962c641e6ab51220253162a35ccc76f44f8ed0",
+    "docs/arc-blend-radius-proof/line-ui-portable.log.gz": "f222bc5cb8e6972e24b759d9d1b31306dd3dc9d8a4119155317baa926c0a601d",
+    "docs/arc-blend-radius-proof/lines-command-native.log.gz": "5b3d47bca3aedfb9b105bd14be19e895cf7784669c5314f1c8c20d11e0328ee4",
+    "docs/arc-blend-radius-proof/lines-command-portable.log.gz": "a2d28185562e74411296d418306f3de7152f1e96813b518e8a735fb2b4d0520b",
+    "docs/arc-blend-radius-proof/lines-ui-native.log.gz": "8dc1ad558a4a92b76d595b7e7dbfdf0d68db4d2a0d8b1c0cebf7bb9e78fbb5e1",
+    "docs/arc-blend-radius-proof/lines-ui-portable.log.gz": "42447e9271199c1aa332052972647622c2f5a3b6417a2bdf5c47b5ddf7a581e7",
+    "docs/arc-blend-radius-proof/move-normal-native.log.gz": "0195aa17cbf7ffaae2cb9c0cc77fc64300e5cb53ce1cbe72e4cc0a39b8b176c8",
+    "docs/arc-blend-radius-proof/move-normal-portable.log.gz": "a5fa37982427e3efabeecda791440797565cf43911e1a4b8505079ecd34a3e97",
+    "docs/arc-blend-radius-proof/normal-command-native.log.gz": "3bde2183c37626d3b45e8167fb91ef0240888e37deb59e211cf2610c1efcc513",
+    "docs/arc-blend-radius-proof/normal-command-portable.log.gz": "83f695aebf8388a1a68b13280c474c25822bed5a44f77bdf5e6b7241288d9275",
+    "docs/arc-blend-radius-proof/normal-ui-native.log.gz": "7817793841480c5b14f8fab71a0b46511a727f69458923bba4da11fbeb0218b5",
+    "docs/arc-blend-radius-proof/normal-ui-portable.log.gz": "200422385c7ebefe08e453968252d6861da2efb318de669d05f0d1c579961e31",
+    "docs/arc-blend-radius-proof/perpendicular-command-native.log.gz": "10cdd6f0f99c0c743b6eeacf1cf97bc4e0cc0a6aef28de664d0e0af1990ade87",
+    "docs/arc-blend-radius-proof/perpendicular-command-portable.log.gz": "4df2ca74d2c803b5b609f5329adeea053627118ff574dd42c6f5b2cc7d5910b2",
+    "docs/arc-blend-radius-proof/perpendicular-ui-native.log.gz": "f0e566baf5349b73b1f35ce47b32e4ead5ad75762f0bbece9d8c907888f46aa0",
+    "docs/arc-blend-radius-proof/perpendicular-ui-portable.log.gz": "0d8424a9e603ad575cdb6ac2463d5d4f676c75f7358408457dcb4547431ea0ad",
+    "docs/arc-blend-radius-proof/pick-command-native.log.gz": "336c0d239d9debf78bf79079cbd0224c48f57ceccdd43854e69470277979a051",
+    "docs/arc-blend-radius-proof/pick-command-portable.log.gz": "ec1e35e7a5cf7a64a85b683ac67bdca819ff13959cfb51782c36057a02a5fa72",
+    "docs/arc-blend-radius-proof/pick-ui-native.log.gz": "b62847b6522168c570591bbcf0fc3b1d170fd8e978c874bf74f217c1f47cb209",
+    "docs/arc-blend-radius-proof/pick-ui-portable.log.gz": "d1bbe05193c6942e4ad82d5b34773a513cbc858ebde91ad6de6fad24a031b4d6",
+    "docs/arc-blend-radius-proof/pick-viewport-native.log.gz": "df095d5920b3ffbbc9c191f110e1b1d87312c399ff71af61abaf3d81003bc2db",
+    "docs/arc-blend-radius-proof/pick-viewport-portable.log.gz": "84dbbba406ec7cafc94e934697a13fc863aa9fd40df7fa23c8a865e3ff7d99f1",
+    "docs/arc-blend-radius-proof/plane-native.log.gz": "cc1f88ff1c8872777a3f7490d07039718aad723c70feff183aca4db827e40bf6",
+    "docs/arc-blend-radius-proof/plane-portable.log.gz": "a4802c3c80fbafc243544a766a8187a62e9bd308099285d3f5fbb7c454bc7c48",
+    "docs/arc-blend-radius-proof/points-native.log.gz": "b0952d4a34950bdcee73a9fe62437f74e0531f3b7267fbcd5ba55d4a5b006137",
+    "docs/arc-blend-radius-proof/points-portable.log.gz": "e0da620a32b663a9c944dabbadd51728f18a3e5b60e5e8e39794a6e6cfce1472",
+    "docs/arc-blend-radius-proof/polyline-native.log.gz": "ef0bbd313c2b0f0caf730826d293d6ccc031c4c7e8ea87dad284f147ae387547",
+    "docs/arc-blend-radius-proof/polyline-portable.log.gz": "375c3bbbe138fcba0ab94751149eec32b81a70163b9896075d365700b277c6f8",
+    "docs/arc-blend-radius-proof/primitive-input-native.log.gz": "ee9468123084dd38a1d3cf387d40e1b58640c4e31a4f17f02bbf0e288405c069",
+    "docs/arc-blend-radius-proof/primitive-input-portable.log.gz": "2b357a44666d1366787fa4c410e618be27743e59e0bc73f34c8db85ec365c9a9",
+    "docs/arc-blend-radius-proof/projection-geometry.log.gz": "97982904d246ece95a37e76835ffba9b75e09ba69562cce08e95178b82ba276b",
+    "docs/arc-blend-radius-proof/python.log.gz": "c716e45bb82beea2f2b28bf7d28ba0c5c4902e0696222b9a8c91816f79a6b0c7",
+    "docs/arc-blend-radius-proof/radius-command-native.log.gz": "88fd237d7194ae8bc09413d210d91e666535ac5358b967f0f25f6d2f291a5ae9",
+    "docs/arc-blend-radius-proof/radius-command-portable.log.gz": "b562a97c2650bcba70b7619206a52517cb3423ec87b24ed8beb28c18b381d907",
+    "docs/arc-blend-radius-proof/radius-ui-native.log.gz": "f8cfa213c16805f01f85d9b20b41dca7d12b7949dc705d98b236c1698beb010b",
+    "docs/arc-blend-radius-proof/radius-ui-portable.log.gz": "0c354ce1b17df53bfef96922a1022365874ee1d1eaaf1be18271368ca45c28df",
+    "docs/arc-blend-radius-proof/rectangle-native.log.gz": "149892dc25f673c12bdd0dceae488ce8d7b5554aa125d014f0e592ea8e7ae988",
+    "docs/arc-blend-radius-proof/rectangle-portable.log.gz": "7b7ac012ebf4ca3776f7c714b54920980c9cfcf24aa7945372681899ba220b72",
+    "docs/arc-blend-radius-proof/reference-command-native.log.gz": "8b6b02d3e77d3335be6531ff60958d1f65d324afaa44913f97122a8d9a467af6",
+    "docs/arc-blend-radius-proof/reference-command-portable.log.gz": "ba875bb36f68b3abbd2eb2857fad421c90836c91fa0e51ddb1727d9115c02586",
+    "docs/arc-blend-radius-proof/reference-ui-native.log.gz": "f1726c9ef826a1d0f47b6816c67c91fd5e16c73b5f921044d3e8a0544513aa79",
+    "docs/arc-blend-radius-proof/reference-ui-portable.log.gz": "5088ea52f7259e7947ed7859163bc6688eca6f82bc48db4d2bc13a9d7a970c82",
+    "docs/arc-blend-radius-proof/registry.log.gz": "d8f1ded42c6039e9438a49bb9f9138dfdfe8e353c11174b6c9c487696760388c",
+    "docs/arc-blend-radius-proof/subd-native.log.gz": "f3450b09734db898ff7988e41e22eb55eb312289520cc72e0dc44dbff0890202",
+    "docs/arc-blend-radius-proof/tangent-boundary-command-native.log.gz": "e9351088e768153f269d2d960f15b603f8998b442a8a15a843eb89a5c664f325",
+    "docs/arc-blend-radius-proof/tangent-boundary-command-portable.log.gz": "f603862f387ea604f0f39b6aecd11460e9bb7229f82c47c970e0cf1d98f35d9c",
+    "docs/arc-blend-radius-proof/tangent-boundary-ui-native.log.gz": "686cb54435f9abf40afc55afcd68ea6f65e1035bc446f4d597eb3e0421a7f517",
+    "docs/arc-blend-radius-proof/tangent-boundary-ui-portable.log.gz": "a8a58b3675a6c4d95fe47bb5e3ca5c44999c5c3d0f01b02fca63e2ae6ee2b815",
+    "docs/arc-blend-radius-proof/tangent-command-native.log.gz": "1f54de28cca822dfbef6ca15e5d9cd3e183beccb015641d157b80e929403d8dc",
+    "docs/arc-blend-radius-proof/tangent-command-portable.log.gz": "f1617e5a51dae92462cf4f72ffba9c8dd21c44635071af0d757a50b371fb413b",
+    "docs/arc-blend-radius-proof/tangent-rays-command-native.log.gz": "dc41bf01a29f514fe76c167b132021426cde647907ad9941f3b6ea0a66fb121c",
+    "docs/arc-blend-radius-proof/tangent-rays-command-portable.log.gz": "50f19d575e537eb4ca96759a47da6af6c7323dc588da8e8717141331bee4ec92",
+    "docs/arc-blend-radius-proof/tangent-rays-ui-native.log.gz": "6335efab9ab77c0b555b728e2150177251bcc045466800bdfe56f7dbb8790a73",
+    "docs/arc-blend-radius-proof/tangent-rays-ui-portable.log.gz": "3b067c3aaa7d51ff83c8deef427808d6d08ecd18b9060ceb82f6b833eb5c71c4",
+    "docs/arc-blend-radius-proof/tangent-ui-native.log.gz": "80c339f0dcfc3ed4df511e916d64688e534fdac8eefc771dee139f0a8798d34f",
+    "docs/arc-blend-radius-proof/tangent-ui-portable.log.gz": "8a37b59dc0507a548e61a2c53309a86d9bcedc720c1df578f5889f2e4f1ae63c",
+    "docs/arc-blend-radius-proof/ui-native.log.gz": "62c3ea5888dadea83168b1195f13d2c69792667a0d266fd2a12841f8fd5f998f",
+    "docs/arc-blend-radius-proof/ui-portable.log.gz": "3b1bc1636f92f553dbb3e5acbd7d178dd8fbfa38553d67972b70cf6cd096a0c1",
+    "docs/arc-blend-radius-validation.json": "6a9b455a11f61fd65c33783bfc8016c9a51bd32554426d78343d025cb6b8438a",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_cocircular.json": "6ecf8158221266f507682e6d7e78290ee6091d380be8c0955bd548dc3a07fd92",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_general.json": "846f1e93c9f7b57feab709e702c30ac5510c1c151421a0b89ebfe8b02d6ad038",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_general_holdouts.json": "97f6130648e4567f0dada9c43578f954b793a2049fc17edbdfe236fd87e284ba",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_getter_holdouts.json": "614a382e33d9e5d03a4e3bc95c6d661aa4a7e5a7e61e0df9dcb10d69f1ff9108",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_getters.json": "7c0c63c63f3aebaa78a267b6afada36aebdaeb14a37b913502145bef5e09ae6d",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_parallel.json": "497c9163c95cf59680f47ff5f2f858b3f996239a4d2fa7194962f8846e20c752",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_recall.json": "2bfb236ca9aea8e71f6d39a9907c215b229562bc84706f878fca294a52ce40be",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_sdk.json": "3987625b26c85e8f5007c93ae717cf99340ce8d91df5f552e2dd00a132a440ae",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_targets.json": "6894a7e70697157a17567fafa2b36a0a491b08e202121df16523eb166970e89e",
+    "tools/rhino_oracle/fixtures/arc_blend_roundoff.json": "4e8320a6313e2d2247544292cf532d85991d0d78fbaff1085e2d2b761d74be8f",
+    "tools/rhino_oracle/fixtures/arc_blend_search_rules.json": "a700424fd8d85454d85cbbed33f5c32175774e0ebd51853db8243a154757c7e0",
+    "tools/rhino_oracle/observations/arc_blend_radius_cocircular.json.gz": "4c806738a1d8b076f9406327934300ed311a53d415e22a8333ca77dce5ca0025",
+    "tools/rhino_oracle/observations/arc_blend_radius_general.json.gz": "d1732decc5f36b0fc5f6486f4b192b5b2b76372efe56dc544ac6a4c89841cb80",
+    "tools/rhino_oracle/observations/arc_blend_radius_general_holdouts.json.gz": "133707705c4011bde0c1b724da6f17d9ab63bb72b820de526373995f2dd16826",
+    "tools/rhino_oracle/observations/arc_blend_radius_getter_holdouts.json.gz": "b8ab996e56ccc4d827b858d39953c62d3e743e8227e9461f911367fd0f134922",
+    "tools/rhino_oracle/observations/arc_blend_radius_getters.json.gz": "b6d58536ab2df92e4cfaddfef5c03265f0117c25bc7445fb5529985cea119a1a",
+    "tools/rhino_oracle/observations/arc_blend_radius_parallel.json.gz": "a9f60e914df8d095aa7b12263b1aa836d1c1b412e9aa7b25c3f7846b5ab71f2a",
+    "tools/rhino_oracle/observations/arc_blend_radius_recall.json.gz": "13a5762a9f2adc1138c2c9aea8758b7289c1a148b708b2aea974eeac9b27731e",
+    "tools/rhino_oracle/observations/arc_blend_radius_sdk.json.gz": "1af653472c3c1e472a33dd89ad238d7ff88de76fab2f58f09535e20d87814174",
+    "tools/rhino_oracle/observations/arc_blend_radius_targets.json.gz": "57f6790e22bc8c4f1526fd6d91dd7f0eaa6594aec3bdc6d566e3fd7da397de5e",
+    "tools/rhino_oracle/observations/arc_blend_roundoff.json.gz": "da76af74dac0c7948bc10719de86a37ae7a2db487af340b19f6e7605f67c7075",
+    "tools/rhino_oracle/observations/arc_blend_search_rules.json.gz": "4e7fde041b6000b801196cc8810a22512f1efd6fb4379fa39864f340c01e92e4",
+    "tools/rhino_oracle/observations/source_snapshots/00815b9a9f39868652deb4c2d511ba126ddf3ab27057acfbefcd55238f04fa64.gz": "fb9627983b722175bff453813f6f8fbf560384aa9adcec34488848bb30350d24",
+    "tools/rhino_oracle/observations/source_snapshots/052b18908ce938efa0941503fd4940d24a2164a1f3bd401b192a39c23670a493.gz": "a8d99bc2ad794ec32fb9e4f728535b004c383cdbd10057fc37302d9de4dc9e56",
+    "tools/rhino_oracle/observations/source_snapshots/063088de757c303315417a06ace7e0585602c0fecc55737eb638b3be8ac8da94.gz": "7ef22e2ef792348a6a4073372655829fa0278d8f67f8630a6e2187fa6fe0411e",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/16131613fb6adde20226725b85034f62f41a73645e4c64331de7a373a2184c6d.gz": "c2d5f054a8195004f0e5eb8012e9d02b52a9c99ccbb25d90c0cc8539a78daaf4",
+    "tools/rhino_oracle/observations/source_snapshots/1a10cb1eef1cda1f984bb17b4d1fad77b6b0e95cc9a96fa6bb2946f46c45291a.gz": "9d044ee25d590ea21c1ec9009dd58f471d6128514c8f7d303c90149ad8a4848b",
+    "tools/rhino_oracle/observations/source_snapshots/1f7a430ac4c5cb4fefdcd058d744f8ecab9e87fc72ec15312e288195032c37d2.gz": "a5dcaf81e9eb2e3e6117e6f918a29761df9f583b72e7352393e2841eb483bf15",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/4e2a9c3c3c77c7817193bc99909ff1f18b34f22c8b01a728abb185b421ab4390.gz": "26b55b70690e8cd57c0f8ac11943c95a0ce79f0e5e536f478fdf2c4883dc930e",
+    "tools/rhino_oracle/observations/source_snapshots/5928215b3f0b6ea8604ebe805b9ef9c7c972773a7340867e3e0c93ad3aa32bb8.gz": "32bd2b8806334cf5f3e7a7d1cf1cb71a9029fde7ae6f344d776d6ed1970e794c",
+    "tools/rhino_oracle/observations/source_snapshots/5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9.gz": "c0f1e6c954d0d0d4e135b9e15c12f17c2c7dbfc5cc122f48d01d59155b5f91ca",
+    "tools/rhino_oracle/observations/source_snapshots/6cfc7a586749cfe09228dcce9c404e6f4ab58b3d2caf810c8205a986a535c23e.gz": "5fc18b1954d53ef03a2cf439d0f24180e04de577f60621f86476029de3adeb89",
+    "tools/rhino_oracle/observations/source_snapshots/7662c0330ed8808cbcef7a1af92226cddd8611d5cabb6dbb1a32add963c8a897.gz": "711c7a21735afeaafc7e0e6cafc6b6b707435f9ac9dbac66a8e5e6ff41936007",
+    "tools/rhino_oracle/observations/source_snapshots/76cc9fe80168a39c01b8fb1a3b886d3107bc0873354fb45588b9b910d2210f09.gz": "4e2c12f8e640c841d599a87dbc96b829208e9ef5607f47221cbd13bb91048850",
+    "tools/rhino_oracle/observations/source_snapshots/7b848e3a01b2b610d3e3c8637bdeae0a0bee3c7b72e8e8f31e35eab5e35d5bde.gz": "74ffb6684c45bcae78693f801767a39bee87dc7a7057d2447cfd5ba358be1e07",
+    "tools/rhino_oracle/observations/source_snapshots/82b39169d45fc3693b76f6ad4aeb3c85f03599877f2be558092476261cac909f.gz": "76564ff150fbb24d945e6be8280903bc6a3513ad5b7b038775ba4e5e460b05ac",
+    "tools/rhino_oracle/observations/source_snapshots/856c771179808de6cfe8d71144b399c6dfccdd793e536f578f6e3b70706eb895.gz": "2fbd3e2398e2092b811ccaa56f3b9012251589ae895af5abba29eab46838a3a7",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8a84035638c15e1bbe73b1e97cb0e99565f92dfcc7d07119087657bbf3809d2b.gz": "35fe52e9fed16103c92f8b5b0edd6a83b4ad3221ff9992cb06c8d97ea46ddeb9",
+    "tools/rhino_oracle/observations/source_snapshots/8d9309103749f61ed0b9f73f21da6cb1f636952c1ceda7d53159373c00641740.gz": "ba2321fcff09d4b0815507c741ced5729e1fab031742ba1eec9ae60e0c5b2e34",
+    "tools/rhino_oracle/observations/source_snapshots/910111dca7c445d0b716a45a1a22c155fec6396f0d833dc2705b5fc3dabb5697.gz": "cf2ff9d9700bc10cf2bd51e0a8e18dd4729025664ab0d60f414e58eb6d13658a",
+    "tools/rhino_oracle/observations/source_snapshots/9598b77b8215e6dc3955c2e9c2d70e77fc3f58a953838d72c5d2b2a120e90415.gz": "2689f2f1205fb157a45f10f08e05d6fe9fdb279bddfe8cc5267c1f5d399abb8f",
+    "tools/rhino_oracle/observations/source_snapshots/95b0e11d4f0e630bf24e9609c3a1f454efe8c7c285e444ac7c8a66a5dc721e47.gz": "1821601817d8a47737587436f39cb1cc690aebb78971226449936d8fd001c66f",
+    "tools/rhino_oracle/observations/source_snapshots/96f35243435a37cd7c4a97efdf9050b861671a8d22ed3b8ca23e0feac6095582.gz": "4972a4c14f2b7cfa64d99e144fc3aad2e86a3920e8863f09401f72e3193cda7e",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/98538f4134468154e29f8616575cfc2e30ebc3091a0b088855241bb3cfe7fd3b.gz": "2cb872aca05f4b1f7ea1a34d2daad69a30f788361c05d0a3de709823c1dada78",
+    "tools/rhino_oracle/observations/source_snapshots/9a5026c1d9d5a4c6bce34d9ddf85271de991cb500b0f367045497b2671c6173a.gz": "b9138fac9a17afb905293b238b1b6415fb541b626067ba20aabc5ea431caf7ee",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/a66869a807c83047a067ab6699d057caa2ebde11b27521e13f40b3076d484d5d.gz": "9e43f08908fa07e190d5f96f0ccce04c9bf02bd717716a654fbc8897f897b7e4",
+    "tools/rhino_oracle/observations/source_snapshots/a8224b82f97a7ba5ab2b8799415f57e7a032e03182256de4623ac6d8d11ad201.gz": "545a29dc66783da8e8fae12f0891b4d8164c9f899deef16aca25e29cb93b385a",
+    "tools/rhino_oracle/observations/source_snapshots/ab5dd7c625914d0ac6b2033f23c6f1dce8c69ad64d4c637ec85cb553a5b95049.gz": "d12f1a11e89731effe7b04c74f63eca6d43c8281bcff5a791925588bb8741665",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/bd4967712194e01fd86c04bbfc564a6cb0592440a3a9c5d5302e44d932358f8b.gz": "3719b93a6cd83620bd9c7ae2ed70efb413480850948d102e5aa614218583aded",
+    "tools/rhino_oracle/observations/source_snapshots/beeac393ed78dd00c82d23bfe3ddeacb5ed6139c8b3350b4fa3d199713356d35.gz": "6bfabcaab0ff6c3ff837d7fe47cd318c2579b012748b9d6f571c6a327536238b",
+    "tools/rhino_oracle/observations/source_snapshots/c4b871928a8388619652b1dc9d5b4716c8d1e8978d2ae2f2500f06628bf9250e.gz": "0aa9c7011871edc74b20017ac102582fab48bcd6f08b46a2c2d0421d1b423949",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/da7bc5a81d072e2851553a4d66a6deb3519032e641e7b9947257503b40ac639d.gz": "bf860bed73725719492d9cba7d482f68387d6f9239d141062a02b3b18f690eef",
+    "tools/rhino_oracle/observations/source_snapshots/daa5a0a60631552755408c19cd187f7cd510d29c3dc00441b7487d08373c81c8.gz": "804a004edbcc285ecc748ccb026331ff488806cd254e4b2a5a910155dba069f4",
+    "tools/rhino_oracle/observations/source_snapshots/e3b7cdbfe50095623256a0ad9a32cca548956eb4e9d6cdadc1f7d3435d58253d.gz": "c9f73b70d5b7b16dc8126c08891c78bb45fabb99d6c6b91bfead8a5cf024f02a",
+    "tools/rhino_oracle/observations/source_snapshots/e5817ce3495fc9861258d7689f07554853794b8b1831ac66b84c1ffdb53e1e64.gz": "d4d65feb8264efc57cff96bbb3757b30b4daebf60dd647cf54a9863b39a44bef",
+    "tools/rhino_oracle/observations/source_snapshots/ebfec758162c139d9f690928111f991de543cdcb12625b38205603978dda7f2b.gz": "992ded37bffc7b34b840cee1e058cb7260857ce1e66cff08687e62c4cc8ff56d"
+  }
+}
