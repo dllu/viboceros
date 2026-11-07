@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_corner_0",
+      "case": "rg_alt_corner_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_corner_1",
+      "case": "rg_alt_corner_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_corner_2",
+      "case": "rg_alt_corner_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_corner_3",
+      "case": "rg_alt_corner_3"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_skew_0",
+      "case": "rg_alt_skew_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_skew_1",
+      "case": "rg_alt_skew_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_spatial_0",
+      "case": "rg_alt_spatial_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_alt_spatial_1",
+      "case": "rg_alt_spatial_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_back_start",
+      "case": "rg_back_start"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_back_both",
+      "case": "rg_back_both"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_contact_skew",
+      "case": "rg_contact_skew"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_contact_spatial",
+      "case": "rg_contact_spatial"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_trim_skew",
+      "case": "rg_trim_skew"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_corner_scale_0",
+      "case": "rg_corner_scale_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_corner_scale_1",
+      "case": "rg_corner_scale_1"
+    }
+  ]
+}

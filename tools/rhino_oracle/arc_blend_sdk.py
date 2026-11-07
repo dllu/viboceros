@@ -18,6 +18,12 @@ HOLDOUTS={}
 for name,point,t0,t1 in [('unit_spatial',[7.,4.,3.],[1.,2.,-1.],[-1.,1.,2.]),('skew_space',[4.,-2.,6.],[2.,-1.,3.],[-2.,4.,1.])]:
  for i,r in enumerate([.1,.25,1.,4.]):HOLDOUTS[name+'_'+str(i)]=dict(start=[0.,0.,0.],start_direction=unit(t0),end=point,end_direction=unit(t1),ratio=r)
 CASES.update(HOLDOUTS)
+RADIUS_SEARCH={}
+for name,point,t0,t1 in [('corner',[5.,4.,0.],[1.,0.,0.],[0.,1.,0.]),('skew',[10.,4.,0.],[1.,0.,0.],[4.,-2.,0.]),('spatial',[7.,4.,3.],[1.,2.,-1.],[-1.,1.,2.])]:
+ for i in range(1,17):
+  a=(1./101.)+(i/17.)*(99./101.)
+  RADIUS_SEARCH['search_'+name+'_'+str(i)]=dict(start=[0.,0.,0.],start_direction=unit(t0),end=point,end_direction=unit(t1),ratio=a/(1.-a))
+CASES.update(RADIUS_SEARCH)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_sdk'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed arc blend query')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_sdk',id=k,case=k)for k in(PILOT if names is None else names)])

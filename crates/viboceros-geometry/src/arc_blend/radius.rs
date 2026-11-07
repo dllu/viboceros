@@ -1,5 +1,8 @@
-//! Closed-form radius differences for biarcs with parallel forward tangents.
-use crate::{GeometryError, Point3, Real, Tolerance, Vector3};
+//! Bounded radius target search, inferred from independent native observations.
+use super::join::Frame;
+use crate::{GeometryError, Point3, Real, Vector3};
+#[cfg(test)]
+mod tests;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ArcBlendRadiusSolution {
@@ -7,44 +10,59 @@ pub struct ArcBlendRadiusSolution {
     pub radius_difference: Real,
     pub reached_target: bool,
 }
+const ZERO: Real = 1. / 4_294_967_296.;
 
-/// Solve R0-R1 without iteration. Parallel tangent biarcs have radii a*R
-/// and (1-a)*R, where R=|chord|²/(2*|tangent cross chord|).
-/// The radius solver's ratio interval is [0.01,100], observed independently
-/// in Rhino command captures. Ordinary explicit ratios are not bounded here.
-/// Other tangent configurations require a separate numerical solver.
-pub fn try_parallel_arc_blend_radius_ratio(
+/// Search chord fractions in [1/101,100/101]. Each half interval is chosen by
+/// comparing its two endpoint errors; keep the best sampled fraction. This
+/// reproduces native failed-target previews as well as attained targets.
+/// It is deliberately not a global root finder: a nonmonotone radius function
+/// can have a closer solution outside the retained interval.
+/// Directions are normalized and trials reuse the analytic tangent equation;
+/// no curves or rational conversions are allocated during the search.
+pub fn try_arc_blend_radius_ratio(
     start: Point3,
     start_direction: Vector3,
     end: Point3,
     end_direction: Vector3,
     difference: Real,
-    tolerance: Tolerance,
+    alternate: bool,
 ) -> Result<ArcBlendRadiusSolution, GeometryError> {
     crate::require_finite([difference], "arc blend radius difference")?;
-    let first = start_direction.normalized_nonzero()?.as_vector();
-    let second = end_direction.normalized_nonzero()?.as_vector();
-    if first.dot(second)? <= 0. || first.cross(second)?.length()? > 1e-12 {
-        return Err(GeometryError::Degenerate {
-            context: "arc blend radius differences require parallel forward tangents",
-        });
+    let frame = Frame::new(start, start_direction, end, end_direction)?;
+    let (mut left, mut right) = (1. / 101., 100. / 101.);
+    let (mut lv, mut rv) = (
+        frame.radius_difference(left, alternate)?,
+        frame.radius_difference(right, alternate)?,
+    );
+    let mut best = if (lv - difference).abs() < (rv - difference).abs() {
+        (left, lv)
+    } else {
+        (right, rv)
+    };
+    for _ in 0..64 {
+        let middle = 0.5 * (left + right);
+        if middle == left || middle == right {
+            break;
+        }
+        let mv = frame.radius_difference(middle, alternate)?;
+        if (mv - difference).abs() < (best.1 - difference).abs() {
+            best = (middle, mv);
+        }
+        if (mv - difference).abs() <= ZERO {
+            best = (middle, mv);
+            break;
+        }
+        if (lv - difference).abs() < (rv - difference).abs() {
+            right = middle;
+            rv = mv;
+        } else {
+            left = middle;
+            lv = mv;
+        }
     }
-    let chord = start.vector_to(end)?;
-    let length = chord.length()?;
-    let direction = chord.normalized_nonzero()?.as_vector();
-    let sine = first.cross(direction)?.length()?;
-    if sine <= 1e-12 || first.dot(direction)? <= 0. {
-        return Err(GeometryError::Degenerate {
-            context: "arc blend radius difference chord",
-        });
-    }
-    let radius = length / (2. * sine);
-    crate::require_finite([radius], "arc blend radius sum")?;
-    let a = (0.5 * (1. + difference / radius)).clamp(1. / 101., 100. / 101.);
-    let achieved = (2. * a - 1.) * radius;
     Ok(ArcBlendRadiusSolution {
-        ratio: a / (1. - a),
-        radius_difference: achieved,
-        reached_target: (achieved - difference).abs() <= tolerance.absolute(),
+        ratio: best.0 / (1. - best.0),
+        radius_difference: best.1,
+        reached_target: (best.1 - difference).abs() <= ZERO,
     })
 }

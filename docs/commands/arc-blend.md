@@ -6,7 +6,7 @@
 each source near the desired end, adjust options, then press Enter to commit
 the preview. [Adjustment handles](arc-blend-handles.md) support endpoint sliding,
 positive ratios and held drags. [Radius differences](arc-blend-radius.md) support
-parallel forward tangents. Esc cancels without changing geometry or pending redo history.
+planar/spatial tangents and alternate solutions. Esc cancels without changing geometry or pending redo history.
 Source selection clears when the command starts. The result uses the current
 layer, with one undo record for the blend and any source edits.
 
@@ -20,8 +20,8 @@ Options currently supported:
 - `Ratio=positive-number` sets the ratio of the two arc control-polygon
   lengths; the default is 1. Zero restores the last radius target, initially
   zero. This is a Viboceros scripting option.
-- `RadiusDifference=number` locks the first arc's radius minus the second's
-  for parallel forward tangents. Interactively, enter `RadiusDifference`,
+- `RadiusDifference=number` targets the first arc's radius minus the second's
+  with a bounded search. Interactively, enter `RadiusDifference`,
   then the number. Positive ratios release the lock.
 - `Parameter1=t` and `Parameter2=t` move the contacts within the original
   source parameter domains, retaining the selected end orientations. These
@@ -55,10 +55,9 @@ Rhino captures use private Xvfb sessions. Reproduce the checks with:
 python3 -m tools.rhino_oracle.check_arc_blend
 ```
 
-This is a first implementation. General nonparallel radius solving,
-SubCrv and remembered settings between commands remain
-unsupported. Native command comparisons cover endpoint contacts on lines;
-interior parameter edits and edge references lack native qualification.
+This is a first implementation. SubCrv and remembered settings between commands remain
+unsupported. Native command comparisons cover endpoint and interior contacts
+on lines; nonlinear source contacts and edge references lack native qualification.
 Three raw non-unit SDK direction cases have discontinuous native join
 tangents and are retained as diagnostics. Seven command discovery cases
 contain incomplete inputs, rejected options or unattained radius targets.

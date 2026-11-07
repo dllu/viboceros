@@ -156,18 +156,13 @@ impl Input {
             jets[1].tangent()
         };
         if let Some(difference) = self.radius_difference {
-            if self.geometry.alternate {
-                return Err(CommandError::Usage(
-                    "ArcBlend RadiusDifference currently requires parallel forward tangents and the ordinary solution",
-                ));
-            }
-            let solution = viboceros_geometry::try_parallel_arc_blend_radius_ratio(
+            let solution = viboceros_geometry::try_arc_blend_radius_ratio(
                 jets[0].point(),
                 a.as_vector(),
                 jets[1].point(),
                 b.as_vector(),
                 difference,
-                self.tolerance,
+                self.geometry.alternate,
             )?;
             self.geometry.ratio = solution.ratio;
             self.radius_target_reached = solution.reached_target;

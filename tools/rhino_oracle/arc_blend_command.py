@@ -111,6 +111,34 @@ RADIUS_RECALL={
 }
 RADIUS_RECALL={k:dict(v,measure_arcs=True)for k,v in RADIUS_RECALL.items()}
 CASES.update(RADIUS_RECALL)
+RADIUS_GENERAL={}
+for name,pose,targets in [('skew',BALANCE_POSE,[-.1,-.01,0.,.01,.1,2.,2.4,2.5,2.6,3.,4.,5.]),('spatial',SPATIAL,[-2.,-1.5,-.5,.5,1.5,2.,3.,4.]),('corner',BASE,[-1.5,-.5,.5,1.5,2.,2.4,2.6,3.5,4.,4.5])]:
+ for i,target in enumerate(targets):
+  RADIUS_GENERAL['rg_'+name+'_'+str(i)]=dict(recipe(*pose,options=['Trim=No','RadiusDifference',target]),measure_arcs=True)
+for i,scale in enumerate([.1,10.]):
+ pose=tuple([x*scale for x in v]for v in BALANCE_POSE)
+ RADIUS_GENERAL['rg_skew_scale_'+str(i)]=dict(recipe(*pose,options=['Trim=No','RadiusDifference',0.]),measure_arcs=True)
+CASES.update(RADIUS_GENERAL)
+RADIUS_GENERAL_HOLDOUTS={}
+for name,pose,targets in [('corner',BASE,[-1.,0.,1.,5.]),('skew',BALANCE_POSE,[-3.,0.]),('spatial',SPATIAL,[0.,1.])]:
+ for i,target in enumerate(targets):
+  RADIUS_GENERAL_HOLDOUTS['rg_alt_'+name+'_'+str(i)]=dict(recipe(*pose,options=['Trim=No','AlternateSolution','RadiusDifference',target]),measure_arcs=True)
+RADIUS_GENERAL_HOLDOUTS.update({
+ 'rg_back_start':dict(recipe([0.,0.,0.],[-5.,0.,0.],[5.,4.,0.],[0.,5.,0.],options=['RadiusDifference',0.]),measure_arcs=True),
+ 'rg_back_both':dict(recipe([0.,0.,0.],[-5.,0.,0.],[5.,4.,0.],[0.,-5.,0.],options=['RadiusDifference',2.]),measure_arcs=True),
+ 'rg_contact_skew':dict(recipe(*BALANCE_POSE,options=['RadiusDifference',0.,dict(click=[10.,4.,0.]),[12.,3.,0.]]),measure_arcs=True),
+ 'rg_contact_spatial':dict(recipe(*SPATIAL,options=['RadiusDifference',1.,dict(click=[7.,4.,3.]),[6.5,4.5,4.]]),measure_arcs=True),
+ 'rg_trim_skew':dict(recipe(*BALANCE_POSE,options=['Trim=Yes','Join=No','RadiusDifference',-1.,dict(click=[0.,0.,0.]),[-2.,0.,0.]]),measure_arcs=True),
+})
+for i,scale in enumerate([.1,10.]):
+ pose=tuple([x*scale for x in v]for v in BASE)
+ RADIUS_GENERAL_HOLDOUTS['rg_corner_scale_'+str(i)]=dict(recipe(*pose,options=['Trim=No','RadiusDifference',scale]),measure_arcs=True)
+CASES.update(RADIUS_GENERAL_HOLDOUTS)
+RADIUS_COCIRCULAR={}
+for i,target in enumerate([0.,1.,-1.]):
+ RADIUS_COCIRCULAR['rg_cocircular_'+str(i)]=dict(recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['Trim=No','RadiusDifference',target]),measure_arcs=True)
+RADIUS_COCIRCULAR['rg_cocircular_alt']=dict(recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['Trim=No','AlternateSolution','RadiusDifference',0.]),measure_arcs=True)
+CASES.update(RADIUS_COCIRCULAR)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

@@ -1,0 +1,50 @@
+[
+  {
+    "family": "arc_blend_radius_sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_radius_sdk"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_radius_sdk.log.gz"
+  },
+  {
+    "family": "arc_blend_radius_general",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_radius_general"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_radius_general.log.gz"
+  },
+  {
+    "family": "arc_blend_radius_general_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_radius_general_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_radius_general_holdouts.log.gz"
+  },
+  {
+    "family": "arc_blend_radius_cocircular",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_radius_cocircular"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_radius_cocircular.log.gz"
+  }
+]

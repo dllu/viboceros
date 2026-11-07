@@ -28,7 +28,8 @@ pub use volume_mass_properties::{SurfaceVolumeMoments, VolumeBoundary, VolumeMas
 mod arc_blend;
 mod arc_deform;
 pub use arc_blend::{
-    ArcBlendOptions, ArcBlendRadiusSolution, try_arc_blend, try_parallel_arc_blend_radius_ratio,
+    ArcBlendOptions, ArcBlendRadiusSolution, try_arc_blend, try_arc_blend_radius_ratio,
+    try_parallel_arc_blend_radius_ratio,
 };
 mod bezier;
 mod binary_accumulator;

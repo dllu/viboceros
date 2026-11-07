@@ -76,7 +76,7 @@ fn radius_targets_match_native_arcs_samples_history_and_archives() {
     assert_eq!((matched, diagnostics), (18, 23));
 }
 #[test]
-fn unsupported_and_invalid_radius_changes_preserve_the_preview_and_document() {
+fn invalid_radius_changes_preserve_the_preview_and_document() {
     let data = native::read("arc_blend_radius_targets");
     for row in data["results"].as_array().unwrap() {
         let v = &row["value"];
@@ -96,11 +96,6 @@ fn unsupported_and_invalid_radius_changes_preserve_the_preview_and_document() {
         let arguments = input.arguments().unwrap();
         for word in ["RadiusDifference=NaN", "RadiusDifference=inf", "Ratio=-1"] {
             assert!(input.option(word).is_err());
-            assert_eq!(input.preview(), Some(&before));
-            assert_eq!(input.arguments().unwrap(), arguments);
-        }
-        if radius::diagnostic(row["id"].as_str().unwrap()).is_some() {
-            assert!(input.option("RadiusDifference=0").is_err());
             assert_eq!(input.preview(), Some(&before));
             assert_eq!(input.arguments().unwrap(), arguments);
         }

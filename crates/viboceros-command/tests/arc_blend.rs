@@ -110,7 +110,7 @@ fn invalid_arc_blend_options_and_stale_sources_are_atomic() {
     doc.undo().unwrap();
     let before = format!("{doc:?}");
     for options in [
-        "Ratio=0",
+        "Ratio=-1",
         "Ratio=NaN",
         "Join=Yes",
         "Parameter1=20",

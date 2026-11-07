@@ -100,7 +100,7 @@ pub fn independent_samples(doc: &Document, v: &Value) -> f64 {
     }
     error
 }
-fn samples(curve: CurveRef<'_>, expected: &Value) -> f64 {
+pub fn samples(curve: CurveRef<'_>, expected: &Value) -> f64 {
     let rows = &expected["samples"];
     let domain = &expected["curve"]["domain"];
     let mut error = 0_f64;

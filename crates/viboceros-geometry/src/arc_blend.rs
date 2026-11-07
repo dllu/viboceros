@@ -1,7 +1,10 @@
 //! Tangent biarcs from endpoint positions and directions.
 use crate::{CircularArc3, GeometryError, Point3, PolyCurve3, Real, Tolerance, Vector3};
+mod join;
+mod parallel;
 mod radius;
-pub use radius::{ArcBlendRadiusSolution, try_parallel_arc_blend_radius_ratio};
+pub use parallel::try_parallel_arc_blend_radius_ratio;
+pub use radius::{ArcBlendRadiusSolution, try_arc_blend_radius_ratio};
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ArcBlendOptions {
     /// Ratio of the two arc control-polygon lengths; strictly positive.
@@ -32,63 +35,11 @@ pub fn try_arc_blend(
             context: "arc blend control-polygon ratio",
         });
     }
-    let first = start_direction.normalized_nonzero()?.as_vector();
-    let second = end_direction.normalized_nonzero()?.as_vector();
-    let chord = start.vector_to(end)?;
-    let length = chord.length()?;
-    if length == 0. {
-        return Err(GeometryError::Degenerate {
-            context: "arc blend endpoints",
-        });
-    }
-    let direction = chord.normalized_nonzero()?.as_vector();
-    let (a, b) = if options.ratio <= 1. {
-        let b = 1. / (1. + options.ratio);
-        (options.ratio * b, b)
-    } else {
-        let a = 1. / (1. + 1. / options.ratio);
-        (a, a / options.ratio)
-    };
-    let delta = Vector3::try_from(std::array::from_fn(|i| {
-        first.to_array()[i] - second.to_array()[i]
-    }))?;
-    // d0=a*d, d1=b*d. Tangency at the shared point requires
-    // |chord-d0*t0-d1*t1|^2=(d0+d1)^2. Work in chord-length units.
-    let quadratic = a * b * delta.dot(delta)?;
-    let linear = 2.
-        * direction.dot(Vector3::try_from(std::array::from_fn(|i| {
-            a * first.to_array()[i] + b * second.to_array()[i]
-        }))?)?;
-    let d = if quadratic == 0. {
-        if linear == 0. || options.alternate {
-            return Err(GeometryError::Degenerate {
-                context: "arc blend tangent-length equation",
-            });
-        }
-        1. / linear
-    } else {
-        let discriminant = linear.hypot(2. * quadratic.sqrt());
-        if options.alternate {
-            if linear <= 0. {
-                -2. / (discriminant - linear)
-            } else {
-                (-linear - discriminant) / (2. * quadratic)
-            }
-        } else if linear >= 0. {
-            2. / (linear + discriminant)
-        } else {
-            (-linear + discriminant) / (2. * quadratic)
-        }
-    };
-    if !d.is_finite() {
-        return Err(GeometryError::Degenerate {
-            context: "arc blend tangent lengths",
-        });
-    }
-    let offset = Vector3::try_from(std::array::from_fn(|i| {
-        a * chord.to_array()[i] + a * b * d * length * delta.to_array()[i]
-    }))?;
-    let joint = start.translated(offset)?;
+    let frame = join::Frame::new(start, start_direction, end, end_direction)?;
+    let joint = start.translated(frame.offset(options)?)?;
+    let length = frame.length;
+    let first = frame.first;
+    let second = frame.second;
     let construction = Tolerance::try_new(
         tolerance
             .absolute()

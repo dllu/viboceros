@@ -2,46 +2,48 @@
 
 [ArcBlend](arc-blend.md) · [Adjustment handles](arc-blend-handles.md)
 
-For parallel forward tangents, `RadiusDifference` followed by a number locks
-the first radius minus the second. Negative values make the first smaller.
-The scripting form is `RadiusDifference=number`. Moving a contact recomputes
-the ratio to retain the target. The result remains two exact circular arcs.
+`RadiusDifference` followed by a number targets the first radius minus the
+second. Negative targets request a smaller first radius. The scripting form is
+`RadiusDifference=number`. Moving a contact solves again for that target.
+Planar and spatial tangents, backward directions and AlternateSolution are
+supported. The result remains two exact circular arcs.
 
-A positive ratio releases the lock. With the ratio handle selected, zero or
-snapping to either end of the chord restores the last requested target.
-That target starts at zero and is recalled within the active command;
-settings between separate commands are not remembered. Esc cancels a numeric
-prompt or handle preview; Enter commits the complete blend in one undo step.
+A positive ratio releases the target. With the ratio handle selected, zero
+or snapping to a chord end restores the last requested target, initially
+zero. Targets are recalled within the active command; settings between
+commands are not remembered. Esc cancels a numeric prompt or handle preview.
+Enter commits the complete blend in one undo step.
 
-The radius solver bounds the control ratio to `[0.01,100]`, as observed in
-Rhino. An unreachable target produces the bounded blend and an
-“Unable to achieve requested radius difference” warning. Explicit positive
-ratios retain their wider range. Nonparallel tangents, straight chords,
-backward-facing chords and alternate-branch radius solving are rejected
-without changing the accepted preview or document.
+The search bounds the control ratio to `[0.01,100]`. At each step it compares
+the errors at the interval ends, retains the closer half and keeps the best
+sampled ratio. A target missed by this search produces a provisional blend
+and an “Unable to achieve requested radius difference” warning. This
+reproduces Rhino's observed behavior, including cases where another ratio
+could reach the target. Explicit positive ratios retain their wider range.
+Straight or zero-length arc pieces are rejected without changing the preview.
 
-The geometry API is `try_parallel_arc_blend_radius_ratio`. For a chord of
-length `L` with unit tangent `t`, the radius sum is
-`R=L²/(2*|t cross chord|)`. At chord fraction `a`, the radii are `a*R` and
-`(1-a)*R`; solving their signed difference gives the control ratio `a/(1-a)`.
-No native output coordinates seed the construction.
+The geometry API is `try_arc_blend_radius_ratio`. It shares the tangent-length
+equation with construction and evaluates trial radii without allocating
+curves or converting NURBS. The older `try_parallel_arc_blend_radius_ratio`
+API remains available for closed-form parallel-tangent solutions.
 
-[Validation](../arc-blend-radius-validation.json) retains 41 new Rhino
-observations: 18 matching workflows and 23 explicit diagnostics. Both builds
-check coefficients, domains, attributes, selection, Undo/Redo and 36 total
-command/UI 3DM round trips. Independent public ArcCurve and PolyCurve
-measurements provide 1,782 point/tangent stations, plus arc radii. Cases
-include translation into 3D, scaling, signed targets, contact edits, ratio
-overrides, target recall and two unattainable targets. Reproduce:
+[General-search validation](../arc-blend-radius-general-validation.json)
+retains 99 new observations and 28 earlier target observations. Both builds
+check 79 command/UI workflows, attributes, selection, history and 158 total
+3DM round trips per build. Forty-eight independent public SDK curves check
+trial radii, coefficients and native point/tangent samples. Reproduce:
 
 ```sh
-python3 -m tools.rhino_oracle.check_arc_blend_radius
+python3 -m tools.rhino_oracle.check_arc_blend_radius_general
 ```
 
-Rhino captures run in private Xvfb sessions; egui tests run without a window.
-Twenty-one diagnostic cases use general tangent configurations: some attain
-their targets, while others warn and leave changed previews. Their numerical
-search behavior remains unresolved. Two further captures inherit settings
-from earlier commands. None of these diagnostics counts as matching geometry.
-Historical creation and handle records keep their original scope. Nonlinear
-source contacts, continuous distance and comparative speed remain unqualified.
+Seventy-seven workflows match NURBS representations within `1e-6`. Two
+same-circle targets choose different internal arc partitions: complete-curve
+samples and supporting-circle/sweep bounds verify equal geometry, while
+coefficient differences remain explicit diagnostics, and ratio-handle station
+parity is unqualified for those two cases.
+Captures use private Xvfb; application and egui tests are windowless.
+Historical [parallel qualification](../arc-blend-radius-validation.json)
+keeps its original scope. Nonlinear source contacts, larger scaling,
+comparative speed and continuous distance outside the same-circle cases
+remain unqualified.

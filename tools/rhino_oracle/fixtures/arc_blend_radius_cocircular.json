@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "rg_cocircular_0",
+      "case": "rg_cocircular_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_cocircular_1",
+      "case": "rg_cocircular_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_cocircular_2",
+      "case": "rg_cocircular_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rg_cocircular_alt",
+      "case": "rg_cocircular_alt"
+    }
+  ]
+}

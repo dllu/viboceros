@@ -4,7 +4,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/arc_blend_radius.rs"]
 #[allow(dead_code)]
-mod radius;
+pub(super) mod radius;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();
@@ -129,20 +129,12 @@ fn numeric_prompt_cancellation_invalid_input_and_reference_changes_are_atomic() 
         assert!(app.arc_blend_session.as_ref().unwrap().input.ready());
         enter(&mut app, "RadiusDifference");
         enter(&mut app, "30");
-        if row["id"] == "rd_parallel_0" {
-            assert!(!app.arc_blend_session.as_ref().unwrap().radius_prompt);
-            assert!(
-                app.command_log
-                    .iter()
-                    .any(|s| s.contains("Unable to achieve"))
-            );
-        } else {
-            assert!(app.arc_blend_session.as_ref().unwrap().radius_prompt);
-            assert_eq!(
-                app.arc_blend_session.as_ref().unwrap().input.preview(),
-                Some(&before)
-            );
-        }
+        assert!(!app.arc_blend_session.as_ref().unwrap().radius_prompt);
+        assert!(
+            app.command_log
+                .iter()
+                .any(|s| s.contains("Unable to achieve"))
+        );
         assert!(!app.document.can_undo());
         enter(&mut app, "RadiusDifference");
         let id = reference_inputs::guide(&app.document, 1);

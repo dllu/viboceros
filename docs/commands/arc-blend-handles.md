@@ -42,10 +42,8 @@ physical mouse acknowledgements, public viewing rays and selected public
 projection matrices. Output coordinates do not seed the Rust construction.
 
 Zero ratio and end snaps restore the last radius target within the command,
-initially zero, for [parallel forward tangents](arc-blend-radius.md).
-General nonparallel radius solving remains unsupported. Some native failed-target probes change provisional geometry
-despite warning that the requested radius difference was not achieved;
-these are retained as diagnostics. Native endpoint comparisons cover line
+initially zero. The [general radius search](arc-blend-radius.md) also reproduces
+failed-target previews for nonparallel tangents and alternate solutions. Native endpoint comparisons cover line
 sources. Nonlinear contacts, edge adjustments, exact hit-box/depth ranking,
 SubCrv and remembered defaults remain unqualified or unsupported.
 

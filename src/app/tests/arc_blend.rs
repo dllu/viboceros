@@ -213,7 +213,7 @@ fn windowless_mouse_picks_preview_and_enter_commit_one_history_record() {
         .unwrap()
         .clone();
     assert_ne!(initial, preview);
-    for bad in ["Ratio=0", "RadiusDifference=0", "0.25", "Parameter1=999"] {
+    for bad in ["Ratio=-1", "RadiusDifference=NaN", "0.25", "Parameter1=999"] {
         enter(&mut app, bad);
         assert_eq!(
             app.arc_blend_session.as_ref().unwrap().input.preview(),

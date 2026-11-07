@@ -1,0 +1,251 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_1",
+      "case": "search_corner_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_2",
+      "case": "search_corner_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_3",
+      "case": "search_corner_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_4",
+      "case": "search_corner_4"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_5",
+      "case": "search_corner_5"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_6",
+      "case": "search_corner_6"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_7",
+      "case": "search_corner_7"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_8",
+      "case": "search_corner_8"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_9",
+      "case": "search_corner_9"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_10",
+      "case": "search_corner_10"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_11",
+      "case": "search_corner_11"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_12",
+      "case": "search_corner_12"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_13",
+      "case": "search_corner_13"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_14",
+      "case": "search_corner_14"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_15",
+      "case": "search_corner_15"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_corner_16",
+      "case": "search_corner_16"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_1",
+      "case": "search_skew_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_2",
+      "case": "search_skew_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_3",
+      "case": "search_skew_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_4",
+      "case": "search_skew_4"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_5",
+      "case": "search_skew_5"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_6",
+      "case": "search_skew_6"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_7",
+      "case": "search_skew_7"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_8",
+      "case": "search_skew_8"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_9",
+      "case": "search_skew_9"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_10",
+      "case": "search_skew_10"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_11",
+      "case": "search_skew_11"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_12",
+      "case": "search_skew_12"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_13",
+      "case": "search_skew_13"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_14",
+      "case": "search_skew_14"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_15",
+      "case": "search_skew_15"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_skew_16",
+      "case": "search_skew_16"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_1",
+      "case": "search_spatial_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_2",
+      "case": "search_spatial_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_3",
+      "case": "search_spatial_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_4",
+      "case": "search_spatial_4"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_5",
+      "case": "search_spatial_5"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_6",
+      "case": "search_spatial_6"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_7",
+      "case": "search_spatial_7"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_8",
+      "case": "search_spatial_8"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_9",
+      "case": "search_spatial_9"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_10",
+      "case": "search_spatial_10"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_11",
+      "case": "search_spatial_11"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_12",
+      "case": "search_spatial_12"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_13",
+      "case": "search_spatial_13"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_14",
+      "case": "search_spatial_14"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_15",
+      "case": "search_spatial_15"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "search_spatial_16",
+      "case": "search_spatial_16"
+    }
+  ]
+}
