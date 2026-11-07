@@ -251,7 +251,14 @@ fn distant_click_selects_the_nearest_projected_control() {
             &context,
             vec![pointer(target, false, false, false)],
         );
-        assert_eq!(out.blend_curve_handle, alt.then_some(Handle::EndShape));
+        assert_eq!(
+            out.blend_curve_handle,
+            Some(if alt {
+                Handle::EndShape
+            } else {
+                Handle::EndControl(2)
+            })
+        );
         assert_eq!(out.blend_curve_angle, alt);
         app.handle_viewport_action(out);
         let input = &app.blend_curve_session.as_ref().unwrap().input;

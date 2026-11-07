@@ -148,6 +148,31 @@ impl VibocerosApp {
             return true;
         }
         let s = self.blend_curve_session.as_ref().unwrap();
+        if s.input.secondary_control_adjustment()
+            && let Some(distance) =
+                viboceros_drafting::PointInput::parse_length_with_units(text, self.document.units())
+        {
+            let result = distance
+                .map_err(|_| {
+                    viboceros_command::CommandError::Usage("Expected a finite control distance")
+                })
+                .and_then(|v| {
+                    self.blend_curve_session
+                        .as_mut()
+                        .unwrap()
+                        .input
+                        .set_shape_distance(v)
+                });
+            match result {
+                Ok(()) => {
+                    self.blend_curve_session.as_mut().unwrap().candidate = None;
+                    self.blend_curve_prompt();
+                }
+                Err(e) => self.push_log(format!("Error: {e}")),
+            }
+            return true;
+        }
+        let s = self.blend_curve_session.as_ref().unwrap();
         let mut next = s.input.clone();
         let result = if next.angle_constraint().is_some() {
             if let Ok(angle) = text.parse::<f64>() {

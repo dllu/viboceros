@@ -21,9 +21,9 @@ preserving the angle. A distinct prescribed pick selects the shape handle and
 changes the angle. Distant surface and ordinary-curve picks check this behavior.
 
 Four terminal-zero private Xvfb captures retain 38 observations, with 37 matched
-document workflows. One exposes independent secondary shape-handle editing; it
-is retained as a pending diagnostic, and selecting that control without Alt
-leaves the preview unchanged. An earlier
+document workflows. One exposed independent secondary shape-handle editing and
+was excluded from that qualification. It is now promoted in the
+[higher control qualification](blend-curve-controls.md). An earlier
 eight-case pilot published complete observations, then its outer process exited
 143. Those observations remain diagnostic replays; every pilot recipe repeats
 in the clean verification capture. Frozen producers and all terminal receipts
@@ -39,8 +39,8 @@ Geometry and normalized derivative gates remain `1e-6`; parameter domains retain
 `max(2e-6, 1e-8 * native span)`. Full Native drag/Escape trajectories, arbitrary
 occlusion/depth ties, shared/seam/trimmed/closed boundaries, singular frames,
 mathematical general G3/G4 continuity, continuous distance and comparative speed
-remain unqualified. Independent secondary shape controls still require additional
-jet freedoms; Alt rotation of their supporting face is available. The earlier
+remain unqualified. Higher shape controls and Alt rotation of their supporting
+face are available. The earlier
 long-handle domain diagnostics remain separate.
 
 ```sh

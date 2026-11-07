@@ -36,18 +36,23 @@ and `Direction=Free` releases it. Numeric intervals can wrap a closed seam.
 PickPoint initially points back toward the portion start. Esc discards the
 nested getter and returns to source selection.
 
-Click a contact to slide it on its source, or a shape handle to change its
-length. The nearest visible projected control determines the edit. Independent
-secondary shape controls remain pending; they do not select another handle. Click again to accept
-the preview; held dragging also works. Typed
-points project onto the constraint. Shape lengths also accept numbers with
-units, fractions and arithmetic. Moving a contact preserves handle lengths.
+Click a contact to slide it on its source, or a primary shape handle to change
+its length. G2–G4 also expose every higher control for signed movement along the
+endpoint tangent. Later tangent gaps stay fixed relative to the primary handle;
+resizing that handle scales the gaps. Moving a contact preserves this shape.
+The nearest projected control determines the edit. Click again to accept the
+preview; held dragging also works. Typed points project onto the constraint.
+Primary lengths accept numbers with units, fractions and arithmetic. For a higher
+control, a number sets a positive distance and the next point chooses its direction,
+measured from the second control's tangential position. See
+[higher control editing](../blend-curve-controls.md).
 Esc discards the local adjustment; another Esc cancels the command. `!` aborts
 immediately. Previews leave geometry and undo/redo untouched.
 
-Hold Shift while selecting a shape handle to set both handle lengths together.
-Both ends must have the same G1–G4 continuity. Each handle stays on its own tangent
-constraint; contacts and mixed/G0 constraints edit independently. Pairing lasts
+Hold Shift while selecting a shape handle to copy its complete shape to the other
+end: primary length and higher gap ratios. Both ends must have the same G1–G4
+continuity. Each end uses its own tangent constraint; contacts and mixed/G0
+constraints edit independently. Pairing lasts
 for that adjustment, including when Shift is released before mouse-up.
 
 Hold Alt when selecting a surface shape handle to rotate its direction in the
@@ -95,7 +100,8 @@ the editor and requests new picks.
 Validation: [G0–G2](../blend-curve-validation.json),
 [G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
 [temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
-[surface edges](../blend-curve-edges.md), and [Alt editing](../blend-curve-alt.md).
+[surface edges](../blend-curve-edges.md), [Alt editing](../blend-curve-alt.md), and
+[higher controls](../blend-curve-controls.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document

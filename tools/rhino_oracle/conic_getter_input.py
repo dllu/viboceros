@@ -104,7 +104,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
         if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
         located=command in('BlendCrv','ArcBlend','Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('arc_blend_command','blend_curve_command','line_pick_context','line_tangent_mouse','line_tangent_rays','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
-        if isinstance(a,dict)and('click'in a or located):
+        if command=='BlendCrv'and isinstance(a,dict)and set(a)=={'wait_prompt'}:
+            body=E.IfThen(prompt_gate(a['wait_prompt']),block(advance+[log('\nBlendCrv observed prompt '+a['wait_prompt']+'\n')]))
+            tokens.append(None)
+        elif isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
             request=pointer_request(i,marker,screen)

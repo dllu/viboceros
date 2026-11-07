@@ -66,7 +66,15 @@ impl Input {
             } else {
                 return Ok(false);
             };
-            if option_name_eq(stem, "Continuity") {
+            if option_name_eq(stem, "Spacing") {
+                let ratios = value
+                    .split(',')
+                    .map(parse_finite_real)
+                    .collect::<Result<Vec<_>, _>>()?;
+                next.spacing[i] = ratios.try_into().map_err(|_| {
+                    CommandError::Usage("Spacing1/2 requires three finite control-gap ratios")
+                })?;
+            } else if option_name_eq(stem, "Continuity") {
                 let order = continuity(value)?;
                 if order != 0
                     && next
@@ -78,7 +86,18 @@ impl Input {
                         "A point endpoint requires G0 continuity",
                     ));
                 }
+                let reset = order != next.continuity[i] && next.preview.is_some();
+                if reset {
+                    next.freeze_handles();
+                }
                 next.continuity[i] = order;
+                if reset {
+                    next.handles[i] = None;
+                    next.bulges[i] = 1.;
+                    next.spacing[i] = [1.; 3];
+                    next.rebuild()?;
+                    next.freeze_handles();
+                }
             } else if option_name_eq(stem, "Handle") || option_name_eq(stem, "Bulge") {
                 let v = parse_finite_real(value)?;
                 if v <= 0. {

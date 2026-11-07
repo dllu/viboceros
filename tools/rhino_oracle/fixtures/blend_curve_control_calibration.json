@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_0p5_4",
+      "case": "control_scale_0p5_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_0p5_5",
+      "case": "control_scale_0p5_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_2p0_4",
+      "case": "control_scale_2p0_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_2p0_5",
+      "case": "control_scale_2p0_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_5p0_4",
+      "case": "control_scale_5p0_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_scale_5p0_5",
+      "case": "control_scale_5p0_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_ordinary_g3_k2",
+      "case": "control_ordinary_g3_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_ordinary_g4_k2",
+      "case": "control_ordinary_g4_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_ordinary_g4_k3",
+      "case": "control_ordinary_g4_k3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_ordinary_g4_k4",
+      "case": "control_ordinary_g4_k4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_number_point_plane_forward",
+      "case": "control_number_point_plane_forward"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_number_point_plane_backward",
+      "case": "control_number_point_plane_backward"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_number_point_curved_forward",
+      "case": "control_number_point_curved_forward"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_number_point_curved_backward",
+      "case": "control_number_point_curved_backward"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_quadratic_4",
+      "case": "control_policy_quadratic_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_quadratic_5",
+      "case": "control_policy_quadratic_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_cubic_4",
+      "case": "control_policy_cubic_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_cubic_5",
+      "case": "control_policy_cubic_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_combined_4",
+      "case": "control_policy_combined_4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_combined_5",
+      "case": "control_policy_combined_5"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_combined_second_third",
+      "case": "control_policy_combined_second_third"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_policy_combined_third",
+      "case": "control_policy_combined_third"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_numeric_plane",
+      "case": "control_numeric_plane"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_numeric_curved",
+      "case": "control_numeric_curved"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_unequal_g2",
+      "case": "control_validate_unequal_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_unequal_g3",
+      "case": "control_validate_unequal_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_unequal_g4",
+      "case": "control_validate_unequal_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_g3_to_g4",
+      "case": "control_validate_g3_to_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_numeric_pointer",
+      "case": "control_validate_numeric_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_point_g4",
+      "case": "control_validate_point_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_rational_g4",
+      "case": "control_validate_rational_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_validate_join_g3",
+      "case": "control_validate_join_g3"
+    }
+  ]
+}

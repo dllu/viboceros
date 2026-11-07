@@ -1,0 +1,32 @@
+[
+  {
+    "name": "controls-command-initial",
+    "status": 101,
+    "log": "controls-command-initial.log.gz"
+  },
+  {
+    "name": "controls-ui-initial",
+    "status": 101,
+    "log": "controls-ui-initial.log.gz"
+  },
+  {
+    "name": "controls-command-domain-attempt",
+    "status": 101,
+    "log": "controls-command-domain-attempt.log.gz"
+  },
+  {
+    "name": "evidence-initial",
+    "status": 1,
+    "log": "evidence-initial.log.gz"
+  },
+  {
+    "name": "alt-ui-legacy-expectation",
+    "status": 101,
+    "log": "alt-ui-legacy-expectation.log.gz"
+  },
+  {
+    "name": "clippy-portable-initial",
+    "status": 101,
+    "log": "clippy-portable-initial.log.gz"
+  }
+]

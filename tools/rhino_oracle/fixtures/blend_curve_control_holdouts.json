@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_second_2",
+      "case": "control_holdout_g4_second_2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_second_6",
+      "case": "control_holdout_g4_second_6"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_end",
+      "case": "control_holdout_g4_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_second_third",
+      "case": "control_holdout_g4_second_third"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_primary",
+      "case": "control_holdout_g4_primary"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g3_numeric",
+      "case": "control_holdout_g3_numeric"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_negative",
+      "case": "control_holdout_g4_negative"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_shift",
+      "case": "control_holdout_g4_shift"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g3_shift_third",
+      "case": "control_holdout_g3_shift_third"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_angle",
+      "case": "control_holdout_g4_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_g4_contact",
+      "case": "control_holdout_g4_contact"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_spatial_g4",
+      "case": "control_holdout_spatial_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_torsion_False",
+      "case": "control_holdout_torsion_False"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_torsion_True",
+      "case": "control_holdout_torsion_True"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_holdout_cancel",
+      "case": "control_holdout_cancel"
+    }
+  ]
+}

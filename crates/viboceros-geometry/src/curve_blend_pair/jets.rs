@@ -6,8 +6,10 @@ use crate::{
 };
 
 mod normalized;
+mod parameterization;
 #[cfg(test)]
 mod point_tests;
+mod spacing;
 
 /// An endpoint position, oriented tangent, geometric curvature, and optional
 /// normalized third/fourth targets. Position-only ends may omit the tangent.
@@ -17,6 +19,8 @@ pub struct CurveBlendJet {
     tangent: Option<UnitVector3>,
     curvature: Vector3,
     higher: [Option<Vector3>; 2],
+    parameterization: [Real; 3],
+    spacing: Option<[Real; 3]>,
 }
 impl CurveBlendJet {
     pub fn new(position: Point3, tangent: Option<UnitVector3>, curvature: Vector3) -> Self {
@@ -25,6 +29,8 @@ impl CurveBlendJet {
             tangent,
             curvature,
             higher: [None; 2],
+            parameterization: [0.; 3],
+            spacing: None,
         }
     }
 }
@@ -201,35 +207,12 @@ pub fn try_blend_curve_from_endpoint_jets_with_interpolation<E: From<GeometryErr
     let xyz = chord.to_array();
     targets[degree] = [xyz[0], xyz[1], xyz[2], 1.];
     for (side, (jet, handle)) in jets.iter().zip([first_handle, second_handle]).enumerate() {
-        let direction = jet.tangent;
         if orders[side] == 0 {
             continue;
         }
-        let direction = direction.expect("constrained blend end has a tangent");
-        let derivative = direction
-            .as_vector()
-            .scaled(handle)?
-            .scaled(degree as Real)?
-            .to_array();
-        let row = if side == 0 { 1 } else { degree - 1 };
-        targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
-        if orders[side] >= 2 {
-            let speed = degree as Real * handle;
-            let derivative = jet.curvature.to_array().map(|c| c * speed * speed);
-            let row = if side == 0 { 2 } else { degree - 2 };
-            targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
-        }
-        for order in 3..=orders[side] {
-            let value = jet.higher[usize::from(order - 3)].ok_or(
-                GeometryError::InvalidEndpointInterpolation {
-                    context: "missing higher curve endpoint derivative",
-                },
-            )?;
-            let mut derivative = value.to_array();
-            let speed = degree as Real * handle;
-            for _ in 0..order {
-                derivative = derivative.map(|v| v * speed);
-            }
+        let derivatives = jet.parameterized_derivatives(handle, degree, orders[side], side == 1)?;
+        for order in 1..=orders[side] {
+            let derivative = derivatives[usize::from(order - 1)];
             let row = if side == 0 {
                 usize::from(order)
             } else {

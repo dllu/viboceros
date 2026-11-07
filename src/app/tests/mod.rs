@@ -24,6 +24,7 @@ mod bend;
 mod bezier_selection;
 mod blend_curve;
 mod blend_curve_alt;
+mod blend_curve_controls;
 mod blend_curve_edges;
 mod blend_curve_points;
 mod blend_curve_portions;

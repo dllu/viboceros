@@ -48,6 +48,8 @@ impl CurveBlendJet {
                 Some(if reversed { third.scaled(-1.)? } else { third }),
                 Some(fourth),
             ],
+            parameterization: [0.; 3],
+            spacing: None,
         })
     }
     /// Fourth derivative target divided by the endpoint speed to the fourth power.

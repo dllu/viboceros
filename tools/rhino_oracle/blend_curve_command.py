@@ -209,3 +209,44 @@ if __package__:from .blend_curve_alt_cases import plain_selection
 else:from blend_curve_alt_cases import plain_selection
 ALT_SELECTION=plain_selection(case,pick)
 CASES.update(ALT_SELECTION)
+
+if __package__:from .blend_curve_control_cases import discovery as control_discovery
+else:from blend_curve_control_cases import discovery as control_discovery
+CONTROL_DISCOVERY=control_discovery(case)
+CASES.update(CONTROL_DISCOVERY)
+
+if __package__:from .blend_curve_control_cases import higher_policy
+else:from blend_curve_control_cases import higher_policy
+CONTROL_POLICY=higher_policy(case)
+CASES.update(CONTROL_POLICY)
+
+if __package__:from .blend_curve_control_cases import calibration
+else:from blend_curve_control_cases import calibration
+CONTROL_CALIBRATION=calibration(case,pick,CUBIC_A,B)
+CASES.update(CONTROL_CALIBRATION)
+
+if __package__:from .blend_curve_control_cases import holdouts as control_holdouts
+else:from blend_curve_control_cases import holdouts as control_holdouts
+CONTROL_HOLDOUTS=control_holdouts(case,pick,CUBIC_A,B)
+CASES.update(CONTROL_HOLDOUTS)
+
+if __package__:from .blend_curve_control_cases import validation as control_validation
+else:from blend_curve_control_cases import validation as control_validation
+CONTROL_VALIDATION=control_validation(case,pick,CUBIC_A,B,POINT_RATIONAL)
+CASES.update(CONTROL_VALIDATION)
+
+if __package__:from .blend_curve_control_cases import numeric as control_numeric
+else:from blend_curve_control_cases import numeric as control_numeric
+CONTROL_NUMERIC=control_numeric(case)
+CASES.update(CONTROL_NUMERIC)
+
+if __package__:from .blend_curve_control_cases import symmetry as control_symmetry
+else:from blend_curve_control_cases import symmetry as control_symmetry
+CONTROL_SYMMETRY=control_symmetry(case)
+CASES.update(CONTROL_SYMMETRY)
+
+CONTROL_LENGTHS={}
+for name in ['control_validate_rational_g4']:
+ recipe=dict(CONTROL_VALIDATION[name]);recipe['measure_lengths']=True
+ CONTROL_LENGTHS[name+'_lengths']=recipe
+CASES.update(CONTROL_LENGTHS)

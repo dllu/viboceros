@@ -123,10 +123,15 @@ impl Getter {
         } else if let Some(number) = a["number"].as_str() {
             if input.angle_constraint().is_some() {
                 input.adjust_shape_angle(number.parse().unwrap()).unwrap();
+            } else if input.secondary_control_adjustment() {
+                input.set_shape_distance(number.parse().unwrap()).unwrap();
+                return true;
             } else {
                 input.adjust_shape_length(number.parse().unwrap()).unwrap();
             }
             input.finish_adjustment();
+        } else if a.get("wait_prompt").is_some() {
+            // A capture-side prompt fence supplies no geometry or edit.
         } else if a == "Point" {
             self.point_prompt = true;
         } else if a == "Flip" {
@@ -184,7 +189,7 @@ pub fn handle_at_click(input: &Input, value: &Value, action: usize) -> Handle {
         .unwrap_or(false);
     input
         .handle_for_control_point(index, alt)
-        .expect("secondary control shape editing is not yet implemented")
+        .expect("control belongs to an endpoint constraint")
 }
 
 /// Intersect an input viewing ray with the independently captured tangent plane.

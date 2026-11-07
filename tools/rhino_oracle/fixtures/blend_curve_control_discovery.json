@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g2_k2",
+      "case": "control_plane_g2_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g3_k2",
+      "case": "control_plane_g3_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g3_k3",
+      "case": "control_plane_g3_k3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g4_k2",
+      "case": "control_plane_g4_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g4_k3",
+      "case": "control_plane_g4_k3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_g4_k4",
+      "case": "control_plane_g4_k4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g2_k2",
+      "case": "control_curved_g2_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g3_k2",
+      "case": "control_curved_g3_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g3_k3",
+      "case": "control_curved_g3_k3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g4_k2",
+      "case": "control_curved_g4_k2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g4_k3",
+      "case": "control_curved_g4_k3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_curved_g4_k4",
+      "case": "control_curved_g4_k4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_end_g2",
+      "case": "control_plane_end_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_plane_negative_g2",
+      "case": "control_plane_negative_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_then_primary_g2",
+      "case": "control_secondary_then_primary_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_then_primary_g3",
+      "case": "control_secondary_then_primary_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_then_contact",
+      "case": "control_secondary_then_contact"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_then_angle",
+      "case": "control_secondary_then_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_shift",
+      "case": "control_secondary_shift"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_secondary_numeric",
+      "case": "control_secondary_numeric"
+    }
+  ]
+}

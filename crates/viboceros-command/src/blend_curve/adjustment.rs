@@ -1,136 +1,19 @@
 //! Contact and shape edits preserve accepted state until the new preview succeeds.
 use super::*;
 impl Input {
-    /// Associate a preview control with an implemented edit. Alt rotation also
-    /// applies to higher controls belonging to the same supporting face.
-    /// Independent secondary-control shape edits require additional jet freedoms.
-    pub fn handle_for_control_point(&self, index: usize, angle: bool) -> Option<Handle> {
-        let last = self
-            .preview
-            .as_ref()?
-            .control_points()
-            .len()
-            .checked_sub(1)?;
-        if index > last {
-            return None;
-        }
-        if index == 0 {
-            return Some(Handle::Start);
-        }
-        if index == last {
-            return Some(Handle::End);
-        }
-        if index == 1 && self.continuity[0] != 0 {
-            return Some(Handle::StartShape);
-        }
-        if index + 1 == last && self.continuity[1] != 0 {
-            return Some(Handle::EndShape);
-        }
-        if angle {
-            for (i, handle) in [Handle::StartShape, Handle::EndShape]
-                .into_iter()
-                .enumerate()
-            {
-                let belongs = if i == 0 {
-                    index <= self.continuity[0] as usize
-                } else {
-                    index >= last - self.continuity[1] as usize
-                };
-                if belongs
-                    && self.endpoints[i]
-                        .curve()
-                        .is_some_and(|g| g.surface.is_some())
-                {
-                    return Some(handle);
-                }
-            }
-        }
-        None
-    }
-    pub fn control_points(&self) -> Vec<(Handle, Point3)> {
-        let Some(c) = &self.preview else {
-            return vec![];
-        };
-        let p = c.control_points();
-        let mut out = vec![
-            (Handle::Start, p[0].point()),
-            (Handle::End, p[p.len() - 1].point()),
-        ];
-        if self.continuity[0] != 0 {
-            out.push((Handle::StartShape, p[1].point()));
-        }
-        if self.continuity[1] != 0 {
-            out.push((Handle::EndShape, p[p.len() - 2].point()));
-        }
-        out
-    }
-    pub fn select_handle(&mut self, handle: Handle) -> Result<(), CommandError> {
-        self.select_handle_with_symmetry(handle, false)
-    }
-    /// Shift selection pairs shape handles when both continuities match.
-    /// Contact edits and mismatched endpoint constraints remain independent.
-    pub fn select_handle_with_symmetry(
-        &mut self,
-        handle: Handle,
-        symmetric: bool,
-    ) -> Result<(), CommandError> {
-        self.select_handle_with_modifiers(handle, symmetric, false)
-    }
-    /// Alt selects a supporting-face angle edit for this adjustment. Ordinary
-    /// curve handles and contacts retain their usual constraints.
-    pub fn select_handle_with_modifiers(
-        &mut self,
-        handle: Handle,
-        symmetric: bool,
-        angle: bool,
-    ) -> Result<(), CommandError> {
-        if !self.control_points().iter().any(|(h, _)| *h == handle) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        self.active = Some(handle);
-        self.symmetric = symmetric;
-        let index = match handle {
-            Handle::StartShape => Some(0),
-            Handle::EndShape => Some(1),
-            _ => None,
-        };
-        self.angle_editing = angle
-            && index.is_some_and(|i| {
-                self.endpoints[i]
-                    .curve()
-                    .is_some_and(|g| g.surface.is_some())
-            });
-        Ok(())
-    }
-    pub fn paired_handle(&self) -> Option<Handle> {
-        if self.angle_editing
-            || !self.symmetric
-            || self.continuity[0] == 0
-            || self.continuity[0] != self.continuity[1]
-        {
-            return None;
-        }
-        match self.active? {
-            Handle::StartShape => Some(Handle::EndShape),
-            Handle::EndShape => Some(Handle::StartShape),
-            _ => None,
-        }
-    }
     pub fn finish_adjustment(&mut self) {
         self.active = None;
         self.symmetric = false;
         self.angle_editing = false;
+        self.shape_origin = None;
+        self.shape_distance = None;
     }
     /// The fixed tangent plane used by an Alt-selected surface shape handle.
     pub fn angle_constraint(&self) -> Option<viboceros_geometry::Plane> {
         if !self.angle_editing {
             return None;
         }
-        let i = match self.active? {
-            Handle::StartShape => 0,
-            Handle::EndShape => 1,
-            _ => return None,
-        };
+        let (i, _) = self.active?.shape()?;
         let guide = self.endpoints[i].curve()?;
         guide.surface.as_ref()?.plane(guide).ok()
     }
@@ -141,23 +24,6 @@ impl Input {
             _ => return None,
         };
         Some(self.endpoints[i].curve()?.display())
-    }
-    pub fn shape_constraint(&self) -> Option<crate::translation::DestinationConstraint> {
-        let i = match self.active? {
-            Handle::StartShape => 0,
-            Handle::EndShape => 1,
-            _ => return None,
-        };
-        let guide = self.endpoints[i].curve()?;
-        let mut direction = guide.direction(i).ok()?;
-        if i == 1 {
-            direction = direction.opposite();
-        }
-        Some(crate::translation::DestinationConstraint {
-            anchor: guide.point().ok()?,
-            direction: Some(direction),
-            distance: None,
-        })
     }
     pub fn adjust_constraint_parameter(&mut self, t: Real) -> Result<(), CommandError> {
         let i = match self.active {
@@ -177,11 +43,10 @@ impl Input {
     }
     pub fn adjust_point(&mut self, point: Point3) -> Result<(), CommandError> {
         if self.angle_editing {
-            let i = if self.active == Some(Handle::StartShape) {
-                0
-            } else {
-                1
-            };
+            let (i, _) = self
+                .active
+                .and_then(Handle::shape)
+                .ok_or(CommandError::Usage(USAGE))?;
             let guide = self.endpoints[i]
                 .curve()
                 .ok_or(CommandError::Usage(USAGE))?;
@@ -221,11 +86,12 @@ impl Input {
                 "Select a surface shape handle with Alt",
             ));
         }
-        let i = if self.active == Some(Handle::StartShape) {
-            1
-        } else {
-            2
-        };
+        let i = self
+            .active
+            .and_then(Handle::shape)
+            .ok_or(CommandError::Usage(USAGE))?
+            .0
+            + 1;
         self.option(&format!("AtAngle_{i}={angle}")).map(|_| ())
     }
     pub(super) fn freeze_handles(&mut self) {

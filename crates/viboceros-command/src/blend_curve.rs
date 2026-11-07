@@ -11,13 +11,15 @@ use viboceros_geometry::{
 mod adjustment;
 mod arguments;
 mod commit;
+mod controls;
 mod endpoint;
 mod guide;
 mod surface;
 use endpoint::Endpoint;
 mod options;
+mod shape;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv source source (Curve=id point|Edges Edge=id,index point Curves|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [AtAngle_1=degrees] [AtAngle_2=degrees] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
+pub const USAGE: &str = "BlendCrv source source (Curve=id point|Edges Edge=id,index point Curves|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [AtAngle_1=degrees] [AtAngle_2=degrees] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Spacing1=r2,r3,r4] [Spacing2=r2,r3,r4] [Trim=Yes|No] [Join=Yes|No]";
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
@@ -28,7 +30,9 @@ pub struct Preferences {
 pub enum Handle {
     Start,
     StartShape,
+    StartControl(u8),
     EndShape,
+    EndControl(u8),
     End,
 }
 #[derive(Clone, Debug)]
@@ -38,6 +42,9 @@ pub struct Input {
     continuity: [u8; 2],
     handles: [Option<Real>; 2],
     bulges: [Real; 2],
+    spacing: [[Real; 3]; 2],
+    shape_origin: Option<Point3>,
+    shape_distance: Option<(Real, Real)>,
     tolerance: Tolerance,
     preview: Option<NurbsCurve>,
     active: Option<Handle>,
@@ -56,6 +63,9 @@ impl Input {
             continuity: [2; 2],
             handles: [None; 2],
             bulges: [1.; 2],
+            spacing: [[1.; 3]; 2],
+            shape_origin: None,
+            shape_distance: None,
             tolerance,
             preview: None,
             active: None,
@@ -92,6 +102,9 @@ impl Input {
     pub fn prompt(&self) -> &'static str {
         match self.active {
             Some(_) if self.angle_editing => "Set the handle angle in degrees or pick a direction",
+            Some(_) if self.secondary_control_adjustment() => {
+                "Move the control along its tangent; a distance then a point chooses the direction"
+            }
             Some(Handle::Start | Handle::End) => "Select blend contact location",
             Some(_) if self.paired_handle().is_some() => {
                 "Set paired blend shape handle length or location"
@@ -158,8 +171,12 @@ impl Input {
             return Ok(());
         }
         let jets = [
-            self.endpoints[0].jet(0, self.continuity[0])?,
-            self.endpoints[1].jet(1, self.continuity[1])?,
+            self.endpoints[0]
+                .jet(0, self.continuity[0])?
+                .with_control_spacing_ratios(self.spacing[0])?,
+            self.endpoints[1]
+                .jet(1, self.continuity[1])?
+                .with_control_spacing_ratios(self.spacing[1])?,
         ];
         let options = CurveBlendJetOptions {
             orders: self.continuity,
@@ -213,24 +230,6 @@ impl Input {
         *self = next;
         Ok(())
     }
-    pub fn adjust_shape_length(&mut self, length: Real) -> Result<(), CommandError> {
-        let i = match self.active {
-            Some(Handle::StartShape) => 0,
-            Some(Handle::EndShape) => 1,
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
-        if !length.is_finite() || length <= 0. {
-            return Err(CommandError::Usage("Blend handle length must be positive"));
-        }
-        let mut next = self.clone();
-        next.handles[i] = Some(length);
-        if next.paired_handle().is_some() {
-            next.handles[1 - i] = Some(length);
-        }
-        next.rebuild()?;
-        *self = next;
-        Ok(())
-    }
     pub fn active_handle(&self) -> Option<Handle> {
         self.active
     }
@@ -261,6 +260,13 @@ impl Input {
             } else {
                 format!("Bulge{}={}", i + 1, self.bulges[i])
             });
+            if self.spacing[i] != [1.; 3] {
+                words.push(format!(
+                    "Spacing{}={}",
+                    i + 1,
+                    self.spacing[i].map(|v| v.to_string()).join(",")
+                ));
+            }
         }
         words.push(format!(
             "BlendStart={}",

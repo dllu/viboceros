@@ -37,7 +37,7 @@ fn alt_surface_handles_match_native_geometry_sources_and_history() {
     replay_workflows();
 }
 #[test]
-fn secondary_shape_control_is_an_explicit_pending_case() {
+fn retained_secondary_shape_control_maps_to_its_own_handle() {
     let data = native::read("blend_curve_alt_selection");
     let value = &data["results"]
         .as_array()
@@ -57,14 +57,13 @@ fn secondary_shape_control_is_an_explicit_pending_case() {
         if a.get("click").is_some() {
             let control = blend::control_index_at_click(&input, value, index);
             assert_eq!(control, 3);
-            assert_eq!(input.handle_for_control_point(control, false), None);
+            assert_eq!(
+                input.handle_for_control_point(control, false),
+                Some(viboceros_command::blend_curve::Handle::EndControl(2))
+            );
             assert_eq!(
                 input.handle_for_control_point(control, true),
                 Some(viboceros_command::blend_curve::Handle::EndShape)
-            );
-            println!(
-                "BLEND_CURVE_ALT_SECONDARY_DIAGNOSTIC {}",
-                serde_json::json!({"id":"blend_curve_alt_selection/plain_alt_far_surface","control":control,"shape_edit_implemented":false,"angle_edit_implemented":true})
             );
             return;
         }

@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "control_symmetry_third_copies_other_gaps",
+      "case": "control_symmetry_third_copies_other_gaps"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_symmetry_primary_copies_gaps",
+      "case": "control_symmetry_primary_copies_gaps"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_symmetry_mixed_independent",
+      "case": "control_symmetry_mixed_independent"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "control_continuity_reset",
+      "case": "control_continuity_reset"
+    }
+  ]
+}
