@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_pick_context",
+      "id": "pick_circle_perspective",
+      "case": "pick_circle_perspective"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_tilted_perspective",
+      "case": "pick_tilted_perspective"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_cubic_perspective",
+      "case": "pick_cubic_perspective"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_circle_top",
+      "case": "pick_circle_top"
+    }
+  ]
+}

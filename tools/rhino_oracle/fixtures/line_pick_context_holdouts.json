@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "line_pick_context",
+      "id": "pick_circle_far",
+      "case": "pick_circle_far"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_circle_quarter",
+      "case": "pick_circle_quarter"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_tilted_top",
+      "case": "pick_tilted_top"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_tilted_front",
+      "case": "pick_tilted_front"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_cubic_front",
+      "case": "pick_cubic_front"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_arc_perspective",
+      "case": "pick_arc_perspective"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_fixed_bothsides",
+      "case": "pick_fixed_bothsides"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_fixed_planar",
+      "case": "pick_fixed_planar"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_circle_length",
+      "case": "pick_circle_length"
+    },
+    {
+      "op": "line_pick_context",
+      "id": "pick_cubic_negative",
+      "case": "pick_cubic_negative"
+    }
+  ]
+}

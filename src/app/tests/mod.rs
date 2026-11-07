@@ -132,6 +132,7 @@ mod line_normal_viewport;
 mod line_perpendicular;
 mod line_perpendicular_lifetime;
 mod line_perpendicular_viewport;
+mod line_pick_context;
 mod line_reference;
 mod line_tangent;
 mod line_tangent_boundary;

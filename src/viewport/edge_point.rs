@@ -195,72 +195,10 @@ impl Viewport {
                 return Some(t);
             }
         }
-        // Use all span boundaries, then refine the best sampled neighborhoods.
-        // This is a bounded numerical UI query, not a certified global minimum.
-        let mut spans = Vec::new();
-        for span in curve.spans() {
-            if spans.len() == 4096 {
-                return None;
-            }
-            spans.push(span);
-        }
-        let mut intervals = Vec::new();
-        let mut best: Option<(Real, Real)> = None;
-        for (start, end) in spans {
-            let mut previous = None;
-            for i in 0..=CURVE_SAMPLES_PER_SPAN {
-                let f = i as Real / CURVE_SAMPLES_PER_SPAN as Real;
-                let t = start * (1. - f) + end * f;
-                let d = score(t);
-                if let Some(d) = d {
-                    if best.is_none_or(|(old, _)| d < old) {
-                        best = Some((d, t));
-                    }
-                    if let Some((a, da)) = previous {
-                        intervals.push((Real::min(d, da), a, t));
-                    }
-                    previous = Some((t, d));
-                } else {
-                    previous = None;
-                }
-            }
-        }
-        intervals.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.total_cmp(&b.1)));
-        for &(_, mut a, mut b) in intervals.iter().take(8) {
-            // Golden section works in the native domain; endpoint seeds remain
-            // candidates. No model-plane intersection or pixel-to-world rounding.
-            const F: Real = 0.381_966_011_250_105_1;
-            let mut left = a * (1. - F) + b * F;
-            let mut right = a * F + b * (1. - F);
-            let mut dl = score(left).unwrap_or(Real::INFINITY);
-            let mut dr = score(right).unwrap_or(Real::INFINITY);
-            for _ in 0..48 {
-                for (d, t) in [(dl, left), (dr, right)] {
-                    if best.is_none_or(|(old, _)| d < old) {
-                        best = Some((d, t));
-                    }
-                }
-                if !(a < left && left < right && right < b) {
-                    break;
-                }
-                if dl <= dr {
-                    b = right;
-                    right = left;
-                    dr = dl;
-                    left = a * (1. - F) + b * F;
-                    dl = score(left).unwrap_or(Real::INFINITY);
-                } else {
-                    a = left;
-                    left = right;
-                    dl = dr;
-                    right = a * F + b * (1. - F);
-                    dr = score(right).unwrap_or(Real::INFINITY);
-                }
-            }
-        }
-        // Once selected, the edge constrains every point pick in this viewport;
-        // unlike component selection this is not an eight-pixel hit test.
-        best.map(|(_, t)| t)
+        curve.closest_parameter_in_projection(
+            [Real::from(pointer.x), Real::from(pointer.y)],
+            |point| self.project_precise(point, rect),
+        )
     }
 }
 

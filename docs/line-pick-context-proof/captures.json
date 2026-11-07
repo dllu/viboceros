@@ -1,0 +1,26 @@
+[
+  {
+    "family": "line_pick_context",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_pick_context"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_pick_context.log.gz"
+  },
+  {
+    "family": "line_pick_context_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_line_pick_context_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-line_pick_context_holdouts.log.gz"
+  }
+]

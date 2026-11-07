@@ -20,11 +20,15 @@ state into document transactions:
 | `viewport/picking` | Face hit metrics and depth interpolation |
 | `viewport/component_picking` | Typed component clicks, rectangles, depth clipping, and highlight overlays |
 | `viewport/polygon_edges` | Mesh/SubD topology edges and SubD vertex capture, including visible control cages |
-| `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture and constrained screen-space edge locations |
+| `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture, feature snaps and projected curve locations |
 | `viewport/scene` | Object display, shading, depth staging, and GPU buffers |
 | `viewport/display_cache` | Shared immutable display meshes, normals, and wires |
 | `viewport/mesh_normals` | Raw mesh sharing and surface tessellation smoothing |
 | `viewport/drafting` | Cursor resolution, construction-plane grid, and drafting overlays |
+
+The geometry crate owns the bounded [projected curve locator](../curve-picking.md).
+`edge_point` supplies precise camera projection and retains endpoint snap policy;
+curve-contact getters reuse the same locator for source picks.
 
 The `viboceros-drafting` crate separates feature snaps (`object_snap`), plane-local
 drafting (`plane`), and typed coordinates (`point_input`), with API regression

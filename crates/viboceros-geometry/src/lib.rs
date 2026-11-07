@@ -102,6 +102,7 @@ mod curve_offset;
 mod curve_pair_support;
 mod curve_parameter_map;
 mod curve_perpendicular;
+mod curve_projected_point;
 mod curve_rebuild;
 mod curve_segment;
 mod curve_shortness;

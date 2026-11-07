@@ -8,17 +8,17 @@ A view parallel to the CPlane may provide no free endpoint at all.
 
 [Validation](../line-tangent-rays-validation.json) retains 20 native UI
 observations and two public SDK experiments. Eleven complete workflows match
-in each build: three Planar/boundary constructions and eight no-output mouse workflows
-followed by explicit cancellation. Seven reject endpoint coordinates; Front
+in each build: three Planar/boundary constructions and eight no-output mouse
+workflows followed by explicit cancellation. Seven reject endpoint coordinates; Front
 has no CPlane intersection. Cancellation preserves pending redo; successful
 lines survive 3DM round trips. Windowless mouse events check preview/commit,
 relative input origins and unchanged source storage.
 
 Eight pilot timeouts remain diagnostic inputs; their clean cancellation repeats
-supply the rejection coverage. A completed fixed perspective input remains a
-known difference: the public curve/viewing-line closest point differs from
-Rhino's picked station by about `1.12e-4`, producing a line difference of
-`1.90e-4`. Its output coordinates are never substituted as replay inputs.
+supply the rejection coverage. The earlier fixed perspective replay used
+world-space viewing-line distance, which differs from screen-space picking. [Projected curve picking](../curve-picking.md)
+resolves this calibration difference using public pre-click transforms; the
+historical record and its diagnostic remain unchanged.
 
 Six public zero-finder callback/bracket combinations converge for all 2,002
 recorded seeds, while Rhino's tangent query fails on 30. This rules out those
