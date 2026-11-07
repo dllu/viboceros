@@ -62,7 +62,18 @@ impl Input {
                 return Ok(false);
             };
             if option_name_eq(stem, "Continuity") {
-                next.continuity[i] = continuity(value)?;
+                let order = continuity(value)?;
+                if order != 0
+                    && next
+                        .endpoints
+                        .get(i)
+                        .is_some_and(|e| matches!(e, Endpoint::Point(_)))
+                {
+                    return Err(CommandError::Usage(
+                        "A point endpoint requires G0 continuity",
+                    ));
+                }
+                next.continuity[i] = order;
             } else if option_name_eq(stem, "Handle") || option_name_eq(stem, "Bulge") {
                 let v = parse_finite_real(value)?;
                 if v <= 0. {
@@ -79,19 +90,24 @@ impl Input {
             } else if option_name_eq(stem, "Parameter") {
                 let t = parse_finite_real(value)?;
                 next.freeze_handles();
-                let g = next.guides.get_mut(i).ok_or(CommandError::Usage(
+                let g = next.endpoints.get_mut(i).ok_or(CommandError::Usage(
                     "Pick the blend sources before changing their parameters",
+                ))?;
+                let g = g.curve_mut().ok_or(CommandError::Usage(
+                    "A point endpoint has no curve parameter",
                 ))?;
                 g.source.curve_ref().evaluate(t)?;
                 g.parameter = t;
             } else if option_name_eq(stem, "Flip") {
                 let v = crate::parse_yes_no(value.trim_start_matches('_'))
                     .ok_or(CommandError::Usage(USAGE))?;
-                next.guides
+                next.endpoints
                     .get_mut(i)
                     .ok_or(CommandError::Usage(
                         "Pick the blend sources before flipping",
                     ))?
+                    .curve_mut()
+                    .ok_or(CommandError::Usage("A point endpoint cannot flip"))?
                     .flip = v;
             } else {
                 return Ok(false);

@@ -1,0 +1,40 @@
+[
+  {
+    "family": "blend_curve_point_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_discovery"
+    ],
+    "exit_status": 130,
+    "reason": "Owned overlapping-curve selection menu prevented the fixed input sequence from completing; interrupted after screenshot verification.",
+    "log": "capture-discovery-attempt.log.gz",
+    "worker_log": "attempt-worker-progress.log.gz",
+    "screenshot": "attempt-ambiguous-selection.png",
+    "request_sha256": "99a3666cf7a6676c95e7d7fe13e863bee04cb820debfb11b00389b19946ee390",
+    "sources": {
+      "generate_blend_curve_point_discovery.py": "6031abea5c6c50c3ccfb3a883edcdadde25b901c21a85b2e4bb3066b2b12c3b8",
+      "structural_sdk.py": "567006f36589b3f2bb7ffc46ed228aca7065ba07c531f0decbdda3def5a077c3",
+      "rhino_worker.py": "dc9ef1af1cbabfd4fa141e2b6963c626ddcd52d8253f9f07e816ca84ca52667d",
+      "client.py": "e484d0667f813db685dccb4810bc86e1a785a64dd61ba4a30f5ecf553591d93d",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "blend_curve_command_probe.py": "3808e67e0d366749e15eea5aa2670331b4c823cd8855eb43423837ae84d124f8",
+      "blend_curve_command.py": "051b46f8859c2e1570230c1a4c4df04642b66c3aad1308cbf4e936801c3c840a",
+      "blend_curve_high_cases.py": "01923d916450745f1a144b3ec9a4ced0d5c15ad2c3c92e228a5748562197d00a",
+      "blend_curve_point_cases.py": "ce0a46a49e9854cdd817227bb3561b4df97d8211f893173270cbdfdf46577ea1",
+      "line_scene_probe.py": "5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "c744d2e4256fbc723bf480559e3080fa7d077e3773d698d587c9fd843219ed29",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+    }
+  }
+]

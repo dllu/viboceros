@@ -77,6 +77,9 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
 
 impl VibocerosApp {
     fn model_requests_point(&self) -> bool {
+        if let Some(session) = &self.blend_curve_session {
+            return self.wants_blend_curve_point() || session.input.active_handle().is_some();
+        }
         self.refinement_prompt
             .as_ref()
             .is_some_and(refinement::Prompt::wants_point)

@@ -1,0 +1,74 @@
+[
+  {
+    "family": "blend_curve_point_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_pilot"
+    ],
+    "exit_status": 0,
+    "log": "capture-pilot.log.gz"
+  },
+  {
+    "family": "blend_curve_point_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz"
+  },
+  {
+    "family": "blend_curve_point_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz"
+  },
+  {
+    "family": "blend_curve_point_ownership",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_ownership"
+    ],
+    "exit_status": 0,
+    "log": "capture-ownership.log.gz"
+  },
+  {
+    "family": "blend_curve_point_modes",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_modes"
+    ],
+    "exit_status": 0,
+    "log": "capture-modes.log.gz"
+  },
+  {
+    "family": "blend_curve_point_pick_context",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_point_pick_context"
+    ],
+    "exit_status": 0,
+    "log": "capture-pick-context.log.gz"
+  }
+]

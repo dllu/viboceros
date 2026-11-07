@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "point_arc_g2",
+      "case": "point_arc_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_rational_g3",
+      "case": "point_rational_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_interior_trim",
+      "case": "point_interior_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_interior_join",
+      "case": "point_interior_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_join_without_trim",
+      "case": "point_join_without_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_curve_shape",
+      "case": "point_curve_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_slide_curve",
+      "case": "point_slide_curve"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_flip_both",
+      "case": "point_flip_both"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_cancel_after_point",
+      "case": "point_cancel_after_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_reverse_spatial_g4",
+      "case": "point_reverse_spatial_g4"
+    }
+  ]
+}

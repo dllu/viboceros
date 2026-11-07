@@ -26,7 +26,8 @@ impl VibocerosApp {
                 && !self.picking_ellipse_curve()
                 && !self.picking_line_normal()
                 && !self.picking_curve_line()
-                && ((self.arc_blend_session.is_none() && self.blend_curve_session.is_none())
+                && ((self.arc_blend_session.is_none()
+                    && (self.blend_curve_session.is_none() || self.wants_blend_curve_point()))
                     || self.plane_prompt.is_some())
                 && !self.picking_line_curve()
                 && !self.picking_arc_extension_curve()
@@ -108,6 +109,11 @@ impl VibocerosApp {
             ortho_angle_degrees: self.ortho_angle.degrees(),
             anchor: if let Some(prompt) = &self.plane_prompt {
                 prompt.anchor()
+            } else if self.wants_blend_curve_point() {
+                self.blend_curve_session
+                    .as_ref()
+                    .and_then(|s| s.input.point_input_anchor())
+                    .or(self.last_point)
             } else if self
                 .active_command
                 .is_some_and(InteractiveCommand::collects_curve_points)

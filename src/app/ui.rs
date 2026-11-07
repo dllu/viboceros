@@ -1209,7 +1209,10 @@ impl eframe::App for VibocerosApp {
                                 .blend_curve_session
                                 .as_ref()
                                 .filter(|s| {
-                                    model_input_active && self.plane_prompt.is_none() && !s.flip
+                                    model_input_active
+                                        && self.plane_prompt.is_none()
+                                        && !s.flip
+                                        && !s.point_prompt
                                 })
                                 .map(|s| s.preview_input()),
                             arc_blend: self

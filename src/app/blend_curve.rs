@@ -2,13 +2,21 @@
 use super::*;
 use viboceros_command::blend_curve::{Handle, Input};
 mod adjustment;
+mod picking;
+mod points;
+#[derive(Clone, Copy, PartialEq)]
+enum CandidateKey {
+    Parameter(f64),
+    Point(Point3),
+}
 #[derive(Clone)]
 pub(super) struct Session {
     pub input: Input,
     pub pointer: Option<egui::Pos2>,
     pub flip: bool,
     binding: Option<(ObjectId, Option<usize>)>,
-    candidate: Option<(f64, Input)>,
+    candidate: Option<(CandidateKey, Input)>,
+    pub(super) point_prompt: bool,
 }
 impl Session {
     pub(super) fn preview_input(&self) -> &Input {
@@ -55,6 +63,7 @@ impl VibocerosApp {
             flip: false,
             binding: None,
             candidate: None,
+            point_prompt: false,
         });
         self.active_command = Some(InteractiveCommand::BlendCurve);
         self.push_log(format!("> {text}"));
@@ -69,6 +78,8 @@ impl VibocerosApp {
                 "BlendCrv: {}; Esc cancels",
                 if s.flip {
                     "Select an end to flip; Enter flips both"
+                } else if s.point_prompt {
+                    "End of curve: pick a point"
                 } else {
                     s.input.prompt()
                 }
@@ -86,61 +97,10 @@ impl VibocerosApp {
             s.binding = None;
             s.candidate = None;
             s.flip = false;
+            s.point_prompt = false;
             self.push_log("BlendCrv reference changed; pick the sources again".into());
             self.blend_curve_prompt();
         }
-    }
-    pub(super) fn picking_blend_curve(&self) -> bool {
-        self.plane_prompt.is_none()
-            && self
-                .blend_curve_session
-                .as_ref()
-                .is_some_and(|s| !s.input.ready() || s.flip)
-    }
-    pub(super) fn pick_blend_curve_at(
-        &mut self,
-        id: ObjectId,
-        edge: Option<usize>,
-        point: Point3,
-    ) -> bool {
-        self.validate_blend_curve();
-        let Some(s) = &mut self.blend_curve_session else {
-            return false;
-        };
-        let result = if s.flip {
-            s.input.flip_source(id)
-        } else {
-            s.input.pick_curve(&self.document, id, edge, point)
-        };
-        if result.is_ok() {
-            s.flip = false;
-        }
-        s.binding = None;
-        match result {
-            Ok(()) => self.blend_curve_prompt(),
-            Err(e) => self.push_log(format!("Error: {e}")),
-        };
-        true
-    }
-    pub(super) fn pick_blend_curve(&mut self, id: Option<ObjectId>, edge: Option<usize>) -> bool {
-        if self.plane_prompt.is_some() {
-            return false;
-        }
-        if !self.picking_blend_curve() {
-            return self.blend_curve_session.is_some();
-        }
-        let point = id.and_then(|id| {
-            self.viewports[self.active_viewport].curve_pick_point(
-                self.document.object(id)?.geometry(),
-                edge,
-                self.blend_curve_session.as_ref()?.pointer?,
-                self.document.tolerance(),
-            )
-        });
-        if let (Some(id), Some(p)) = (id, point) {
-            self.pick_blend_curve_at(id, edge, p);
-        }
-        true
     }
     pub(super) fn continue_blend_curve(&mut self, text: &str) -> bool {
         if self.blend_curve_session.is_none() || self.plane_prompt.is_some() {
@@ -156,6 +116,9 @@ impl VibocerosApp {
             if !self.cancel_blend_curve_adjustment() {
                 self.cancel_interactive_command(false);
             }
+            return true;
+        }
+        if self.continue_blend_curve_point(text) {
             return true;
         }
         if self.blend_curve_session.as_ref().unwrap().flip {

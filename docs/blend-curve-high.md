@@ -51,7 +51,8 @@ python3 -m tools.rhino_oracle.check_blend_curve_high
 python3 -m tools.rhino_oracle.report_blend_curve_high --implementation-revision <full-sha>
 ```
 
-Captures run in private Xvfb; tests create no desktop windows. Closed sources,
-SubCrv, point-only endpoints, symmetry/Alt edits, curvature display, history
-re-editing, extreme higher-order scaling, continuous distance and comparative
-speed remain unsupported or unqualified.
+Captures run in private Xvfb; tests create no desktop windows.
+[Point endpoints and partial joins](blend-curve-points.md) now have separate
+qualification. Closed sources, SubCrv, symmetry/Alt edits, curvature display,
+history re-editing, extreme higher-order scaling, continuous distance and
+comparative speed remain unsupported or unqualified.

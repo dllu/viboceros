@@ -8,12 +8,15 @@ use viboceros_geometry::{
     CurveBlendJet, CurveBlendJetOptions, NurbsCurve, ParameterSide, Point3, Real, Tolerance,
     UnitVector3, Vector3,
 };
+mod adjustment;
 mod arguments;
 mod commit;
+mod endpoint;
 mod guide;
+use endpoint::Endpoint;
 mod options;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv Curve=id point Curve=id point [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
+pub const USAGE: &str = "BlendCrv Curve=id point|Point=x,y,z Curve=id point|Point=x,y,z [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
@@ -29,7 +32,7 @@ pub enum Handle {
 }
 #[derive(Clone, Debug)]
 pub struct Input {
-    guides: Vec<Guide>,
+    endpoints: Vec<Endpoint>,
     preferences: Preferences,
     continuity: [u8; 2],
     handles: [Option<Real>; 2],
@@ -44,7 +47,7 @@ impl Input {
     }
     pub fn with_preferences(tolerance: Tolerance, preferences: Preferences) -> Self {
         Self {
-            guides: vec![],
+            endpoints: vec![],
             preferences,
             continuity: [2; 2],
             handles: [None; 2],
@@ -61,13 +64,13 @@ impl Input {
         self.preferences
     }
     pub fn ready(&self) -> bool {
-        self.guides.len() == 2
+        self.endpoints.len() == 2
     }
     pub fn reference_count(&self) -> usize {
-        self.guides.len()
+        self.endpoints.len()
     }
     pub fn current(&self, doc: &Document) -> bool {
-        self.tolerance == doc.tolerance() && self.guides.iter().all(|g| g.source.current(doc))
+        self.tolerance == doc.tolerance() && self.endpoints.iter().all(|g| g.current(doc))
     }
     pub fn reset(&mut self, tolerance: Tolerance) {
         *self = Self::with_preferences(tolerance, self.preferences);
@@ -79,8 +82,11 @@ impl Input {
         match self.active {
             Some(Handle::Start | Handle::End) => "Select blend contact location",
             Some(_) => "Set blend shape handle length or location",
-            None if self.guides.is_empty() => "Select first curve near blend end",
-            None if !self.ready() => "Select second curve near blend end",
+            None if self.endpoints.is_empty() => "Select first curve near blend end or Point",
+            None if !self.ready() && !self.has_point_endpoint() => {
+                "Select second curve near blend end or Point"
+            }
+            None if !self.ready() => "Select a curve near the blend end",
             None => "Select a blend control point or change continuity; Enter accepts",
         }
     }
@@ -94,13 +100,13 @@ impl Input {
         if self.ready() {
             return Err(CommandError::Usage(USAGE));
         }
-        self.guides.push(Guide::capture(
+        self.endpoints.push(Endpoint::Curve(Guide::capture(
             doc,
             id,
             edge,
             pick,
             self.preferences.pick_point,
-        )?);
+        )?));
         Ok(())
     }
     pub fn pick_curve(
@@ -121,8 +127,8 @@ impl Input {
             return Ok(());
         }
         let jets = [
-            self.guides[0].jet(0, self.continuity[0])?,
-            self.guides[1].jet(1, self.continuity[1])?,
+            self.endpoints[0].jet(0, self.continuity[0])?,
+            self.endpoints[1].jet(1, self.continuity[1])?,
         ];
         let options = CurveBlendJetOptions {
             orders: self.continuity,
@@ -150,8 +156,9 @@ impl Input {
     pub fn flip_source(&mut self, id: ObjectId) -> Result<(), CommandError> {
         let mut next = self.clone();
         let g = next
-            .guides
+            .endpoints
             .iter_mut()
+            .filter_map(Endpoint::curve_mut)
             .find(|g| g.source.object_id() == id)
             .ok_or(CommandError::Usage("Select one of the blend sources"))?;
         g.flip = !g.flip;
@@ -161,7 +168,7 @@ impl Input {
     }
     pub fn flip_both(&mut self) -> Result<(), CommandError> {
         let mut next = self.clone();
-        for g in &mut next.guides {
+        for g in next.endpoints.iter_mut().filter_map(Endpoint::curve_mut) {
             g.flip = !g.flip;
         }
         next.rebuild()?;
@@ -186,113 +193,12 @@ impl Input {
     pub fn active_handle(&self) -> Option<Handle> {
         self.active
     }
-    pub fn control_points(&self) -> Vec<(Handle, Point3)> {
-        let Some(c) = &self.preview else {
-            return vec![];
-        };
-        let p = c.control_points();
-        let mut out = vec![
-            (Handle::Start, p[0].point()),
-            (Handle::End, p[p.len() - 1].point()),
-        ];
-        if self.continuity[0] != 0 {
-            out.push((Handle::StartShape, p[1].point()));
-        }
-        if self.continuity[1] != 0 {
-            out.push((Handle::EndShape, p[p.len() - 2].point()));
-        }
-        out
-    }
-    pub fn select_handle(&mut self, handle: Handle) -> Result<(), CommandError> {
-        if !self.control_points().iter().any(|(h, _)| *h == handle) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        self.active = Some(handle);
-        Ok(())
-    }
-    pub fn finish_adjustment(&mut self) {
-        self.active = None;
-    }
-    pub fn adjustment_curve(&self) -> Option<&NurbsCurve> {
-        let i = match self.active? {
-            Handle::Start => 0,
-            Handle::End => 1,
-            _ => return None,
-        };
-        Some(self.guides[i].source.curve())
-    }
-    pub fn shape_constraint(&self) -> Option<crate::translation::DestinationConstraint> {
-        let i = match self.active? {
-            Handle::StartShape => 0,
-            Handle::EndShape => 1,
-            _ => return None,
-        };
-        let guide = &self.guides[i];
-        let mut direction = guide.direction(i).ok()?;
-        if i == 1 {
-            direction = direction.opposite();
-        }
-        Some(crate::translation::DestinationConstraint {
-            anchor: guide.point().ok()?,
-            direction: Some(direction),
-            distance: None,
-        })
-    }
-    pub fn adjust_constraint_parameter(&mut self, t: Real) -> Result<(), CommandError> {
-        let i = match self.active {
-            Some(Handle::Start) => 0,
-            Some(Handle::End) => 1,
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
-        let parameter = self.guides[i].source.curve_ref().parameter_from_nurbs(t)?;
-        self.option(&format!("Parameter{}={parameter}", i + 1))
-            .map(|_| ())
-    }
-    pub fn adjust_point(&mut self, point: Point3) -> Result<(), CommandError> {
-        if let Some(c) = self.shape_constraint() {
-            let length = c
-                .anchor
-                .vector_to(point)?
-                .dot(c.direction.unwrap().as_vector())?;
-            let i = if self.active == Some(Handle::StartShape) {
-                1
-            } else {
-                2
-            };
-            return self.option(&format!("Handle{i}={length}")).map(|_| ());
-        }
-        let i = match self.active {
-            Some(Handle::Start) => 0,
-            Some(Handle::End) => 1,
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
-        let t = self.guides[i]
-            .source
-            .curve_ref()
-            .closest_parameter(point, self.tolerance)?;
-        self.option(&format!("Parameter{}={t}", i + 1)).map(|_| ())
-    }
-    fn freeze_handles(&mut self) {
-        let Some(c) = &self.preview else { return };
-        let p = c.control_points();
-        for (i, (a, b)) in [
-            (p[0].point(), p[1].point()),
-            (p[p.len() - 1].point(), p[p.len() - 2].point()),
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            if self.continuity[i] != 0 && self.handles[i].is_none() {
-                self.handles[i] = a.distance_to(b).ok();
-            }
-        }
-    }
     pub fn arguments(&self) -> Result<String, CommandError> {
         if !self.ready() {
             return Err(CommandError::Usage(USAGE));
         }
         let mut words = vec!["BlendCrv".to_owned(), "BlendStart=CurveEnd".to_owned()];
-        for g in &self.guides {
+        for g in &self.endpoints {
             words.push(g.binding()?);
         }
         for i in 0..2 {
@@ -301,8 +207,11 @@ impl Input {
                 i + 1,
                 options::continuity_name(self.continuity[i])
             ));
-            words.push(format!("Parameter{}={}", i + 1, self.guides[i].parameter));
-            words.push(format!("Flip{}={}", i + 1, yes(self.guides[i].flip)));
+            let Some(guide) = self.endpoints[i].curve() else {
+                continue;
+            };
+            words.push(format!("Parameter{}={}", i + 1, guide.parameter));
+            words.push(format!("Flip{}={}", i + 1, yes(guide.flip)));
             words.push(if let Some(h) = self.handles[i] {
                 format!("Handle{}={h}", i + 1)
             } else {

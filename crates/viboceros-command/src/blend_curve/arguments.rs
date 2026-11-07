@@ -9,6 +9,13 @@ pub(super) fn parse(
     let mut i = 0;
     while i < args.len() {
         if let Some((key, value)) = args[i].split_once('=') {
+            if option_name_eq(key, "Point") {
+                let (point, n) = parse_point(&[value])?;
+                debug_assert_eq!(n, 1);
+                input.add_point(point)?;
+                i += 1;
+                continue;
+            }
             let binding = if option_name_eq(key, "Curve") {
                 Some((
                     value

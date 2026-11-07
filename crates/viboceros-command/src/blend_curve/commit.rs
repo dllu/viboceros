@@ -1,3 +1,4 @@
+//! Only curve endpoints own source objects; free point endpoints own no geometry.
 use super::*;
 impl Input {
     pub fn commit(&self, doc: &mut Document) -> Result<ObjectId, CommandError> {
@@ -7,17 +8,40 @@ impl Input {
             ));
         }
         let curve = self.preview.as_ref().ok_or(CommandError::Usage(USAGE))?;
+        let guides = self
+            .endpoints
+            .iter()
+            .filter_map(Endpoint::curve)
+            .collect::<Vec<_>>();
         if (self.preferences.trim || self.preferences.join)
-            && self.guides.iter().any(|g| g.source.source().1.is_some())
+            && guides.iter().any(|g| g.source.source().1.is_some())
         {
             return Err(CommandError::Usage(
                 "BlendCrv surface edges currently require Trim=No and Join=No",
             ));
         }
+        if self.preferences.join
+            && guides.len() == 2
+            && guides[0].source.object_id() == guides[1].source.object_id()
+        {
+            return Err(CommandError::Usage(
+                "BlendCrv joined sources must be distinct",
+            ));
+        }
         let mut replacements = vec![];
         let mut pieces = vec![];
+        let mut consumed = vec![];
+        let mut inherited_source = None;
         if self.preferences.trim || self.preferences.join {
-            for (i, g) in self.guides.iter().enumerate() {
+            for (i, endpoint) in self.endpoints.iter().enumerate() {
+                if i == 1 {
+                    pieces.push(
+                        viboceros_geometry::Curve3::NurbsCurve(curve.clone()).to_polycurve()?,
+                    );
+                }
+                let Some(g) = endpoint.curve() else {
+                    continue;
+                };
                 let c = g.source.curve_ref();
                 let retained_end = g.end ^ g.flip;
                 let domain = if !self.preferences.trim {
@@ -34,48 +58,61 @@ impl Input {
                 } else {
                     source
                 };
-                if changed {
+                if changed && self.preferences.trim {
                     replacements.push((g.source.object_id(), Geometry::from(piece.clone())));
                 }
                 let reverse = if i == 0 { !retained_end } else { retained_end };
-                pieces.push(if reverse {
+                let piece = if reverse {
                     piece.reversed(self.tolerance)?
                 } else {
                     piece
-                });
+                };
+                if self.preferences.join {
+                    let (source_end, blend_end) = if i == 0 {
+                        (
+                            piece.as_ref().end_point()?,
+                            curve.evaluate(*curve.domain().start())?,
+                        )
+                    } else {
+                        (
+                            piece.as_ref().start_point()?,
+                            curve.evaluate(*curve.domain().end())?,
+                        )
+                    };
+                    if source_end.distance_to(blend_end)? > self.tolerance.absolute() {
+                        // Native partial joins leave disconnected whole sources
+                        // untouched. A blend alone still becomes a PolyCurve.
+                        if !self.preferences.trim {
+                            continue;
+                        }
+                        return Err(CommandError::Usage(
+                            "The retained source does not meet this blend contact",
+                        ));
+                    }
+                    consumed.push(g.source.object_id());
+                    inherited_source.get_or_insert(g.source.object_id());
+                }
+                pieces.push(piece.to_polycurve()?);
             }
         }
-        let output = if self.preferences.join {
-            if self.guides[0].source.object_id() == self.guides[1].source.object_id() {
-                return Err(CommandError::Usage(
-                    "BlendCrv joined sources must be distinct",
-                ));
-            }
-            let start = curve.evaluate(*curve.domain().start())?;
-            let end = curve.evaluate(*curve.domain().end())?;
-            if pieces[0].as_ref().end_point()?.distance_to(start)? > self.tolerance.absolute()
-                || pieces[1].as_ref().start_point()?.distance_to(end)? > self.tolerance.absolute()
-            {
-                return Err(CommandError::Usage(
-                    "Enable Trim to join interior blend contacts",
-                ));
-            }
-            Some(viboceros_geometry::PolyCurve3::concatenate(&[
-                pieces[0].to_polycurve()?,
-                viboceros_geometry::Curve3::NurbsCurve(curve.clone()).to_polycurve()?,
-                pieces[1].to_polycurve()?,
-            ])?)
-        } else {
-            None
-        };
+        let output = self
+            .preferences
+            .join
+            .then(|| viboceros_geometry::PolyCurve3::concatenate(&pieces))
+            .transpose()?;
         let selected = doc.selected_object_ids().collect::<Vec<_>>();
         doc.release_command_selection_on_history_replay(selected)?;
         doc.clear_selection();
         if let Some(output) = output {
-            let first = self.guides[0].source.object_id();
-            doc.replace_object_geometries([(first, Geometry::PolyCurve(output))])?;
-            doc.delete_objects([self.guides[1].source.object_id()])?;
-            Ok(first)
+            if let Some(first) = inherited_source {
+                doc.replace_object_geometries([(first, Geometry::PolyCurve(output))])?;
+                doc.delete_objects(consumed.into_iter().filter(|id| *id != first))?;
+                Ok(first)
+            } else {
+                let id = doc.add_geometry(Geometry::PolyCurve(output))?;
+                doc.delete_objects(consumed)?;
+                Ok(id)
+            }
         } else {
             if self.preferences.trim {
                 doc.replace_object_geometries(replacements)?;

@@ -75,3 +75,41 @@ if __package__:from .blend_curve_high_cases import holdouts as high_holdouts
 else:from blend_curve_high_cases import holdouts as high_holdouts
 HIGH_HOLDOUTS=high_holdouts(held,ARC_A,B)
 CASES.update(HIGH_HOLDOUTS)
+
+if __package__:from .blend_curve_point_cases import pilot as point_pilot
+else:from blend_curve_point_cases import pilot as point_pilot
+POINT_PILOT=point_pilot(case,pick,A,B)
+CASES.update(POINT_PILOT)
+
+if __package__:
+ from .blend_curve_point_cases import discovery as point_discovery
+ from .blend_curve_high_cases import QUARTIC as POINT_QUARTIC
+else:
+ from blend_curve_point_cases import discovery as point_discovery
+ from blend_curve_high_cases import QUARTIC as POINT_QUARTIC
+POINT_DISCOVERY=point_discovery(case,pick,B,POINT_QUARTIC,CUBIC_B,A)
+CASES.update(POINT_DISCOVERY)
+
+if __package__:
+ from .blend_curve_point_cases import holdouts as point_holdouts
+ from .blend_curve_high_cases import RATIONAL as POINT_RATIONAL,QUINTIC as POINT_QUINTIC
+else:
+ from blend_curve_point_cases import holdouts as point_holdouts
+ from blend_curve_high_cases import RATIONAL as POINT_RATIONAL,QUINTIC as POINT_QUINTIC
+POINT_HOLDOUTS=point_holdouts(case,pick,B,ARC_A,POINT_RATIONAL,POINT_QUINTIC)
+CASES.update(POINT_HOLDOUTS)
+
+if __package__:from .blend_curve_point_cases import ownership as point_ownership
+else:from blend_curve_point_cases import ownership as point_ownership
+POINT_OWNERSHIP=point_ownership(case,pick)
+CASES.update(POINT_OWNERSHIP)
+
+if __package__:from .blend_curve_point_cases import modes as point_modes
+else:from blend_curve_point_cases import modes as point_modes
+POINT_MODES=point_modes(case,pick)
+CASES.update(POINT_MODES)
+
+if __package__:from .blend_curve_point_cases import pick_context as point_pick_context
+else:from blend_curve_point_cases import pick_context as point_pick_context
+POINT_PICK_CONTEXT=point_pick_context(case,pick,B,POINT_QUINTIC)
+CASES.update(POINT_PICK_CONTEXT)

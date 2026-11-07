@@ -22,7 +22,10 @@ impl VibocerosApp {
         let Some(s) = &mut self.blend_curve_session else {
             return;
         };
-        if s.candidate.as_ref().is_some_and(|(old, _)| *old == t) {
+        if s.candidate
+            .as_ref()
+            .is_some_and(|(old, _)| *old == CandidateKey::Parameter(t))
+        {
             return;
         }
         let mut next = s.input.clone();
@@ -31,7 +34,7 @@ impl VibocerosApp {
         } else {
             next.adjust_constraint_parameter(t)
         };
-        s.candidate = result.is_ok().then_some((t, next));
+        s.candidate = result.is_ok().then_some((CandidateKey::Parameter(t), next));
     }
     pub(in crate::app) fn accept_blend_curve_parameter(&mut self, t: f64) -> bool {
         if self.plane_prompt.is_some()
@@ -70,6 +73,14 @@ impl VibocerosApp {
     pub(super) fn continue_blend_curve_adjustment(&mut self, text: &str) -> bool {
         if text.is_empty() {
             self.cancel_blend_curve_adjustment();
+            return true;
+        }
+        if self.wants_blend_curve_point() {
+            if let Some(point) = self.blend_curve_point(text) {
+                self.accept_filtered_drafting_point(point, true);
+            } else {
+                self.push_log("Error: pick a blend contact location".into());
+            }
             return true;
         }
         let s = self.blend_curve_session.as_ref().unwrap();

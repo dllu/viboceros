@@ -107,7 +107,7 @@ pub(super) fn frame(
         blend_curve: app
             .blend_curve_session
             .as_ref()
-            .filter(|s| !s.flip && app.plane_prompt.is_none())
+            .filter(|s| !s.flip && !s.point_prompt && app.plane_prompt.is_none())
             .map(|s| s.preview_input()),
         arc_blend: app
             .arc_blend_session

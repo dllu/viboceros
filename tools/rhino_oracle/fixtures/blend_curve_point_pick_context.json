@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "spatial_pick_context_g4",
+      "case": "spatial_pick_context_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "spatial_natural_g4",
+      "case": "spatial_natural_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "spatial_interior_g4",
+      "case": "spatial_interior_g4"
+    }
+  ]
+}

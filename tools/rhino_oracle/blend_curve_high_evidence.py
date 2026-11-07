@@ -9,14 +9,14 @@ BASELINE = '6917879a5ef390da32ba821412804daafa3267cd'
 FAMILIES = dict(blend_curve_high_discovery=list(recipes.HIGH_DISCOVERY),
                 blend_curve_high_holdouts=list(recipes.HIGH_HOLDOUTS))
 
-def captures(proof):
+def captures(proof, families=FAMILIES):
     receipts = json.loads((proof/'captures.json').read_bytes())
     paths = {p for p in proof.iterdir() if p.is_file()}
     rows, summary = {}, []
     sha = lambda b: hashlib.sha256(b).hexdigest()
-    if [r['family'] for r in receipts] != list(FAMILIES):
+    if [r['family'] for r in receipts] != list(families):
         raise ValueError('capture inventory changed')
-    for receipt, (family, names) in zip(receipts, FAMILIES.items()):
+    for receipt, (family, names) in zip(receipts, families.items()):
         fixture = HERE/('fixtures/'+family+'.json')
         path = HERE/('observations/'+family+'.json.gz')
         data = read(family)

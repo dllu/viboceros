@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "point_curve_to_point",
+      "case": "point_curve_to_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_point_to_curve",
+      "case": "point_point_to_curve"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_two_points",
+      "case": "point_two_points"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_curve_g4",
+      "case": "point_curve_g4"
+    }
+  ]
+}

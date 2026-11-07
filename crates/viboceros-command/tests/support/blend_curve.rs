@@ -33,23 +33,9 @@ pub fn accepted(value: &Value) -> bool {
         .iter()
         .any(|e| e["name"] == "BlendCrv" && e["result"] == "Nothing")
 }
-pub fn source_pick(
-    value: &Value,
-    index: usize,
-    action: &Value,
-    input: &Input,
-) -> viboceros_geometry::Point3 {
-    if !input.preferences().pick_point {
-        return native::point(&action["pick"]);
-    }
-    let click = value["input_trace"][0]["clicks"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|c| c["action"].as_u64() == Some(index as u64))
-        .unwrap();
-    native::point(&click["sight_point"])
-}
+#[path = "blend_curve/picks.rs"]
+mod picks;
+pub use picks::source_pick;
 pub fn handle(input: &Input, point: viboceros_geometry::Point3) -> Handle {
     input
         .control_points()
@@ -64,6 +50,7 @@ pub fn handle(input: &Input, point: viboceros_geometry::Point3) -> Handle {
 }
 pub fn replay(input: &mut Input, doc: &Document, value: &Value) {
     let mut flip = false;
+    let mut point_prompt = false;
     for (index, a) in value["prescribed_case"]["actions"]
         .as_array()
         .unwrap()
@@ -89,14 +76,20 @@ pub fn replay(input: &mut Input, doc: &Document, value: &Value) {
                 .select_handle(handle(input, native::point(p)))
                 .unwrap();
         } else if a.is_array() {
-            input.adjust_point(native::point(a)).unwrap();
-            input.finish_adjustment();
+            if point_prompt {
+                input.pick_point(native::point(a)).unwrap();
+                point_prompt = false;
+            } else {
+                input.adjust_point(native::point(a)).unwrap();
+                input.finish_adjustment();
+            }
+        } else if a == "Point" {
+            point_prompt = true;
         } else if a == "Flip" {
             flip = true;
         } else if a == "Enter" {
             if flip {
-                input.option("Flip1=Yes").unwrap();
-                input.option("Flip2=Yes").unwrap();
+                input.flip_both().unwrap();
                 flip = false;
             }
         } else if a == "Cancel" {

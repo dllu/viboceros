@@ -6,6 +6,8 @@ use crate::{
 };
 
 mod normalized;
+#[cfg(test)]
+mod point_tests;
 
 /// An endpoint position, oriented tangent, geometric curvature, and optional
 /// normalized third/fourth targets. Position-only ends may omit the tangent.
@@ -169,6 +171,16 @@ pub fn try_blend_curve_from_endpoint_jets_with_interpolation<E: From<GeometryErr
         }
         if options.handles[1].is_none() {
             second_handle = speed_scale * (1.4 - b + (b - a) * (0.3 + 0.5 * a));
+        }
+    }
+    // A lone curve direction blending to a positional point uses chord-length
+    // endpoint speed, independent of the constrained order.
+    if endpoint_specific && (first_direction.is_none() || second_direction.is_none()) {
+        if first_direction.is_some() && options.handles[0].is_none() {
+            first_handle = chord_length / degree as Real;
+        }
+        if second_direction.is_some() && options.handles[1].is_none() {
+            second_handle = chord_length / degree as Real;
         }
     }
     if options.handles[0].is_none() {

@@ -177,6 +177,9 @@ def drive(op,host,guides,command="Conic",start_script=None):
                         if op.get('op')=='line_pick_context':
                             from line_pick_context import measure
                             clicks[-1]['pick_context']=measure(source,vp,view,pixel,host)
+                        if op.get('op')=='blend_curve_command':
+                            from blend_curve_pick_context import measure
+                            clicks[-1]['pick_context']=measure(source,vp,view,pixel,host,guides[a['curve']])
                         ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                         if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command'):
                             clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]

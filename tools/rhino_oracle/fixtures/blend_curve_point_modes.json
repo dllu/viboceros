@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "point_natural_first_join",
+      "case": "point_natural_first_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_natural_shape",
+      "case": "point_natural_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_interior_copy_join",
+      "case": "point_interior_copy_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_two_interior_copy_join",
+      "case": "point_two_interior_copy_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_mixed_first_natural_join",
+      "case": "point_mixed_first_natural_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "point_mixed_first_interior_join",
+      "case": "point_mixed_first_interior_join"
+    }
+  ]
+}

@@ -118,6 +118,7 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            self.hover_blend_curve_point(point);
             if self.plane_prompt.is_none()
                 && let Some(input) = &mut self.line_input
             {
