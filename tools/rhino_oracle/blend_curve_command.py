@@ -282,3 +282,13 @@ if __package__:from .blend_curve_closed_cases import self_flips as closed_self_f
 else:from blend_curve_closed_cases import self_flips as closed_self_flips
 CLOSED_SELF_FLIPS=closed_self_flips(case,pick,B)
 CASES.update(CLOSED_SELF_FLIPS)
+
+if __package__:from .blend_curve_empty_cases import discovery as empty_discovery
+else:from blend_curve_empty_cases import discovery as empty_discovery
+EMPTY_DISCOVERY=empty_discovery(case,pick)
+CASES.update(EMPTY_DISCOVERY)
+
+if __package__:from .blend_curve_empty_cases import holdouts as empty_holdouts
+else:from blend_curve_empty_cases import holdouts as empty_holdouts
+EMPTY_HOLDOUTS=empty_holdouts(case,pick,A,B,ARC_A,CUBIC_A)
+CASES.update(EMPTY_HOLDOUTS)

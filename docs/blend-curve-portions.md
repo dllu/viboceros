@@ -40,10 +40,11 @@ The checks include the earlier blend qualifications and shared ArcBlend editor.
 Two producer setup failures are retained separately and contribute no observations.
 All Native captures use private Xvfb; application tests open no desktop windows.
 
-Whole closed curves are now covered by the [closed-source qualification](blend-curve-closed.md).
-Native surface-edge portions and arbitrary shared-parent
-self-blends, zero-retained-side joins, symmetry/Alt editing, curvature display and
-history re-editing remain unqualified. G4 retains the measured Native zero-fourth-
+Later qualifications cover [whole closed sources](blend-curve-closed.md),
+[zero-side joins](blend-curve-empty.md), [Shift editing](blend-curve-symmetry.md)
+and [Alt editing](blend-curve-alt.md). Native surface-edge portions, arbitrary
+shared-parent self-blends, curvature display and history re-editing remain
+unqualified. G4 retains the measured Native zero-fourth-
 derivative policy, rather than establishing general mathematical G4 continuity.
 Exact Native picking, numeric/Escape trajectories, continuous distance and
 comparative performance also remain unqualified.

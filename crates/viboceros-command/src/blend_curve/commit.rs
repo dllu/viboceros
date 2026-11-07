@@ -79,19 +79,32 @@ impl Input {
                     continue;
                 }
                 // Unjoined private portions never replace their original parent.
-                // In PickPoint mode the retained side may even be empty.
                 if g.temporary() && !join {
                     continue;
                 }
                 let c = g.curve_ref();
-                let retained_end = g.end ^ g.flip;
-                let domain = if !trim {
+                let mut retained_end = g.end ^ g.flip;
+                if join && !trim {
+                    // Joining a whole source follows its connected endpoint;
+                    // Flip changes the blend tangent, not the source direction.
+                    let contact = g.point()?;
+                    retained_end = contact.distance_to(c.evaluate(*c.domain().end())?)?
+                        < contact.distance_to(c.evaluate(*c.domain().start())?)?;
+                }
+                let mut domain = if !trim {
                     c.domain()
                 } else if retained_end {
                     *c.domain().start()..=g.parameter
                 } else {
                     g.parameter..=*c.domain().end()
                 };
+                // Native leaves the source intact when the chosen retained side
+                // is exactly empty. Join then uses the source's other endpoint
+                // direction, independently of the blend's flipped tangent.
+                if domain.start() == domain.end() {
+                    domain = c.domain();
+                    retained_end = !retained_end;
+                }
                 let changed = domain != c.domain();
                 let source = c.to_owned();
                 let piece = if changed {

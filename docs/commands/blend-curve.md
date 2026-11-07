@@ -74,8 +74,13 @@ flip both. When the same curve supplies both contacts, the pick selects the
 nearest contact. `Trim=Yes` retains the chosen open source portions. `Join=Yes` combines
 the blend with source portions when Trim is enabled. With Trim disabled, only
 inputs meeting the blend at an endpoint participate; disconnected
-sources remain unchanged and outside the joined result. The output inherits the
-first participating whole source's identity, attributes and groups. Temporary
+sources remain unchanged and outside the joined result.
+When trimming would leave an exactly empty interval, the full source is retained.
+Joined source direction follows its connected endpoint independently of Flip,
+including when Trim is disabled. See [endpoint trim/join validation](../blend-curve-empty.md).
+
+The output inherits the first participating whole source's identity, attributes
+and groups. Temporary
 portions can join without consuming or trimming their parent objects; a whole
 input sharing that parent still participates normally. If none participates, it is
 a new PolyCurve containing the blend and any participating temporary portions,
@@ -108,8 +113,9 @@ the editor and requests new picks.
 Validation: [G0–G2](../blend-curve-validation.json),
 [G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
 [temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
-[surface edges](../blend-curve-edges.md), [Alt editing](../blend-curve-alt.md), and
-[higher controls](../blend-curve-controls.md), and [closed sources](../blend-curve-closed.md).
+[surface edges](../blend-curve-edges.md), [Alt editing](../blend-curve-alt.md),
+[higher controls](../blend-curve-controls.md), [closed sources](../blend-curve-closed.md),
+and [endpoint trims/joins](../blend-curve-empty.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document
@@ -120,11 +126,11 @@ blend derivative; this does not establish general mathematical G4 continuity.
 See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_closed
+python3 -m tools.rhino_oracle.check_blend_curve_empty
 ```
 
-Captures use private Xvfb; application tests are windowless. Zero-retained-side
-joins, shared/seam surface edges, curvature display and
+Captures use private Xvfb; application tests are windowless. Shared/seam surface
+edges, curvature display and
 history-based re-editing remain pending. Arbitrary clipping/occlusion/depth ties,
 complete Native drag/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

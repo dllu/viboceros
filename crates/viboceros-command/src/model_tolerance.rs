@@ -179,26 +179,28 @@ mod tests {
     }
 
     #[test]
-    fn new_geometry_uses_changed_tolerance_without_modifying_existing_geometry() {
+    fn new_polyline_uses_changed_tolerance_without_modifying_existing_geometry() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::new(Tolerance::DEFAULT);
         registry
-            .execute(&mut document, "Line 0,0,0 0.005,0,0")
+            .execute(&mut document, "Polyline 0,0,0 0.005,0,0")
             .unwrap();
         let original = document.objects().cloned().collect::<Vec<_>>();
         registry
             .execute(&mut document, "Tolerance Absolute=0.01")
             .unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        // Polyline validation uses document tolerance. Line admission has a
+        // separately qualified tolerance-independent policy.
         assert!(
             registry
-                .execute(&mut document, "Line 0,1,0 0.005,1,0")
+                .execute(&mut document, "Polyline 0,1,0 0.005,1,0")
                 .is_err()
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
         registry.execute(&mut document, "Undo").unwrap();
         registry
-            .execute(&mut document, "Line 0,1,0 0.005,1,0")
+            .execute(&mut document, "Polyline 0,1,0 0.005,1,0")
             .unwrap();
         assert_eq!(document.objects().len(), 2);
     }

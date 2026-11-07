@@ -1,0 +1,62 @@
+[
+  {
+    "name": "fixture-not-yet-published",
+    "log": "fixture-not-yet-published.log.gz",
+    "status": 101
+  },
+  {
+    "name": "empty-interval-before-fix",
+    "log": "empty-interval-before-fix.log.gz",
+    "status": 101
+  },
+  {
+    "name": "flipped-untrimmed-join-before-fix",
+    "log": "flipped-untrimmed-join-before-fix.log.gz",
+    "status": 101
+  },
+  {
+    "name": "regression-target-setup",
+    "log": "regression-target-setup.log.gz",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve",
+      "--test",
+      "blend_curve_high",
+      "--test",
+      "blend_curve_points",
+      "--test",
+      "blend_curve_portions",
+      "--test",
+      "blend_curve_symmetry",
+      "--test",
+      "blend_curve_edges",
+      "--test",
+      "blend_curve_surface_high",
+      "--test",
+      "blend_curve_alt",
+      "--test",
+      "blend_curve_controls",
+      "--test",
+      "blend_curve_closed",
+      "--",
+      "--nocapture"
+    ]
+  },
+  {
+    "name": "command-library-stale-tolerance",
+    "log": "command-library-stale-tolerance.log.gz",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib"
+    ]
+  }
+]

@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "empty_arc_g2",
+      "case": "empty_arc_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_arc_g4",
+      "case": "empty_arc_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_cubic_g2",
+      "case": "empty_cubic_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_cubic_g4",
+      "case": "empty_cubic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_reverse_g2",
+      "case": "empty_reverse_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_reverse_g4",
+      "case": "empty_reverse_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_no_trim_first",
+      "case": "empty_no_trim_first"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_no_trim_second",
+      "case": "empty_no_trim_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_no_trim_both",
+      "case": "empty_no_trim_both"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_near_endpoint_0",
+      "case": "empty_near_endpoint_0"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_near_endpoint_1",
+      "case": "empty_near_endpoint_1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_g0",
+      "case": "empty_point_g0"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_g4",
+      "case": "empty_point_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_portion_point",
+      "case": "empty_portion_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_cancel",
+      "case": "empty_cancel"
+    }
+  ]
+}

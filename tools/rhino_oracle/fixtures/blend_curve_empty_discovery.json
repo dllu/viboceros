@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "empty_first_trim",
+      "case": "empty_first_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_first_join",
+      "case": "empty_first_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_second_trim",
+      "case": "empty_second_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_second_join",
+      "case": "empty_second_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_both_trim",
+      "case": "empty_both_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_both_join",
+      "case": "empty_both_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_point_first_trim",
+      "case": "empty_point_point_first_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_point_first_join",
+      "case": "empty_point_point_first_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_curve_first_trim",
+      "case": "empty_point_curve_first_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_point_curve_first_join",
+      "case": "empty_point_curve_first_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_portion_second_join",
+      "case": "empty_portion_second_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "empty_portion_first_join",
+      "case": "empty_portion_first_join"
+    }
+  ]
+}

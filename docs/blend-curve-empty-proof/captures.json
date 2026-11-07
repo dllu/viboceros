@@ -1,0 +1,30 @@
+[
+  {
+    "family": "blend_curve_empty_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_empty_discovery"
+    ],
+    "log": "capture-discovery.log.gz",
+    "exit_status": 0,
+    "observation_sha256": "8fb7c69576d211ec6163fbf0667185af0247788c5b4d4aa63196640584461481",
+    "request_sha256": "78190d9b50bb260a12937d06b2f40bbb369b356ab1376eba255e15285ef8b8d2"
+  },
+  {
+    "family": "blend_curve_empty_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_empty_holdouts"
+    ],
+    "log": "capture-holdouts.log.gz",
+    "exit_status": 0,
+    "observation_sha256": "e32b1d26c532ee1472b4f6e9a5115fe43631d0a2ac8bacb91085b5f44464baf9",
+    "request_sha256": "1fce77f5569dd9b4f1fee82d6d1f3bf1d28117365bf7637a94925c25d416616a"
+  }
+]
