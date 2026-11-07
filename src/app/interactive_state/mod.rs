@@ -90,6 +90,9 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum InteractiveCommand {
+    Fillet {
+        anchor: Option<Point3>,
+    },
     ArcBlend,
     BlendCurve,
     DraftPullPoints {

@@ -1,0 +1,60 @@
+[
+  {
+    "family": "fillet_getter_pilot",
+    "status": 1,
+    "native_observations": 0,
+    "reason": "Worker dispatch did not yet include fillet_command. No Native results published.",
+    "request_sha256": "47117c3c4d3c3b8424c019d109f874f2b59e7a6332444933a0ade8133f43d2b7",
+    "sources": {
+      "generate_fillet_getter_pilot.py": "22c7221c70e6b77bacef74877c4bb8844115471cc6a00d8b68e9badb7beb4f15",
+      "structural_sdk.py": "335282cc1824c3dbc940b5235be3190a0a895a7a6289c74f068e3ece4cab1485",
+      "rhino_worker.py": "dc9ef1af1cbabfd4fa141e2b6963c626ddcd52d8253f9f07e816ca84ca52667d",
+      "client.py": "e484d0667f813db685dccb4810bc86e1a785a64dd61ba4a30f5ecf553591d93d",
+      "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+      "fillet_command_probe.py": "cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de",
+      "fillet_command.py": "8645f3a41728e29875cb18e7fd24767e19443137ef8e1489c185f296679bf2f4",
+      "line_scene_probe.py": "591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "d0faecb0ecce4568cd9ad8fb969a4d90c03599f8a2dbbd0e5206967c0d96f583",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+    },
+    "log": "capture-pilot-dispatch-failure.log.gz"
+  },
+  {
+    "family": "fillet_getter_verification",
+    "status": 1,
+    "native_observations": 0,
+    "reason": "Final curved-source picks overlapped in projection and opened Selection Menu. Manual dismissal/cancellation ended the worker with IndexError, so the entire family published no observations. All recipes will be repeated with separated picks for the curved case.",
+    "request_sha256": "185491041c3d166782a375659e2f39098a5d861c08708c1d3deae804f1d235ca",
+    "sources": {
+      "generate_fillet_getter_verification.py": "1143b6c899bc2b0d6e0e404e030368f5d582fd2557daadced4f0cf0150ac64de",
+      "structural_sdk.py": "ece673e7a565bcc7198270c2130e69a699fd783ee8e7c4a54a31505d7529166f",
+      "rhino_worker.py": "63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9",
+      "client.py": "ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85",
+      "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+      "fillet_command_probe.py": "cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de",
+      "fillet_command.py": "10d9b3bf3e495e69ecec837550e3c1b808ae14158271cd86bb9ba22f46834fdd",
+      "blend_curve_display_capture.py": "987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56",
+      "line_scene_probe.py": "591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+    },
+    "log": "capture-verification-selection-failure.log.gz",
+    "intervention": "manual-intervention.json"
+  }
+]

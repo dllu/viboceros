@@ -60,8 +60,12 @@ The [SDK replay](smlib-native-fillet-contact-comparison.json) uses the same
 extraction-only records identify their original sources at `2cf12526`.
 All 243 native-suite tests, 30 geometry fillet regressions, targeted command
 and oracle regressions, and native/portable Clippy checks pass.
-Fresh Rhino capture remains blocked by the
-[recorded Wine startup failure](smlib-extension-rhino-capture.json).
+The earlier [Wine startup failure](smlib-extension-rhino-capture.json) is retained
+as historical evidence. Later [Fillet getter captures](fillet-getter.md) qualify
+ordered picking, radius previews and output policy. They also exposed a new-arc
+domain error: the adapter now restores its physical arc-length chart after
+scaling from the unit-radius frame, with unit-speed derivative checks across
+three model scales.
 
 The [backend harness benchmark](smlib-native-fillet-contact-benchmark.json)
 compares the same 51 fillet fixtures with source construction and output

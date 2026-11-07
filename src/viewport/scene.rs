@@ -300,7 +300,7 @@ impl GpuSceneBuilder {
 
 impl Viewport {
     #[cfg(test)]
-    pub(super) fn object_scene(&self, rect: Rect, document: &Document) -> Arc<GpuViewportScene> {
+    pub(crate) fn object_scene(&self, rect: Rect, document: &Document) -> Arc<GpuViewportScene> {
         self.object_scene_with_preview(rect, document, None, &[])
     }
 

@@ -39,6 +39,9 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
+        if self.curve_fillet_session.take().is_some() {
+            self.document.clear_selection();
+        }
         self.cancel_curve_boolean();
         self.finish_select_uv();
         self.refinement_prompt = None;

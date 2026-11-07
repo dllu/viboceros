@@ -28,7 +28,7 @@
 - [Standalone subcurves and numeric confirmation](subcurve.md)
 - [Delete portions of curves](delete-subcurve.md)
 - [Analytic curve offsets](offset.md)
-- [Two-curve fillets](fillet.md)
+- [Two-curve fillets, ordered picking and dynamic radius previews](fillet.md)
 - [Two-curve chamfers](chamfer.md)
 - [Connect two curves](connect.md)
 - [BlendCrv, curve/point/surface-edge blends, portions and joining](blend-curve.md)

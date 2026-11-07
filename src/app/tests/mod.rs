@@ -396,6 +396,7 @@ pub(super) fn test_app() -> VibocerosApp {
         sweep_session: None,
         blend_surface_prompt: None,
         fillet_surface_prompt: None,
+        curve_fillet_session: None,
         curve_boolean_prompt: None,
         reparameterize_prompt: None,
         direction_session: None,
@@ -579,3 +580,5 @@ mod planar_chains;
 mod planar_regions;
 #[path = "../../../crates/viboceros-oracle/tests/support/planar_regions.rs"]
 mod planar_regions_comparison;
+
+mod curve_fillet;

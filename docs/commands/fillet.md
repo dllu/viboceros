@@ -2,21 +2,39 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/fillet.htm)
 
-Select exactly two open curves, then enter `Fillet 0.5` or
-`Fillet Radius=0.5`. The command trims the selected ends, inserts a tangent
-circular arc, and joins the three pieces into one polycurve. The result is
-selected and the two sources can be restored with one Undo. It inherits the
-first source's attributes and groups.
-With radius zero, the curves meet at a sharp corner without an inserted arc.
+Enter `Fillet` and pick two open curves near the ends to connect. Radius starts
+at 1, Join at No, Trim at Yes, and Dynamic at No. Enter `Radius`, then a number
+or two distance points to change the radius. Typed values accept document units
+and arithmetic. Options remain available between the source picks.
 
-Use `Join=No` to create separate retained curves and a fillet arc. The
-retained curves inherit their respective sources' attributes and groups; the
-arc inherits the first source's. `Trim=No` keeps the original curves and adds
-only the arc, whether `Join=Yes` or `Join=No`. Zero radius requires trimming.
+Choose `Dynamic=Yes` while selecting the curves to preview the prospective
+fillet. Change the radius with numbers or two points, including snapping and
+typed 3D coordinates; these edits leave the getter active. Press Enter to accept.
+The original sources remain highlighted while prospective pieces are drawn in
+all viewports and display modes. Escape cancels without a geometry edit or loss
+of pending Redo. Source/settings changes invalidate the getter.
 
-The nearest pair of source endpoints determines which ends are filleted. Use
-`Pick1=x,y,z` and `Pick2=x,y,z` to choose different ends. The picks identify
-the end; they do not need to lie exactly on the curves. Line ends may be
+`Trim=Yes` changes the sources in place, preserving their IDs, attributes and
+groups. `Join=Yes` additionally combines both sources and the arc into a
+polycurve, retaining the first picked source's identity and metadata. A separate
+fillet arc is new, unnamed, ungrouped geometry on the current layer. Results are
+deselected, and one Undo restores the sources. With radius zero, there is no
+inserted arc; an already meeting pair with Join=No can remain a successful no-op.
+
+`Trim=No` retains both complete sources and adds only the arc. Join is unavailable
+until Trim is restored. Radius, Join, Trim and extension choices persist for the
+application session, including after cancellation. Dynamic resets to No for each
+invocation. See [getter evidence and limits](../fillet-getter.md).
+
+Headless commands accept two selected curves, with nearest ends as the default,
+or explicit ordered bindings:
+
+```text
+Fillet 0.5 Join=Yes Trim=Yes
+Fillet Sources=id1,id2 Pick1=3.7,0,0 Pick2=4,0.3,0 Radius=0.5 Join=No
+```
+
+The picks identify an end; they do not need to lie exactly on a curve. Line ends may be
 extended to their supporting-line intersection. `ExtendArcsBy=Arc|Line`
 continues nonmeeting arcs on their supporting circle or adds a tangent line.
 `ExtendOtherCurvesBy=Line|Smooth` adds a tangent line or smoothly continues a
@@ -33,13 +51,13 @@ in a normalized geometry frame, with independent radius and tangency checks.
 
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
-fillets that consume an entire added segment can still be rejected. Dynamic
-preview is still to be implemented. Smooth rational NURBS extension can differ
+fillets that consume an entire added segment can still be rejected. Closed or
+self-source fillets are not supported. Smooth rational NURBS extension can differ
 from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.
 
-The [nine-case fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pair.json)
+The earlier public geometry-API [nine-case fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pair.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_pair.json)
 compare meeting and extended lines, reversed selection, arc-to-line,
 NURBS-to-line, NURBS-to-NURBS, and zero-radius line joins. Each uses 65 equal arc-length

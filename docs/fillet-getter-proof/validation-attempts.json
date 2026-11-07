@@ -1,0 +1,74 @@
+[
+  {
+    "name": "legacy-library-first",
+    "status": 101,
+    "log": "legacy-library-first.log.gz",
+    "reason": "Legacy assertions assumed every Fillet creates history and did not yet expose segment-layout diagnostics after source identity retention. Retained for correction against the measured command behavior."
+  },
+  {
+    "name": "legacy-library-diagnostic-compile",
+    "status": 101,
+    "log": "legacy-library-diagnostic-compile.log.gz",
+    "reason": "An added assertion diagnostic referred to a joined variable outside its test scope; corrected to print the actual document geometry."
+  },
+  {
+    "name": "comparison-analytic-parameter-chart",
+    "status": 101,
+    "log": "comparison-analytic-parameter-chart.log.gz",
+    "reason": "The comparator evaluated original ArcCurve/PolyCurve stations in a NURBS parameter chart. It now uses each original curve representation for those samples and separately compares NURBS coefficients."
+  },
+  {
+    "name": "retained-line-domain",
+    "status": 101,
+    "log": "retained-line-domain.log.gz",
+    "reason": "Public Native comparison exposed a 0.75 source-domain offset on a trimmed second line. The command now preserves that input chart."
+  },
+  {
+    "name": "reversed-joined-domain",
+    "status": 101,
+    "log": "reversed-joined-domain.log.gz",
+    "reason": "Public Native comparison exposed a 4-unit joined-domain origin offset when the first source was reversed. The prepared result now retains its oriented source origin."
+  },
+  {
+    "name": "legacy-selection-order",
+    "status": 101,
+    "log": "legacy-selection-order.log.gz",
+    "reason": "Undo restored source geometry while selected-object iteration used the reverse action order after an in-place first-source edit. The extension comparisons now reselect their prescribed first/second order explicitly."
+  },
+  {
+    "name": "legacy-reselection-retains-action-order",
+    "status": 101,
+    "log": "legacy-reselection-retains-action-order.log.gz",
+    "reason": "SelectionMode::Replace preserves action order for IDs already selected, so the test reselection did not restore its prescribed first source. Clear selection before selecting the ordered pair, and assert its first ID."
+  },
+  {
+    "name": "ui-helper-array-inference",
+    "status": 101,
+    "log": "ui-helper-array-inference.log.gz",
+    "reason": "The ready-preview test helper needed an explicit two-ID array type before indexed use."
+  },
+  {
+    "name": "ui-selection-replay-and-gpu-callback",
+    "status": 101,
+    "log": "ui-selection-replay-and-gpu-callback.log.gz",
+    "reason": "Highlighting real getter selections exposed restoration on Undo; commit now records their release before replacement and marks them temporary. Paint assertions counted egui callbacks, whose count is constant; they now inspect the GPU line instances submitted by those callbacks."
+  },
+  {
+    "name": "native-curved-source-first",
+    "status": 101,
+    "log": "native-curved-source-first.log.gz",
+    "reason": "The new curved-source workflow exceeded the unchanged 1e-6 Native comparison gate; inspecting native producer geometry and parameter charts."
+  },
+  {
+    "name": "native-arc-domain-inspection",
+    "status": 101,
+    "log": "native-arc-domain-inspection.log.gz",
+    "reason": "Native control points matched within about 1e-14, but the arc domain retained the unit-radius frame: 0.8008256587490649 versus Native 0.16016513174981362 for radius 0.2. Restore the physical arc-length chart after the similarity transform."
+  },
+  {
+    "name": "mouse-helper-before-layout",
+    "status": 101,
+    "log": "mouse-helper-before-layout.log.gz",
+    "reason": "The mouse-input helper tried to zoom a viewport before its first layout. The unnecessary zoom was removed; default projection separates the prescribed picks by more than the capture aperture."
+  }
+]

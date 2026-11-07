@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "dynamic_enter",
+      "case": "dynamic_enter"
+    },
+    {
+      "op": "fillet_command",
+      "id": "dynamic_numeric",
+      "case": "dynamic_numeric"
+    },
+    {
+      "op": "fillet_command",
+      "id": "dynamic_distance",
+      "case": "dynamic_distance"
+    },
+    {
+      "op": "fillet_command",
+      "id": "dynamic_options",
+      "case": "dynamic_options"
+    },
+    {
+      "op": "fillet_command",
+      "id": "dynamic_distance_cancel",
+      "case": "dynamic_distance_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "fixed_no_trim",
+      "case": "fixed_no_trim"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_joined",
+      "case": "zero_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "reverse_pick_order",
+      "case": "reverse_pick_order"
+    },
+    {
+      "op": "fillet_command",
+      "id": "options_after_first",
+      "case": "options_after_first"
+    },
+    {
+      "op": "fillet_command",
+      "id": "cancel_second",
+      "case": "cancel_second"
+    },
+    {
+      "op": "fillet_command",
+      "id": "cancel_radius_setting",
+      "case": "cancel_radius_setting"
+    },
+    {
+      "op": "fillet_command",
+      "id": "remember_cancelled_radius",
+      "case": "remember_cancelled_radius"
+    },
+    {
+      "op": "fillet_command",
+      "id": "extended_arcs",
+      "case": "extended_arcs"
+    }
+  ]
+}

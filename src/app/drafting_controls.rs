@@ -20,6 +20,11 @@ impl VibocerosApp {
                 && self.offset_subd_session.is_none()
                 && self.extrude_subd_session.is_none()
                 && self.inset_session.is_none()
+                && (self
+                    .curve_fillet_session
+                    .as_ref()
+                    .is_none_or(curve_fillet::Session::wants_point)
+                    || self.plane_prompt.is_some())
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()

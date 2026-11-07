@@ -279,6 +279,15 @@ fn native_radius_frames_preserve_tangencies_at_small_and_large_model_scales() {
                 panic!("fillet arc missing")
             };
             assert!((arc.radius() - 0.5 * scale).abs() < tolerance.absolute());
+            let curve = CurveRef::Arc(&arc);
+            let derivative = curve
+                .evaluate_with_derivative(curve.parameter_at(0.37).unwrap())
+                .unwrap()
+                .1;
+            assert!(
+                (derivative.length().unwrap() - 1.).abs() < 1e-12,
+                "new fillet arcs use a physical arc-length chart at scale {scale}"
+            );
             for pair in result.segments().windows(2) {
                 let first = pair[0]
                     .as_ref()

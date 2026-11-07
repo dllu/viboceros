@@ -1,0 +1,13 @@
+{
+  "family": "fillet_getter_verification",
+  "case": "curved_contact",
+  "published_before_intervention": false,
+  "reason": "Public private-display pixels showed Selection Menu with guide0 and guide1 after both prescribed clicks. Earlier cases had completed; the worker progress was in the final case.",
+  "owned_rhino_pid": 4064588,
+  "x_display": ":99",
+  "window": 14680070,
+  "window_pid_verified": true,
+  "action": "Sent Escape twice to the verified owned Rhino window to dismiss the menu and cancel the final getter. This case is a diagnostic and excluded from matched comparisons.",
+  "inspection": "Read-only private root screenshot; file verification-selection-menu.png.",
+  "additional_action": "Escape did not dismiss the Selection Menu (confirmed by private xwininfo). Clicked its None row at screen 1350,586, then sent Escape on the same private display."
+}

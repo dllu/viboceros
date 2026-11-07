@@ -449,7 +449,7 @@ pub mod chamfer_edge;
 mod connect;
 mod edge_blend_input;
 mod extract_surface;
-mod fillet;
+pub mod fillet;
 mod fillet_corners;
 mod fillet_edge;
 use fillet_edge::FilletEdgeCommand;
@@ -1032,6 +1032,7 @@ pub struct CommandRegistry {
     point_deviation: std::sync::Arc<point_deviation::Session>,
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
+    fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
@@ -1876,7 +1877,7 @@ impl CommandRegistry {
             .register(OffsetCommand)
             .expect("unique built-in command");
         registry
-            .register(FilletCommand)
+            .register(FilletCommand(registry.fillet_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(ChamferCommand)
@@ -2808,6 +2809,19 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("BlendCrv"))
             .is_some_and(|i| self.commands[*i].remember_blend_curve_preferences(value))
+    }
+    pub fn fillet_preferences(&self) -> fillet::Preferences {
+        self.fillet_preferences.get()
+    }
+    pub fn remember_fillet_preferences(
+        &self,
+        value: fillet::Preferences,
+    ) -> Result<(), CommandError> {
+        self.fillet_preferences.set(fillet::Preferences {
+            dynamic: false,
+            ..value.validate()?
+        });
+        Ok(())
     }
     pub fn arc_blend_preferences(&self) -> arc_blend::Preferences {
         self.lookup

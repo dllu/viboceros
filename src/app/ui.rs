@@ -45,6 +45,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_curve_fillet();
         self.validate_curve_boolean();
         self.validate_chain();
         self.validate_length_choices();
@@ -761,6 +762,7 @@ impl eframe::App for VibocerosApp {
                 .and_then(|p| p.scene())
                 .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.curve_fillet_session.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.curve_boolean_prompt.as_ref().and_then(|p| p.scene())),
             self.rebuild_preview
                 .as_ref()

@@ -69,6 +69,10 @@ pub(super) fn contacts(
     let arc = arc
         .transformed_similarity(restore, Tolerance::NUMERICAL_VALIDATION)?
         .ok_or(Error::InvalidOutput)?;
+    // A similarity transform preserves an existing curve's chart. This arc
+    // was newly constructed in a unit-radius frame, so restore its physical
+    // arc-length chart as well as its locus.
+    let arc = arc.try_reparameterized(0. ..=arc.length()?)?;
     // A circular arc's analytic angle parameter differs from its exact
     // rational-quadratic representation. Recover that parameter from the
     // contact point, while native NURBS/line charts map affinely.

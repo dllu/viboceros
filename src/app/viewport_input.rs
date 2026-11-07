@@ -56,6 +56,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.blend_curve_session {
                 s.pointer = output.selection_pointer;
             }
+            if let Some(s) = &mut self.curve_fillet_session {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.arc_blend_session {
                 s.pointer = output.selection_pointer;
             }
@@ -130,6 +133,7 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            self.hover_curve_fillet_radius(point);
             self.hover_blend_curve_point(point);
             if self.plane_prompt.is_none()
                 && let Some(input) = &mut self.line_input

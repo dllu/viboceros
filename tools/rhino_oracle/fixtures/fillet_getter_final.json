@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "numeric_then_enter",
+      "case": "numeric_then_enter"
+    },
+    {
+      "op": "fillet_command",
+      "id": "measured_then_enter",
+      "case": "measured_then_enter"
+    },
+    {
+      "op": "fillet_command",
+      "id": "repeated_numbers",
+      "case": "repeated_numbers"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_joined_confirmed",
+      "case": "zero_joined_confirmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_parts",
+      "case": "zero_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_untrimmed_cancel",
+      "case": "zero_untrimmed_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "cancel_changed_preview",
+      "case": "cancel_changed_preview"
+    },
+    {
+      "op": "fillet_command",
+      "id": "remember_preview_radius",
+      "case": "remember_preview_radius"
+    },
+    {
+      "op": "fillet_command",
+      "id": "spatial_joined",
+      "case": "spatial_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "curved_contact_separated",
+      "case": "curved_contact_separated"
+    }
+  ]
+}

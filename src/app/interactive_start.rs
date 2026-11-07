@@ -11,6 +11,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.start_curve_fillet(input) {
+            return true;
+        }
         if self.try_start_blend_curve(input) {
             return true;
         }
