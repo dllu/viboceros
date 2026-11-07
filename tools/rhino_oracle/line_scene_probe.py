@@ -1,6 +1,6 @@
 """Owned line-construction scene and document/history observations."""
 
-def run_case(op,host,iterations,tolerance,case,command,capture_recall=True):
+def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None):
     from join_probe import observe_command
     from conic_getter_input import drive
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
@@ -16,7 +16,9 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True):
                 attributes=dict(name=a.Name or '',layer=doc.Layers[a.LayerIndex].Name,color_source=str(a.ColorSource),
                     color=[int(a.ObjectColor.R),int(a.ObjectColor.G),int(a.ObjectColor.B)],groups=[doc.Groups.GroupName(i) for i in (a.GetGroupList() or [])]))
             if isinstance(g,G.Point):row['point']=host['_xyz'](g.Location)
-            elif isinstance(g,G.Curve):row['curve']=host['_nurbs_curve_definition'](g)
+            elif isinstance(g,G.Curve):
+                row['curve']=host['_nurbs_curve_definition'](g)
+                if curve_observer is not None:row.update(curve_observer(g))
             elif isinstance(g,G.Brep):row.update(face_count=g.Faces.Count,surfaces=[host['_nurbs_surface_definition'](f.UnderlyingSurface())for f in g.Faces],brep=host['_interchange_brep_record'](g,include_samples=False))
             elif isinstance(g,G.Surface):row.update(face_count=1,surfaces=[host['_nurbs_surface_definition'](g)])
             else:raise ValueError('unexpected Lines output')

@@ -10,7 +10,7 @@ mod commit;
 mod handles;
 mod options;
 pub use handles::Handle;
-pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=positive] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
+pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=nonnegative|RadiusDifference=number] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
 #[derive(Clone, Debug)]
 struct Guide {
     source: CapturedCurve,
@@ -21,6 +21,9 @@ struct Guide {
 pub struct Input {
     guides: Vec<Guide>,
     geometry: ArcBlendOptions,
+    radius_difference: Option<Real>,
+    last_radius_difference: Real,
+    radius_target_reached: bool,
     trim: bool,
     join: bool,
     tolerance: Tolerance,
@@ -34,6 +37,9 @@ impl Input {
         Self {
             guides: vec![],
             geometry: Default::default(),
+            radius_difference: None,
+            last_radius_difference: 0.,
+            radius_target_reached: false,
             trim: false,
             join: false,
             tolerance,
@@ -49,6 +55,7 @@ impl Input {
         self.preview = None;
         self.active_handle = None;
         self.adjustment_curve = None;
+        self.radius_target_reached = false;
         self.tolerance = tolerance;
     }
     pub fn ready(&self) -> bool {
@@ -72,12 +79,19 @@ impl Input {
             0 => "Select first curve near end",
             1 => "Select second curve near end",
             _ => {
-                "Pick a handle, Ratio, AlternateSolution, Trim or Join; Enter accepts, Esc cancels"
+                "Pick a handle, Ratio, RadiusDifference, AlternateSolution, Trim or Join; Enter accepts, Esc cancels"
             }
         }
     }
     pub fn reference_count(&self) -> usize {
         self.guides.len()
+    }
+    pub fn radius_difference(&self) -> Option<Real> {
+        self.radius_difference
+    }
+    pub fn warning(&self) -> Option<&'static str> {
+        (self.preview.is_some() && self.radius_difference.is_some() && !self.radius_target_reached)
+            .then_some("Unable to achieve requested radius difference")
     }
     fn add(
         &mut self,
@@ -141,6 +155,23 @@ impl Input {
         } else {
             jets[1].tangent()
         };
+        if let Some(difference) = self.radius_difference {
+            if self.geometry.alternate {
+                return Err(CommandError::Usage(
+                    "ArcBlend RadiusDifference currently requires parallel forward tangents and the ordinary solution",
+                ));
+            }
+            let solution = viboceros_geometry::try_parallel_arc_blend_radius_ratio(
+                jets[0].point(),
+                a.as_vector(),
+                jets[1].point(),
+                b.as_vector(),
+                difference,
+                self.tolerance,
+            )?;
+            self.geometry.ratio = solution.ratio;
+            self.radius_target_reached = solution.reached_target;
+        }
         let curve = viboceros_geometry::try_arc_blend(
             jets[0].point(),
             a.as_vector(),
@@ -173,7 +204,10 @@ impl Input {
             words.push(p.to_array().map(|x| x.to_string()).join(","));
         }
         words.extend([
-            format!("Ratio={}", self.geometry.ratio),
+            self.radius_difference.map_or_else(
+                || format!("Ratio={}", self.geometry.ratio),
+                |r| format!("RadiusDifference={r}"),
+            ),
             format!("AlternateSolution={}", yes(self.geometry.alternate)),
             format!("Trim={}", yes(self.trim)),
         ]);
@@ -200,6 +234,9 @@ impl Command for ArcBlendCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let input = arguments::parse(doc, args)?;
         input.commit(doc)?;
-        Ok("Created an arc blend".into())
+        Ok(input.warning().map_or_else(
+            || "Created an arc blend".into(),
+            |warning| format!("{warning}; created an arc blend"),
+        ))
     }
 }

@@ -1,6 +1,7 @@
 //! Ordered curve picks and cached ArcBlend preview outside document history.
 use super::*;
 mod adjustment;
+mod radius;
 use viboceros_command::arc_blend::Input;
 #[derive(Clone)]
 pub(super) struct Session {
@@ -8,6 +9,7 @@ pub(super) struct Session {
     pub pointer: Option<egui::Pos2>,
     binding: Option<(ObjectId, Option<usize>)>,
     candidate: Option<(f64, Input)>,
+    pub(super) radius_prompt: bool,
 }
 impl Session {
     pub(super) fn cursor_curve(
@@ -59,6 +61,7 @@ impl VibocerosApp {
             pointer: None,
             binding: None,
             candidate: None,
+            radius_prompt: false,
         });
         self.active_command = Some(InteractiveCommand::ArcBlend);
         self.push_log(format!("> {text}"));
@@ -67,7 +70,17 @@ impl VibocerosApp {
     }
     fn arc_blend_prompt(&mut self) {
         if let Some(s) = &self.arc_blend_session {
-            self.push_log(format!("ArcBlend: {}; Esc cancels", s.input.prompt()));
+            let prompt = if s.radius_prompt {
+                "Radius difference"
+            } else {
+                s.input.prompt()
+            };
+            let warning = s.input.warning();
+            let message = format!("ArcBlend: {prompt}; Esc cancels");
+            if let Some(warning) = warning {
+                self.push_log(warning.into());
+            }
+            self.push_log(message);
         }
     }
     pub(super) fn validate_arc_blend(&mut self) {
@@ -80,6 +93,7 @@ impl VibocerosApp {
             s.input.reset(self.document.tolerance());
             s.binding = None;
             s.candidate = None;
+            s.radius_prompt = false;
             self.push_log("ArcBlend reference changed; pick the curves again".into());
             self.arc_blend_prompt();
         }
@@ -142,6 +156,9 @@ impl VibocerosApp {
             return true;
         }
         self.validate_arc_blend();
+        if self.continue_arc_blend_radius(text) {
+            return true;
+        }
         if self
             .arc_blend_session
             .as_ref()

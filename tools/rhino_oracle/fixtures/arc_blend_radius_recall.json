@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "rd_zero_explicit",
+      "case": "rd_zero_explicit"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_snap_explicit",
+      "case": "rd_snap_explicit"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_recall_typed",
+      "case": "rd_recall_typed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_recall_snap",
+      "case": "rd_recall_snap"
+    }
+  ]
+}

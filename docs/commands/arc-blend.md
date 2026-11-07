@@ -5,7 +5,8 @@
 `ArcBlend` connects two open curve ends with two tangent circular arcs. Pick
 each source near the desired end, adjust options, then press Enter to commit
 the preview. [Adjustment handles](arc-blend-handles.md) support endpoint sliding,
-positive ratios and held drags. Esc cancels without changing geometry or pending redo history.
+positive ratios and held drags. [Radius differences](arc-blend-radius.md) support
+parallel forward tangents. Esc cancels without changing geometry or pending redo history.
 Source selection clears when the command starts. The result uses the current
 layer, with one undo record for the blend and any source edits.
 
@@ -17,7 +18,11 @@ Options currently supported:
 - `Join=Yes|No` becomes available with Trim enabled. Yes replaces two distinct
   ordinary source curves with the joined source portions and blend.
 - `Ratio=positive-number` sets the ratio of the two arc control-polygon
-  lengths; the default is 1. This is a Viboceros scripting option.
+  lengths; the default is 1. Zero restores the last radius target, initially
+  zero. This is a Viboceros scripting option.
+- `RadiusDifference=number` locks the first arc's radius minus the second's
+  for parallel forward tangents. Interactively, enter `RadiusDifference`,
+  then the number. Positive ratios release the lock.
 - `Parameter1=t` and `Parameter2=t` move the contacts within the original
   source parameter domains, retaining the selected end orientations. These
   are Viboceros scripting options; they require both source picks first.
@@ -50,8 +55,8 @@ Rhino captures use private Xvfb sessions. Reproduce the checks with:
 python3 -m tools.rhino_oracle.check_arc_blend
 ```
 
-This is a first implementation. RadiusDifference, zero-ratio automatic
-solving, SubCrv and remembered Trim/Join settings remain
+This is a first implementation. General nonparallel radius solving,
+SubCrv and remembered settings between commands remain
 unsupported. Native command comparisons cover endpoint contacts on lines;
 interior parameter edits and edge references lack native qualification.
 Three raw non-unit SDK direction cases have discontinuous native join

@@ -93,11 +93,11 @@ impl Input {
                 let a =
                     (parameter - *c.domain().start()) / (*c.domain().end() - *c.domain().start());
                 if a <= 0. || a >= 1. {
-                    return Err(CommandError::Usage(
-                        "ArcBlend ratio end snaps require automatic radius solving",
-                    ));
+                    next.radius_difference = Some(next.last_radius_difference);
+                } else {
+                    next.radius_difference = None;
+                    next.geometry.ratio = a / (1. - a);
                 }
-                next.geometry.ratio = a / (1. - a);
             }
         }
         next.rebuild()?;

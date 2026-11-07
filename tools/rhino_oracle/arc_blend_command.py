@@ -84,6 +84,33 @@ CHORD_HANDLES={
  'arc_chord_spatial_perspective_mouse':dict(recipe(*SPATIAL,options=[dict(click=chord(*SPATIAL)),dict(click=[2.,3.,5.])]),view='Perspective'),
 }
 CASES.update(CHORD_HANDLES)
+RADIUS_TARGETS={}
+for name,pose,targets in [('parallel',S_SHAPE,[-15.,-5.,-1.,0.,1.,5.,15.]),('corner',BASE,[-10.,-5.,-2.,-1.,0.,1.,2.5,3.,5.,10.]),('skew',BALANCE_POSE,[-3.,-1.,0.,1.,3.]),('spatial',SPATIAL,[-5.,-1.,0.,1.,5.])]:
+ for i,target in enumerate(targets):
+  RADIUS_TARGETS['rd_'+name+'_'+str(i)]=dict(recipe(*pose,options=['Trim=No','RadiusDifference',target]),measure_arcs=True)
+RADIUS_TARGETS['rd_corner_from_s']=dict(recipe(*BASE,options=[dict(click=chord(*BASE)),.05,'RadiusDifference',0.]),measure_arcs=True)
+CASES.update(RADIUS_TARGETS)
+RADIUS_PARALLEL={
+ 'rd_parallel_shifted':recipe([100.,-80.,7.],[3.,4.,0.],[111.,-72.,10.],[6.,8.,0.],options=['Trim=No','RadiusDifference',2.]),
+ 'rd_parallel_scaled':recipe([0.,0.,0.],[50.,0.,0.],[100.,30.,0.],[50.,0.,0.],options=['RadiusDifference',-50.]),
+ 'rd_parallel_reversed':recipe([0.,0.,0.],[-5.,0.,0.],[-10.,-3.,0.],[-5.,0.,0.],options=['RadiusDifference',-5.]),
+ 'rd_parallel_unreachable_low':recipe(*S_SHAPE,options=['RadiusDifference',-30.]),
+ 'rd_parallel_unreachable_high':recipe(*S_SHAPE,options=['RadiusDifference',30.]),
+ 'rd_parallel_contact':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'rd_parallel_override':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),.25]),
+ 'rd_parallel_end_zero':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),dict(click=[0.,0.,0.])]),
+ 'rd_parallel_typed_zero':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),.25,dict(click=chord(*S_SHAPE,ratio=.25)),0.]),
+}
+RADIUS_PARALLEL={k:dict(v,measure_arcs=True)for k,v in RADIUS_PARALLEL.items()}
+CASES.update(RADIUS_PARALLEL)
+RADIUS_RECALL={
+ 'rd_zero_explicit':recipe(*S_SHAPE,options=['RadiusDifference',0.,dict(click=chord(*S_SHAPE)),.25,dict(click=chord(*S_SHAPE,ratio=.25)),0.]),
+ 'rd_snap_explicit':recipe(*S_SHAPE,options=['RadiusDifference',0.,dict(click=chord(*S_SHAPE)),dict(click=[0.,0.,0.])]),
+ 'rd_recall_typed':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),.25,dict(click=chord(*S_SHAPE,ratio=.25)),0.]),
+ 'rd_recall_snap':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),.25,dict(click=chord(*S_SHAPE,ratio=.25)),dict(click=[0.,0.,0.])]),
+}
+RADIUS_RECALL={k:dict(v,measure_arcs=True)for k,v in RADIUS_RECALL.items()}
+CASES.update(RADIUS_RECALL)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

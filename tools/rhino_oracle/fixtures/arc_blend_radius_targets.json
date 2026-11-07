@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_0",
+      "case": "rd_parallel_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_1",
+      "case": "rd_parallel_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_2",
+      "case": "rd_parallel_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_3",
+      "case": "rd_parallel_3"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_4",
+      "case": "rd_parallel_4"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_5",
+      "case": "rd_parallel_5"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_6",
+      "case": "rd_parallel_6"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_0",
+      "case": "rd_corner_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_1",
+      "case": "rd_corner_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_2",
+      "case": "rd_corner_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_3",
+      "case": "rd_corner_3"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_4",
+      "case": "rd_corner_4"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_5",
+      "case": "rd_corner_5"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_6",
+      "case": "rd_corner_6"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_7",
+      "case": "rd_corner_7"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_8",
+      "case": "rd_corner_8"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_9",
+      "case": "rd_corner_9"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_skew_0",
+      "case": "rd_skew_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_skew_1",
+      "case": "rd_skew_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_skew_2",
+      "case": "rd_skew_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_skew_3",
+      "case": "rd_skew_3"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_skew_4",
+      "case": "rd_skew_4"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_spatial_0",
+      "case": "rd_spatial_0"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_spatial_1",
+      "case": "rd_spatial_1"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_spatial_2",
+      "case": "rd_spatial_2"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_spatial_3",
+      "case": "rd_spatial_3"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_spatial_4",
+      "case": "rd_spatial_4"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_corner_from_s",
+      "case": "rd_corner_from_s"
+    }
+  ]
+}

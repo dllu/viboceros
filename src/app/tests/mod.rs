@@ -6,6 +6,7 @@ mod apex_splitting;
 mod apply_curves;
 mod arc_blend;
 mod arc_blend_handles;
+mod arc_blend_radius;
 mod arc_deform;
 mod arc_extension;
 mod arc_input;

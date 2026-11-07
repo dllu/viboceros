@@ -10,6 +10,9 @@ impl VibocerosApp {
         let Some(s) = &mut self.arc_blend_session else {
             return;
         };
+        if s.radius_prompt {
+            return;
+        }
         match s.input.select_handle(handle) {
             Ok(()) => {
                 s.candidate = None;
@@ -53,6 +56,17 @@ impl VibocerosApp {
         true
     }
     pub(in crate::app) fn cancel_arc_blend_adjustment(&mut self) -> bool {
+        if self.plane_prompt.is_none()
+            && self
+                .arc_blend_session
+                .as_ref()
+                .is_some_and(|s| s.radius_prompt)
+        {
+            self.arc_blend_session.as_mut().unwrap().radius_prompt = false;
+            self.command_input.clear();
+            self.arc_blend_prompt();
+            return true;
+        }
         if self.plane_prompt.is_some()
             || self
                 .arc_blend_session

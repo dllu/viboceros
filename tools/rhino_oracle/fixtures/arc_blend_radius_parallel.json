@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_shifted",
+      "case": "rd_parallel_shifted"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_scaled",
+      "case": "rd_parallel_scaled"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_reversed",
+      "case": "rd_parallel_reversed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_unreachable_low",
+      "case": "rd_parallel_unreachable_low"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_unreachable_high",
+      "case": "rd_parallel_unreachable_high"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_contact",
+      "case": "rd_parallel_contact"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_override",
+      "case": "rd_parallel_override"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_end_zero",
+      "case": "rd_parallel_end_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "rd_parallel_typed_zero",
+      "case": "rd_parallel_typed_zero"
+    }
+  ]
+}

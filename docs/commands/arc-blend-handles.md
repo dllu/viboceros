@@ -41,8 +41,9 @@ getter in Top, Perspective and the alternate branch. The captures retain
 physical mouse acknowledgements, public viewing rays and selected public
 projection matrices. Output coordinates do not seed the Rust construction.
 
-Zero ratio, end-snap automatic balancing and RadiusDifference remain
-unsupported. Some native failed-target probes change provisional geometry
+Zero ratio and end snaps restore the last radius target within the command,
+initially zero, for [parallel forward tangents](arc-blend-radius.md).
+General nonparallel radius solving remains unsupported. Some native failed-target probes change provisional geometry
 despite warning that the requested radius difference was not achieved;
 these are retained as diagnostics. Native endpoint comparisons cover line
 sources. Nonlinear contacts, edge adjustments, exact hit-box/depth ranking,
@@ -51,7 +52,8 @@ SubCrv and remembered defaults remain unqualified or unsupported.
 Rhino keeps source IDs while assigning new runtime serials to trimmed
 objects. The controlled comparison matches its unique source names; object
 enumeration order remains unqualified. Geometry is compared through exact
-NURBS data and 33 local evaluations; native command PointAt sampling,
-continuous distance and comparative speed remain unqualified.
+NURBS data and 33 local evaluations. The newer parallel-radius qualification
+adds independent native command arc samples. Continuous distance and
+comparative speed remain unqualified.
 
 Reference: [Rhino 8 ArcBlend](https://docs.mcneel.com/rhino/8/help/en-us/commands/arcblend.htm).

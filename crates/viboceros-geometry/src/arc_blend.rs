@@ -1,5 +1,7 @@
 //! Tangent biarcs from endpoint positions and directions.
 use crate::{CircularArc3, GeometryError, Point3, PolyCurve3, Real, Tolerance, Vector3};
+mod radius;
+pub use radius::{ArcBlendRadiusSolution, try_parallel_arc_blend_radius_ratio};
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ArcBlendOptions {
     /// Ratio of the two arc control-polygon lengths; strictly positive.

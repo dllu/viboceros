@@ -4,7 +4,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/arc_blend_handles.rs"]
 #[allow(dead_code)]
-mod inputs;
+pub(super) mod inputs;
 use super::arc_blend::{click, frame, scene};
 use viboceros_command::arc_blend::Handle;
 fn enter(app: &mut VibocerosApp, text: &str) {

@@ -26,10 +26,17 @@ impl Input {
             self.join = value.map_or(Ok(!self.join), boolean)?;
         } else if option_name_eq(key, "Ratio") {
             let r = parse_finite_real(value.ok_or(CommandError::Usage(USAGE))?)?;
-            if r <= 0. {
-                return Err(CommandError::Usage("ArcBlend Ratio must be positive"));
+            if r < 0. {
+                return Err(CommandError::Usage("ArcBlend Ratio must be nonnegative"));
             }
-            self.geometry.ratio = r;
+            self.radius_difference = (r == 0.).then_some(self.last_radius_difference);
+            if r > 0. {
+                self.geometry.ratio = r;
+            }
+        } else if option_name_eq(key, "RadiusDifference") {
+            let target = parse_finite_real(value.ok_or(CommandError::Usage(USAGE))?)?;
+            self.radius_difference = Some(target);
+            self.last_radius_difference = target;
         } else if let Some(index) = ["Parameter1", "Parameter2"]
             .iter()
             .position(|k| option_name_eq(key, k))
