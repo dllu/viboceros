@@ -1,0 +1,555 @@
+{
+  "scope": "Same-parent Fillet on open/closed polylines, mixed polycurves and kinked NURBS, including a closed NURBS seam, native domains, source identity, split metadata, preview/cancel, no-ops and rejections.",
+  "baseline_revision": "379f04a268a58ed948b6d1c562d30161d8917f97",
+  "implementation_revision": "3289c457037c1b0f8f79e3f5627feef2bc169010",
+  "full_native_parity": false,
+  "observations": 38,
+  "successful": 30,
+  "cancelled": 3,
+  "failed": 5,
+  "changed": 28,
+  "images": 2,
+  "physical_picks": 76,
+  "point_tangent_stations": 2871,
+  "successful_command_replays_per_build": 30,
+  "ui_replays_per_build": 38,
+  "archive_round_trips_per_build": 68,
+  "api_rejections_per_build": 5,
+  "windowless_source_picks_per_build": 2,
+  "retained_failed_captures": 0,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 5.587935447692871e-09,
+  "construction": "A linear scan of neighboring smooth pieces ranks fillets by distance from pick seeds in the original parameter chart. Active coincident line offsets reject a singular angle. Existing portable/usd-brep producers solve junctions and extract retained NURBS intervals. Batch C0 splitting copies output control blocks rather than repeatedly trimming the full source. Closed NURBS seam kinks are exposed by a private midpoint split. One prepared edit plan supplies previews and commits.",
+  "input_evidence": "Only prescribed source definitions, options and public pre-command mouse-ray/source witnesses construct replays. Native output coefficients, domains, samples and pixels are expectations.",
+  "execution": "All five licensed Rhino captures ran on private Xvfb displays. Application and viewport tests were windowless.",
+  "limits": [
+    "The corpus covers 28 edits, two successful no-ops, five failures and three cancellations. It includes reversed picks and sources, nonadjacent picks, folded paths, near-corner picks, far-origin and tilted geometry, dynamic option/radius transitions and parallel offset singularities. This is sampled finite coverage, not all possible branches or a continuous distance bound.",
+    "Fully consumed multi-span junctions, arbitrary smooth self-bitangencies and all highly folded or self-intersecting sources remain unqualified. No pixel equality or comparative performance claim. Source decomposition and candidate search still require work proportional to the number of pieces; non-C0 NURBS cuts need interval extraction."
+  ],
+  "cases": [
+    {
+      "id": "fillet_self_branches/self_closed_joined_backward_source",
+      "portable_command_maximum_geometry_error": 5.329070518200751e-15,
+      "portable_ui_maximum_geometry_error": 5.329070518200751e-15,
+      "native_command_maximum_geometry_error": 5.329070518200751e-15,
+      "native_ui_maximum_geometry_error": 5.329070518200751e-15
+    },
+    {
+      "id": "fillet_self_branches/self_dynamic_untrimmed",
+      "portable_command_maximum_geometry_error": 9.155133597044475e-16,
+      "portable_ui_maximum_geometry_error": 9.155133597044475e-16,
+      "native_command_maximum_geometry_error": 9.155133597044475e-16,
+      "native_ui_maximum_geometry_error": 9.155133597044475e-16
+    },
+    {
+      "id": "fillet_self_branches/self_dynamic_zero_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_branches/self_far_origin",
+      "portable_command_maximum_geometry_error": 5.587935447692871e-09,
+      "portable_ui_maximum_geometry_error": 5.587935447692871e-09,
+      "native_command_maximum_geometry_error": 5.587935447692871e-09,
+      "native_ui_maximum_geometry_error": 5.587935447692871e-09
+    },
+    {
+      "id": "fillet_self_branches/self_folded_path",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_branches/self_near_corner",
+      "portable_command_maximum_geometry_error": 1.831026719408895e-15,
+      "portable_ui_maximum_geometry_error": 1.831026719408895e-15,
+      "native_command_maximum_geometry_error": 1.831026719408895e-15,
+      "native_ui_maximum_geometry_error": 1.831026719408895e-15
+    },
+    {
+      "id": "fillet_self_branches/self_open_joined_backward_source",
+      "portable_command_maximum_geometry_error": 7.108895957933346e-16,
+      "portable_ui_maximum_geometry_error": 7.108895957933346e-16,
+      "native_command_maximum_geometry_error": 7.108895957933346e-16,
+      "native_ui_maximum_geometry_error": 7.108895957933346e-16
+    },
+    {
+      "id": "fillet_self_branches/self_oversized",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_discovery/self_closed_arc",
+      "portable_command_maximum_geometry_error": 9.155133597044475e-16,
+      "portable_ui_maximum_geometry_error": 9.155133597044475e-16,
+      "native_command_maximum_geometry_error": 9.155133597044475e-16,
+      "native_ui_maximum_geometry_error": 9.155133597044475e-16
+    },
+    {
+      "id": "fillet_self_discovery/self_closed_joined",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_closed_numeric",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_closed_parts",
+      "portable_command_maximum_geometry_error": 9.155133597044475e-16,
+      "portable_ui_maximum_geometry_error": 9.155133597044475e-16,
+      "native_command_maximum_geometry_error": 9.155133597044475e-16,
+      "native_ui_maximum_geometry_error": 9.155133597044475e-16
+    },
+    {
+      "id": "fillet_self_discovery/self_closed_seam",
+      "portable_command_maximum_geometry_error": 4.884981308350689e-15,
+      "portable_ui_maximum_geometry_error": 4.884981308350689e-15,
+      "native_command_maximum_geometry_error": 4.884981308350689e-15,
+      "native_ui_maximum_geometry_error": 4.884981308350689e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_curved_junction",
+      "portable_command_maximum_geometry_error": 1.1443916996305594e-15,
+      "portable_ui_maximum_geometry_error": 1.1443916996305594e-15,
+      "native_command_maximum_geometry_error": 1.1443916996305594e-15,
+      "native_ui_maximum_geometry_error": 1.1443916996305594e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_open_arc",
+      "portable_command_maximum_geometry_error": 1.124100812432971e-15,
+      "portable_ui_maximum_geometry_error": 1.124100812432971e-15,
+      "native_command_maximum_geometry_error": 1.124100812432971e-15,
+      "native_ui_maximum_geometry_error": 1.124100812432971e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_open_joined",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_open_parts",
+      "portable_command_maximum_geometry_error": 1.124100812432971e-15,
+      "portable_ui_maximum_geometry_error": 1.124100812432971e-15,
+      "native_command_maximum_geometry_error": 1.124100812432971e-15,
+      "native_ui_maximum_geometry_error": 1.124100812432971e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_open_reverse",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_discovery/self_zero_joined",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_holdouts/self_closed_joined_reversed",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_closed_parts_reversed",
+      "portable_command_maximum_geometry_error": 9.155133597044475e-16,
+      "portable_ui_maximum_geometry_error": 9.155133597044475e-16,
+      "native_command_maximum_geometry_error": 9.155133597044475e-16,
+      "native_ui_maximum_geometry_error": 9.155133597044475e-16
+    },
+    {
+      "id": "fillet_self_holdouts/self_closed_seam_reversed",
+      "portable_command_maximum_geometry_error": 4.884981308350689e-15,
+      "portable_ui_maximum_geometry_error": 4.884981308350689e-15,
+      "native_command_maximum_geometry_error": 4.884981308350689e-15,
+      "native_ui_maximum_geometry_error": 4.884981308350689e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_interior_corner",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_kinked_nurbs",
+      "portable_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_command_maximum_geometry_error": 1.7763568394002505e-15,
+      "native_ui_maximum_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_nonadjacent",
+      "portable_command_maximum_geometry_error": 3.552713678800501e-15,
+      "portable_ui_maximum_geometry_error": 3.552713678800501e-15,
+      "native_command_maximum_geometry_error": 3.552713678800501e-15,
+      "native_ui_maximum_geometry_error": 3.552713678800501e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_open_parts_reversed",
+      "portable_command_maximum_geometry_error": 1.124100812432971e-15,
+      "portable_ui_maximum_geometry_error": 1.124100812432971e-15,
+      "native_command_maximum_geometry_error": 1.124100812432971e-15,
+      "native_ui_maximum_geometry_error": 1.124100812432971e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_same_leaf",
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_holdouts/self_seam_parts",
+      "portable_command_maximum_geometry_error": 2.6645352591003757e-15,
+      "portable_ui_maximum_geometry_error": 2.6645352591003757e-15,
+      "native_command_maximum_geometry_error": 2.6645352591003757e-15,
+      "native_ui_maximum_geometry_error": 2.6645352591003757e-15
+    },
+    {
+      "id": "fillet_self_holdouts/self_smooth_nurbs",
+      "portable_command_maximum_geometry_error": 1.2412670766236366e-16,
+      "portable_ui_maximum_geometry_error": 1.2412670766236366e-16,
+      "native_command_maximum_geometry_error": 1.2412670766236366e-16,
+      "native_ui_maximum_geometry_error": 1.2412670766236366e-16
+    },
+    {
+      "id": "fillet_self_holdouts/self_spatial",
+      "portable_command_maximum_geometry_error": 5.197930934883577e-15,
+      "portable_ui_maximum_geometry_error": 5.197930934883577e-15,
+      "native_command_maximum_geometry_error": 5.197930934883577e-15,
+      "native_ui_maximum_geometry_error": 5.197930934883577e-15
+    },
+    {
+      "id": "fillet_self_limits/self_nurbs_seam_joined",
+      "portable_command_maximum_geometry_error": 6.43753887771207e-14,
+      "portable_ui_maximum_geometry_error": 6.43753887771207e-14,
+      "native_command_maximum_geometry_error": 5.469767702661925e-15,
+      "native_ui_maximum_geometry_error": 5.469767702661925e-15
+    },
+    {
+      "id": "fillet_self_limits/self_nurbs_seam_parts",
+      "portable_command_maximum_geometry_error": 4.769168967720767e-14,
+      "portable_ui_maximum_geometry_error": 4.769168967720767e-14,
+      "native_command_maximum_geometry_error": 1.831026719408895e-15,
+      "native_ui_maximum_geometry_error": 1.831026719408895e-15
+    },
+    {
+      "id": "fillet_self_limits/self_parallel_half_gap",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_limits/self_parallel_half_gap_reverse",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_limits/self_parallel_large",
+      "portable_command_maximum_geometry_error": 3.552713678800501e-15,
+      "portable_ui_maximum_geometry_error": 3.552713678800501e-15,
+      "native_command_maximum_geometry_error": 3.552713678800501e-15,
+      "native_ui_maximum_geometry_error": 3.552713678800501e-15
+    },
+    {
+      "id": "fillet_self_limits/self_parallel_small",
+      "portable_command_maximum_geometry_error": 1.554312234475219e-14,
+      "portable_ui_maximum_geometry_error": 1.554312234475219e-14,
+      "native_command_maximum_geometry_error": 1.554312234475219e-14,
+      "native_ui_maximum_geometry_error": 1.554312234475219e-14
+    },
+    {
+      "id": "fillet_self_pilot/self_closed_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_self_pilot/self_open_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    }
+  ],
+  "captures": [
+    {
+      "family": "fillet_self_pilot",
+      "observations": 2,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "965f3c099fe9ca9f17d105f44e9d650560b4fef69626df9f3e56224645b500a3"
+    },
+    {
+      "family": "fillet_self_discovery",
+      "observations": 11,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "4054344d2bb8bc1475f8e969b067d37f34068e8e2ef0a4f7b98e5f126fd02cd1"
+    },
+    {
+      "family": "fillet_self_holdouts",
+      "observations": 11,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "5f859dae34d69ff3386f53826acfdf9e24bb33702f37d294f6cb522daead982e"
+    },
+    {
+      "family": "fillet_self_branches",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "058c9122a3bc814750e36c385c92f68b7194a700069c0ec38926d86223562759"
+    },
+    {
+      "family": "fillet_self_limits",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "6351e878198b6a3e1db74df8eb093c49342f0c8e01134d1db86bd3c5cf35d8bf"
+    }
+  ],
+  "checks": [
+    {
+      "name": "self-command-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "open-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "self-command-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "open-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "geometry-decompose",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet.rs": "afc97b461150c8c3a14868a6238d7c0200cb00f0ea6f74eba7f636b699ae1e0f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/closed.rs": "d5ec4da99365b7a6bea6c9e2702b5c7845252fafc27c486b7d3e52df93804333",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/contacts.rs": "147f62652c8a64f38f489fa98c0c57721003b1af43ac4834aab481f1a49a0847",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/prepare.rs": "4124e0e5031fa1bfd51c838ba68cd86f2f32e01dabe2382ae53d651219880644",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/same_source.rs": "60602270651d47322b29e403e4a1cd8a397c080b61024d07a2c7bad4873ff032",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/same_source/leaf.rs": "c8c140d6d4da5c7af7304561beffd1287699257b81f591e7b6758f205a127f07",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/src/fillet/same_source/select.rs": "3817c2b89a977d019f40b00663b4313ec2abe6237cccfbffe94593768d1ae0a1",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-command/tests/fillet_self.rs": "c7ead1e3c639a643b3d294c0184ea6fcd6af6db3127c4aae816e24eba3c8c246",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-geometry/src/nurbs/decompose.rs": "efe4443a7803780a0c32b2f9b84e54be735837ca9eddaa612299d37079766a15",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:crates/viboceros-geometry/src/nurbs/decompose/tests.rs": "e285160d40c28a5cafcdce0cbfe79251a35ad49a15113a744413853ee0aab98a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/commands/fillet.md": "93029574c8bd7e77f34e1ea0bd2f08a89090748fa7808d3792f7571ff009ae16",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-closed.md": "ab61a0d0ecfa03e49229fe084c9572294458e6eae409724f54b83896b81599cd",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-getter.md": "0ca4c6b57ba1d7417485179707690e2a9635f121ceaabd254e20ba238ea7e37f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/capture-branches.log.gz": "46e7443b4a75203c9ed25d7865c6c867dcafc07c339b897fb8f2c9babda79ef0",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/capture-discovery.log.gz": "d463ac07dbee06862418a2b482dedb9e308cc2d78e8191782fcebb434cf82333",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/capture-holdouts.log.gz": "44eac178b6de31f86f97feeb82dcf14950b31c022e1fb348dc1d9c21ba583f93",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/capture-limits.log.gz": "0dd5e5b4abe4670574819d2ac1ee2f1676d10ad4d5e1764df19097a72df4b67f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/capture-pilot.log.gz": "baa256852e15dce019d6c9eedac9c30a9279b5355b20c60fb32e27f3b186449a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/captures.json": "6b57ef04e70b0937b2054aa3438bd61793e6ee0daa6e0ddd1f3959b79f210e4e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/checks.json": "d231472088b3d538d52f4cca35db01fb6741a2dcc616508b941c28d5a8fbd627",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/clippy-native.log.gz": "4d97d01c280bbb2330e1a617e60c24681409b93ea099f511586f7500aa7c223a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/clippy-portable.log.gz": "af2e507aa4bc39d73910ce87a298f3349e7fb6a6fc5bbe570674d2aaea12b4a1",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/closed-ui-native.log.gz": "980376f611b719171f37d61b298287e6edfed6f8322b2bb4e2a757d9e1ca577e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/closed-ui-portable.log.gz": "e08a0e76847c40ae48615ec4ca83565135cb043bdb3d8ce31f0b6a47a5d8e093",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/command-regressions-native.log.gz": "a50b2cd716352f30bad5e221952f144389b0ee1eef9cedfb8f9246d44df7a480",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/command-regressions-portable.log.gz": "e9878918098661eecc1785447f9a70941cd558fa41ab98eca6d9721b053a41c4",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/geometry-decompose.log.gz": "bb0977017083f719adc4d939260709ba6e7b40a8de16e881dc762007e7206554",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/library-native.log.gz": "8fd64e72e158be64403f295c7a742d122187dea7122447bd763d4256280afb17",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/library-portable.log.gz": "2c9635de6bbe952f1953030556be86b4bdca3c4201f05f2ec2919963d9ea6f75",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/open-ui-native.log.gz": "528cd22f85441d71db563f91a673ae5bdf89361f92c3e3c95e2fd8daa8ab920e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/open-ui-portable.log.gz": "8573fd91241b47ce1f1d9523ed97fd845cb1e49a9fe0890e5d008ade4b11283d",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/python-subd.log.gz": "05ee9d069742d15ee7f7b593c01cc01d492bf02af9d290488508b8996584f46c",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/python.log.gz": "3245c9e456de1dcdf27545a9a0db43de47ba91bd67d16c7ca28d06a970da9701",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/self-command-native.log.gz": "92c9095febbb02ca151420003d1eb8a1b9097eafbf6b332f35065a2f797c1a88",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/self-command-portable.log.gz": "28fe9871bd0e5dd114fb0df7e2b21606033894e5f279e9d9747e585aabc85c0d",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/self-ui-native.log.gz": "5b4667c8b9b507c940399e597d033becfe22ae0770d2e01c815e0ac72b9747e0",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/self-ui-portable.log.gz": "4f005058be72c81e61a2c8d243e5b9b5376cbe214686d5a28371e4472dfdaf2e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/subd-command-native.log.gz": "b00760be892fa5f4ae7c7df6112cffdd1f5e0cb8ddce2df20b4d434b6e4c67df",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self-proof/subd-ui-native.log.gz": "1351e7f85a428c662435412a06cc81cf0e008ac864896f1a2d891bb301959e2a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/fillet-self.md": "9ca89b286e32cf2412d94815ad423338433ae07cac60ef13b92a8accdee9669a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/subd-box-qualification.json": "b61b5c5c64fcfa4aca10d1ebc84dee49a2cfc0c73464bbf910a4dbce6b236d5d",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:docs/subd-plane-qualification.json": "b11f381d22e157fedbb0d255cf8a1d4ee1a011f2e035523dea2176a8ce5982e3",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:src/app/curve_fillet.rs": "2c94f47de407e74f71e8fd3a73992984ee1904e05feef3022c66fd7d4e6be506",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:src/app/tests/curve_fillet.rs": "323558c8c0b19b71ee0d576d237eb44ec1226fd8d607310f1021eadcb970ebe6",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:src/app/tests/fillet_self.rs": "e7d974a6216c25beb9e306b58e3d064c319784f329cd97c45c0c527b0b9ffde0",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:src/app/tests/mod.rs": "196f5ded1af60f787795ec29bdd7139f9f8993616448b6e459621f6778fb3200",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/check_fillet_self.py": "c9959bc26b7fb6db78f4f177e842e3b9bf4fbc0f53217112da113e2ee6dc713c",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fillet_command.py": "ee5187ca56475886d18464cbaa5c7ef7d486dd50845da009807b297b8eb9f990",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fillet_self_cases.py": "6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fillet_self_evidence.py": "e0b49c5a9e8aa15cbaf17c8ed317458159c256dff2f45e36c87792ff38e25d8f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fixtures/fillet_self_branches.json": "953ac4b1231c2dc3c442f90d4eca01563fe127a3c2ce3785eee3420dd2e13d3d",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fixtures/fillet_self_discovery.json": "3cf9e70854a35f05ab5ffeb1409ac58557b94b0c4ef4c3ccac10dc52b9c0a3ff",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fixtures/fillet_self_holdouts.json": "e7634b486ed86e8ca0f0e7ca27d69907a61fd41d7325bfaf143a6c4c05b40733",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fixtures/fillet_self_limits.json": "adca95735600ee2eb25986614ceecae22b0b6a17ee94aa6ecb5c579c0c3d17fb",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/fixtures/fillet_self_pilot.json": "96ffdd8030c5ce16ae043121594e9512b0175c3c80764edb25714cbc2fbea48f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/generate_fillet_self_branches.py": "d51de1eb8f7a52b82693de8ce372b18f3bd030c77cff80a2a0a365ebe5a4fee9",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/generate_fillet_self_discovery.py": "a17186e1247031aca59f2b81786ea73571df8f90ca10c7a94593db9b02619168",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/generate_fillet_self_holdouts.py": "8b59280e2f68741b19257d9c914e62f0b08ca157120765915f7dcc8ab0fc6663",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/generate_fillet_self_limits.py": "f3efc301361c63058b73c03424d490d205b2aa57f85935d8496985bc339aeae9",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/generate_fillet_self_pilot.py": "69fc4103de07cfc618303e096dbc0d220bab97a45f5c0d76372eacef2332f7cb",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/fillet_self_branches.json.gz": "049bfa95e982729b517ff19bda9d9fb18e1210e36f703fd49d1a1423146034f0",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/fillet_self_discovery.json.gz": "6580ca3985fa113f9710d215999de2061128846b146ac23a12413443d1fe5e22",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/fillet_self_holdouts.json.gz": "8fd2e0f1843cd2238979b8987e40826a9f3d2165e18955bd570f80d37b537fa2",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/fillet_self_limits.json.gz": "61f56412efc7c4e53c2ed67d481080c987386d49740c3cca5aec369945dd0b7e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/fillet_self_pilot.json.gz": "a22d6cf0689c6106a336767f213443706a6494f0010db28a151c6cd8c4bd4b82",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/20c3b008e2a66c5add665517d24e660be120349308ee48aa88ec911835276f92.gz": "9fe12223ff19e00d00fc1363ccf0673434efc7ccb366d26a43a812218013929a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2.gz": "1bc44db7771d8b09dcfea5995c42c3df5cd755d1c5bb2ac42eb8015bbd959239",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/69fc4103de07cfc618303e096dbc0d220bab97a45f5c0d76372eacef2332f7cb.gz": "fd80b127476f8c29ac30d740143795f5621ae61ea0f0589148db99251fb38746",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/748db4a32def0273fef09a3726f8c5aa83867adeaa807529c1cc0d4063c9269e.gz": "b64f47152e6c0841ede9f60cf25fdda0fe0c2d01e285eadf5acd3c656d4cfbda",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/78b6563960c426fd941c57c644f3c5e4d0ae47a7fd04e982d19b2fa4673c02e0.gz": "10e490e37e82ea1ec6699e90811a3e8c6948952e8a856a66d4b534f6bfc07211",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/86422705e2822b8b5d291a2af7f00a0a7be6f419806830b87e4183d104cd9dc2.gz": "d8fd80f4b73d34f6f07d20860c19d801b16d523e5caa781aeb23961d91bea445",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/89cf61c8f4fadfcf9f321506fada0448ee135e32749fa9ab24173003d912d82e.gz": "7fa26b72f4adb9eacf9c19a3583027e27f202ade94764a2703a698fb8bbfc1c3",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/8b59280e2f68741b19257d9c914e62f0b08ca157120765915f7dcc8ab0fc6663.gz": "0ee69993e929af0bb742b19c73844a679269d32e0953ec8e375cf01954870c44",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/a17186e1247031aca59f2b81786ea73571df8f90ca10c7a94593db9b02619168.gz": "6c0b96c16d5bcd2fc7eaf0d149754a8cdfd0b90c52d26f70cf85f8a060c9125c",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/a39cfbed663bed5122cc56b6aa75df3d0bec441ac95a20e603e27a3ff07a6770.gz": "51e00b6cb2032d300c387fef8725934cce4146c7cf25c7183768d49503db907e",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/c93d5ecaf6072904cff0095e97c2fd71b46d05043d56ce7fdc8dfa070a1847fd.gz": "2b0c387fc7d6b66cf6791b3ce4ba5dd19688b1a08b80a6530caf1d603394382a",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/d51de1eb8f7a52b82693de8ce372b18f3bd030c77cff80a2a0a365ebe5a4fee9.gz": "23e9eafb524799dd516049f69c5f6df1436db7ed9d009992eb9b29f5c5f2ea50",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/ee5187ca56475886d18464cbaa5c7ef7d486dd50845da009807b297b8eb9f990.gz": "fe90beba63e2e67c00010c9989f37026d9811abe22f7f2728de2711e75172702",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/f3efc301361c63058b73c03424d490d205b2aa57f85935d8496985bc339aeae9.gz": "29c9c1b953824b915699bd2a318c845afba312157e5f259b86288c09666feef5",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/f90ed4af2f9a98aa68ea7a3585d0147e49f2be92decb10e9f76b89ddb5251793.gz": "a30c47dc29d0056dead68a7b085b7db010f6e9eaa6e2b731d3222d3112f66809",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/observations/source_snapshots/fd013a02acd50c2cd9157f7aac6c952d019106ff6f4e53aa8424e1c91f57c4f0.gz": "1d5770d80255f9271d7f5d317fe387704d84f0300ab6d0f2e4606226bf3d786f",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/report_fillet_self.py": "a0703b2e8b5d6e4de77a825f206e76b95eb211a0b72c003cf41bbdb7f8fc4a15",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/structural_sdk.py": "86422705e2822b8b5d291a2af7f00a0a7be6f419806830b87e4183d104cd9dc2",
+    "3289c457037c1b0f8f79e3f5627feef2bc169010:tools/rhino_oracle/test_fillet_self.py": "e7a37da6538ab17e3c0053eb9383d9e79b28e3deb2c3b87415cb21870ec60264"
+  },
+  "evidence_sha256": {
+    "docs/fillet-self-proof/capture-branches.log.gz": "46e7443b4a75203c9ed25d7865c6c867dcafc07c339b897fb8f2c9babda79ef0",
+    "docs/fillet-self-proof/capture-discovery.log.gz": "d463ac07dbee06862418a2b482dedb9e308cc2d78e8191782fcebb434cf82333",
+    "docs/fillet-self-proof/capture-holdouts.log.gz": "44eac178b6de31f86f97feeb82dcf14950b31c022e1fb348dc1d9c21ba583f93",
+    "docs/fillet-self-proof/capture-limits.log.gz": "0dd5e5b4abe4670574819d2ac1ee2f1676d10ad4d5e1764df19097a72df4b67f",
+    "docs/fillet-self-proof/capture-pilot.log.gz": "baa256852e15dce019d6c9eedac9c30a9279b5355b20c60fb32e27f3b186449a",
+    "docs/fillet-self-proof/captures.json": "6b57ef04e70b0937b2054aa3438bd61793e6ee0daa6e0ddd1f3959b79f210e4e",
+    "docs/fillet-self-proof/checks.json": "0dd427263993bf8bbd27a2256cb62b13c517e97b3a14d6ecac3d949a134b6609",
+    "docs/fillet-self-proof/clippy-native.log.gz": "4d97d01c280bbb2330e1a617e60c24681409b93ea099f511586f7500aa7c223a",
+    "docs/fillet-self-proof/clippy-portable.log.gz": "af2e507aa4bc39d73910ce87a298f3349e7fb6a6fc5bbe570674d2aaea12b4a1",
+    "docs/fillet-self-proof/closed-ui-native.log.gz": "980376f611b719171f37d61b298287e6edfed6f8322b2bb4e2a757d9e1ca577e",
+    "docs/fillet-self-proof/closed-ui-portable.log.gz": "e08a0e76847c40ae48615ec4ca83565135cb043bdb3d8ce31f0b6a47a5d8e093",
+    "docs/fillet-self-proof/command-regressions-native.log.gz": "a50b2cd716352f30bad5e221952f144389b0ee1eef9cedfb8f9246d44df7a480",
+    "docs/fillet-self-proof/command-regressions-portable.log.gz": "e9878918098661eecc1785447f9a70941cd558fa41ab98eca6d9721b053a41c4",
+    "docs/fillet-self-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-self-proof/geometry-decompose.log.gz": "bb0977017083f719adc4d939260709ba6e7b40a8de16e881dc762007e7206554",
+    "docs/fillet-self-proof/library-native.log.gz": "8fd64e72e158be64403f295c7a742d122187dea7122447bd763d4256280afb17",
+    "docs/fillet-self-proof/library-portable.log.gz": "2c9635de6bbe952f1953030556be86b4bdca3c4201f05f2ec2919963d9ea6f75",
+    "docs/fillet-self-proof/open-ui-native.log.gz": "528cd22f85441d71db563f91a673ae5bdf89361f92c3e3c95e2fd8daa8ab920e",
+    "docs/fillet-self-proof/open-ui-portable.log.gz": "8573fd91241b47ce1f1d9523ed97fd845cb1e49a9fe0890e5d008ade4b11283d",
+    "docs/fillet-self-proof/python-subd.log.gz": "05ee9d069742d15ee7f7b593c01cc01d492bf02af9d290488508b8996584f46c",
+    "docs/fillet-self-proof/python.log.gz": "ac5457f3d2d99a7a789568c2eb0c68141fe1d6f37ffa2d62caa86e1efcfdb7a3",
+    "docs/fillet-self-proof/self-command-native.log.gz": "92c9095febbb02ca151420003d1eb8a1b9097eafbf6b332f35065a2f797c1a88",
+    "docs/fillet-self-proof/self-command-portable.log.gz": "28fe9871bd0e5dd114fb0df7e2b21606033894e5f279e9d9747e585aabc85c0d",
+    "docs/fillet-self-proof/self-ui-native.log.gz": "5b4667c8b9b507c940399e597d033becfe22ae0770d2e01c815e0ac72b9747e0",
+    "docs/fillet-self-proof/self-ui-portable.log.gz": "4f005058be72c81e61a2c8d243e5b9b5376cbe214686d5a28371e4472dfdaf2e",
+    "docs/fillet-self-proof/subd-command-native.log.gz": "b00760be892fa5f4ae7c7df6112cffdd1f5e0cb8ddce2df20b4d434b6e4c67df",
+    "docs/fillet-self-proof/subd-ui-native.log.gz": "1351e7f85a428c662435412a06cc81cf0e008ac864896f1a2d891bb301959e2a",
+    "tools/rhino_oracle/fixtures/fillet_self_branches.json": "953ac4b1231c2dc3c442f90d4eca01563fe127a3c2ce3785eee3420dd2e13d3d",
+    "tools/rhino_oracle/fixtures/fillet_self_discovery.json": "3cf9e70854a35f05ab5ffeb1409ac58557b94b0c4ef4c3ccac10dc52b9c0a3ff",
+    "tools/rhino_oracle/fixtures/fillet_self_holdouts.json": "e7634b486ed86e8ca0f0e7ca27d69907a61fd41d7325bfaf143a6c4c05b40733",
+    "tools/rhino_oracle/fixtures/fillet_self_limits.json": "adca95735600ee2eb25986614ceecae22b0b6a17ee94aa6ecb5c579c0c3d17fb",
+    "tools/rhino_oracle/fixtures/fillet_self_pilot.json": "96ffdd8030c5ce16ae043121594e9512b0175c3c80764edb25714cbc2fbea48f",
+    "tools/rhino_oracle/observations/fillet_self_branches.json.gz": "049bfa95e982729b517ff19bda9d9fb18e1210e36f703fd49d1a1423146034f0",
+    "tools/rhino_oracle/observations/fillet_self_discovery.json.gz": "6580ca3985fa113f9710d215999de2061128846b146ac23a12413443d1fe5e22",
+    "tools/rhino_oracle/observations/fillet_self_holdouts.json.gz": "8fd2e0f1843cd2238979b8987e40826a9f3d2165e18955bd570f80d37b537fa2",
+    "tools/rhino_oracle/observations/fillet_self_limits.json.gz": "61f56412efc7c4e53c2ed67d481080c987386d49740c3cca5aec369945dd0b7e",
+    "tools/rhino_oracle/observations/fillet_self_pilot.json.gz": "a22d6cf0689c6106a336767f213443706a6494f0010db28a151c6cd8c4bd4b82",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/20c3b008e2a66c5add665517d24e660be120349308ee48aa88ec911835276f92.gz": "9fe12223ff19e00d00fc1363ccf0673434efc7ccb366d26a43a812218013929a",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158.gz": "d7961c149b90800346253f1d3c2bd85275a5e6f157970e786e6db5c79dfa6444",
+    "tools/rhino_oracle/observations/source_snapshots/63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9.gz": "ab7aa676392930d72c3954751a10cb81dcf9151eb3111a4be27a4f5375017935",
+    "tools/rhino_oracle/observations/source_snapshots/6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2.gz": "1bc44db7771d8b09dcfea5995c42c3df5cd755d1c5bb2ac42eb8015bbd959239",
+    "tools/rhino_oracle/observations/source_snapshots/69fc4103de07cfc618303e096dbc0d220bab97a45f5c0d76372eacef2332f7cb.gz": "fd80b127476f8c29ac30d740143795f5621ae61ea0f0589148db99251fb38746",
+    "tools/rhino_oracle/observations/source_snapshots/748db4a32def0273fef09a3726f8c5aa83867adeaa807529c1cc0d4063c9269e.gz": "b64f47152e6c0841ede9f60cf25fdda0fe0c2d01e285eadf5acd3c656d4cfbda",
+    "tools/rhino_oracle/observations/source_snapshots/78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da.gz": "feeb2535f264a3bd71854d71997e4a41a67683160150018f071e96cde445f89e",
+    "tools/rhino_oracle/observations/source_snapshots/78b6563960c426fd941c57c644f3c5e4d0ae47a7fd04e982d19b2fa4673c02e0.gz": "10e490e37e82ea1ec6699e90811a3e8c6948952e8a856a66d4b534f6bfc07211",
+    "tools/rhino_oracle/observations/source_snapshots/86422705e2822b8b5d291a2af7f00a0a7be6f419806830b87e4183d104cd9dc2.gz": "d8fd80f4b73d34f6f07d20860c19d801b16d523e5caa781aeb23961d91bea445",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/89cf61c8f4fadfcf9f321506fada0448ee135e32749fa9ab24173003d912d82e.gz": "7fa26b72f4adb9eacf9c19a3583027e27f202ade94764a2703a698fb8bbfc1c3",
+    "tools/rhino_oracle/observations/source_snapshots/8b59280e2f68741b19257d9c914e62f0b08ca157120765915f7dcc8ab0fc6663.gz": "0ee69993e929af0bb742b19c73844a679269d32e0953ec8e375cf01954870c44",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/a17186e1247031aca59f2b81786ea73571df8f90ca10c7a94593db9b02619168.gz": "6c0b96c16d5bcd2fc7eaf0d149754a8cdfd0b90c52d26f70cf85f8a060c9125c",
+    "tools/rhino_oracle/observations/source_snapshots/a39cfbed663bed5122cc56b6aa75df3d0bec441ac95a20e603e27a3ff07a6770.gz": "51e00b6cb2032d300c387fef8725934cce4146c7cf25c7183768d49503db907e",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "tools/rhino_oracle/observations/source_snapshots/c93d5ecaf6072904cff0095e97c2fd71b46d05043d56ce7fdc8dfa070a1847fd.gz": "2b0c387fc7d6b66cf6791b3ce4ba5dd19688b1a08b80a6530caf1d603394382a",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/d51de1eb8f7a52b82693de8ce372b18f3bd030c77cff80a2a0a365ebe5a4fee9.gz": "23e9eafb524799dd516049f69c5f6df1436db7ed9d009992eb9b29f5c5f2ea50",
+    "tools/rhino_oracle/observations/source_snapshots/ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85.gz": "e2e7daf1ce6bbd83b220b65c3f8586bd2826447b1a27fb06027664a2313ffe6e",
+    "tools/rhino_oracle/observations/source_snapshots/ee5187ca56475886d18464cbaa5c7ef7d486dd50845da009807b297b8eb9f990.gz": "fe90beba63e2e67c00010c9989f37026d9811abe22f7f2728de2711e75172702",
+    "tools/rhino_oracle/observations/source_snapshots/f3efc301361c63058b73c03424d490d205b2aa57f85935d8496985bc339aeae9.gz": "29c9c1b953824b915699bd2a318c845afba312157e5f259b86288c09666feef5",
+    "tools/rhino_oracle/observations/source_snapshots/f90ed4af2f9a98aa68ea7a3585d0147e49f2be92decb10e9f76b89ddb5251793.gz": "a30c47dc29d0056dead68a7b085b7db010f6e9eaa6e2b731d3222d3112f66809",
+    "tools/rhino_oracle/observations/source_snapshots/fd013a02acd50c2cd9157f7aac6c952d019106ff6f4e53aa8424e1c91f57c4f0.gz": "1d5770d80255f9271d7f5d317fe387704d84f0300ab6d0f2e4606226bf3d786f",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
