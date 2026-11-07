@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_first",
+      "case": "subcurve_first"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_first_near_start",
+      "case": "subcurve_first_near_start"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_reverse",
+      "case": "subcurve_reverse"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_second",
+      "case": "subcurve_second"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_both_trim",
+      "case": "subcurve_both_trim"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_join_slide",
+      "case": "subcurve_join_slide"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle",
+      "case": "subcurve_circle"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_cancel",
+      "case": "subcurve_cancel"
+    }
+  ]
+}

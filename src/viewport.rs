@@ -3222,7 +3222,7 @@ impl Viewport {
             .flatten(),
             arc_blend_hover: input
                 .arc_blend
-                .filter(|i| i.active_handle().is_some())
+                .filter(|i| i.active_handle().is_some() || !i.ready())
                 .and_then(|_| response.hovered().then_some(edge_cursor).flatten())
                 .map(|c| c.parameter),
             curve_line_click: response

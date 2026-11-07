@@ -9,6 +9,28 @@ pub(super) fn parse(
     let mut i = 0;
     while i < args.len() {
         if let Some((key, value)) = args[i].split_once('=') {
+            if option_name_eq(key, "SubCrv") || option_name_eq(key, "SubCrvWrap") {
+                let parts = value.split(',').collect::<Vec<_>>();
+                let (id, edge, range) = match parts.as_slice() {
+                    [id, a, b] => (id, None, [parse_finite_real(a)?, parse_finite_real(b)?]),
+                    [id, tag, e, a, b] if option_name_eq(tag, "Edge") => (
+                        id,
+                        Some(e.parse().map_err(|_| CommandError::Usage(USAGE))?),
+                        [parse_finite_real(a)?, parse_finite_real(b)?],
+                    ),
+                    _ => return Err(CommandError::Usage(USAGE)),
+                };
+                let id = id.parse().map_err(|_| CommandError::Usage(USAGE))?;
+                input.add(
+                    doc,
+                    id,
+                    edge,
+                    None,
+                    Some((range, option_name_eq(key, "SubCrvWrap"))),
+                )?;
+                i += 1;
+                continue;
+            }
             let binding = if option_name_eq(key, "Curve") {
                 Some((
                     value
@@ -25,7 +47,7 @@ pub(super) fn parse(
             };
             if let Some((id, edge)) = binding {
                 let (p, n) = parse_point(&args[i + 1..])?;
-                input.add(doc, id, edge, p)?;
+                input.add(doc, id, edge, Some(p), None)?;
                 i += n + 1;
                 continue;
             }

@@ -7,8 +7,8 @@ and a ratio handle on the straight chord between them. Click a handle, then
 move and click to accept its preview, or press, drag and release it.
 The model changes only when Enter finishes the whole command.
 
-Endpoint handles slide along the original bounded source curve. A typed
-point projects to that curve, including clamping at its endpoints. The
+Endpoint handles slide along the bounded source curve or temporary portion.
+A typed point projects to that curve, including clamping at its endpoints. The
 selected source end still determines the tangent orientation and which
 portion Trim keeps.
 
@@ -49,7 +49,8 @@ failed-target previews for nonparallel tangents and alternate solutions.
 [Curved contacts](arc-blend-contacts.md) add arc, NURBS, polycurve and polyline
 comparisons, including planar mouse-constrained arc contacts. Radius targets,
 Trim and Join are remembered across commands. Edge adjustments, exact
-hit-box/depth ranking and SubCrv remain unqualified or unsupported.
+hit-box/depth ranking remain unqualified.
+[Temporary portions](arc-blend-subcurves.md) have separate qualification.
 
 Rhino keeps source IDs while assigning new runtime serials to trimmed
 objects. The controlled comparison matches its unique source names; object

@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_mouse_line",
+      "case": "subcurve_mouse_line"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_mouse_arc",
+      "case": "subcurve_mouse_arc"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_mouse_circle",
+      "case": "subcurve_mouse_circle"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_length_units",
+      "case": "subcurve_length_units"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_cancel_start",
+      "case": "subcurve_cancel_start"
+    }
+  ]
+}

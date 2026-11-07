@@ -15,15 +15,15 @@ Options currently supported:
 - `AlternateSolution` toggles the other signed tangent-length solution when
   available; `AlternateSolution=Yes|No` sets it explicitly.
 - `Trim=Yes|No` controls source trimming; initially No, then remembered.
-- `Join=Yes|No` becomes available with Trim enabled. Yes replaces two distinct
-  ordinary source curves with the joined source portions and blend.
+- `Join=Yes|No` becomes available with Trim enabled. Yes joins the retained
+  source portions and blend; whole sources are replaced, while temporary parents survive.
 - `Ratio=positive-number` sets the ratio of the two arc control-polygon
   lengths; the default is 1. Zero restores the last radius target, initially
   zero. This is a Viboceros scripting option.
 - `RadiusDifference=number` targets the first arc's radius minus the second's
   with a bounded search. Interactively, enter `RadiusDifference`,
   then the number. Positive ratios release the lock.
-- `Parameter1=t` and `Parameter2=t` move the contacts within the original
+- `Parameter1=t` and `Parameter2=t` move the contacts within the effective
   source parameter domains, retaining the selected end orientations. These
   are Viboceros scripting options; they require both source picks first.
 
@@ -35,9 +35,12 @@ ArcBlend Curve=id1 0,0,0 Curve=id2 5,4,0 Ratio=1 Trim=No
 
 An interactive source can also be entered as `Curve=id`, followed by a point.
 `Edge=id,index` accepts a read-only B-rep edge with `Trim=No`. Ordinary
-drafting point syntax applies to interactive typed picks. Closed sources,
-degenerate two-arc solutions, joined self-blends and surface-edge trimming
-are rejected. Source geometry or tolerance changes invalidate stored picks.
+drafting point syntax applies to interactive typed picks.
+[Temporary portions](arc-blend-subcurves.md) also accept closed parents and
+shared-parent joining. Whole closed sources, degenerate two-arc solutions,
+joining two whole references to the same object, and whole surface-edge
+trimming are rejected. Source geometry or tolerance changes invalidate
+stored picks.
 [Curved contacts and numeric input](arc-blend-contacts.md) cover arcs, NURBS,
 polycurves and polylines, including source trimming and joining.
 
@@ -61,7 +64,7 @@ The radius target, Trim and Join survive subsequent commands and cancellation
 for the application session. Ratio and AlternateSolution reset for each command.
 See [settings validation](../arc-blend-preferences-validation.json).
 
-SubCrv remains unsupported, and B-rep edge references lack native qualification.
+B-rep edge references lack native qualification.
 Curved-source coverage has its own
 [validation record](../arc-blend-sources-validation.json).
 Three raw non-unit SDK direction cases have discontinuous native join

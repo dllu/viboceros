@@ -37,7 +37,7 @@ impl Input {
     }
     pub fn adjustment_curve(&self) -> Option<&NurbsCurve> {
         match self.adjustment_curve.as_ref()? {
-            AdjustmentCurve::Source(i) => Some(self.guides.get(*i)?.source.curve()),
+            AdjustmentCurve::Source(i) => Some(self.guides.get(*i)?.display()),
             AdjustmentCurve::Chord(c) => Some(c),
         }
     }
@@ -113,7 +113,6 @@ impl Input {
             .ok_or(CommandError::Usage(USAGE))?
         {
             AdjustmentCurve::Source(i) => self.guides[*i]
-                .source
                 .curve_ref()
                 .parameter_from_nurbs(parameter)?,
             AdjustmentCurve::Chord(_) => parameter,
@@ -127,7 +126,6 @@ impl Input {
             .ok_or(CommandError::Usage(USAGE))?
         {
             AdjustmentCurve::Source(i) => self.guides[*i]
-                .source
                 .curve_ref()
                 .closest_parameter(point, Tolerance::NUMERICAL_VALIDATION)?,
             AdjustmentCurve::Chord(c) => {

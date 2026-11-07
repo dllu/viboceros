@@ -10,7 +10,7 @@ impl VibocerosApp {
         let Some(s) = &mut self.arc_blend_session else {
             return;
         };
-        if s.radius_prompt {
+        if s.radius_prompt || s.subcurve.is_some() {
             return;
         }
         match s.input.select_handle(handle) {
@@ -26,6 +26,9 @@ impl VibocerosApp {
             return;
         }
         self.validate_arc_blend();
+        if self.hover_arc_subcurve_parameter(t) {
+            return;
+        }
         let Some(s) = &mut self.arc_blend_session else {
             return;
         };
@@ -42,6 +45,9 @@ impl VibocerosApp {
             .then_some((t, next));
     }
     pub(in crate::app) fn accept_arc_blend_parameter(&mut self, t: f64) -> bool {
+        if self.plane_prompt.is_none() && self.accept_arc_subcurve_parameter(t) {
+            return true;
+        }
         if self.plane_prompt.is_some()
             || self
                 .arc_blend_session
@@ -66,6 +72,9 @@ impl VibocerosApp {
         true
     }
     pub(in crate::app) fn cancel_arc_blend_adjustment(&mut self) -> bool {
+        if self.plane_prompt.is_none() && self.discard_arc_subcurve() {
+            return true;
+        }
         if self.plane_prompt.is_none()
             && self
                 .arc_blend_session

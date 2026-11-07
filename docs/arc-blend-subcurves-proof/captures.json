@@ -1,0 +1,50 @@
+[
+  {
+    "family": "arc_blend_subcurve_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_subcurve_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz"
+  },
+  {
+    "family": "arc_blend_subcurve_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_subcurve_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz"
+  },
+  {
+    "family": "arc_blend_subcurve_pointers",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_subcurve_pointers"
+    ],
+    "exit_status": 0,
+    "log": "capture-pointers.log.gz"
+  },
+  {
+    "family": "arc_blend_subcurve_closed",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_subcurve_closed"
+    ],
+    "exit_status": 0,
+    "log": "capture-closed.log.gz"
+  }
+]

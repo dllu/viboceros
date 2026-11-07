@@ -5,7 +5,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/arc_blend_sources.rs"]
 #[allow(dead_code)]
-mod sources;
+pub(super) mod sources;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

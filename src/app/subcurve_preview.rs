@@ -14,6 +14,7 @@ struct Parameters {
     locked_forward: Option<bool>,
     midpoint: bool,
     retain_orientation: bool,
+    bounded: bool,
 }
 
 #[derive(Debug)]
@@ -63,6 +64,35 @@ impl Cache {
                 locked_forward,
                 midpoint: false,
                 retain_orientation: false,
+                bounded: false,
+            }),
+            tolerance,
+        )
+        .map(|geometry| Preview {
+            geometry,
+            show_curve: true,
+        })
+    }
+    pub(super) fn temporary_bounded(
+        &mut self,
+        source: Option<&GeometrySnapshot>,
+        edge: Option<usize>,
+        range: [f64; 2],
+        length: Option<f64>,
+        locked_forward: Option<bool>,
+        tolerance: Tolerance,
+    ) -> Option<Preview> {
+        self.get(
+            source,
+            Some(Parameters {
+                edge,
+                start: range[0],
+                hover: range[1],
+                length,
+                locked_forward,
+                midpoint: false,
+                retain_orientation: false,
+                bounded: true,
             }),
             tolerance,
         )
@@ -90,6 +120,7 @@ impl Cache {
                 locked_forward,
                 midpoint: false,
                 retain_orientation: true,
+                bounded: false,
             }),
             tolerance,
         )
@@ -234,7 +265,9 @@ fn resolve(
         else {
             return Ok(None);
         };
-        Some(if p.edge.is_some() && !p.retain_orientation {
+        Some(if p.bounded {
+            viboceros_command::arc_blend::prepare_subcurve(curve, [start, end], false)?
+        } else if p.edge.is_some() && !p.retain_orientation {
             viboceros_command::curve_reference::edge_subcurve(curve, start, end)?
         } else {
             viboceros_command::prepare_directed_subcurve(&curve.to_owned(), start, end)?
@@ -250,6 +283,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(s) = &self.arc_blend_session {
+            return s.subcurve_hover();
+        }
         if let Some(prompt) = &self.curve_boolean_prompt {
             return prompt.subcurve_hover();
         }
@@ -289,6 +325,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(s) = &mut self.arc_blend_session {
+            return s.subcurve_preview(&self.document);
+        }
         if let Some(s) = &mut self.orient_edge_session {
             return s.subcurve_preview(&self.document);
         }
@@ -340,6 +379,7 @@ impl VibocerosApp {
                     locked_forward: p.locked_forward,
                     midpoint: p.from_midpoint,
                     retain_orientation: true,
+                    bounded: false,
                 });
             return p
                 .preview
@@ -374,6 +414,7 @@ impl VibocerosApp {
                 locked_forward: p.locked_forward,
                 midpoint: false,
                 retain_orientation: false,
+                bounded: false,
             });
         p.preview
             .get(source, parameters, tolerance)
@@ -385,152 +426,4 @@ impl VibocerosApp {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use viboceros_geometry::LineSegment;
-    fn source(end: [f64; 3]) -> GeometrySnapshot {
-        Geometry::Line(
-            LineSegment::try_new(
-                Point3::try_new(0., 0., 0.).unwrap(),
-                Point3::try_from(end).unwrap(),
-                Tolerance::DEFAULT,
-            )
-            .unwrap(),
-        )
-        .into()
-    }
-    #[test]
-    fn cache_invalidates_geometry_hover_and_failed_results_by_snapshot_and_inputs() {
-        let x = source([10., 0., 0.]);
-        let y = source([0., 10., 0.]);
-        let mut cache = Cache::default();
-        let p = Parameters {
-            edge: None,
-            start: 2.,
-            hover: 4.,
-            length: None,
-            locked_forward: None,
-            midpoint: false,
-            retain_orientation: true,
-        };
-        let first = cache.get(Some(&x), Some(p), Tolerance::DEFAULT).unwrap();
-        assert!(Arc::ptr_eq(
-            &first,
-            &cache.get(Some(&x), Some(p), Tolerance::DEFAULT).unwrap()
-        ));
-        let new = cache.get(Some(&y), Some(p), Tolerance::DEFAULT).unwrap();
-        assert!(!Arc::ptr_eq(&first, &new));
-        assert_eq!(new.endpoints[0], Point3::try_new(0., 2., 0.).unwrap());
-        let point = Point3::try_new(6., 4., 0.).unwrap();
-        assert_eq!(
-            cache.parameter(Some(&x), None, point, Tolerance::DEFAULT),
-            Some(6.)
-        );
-        assert_eq!(
-            cache.parameter(Some(&y), None, point, Tolerance::DEFAULT),
-            Some(4.)
-        );
-        let bad = Parameters { hover: 2., ..p };
-        assert!(cache.get(Some(&x), Some(bad), Tolerance::DEFAULT).is_none());
-        assert!(cache.get(Some(&x), Some(bad), Tolerance::DEFAULT).is_none());
-        assert!(cache.key.as_ref().unwrap().1 == bad);
-        assert!(cache.get(None, Some(p), Tolerance::DEFAULT).is_none());
-        assert!(cache.key.is_none());
-        assert!(cache.get(Some(&x), Some(p), Tolerance::DEFAULT).is_some());
-        assert!(
-            cache
-                .parameter(None, None, point, Tolerance::DEFAULT)
-                .is_none()
-        );
-        assert!(cache.hover.is_none());
-    }
-    #[test]
-    fn surface_edge_conversion_is_reused_across_hover_and_invalidated_by_edge_or_snapshot() {
-        let surface = viboceros_geometry::NurbsSurface::try_bilinear([
-            Point3::try_new(0., 0., 0.).unwrap(),
-            Point3::try_new(4., 0., 0.).unwrap(),
-            Point3::try_new(4., 6., 0.).unwrap(),
-            Point3::try_new(0., 6., 0.).unwrap(),
-        ])
-        .unwrap();
-        let source: GeometrySnapshot = Geometry::NurbsSurface(surface).into();
-        let mut cache = Cache::default();
-        let a = Point3::try_new(1., 0., 0.).unwrap();
-        let b = Point3::try_new(3., 0., 0.).unwrap();
-        let start = cache
-            .parameter(Some(&source), Some(0), a, Tolerance::DEFAULT)
-            .unwrap();
-        let cached_storage = |cache: &Cache| {
-            let Some(Curve3::NurbsCurve(curve)) = cache.surface_edge.as_ref().unwrap().3.as_ref()
-            else {
-                panic!()
-            };
-            curve.control_points().as_ptr()
-        };
-        let storage = cached_storage(&cache);
-        let hover = cache
-            .parameter(Some(&source), Some(0), b, Tolerance::DEFAULT)
-            .unwrap();
-        assert_eq!(storage, cached_storage(&cache));
-        let p = Parameters {
-            edge: Some(0),
-            start,
-            hover,
-            length: None,
-            locked_forward: None,
-            midpoint: false,
-            retain_orientation: true,
-        };
-        let preview = cache
-            .get(Some(&source), Some(p), Tolerance::DEFAULT)
-            .unwrap();
-        assert!(preview.endpoints[0].distance_to(a).unwrap() < 1e-9);
-        assert!(preview.endpoints[1].distance_to(b).unwrap() < 1e-9);
-        assert_eq!(storage, cached_storage(&cache));
-        assert!(
-            cache
-                .parameter(Some(&source), Some(999), b, Tolerance::DEFAULT)
-                .is_none()
-        );
-        assert!(cache.surface_edge.as_ref().unwrap().3.is_none());
-        assert!(
-            cache
-                .parameter(Some(&source), Some(0), b, Tolerance::DEFAULT)
-                .is_some()
-        );
-        let other: GeometrySnapshot = Geometry::NurbsSurface(
-            viboceros_geometry::NurbsSurface::try_bilinear([
-                Point3::try_new(0., 0., 2.).unwrap(),
-                Point3::try_new(4., 0., 2.).unwrap(),
-                Point3::try_new(4., 6., 2.).unwrap(),
-                Point3::try_new(0., 6., 2.).unwrap(),
-            ])
-            .unwrap(),
-        )
-        .into();
-        assert!(
-            cache
-                .parameter(Some(&other), Some(0), b, Tolerance::DEFAULT)
-                .is_some()
-        );
-        assert!(
-            cache
-                .surface_edge
-                .as_ref()
-                .unwrap()
-                .0
-                .shares_storage_with(&other)
-        );
-        let new = cache
-            .get(Some(&other), Some(p), Tolerance::DEFAULT)
-            .unwrap();
-        assert_eq!(new.endpoints[0].z(), 2.);
-        let tolerance = Tolerance::try_new(1e-4, 1e-12, 1e-10).unwrap();
-        assert!(
-            cache
-                .parameter(Some(&other), Some(0), b, tolerance)
-                .is_some()
-        );
-        assert_eq!(cache.surface_edge.as_ref().unwrap().2, tolerance);
-    }
-}
+mod tests;

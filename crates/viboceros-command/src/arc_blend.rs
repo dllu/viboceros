@@ -6,6 +6,9 @@ use crate::{
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{ArcBlendOptions, NurbsCurve, Point3, PolyCurve3, Real, Tolerance};
 mod arguments;
+mod guide;
+use guide::Guide;
+pub use guide::prepare_subcurve;
 mod commit;
 mod handles;
 mod options;
@@ -13,13 +16,7 @@ mod preferences;
 pub use handles::Handle;
 pub use options::parse_number;
 pub use preferences::Preferences;
-pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=nonnegative|RadiusDifference=number] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
-#[derive(Clone, Debug)]
-struct Guide {
-    source: CapturedCurve,
-    parameter: Real,
-    end: bool,
-}
+pub const USAGE: &str = "ArcBlend Curve=id point|SubCrv=id,start,end Curve=id point|SubCrv=id,start,end [Ratio=nonnegative|RadiusDifference=number] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
 #[derive(Clone, Debug)]
 pub struct Input {
     guides: Vec<Guide>,
@@ -82,8 +79,8 @@ impl Input {
             };
         }
         match self.guides.len() {
-            0 => "Select first curve near end",
-            1 => "Select second curve near end",
+            0 => "Select first curve near end or SubCrv",
+            1 => "Select second curve near end or SubCrv",
             _ => {
                 "Pick a handle, Ratio, RadiusDifference, AlternateSolution or Trim; Enter accepts, Esc cancels"
             }
@@ -131,29 +128,30 @@ impl Input {
         doc: &Document,
         id: ObjectId,
         edge: Option<usize>,
-        pick: Point3,
+        pick: Option<Point3>,
+        range: Option<([Real; 2], bool)>,
     ) -> Result<(), CommandError> {
         if self.ready() {
             return Err(CommandError::Usage(USAGE));
         }
-        let source = CapturedCurve::capture(doc, id, edge)?;
-        let c = source.curve_ref();
-        if c.is_closed()? {
-            return Err(CommandError::Usage("ArcBlend requires open curve ends"));
-        }
-        let a = c.evaluate(*c.domain().start())?;
-        let b = c.evaluate(*c.domain().end())?;
-        let end = pick.distance_to(b)? < pick.distance_to(a)?;
-        let parameter = if end {
-            *c.domain().end()
-        } else {
-            *c.domain().start()
-        };
-        self.guides.push(Guide {
-            source,
-            parameter,
-            end,
-        });
+        self.guides
+            .push(Guide::capture(doc, id, edge, pick, range)?);
+        Ok(())
+    }
+    /// Select the directed end of a private portion, preserving its parent.
+    /// `wrap` permits increasing traversal across a closed seam (numeric input).
+    pub fn pick_subcurve(
+        &mut self,
+        doc: &Document,
+        id: ObjectId,
+        edge: Option<usize>,
+        range: [Real; 2],
+        wrap: bool,
+    ) -> Result<(), CommandError> {
+        let mut next = self.clone();
+        next.add(doc, id, edge, None, Some((range, wrap)))?;
+        next.rebuild()?;
+        *self = next;
         Ok(())
     }
     pub fn pick_curve(
@@ -164,7 +162,7 @@ impl Input {
         pick: Point3,
     ) -> Result<(), CommandError> {
         let mut next = self.clone();
-        next.add(doc, id, edge, pick)?;
+        next.add(doc, id, edge, Some(pick), None)?;
         next.rebuild()?;
         *self = next;
         Ok(())
@@ -176,7 +174,7 @@ impl Input {
         let jets = self
             .guides
             .iter()
-            .map(|g| g.source.curve_ref().evaluate_with_tangent(g.parameter))
+            .map(|g| g.curve_ref().evaluate_with_tangent(g.parameter))
             .collect::<Result<Vec<_>, _>>()?;
         let a = if self.guides[0].end {
             jets[0].tangent()
@@ -219,18 +217,7 @@ impl Input {
         }
         let mut words = vec!["ArcBlend".to_owned()];
         for g in &self.guides {
-            let edge = g.source.source().1;
-            words.push(edge.map_or_else(
-                || format!("Curve={}", g.source.object_id()),
-                |e| format!("Edge={},{}", g.source.object_id(), e),
-            ));
-            let c = g.source.curve_ref();
-            let p = c.evaluate(if g.end {
-                *c.domain().end()
-            } else {
-                *c.domain().start()
-            })?;
-            words.push(p.to_array().map(|x| x.to_string()).join(","));
+            words.push(g.argument()?);
         }
         // The ratio getter can change a target without accepting another
         // curve. Preserve that preview when committing its command arguments.

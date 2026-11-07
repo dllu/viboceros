@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle_long",
+      "case": "subcurve_circle_long"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle_reverse_join",
+      "case": "subcurve_circle_reverse_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle_numeric_wrap",
+      "case": "subcurve_circle_numeric_wrap"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle_numeric_short",
+      "case": "subcurve_circle_numeric_short"
+    }
+  ]
+}

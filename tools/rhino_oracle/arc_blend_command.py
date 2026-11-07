@@ -224,6 +224,12 @@ for name,text in [('mixed_fraction','-1-1/2mm'),('scientific','1e-3m'),('trailin
 CASES.update(SOURCE_INPUT_HOLDOUTS)
 
 
+if __package__:from .arc_blend_subcurve_cases import SUBCURVE_DISCOVERY,SUBCURVE_HOLDOUTS,SUBCURVE_POINTERS,SUBCURVE_CLOSED
+else:from arc_blend_subcurve_cases import SUBCURVE_DISCOVERY,SUBCURVE_HOLDOUTS,SUBCURVE_POINTERS,SUBCURVE_CLOSED
+CASES.update(SUBCURVE_DISCOVERY)
+CASES.update(SUBCURVE_HOLDOUTS)
+CASES.update(SUBCURVE_POINTERS)
+CASES.update(SUBCURVE_CLOSED)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

@@ -1,7 +1,9 @@
 //! Ordered curve picks and cached ArcBlend preview outside document history.
 use super::*;
 mod adjustment;
+mod picking;
 mod radius;
+mod subcurve;
 use viboceros_command::arc_blend::Input;
 #[derive(Clone)]
 pub(super) struct Session {
@@ -10,6 +12,7 @@ pub(super) struct Session {
     binding: Option<(ObjectId, Option<usize>)>,
     candidate: Option<(f64, Input)>,
     pub(super) radius_prompt: bool,
+    subcurve: Option<subcurve::Editor>,
 }
 impl Session {
     pub(super) fn cursor_curve(
@@ -18,6 +21,8 @@ impl Session {
     ) -> Option<&viboceros_geometry::NurbsCurve> {
         if plane_prompt_active || self.radius_prompt {
             None
+        } else if let Some(editor) = &self.subcurve {
+            editor.reference.as_ref().map(|r| r.curve())
         } else {
             self.input.adjustment_curve()
         }
@@ -37,10 +42,13 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        if words[1..]
-            .iter()
-            .any(|w| viboceros_command::line::normal::parse_binding(w).is_some())
-        {
+        if words[1..].iter().any(|w| {
+            viboceros_command::line::normal::parse_binding(w).is_some()
+                || w.split_once('=').is_some_and(|(k, _)| {
+                    k.trim_start_matches('_').eq_ignore_ascii_case("SubCrv")
+                        || k.trim_start_matches('_').eq_ignore_ascii_case("SubCrvWrap")
+                })
+        }) {
             return false;
         }
         let mut input = Input::with_preferences(
@@ -66,6 +74,7 @@ impl VibocerosApp {
             binding: None,
             candidate: None,
             radius_prompt: false,
+            subcurve: None,
         });
         self.active_command = Some(InteractiveCommand::ArcBlend);
         self.push_log(format!("> {text}"));
@@ -78,7 +87,9 @@ impl VibocerosApp {
             // this state, and preferences do not create document history.
             self.commands
                 .remember_arc_blend_preferences(s.input.preferences());
-            let prompt = if s.radius_prompt {
+            let prompt = if let Some(editor) = &s.subcurve {
+                editor.hint().into()
+            } else if s.radius_prompt {
                 format!("Radius difference <{}>", s.input.last_radius_difference())
             } else if s.input.active_handle() == Some(viboceros_command::arc_blend::Handle::Ratio) {
                 format!(
@@ -112,72 +123,40 @@ impl VibocerosApp {
         }
     }
     pub(super) fn validate_arc_blend(&mut self) {
-        if self
-            .arc_blend_session
-            .as_ref()
-            .is_some_and(|s| !s.input.current(&self.document))
-        {
+        if self.arc_blend_session.as_ref().is_some_and(|s| {
+            !s.input.current(&self.document)
+                || s.subcurve
+                    .as_ref()
+                    .and_then(|p| p.reference.as_ref())
+                    .is_some_and(|r| !r.current(&self.document))
+        }) {
             let s = self.arc_blend_session.as_mut().unwrap();
             s.input.reset(self.document.tolerance());
             s.binding = None;
             s.candidate = None;
             s.radius_prompt = false;
+            s.subcurve = None;
             self.push_log("ArcBlend reference changed; pick the curves again".into());
             self.arc_blend_prompt();
         }
     }
     pub(super) fn picking_arc_blend(&self) -> bool {
         self.plane_prompt.is_none()
-            && self
-                .arc_blend_session
-                .as_ref()
-                .is_some_and(|s| !s.input.ready())
-    }
-    pub(super) fn pick_arc_blend_at(
-        &mut self,
-        id: ObjectId,
-        edge: Option<usize>,
-        point: Point3,
-    ) -> bool {
-        self.validate_arc_blend();
-        let Some(s) = &mut self.arc_blend_session else {
-            return false;
-        };
-        let result = s.input.pick_curve(&self.document, id, edge, point);
-        s.binding = None;
-        match result {
-            Ok(()) => self.arc_blend_prompt(),
-            Err(e) => self.push_log(format!("Error: {e}")),
-        };
-        true
-    }
-    pub(super) fn pick_arc_blend_curve(
-        &mut self,
-        id: Option<ObjectId>,
-        edge: Option<usize>,
-    ) -> bool {
-        if self.plane_prompt.is_some() {
-            return false;
-        }
-        if !self.picking_arc_blend() {
-            return self.arc_blend_session.is_some();
-        }
-        let p = id.and_then(|id| {
-            self.viewports[self.active_viewport].curve_pick_point(
-                self.document.object(id)?.geometry(),
-                edge,
-                self.arc_blend_session.as_ref()?.pointer?,
-                self.document.tolerance(),
-            )
-        });
-        if let (Some(id), Some(p)) = (id, p) {
-            self.pick_arc_blend_at(id, edge, p);
-        }
-        true
+            && self.arc_blend_session.as_ref().is_some_and(|s| {
+                !s.input.ready() && s.subcurve.as_ref().is_none_or(|p| p.reference.is_none())
+            })
     }
     pub(super) fn continue_arc_blend(&mut self, text: &str) -> bool {
         if self.arc_blend_session.is_none() || self.plane_prompt.is_some() {
             return false;
+        }
+        if text == "!" {
+            self.cancel_interactive_command(false);
+            return true;
+        }
+        self.validate_arc_blend();
+        if self.continue_arc_blend_subcurve(text) {
+            return true;
         }
         if matches!(text, "Cancel" | "_Cancel")
             && self.arc_blend_session.as_ref().unwrap().radius_prompt
@@ -190,7 +169,6 @@ impl VibocerosApp {
             self.cancel_interactive_command(false);
             return true;
         }
-        self.validate_arc_blend();
         if self.continue_arc_blend_radius(text) {
             return true;
         }
@@ -253,30 +231,6 @@ impl VibocerosApp {
         }
         self.arc_blend_session.as_mut().unwrap().input = next;
         self.arc_blend_prompt();
-        true
-    }
-    fn arc_blend_binding_point(&mut self, text: &str) -> bool {
-        let p = viboceros_drafting::PointInput::parse_with_units(text, self.document.units())
-            .and_then(Result::ok)
-            .and_then(|p| {
-                p.resolve(
-                    self.viewports[self.active_viewport].construction_plane(),
-                    self.last_point,
-                )
-                .ok()
-            });
-        if let Some(p) = p {
-            let (id, edge) = self
-                .arc_blend_session
-                .as_mut()
-                .unwrap()
-                .binding
-                .take()
-                .unwrap();
-            self.pick_arc_blend_at(id, edge, p);
-        } else {
-            self.push_log("Error: expected an ArcBlend source pick".into());
-        }
         true
     }
 }

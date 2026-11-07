@@ -73,7 +73,7 @@ impl Input {
             let g = self.guides.get_mut(index).ok_or(CommandError::Usage(
                 "Pick both ArcBlend source curves before changing their parameters",
             ))?;
-            g.source.curve_ref().evaluate(t)?;
+            g.curve_ref().evaluate(t)?;
             g.parameter = t;
         } else {
             return Ok(false);

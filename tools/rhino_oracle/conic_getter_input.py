@@ -48,7 +48,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
-    if command=='ArcBlend':prefixes=('Select','Set arc control','Arc','Control','Radius','Point','Ratio','Choose','Enter')
+    if command=='ArcBlend':prefixes=('Select','Set arc control','Arc','Control','Radius','Point','Ratio','Choose','Enter','Start','End','Current')
     if command=='Line':prefixes=('Select','Middle','Start','End','Angle','Length','First','Second','Direction','Point','Pivot','Bisector')
     if command=='Lines':prefixes=('Start','End','Next','Point')
     if command=='ReadCommandFile':prefixes=('Start of line','End of line','Start of polyline','Next point','Location of point object')

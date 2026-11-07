@@ -11,8 +11,9 @@ portions with the blend in the same undo step.
 
 Arc parameters differ from the parameters of their rational display curves.
 The editor converts viewport constraint parameters back to the original guide
-before evaluating its point and tangent. `Parameter1` and `Parameter2` always
-refer to original guide domains, including arcs inside polycurves.
+before evaluating its point and tangent. `Parameter1` and `Parameter2` refer
+to the effective guide domain, including arcs inside polycurves and
+[temporary portions](arc-blend-subcurves.md).
 
 Radius and ratio getters, and their scripted options, accept fractions,
 functions, arithmetic and length suffixes using current model units. Examples
@@ -34,6 +35,7 @@ python3 -m tools.rhino_oracle.check_arc_blend_sources
 
 Rhino captures run in private Xvfb; application and egui tests are windowless.
 Free mouse contact comparisons cover arcs and arc polycurves in Top view.
-Other pointer trajectories, B-rep edge contacts, SubCrv, general continuous
+Temporary portions have their own qualification.
+Other pointer trajectories, B-rep edge contacts, general continuous
 distance, same-circle internal split parity and comparative speed remain
 unqualified. Earlier qualification records retain their original scopes.

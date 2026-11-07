@@ -7,7 +7,12 @@ impl Input {
             ));
         }
         let curve = self.curve.as_ref().ok_or(CommandError::Usage(USAGE))?;
-        if self.trim && self.guides.iter().any(|g| g.source.source().1.is_some()) {
+        if self.trim
+            && self
+                .guides
+                .iter()
+                .any(|g| g.source.source().1.is_some() && !g.temporary())
+        {
             return Err(CommandError::Usage(
                 "ArcBlend trims ordinary curves; use Trim=No for surface edges",
             ));
@@ -16,10 +21,7 @@ impl Input {
         let mut pieces = Vec::new();
         if self.trim {
             for (i, g) in self.guides.iter().enumerate() {
-                let c = doc
-                    .object(g.source.object_id())
-                    .and_then(|o| o.geometry().curve_ref())
-                    .ok_or(CommandError::Usage(USAGE))?;
+                let c = g.curve_ref();
                 let source = c.to_owned();
                 let domain = if g.end {
                     *c.domain().start()..=g.parameter
@@ -32,7 +34,7 @@ impl Input {
                 } else {
                     source.try_trimmed(domain)?
                 };
-                if changed {
+                if changed && !g.temporary() {
                     replacements.push((g.source.object_id(), Geometry::from(piece.clone())));
                 }
                 let reverse = if i == 0 { !g.end } else { g.end };
@@ -44,7 +46,9 @@ impl Input {
             }
         }
         let output = if self.trim && self.join {
-            if self.guides[0].source.object_id() == self.guides[1].source.object_id() {
+            if self.guides[0].source.object_id() == self.guides[1].source.object_id()
+                && self.guides.iter().all(|g| !g.temporary())
+            {
                 return Err(CommandError::Usage(
                     "ArcBlend joined self-blends require distinct trimmed source portions",
                 ));
@@ -61,7 +65,15 @@ impl Input {
         doc.release_command_selection_on_history_replay(selected)?;
         doc.clear_selection();
         if self.trim && self.join {
-            doc.delete_objects(self.guides.iter().map(|g| g.source.object_id()))?;
+            let deleted = self
+                .guides
+                .iter()
+                .filter(|g| !g.temporary())
+                .map(|g| g.source.object_id())
+                .collect::<Vec<_>>();
+            if !deleted.is_empty() {
+                doc.delete_objects(deleted)?;
+            }
         } else if self.trim {
             doc.replace_object_geometries(replacements)?;
         }

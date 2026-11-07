@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_reverse_trim",
+      "case": "subcurve_reverse_trim"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_clamp",
+      "case": "subcurve_clamp"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_arc",
+      "case": "subcurve_arc"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_cubic_join",
+      "case": "subcurve_cubic_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_circle_wrap",
+      "case": "subcurve_circle_wrap"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_self_join",
+      "case": "subcurve_self_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_mixed_self_join",
+      "case": "subcurve_mixed_self_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_numeric",
+      "case": "subcurve_numeric"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_negative_length",
+      "case": "subcurve_negative_length"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_zero",
+      "case": "subcurve_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_locked",
+      "case": "subcurve_locked"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "subcurve_cancel_end",
+      "case": "subcurve_cancel_end"
+    }
+  ]
+}
