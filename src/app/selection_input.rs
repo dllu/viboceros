@@ -113,6 +113,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_arc_blend_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_curve_line_base_curve(click.object_id, None) {
             return;
         }
@@ -400,6 +403,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.arc_blend_session.is_some() && self.plane_prompt.is_none() {
+            return;
+        }
         if self.direction_session.is_some() {
             return;
         }

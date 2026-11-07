@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_sdk",
+      "id": "unit_spatial_0",
+      "case": "unit_spatial_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "unit_spatial_1",
+      "case": "unit_spatial_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "unit_spatial_2",
+      "case": "unit_spatial_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "unit_spatial_3",
+      "case": "unit_spatial_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "skew_space_0",
+      "case": "skew_space_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "skew_space_1",
+      "case": "skew_space_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "skew_space_2",
+      "case": "skew_space_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "skew_space_3",
+      "case": "skew_space_3"
+    }
+  ]
+}

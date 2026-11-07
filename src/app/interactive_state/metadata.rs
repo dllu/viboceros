@@ -38,6 +38,7 @@ impl InteractiveCommand {
             Self::Insert { .. } => "Insert",
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
+            Self::ArcBlend => "ArcBlend",
             Self::EvaluatePoint => "EvaluatePt",
             Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
@@ -232,7 +233,8 @@ impl InteractiveCommand {
                 [_, Some(point), _] => Some(point),
                 [point, _, _] => point,
             },
-            Self::Point
+            Self::ArcBlend
+            | Self::Point
             | Self::BlockEditAdd
             | Self::BlockEditBasePoint
             | Self::AddObjectsToBlock

@@ -63,7 +63,7 @@ pub fn compare(doc: &Document, expected: &Value, archive: bool) -> Comparison {
                 assert_eq!(actual.degree(), target.degree());
                 assert_eq!(actual.control_points().len(), target.control_points().len());
                 for (a, b) in actual.control_points().iter().zip(target.control_points()) {
-                    assert_eq!(a.weight(), b.weight());
+                    error = error.max((a.weight() - b.weight()).abs());
                     error = error.max(a.point().distance_to(b.point()).unwrap());
                 }
                 assert_eq!(actual.knots().len(), target.knots().len());

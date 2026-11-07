@@ -231,6 +231,14 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
+        if self
+            .arc_blend_session
+            .as_ref()
+            .is_some_and(|s| s.input.ready())
+            && self.plane_prompt.is_none()
+        {
+            return;
+        }
         if self.accept_mesh_conversion_face_click(&click) {
             return;
         }
@@ -256,6 +264,7 @@ impl VibocerosApp {
             && !self.picking_flow_guide()
             && !self.picking_spiral_rail()
             && !self.picking_conic_curve()
+            && !self.picking_arc_blend()
             && !self.picking_rectangle_curve()
             && !self.picking_ellipse_curve()
             && !self.picking_line_curve()
@@ -311,6 +320,7 @@ impl VibocerosApp {
             || self.picking_flow_guide()
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
+            || self.picking_arc_blend()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
             || self.picking_line_curve()
@@ -441,6 +451,12 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_arc_blend() {
+            if let [pick] = picks.as_slice() {
+                self.pick_arc_blend_curve(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
         if self.edge_pattern_prompt.is_some() {
             self.pick_edge_pattern(picks, action);
             return;
@@ -624,6 +640,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.arc_blend_session.is_some() && self.plane_prompt.is_none() {
+            return;
+        }
         if self.edge_pattern_prompt.is_some() {
             let action = if window.modifiers.ctrl || window.modifiers.command {
                 ComponentAction::Remove

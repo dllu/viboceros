@@ -90,6 +90,7 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum InteractiveCommand {
+    ArcBlend,
     DraftPullPoints {
         start: Option<Point3>,
     },

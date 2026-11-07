@@ -11,6 +11,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_arc_blend(input) {
+            return true;
+        }
         if self.try_start_line(input) {
             return true;
         }

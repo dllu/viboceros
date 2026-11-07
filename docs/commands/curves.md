@@ -97,6 +97,9 @@ preserves source geometry and selection.
 orientation point. It supports signed angles, length measurements and a live
 orientation rectangle and endpoint preview.
 
+[ArcBlend](arc-blend.md) joins two open curve ends with tangent circular arcs,
+with a preview, alternate solutions, explicit ratio/contact parameters, Trim and Join.
+
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

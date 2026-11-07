@@ -1,0 +1,50 @@
+[
+  {
+    "family": "arc_blend_sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_sdk"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_sdk.log.gz"
+  },
+  {
+    "family": "arc_blend_unit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_unit"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_unit.log.gz"
+  },
+  {
+    "family": "arc_blend_command",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_command"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_command.log.gz"
+  },
+  {
+    "family": "arc_blend_options",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_options"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_options.log.gz"
+  }
+]

@@ -4,6 +4,7 @@ mod analysis_mesh;
 mod angle;
 mod apex_splitting;
 mod apply_curves;
+mod arc_blend;
 mod arc_deform;
 mod arc_extension;
 mod arc_input;
@@ -429,6 +430,7 @@ pub(super) fn test_app() -> VibocerosApp {
         circle_around_session: None,
         tangent_session: None,
         arc_extension_session: None,
+        arc_blend_session: None,
         arc_tilted_session: None,
         arc_length_session: None,
         arc_deform_session: None,

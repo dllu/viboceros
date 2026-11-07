@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "arc_radius_zero",
+      "case": "arc_radius_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_radius_positive",
+      "case": "arc_radius_positive"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_radius_negative",
+      "case": "arc_radius_negative"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_trim",
+      "case": "arc_trim"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_join",
+      "case": "arc_join"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_ratio_direct",
+      "case": "arc_ratio_direct"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_ratio_zero",
+      "case": "arc_ratio_zero"
+    }
+  ]
+}

@@ -12,6 +12,7 @@
 - [Arc Tilted, spatial planes, endpoint dragging and length measurements](arc-tilted.md)
 - [Arc Deformable, editable NURBS output and degree/count settings](arc-deformable.md)
 - [Arc Extension, curve/edge continuation and constrained centers](arc-extension.md)
+- [ArcBlend, tangent biarcs from open curve ends with Trim and Join](arc-blend.md)
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)

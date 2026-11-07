@@ -3,6 +3,7 @@
 mod add_objects_to_block;
 mod align;
 mod apply_curves;
+pub mod arc_blend;
 pub mod array_curve_surface;
 pub mod array_surface;
 pub mod curve_array;
@@ -1074,6 +1075,9 @@ impl CommandRegistry {
             )),
             ..Self::default()
         };
+        registry
+            .register(arc_blend::ArcBlendCommand)
+            .expect("unique built-in command");
         registry
             .register(curve_boolean::CurveBooleanCommand(
                 registry.curve_boolean_preferences.clone(),

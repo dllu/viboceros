@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "arc_default",
+      "case": "arc_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_s_shape",
+      "case": "arc_s_shape"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_spatial",
+      "case": "arc_spatial"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_alternate",
+      "case": "arc_alternate"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_radius_difference",
+      "case": "arc_radius_difference"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_unjoined",
+      "case": "arc_unjoined"
+    }
+  ]
+}

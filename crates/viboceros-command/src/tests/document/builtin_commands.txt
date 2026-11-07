@@ -11,6 +11,7 @@ AlignVertices
 Angle
 ApplyCrv
 Arc
+ArcBlend
 Area
 AreaCentroid
 Array

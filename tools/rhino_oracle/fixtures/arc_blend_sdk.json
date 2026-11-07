@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_0",
+      "case": "corner_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_1",
+      "case": "corner_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_2",
+      "case": "corner_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_3",
+      "case": "corner_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_4",
+      "case": "corner_4"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_5",
+      "case": "corner_5"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_6",
+      "case": "corner_6"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "corner_7",
+      "case": "corner_7"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "s_shape_0",
+      "case": "s_shape_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "s_shape_1",
+      "case": "s_shape_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "s_shape_2",
+      "case": "s_shape_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "s_shape_3",
+      "case": "s_shape_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "straight_0",
+      "case": "straight_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "straight_1",
+      "case": "straight_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "straight_2",
+      "case": "straight_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "straight_3",
+      "case": "straight_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "opposed_0",
+      "case": "opposed_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "opposed_1",
+      "case": "opposed_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "opposed_2",
+      "case": "opposed_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "spatial_0",
+      "case": "spatial_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "spatial_1",
+      "case": "spatial_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "spatial_2",
+      "case": "spatial_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "spatial_3",
+      "case": "spatial_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_start_0",
+      "case": "back_start_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_start_1",
+      "case": "back_start_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_start_2",
+      "case": "back_start_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_start_3",
+      "case": "back_start_3"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_both_0",
+      "case": "back_both_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_both_1",
+      "case": "back_both_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "back_both_2",
+      "case": "back_both_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "coincident",
+      "case": "coincident"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "zero_direction",
+      "case": "zero_direction"
+    }
+  ]
+}

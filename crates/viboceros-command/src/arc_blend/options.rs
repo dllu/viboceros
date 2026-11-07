@@ -1,0 +1,48 @@
+use super::*;
+impl Input {
+    pub fn option(&mut self, word: &str) -> Result<bool, CommandError> {
+        let mut next = self.clone();
+        if !next.apply_option(word)? {
+            return Ok(false);
+        }
+        next.rebuild()?;
+        *self = next;
+        Ok(true)
+    }
+    pub(super) fn apply_option(&mut self, word: &str) -> Result<bool, CommandError> {
+        let (key, value) = word
+            .split_once('=')
+            .map_or((word, None), |(k, v)| (k, Some(v)));
+        if option_name_eq(key, "AlternateSolution") {
+            self.geometry.alternate = value.map_or(Ok(!self.geometry.alternate), boolean)?;
+        } else if option_name_eq(key, "Trim") {
+            self.trim = value.map_or(Ok(!self.trim), boolean)?;
+        } else if option_name_eq(key, "Join") {
+            if !self.trim {
+                return Err(CommandError::Usage(
+                    "ArcBlend Join is available with Trim=Yes",
+                ));
+            }
+            self.join = value.map_or(Ok(!self.join), boolean)?;
+        } else if option_name_eq(key, "Ratio") {
+            let r = parse_finite_real(value.ok_or(CommandError::Usage(USAGE))?)?;
+            if r <= 0. {
+                return Err(CommandError::Usage("ArcBlend Ratio must be positive"));
+            }
+            self.geometry.ratio = r;
+        } else if let Some(index) = ["Parameter1", "Parameter2"]
+            .iter()
+            .position(|k| option_name_eq(key, k))
+        {
+            let t = parse_finite_real(value.ok_or(CommandError::Usage(USAGE))?)?;
+            let g = self.guides.get_mut(index).ok_or(CommandError::Usage(
+                "Pick both ArcBlend source curves before changing their parameters",
+            ))?;
+            g.source.curve_ref().evaluate(t)?;
+            g.parameter = t;
+        } else {
+            return Ok(false);
+        }
+        Ok(true)
+    }
+}

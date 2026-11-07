@@ -38,6 +38,7 @@ impl eframe::App for VibocerosApp {
         self.validate_ellipse_curve();
         self.validate_arc_extension_source();
         self.validate_curve_line();
+        self.validate_arc_blend();
         self.validate_line_normal();
         self.validate_line_reference();
         self.validate_tangent_sources();
@@ -385,6 +386,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
             || self.picking_curve_line()
+            || self.picking_arc_blend()
             || self.picking_line_curve()
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
@@ -732,6 +734,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
                 || self.picking_curve_line()
+                || self.picking_arc_blend()
                 || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
@@ -1031,7 +1034,8 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active)
             .and_then(surface_point_grid::Session::preview);
-        let selecting_perpendicular = model_input_active && self.picking_curve_line();
+        let selecting_perpendicular =
+            model_input_active && (self.picking_curve_line() || self.picking_arc_blend());
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1189,12 +1193,17 @@ impl eframe::App for VibocerosApp {
                                 .refinement_prompt
                                 .as_ref()
                                 .and_then(refinement::Prompt::control_removal),
-                            preview_curve: preview_curve.as_deref().or_else(|| {
-                                subcurve_preview
-                                    .as_ref()
-                                    .filter(|p| p.show_curve)
-                                    .map(|p| &p.geometry.curve)
-                            }),
+                            preview_curve: self
+                                .arc_blend_session
+                                .as_ref()
+                                .and_then(|s| s.input.preview())
+                                .or(preview_curve.as_deref())
+                                .or_else(|| {
+                                    subcurve_preview
+                                        .as_ref()
+                                        .filter(|p| p.show_curve)
+                                        .map(|p| &p.geometry.curve)
+                                }),
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()
