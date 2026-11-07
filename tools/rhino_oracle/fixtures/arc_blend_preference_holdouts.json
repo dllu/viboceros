@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_nested_cancel",
+      "case": "prefs_nested_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_zero_recall",
+      "case": "prefs_zero_recall"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_numeric_cancel",
+      "case": "prefs_numeric_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_numeric_default",
+      "case": "prefs_numeric_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_negative_cancel",
+      "case": "prefs_negative_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_zero_after_cancel",
+      "case": "prefs_zero_after_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_pending_cancel",
+      "case": "prefs_pending_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_after_pending",
+      "case": "prefs_join_after_pending"
+    }
+  ]
+}

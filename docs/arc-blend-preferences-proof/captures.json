@@ -1,0 +1,38 @@
+[
+  {
+    "family": "arc_blend_preferences",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_preferences"
+    ],
+    "exit_status": 0,
+    "log": "capture.log.gz"
+  },
+  {
+    "family": "arc_blend_preference_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_preference_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz"
+  },
+  {
+    "family": "arc_blend_preference_cancellation",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_preference_cancellation"
+    ],
+    "exit_status": 0,
+    "log": "capture-cancellation.log.gz"
+  }
+]

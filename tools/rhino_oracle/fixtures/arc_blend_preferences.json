@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_initial",
+      "case": "prefs_initial"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_radius_commit",
+      "case": "prefs_radius_commit"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_manual_reset",
+      "case": "prefs_manual_reset"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_radius_default",
+      "case": "prefs_radius_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_radius_cancel",
+      "case": "prefs_radius_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_radius_after_cancel",
+      "case": "prefs_radius_after_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_commit",
+      "case": "prefs_join_commit"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_default",
+      "case": "prefs_join_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_trim_cancel",
+      "case": "prefs_trim_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_trim_after_cancel",
+      "case": "prefs_trim_after_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_restored",
+      "case": "prefs_join_restored"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_cancel",
+      "case": "prefs_join_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_join_after_cancel",
+      "case": "prefs_join_after_cancel"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_alternate_commit",
+      "case": "prefs_alternate_commit"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_alternate_reset",
+      "case": "prefs_alternate_reset"
+    }
+  ]
+}

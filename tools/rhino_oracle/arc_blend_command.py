@@ -158,6 +158,49 @@ RADIUS_GETTER_HOLDOUTS={
 }
 RADIUS_GETTER_HOLDOUTS={k:dict(v,measure_arcs=True)for k,v in RADIUS_GETTER_HOLDOUTS.items()}
 CASES.update(RADIUS_GETTER_HOLDOUTS)
+PREFERENCES={
+ 'prefs_initial':recipe(*S_SHAPE),
+ 'prefs_radius_commit':recipe(*S_SHAPE,options=['RadiusDifference',5.]),
+ 'prefs_manual_reset':recipe(*S_SHAPE),
+ 'prefs_radius_default':recipe(*S_SHAPE,options=['RadiusDifference','Enter']),
+ 'prefs_radius_cancel':recipe(*S_SHAPE,options=['RadiusDifference',-5.]),
+ 'prefs_radius_after_cancel':recipe(*S_SHAPE,options=['RadiusDifference','Enter']),
+ 'prefs_join_commit':recipe(*S_SHAPE,options=['Trim=Yes','Join=Yes',dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'prefs_join_default':recipe(*S_SHAPE,options=[dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'prefs_trim_cancel':recipe(*S_SHAPE,options=['Trim=No']),
+ 'prefs_trim_after_cancel':recipe(*S_SHAPE,options=[dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'prefs_join_restored':recipe(*S_SHAPE,options=['Trim=Yes',dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'prefs_join_cancel':recipe(*S_SHAPE,options=['Join=No']),
+ 'prefs_join_after_cancel':recipe(*S_SHAPE,options=[dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+ 'prefs_alternate_commit':recipe(*BASE,options=['Trim=No','AlternateSolution',dict(click=chord(*BASE)),.25]),
+ 'prefs_alternate_reset':recipe(*BASE),
+}
+for name in ['prefs_radius_cancel','prefs_trim_cancel','prefs_join_cancel']:
+ PREFERENCES[name]['actions'][-1]='Cancel'
+PREFERENCES={k:dict(v,measure_arcs=True)for k,v in PREFERENCES.items()}
+CASES.update(PREFERENCES)
+PREFERENCE_HOLDOUTS={
+ 'prefs_nested_cancel':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),'RadiusDifference',5.,'Enter','Cancel']),
+ 'prefs_zero_recall':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),0.]),
+ 'prefs_numeric_cancel':recipe(*S_SHAPE,options=['RadiusDifference','Cancel']),
+ 'prefs_numeric_default':recipe(*S_SHAPE,options=['RadiusDifference','Enter']),
+ 'prefs_negative_cancel':recipe(*S_SHAPE,options=['RadiusDifference',-5.,'Cancel']),
+ 'prefs_zero_after_cancel':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),0.]),
+ 'prefs_pending_cancel':dict(recipe(*S_SHAPE,options=['Trim=Yes','Join=Yes','Cancel']),pending_redo=True),
+ 'prefs_join_after_pending':recipe(*S_SHAPE,options=[dict(click=[0.,0.,0.]),[-2.,0.,0.]]),
+}
+for name in ['prefs_nested_cancel','prefs_numeric_cancel','prefs_negative_cancel','prefs_pending_cancel']:
+ PREFERENCE_HOLDOUTS[name]['actions'].pop()
+PREFERENCE_HOLDOUTS={k:dict(v,measure_arcs=True)for k,v in PREFERENCE_HOLDOUTS.items()}
+CASES.update(PREFERENCE_HOLDOUTS)
+PREFERENCE_CANCELLATION={
+ 'prefs_numeric_seed':recipe(*S_SHAPE,options=['RadiusDifference',5.]),
+ 'prefs_numeric_twice':recipe(*S_SHAPE,options=['RadiusDifference','Cancel','Cancel']),
+ 'prefs_zero_after_numeric':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),0.]),
+}
+PREFERENCE_CANCELLATION['prefs_numeric_twice']['actions'].pop()
+PREFERENCE_CANCELLATION={k:dict(v,measure_arcs=True)for k,v in PREFERENCE_CANCELLATION.items()}
+CASES.update(PREFERENCE_CANCELLATION)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

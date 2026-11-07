@@ -1,6 +1,10 @@
 use super::*;
-pub(super) fn parse(doc: &Document, args: &[&str]) -> Result<Input, CommandError> {
-    let mut input = Input::new(doc.tolerance());
+pub(super) fn parse(
+    doc: &Document,
+    args: &[&str],
+    preferences: Preferences,
+) -> Result<Input, CommandError> {
+    let mut input = Input::with_preferences(doc.tolerance(), preferences)?;
     let mut options = Vec::new();
     let mut i = 0;
     while i < args.len() {

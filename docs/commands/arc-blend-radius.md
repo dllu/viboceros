@@ -10,9 +10,13 @@ supported. The result remains two exact circular arcs.
 
 A positive ratio releases the target. With the ratio handle selected, zero
 or snapping to a chord end restores the last requested target, initially
-zero. Targets are recalled within the active command; settings between
-commands are not remembered. Esc cancels a numeric prompt or handle preview.
-Enter commits the complete blend in one undo step.
+zero. The target, Trim and Join are remembered across commands, including
+cancellation. Each new command starts with ratio 1 and the primary solution;
+zero or the radius prompt default restores the target. Esc cancels a numeric
+prompt or handle preview.
+Enter commits the complete blend in one undo step. Typed `Cancel` inside
+the radius number prompt accepts its default and returns to the parent getter;
+a second `Cancel` at the main prompt ends the command. `!` cancels all levels.
 
 Inside ratio editing, `RadiusDifference` opens a numeric prompt and returns
 to ratio editing. Enter accepts the displayed default; zero applies that
@@ -60,3 +64,11 @@ workflows, including nested defaults and retained previews. Run
 `python3 -m tools.rhino_oracle.check_arc_blend_getters` for those checks and
 the earlier regressions. Fourteen partition investigations are retained
 separately; exact same-circle split and handle parity remain unqualified.
+
+[Settings validation](../arc-blend-preferences-validation.json) checks 25
+ordered native workflows, including seven cancellations, hidden Join recall
+and pending redo. One timed-out numeric cancellation remains a diagnostic.
+Run `python3 -m tools.rhino_oracle.check_arc_blend_preferences` for both builds
+and shared regressions. Preferences belong to the command registry and are
+shared across documents; they are outside undo and 3DM storage, and reset
+when the application restarts.

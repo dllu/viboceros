@@ -43,7 +43,11 @@ impl VibocerosApp {
         {
             return false;
         }
-        let mut input = Input::new(self.document.tolerance());
+        let mut input = Input::with_preferences(
+            self.document.tolerance(),
+            self.commands.arc_blend_preferences(),
+        )
+        .expect("registry stores finite ArcBlend settings");
         for w in &words[1..] {
             match input.option(w) {
                 Ok(true) => {}
@@ -70,6 +74,10 @@ impl VibocerosApp {
     }
     fn arc_blend_prompt(&mut self) {
         if let Some(s) = &self.arc_blend_session {
+            // Accepted edits survive cancellation. Hover candidates never enter
+            // this state, and preferences do not create document history.
+            self.commands
+                .remember_arc_blend_preferences(s.input.preferences());
             let prompt = if s.radius_prompt {
                 format!("Radius difference <{}>", s.input.last_radius_difference())
             } else if s.input.active_handle() == Some(viboceros_command::arc_blend::Handle::Ratio) {
@@ -77,6 +85,18 @@ impl VibocerosApp {
                     "{}; RadiusDifference={}; zero or end snap applies the target",
                     s.input.prompt(),
                     s.input.last_radius_difference()
+                )
+            } else if s.input.ready() && s.input.active_handle().is_none() {
+                let preferences = s.input.preferences();
+                format!(
+                    "{}; Trim={}{}",
+                    s.input.prompt(),
+                    if preferences.trim { "Yes" } else { "No" },
+                    if preferences.trim {
+                        format!("; Join={}", if preferences.join { "Yes" } else { "No" })
+                    } else {
+                        String::new()
+                    }
                 )
             } else {
                 s.input.prompt().into()
@@ -158,6 +178,13 @@ impl VibocerosApp {
     pub(super) fn continue_arc_blend(&mut self, text: &str) -> bool {
         if self.arc_blend_session.is_none() || self.plane_prompt.is_some() {
             return false;
+        }
+        if matches!(text, "Cancel" | "_Cancel")
+            && self.arc_blend_session.as_ref().unwrap().radius_prompt
+        {
+            // Native typed cancellation accepts the numeric default and
+            // returns to the caller getter. A second Cancel ends the command.
+            return self.continue_arc_blend_radius("");
         }
         if matches!(text, "!" | "Cancel" | "_Cancel") {
             self.cancel_interactive_command(false);

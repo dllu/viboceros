@@ -916,6 +916,12 @@ pub trait Command: Send + Sync {
     fn remember_surface_array_preferences(&self, _value: array_surface::Preferences) -> bool {
         false
     }
+    fn arc_blend_preferences(&self) -> Option<arc_blend::Preferences> {
+        None
+    }
+    fn remember_arc_blend_preferences(&self, _value: arc_blend::Preferences) -> bool {
+        false
+    }
     /// The surface-curve array shares its accepted count between both layouts.
     fn array_curve_surface_preferences(&self) -> Option<array_curve_surface::Preferences> {
         None
@@ -1076,7 +1082,7 @@ impl CommandRegistry {
             ..Self::default()
         };
         registry
-            .register(arc_blend::ArcBlendCommand)
+            .register(arc_blend::ArcBlendCommand::default())
             .expect("unique built-in command");
         registry
             .register(curve_boolean::CurveBooleanCommand(
@@ -2780,6 +2786,17 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("ArraySrf"))
             .is_some_and(|i| self.commands[*i].remember_surface_array_preferences(value))
+    }
+    pub fn arc_blend_preferences(&self) -> arc_blend::Preferences {
+        self.lookup
+            .get(&normalize_command_name("ArcBlend"))
+            .and_then(|i| self.commands[*i].arc_blend_preferences())
+            .unwrap_or_default()
+    }
+    pub fn remember_arc_blend_preferences(&self, value: arc_blend::Preferences) -> bool {
+        self.lookup
+            .get(&normalize_command_name("ArcBlend"))
+            .is_some_and(|i| self.commands[*i].remember_arc_blend_preferences(value))
     }
     pub fn array_curve_surface_preferences(&self) -> array_curve_surface::Preferences {
         self.lookup

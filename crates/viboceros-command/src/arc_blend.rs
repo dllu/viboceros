@@ -9,7 +9,9 @@ mod arguments;
 mod commit;
 mod handles;
 mod options;
+mod preferences;
 pub use handles::Handle;
+pub use preferences::Preferences;
 pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=nonnegative|RadiusDifference=number] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
 #[derive(Clone, Debug)]
 struct Guide {
@@ -82,7 +84,7 @@ impl Input {
             0 => "Select first curve near end",
             1 => "Select second curve near end",
             _ => {
-                "Pick a handle, Ratio, RadiusDifference, AlternateSolution, Trim or Join; Enter accepts, Esc cancels"
+                "Pick a handle, Ratio, RadiusDifference, AlternateSolution or Trim; Enter accepts, Esc cancels"
             }
         }
     }
@@ -256,14 +258,26 @@ fn yes(v: bool) -> &'static str {
 fn boolean(v: &str) -> Result<bool, CommandError> {
     crate::parse_yes_no(v.trim_start_matches('_')).ok_or(CommandError::Usage(USAGE))
 }
-pub(super) struct ArcBlendCommand;
+#[derive(Default)]
+pub(super) struct ArcBlendCommand(crate::remembered::Remembered<Preferences>);
 impl Command for ArcBlendCommand {
     fn name(&self) -> &'static str {
         "ArcBlend"
     }
+    fn arc_blend_preferences(&self) -> Option<Preferences> {
+        Some(self.0.get())
+    }
+    fn remember_arc_blend_preferences(&self, value: Preferences) -> bool {
+        if !value.radius_difference.is_finite() {
+            return false;
+        }
+        self.0.set(value);
+        true
+    }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let input = arguments::parse(doc, args)?;
+        let input = arguments::parse(doc, args, self.0.get())?;
         input.commit(doc)?;
+        self.0.set(input.preferences());
         Ok(input.warning().map_or_else(
             || "Created an arc blend".into(),
             |warning| format!("{warning}; created an arc blend"),

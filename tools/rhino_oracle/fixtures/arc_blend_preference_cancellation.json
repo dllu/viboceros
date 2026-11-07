@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_numeric_seed",
+      "case": "prefs_numeric_seed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_numeric_twice",
+      "case": "prefs_numeric_twice"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "prefs_zero_after_numeric",
+      "case": "prefs_zero_after_numeric"
+    }
+  ]
+}

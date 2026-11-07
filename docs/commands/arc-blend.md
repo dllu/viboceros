@@ -14,7 +14,7 @@ Options currently supported:
 
 - `AlternateSolution` toggles the other signed tangent-length solution when
   available; `AlternateSolution=Yes|No` sets it explicitly.
-- `Trim=Yes|No` controls source trimming; the default is No.
+- `Trim=Yes|No` controls source trimming; initially No, then remembered.
 - `Join=Yes|No` becomes available with Trim enabled. Yes replaces two distinct
   ordinary source curves with the joined source portions and blend.
 - `Ratio=positive-number` sets the ratio of the two arc control-polygon
@@ -55,9 +55,12 @@ Rhino captures use private Xvfb sessions. Reproduce the checks with:
 python3 -m tools.rhino_oracle.check_arc_blend
 ```
 
-This is a first implementation. SubCrv and remembered settings between commands remain
-unsupported. Native command comparisons cover endpoint and interior contacts
-on lines; nonlinear source contacts and edge references lack native qualification.
+The radius target, Trim and Join survive subsequent commands and cancellation
+for the application session. Ratio and AlternateSolution reset for each command.
+See [settings validation](../arc-blend-preferences-validation.json).
+
+This is a first implementation. SubCrv remains unsupported. Native command
+comparisons cover endpoint and interior contacts on lines; nonlinear source contacts and edge references lack native qualification.
 Three raw non-unit SDK direction cases have discontinuous native join
 tangents and are retained as diagnostics. Seven command discovery cases
 contain incomplete inputs, rejected options or unattained radius targets.
