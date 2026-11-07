@@ -1,6 +1,61 @@
 //! Contact and shape edits preserve accepted state until the new preview succeeds.
 use super::*;
 impl Input {
+    pub fn flip_source(&mut self, id: ObjectId) -> Result<(), CommandError> {
+        let point = self
+            .endpoints
+            .iter()
+            .filter_map(Endpoint::curve)
+            .find(|g| g.source.object_id() == id)
+            .ok_or(CommandError::Usage("Select one of the blend sources"))?
+            .point()?;
+        self.flip_source_at(id, point)
+    }
+    /// Repeated references to one source are distinguished by their captured
+    /// contacts, rather than the shared document object identity.
+    pub fn flip_source_at(&mut self, id: ObjectId, point: Point3) -> Result<(), CommandError> {
+        let mut selected = None;
+        let mut nearest = Real::INFINITY;
+        for (i, g) in self
+            .endpoints
+            .iter()
+            .enumerate()
+            .filter_map(|(i, e)| e.curve().map(|g| (i, g)))
+        {
+            if g.source.object_id() == id {
+                let distance = g.point()?.distance_to(point)?;
+                if distance < nearest {
+                    nearest = distance;
+                    selected = Some(i);
+                }
+            }
+        }
+        let mut next = self.clone();
+        let g = next.endpoints
+            [selected.ok_or(CommandError::Usage("Select one of the blend sources"))?]
+        .curve_mut()
+        .unwrap();
+        if g.surface.is_some() {
+            return Err(CommandError::Usage(
+                "Surface-edge direction is controlled by AtAngle",
+            ));
+        }
+        g.flip = !g.flip;
+        next.rebuild()?;
+        *self = next;
+        Ok(())
+    }
+    pub fn flip_both(&mut self) -> Result<(), CommandError> {
+        let mut next = self.clone();
+        for g in next.endpoints.iter_mut().filter_map(Endpoint::curve_mut) {
+            if g.surface.is_none() {
+                g.flip = !g.flip;
+            }
+        }
+        next.rebuild()?;
+        *self = next;
+        Ok(())
+    }
     pub fn finish_adjustment(&mut self) {
         self.active = None;
         self.symmetric = false;

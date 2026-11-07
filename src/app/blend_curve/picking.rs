@@ -30,7 +30,7 @@ impl VibocerosApp {
             return false;
         };
         let result = if s.flip {
-            s.input.flip_source(id)
+            s.input.flip_source_at(id, point)
         } else {
             s.input.pick_curve(&self.document, id, edge, point)
         };

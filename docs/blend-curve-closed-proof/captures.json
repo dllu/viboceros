@@ -1,0 +1,86 @@
+[
+  {
+    "family": "blend_curve_closed_single",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_single"
+    ],
+    "exit_status": 0,
+    "log": "capture-single.log.gz",
+    "observation_sha256": "78afea7b6f2514f7c944e9009ae0bea9562bbed704a2697b6ed49da5061337fa",
+    "request_sha256": "e091451e13803b748bfddd6f78374531df1b75d0e7ae8f5984452573b8ebc034"
+  },
+  {
+    "family": "blend_curve_closed_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz",
+    "observation_sha256": "d0f15e5dc09c357af9b0a5330299ad599a5154e84952bf5efc6fcf462d16d35b",
+    "request_sha256": "102990ec0d95522175d88852702cd307d64430d669ce8041ac14fe7f155618be"
+  },
+  {
+    "family": "blend_curve_closed_verification",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_verification"
+    ],
+    "exit_status": 0,
+    "log": "capture-verification.log.gz",
+    "observation_sha256": "85cdf8e44b7b4b7a428f45ad5c9ab989c3a482cd039f3c6c9b5d70ab50cf2712",
+    "request_sha256": "61630f41cd249280b72f3a665d2c25c8398e748e634fa702066405945494c045"
+  },
+  {
+    "family": "blend_curve_closed_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz",
+    "observation_sha256": "fdd1a4c87b1555a60bd8922a40ece5ed567f7f42b30ac260738299a9bfd06860",
+    "request_sha256": "388203bbc2d666b66b80e68d9a5024152a9a69ec4929f530c14e8ddef8a03f7f"
+  },
+  {
+    "family": "blend_curve_closed_ownership",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_ownership"
+    ],
+    "exit_status": 0,
+    "log": "capture-ownership.log.gz",
+    "observation_sha256": "fa0e08398865c79a82699eef108c9fc25a849c552bc4172be37733d3300ea9f7",
+    "request_sha256": "2c08d946487161bbe8239077aa845bb7ec41265ca2859ae6541d0e56b810c0b1"
+  },
+  {
+    "family": "blend_curve_closed_self_flips",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_self_flips"
+    ],
+    "exit_status": 0,
+    "log": "capture-self-flips.log.gz",
+    "observation_sha256": "3e41c987861802ec5e5b948a129f073146e7e33c6a32f0d1c75a11f843e017ff",
+    "request_sha256": "a4344f5948cc441a6b7de39faa1263e2c5935dfcf7764646b7464eadb68383c6"
+  }
+]

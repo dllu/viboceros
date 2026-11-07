@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_point",
+      "case": "closed_ownership_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_point_join",
+      "case": "closed_ownership_point_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_two",
+      "case": "closed_ownership_two"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_two_join",
+      "case": "closed_ownership_two_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_self",
+      "case": "closed_ownership_self"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_self_join",
+      "case": "closed_ownership_self_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ownership_curved_join",
+      "case": "closed_ownership_curved_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_shape_then_contact",
+      "case": "closed_shape_then_contact"
+    }
+  ]
+}

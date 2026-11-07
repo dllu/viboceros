@@ -2,7 +2,7 @@
 
 [Curve commands](curves-index.md) · [Blend API](blend.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendcrv.htm)
 
-Enter `BlendCrv`, pick two open curves near the desired ends, then adjust the
+Enter `BlendCrv`, pick two curves near the desired contacts, then adjust the
 preview and press Enter. The source curves stay unchanged unless Trim or Join
 is enabled. The result is a minimum-degree NURBS curve with a domain scaled to its measured length.
 
@@ -13,6 +13,13 @@ starts at G2/G2. `BlendStart=CurveEnd`
 uses the selected natural end; `BlendStart=PickPoint` uses the picked location,
 initially pointing toward the source start. Flip reverses that direction.
 BlendStart, Trim and Join persist for the application session.
+
+Whole closed curves always use the picked contact, independently of BlendStart.
+They remain unchanged under Trim and never become joined pieces. With only closed
+inputs, Join is unavailable; Trim is also unavailable except for repeated
+references to the same curve. Unavailable interactive options reject without
+changing the preview or remembered settings. See
+[closed-source behavior and validation](../blend-curve-closed.md).
 
 Enter `Edges` to constrain a blend across a supporting surface. Contacts use the
 clicked locations, independently of BlendStart. Default tangents point outward,
@@ -63,7 +70,8 @@ edits remain independent when Shift is held. Ordinary curve handles and contacts
 keep their usual constraints. See [Alt surface handles](../blend-curve-alt.md).
 
 Enter `Flip` and pick a source to reverse its blend tangent, or press Enter to
-flip both. `Trim=Yes` retains the chosen source portions. `Join=Yes` combines
+flip both. When the same curve supplies both contacts, the pick selects the
+nearest contact. `Trim=Yes` retains the chosen open source portions. `Join=Yes` combines
 the blend with source portions when Trim is enabled. With Trim disabled, only
 inputs meeting the blend at an endpoint participate; disconnected
 sources remain unchanged and outside the joined result. The output inherits the
@@ -101,7 +109,7 @@ Validation: [G0–G2](../blend-curve-validation.json),
 [G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
 [temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
 [surface edges](../blend-curve-edges.md), [Alt editing](../blend-curve-alt.md), and
-[higher controls](../blend-curve-controls.md).
+[higher controls](../blend-curve-controls.md), and [closed sources](../blend-curve-closed.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document
@@ -112,11 +120,11 @@ blend derivative; this does not establish general mathematical G4 continuity.
 See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_alt
+python3 -m tools.rhino_oracle.check_blend_curve_closed
 ```
 
-Captures use private Xvfb; application tests are windowless. Whole closed sources,
-zero-retained-side joins, shared/seam surface edges, curvature display and
+Captures use private Xvfb; application tests are windowless. Zero-retained-side
+joins, shared/seam surface edges, curvature display and
 history-based re-editing remain pending. Arbitrary clipping/occlusion/depth ties,
 complete Native drag/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

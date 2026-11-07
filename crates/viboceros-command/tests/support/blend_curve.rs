@@ -79,7 +79,10 @@ impl Getter {
     ) -> bool {
         if let Some(i) = a["curve"].as_u64() {
             if self.flip {
-                input.option(&format!("Flip{}=Yes", i + 1)).unwrap();
+                let point = source_pick(value, index, a, input);
+                input
+                    .flip_source_at(reference_inputs::guide(doc, i as usize), point)
+                    .unwrap();
                 self.flip = false;
             } else {
                 input
@@ -144,11 +147,16 @@ impl Getter {
         } else if a == "Cancel" {
             return false;
         } else {
-            assert!(
-                input
-                    .option_with_units(a.as_str().unwrap(), doc.units())
-                    .unwrap()
-            );
+            let word = a.as_str().unwrap();
+            match input.option_with_units(word, doc.units()) {
+                Ok(true) => {}
+                Err(_)
+                    if value["history"]
+                        .as_str()
+                        .unwrap()
+                        .contains(&format!("Unknown command: _{word}")) => {}
+                result => panic!("unexpected BlendCrv option result for {word}: {result:?}"),
+            }
         }
         true
     }

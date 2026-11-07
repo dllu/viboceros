@@ -49,7 +49,11 @@ pub fn source_pick(
     if action.get("edge").is_some() {
         return native::point(&edge_candidate(value, index)["point"]);
     }
-    if !input.preferences().pick_point {
+    let source = &value["prescribed_case"]["curves"][action["curve"].as_u64().unwrap() as usize];
+    let closed = reference_inputs::geometry(source)
+        .curve_ref()
+        .is_some_and(|c| c.is_closed().unwrap());
+    if !input.preferences().pick_point && !closed {
         return native::point(&action["pick"]);
     }
     let click = value["input_trace"][0]["clicks"]

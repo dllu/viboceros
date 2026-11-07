@@ -250,3 +250,35 @@ for name in ['control_validate_rational_g4']:
  recipe=dict(CONTROL_VALIDATION[name]);recipe['measure_lengths']=True
  CONTROL_LENGTHS[name+'_lengths']=recipe
 CASES.update(CONTROL_LENGTHS)
+
+if __package__:from .blend_curve_closed_cases import pilot as closed_pilot
+else:from blend_curve_closed_cases import pilot as closed_pilot
+CLOSED_PILOT=closed_pilot(case,pick,B)
+CASES.update(CLOSED_PILOT)
+
+CLOSED_SINGLE={'closed_single_pickpoint_top':dict(CLOSED_PILOT['closed_pickpoint_top'])}
+CASES.update(CLOSED_SINGLE)
+
+if __package__:from .blend_curve_closed_cases import discovery as closed_discovery
+else:from blend_curve_closed_cases import discovery as closed_discovery
+CLOSED_DISCOVERY=closed_discovery(case,pick,B)
+CASES.update(CLOSED_DISCOVERY)
+
+if __package__:
+ from .blend_curve_closed_cases import verification as closed_verification,holdouts as closed_holdouts
+else:
+ from blend_curve_closed_cases import verification as closed_verification,holdouts as closed_holdouts
+CLOSED_VERIFICATION=closed_verification(case,pick,B)
+CLOSED_HOLDOUTS=closed_holdouts(case,pick,B)
+CASES.update(CLOSED_VERIFICATION)
+CASES.update(CLOSED_HOLDOUTS)
+
+if __package__:from .blend_curve_closed_cases import ownership as closed_ownership
+else:from blend_curve_closed_cases import ownership as closed_ownership
+CLOSED_OWNERSHIP=closed_ownership(case,pick,B,CUBIC_B)
+CASES.update(CLOSED_OWNERSHIP)
+
+if __package__:from .blend_curve_closed_cases import self_flips as closed_self_flips
+else:from blend_curve_closed_cases import self_flips as closed_self_flips
+CLOSED_SELF_FLIPS=closed_self_flips(case,pick,B)
+CASES.update(CLOSED_SELF_FLIPS)

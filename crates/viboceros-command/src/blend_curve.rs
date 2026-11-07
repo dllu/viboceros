@@ -201,35 +201,6 @@ impl Input {
         self.preview = Some(curve.try_reparameterized(0. ..=length)?);
         Ok(())
     }
-    pub fn flip_source(&mut self, id: ObjectId) -> Result<(), CommandError> {
-        let mut next = self.clone();
-        let g = next
-            .endpoints
-            .iter_mut()
-            .filter_map(Endpoint::curve_mut)
-            .find(|g| g.source.object_id() == id)
-            .ok_or(CommandError::Usage("Select one of the blend sources"))?;
-        if g.surface.is_some() {
-            return Err(CommandError::Usage(
-                "Surface-edge direction is controlled by AtAngle",
-            ));
-        }
-        g.flip = !g.flip;
-        next.rebuild()?;
-        *self = next;
-        Ok(())
-    }
-    pub fn flip_both(&mut self) -> Result<(), CommandError> {
-        let mut next = self.clone();
-        for g in next.endpoints.iter_mut().filter_map(Endpoint::curve_mut) {
-            if g.surface.is_none() {
-                g.flip = !g.flip;
-            }
-        }
-        next.rebuild()?;
-        *self = next;
-        Ok(())
-    }
     pub fn active_handle(&self) -> Option<Handle> {
         self.active
     }

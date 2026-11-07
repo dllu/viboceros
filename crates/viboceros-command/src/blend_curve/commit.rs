@@ -1,6 +1,24 @@
 //! Only curve endpoints own source objects; free point endpoints own no geometry.
 use super::*;
 impl Input {
+    pub(super) fn repeated_whole_curve(&self) -> bool {
+        let guides = self
+            .endpoints
+            .iter()
+            .filter_map(Endpoint::curve)
+            .collect::<Vec<_>>();
+        guides.len() == 2
+            && guides.iter().all(|g| g.surface.is_none() && !g.temporary())
+            && guides[0].source.source() == guides[1].source.source()
+    }
+    pub(super) fn has_open_curve_input(&self) -> Result<bool, CommandError> {
+        for g in self.endpoints.iter().filter_map(Endpoint::curve) {
+            if g.surface.is_none() && !g.curve_ref().is_closed()? {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
     pub fn commit(&self, doc: &mut Document) -> Result<ObjectId, CommandError> {
         if !self.ready() || !self.current(doc) {
             return Err(CommandError::Usage(
@@ -15,22 +33,27 @@ impl Input {
             .collect::<Vec<_>>();
         // Mixed blends can trim/join the ordinary input. A supporting surface
         // contributes a constraint without becoming a retained curve piece.
-        let ordinary = guides.iter().any(|g| g.surface.is_none());
+        let ordinary = self.has_open_curve_input()?;
         let trim = self.preferences.trim && ordinary;
         let join = self.preferences.join && ordinary;
-        if (trim || join)
-            && guides
-                .iter()
-                .any(|g| g.source.source().1.is_some() && !g.temporary() && g.surface.is_none())
-        {
-            return Err(CommandError::Usage(
-                "BlendCrv surface edges currently require Trim=No and Join=No",
-            ));
+        if trim || join {
+            for g in &guides {
+                if g.source.source().1.is_some()
+                    && !g.temporary()
+                    && g.surface.is_none()
+                    && !g.curve_ref().is_closed()?
+                {
+                    return Err(CommandError::Usage(
+                        "BlendCrv open surface edges currently require Trim=No and Join=No",
+                    ));
+                }
+            }
         }
         if join
             && guides.len() == 2
             && guides.iter().all(|g| !g.temporary())
             && guides[0].source.object_id() == guides[1].source.object_id()
+            && !guides[0].curve_ref().is_closed()?
         {
             return Err(CommandError::Usage(
                 "BlendCrv joined sources must be distinct",
@@ -50,7 +73,9 @@ impl Input {
                 let Some(g) = endpoint.curve() else {
                     continue;
                 };
-                if g.surface.is_some() {
+                // Whole closed inputs contribute constraints without a retained
+                // open segment. Trim leaves them intact and Join skips them.
+                if g.surface.is_some() || g.curve_ref().is_closed()? {
                     continue;
                 }
                 // Unjoined private portions never replace their original parent.

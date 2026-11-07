@@ -51,6 +51,23 @@ impl Input {
                 return Err(CommandError::Usage(USAGE));
             };
         } else if option_name_eq(key, "Trim") || option_name_eq(key, "Join") {
+            if next.preview.is_some() {
+                let open = next.has_open_curve_input()?;
+                let repeated = next.repeated_whole_curve();
+                if option_name_eq(key, "Join") && !open {
+                    return Err(CommandError::Usage("Join requires an open curve input"));
+                }
+                if option_name_eq(key, "Join") && repeated {
+                    return Err(CommandError::Usage(
+                        "Join requires distinct open curve inputs",
+                    ));
+                }
+                if option_name_eq(key, "Trim") && !open && !repeated {
+                    return Err(CommandError::Usage(
+                        "Trim requires an open curve input or a repeated curve",
+                    ));
+                }
+            }
             let v = crate::parse_yes_no(value.trim_start_matches('_'))
                 .ok_or(CommandError::Usage(USAGE))?;
             if option_name_eq(key, "Trim") {

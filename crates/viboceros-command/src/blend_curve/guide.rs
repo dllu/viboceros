@@ -30,12 +30,10 @@ impl Guide {
         let c = portion
             .as_ref()
             .map_or_else(|| source.curve_ref(), |p| p.curve_ref());
-        if !surface_mode && c.is_closed()? {
-            return Err(CommandError::Usage(
-                "BlendCrv requires an open source curve",
-            ));
-        }
-        let end = if surface_mode {
+        // Whole closed curves have no natural endpoint: Native uses the picked
+        // contact and the decreasing-parameter direction in either start mode.
+        let closed_contact = portion.is_none() && c.is_closed()?;
+        let end = if surface_mode || closed_contact {
             false
         } else if portion.is_some() {
             !at_pick
@@ -45,7 +43,7 @@ impl Guide {
                 && pick.distance_to(c.evaluate(*c.domain().end())?)?
                     < pick.distance_to(c.evaluate(*c.domain().start())?)?
         };
-        let parameter = if surface_mode || (at_pick && portion.is_none()) {
+        let parameter = if surface_mode || closed_contact || (at_pick && portion.is_none()) {
             let pick = pick.ok_or(CommandError::Usage(USAGE))?;
             c.closest_parameter(pick, doc.tolerance())?
         } else if end || portion.is_some() {

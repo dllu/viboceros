@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_curveend_right",
+      "case": "verified_closed_curveend_right"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_curveend_top",
+      "case": "verified_closed_curveend_top"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_curveend_left",
+      "case": "verified_closed_curveend_left"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_pickpoint_right",
+      "case": "verified_closed_pickpoint_right"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_pickpoint_top",
+      "case": "verified_closed_pickpoint_top"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_pickpoint_left",
+      "case": "verified_closed_pickpoint_left"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_second",
+      "case": "verified_closed_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_closed_point",
+      "case": "verified_closed_point"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "periodic-command-initial",
+    "status": 101,
+    "log": "periodic-command-initial.log.gz"
+  },
+  {
+    "name": "periodic-ui-initial",
+    "status": 101,
+    "log": "periodic-ui-initial.log.gz"
+  },
+  {
+    "name": "canonical-input-initial",
+    "status": 101,
+    "log": "canonical-input-initial.log.gz"
+  },
+  {
+    "name": "archive-padding-diagnostic",
+    "status": 101,
+    "log": "archive-padding-diagnostic.log.gz"
+  },
+  {
+    "name": "ui-log-access-initial",
+    "status": 101,
+    "log": "ui-log-access-initial.log.gz"
+  },
+  {
+    "name": "evidence-inventory-initial",
+    "status": 1,
+    "log": "evidence-inventory-initial.log.gz"
+  }
+]

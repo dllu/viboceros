@@ -48,22 +48,31 @@ pub fn geometry(v: &Value) -> Geometry {
             )
             .unwrap(),
         ),
-        "nurbs" => Geometry::NurbsCurve(
-            NurbsCurve::try_new_rational(
-                v["degree"].as_u64().unwrap() as usize,
-                v["control_points"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|q| {
-                        WeightedPoint3::try_new(p(&q["point"]), q["weight"].as_f64().unwrap())
-                            .unwrap()
-                    })
-                    .collect(),
-                serde_json::from_value(v["knots"].clone()).unwrap(),
+        "nurbs" => {
+            let mut knots: Vec<f64> = serde_json::from_value(v["knots"].clone()).unwrap();
+            // The public Native setter consumes full_knots[1..len-1]. Its
+            // reader pads the two unused outer entries from their neighbours.
+            // Reproduce that input contract without consulting Native output.
+            let last = knots.len() - 1;
+            knots[0] = knots[1];
+            knots[last] = knots[last - 1];
+            Geometry::NurbsCurve(
+                NurbsCurve::try_new_rational(
+                    v["degree"].as_u64().unwrap() as usize,
+                    v["control_points"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|q| {
+                            WeightedPoint3::try_new(p(&q["point"]), q["weight"].as_f64().unwrap())
+                                .unwrap()
+                        })
+                        .collect(),
+                    knots,
+                )
+                .unwrap(),
             )
-            .unwrap(),
-        ),
+        }
         "polyline" => Geometry::Polyline(
             Polyline3::try_new(v["vertices"].as_array().unwrap().iter().map(p).collect(), t)
                 .unwrap(),

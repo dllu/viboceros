@@ -1,0 +1,67 @@
+[
+  {
+    "family": "blend_curve_closed_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_pilot"
+    ],
+    "exit_status": 1,
+    "log": "capture-pilot-failed.log.gz",
+    "native_observations": 0,
+    "request_sha256": "17450572a41be7a6ac39df8edddb461ece61a0afb10a74dbe37be6bf4bbc112c",
+    "sources": {
+      "generate_blend_curve_closed_pilot.py": "c600dc4d79ff3e2a2df6175c906f7b586c4f10df50a0505858af51cef34f175a",
+      "structural_sdk.py": "91a5dd7a09cbc0b96cc18e618b6ef85ca15111a9d459519dfd16e562dd9d4fa2",
+      "rhino_worker.py": "dc9ef1af1cbabfd4fa141e2b6963c626ddcd52d8253f9f07e816ca84ca52667d",
+      "client.py": "e484d0667f813db685dccb4810bc86e1a785a64dd61ba4a30f5ecf553591d93d",
+      "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+      "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+      "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "blend_curve_command_probe.py": "8cb5187cb6d9b2ebae6d8a83ff1cc32526b699324ab837e3c5f4aad92b3258fb",
+      "blend_curve_command.py": "67e7b1bff9eaa70016823edc5b6d41c7efc49cf8dc00c2f55a3f8fecb3098326",
+      "blend_curve_high_cases.py": "01923d916450745f1a144b3ec9a4ced0d5c15ad2c3c92e228a5748562197d00a",
+      "blend_curve_point_cases.py": "013e642f663f9c3a68cbf165f2223b55289b0f561c11194c98ec8a29cea0980f",
+      "blend_curve_pick_context.py": "b8b19a5b6854f9707049b08f3c8b4450b7bd696c31c7abbd9fad3aa8d04803a8",
+      "blend_curve_portion_cases.py": "9177dfba5865800c6aa3835fda70f167e563326dd70b52a07ea36add29ab560e",
+      "blend_curve_portion_holdouts.py": "279a2b03890858282daae526693df3d8caf957c32fabca7b788946ae00436930",
+      "blend_curve_symmetry_cases.py": "5363318207a23e52261f38729583f6fb42d853fd781804d474fdaf8f17364e76",
+      "blend_curve_edge_cases.py": "b3a1eaee3ea8a0c67e042cdfbe0ccecc4062e7f86b7eea57995911354fac4373",
+      "blend_curve_edge_pick.py": "272089630bcdd92633814a759ffc9e83ad34072ecf2b997435524a8f9d82ba5b",
+      "blend_curve_edge_holdouts.py": "c82eb8660757633893ec6361ef2f8decfc962a536a8cd61bd600622484256874",
+      "blend_curve_surface_high_cases.py": "bbabe1eceb4f1d86a68bd28b02881df66759f1913b39afc39b12b87ecb088546",
+      "blend_curve_alt_cases.py": "858f26b5c6f32f85595a6106f57d1241f440dab5c6a841c3d0b47e0b25a27d26",
+      "blend_curve_control_cases.py": "c1004d2c12a5349ccec528b57db05bf4803dd7a3be1bebe32a12869a3af019ce",
+      "blend_curve_closed_cases.py": "abccc9f26dd08ff775c753802929c69bdedc6275f82d20d871e8f2f3b04f430d",
+      "arc_blend_subcurve_cases.py": "75d6ce4da16779bb740b6a6c7ff48a295d2c09d8254bd5cf8c85c243cca9e8a8",
+      "arc_blend_source_cases.py": "68d699e4b751649ec9ea70f0eb56d57eefe9e42ff60d40c4fadc4f32de539e5d",
+      "line_scene_probe.py": "5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "40b2a903b0149dd4cb067892814af4a70194941302e97813882c60909a24d4b2",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+    }
+  },
+  {
+    "family": "blend_curve_closed_verification",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_closed_verification"
+    ],
+    "exit_status": 1,
+    "log": "capture-setup-failed.log.gz",
+    "native_observations": 0,
+    "sources": {
+      "blend_curve_closed_cases.py": "fc44bfaf53bc20653c1148032972acc5279da11cfe8b068f1e2b6695b1bba563"
+    }
+  }
+]

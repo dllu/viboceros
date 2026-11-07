@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_curveend_upper",
+      "case": "closed_discover_curveend_upper"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_curveend_lower",
+      "case": "closed_discover_curveend_lower"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_curveend_far",
+      "case": "closed_discover_curveend_far"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_pickpoint_upper",
+      "case": "closed_discover_pickpoint_upper"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_pickpoint_lower",
+      "case": "closed_discover_pickpoint_lower"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_pickpoint_far",
+      "case": "closed_discover_pickpoint_far"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_trim",
+      "case": "closed_discover_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_join",
+      "case": "closed_discover_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_trim_join",
+      "case": "closed_discover_trim_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_discover_flip",
+      "case": "closed_discover_flip"
+    }
+  ]
+}

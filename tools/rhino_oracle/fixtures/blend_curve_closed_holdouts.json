@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "closed_order_g0",
+      "case": "closed_order_g0"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_order_g1",
+      "case": "closed_order_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_order_g3",
+      "case": "closed_order_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_order_g4",
+      "case": "closed_order_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ellipse_g3",
+      "case": "closed_ellipse_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_ellipse_g4",
+      "case": "closed_ellipse_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_periodic_g3",
+      "case": "closed_periodic_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_periodic_g4",
+      "case": "closed_periodic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_corner_g3",
+      "case": "closed_corner_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_corner_g4",
+      "case": "closed_corner_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_polyline",
+      "case": "closed_polyline"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_join_without_trim",
+      "case": "closed_join_without_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_reverse_join",
+      "case": "closed_reverse_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_cancel",
+      "case": "closed_cancel"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_corner_contact",
+      "case": "closed_corner_contact"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "closed_corner_flip_contact",
+      "case": "closed_corner_flip_contact"
+    }
+  ]
+}
