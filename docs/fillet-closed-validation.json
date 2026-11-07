@@ -1,0 +1,356 @@
+{
+  "scope": "Positive-radius Fillet with a distinct planar closed source: preserve closed parents, trim the picked side of open sources, apply ordered join identity and metadata, dynamic preview/cancel, history and 3DM archives.",
+  "baseline_revision": "23b0cc92c8813ea29a396dd74fedbc118c9778eb",
+  "implementation_revision": "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10",
+  "full_native_parity": false,
+  "observations": 16,
+  "successful": 15,
+  "cancelled": 1,
+  "physical_picks": 32,
+  "point_tangent_stations": 2442,
+  "successful_command_replays_per_build": 15,
+  "ui_replays_per_build": 16,
+  "archive_round_trips_per_build": 31,
+  "windowless_source_picks_per_build": 2,
+  "retained_failed_captures": 2,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.5553056657358855e-14,
+  "construction": "Existing tangent-circle solver uses source parameters seeded from picks. Closed parents stay unchanged. Retained open NURBS intervals use the selected portable/usd-brep extractor; lines retain their parameter charts. One prepared edit plan supplies previews and atomic commits. Native outputs are expectations only.",
+  "input_evidence": "Prescribed source definitions, settings, acknowledged private mouse rays and pre-command public curve/sight-line witnesses construct replays. Construction-plane projection is insufficient for tilted sources; the spatial holdout uses the recorded sight-line witness.",
+  "execution": "Native captures used private Xvfb displays; application and viewport tests were windowless. The failed perspective capture was terminated after verifying its owned PID and settings scheme; no desktop input was sent.",
+  "limits": [
+    "Coverage includes circles, a rational NURBS circle, an ellipse, internal/external and upper/lower branches, reversed source order, tilted spatial sources and dynamic cancellation. This is a finite corpus, not every branch or a continuous distance bound.",
+    "Self-source fillets, zero radius with closed sources, nonplanar closed curves, closed polylines with corner contacts and extension of open curved sources remain unqualified. No pixel equality or comparative performance claim."
+  ],
+  "cases": [
+    {
+      "id": "fillet_closed_final/circle_line_inner",
+      "portable_command_maximum_geometry_error": 9.77000891922376e-15,
+      "portable_ui_maximum_geometry_error": 9.77000891922376e-15,
+      "native_command_maximum_geometry_error": 9.77000891922376e-15,
+      "native_ui_maximum_geometry_error": 9.77000891922376e-15
+    },
+    {
+      "id": "fillet_closed_final/circle_line_joined_reverse",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_final/circle_line_lower",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_final/circle_line_spatial_top",
+      "portable_command_maximum_geometry_error": 1.5553056657358855e-14,
+      "portable_ui_maximum_geometry_error": 1.5553056657358855e-14,
+      "native_command_maximum_geometry_error": 1.5553056657358855e-14,
+      "native_ui_maximum_geometry_error": 1.5553056657358855e-14
+    },
+    {
+      "id": "fillet_closed_final/closed_dynamic_cancel",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_final/closed_dynamic_enter",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_final/closed_dynamic_radius",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_final/ellipse_line",
+      "portable_command_maximum_geometry_error": 2.673771110915334e-15,
+      "portable_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "native_command_maximum_geometry_error": 2.673771110915334e-15,
+      "native_ui_maximum_geometry_error": 2.673771110915334e-15
+    },
+    {
+      "id": "fillet_closed_final/nurbs_circle_line",
+      "portable_command_maximum_geometry_error": 4.396609337412844e-15,
+      "portable_ui_maximum_geometry_error": 4.396609337412844e-15,
+      "native_command_maximum_geometry_error": 4.396609337412844e-15,
+      "native_ui_maximum_geometry_error": 4.396609337412844e-15
+    },
+    {
+      "id": "fillet_closed_final/two_circles_joined_reverse",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/circle_line_arc",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/circle_line_joined",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/circle_line_parts",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/two_circles_arc",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/two_circles_joined",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_closed_pilot/two_circles_parts",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    }
+  ],
+  "captures": [
+    {
+      "family": "fillet_closed_pilot",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "fff3e59fd2de43de52e63a3d3f6747778bff5a275149ccab57b2f62c2b66b3c9"
+    },
+    {
+      "family": "fillet_closed_final",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c624d6f550948288e1ffbc34e3bf782e44eceb1e1b629c3bb108e532127db283"
+    }
+  ],
+  "checks": [
+    {
+      "name": "closed-command-portable",
+      "status": 0
+    },
+    {
+      "name": "open-command-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "open-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-command-native",
+      "status": 0
+    },
+    {
+      "name": "open-command-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "open-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-geometry",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/src/fillet.rs": "af98c3514735dbc3397643512c9ad51c993fe6f02bd3bddeaddacc613955af17",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/src/fillet/closed.rs": "480b3c4c40b0da99a0aa4c9b4578a3f3a787fa65254356201db1de31478f8043",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/src/fillet/prepare.rs": "0e1df39f20878c6da2bda061e306761c4a5a9ef6d7e94a7792b7085cd1c8cd99",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/tests/fillet_closed.rs": "7b364d83c19b2314146a62b24c361f4bdddbc5e5346b007d31cf06bd14c63dad",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/tests/support/fillet_getter.rs": "a6930eb2a749a73773c04b69ba700270196c30602054ba3772cbcfa6646ab615",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:crates/viboceros-command/tests/support/line_reference.rs": "7376014e12829fc28048abcc3d76e7830fd9ecea6c3ed721e4fd23cb67c47bb9",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/commands/fillet.md": "4a76b314da6d7a2fd2e7cd406f2e297a84e5f65b7e273c6a837ecf4354e63ec3",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/capture-failed-import.log.gz": "bddf2b089690eaa536e8eb9bf7b12adb42cdc2bb7a987344dd872fbf0d1710aa",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/capture-failed-spatial.log.gz": "065d4167a5e2313979e53f803de4c38c21ba3192e04fe6aa481dae7a3e83d05d",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/capture-final.log.gz": "1194cf5861bcc09170474ffc122f35be91c967093c54aea01758d72f00aabc2c",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/capture-pilot.log.gz": "0f5df9533cc3149afdc5ef5e61ad8bed558a7f8587bb051433806a12452c45a4",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/captures.json": "9b581f98d52e96e6e89e3c7c448aa21ae8897e4eea98b559bcbbe6bf3aa6bc11",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/checks.json": "8a1674a9928a784f2e85576e1779813e0da5930b457946802655e0254c59ab11",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/clippy-native.log.gz": "a6277f608c6dddeb26e9b14aa28c78b40b9f49b5f399012f42280d452a373334",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/clippy-portable.log.gz": "8e52c53115deb6e116f5244a2c6e9506d1d76cdadf15ac84b81e614a6b5171bc",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/closed-command-native.log.gz": "a44ed84ee1ddde17e09537fa6e9a01c4227f58e10730085b60e7949762141b72",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/closed-command-portable.log.gz": "a9540d113ccb3447ee2ed3a95b9fa7ed766401cce871d017858da42372edcccb",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/closed-ui-native.log.gz": "3b5b281a1449ba68fdbeb5705eeb20a7c4dd2eaf674a568c4f34ec91e4191033",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/closed-ui-portable.log.gz": "de8208898b8249b3c89902cd17b79c737e172d5958ab87ecbfa338b72e10218b",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/failed-import.json": "10895b684ab2a116bc30b5a6de223abf90c0e5246b881eb21ea17995705a3dd0",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/failed-spatial-private.png": "e92c94652b22640274870ba59e0da1011759d6b31d72c0b4caf12d9ea23e26d0",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/failed-spatial-progress.log.gz": "3a3ebe9d813e7e91334816e8559135b6c3d0bf0ad417d85fb80a6999b11500d8",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/failed-spatial.json": "326156806f371ea5a6181fec3462c0bc37a27f97487c6b5c5225d6790db2ce0e",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/library-native.log.gz": "c7f16a678f7bff19047a40d1c3ab2d93a8f9dd38603ca38de391c4d7463e7c45",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/library-portable.log.gz": "defc7e345af59f468f4f085abaa3bd838d12576617fcddc4d9555037d21468dd",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/open-command-native.log.gz": "f9d607522c775d37df9cc7c221ab94384c0966f75ea5146d1cbb5605d10a294d",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/open-command-portable.log.gz": "bea7d5ca03ab21ece99d8f3b24fbc24c8ab434e606b3c6a7af6a7b639f1fae6e",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/open-ui-native.log.gz": "94d8e2cb6b0cb89712c1de556ee33a780c3f1247e8bebe7105cdfb5b54797077",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/open-ui-portable.log.gz": "9365c083d7aaf1dcef5b0c8317422332b5862a6f44e3561724150d899536f722",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/python-subd.log.gz": "7a1e9980cef647f9e548d54564e224ac1de1f9caceb08916e150be051c57fe93",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/python.log.gz": "18e13034d7cfe25c8583e3497ededed4824479a161776a5151e7cfed0fc51f29",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/subd-command-native.log.gz": "3e045e29a4117183fd56e61d1ccaca51ac006ae44ba2c1ebe58a1bbbb415a157",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/subd-ui-native.log.gz": "33f761da7091817c928f89d5a1c5be67e3e999e666215d3d75ca8fb29f27c01b",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed-proof/tangent-geometry.log.gz": "15214550e6d85bd6af16c917dcd0f5cb0c428f577c35250dd85a5868cc79e90a",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-closed.md": "7c0eae1997cec6abdb872213665968d74bd06b53d8f7e1212d79dfce13ac883a",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/fillet-getter.md": "bc910c31d05c72566c1db81449dafc8ebc89e8d7bd19a286a8a7175fe5f36c9b",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/subd-box-qualification.json": "8ad8ad67f894b0614013bfd70d3261429456b3738f70f130e14299cc65077416",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:docs/subd-plane-qualification.json": "2eab5d9057bddf711c60a0562040f79656d94969a2067546241d180685186f1a",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:src/app/tests/curve_fillet.rs": "378e997f502a20f4503e6072fea14a93949afd4d9bcb3c10576775cef94e7ba2",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:src/app/tests/fillet_closed.rs": "bbb770d67392d44f4d46b5b5e04e201b4604bacc7ba8ccf3290dca0ceb88cb42",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:src/app/tests/mod.rs": "77d11ef92665ee11c8d37563cdd1497f03d009e8e4c50f8845ad5f18c9dc437b",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/check_fillet_closed.py": "ffec2025f63cf41ccb124ebb216e60b7f819b9d778543b3b2968cdc8dcd5e97c",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fillet_closed_cases.py": "c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fillet_closed_evidence.py": "004a87d4a5d3b01264b38799c2ccf55a76c5ad73e956c8bca4be85863c0d2612",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fillet_command.py": "3e0b30a5c2f8cc6c16f67cc7ed9ed65945be4dc32f867ec8272401aba7656961",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fixtures/fillet_closed_final.json": "fbe1ead67e0a7f1e08434f13c8b1e627c7a207d09dce2e7de1d3e90551720f40",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fixtures/fillet_closed_holdouts.json": "8edc7d1ac5c66d5d0b2ee46ffbf204b721a2f55395e092f2fa0800922aeab781",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/fixtures/fillet_closed_pilot.json": "4e6ce657eedf09b6f244ca43b25b7a48169604d46449cd75fb920aca84c69150",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/generate_fillet_closed_final.py": "2336830c19fdd7671af04e039b2463157aae3e92336f3ab12de6010e0a37f135",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/generate_fillet_closed_holdouts.py": "a12be7e82f5cd6baea8b8a38c9848b4a84cc630821a0b9c7a5903a083b34253e",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/generate_fillet_closed_pilot.py": "5793e15e2fa4534ad2331c6b4cf109e413decfabc83485a931f51e126d7d3a2c",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/fillet_closed_final.json.gz": "a2dec9e629591ce1608fc3551109b9a8fa035ae9a14d5069813bfa9b3b7086a5",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/fillet_closed_pilot.json.gz": "d02cb66af3b1b0c63b6ac084ecbec66ce7bd2af42ab171780d257ddbfaa854e7",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/1d7b01bdbc454a24267e746e1c76f9bc63da44a0c1ca96f8f23f5c14715b3c4d.gz": "d80b035bfb99b5ba5361ff8efe80066abbef189ac74dcb48a9d6c48d617fc743",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/2336830c19fdd7671af04e039b2463157aae3e92336f3ab12de6010e0a37f135.gz": "a3991989ac0018b2ce2284cf0c5f8ffa879b19502ea1bfce928505adab935006",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/3e0b30a5c2f8cc6c16f67cc7ed9ed65945be4dc32f867ec8272401aba7656961.gz": "201fc3245d2b5d2c5118c69b4f7457a089ddccfcb3ef2975e7c1c5c932cebab3",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/5793e15e2fa4534ad2331c6b4cf109e413decfabc83485a931f51e126d7d3a2c.gz": "8fb6a3c52f1c1813be314854fe808a90268c380713017bf3f78ed7daa7c22612",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/702a8fd5f4e1df31274e0d9f999deef1435083759931668623474b8d35bfe496.gz": "cb74da5ba362dc5ca9a91d11ee2d4eb3ed5890537c19940edc4c3d0092a3d02d",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/a12be7e82f5cd6baea8b8a38c9848b4a84cc630821a0b9c7a5903a083b34253e.gz": "09c45a26ad9305f910fdd6b9948a2f430c015e8e3724bd219976a071dc732db6",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/c4d2132d0ce25de0c03e6ecc4f4afd5024479d5687c75b6c264f49be77d221d0.gz": "1d3e1c02c6e6b007da877056653ddf1d82487001dab5166085c63890ff33f786",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/e20779cfd4962b4c35341403a0ca6ee00016f147855f7ab0ff592e43a8ef97a4.gz": "cc175509bfe5e2cfdbdda96d0a7e9c97b8cc178ce4a440d01ed032026c4a9f63",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/observations/source_snapshots/eedebf4159a2a76d9f249e5aa6b666386c86b962e875dcf05446d07536e96cbd.gz": "55bc6e60318fa5e849e9b179ca0d1856da2dccdb38112d31891b5afc1e491f51",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/report_fillet_closed.py": "c3dc250d57f8c09d35468e7c0f8b953e0e1146a311be09681e74276312afeae6",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/structural_sdk.py": "e20779cfd4962b4c35341403a0ca6ee00016f147855f7ab0ff592e43a8ef97a4",
+    "4b9a26f5d55b491adb77b3ce71c01dcb6b2f1d10:tools/rhino_oracle/test_fillet_closed.py": "e3fa0cd0a4b0841f3201e0196c26fdbe302770454111fda3b69bef6da913d861"
+  },
+  "evidence_sha256": {
+    "docs/fillet-closed-proof/capture-failed-import.log.gz": "bddf2b089690eaa536e8eb9bf7b12adb42cdc2bb7a987344dd872fbf0d1710aa",
+    "docs/fillet-closed-proof/capture-failed-spatial.log.gz": "065d4167a5e2313979e53f803de4c38c21ba3192e04fe6aa481dae7a3e83d05d",
+    "docs/fillet-closed-proof/capture-final.log.gz": "1194cf5861bcc09170474ffc122f35be91c967093c54aea01758d72f00aabc2c",
+    "docs/fillet-closed-proof/capture-pilot.log.gz": "0f5df9533cc3149afdc5ef5e61ad8bed558a7f8587bb051433806a12452c45a4",
+    "docs/fillet-closed-proof/captures.json": "9b581f98d52e96e6e89e3c7c448aa21ae8897e4eea98b559bcbbe6bf3aa6bc11",
+    "docs/fillet-closed-proof/checks.json": "592b5152ba458dc5506df05ffbf9af3a2f27f9aeb885db7fe7537af8a26fea3e",
+    "docs/fillet-closed-proof/clippy-native.log.gz": "a6277f608c6dddeb26e9b14aa28c78b40b9f49b5f399012f42280d452a373334",
+    "docs/fillet-closed-proof/clippy-portable.log.gz": "8e52c53115deb6e116f5244a2c6e9506d1d76cdadf15ac84b81e614a6b5171bc",
+    "docs/fillet-closed-proof/closed-command-native.log.gz": "a44ed84ee1ddde17e09537fa6e9a01c4227f58e10730085b60e7949762141b72",
+    "docs/fillet-closed-proof/closed-command-portable.log.gz": "a9540d113ccb3447ee2ed3a95b9fa7ed766401cce871d017858da42372edcccb",
+    "docs/fillet-closed-proof/closed-ui-native.log.gz": "3b5b281a1449ba68fdbeb5705eeb20a7c4dd2eaf674a568c4f34ec91e4191033",
+    "docs/fillet-closed-proof/closed-ui-portable.log.gz": "de8208898b8249b3c89902cd17b79c737e172d5958ab87ecbfa338b72e10218b",
+    "docs/fillet-closed-proof/failed-import.json": "10895b684ab2a116bc30b5a6de223abf90c0e5246b881eb21ea17995705a3dd0",
+    "docs/fillet-closed-proof/failed-spatial-private.png": "e92c94652b22640274870ba59e0da1011759d6b31d72c0b4caf12d9ea23e26d0",
+    "docs/fillet-closed-proof/failed-spatial-progress.log.gz": "3a3ebe9d813e7e91334816e8559135b6c3d0bf0ad417d85fb80a6999b11500d8",
+    "docs/fillet-closed-proof/failed-spatial.json": "326156806f371ea5a6181fec3462c0bc37a27f97487c6b5c5225d6790db2ce0e",
+    "docs/fillet-closed-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-closed-proof/library-native.log.gz": "c7f16a678f7bff19047a40d1c3ab2d93a8f9dd38603ca38de391c4d7463e7c45",
+    "docs/fillet-closed-proof/library-portable.log.gz": "defc7e345af59f468f4f085abaa3bd838d12576617fcddc4d9555037d21468dd",
+    "docs/fillet-closed-proof/open-command-native.log.gz": "f9d607522c775d37df9cc7c221ab94384c0966f75ea5146d1cbb5605d10a294d",
+    "docs/fillet-closed-proof/open-command-portable.log.gz": "bea7d5ca03ab21ece99d8f3b24fbc24c8ab434e606b3c6a7af6a7b639f1fae6e",
+    "docs/fillet-closed-proof/open-ui-native.log.gz": "94d8e2cb6b0cb89712c1de556ee33a780c3f1247e8bebe7105cdfb5b54797077",
+    "docs/fillet-closed-proof/open-ui-portable.log.gz": "9365c083d7aaf1dcef5b0c8317422332b5862a6f44e3561724150d899536f722",
+    "docs/fillet-closed-proof/python-subd.log.gz": "7a1e9980cef647f9e548d54564e224ac1de1f9caceb08916e150be051c57fe93",
+    "docs/fillet-closed-proof/python.log.gz": "acb59529b12fbdfd9edd7507bc5c1cc30621c81ef7d7fb951c46a5c78e0fd198",
+    "docs/fillet-closed-proof/subd-command-native.log.gz": "3e045e29a4117183fd56e61d1ccaca51ac006ae44ba2c1ebe58a1bbbb415a157",
+    "docs/fillet-closed-proof/subd-ui-native.log.gz": "33f761da7091817c928f89d5a1c5be67e3e999e666215d3d75ca8fb29f27c01b",
+    "docs/fillet-closed-proof/tangent-geometry.log.gz": "15214550e6d85bd6af16c917dcd0f5cb0c428f577c35250dd85a5868cc79e90a",
+    "tools/rhino_oracle/fixtures/fillet_closed_final.json": "fbe1ead67e0a7f1e08434f13c8b1e627c7a207d09dce2e7de1d3e90551720f40",
+    "tools/rhino_oracle/fixtures/fillet_closed_holdouts.json": "8edc7d1ac5c66d5d0b2ee46ffbf204b721a2f55395e092f2fa0800922aeab781",
+    "tools/rhino_oracle/fixtures/fillet_closed_pilot.json": "4e6ce657eedf09b6f244ca43b25b7a48169604d46449cd75fb920aca84c69150",
+    "tools/rhino_oracle/observations/fillet_closed_final.json.gz": "a2dec9e629591ce1608fc3551109b9a8fa035ae9a14d5069813bfa9b3b7086a5",
+    "tools/rhino_oracle/observations/fillet_closed_pilot.json.gz": "d02cb66af3b1b0c63b6ac084ecbec66ce7bd2af42ab171780d257ddbfaa854e7",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/1d7b01bdbc454a24267e746e1c76f9bc63da44a0c1ca96f8f23f5c14715b3c4d.gz": "d80b035bfb99b5ba5361ff8efe80066abbef189ac74dcb48a9d6c48d617fc743",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/2336830c19fdd7671af04e039b2463157aae3e92336f3ab12de6010e0a37f135.gz": "a3991989ac0018b2ce2284cf0c5f8ffa879b19502ea1bfce928505adab935006",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3e0b30a5c2f8cc6c16f67cc7ed9ed65945be4dc32f867ec8272401aba7656961.gz": "201fc3245d2b5d2c5118c69b4f7457a089ddccfcb3ef2975e7c1c5c932cebab3",
+    "tools/rhino_oracle/observations/source_snapshots/5793e15e2fa4534ad2331c6b4cf109e413decfabc83485a931f51e126d7d3a2c.gz": "8fb6a3c52f1c1813be314854fe808a90268c380713017bf3f78ed7daa7c22612",
+    "tools/rhino_oracle/observations/source_snapshots/591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158.gz": "d7961c149b90800346253f1d3c2bd85275a5e6f157970e786e6db5c79dfa6444",
+    "tools/rhino_oracle/observations/source_snapshots/63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9.gz": "ab7aa676392930d72c3954751a10cb81dcf9151eb3111a4be27a4f5375017935",
+    "tools/rhino_oracle/observations/source_snapshots/702a8fd5f4e1df31274e0d9f999deef1435083759931668623474b8d35bfe496.gz": "cb74da5ba362dc5ca9a91d11ee2d4eb3ed5890537c19940edc4c3d0092a3d02d",
+    "tools/rhino_oracle/observations/source_snapshots/78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da.gz": "feeb2535f264a3bd71854d71997e4a41a67683160150018f071e96cde445f89e",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/a12be7e82f5cd6baea8b8a38c9848b4a84cc630821a0b9c7a5903a083b34253e.gz": "09c45a26ad9305f910fdd6b9948a2f430c015e8e3724bd219976a071dc732db6",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "tools/rhino_oracle/observations/source_snapshots/c4d2132d0ce25de0c03e6ecc4f4afd5024479d5687c75b6c264f49be77d221d0.gz": "1d3e1c02c6e6b007da877056653ddf1d82487001dab5166085c63890ff33f786",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/e20779cfd4962b4c35341403a0ca6ee00016f147855f7ab0ff592e43a8ef97a4.gz": "cc175509bfe5e2cfdbdda96d0a7e9c97b8cc178ce4a440d01ed032026c4a9f63",
+    "tools/rhino_oracle/observations/source_snapshots/ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85.gz": "e2e7daf1ce6bbd83b220b65c3f8586bd2826447b1a27fb06027664a2313ffe6e",
+    "tools/rhino_oracle/observations/source_snapshots/eedebf4159a2a76d9f249e5aa6b666386c86b962e875dcf05446d07536e96cbd.gz": "55bc6e60318fa5e849e9b179ca0d1856da2dccdb38112d31891b5afc1e491f51",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
