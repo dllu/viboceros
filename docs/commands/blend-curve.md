@@ -8,8 +8,10 @@ is enabled. The result is a minimum-degree NURBS curve with a domain scaled to i
 
 `Continuity_1=G0|G1|G2|G3|G4` and `Continuity_2=G0|G1|G2|G3|G4` independently
 set endpoint constraints. G0/G1/G2 use position, tangency and curvature; G3/G4
-follow the measured Native default construction described below. Each invocation
-starts at G2/G2. `BlendStart=CurveEnd`
+follow the measured Native default construction described below. Defaults begin
+at G2/G2. Continuity changes in the ready preview persist per endpoint, including
+after cancellation; choices before picking apply only to that invocation. A
+point's forced G0 does not replace the remembered curve setting. `BlendStart=CurveEnd`
 uses the selected natural end; `BlendStart=PickPoint` uses the picked location,
 initially pointing toward the source start. Flip reverses that direction.
 BlendStart, Trim and Join persist for the application session.
@@ -55,6 +57,14 @@ measured from the second control's tangential position. See
 [higher control editing](../blend-curve-controls.md).
 Esc discards the local adjustment; another Esc cancels the command. `!` aborts
 immediately. Previews leave geometry and undo/redo untouched.
+
+Enter `DisplayCurvature` in the ready preview to show source and blend curvature
+combs. Repeating it keeps the display enabled. Scale, density and colors use the
+Curvature Graph panel and update the current hover candidate. Existing graph
+analysis enables the new getter's display automatically. Completion or cancellation
+removes the temporary graphs and restores the existing ones. Closing the panel
+hides the display; `DisplayCurvature` shows it again. See
+[live display and continuity defaults](../blend-curve-display.md).
 
 Hold Shift while selecting a shape handle to copy its complete shape to the other
 end: primary length and higher gap ratios. Both ends must have the same G1–G4
@@ -115,7 +125,8 @@ Validation: [G0–G2](../blend-curve-validation.json),
 [temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
 [surface edges](../blend-curve-edges.md), [Alt editing](../blend-curve-alt.md),
 [higher controls](../blend-curve-controls.md), [closed sources](../blend-curve-closed.md),
-and [endpoint trims/joins](../blend-curve-empty.md).
+and [endpoint trims/joins](../blend-curve-empty.md), with
+[live curvature display and defaults](../blend-curve-display.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document
@@ -126,11 +137,11 @@ blend derivative; this does not establish general mathematical G4 continuity.
 See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_empty
+python3 -m tools.rhino_oracle.check_blend_curve_display
 ```
 
 Captures use private Xvfb; application tests are windowless. Shared/seam surface
-edges, curvature display and
+edges and
 history-based re-editing remain pending. Arbitrary clipping/occlusion/depth ties,
 complete Native drag/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

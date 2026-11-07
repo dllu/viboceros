@@ -3072,6 +3072,16 @@ impl CommandRegistry {
     ) -> Result<Option<curvature_graph::View>, CommandError> {
         self.curvature_graph.view(doc)
     }
+    pub fn curvature_graph_options(&self) -> curvature_graph::Options {
+        self.curvature_graph.options()
+    }
+    pub fn configure_curvature_graph(
+        &self,
+        doc: &Document,
+        options: curvature_graph::Options,
+    ) -> Result<(), CommandError> {
+        self.curvature_graph.configure(doc, options)
+    }
     pub fn curvature_graph_curve_sources(&self, doc: &Document) -> BTreeSet<ObjectId> {
         self.curvature_graph.curve_sources(doc)
     }

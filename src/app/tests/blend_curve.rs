@@ -271,13 +271,14 @@ fn cancelled_adjustments_invalid_lengths_and_stale_sources_preserve_model_histor
         .input
         .preferences();
     assert!(prefs.trim && prefs.join && prefs.pick_point);
+    // The ready-preview G1 choice persists after cancellation.
     assert_eq!(
         app.blend_curve_session
             .as_ref()
             .unwrap()
             .input
             .continuities(),
-        [2; 2]
+        [1, 2]
     );
     app.pick_blend_curve_at(ids[0], None, Point3::try_new(-1., 0., 0.).unwrap());
     app.document

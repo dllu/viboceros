@@ -81,6 +81,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select surface to splop on' if command=='Splop' else 'Select' if command in ('SubDTorus','SubDTruncatedCone','SubDCone','SubDCylinder') else 'Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
+    display_observer=None
+    if command=='BlendCrv'and any(isinstance(a,dict)and'view_snapshot'in a for a in actions):
+        from blend_curve_display_capture import Observer
+        display_observer=Observer(host,view,root,E,op['id'])
     click_shift=S.Array[S.Int32]([-1]*len(actions))
     click_alt=S.Array[S.Int32]([-1]*len(actions))
     pointer_plane=vp.GetConstructionPlane().Plane
@@ -106,6 +110,9 @@ def drive(op,host,guides,command="Conic",start_script=None):
         located=command in('BlendCrv','ArcBlend','Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('arc_blend_command','blend_curve_command','line_pick_context','line_tangent_mouse','line_tangent_rays','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if command=='BlendCrv'and isinstance(a,dict)and set(a)=={'wait_prompt'}:
             body=E.IfThen(prompt_gate(a['wait_prompt']),block(advance+[log('\nBlendCrv observed prompt '+a['wait_prompt']+'\n')]))
+            tokens.append(None)
+        elif command=='BlendCrv'and isinstance(a,dict)and set(a)=={'view_snapshot'}:
+            body=E.IfThen(base,block([display_observer.expression(i,a['view_snapshot'])]+advance))
             tokens.append(None)
         elif isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
@@ -225,7 +232,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
                 body=block([E.IfThen(selection,request),E.IfThen(acknowledged(marker),block(advance))]);picks.append(dict(action=i,marker=marker,pick=aim,authored_edge=a['edge']))
             tokens.append(None)
         else:
-            if isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
+            if command=='BlendCrv'and isinstance(a,dict)and set(a)=={'transparent'}:
+                if a['transparent']!='CurvatureGraphOff':raise ValueError('unsupported owned transparent display command')
+                token="'_"+a['transparent'];gate=base
+            elif isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
             elif command in('BlendCrv','ArcBlend','Line')and isinstance(a,dict)and set(a)=={'number'}:token=a['number'];gate=base
             elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else selection
             elif isinstance(a,list):token=point(a);gate=base
@@ -309,6 +319,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     trace=dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.'if command!='Conic'else'Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')
 
     if plan_view is not None:trace['aligned_construction_plane_view']=plan_view
+    if display_observer is not None:trace['viewport_snapshots']=display_observer.records()
     if clicks:
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]>=9)for c in clicks]
         if command=='BlendCrv':

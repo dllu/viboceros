@@ -26,6 +26,7 @@ mod blend_curve;
 mod blend_curve_alt;
 mod blend_curve_closed;
 mod blend_curve_controls;
+mod blend_curve_display;
 mod blend_curve_edges;
 mod blend_curve_empty;
 mod blend_curve_points;

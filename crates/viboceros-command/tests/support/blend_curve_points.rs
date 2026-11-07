@@ -18,8 +18,21 @@ pub fn preferences(v: &serde_json::Value) -> viboceros_command::blend_curve::Pre
             .as_str()
             .unwrap()
             .contains("BlendStart=PickPoint"),
+        continuity: initial_continuities(v),
         ..Default::default()
     }
+}
+
+pub fn initial_continuities(value: &serde_json::Value) -> [u8; 2] {
+    let prompt = value["input_trace"][0]["prompts"][0].as_str().unwrap();
+    std::array::from_fn(|i| {
+        prompt
+            .split(&format!("Continuity_{}=G", i + 1))
+            .nth(1)
+            .and_then(|s| s.chars().next())
+            .and_then(|c| c.to_digit(10))
+            .map_or(2, |c| c as u8)
+    })
 }
 
 pub fn identities(

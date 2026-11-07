@@ -374,6 +374,7 @@ pub struct ViewportInput<'a> {
     pub curve_line_input: Option<&'a viboceros_command::line::curve_input::Input>,
     pub arc_blend: Option<&'a viboceros_command::arc_blend::Input>,
     pub blend_curve: Option<&'a viboceros_command::blend_curve::Input>,
+    pub blend_curve_curvature: Option<&'a viboceros_command::blend_curve::CurvatureDisplay>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
@@ -515,6 +516,7 @@ impl Default for ViewportInput<'_> {
             curve_line_input: None,
             arc_blend: None,
             blend_curve: None,
+            blend_curve_curvature: None,
             normal_surface: None,
             mesh_constraint: None,
             surface_curve_close_point: None,
@@ -2728,6 +2730,9 @@ impl Viewport {
                 response.hover_pos(),
                 drafting_cursor.map(|c| c.point),
             );
+        }
+        if let Some(view) = input.blend_curve_curvature {
+            self.paint_blend_curve_curvature(&painter, rect, view);
         }
         if let Some(getter) = input.blend_curve {
             self.paint_blend_curve_handles(&painter, rect, getter);

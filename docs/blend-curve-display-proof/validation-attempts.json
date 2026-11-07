@@ -1,0 +1,44 @@
+[
+  {
+    "name": "command-setup-group-expansion",
+    "log": "command-setup-group-expansion.log.gz",
+    "status": 101,
+    "reason": "The fixture adapter used grouped selection to enable a single prescribed native analysis object. It now selects those object IDs directly."
+  },
+  {
+    "name": "ui-setup-group-expansion",
+    "status": 101,
+    "log": "ui-setup-group-expansion.log.gz",
+    "reason": "Same grouped-selection fixture adapter, observed by the windowless UI replay."
+  },
+  {
+    "name": "command-continuity-initial-state",
+    "status": 101,
+    "log": "command-continuity-initial-state.log.gz",
+    "reason": "A preceding preview control change persisted Native G1. Replays now initialize from the public initial getter state; command preferences distinguish preselection options from preview controls."
+  },
+  {
+    "name": "ui-legacy-default-reset",
+    "status": 101,
+    "log": "ui-legacy-default-reset.log.gz",
+    "reason": "An older test expected all continuities to reset. Native preview-control captures prove the G1 choice survives cancellation; the expectation is now G1/G2."
+  },
+  {
+    "name": "clippy-shared-test-module",
+    "status": 101,
+    "log": "clippy-shared-test-module.log.gz",
+    "reason": "The new UI test loaded an existing shared helper a second time. It now imports the already-loaded module."
+  },
+  {
+    "name": "clippy-reused-helper-imports",
+    "status": 101,
+    "log": "clippy-reused-helper-imports.log.gz",
+    "reason": "Reusing the shared helper made two local imports unnecessary; they were removed."
+  },
+  {
+    "name": "python-run-terminated",
+    "status": 143,
+    "log": "python-run-terminated.log.gz",
+    "reason": "The check process received SIGTERM after reaching Python. Read-only process inspection confirmed that the checker and unittest child were absent. Fifteen successful checks were retained; only unfinished work was resumed."
+  }
+]

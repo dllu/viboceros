@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "display_control_defaults_low",
+      "case": "display_control_defaults_low"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_control_defaults_low_next",
+      "case": "display_control_defaults_low_next"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_control_defaults_high_cancel",
+      "case": "display_control_defaults_high_cancel"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_control_defaults_high_next",
+      "case": "display_control_defaults_high_next"
+    }
+  ]
+}

@@ -12,6 +12,8 @@ mod adjustment;
 mod arguments;
 mod commit;
 mod controls;
+mod display;
+pub use display::{CurvatureData, CurvatureDisplay};
 mod endpoint;
 mod guide;
 mod surface;
@@ -19,12 +21,23 @@ use endpoint::Endpoint;
 mod options;
 mod shape;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv source source (Curve=id point|Edges Edge=id,index point Curves|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [AtAngle_1=degrees] [AtAngle_2=degrees] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Spacing1=r2,r3,r4] [Spacing2=r2,r3,r4] [Trim=Yes|No] [Join=Yes|No]";
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub const USAGE: &str = "BlendCrv source source (Curve=id point|Edges Edge=id,index point Curves|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [AtAngle_1=degrees] [AtAngle_2=degrees] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Spacing1=r2,r3,r4] [Spacing2=r2,r3,r4] [Trim=Yes|No] [Join=Yes|No] [DisplayCurvature]";
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
     pub trim: bool,
     pub join: bool,
+    pub continuity: [u8; 2],
+}
+impl Default for Preferences {
+    fn default() -> Self {
+        Self {
+            pick_point: false,
+            trim: false,
+            join: false,
+            continuity: [2; 2],
+        }
+    }
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Handle {
@@ -51,16 +64,19 @@ pub struct Input {
     symmetric: bool,
     angle_editing: bool,
     surface_edges: bool,
+    display_curvature: bool,
+    curvature_cache: display::Cache,
 }
 impl Input {
     pub fn new(tolerance: Tolerance) -> Self {
         Self::with_preferences(tolerance, Preferences::default())
     }
-    pub fn with_preferences(tolerance: Tolerance, preferences: Preferences) -> Self {
+    pub fn with_preferences(tolerance: Tolerance, mut preferences: Preferences) -> Self {
+        preferences.continuity = preferences.continuity.map(|c| c.min(4));
         Self {
             endpoints: vec![],
             preferences,
-            continuity: [2; 2],
+            continuity: preferences.continuity,
             handles: [None; 2],
             bulges: [1.; 2],
             spacing: [[1.; 3]; 2],
@@ -72,6 +88,8 @@ impl Input {
             symmetric: false,
             angle_editing: false,
             surface_edges: false,
+            display_curvature: false,
+            curvature_cache: display::Cache::default(),
         }
     }
     pub fn continuities(&self) -> [u8; 2] {
@@ -124,9 +142,9 @@ impl Input {
                 .filter_map(Endpoint::curve)
                 .any(|g| g.surface.is_some()) =>
             {
-                "Select a blend control point or set AtAngle_1/2; Enter accepts"
+                "Select a blend control point; AtAngle_1/2 or DisplayCurvature; Enter accepts"
             }
-            None => "Select a blend control point or change continuity; Enter accepts",
+            None => "Select a blend control point; Continuity or DisplayCurvature; Enter accepts",
         }
     }
     fn add(
@@ -199,6 +217,7 @@ impl Input {
         )?;
         let length = curve.length(measurement)?;
         self.preview = Some(curve.try_reparameterized(0. ..=length)?);
+        self.curvature_cache = display::Cache::default();
         Ok(())
     }
     pub fn active_handle(&self) -> Option<Handle> {

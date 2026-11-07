@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "display_enable_lifetime",
+      "case": "display_enable_lifetime"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_reentry",
+      "case": "display_reentry"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_cancel_lifetime",
+      "case": "display_cancel_lifetime"
+    }
+  ]
+}

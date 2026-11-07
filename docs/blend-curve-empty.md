@@ -40,5 +40,6 @@ python3 -m tools.rhino_oracle.check_blend_curve_empty
 
 Captures use private Xvfb displays and do not open desktop windows. Surface-edge
 trimming, arbitrary self-blends, continuous distance and comparative performance
-remain unqualified. Earlier higher-continuity and approximate-length diagnostics,
-curvature display and history reediting remain unchanged.
+remain unqualified. [Curvature display](blend-curve-display.md) is qualified separately.
+Earlier higher-continuity and approximate-length diagnostics and history reediting
+remain unchanged.

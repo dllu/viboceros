@@ -1,6 +1,6 @@
 """Owned line-construction scene and document/history observations."""
 
-def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None):
+def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None,completion_observer=None,source_setup=None):
     from join_probe import observe_command
     from conic_getter_input import drive
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
@@ -53,6 +53,7 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
         doc.Layers.SetCurrentLayerIndex(layers[1],True);doc.ClearUndoRecords(True)
         if case.get('pending_redo'):
             R.RhinoApp.RunScript('_Point w90,91,92',False);R.RhinoApp.RunScript('_Undo',False)
+        if source_setup is not None:source_setup(guides)
         before=snapshot();marker='Owned '+command+' '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker);traces=[]
         def invoke():
             if case.get('macro'):
@@ -62,7 +63,8 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
                 return R.RhinoApp.RunScript('_-ReadCommandFile "'+path.replace('/','\\')+'"',True)
             result,trace=drive(dict(op=op['op'],id=op['id'],actions=case['actions'],planar=case.get('planar',False)),host,guides,command);traces.append(trace);return result
         success,created,events=observe_command(R.Commands.Command,'ReadCommandFile' if case.get('macro') else command,invoke,snapshot,lambda:[],True)
-        after=snapshot();history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
+        after=snapshot();completion=completion_observer()if completion_observer is not None else None
+        history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         if R.Commands.Command.InCommand():raise ValueError('Lines did not return idle')
         last_selection=None
         if capture_recall:
@@ -77,8 +79,10 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
         pending_redo=None
         if case.get('pending_redo'):
             R.RhinoApp.RunScript('_Redo',False);pending_redo=snapshot()
-        return dict(success=success,before=before,created=created,after=after,undo=undo,redo=redo,history=history,events=events,
-            input_trace=traces,history_changed=history_changed,construction_plane=frame,returned_idle=True,model_tolerance=tolerance,last_selection=last_selection,pending_redo=pending_redo),0
+        value=dict(success=success,before=before,created=created,after=after,undo=undo,redo=redo,history=history,events=events,
+            input_trace=traces,history_changed=history_changed,construction_plane=frame,returned_idle=True,model_tolerance=tolerance,last_selection=last_selection,pending_redo=pending_redo)
+        if completion is not None:value['completion_observation']=completion
+        return value,0
     finally:
         R.RhinoApp.RunScript('!',False)
         for obj in list(doc.Objects):doc.Objects.Delete(obj.Id,True)

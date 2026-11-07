@@ -292,3 +292,38 @@ if __package__:from .blend_curve_empty_cases import holdouts as empty_holdouts
 else:from blend_curve_empty_cases import holdouts as empty_holdouts
 EMPTY_HOLDOUTS=empty_holdouts(case,pick,A,B,ARC_A,CUBIC_A)
 CASES.update(EMPTY_HOLDOUTS)
+
+if __package__:from .blend_curve_display_cases import pilot as display_pilot
+else:from blend_curve_display_cases import pilot as display_pilot
+DISPLAY_PILOT=display_pilot(case,pick)
+CASES.update(DISPLAY_PILOT)
+
+if __package__:from .blend_curve_display_cases import discovery as display_discovery
+else:from blend_curve_display_cases import discovery as display_discovery
+DISPLAY_DISCOVERY=display_discovery(case,pick,ARC_A,B)
+CASES.update(DISPLAY_DISCOVERY)
+
+if __package__:from .blend_curve_display_cases import lifecycle as display_lifecycle
+else:from blend_curve_display_cases import lifecycle as display_lifecycle
+DISPLAY_LIFECYCLE=display_lifecycle(case,pick,ARC_A,B)
+CASES.update(DISPLAY_LIFECYCLE)
+
+if __package__:from .blend_curve_display_cases import holdouts as display_holdouts
+else:from blend_curve_display_cases import holdouts as display_holdouts
+DISPLAY_HOLDOUTS=display_holdouts(case,pick,ARC_A,B,CUBIC_A,CUBIC_B,EDGE_DISCOVERY['surface_curved_g2'])
+CASES.update(DISPLAY_HOLDOUTS)
+
+if __package__:from .blend_curve_display_cases import verification as display_verification
+else:from blend_curve_display_cases import verification as display_verification
+DISPLAY_VERIFICATION=display_verification(case,pick,DISPLAY_HOLDOUTS,B)
+CASES.update(DISPLAY_VERIFICATION)
+
+if __package__:from .blend_curve_display_cases import defaults as display_defaults
+else:from blend_curve_display_cases import defaults as display_defaults
+DISPLAY_DEFAULTS=display_defaults(case,pick,ARC_A,B)
+CASES.update(DISPLAY_DEFAULTS)
+
+if __package__:from .blend_curve_display_cases import control_defaults as display_control_defaults
+else:from blend_curve_display_cases import control_defaults as display_control_defaults
+DISPLAY_CONTROL_DEFAULTS=display_control_defaults(case,pick,ARC_A,B)
+CASES.update(DISPLAY_CONTROL_DEFAULTS)

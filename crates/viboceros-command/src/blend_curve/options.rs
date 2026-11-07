@@ -23,6 +23,10 @@ fn continuity(value: &str) -> Result<u8, CommandError> {
 }
 impl Input {
     pub fn option(&mut self, text: &str) -> Result<bool, CommandError> {
+        if option_name_eq(text.trim_start_matches(['_', '-']), "DisplayCurvature") {
+            self.set_curvature_display(true)?;
+            return Ok(true);
+        }
         let mut next = self.clone();
         if !next.apply_option(text)? {
             return Ok(false);
@@ -33,6 +37,10 @@ impl Input {
     }
     pub(super) fn apply_option(&mut self, text: &str) -> Result<bool, CommandError> {
         let word = text.trim_start_matches(['_', '-']);
+        if option_name_eq(word, "DisplayCurvature") {
+            self.set_curvature_display(true)?;
+            return Ok(true);
+        }
         if option_name_eq(word, "Edges") || option_name_eq(word, "Curves") {
             self.surface_edges = option_name_eq(word, "Edges");
             return Ok(true);
@@ -104,6 +112,9 @@ impl Input {
                     ));
                 }
                 let reset = order != next.continuity[i] && next.preview.is_some();
+                if next.preview.is_some() && next.endpoints[i].curve().is_some() {
+                    next.preferences.continuity[i] = order;
+                }
                 if reset {
                     next.freeze_handles();
                 }

@@ -517,6 +517,7 @@ impl eframe::App for VibocerosApp {
             .curvature_graph_view(&self.document)
             .ok()
             .flatten();
+        let blend_curvature_display = self.blend_curvature_display();
         let direction_analysis_view = self.commands.direction_analysis_view(&self.document);
         let draft_angle_analysis_view = self.commands.draft_angle_analysis_view(&self.document);
         let curvature_analysis_view = self.commands.curvature_analysis_view(&self.document);
@@ -1216,6 +1217,9 @@ impl eframe::App for VibocerosApp {
                                         && !s.point_prompt
                                 })
                                 .map(|s| s.preview_input()),
+                            blend_curve_curvature: blend_curvature_display
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none()),
                             arc_blend: self
                                 .arc_blend_session
                                 .as_ref()

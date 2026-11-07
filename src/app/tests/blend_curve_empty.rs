@@ -5,7 +5,7 @@ use super::line_reference::inputs as reference_inputs;
 use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/blend_curve_empty.rs"]
-mod empty;
+pub(super) mod empty;
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_existing_unrelated",
+      "case": "verified_display_existing_unrelated"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_existing_selected",
+      "case": "verified_display_existing_selected"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_point_endpoint",
+      "case": "verified_display_point_endpoint"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_portion",
+      "case": "verified_display_portion"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_order_change",
+      "case": "verified_display_order_change"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_transparent_off",
+      "case": "verified_display_transparent_off"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_closed",
+      "case": "verified_display_closed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_surface",
+      "case": "verified_display_surface"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_existing_without_display",
+      "case": "verified_existing_without_display"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_existing_without_display_cancel",
+      "case": "verified_existing_without_display_cancel"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_display_curved_portion",
+      "case": "verified_display_curved_portion"
+    }
+  ]
+}

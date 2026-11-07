@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "display_existing_selected",
+      "case": "display_existing_selected"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_existing_unrelated",
+      "case": "display_existing_unrelated"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_point_endpoint",
+      "case": "display_point_endpoint"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_portion",
+      "case": "display_portion"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_order_change",
+      "case": "display_order_change"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_transparent_off",
+      "case": "display_transparent_off"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_closed",
+      "case": "display_closed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_surface",
+      "case": "display_surface"
+    }
+  ]
+}

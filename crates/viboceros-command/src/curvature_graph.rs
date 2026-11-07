@@ -10,7 +10,7 @@ mod tests;
 pub(super) use extract::ExtractCommand;
 
 pub const USAGE: &str = "CurvatureGraph [Add|Remove] [Scale=0..300] [Density=0..10] [Count=2..64] [U=Yes|No] [V=Yes|No] [Color=r,g,b] [UColor=r,g,b] [VColor=r,g,b] | CurvatureGraphOff";
-const MAX_SAMPLES: usize = 200_000;
+pub(super) const MAX_SAMPLES: usize = 200_000;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
@@ -52,11 +52,17 @@ impl Options {
             Kind::V => self.v_color,
         }
     }
-    fn sampling(&self) -> (u8, u8, bool, bool) {
+    pub(super) fn sampling(&self) -> (u8, u8, bool, bool) {
         (self.density, self.count, self.u, self.v)
     }
     pub fn factor(&self) -> Real {
         ((self.scale as Real - 100.) / 2.).exp2()
+    }
+    pub(super) fn validate(&self) -> Result<(), CommandError> {
+        if self.scale > 300 || self.density > 10 || !(2..=64).contains(&self.count) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(())
     }
 }
 
@@ -99,7 +105,7 @@ struct State {
 #[derive(Default)]
 pub(super) struct Session(Mutex<State>);
 
-fn gather(
+pub(super) fn gather(
     geometry: &Geometry,
     object: ObjectId,
     options: &Options,
@@ -189,6 +195,24 @@ fn gather(
 }
 
 impl Session {
+    pub(super) fn options(&self) -> Options {
+        self.0
+            .lock()
+            .expect("curvature graph state")
+            .options
+            .clone()
+    }
+    pub(super) fn configure(&self, doc: &Document, options: Options) -> Result<(), CommandError> {
+        options.validate()?;
+        let mut state = self.0.lock().expect("curvature graph state");
+        let mut proposed = state.clone();
+        proposed.options = options;
+        if proposed.enabled {
+            Self::resolve(&mut proposed, doc)?;
+        }
+        *state = proposed;
+        Ok(())
+    }
     fn resolve(state: &mut State, doc: &Document) -> Result<View, CommandError> {
         Self::resolve_with_budget(state, doc, MAX_SAMPLES)
     }

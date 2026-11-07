@@ -42,8 +42,8 @@ All Native captures use private Xvfb; application tests open no desktop windows.
 
 Later qualifications cover [whole closed sources](blend-curve-closed.md),
 [zero-side joins](blend-curve-empty.md), [Shift editing](blend-curve-symmetry.md)
-and [Alt editing](blend-curve-alt.md). Native surface-edge portions, arbitrary
-shared-parent self-blends, curvature display and history re-editing remain
+and [Alt editing](blend-curve-alt.md), with [curvature display](blend-curve-display.md).
+Native surface-edge portions, arbitrary shared-parent self-blends and history re-editing remain
 unqualified. G4 retains the measured Native zero-fourth-
 derivative policy, rather than establishing general mathematical G4 continuity.
 Exact Native picking, numeric/Escape trajectories, continuous distance and

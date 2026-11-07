@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "display_arc_toggles",
+      "case": "display_arc_toggles"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "display_prompt_repeat",
+      "case": "display_prompt_repeat"
+    }
+  ]
+}

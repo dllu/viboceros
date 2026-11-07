@@ -1,0 +1,328 @@
+[
+  {
+    "name": "display-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_display",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 7.546889414981706
+  },
+  {
+    "name": "graph-library-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "curvature_graph",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 31.61288809098187
+  },
+  {
+    "name": "graph-viewport-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "viewport::curvature_graph",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 41.0797754630039
+  },
+  {
+    "name": "display-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_display",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 20.348071649001213
+  },
+  {
+    "name": "graph-library-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "curvature_graph",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 31.189904745988315
+  },
+  {
+    "name": "graph-viewport-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "viewport::curvature_graph",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 59.73557476900169
+  },
+  {
+    "name": "empty-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_empty",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 18.682655592012452
+  },
+  {
+    "name": "blend-regressions-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve",
+      "--test",
+      "blend_curve_points",
+      "--test",
+      "blend_curve_portions",
+      "--test",
+      "blend_curve_symmetry",
+      "--test",
+      "blend_curve_edges",
+      "--test",
+      "blend_curve_surface_high",
+      "--test",
+      "blend_curve_alt",
+      "--test",
+      "blend_curve_controls",
+      "--test",
+      "blend_curve_closed",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 26.450940349983284
+  },
+  {
+    "name": "display-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 42.02466881897999
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 21.253730986005394
+  },
+  {
+    "name": "empty-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_empty",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 18.782973713998217
+  },
+  {
+    "name": "blend-regressions-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve",
+      "--test",
+      "blend_curve_points",
+      "--test",
+      "blend_curve_portions",
+      "--test",
+      "blend_curve_symmetry",
+      "--test",
+      "blend_curve_edges",
+      "--test",
+      "blend_curve_surface_high",
+      "--test",
+      "blend_curve_alt",
+      "--test",
+      "blend_curve_controls",
+      "--test",
+      "blend_curve_closed",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 26.79845217600814
+  },
+  {
+    "name": "display-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 44.386823345004814
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 37.8682635659934
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.399830715003191
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_blend_curve",
+      "tools.rhino_oracle.test_blend_curve_points",
+      "tools.rhino_oracle.test_blend_curve_portions",
+      "tools.rhino_oracle.test_blend_curve_closed",
+      "tools.rhino_oracle.test_blend_curve_empty",
+      "tools.rhino_oracle.test_blend_curve_display"
+    ],
+    "status": 0,
+    "seconds": 89.8131233160093
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 51.21724840000388
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.42181232699659
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.9640852739976253
+  }
+]

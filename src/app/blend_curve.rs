@@ -2,6 +2,7 @@
 use super::*;
 use viboceros_command::blend_curve::{Handle, Input};
 mod adjustment;
+mod display;
 mod picking;
 mod points;
 mod subcurve;
@@ -50,6 +51,13 @@ impl VibocerosApp {
         let mut input = Input::with_preferences(
             self.document.tolerance(),
             self.commands.blend_curve_preferences(),
+        );
+        input.inherit_curvature_display(
+            self.commands
+                .curvature_graph_view(&self.document)
+                .ok()
+                .flatten()
+                .is_some_and(|v| v.sources > 0),
         );
         for w in &words[1..] {
             match input.option_with_units(w, self.document.units()) {
@@ -123,6 +131,20 @@ impl VibocerosApp {
             return true;
         }
         self.validate_blend_curve();
+        if text.starts_with('\'')
+            && text
+                .trim_start_matches(['\'', '_', '-'])
+                .eq_ignore_ascii_case("CurvatureGraphOff")
+        {
+            match self
+                .commands
+                .execute(&mut self.document, "CurvatureGraphOff")
+            {
+                Ok(message) => self.push_log(message),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            return true;
+        }
         if self.continue_blend_curve_subcurve(text) {
             return true;
         }

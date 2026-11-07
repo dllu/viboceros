@@ -1,0 +1,86 @@
+[
+  {
+    "family": "blend_curve_display_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_pilot"
+    ],
+    "log": "capture-pilot.log.gz",
+    "observation_sha256": "779267226de52ecdfd4113cd6c874d1ccef45bd8d7121c11ac423a0ebb91f1d9",
+    "request_sha256": "9f728eb3e8ef0702ce636c170f8582413594626387093edcdbd3d82c31ba0040"
+  },
+  {
+    "family": "blend_curve_display_discovery",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_discovery"
+    ],
+    "log": "capture-discovery.log.gz",
+    "observation_sha256": "2f1a3803180be6ba5c0234589846d40eefa99448ba7c8115d2d46862120b3a35",
+    "request_sha256": "fc634a1b60dd307cb47afda1f670839e17971731486a5784bfcf4055035e77b0"
+  },
+  {
+    "family": "blend_curve_display_lifecycle",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_lifecycle"
+    ],
+    "log": "capture-lifecycle.log.gz",
+    "observation_sha256": "6e2edfee8ebd479579e4880fd46cb9461e1bc5e909d6c7742c2f787d52ed103d",
+    "request_sha256": "ed0cb8b5d639e14dd36f03448da23ebc877f08a52535d014086dd93004174c80"
+  },
+  {
+    "family": "blend_curve_display_verification",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_verification"
+    ],
+    "log": "capture-verification.log.gz",
+    "observation_sha256": "5e251256d71d22ffe28a2b73569593dd08811dad90bc0e59749192c5d8f01f8a",
+    "request_sha256": "345f5d379bc037b914cb59ca04143114c8c3be43d6860816d4976e6dd930733c"
+  },
+  {
+    "family": "blend_curve_display_defaults",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_defaults"
+    ],
+    "log": "capture-defaults.log.gz",
+    "observation_sha256": "90ef6122135e582d62dc5f6d5382160ecf714997b0b638e78c3eb4f93feecc0f",
+    "request_sha256": "9fb4c56977c2c54f0713e80eba66b05ec33df3731d41f7552a13199c61198f34"
+  },
+  {
+    "family": "blend_curve_display_control_defaults",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_display_control_defaults"
+    ],
+    "log": "capture-control-defaults.log.gz",
+    "observation_sha256": "4906a5c9c351ee1f254fd3e6317975dfbbbe0d734ca96b2cc6e29362a1d28798",
+    "request_sha256": "9542d6ed776e0e223bfb32d2d7d577254042aa25670443dfbe78b526a6e060ea"
+  }
+]

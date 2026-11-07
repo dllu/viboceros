@@ -28,6 +28,7 @@ pub fn preferences(value: &Value) -> viboceros_command::blend_curve::Preferences
             .contains("BlendStart=PickPoint"),
         trim: adjustment.contains("Trim=Yes"),
         join: adjustment.contains("Join=Yes"),
+        continuity: super::points::initial_continuities(value),
     }
 }
 
