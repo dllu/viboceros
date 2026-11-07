@@ -20,6 +20,14 @@ must be a curve. Point placement and movement use ordinary drafting, object
 snaps and 3D typed coordinates. No point object is created or consumed. While
 picking the location, `Point` requests a one-shot point snap.
 
+Enter `SubCrv` while selecting a source to use a temporary portion. Select its
+parent (including a closed curve), then its start and end. Point order sets the
+portion direction; the last endpoint becomes the blend contact. A numeric length
+accepts units and uses the cursor side; `Direction=Locked` holds that direction
+and `Direction=Free` releases it. Numeric intervals can wrap a closed seam.
+PickPoint initially points back toward the portion start. Esc discards the
+nested getter and returns to source selection.
+
 Click a contact to slide it on its source, or a shape handle to change its
 length. Click again to accept the preview; held dragging also works. Typed
 points project onto the constraint. Shape lengths also accept numbers with
@@ -30,10 +38,13 @@ immediately. Previews leave geometry and undo/redo untouched.
 Enter `Flip` and pick a source to reverse its blend tangent, or press Enter to
 flip both. `Trim=Yes` retains the chosen source portions. `Join=Yes` combines
 the blend with source portions when Trim is enabled. With Trim disabled, only
-whole sources meeting the blend at an endpoint participate; disconnected
+inputs meeting the blend at an endpoint participate; disconnected
 sources remain unchanged and outside the joined result. The output inherits the
-first participating source's attributes and groups. If none participates, it is
-a new PolyCurve containing just the blend, on the current layer. The entire
+first participating whole source's identity, attributes and groups. Temporary
+portions can join without consuming or trimming their parent objects; a whole
+input sharing that parent still participates normally. If none participates, it is
+a new PolyCurve containing the blend and any participating temporary portions,
+on the current layer. The entire
 result commits in one undo entry and is deselected.
 
 Explicit scripting bindings use world points and native contact parameters:
@@ -42,7 +53,12 @@ Explicit scripting bindings use world points and native contact parameters:
 BlendCrv Curve=id1 0,0,0 Curve=id2 10,3,0 Continuity_1=G1 Continuity_2=G2
 BlendCrv Curve=id1 0,0,0 Curve=id2 10,3,0 Handle1=0.3cm Trim=Yes Join=Yes
 BlendCrv Point=0,0,0 Curve=id2 10,3,0 Continuity_2=G2
+BlendCrv SubCrv=id1,1,4 Curve=id2 10,3,0 Trim=Yes Join=Yes
 ```
+
+`SubCrv[Wrap]=id,start,end` uses native parent parameters; `Wrap` selects a
+directed interval that may cross a closed seam. `SubCrv=id,Edge,index,start,end`
+also accepts private edge portions, without native edge qualification.
 
 `Parameter1/2`, `Handle1/2`, `Bulge1/2` and `Flip1/2=Yes|No` are Viboceros
 scripting options. Bulges multiply default handles; an explicit handle replaces
@@ -56,7 +72,8 @@ the editor and requests new picks.
 [higher-order qualification](../blend-curve-high.md) adds 19 captures and matches
 six historical G3/G4 observations. [Point endpoint validation](../blend-curve-points.md)
 adds 42 observations, with 41 matched workflows and one retained input diagnostic.
-Both builds verify geometry, source attributes,
+[Temporary-source qualification](../blend-curve-portions.md) adds 36 matched
+workflows. Both builds verify geometry, source attributes,
 selection, history, 3DM round trips and independent native evaluations. Rhino
 reports `Nothing` with success=false after accepting these blends; the records
 retain that result alongside the actual document changes.
@@ -68,11 +85,11 @@ G4 continuity for arbitrary sources. Default degrees are seven for G3/G3 and
 nine for G4/G4; mixed endpoints use degree `order1 + order2 + 1`.
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_points
+python3 -m tools.rhino_oracle.check_blend_curve_portions
 ```
 
-Captures use private Xvfb; application tests are windowless. Closed sources,
-SubCrv, symmetry/Alt edits, curvature display and
+Captures use private Xvfb; application tests are windowless. Whole closed sources,
+zero-retained-side joins, symmetry/Alt edits, curvature display and
 history-based re-editing remain pending. Exact hit-box/depth ranking, native
 numeric/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

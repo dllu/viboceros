@@ -4,6 +4,7 @@ use viboceros_command::blend_curve::{Handle, Input};
 mod adjustment;
 mod picking;
 mod points;
+mod subcurve;
 #[derive(Clone, Copy, PartialEq)]
 enum CandidateKey {
     Parameter(f64),
@@ -17,13 +18,18 @@ pub(super) struct Session {
     binding: Option<(ObjectId, Option<usize>)>,
     candidate: Option<(CandidateKey, Input)>,
     pub(super) point_prompt: bool,
+    subcurve: Option<crate::app::curve_portion::Editor>,
 }
 impl Session {
     pub(super) fn preview_input(&self) -> &Input {
         self.candidate.as_ref().map_or(&self.input, |(_, i)| i)
     }
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {
-        self.input.adjustment_curve()
+        if let Some(editor) = &self.subcurve {
+            editor.reference.as_ref().map(|r| r.curve())
+        } else {
+            self.input.adjustment_curve()
+        }
     }
 }
 impl VibocerosApp {
@@ -35,10 +41,10 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        if words[1..]
-            .iter()
-            .any(|w| viboceros_command::line::normal::parse_binding(w).is_some())
-        {
+        if words[1..].iter().any(|w| {
+            viboceros_command::line::normal::parse_binding(w).is_some()
+                || viboceros_command::curve_reference::parse_portion_binding(w).is_some()
+        }) {
             return false;
         }
         let mut input = Input::with_preferences(
@@ -64,6 +70,7 @@ impl VibocerosApp {
             binding: None,
             candidate: None,
             point_prompt: false,
+            subcurve: None,
         });
         self.active_command = Some(InteractiveCommand::BlendCurve);
         self.push_log(format!("> {text}"));
@@ -76,7 +83,9 @@ impl VibocerosApp {
                 .remember_blend_curve_preferences(s.input.preferences());
             self.push_log(format!(
                 "BlendCrv: {}; Esc cancels",
-                if s.flip {
+                if let Some(editor) = &s.subcurve {
+                    editor.hint()
+                } else if s.flip {
                     "Select an end to flip; Enter flips both"
                 } else if s.point_prompt {
                     "End of curve: pick a point"
@@ -87,17 +96,20 @@ impl VibocerosApp {
         }
     }
     pub(super) fn validate_blend_curve(&mut self) {
-        if self
-            .blend_curve_session
-            .as_ref()
-            .is_some_and(|s| !s.input.current(&self.document))
-        {
+        if self.blend_curve_session.as_ref().is_some_and(|s| {
+            !s.input.current(&self.document)
+                || s.subcurve
+                    .as_ref()
+                    .and_then(|p| p.reference.as_ref())
+                    .is_some_and(|r| !r.current(&self.document))
+        }) {
             let s = self.blend_curve_session.as_mut().unwrap();
             s.input.reset(self.document.tolerance());
             s.binding = None;
             s.candidate = None;
             s.flip = false;
             s.point_prompt = false;
+            s.subcurve = None;
             self.push_log("BlendCrv reference changed; pick the sources again".into());
             self.blend_curve_prompt();
         }
@@ -111,6 +123,9 @@ impl VibocerosApp {
             return true;
         }
         self.validate_blend_curve();
+        if self.continue_blend_curve_subcurve(text) {
+            return true;
+        }
         let word = text.trim_start_matches(['_', '-']);
         if word.eq_ignore_ascii_case("Cancel") {
             if !self.cancel_blend_curve_adjustment() {

@@ -5,7 +5,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/arc_blend_subcurves.rs"]
 #[allow(dead_code)]
-mod subcurves;
+pub(super) mod subcurves;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

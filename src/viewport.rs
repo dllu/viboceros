@@ -1977,7 +1977,6 @@ impl Viewport {
             });
         let blend_parameter = input
             .blend_curve
-            .filter(|getter| getter.active_handle().is_some())
             .and_then(|_| blend_shape_parameter.or(edge_cursor.map(|c| c.parameter)));
         let (affine_preview, affine_preview_update) =
             input.affine_preview.map_or((None, None), |preview| {

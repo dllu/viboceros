@@ -34,7 +34,7 @@ impl Input {
             Handle::End => 1,
             _ => return None,
         };
-        Some(self.endpoints[i].curve()?.source.curve())
+        Some(self.endpoints[i].curve()?.display())
     }
     pub fn shape_constraint(&self) -> Option<crate::translation::DestinationConstraint> {
         let i = match self.active? {
@@ -64,7 +64,6 @@ impl Input {
             .ok_or(CommandError::Usage(
                 "A point endpoint has no curve parameter",
             ))?
-            .source
             .curve_ref()
             .parameter_from_nurbs(t)?;
         self.option(&format!("Parameter{}={parameter}", i + 1))
@@ -96,10 +95,7 @@ impl Input {
             *self = next;
             return Ok(());
         };
-        let t = guide
-            .source
-            .curve_ref()
-            .closest_parameter(point, self.tolerance)?;
+        let t = guide.curve_ref().closest_parameter(point, self.tolerance)?;
         self.option(&format!("Parameter{}={t}", i + 1)).map(|_| ())
     }
     pub(super) fn freeze_handles(&mut self) {

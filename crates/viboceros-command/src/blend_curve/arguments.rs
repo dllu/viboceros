@@ -8,6 +8,12 @@ pub(super) fn parse(
 
     let mut i = 0;
     while i < args.len() {
+        if let Some(binding) = crate::curve_reference::parse_portion_binding(args[i]) {
+            let p = binding?;
+            input.add_subcurve(doc, p.object, p.edge, p.parameters, p.wrap)?;
+            i += 1;
+            continue;
+        }
         if let Some((key, value)) = args[i].split_once('=') {
             if option_name_eq(key, "Point") {
                 let (point, n) = parse_point(&[value])?;

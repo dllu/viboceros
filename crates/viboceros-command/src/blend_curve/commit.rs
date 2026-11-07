@@ -14,7 +14,9 @@ impl Input {
             .filter_map(Endpoint::curve)
             .collect::<Vec<_>>();
         if (self.preferences.trim || self.preferences.join)
-            && guides.iter().any(|g| g.source.source().1.is_some())
+            && guides
+                .iter()
+                .any(|g| g.source.source().1.is_some() && !g.temporary())
         {
             return Err(CommandError::Usage(
                 "BlendCrv surface edges currently require Trim=No and Join=No",
@@ -22,6 +24,7 @@ impl Input {
         }
         if self.preferences.join
             && guides.len() == 2
+            && guides.iter().all(|g| !g.temporary())
             && guides[0].source.object_id() == guides[1].source.object_id()
         {
             return Err(CommandError::Usage(
@@ -42,7 +45,12 @@ impl Input {
                 let Some(g) = endpoint.curve() else {
                     continue;
                 };
-                let c = g.source.curve_ref();
+                // Unjoined private portions never replace their original parent.
+                // In PickPoint mode the retained side may even be empty.
+                if g.temporary() && !self.preferences.join {
+                    continue;
+                }
+                let c = g.curve_ref();
                 let retained_end = g.end ^ g.flip;
                 let domain = if !self.preferences.trim {
                     c.domain()
@@ -58,7 +66,7 @@ impl Input {
                 } else {
                     source
                 };
-                if changed && self.preferences.trim {
+                if changed && self.preferences.trim && !g.temporary() {
                     replacements.push((g.source.object_id(), Geometry::from(piece.clone())));
                 }
                 let reverse = if i == 0 { !retained_end } else { retained_end };
@@ -89,8 +97,10 @@ impl Input {
                             "The retained source does not meet this blend contact",
                         ));
                     }
-                    consumed.push(g.source.object_id());
-                    inherited_source.get_or_insert(g.source.object_id());
+                    if !g.temporary() {
+                        consumed.push(g.source.object_id());
+                        inherited_source.get_or_insert(g.source.object_id());
+                    }
                 }
                 pieces.push(piece.to_polycurve()?);
             }

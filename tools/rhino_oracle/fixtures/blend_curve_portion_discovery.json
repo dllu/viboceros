@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "portion_cubic_join",
+      "case": "portion_cubic_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_self_join",
+      "case": "portion_self_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_mixed_self_join",
+      "case": "portion_mixed_self_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_numeric",
+      "case": "portion_numeric"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_negative_length",
+      "case": "portion_negative_length"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_zero",
+      "case": "portion_zero"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_locked",
+      "case": "portion_locked"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_cancel_end",
+      "case": "portion_cancel_end"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_mouse_line",
+      "case": "portion_mouse_line"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_mouse_arc",
+      "case": "portion_mouse_arc"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_mouse_circle",
+      "case": "portion_mouse_circle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_length_units",
+      "case": "portion_length_units"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_cancel_start",
+      "case": "portion_cancel_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_circle_long",
+      "case": "portion_circle_long"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_circle_reverse_join",
+      "case": "portion_circle_reverse_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_circle_numeric_wrap",
+      "case": "portion_circle_numeric_wrap"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_circle_numeric_short",
+      "case": "portion_circle_numeric_short"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_both_join",
+      "case": "portion_both_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_point_join",
+      "case": "portion_point_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_pick_point",
+      "case": "portion_pick_point"
+    }
+  ]
+}

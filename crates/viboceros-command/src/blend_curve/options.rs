@@ -96,7 +96,7 @@ impl Input {
                 let g = g.curve_mut().ok_or(CommandError::Usage(
                     "A point endpoint has no curve parameter",
                 ))?;
-                g.source.curve_ref().evaluate(t)?;
+                g.curve_ref().evaluate(t)?;
                 g.parameter = t;
             } else if option_name_eq(stem, "Flip") {
                 let v = crate::parse_yes_no(value.trim_start_matches('_'))

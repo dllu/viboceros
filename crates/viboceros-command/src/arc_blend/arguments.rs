@@ -8,29 +8,13 @@ pub(super) fn parse(
     let mut options = Vec::new();
     let mut i = 0;
     while i < args.len() {
+        if let Some(binding) = crate::curve_reference::parse_portion_binding(args[i]) {
+            let p = binding?;
+            input.add(doc, p.object, p.edge, None, Some((p.parameters, p.wrap)))?;
+            i += 1;
+            continue;
+        }
         if let Some((key, value)) = args[i].split_once('=') {
-            if option_name_eq(key, "SubCrv") || option_name_eq(key, "SubCrvWrap") {
-                let parts = value.split(',').collect::<Vec<_>>();
-                let (id, edge, range) = match parts.as_slice() {
-                    [id, a, b] => (id, None, [parse_finite_real(a)?, parse_finite_real(b)?]),
-                    [id, tag, e, a, b] if option_name_eq(tag, "Edge") => (
-                        id,
-                        Some(e.parse().map_err(|_| CommandError::Usage(USAGE))?),
-                        [parse_finite_real(a)?, parse_finite_real(b)?],
-                    ),
-                    _ => return Err(CommandError::Usage(USAGE)),
-                };
-                let id = id.parse().map_err(|_| CommandError::Usage(USAGE))?;
-                input.add(
-                    doc,
-                    id,
-                    edge,
-                    None,
-                    Some((range, option_name_eq(key, "SubCrvWrap"))),
-                )?;
-                i += 1;
-                continue;
-            }
             let binding = if option_name_eq(key, "Curve") {
                 Some((
                     value

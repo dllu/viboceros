@@ -3,10 +3,11 @@ use super::*;
 impl VibocerosApp {
     pub(in crate::app) fn picking_blend_curve(&self) -> bool {
         self.plane_prompt.is_none()
-            && self
-                .blend_curve_session
-                .as_ref()
-                .is_some_and(|s| !s.point_prompt && (!s.input.ready() || s.flip))
+            && self.blend_curve_session.as_ref().is_some_and(|s| {
+                !s.point_prompt
+                    && s.subcurve.as_ref().is_none_or(|p| p.reference.is_none())
+                    && (!s.input.ready() || s.flip)
+            })
     }
     pub(in crate::app) fn pick_blend_curve_at(
         &mut self,
@@ -15,6 +16,9 @@ impl VibocerosApp {
         point: Point3,
     ) -> bool {
         self.validate_blend_curve();
+        if self.pick_blend_subcurve_reference(id, edge, Some(point)) {
+            return true;
+        }
         let Some(s) = &mut self.blend_curve_session else {
             return false;
         };

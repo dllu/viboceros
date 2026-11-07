@@ -1,4 +1,6 @@
 //! Resolve ordinary curves or immutable surface edges without temporary objects.
+mod portion;
+pub use portion::{CurvePortion, PortionBinding, parse_portion_binding, prepare_subcurve};
 use viboceros_document::{Geometry, ObjectId};
 use viboceros_geometry::{
     Brep, CircularArc3, CurveRef, Frame3, GeometryError, NurbsCurve, Point3, Tolerance,

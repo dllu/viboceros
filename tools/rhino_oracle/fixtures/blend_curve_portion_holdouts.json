@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "portion_slide_join",
+      "case": "portion_slide_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_clamp",
+      "case": "portion_clamp"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_shape",
+      "case": "portion_shape"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_flip",
+      "case": "portion_flip"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_both_no_trim_join",
+      "case": "portion_both_no_trim_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_whole_first_join",
+      "case": "portion_whole_first_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_arc_g2",
+      "case": "portion_arc_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_rational_g3",
+      "case": "portion_rational_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_reverse_quintic_g4",
+      "case": "portion_reverse_quintic_g4"
+    }
+  ]
+}

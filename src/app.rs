@@ -238,6 +238,7 @@ mod blend_curve;
 #[cfg(test)]
 mod crease_native_tests;
 mod curve_line;
+mod curve_portion;
 mod extrude_subd;
 mod inset;
 mod intersect_two_sets;

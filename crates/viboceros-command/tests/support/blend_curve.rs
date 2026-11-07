@@ -49,18 +49,36 @@ pub fn handle(input: &Input, point: viboceros_geometry::Point3) -> Handle {
         .0
 }
 pub fn replay(input: &mut Input, doc: &Document, value: &Value) {
-    let mut flip = false;
-    let mut point_prompt = false;
+    let mut getter = Getter::default();
     for (index, a) in value["prescribed_case"]["actions"]
         .as_array()
         .unwrap()
         .iter()
         .enumerate()
     {
+        if !getter.action(input, doc, value, index, a) {
+            break;
+        }
+    }
+}
+#[derive(Default)]
+pub struct Getter {
+    flip: bool,
+    point_prompt: bool,
+}
+impl Getter {
+    pub fn action(
+        &mut self,
+        input: &mut Input,
+        doc: &Document,
+        value: &Value,
+        index: usize,
+        a: &Value,
+    ) -> bool {
         if let Some(i) = a["curve"].as_u64() {
-            if flip {
+            if self.flip {
                 input.option(&format!("Flip{}=Yes", i + 1)).unwrap();
-                flip = false;
+                self.flip = false;
             } else {
                 input
                     .pick_curve(
@@ -76,24 +94,24 @@ pub fn replay(input: &mut Input, doc: &Document, value: &Value) {
                 .select_handle(handle(input, native::point(p)))
                 .unwrap();
         } else if a.is_array() {
-            if point_prompt {
+            if self.point_prompt {
                 input.pick_point(native::point(a)).unwrap();
-                point_prompt = false;
+                self.point_prompt = false;
             } else {
                 input.adjust_point(native::point(a)).unwrap();
                 input.finish_adjustment();
             }
         } else if a == "Point" {
-            point_prompt = true;
+            self.point_prompt = true;
         } else if a == "Flip" {
-            flip = true;
+            self.flip = true;
         } else if a == "Enter" {
-            if flip {
+            if self.flip {
                 input.flip_both().unwrap();
-                flip = false;
+                self.flip = false;
             }
         } else if a == "Cancel" {
-            break;
+            return false;
         } else {
             assert!(
                 input
@@ -101,6 +119,7 @@ pub fn replay(input: &mut Input, doc: &Document, value: &Value) {
                     .unwrap()
             );
         }
+        true
     }
 }
 pub fn samples(doc: &Document, value: &Value) -> (f64, usize) {
@@ -108,13 +127,21 @@ pub fn samples(doc: &Document, value: &Value) -> (f64, usize) {
         .as_array()
         .unwrap()
         .iter()
-        .find(|o| o["attributes"]["name"] == "" || o["native_type"] == "PolyCurve")
+        .find(|o| o["attributes"]["name"] == "")
+        .or_else(|| {
+            value["after"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|o| o["native_type"] == "PolyCurve")
+        })
         .unwrap();
     let object = doc
         .objects()
-        .find(|o| {
-            o.attributes().name().is_none()
-                || matches!(o.geometry(), viboceros_document::Geometry::PolyCurve(_))
+        .find(|o| o.attributes().name().is_none())
+        .or_else(|| {
+            doc.objects()
+                .find(|o| matches!(o.geometry(), viboceros_document::Geometry::PolyCurve(_)))
         })
         .unwrap();
     let c = object.geometry().curve_ref().unwrap();
@@ -123,8 +150,7 @@ pub fn samples(doc: &Document, value: &Value) -> (f64, usize) {
     let [a, b]: [f64; 2] = serde_json::from_value(output["curve"]["domain"].clone()).unwrap();
     for s in target {
         let fraction = (s["parameter"].as_f64().unwrap() - a) / (b - a);
-        let domain = c.domain();
-        let t = *domain.start() + (domain.end() - domain.start()) * fraction;
+        let t = c.parameter_at(fraction).unwrap();
         let jet = c.evaluate_with_tangent(t).unwrap();
         error = error.max(jet.point().distance_to(native::point(&s["point"])).unwrap());
         let tangent: [f64; 3] = serde_json::from_value(s["tangent"].clone()).unwrap();

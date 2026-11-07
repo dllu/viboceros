@@ -6,7 +6,7 @@ impl VibocerosApp {
         let Some(s) = &mut self.blend_curve_session else {
             return;
         };
-        if s.flip {
+        if s.flip || s.subcurve.is_some() {
             return;
         }
         match s.input.select_handle(handle) {
@@ -19,6 +19,9 @@ impl VibocerosApp {
     }
     pub(in crate::app) fn hover_blend_curve_parameter(&mut self, t: f64) {
         self.validate_blend_curve();
+        if self.hover_blend_subcurve_parameter(t) {
+            return;
+        }
         let Some(s) = &mut self.blend_curve_session else {
             return;
         };
@@ -37,6 +40,9 @@ impl VibocerosApp {
         s.candidate = result.is_ok().then_some((CandidateKey::Parameter(t), next));
     }
     pub(in crate::app) fn accept_blend_curve_parameter(&mut self, t: f64) -> bool {
+        if self.plane_prompt.is_none() && self.accept_blend_subcurve_parameter(t) {
+            return true;
+        }
         if self.plane_prompt.is_some()
             || self
                 .blend_curve_session
@@ -57,6 +63,9 @@ impl VibocerosApp {
         true
     }
     pub(in crate::app) fn cancel_blend_curve_adjustment(&mut self) -> bool {
+        if self.plane_prompt.is_none() && self.discard_blend_subcurve() {
+            return true;
+        }
         let Some(s) = &mut self.blend_curve_session else {
             return false;
         };

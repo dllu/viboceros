@@ -12,7 +12,7 @@ pub(super) struct Session {
     binding: Option<(ObjectId, Option<usize>)>,
     candidate: Option<(f64, Input)>,
     pub(super) radius_prompt: bool,
-    subcurve: Option<subcurve::Editor>,
+    subcurve: Option<crate::app::curve_portion::Editor>,
 }
 impl Session {
     pub(super) fn cursor_curve(

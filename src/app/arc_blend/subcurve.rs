@@ -1,52 +1,15 @@
-//! Ephemeral curve portions retain their original parent and shared preview policy.
+//! Adapt the shared SubCrv getter to the arc_blend source-selection session.
 use super::*;
-use viboceros_command::{curve_reference::CapturedCurve, subcurve_input};
-mod input;
-#[derive(Clone, Default)]
-pub(in crate::app) struct Editor {
-    pub(super) reference: Option<CapturedCurve>,
-    start: Option<f64>,
-    length: Option<f64>,
-    hover: Option<f64>,
-    locked: Option<bool>,
-    preview: crate::app::subcurve_preview::Cache,
-}
-impl Editor {
-    pub(super) fn hint(&self) -> &'static str {
-        if self.reference.is_none() {
-            "Select curve to temporarily shorten"
-        } else if self.start.is_none() {
-            "Start of temporary curve"
-        } else if self.locked.is_some() {
-            "Select locked-side end or enter curve length; Direction=Free unlocks"
-        } else if self.length.is_some() {
-            "Confirm the length direction on the curve"
-        } else {
-            "Select end location or enter curve length; Direction=Free"
-        }
-    }
-}
+use crate::app::curve_portion::{Action, Editor};
 impl Session {
     pub(in crate::app) fn subcurve_hover(&self) -> Option<f64> {
-        self.subcurve.as_ref()?.hover
+        self.subcurve.as_ref()?.hover()
     }
     pub(in crate::app) fn subcurve_preview(
         &mut self,
         doc: &Document,
     ) -> Option<crate::app::subcurve_preview::Preview> {
-        let p = self.subcurve.as_mut()?;
-        let source = p.reference.as_ref()?;
-        if !source.current(doc) {
-            return None;
-        }
-        p.preview.temporary_bounded(
-            Some(source.source().0),
-            source.source().1,
-            [p.start?, p.hover?],
-            p.length,
-            p.locked,
-            doc.tolerance(),
-        )
+        self.subcurve.as_mut()?.preview(doc)
     }
 }
 impl VibocerosApp {
@@ -71,35 +34,18 @@ impl VibocerosApp {
     ) -> bool {
         let Some(p) = self
             .arc_blend_session
-            .as_ref()
-            .and_then(|s| s.subcurve.as_ref())
+            .as_mut()
+            .and_then(|s| s.subcurve.as_mut())
         else {
             return false;
         };
         if p.reference.is_some() {
             return true;
         }
-        match CapturedCurve::capture(&self.document, id, edge) {
-            Ok(reference) => {
-                let hover = pick.and_then(|p| {
-                    reference
-                        .curve_ref()
-                        .closest_parameter(p, self.document.tolerance())
-                        .ok()
-                });
-                let p = self
-                    .arc_blend_session
-                    .as_mut()
-                    .unwrap()
-                    .subcurve
-                    .as_mut()
-                    .unwrap();
-                p.reference = Some(reference);
-                p.hover = hover;
-                self.arc_blend_prompt();
-            }
+        match p.capture(&self.document, id, edge, pick) {
+            Ok(()) => self.arc_blend_prompt(),
             Err(e) => self.push_log(format!("Error: {e}")),
-        }
+        };
         true
     }
     pub(super) fn hover_arc_subcurve_parameter(&mut self, t: f64) -> bool {
@@ -110,74 +56,81 @@ impl VibocerosApp {
         else {
             return false;
         };
-        if let Some(source) = &p.reference {
-            p.hover = source.curve_ref().parameter_from_nurbs(t).ok();
-        }
+        p.hover_parameter(t);
         true
     }
     pub(super) fn accept_arc_subcurve_parameter(&mut self, t: f64) -> bool {
         self.validate_arc_blend();
-        let Some(source) = self
+        let Some(p) = self
             .arc_blend_session
-            .as_ref()
-            .and_then(|s| s.subcurve.as_ref())
-            .and_then(|p| p.reference.as_ref())
+            .as_mut()
+            .and_then(|s| s.subcurve.as_mut())
+            .filter(|p| p.reference.is_some())
         else {
             return false;
         };
-        let result = source.curve_ref().parameter_from_nurbs(t);
-        match result {
-            Ok(t) => self.accept_arc_subcurve_native_parameter(t),
-            Err(e) => self.push_log(format!("Error: {e}")),
-        };
+        let result = p.accept_parameter(t, self.document.tolerance());
+        if result.is_ok() {
+            self.snaps.model_override = None;
+        }
+        self.arc_subcurve_action(result);
         true
     }
-    fn accept_arc_subcurve_native_parameter(&mut self, t: f64) {
-        let s = self.arc_blend_session.as_mut().unwrap();
-        let p = s.subcurve.as_mut().unwrap();
-        let Some(start) = p.start else {
-            p.start = Some(t);
-            self.arc_blend_prompt();
-            return;
-        };
-        let source = p.reference.as_ref().unwrap();
-        let c = source.curve_ref();
-        if p.length.is_none() && start == t {
-            self.discard_arc_subcurve();
-            return;
-        }
-        let range = if let Some(length) = p.length {
-            if let Some(forward) = p.locked {
-                subcurve_input::interval_in_direction(
-                    c,
-                    start,
-                    length,
-                    forward,
-                    self.document.tolerance(),
-                )
-            } else {
-                subcurve_input::interval(c, start, t, length, self.document.tolerance())
-            }
-        } else {
-            subcurve_input::point_parameters(c, start, t, p.locked, false).map_err(Into::into)
-        };
-        let result = range.and_then(|range| {
-            if let Some(range) = range {
-                s.input.pick_subcurve(
-                    &self.document,
-                    source.object_id(),
-                    source.source().1,
-                    range,
-                    p.length.is_some(),
-                )?;
-            }
-            Ok(())
-        });
+    fn arc_subcurve_action(&mut self, result: Result<Action, String>) {
         match result {
-            Ok(()) => {
+            Ok(Action::Pending) => self.arc_blend_prompt(),
+            Ok(Action::Discard) => {
                 self.discard_arc_subcurve();
             }
+            Ok(Action::Capture(id, edge)) => {
+                self.pick_arc_subcurve_reference(id, edge, None);
+            }
+            Ok(Action::Selected(p)) => {
+                let result = self
+                    .arc_blend_session
+                    .as_mut()
+                    .unwrap()
+                    .input
+                    .pick_subcurve(&self.document, p.object, p.edge, p.parameters, p.wrap);
+                match result {
+                    Ok(()) => {
+                        self.discard_arc_subcurve();
+                    }
+                    Err(e) => self.push_log(format!("Error: {e}")),
+                };
+            }
             Err(e) => self.push_log(format!("Error: {e}")),
+        }
+    }
+    pub(super) fn continue_arc_blend_subcurve(&mut self, text: &str) -> bool {
+        let s = self.arc_blend_session.as_ref().unwrap();
+        if text
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("SubCrv")
+            && s.subcurve.is_none()
+            && !s.input.ready()
+        {
+            let s = self.arc_blend_session.as_mut().unwrap();
+            s.subcurve = Some(Editor::default());
+            s.binding = None;
+            s.candidate = None;
+            self.arc_blend_prompt();
+            return true;
+        }
+        let Some(p) = self
+            .arc_blend_session
+            .as_mut()
+            .and_then(|s| s.subcurve.as_mut())
+        else {
+            return false;
         };
+        let result = p.input(
+            text,
+            &self.document,
+            self.viewports[self.active_viewport].construction_plane(),
+            self.last_point,
+        );
+        self.arc_subcurve_action(result);
+        true
     }
 }

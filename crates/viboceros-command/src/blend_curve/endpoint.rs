@@ -89,3 +89,42 @@ impl Input {
             .or_else(|| self.endpoints.last()?.point().ok())
     }
 }
+
+impl Input {
+    pub(super) fn add_subcurve(
+        &mut self,
+        doc: &Document,
+        id: ObjectId,
+        edge: Option<usize>,
+        parameters: [Real; 2],
+        wrap: bool,
+    ) -> Result<(), CommandError> {
+        if self.ready() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        self.endpoints.push(Endpoint::Curve(Guide::capture(
+            doc,
+            id,
+            edge,
+            None,
+            self.preferences.pick_point,
+            Some((parameters, wrap)),
+        )?));
+        Ok(())
+    }
+    /// A directed private portion retains its original document parent.
+    pub fn pick_subcurve(
+        &mut self,
+        doc: &Document,
+        id: ObjectId,
+        edge: Option<usize>,
+        parameters: [Real; 2],
+        wrap: bool,
+    ) -> Result<(), CommandError> {
+        let mut next = self.clone();
+        next.add_subcurve(doc, id, edge, parameters, wrap)?;
+        next.rebuild()?;
+        *self = next;
+        Ok(())
+    }
+}

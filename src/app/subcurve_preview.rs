@@ -283,6 +283,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(s) = &self.blend_curve_session {
+            return s.subcurve_hover();
+        }
         if let Some(s) = &self.arc_blend_session {
             return s.subcurve_hover();
         }
@@ -325,6 +328,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(s) = &mut self.blend_curve_session {
+            return s.subcurve_preview(&self.document);
+        }
         if let Some(s) = &mut self.arc_blend_session {
             return s.subcurve_preview(&self.document);
         }

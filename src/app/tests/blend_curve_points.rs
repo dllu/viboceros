@@ -3,7 +3,7 @@ use super::line_reference::inputs as reference_inputs;
 use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/blend_curve_points.rs"]
-mod points;
+pub(super) mod points;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

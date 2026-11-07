@@ -113,3 +113,18 @@ if __package__:from .blend_curve_point_cases import pick_context as point_pick_c
 else:from blend_curve_point_cases import pick_context as point_pick_context
 POINT_PICK_CONTEXT=point_pick_context(case,pick,B,POINT_QUINTIC)
 CASES.update(POINT_PICK_CONTEXT)
+
+if __package__:from .blend_curve_portion_cases import pilot as portion_pilot
+else:from blend_curve_portion_cases import pilot as portion_pilot
+PORTION_PILOT=portion_pilot(case,pick)
+CASES.update(PORTION_PILOT)
+
+if __package__:from .blend_curve_portion_cases import discovery as portion_discovery
+else:from blend_curve_portion_cases import discovery as portion_discovery
+PORTION_DISCOVERY=portion_discovery(case,pick)
+CASES.update(PORTION_DISCOVERY)
+
+if __package__:from .blend_curve_portion_holdouts import holdouts as portion_holdouts
+else:from blend_curve_portion_holdouts import holdouts as portion_holdouts
+PORTION_HOLDOUTS=portion_holdouts(case,pick,ARC_A,B,POINT_RATIONAL,POINT_QUINTIC)
+CASES.update(PORTION_HOLDOUTS)

@@ -16,7 +16,7 @@ mod guide;
 use endpoint::Endpoint;
 mod options;
 use guide::Guide;
-pub const USAGE: &str = "BlendCrv Curve=id point|Point=x,y,z Curve=id point|Point=x,y,z [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
+pub const USAGE: &str = "BlendCrv source source (Curve=id point|Point=x,y,z|SubCrv[Wrap]=id,start,end) [Continuity_1=G0|G1|G2|G3|G4] [Continuity_2=G0|G1|G2|G3|G4] [BlendStart=CurveEnd|PickPoint] [Handle1=length] [Handle2=length] [Bulge1=factor] [Bulge2=factor] [Trim=Yes|No] [Join=Yes|No]";
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Preferences {
     pub pick_point: bool,
@@ -82,11 +82,13 @@ impl Input {
         match self.active {
             Some(Handle::Start | Handle::End) => "Select blend contact location",
             Some(_) => "Set blend shape handle length or location",
-            None if self.endpoints.is_empty() => "Select first curve near blend end or Point",
-            None if !self.ready() && !self.has_point_endpoint() => {
-                "Select second curve near blend end or Point"
+            None if self.endpoints.is_empty() => {
+                "Select first curve near blend end; Point or SubCrv"
             }
-            None if !self.ready() => "Select a curve near the blend end",
+            None if !self.ready() && !self.has_point_endpoint() => {
+                "Select second curve near blend end; Point or SubCrv"
+            }
+            None if !self.ready() => "Select a curve near the blend end or SubCrv",
             None => "Select a blend control point or change continuity; Enter accepts",
         }
     }
@@ -104,8 +106,9 @@ impl Input {
             doc,
             id,
             edge,
-            pick,
+            Some(pick),
             self.preferences.pick_point,
+            None,
         )?));
         Ok(())
     }

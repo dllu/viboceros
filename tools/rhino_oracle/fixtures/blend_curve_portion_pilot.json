@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "portion_first",
+      "case": "portion_first"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_reverse",
+      "case": "portion_reverse"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_second",
+      "case": "portion_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_join",
+      "case": "portion_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_circle",
+      "case": "portion_circle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_point",
+      "case": "portion_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "portion_cancel",
+      "case": "portion_cancel"
+    }
+  ]
+}
