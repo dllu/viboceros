@@ -6,6 +6,7 @@ mod apply_curves;
 pub mod arc_blend;
 pub mod array_curve_surface;
 pub mod array_surface;
+pub mod blend_curve;
 pub mod curve_array;
 pub mod curve_frames;
 use curve_array::{ArrayCurveCommand, CurveArraySpacing, curve_array_samples};
@@ -914,6 +915,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_surface_array_preferences(&self, _value: array_surface::Preferences) -> bool {
+        false
+    }
+    fn blend_curve_preferences(&self) -> Option<blend_curve::Preferences> {
+        None
+    }
+    fn remember_blend_curve_preferences(&self, _value: blend_curve::Preferences) -> bool {
         false
     }
     fn arc_blend_preferences(&self) -> Option<arc_blend::Preferences> {
@@ -1877,6 +1884,9 @@ impl CommandRegistry {
             .register(ConnectCommand)
             .expect("unique built-in command");
         registry
+            .register(blend_curve::BlendCurveCommand::default())
+            .expect("unique BlendCrv command");
+        registry
             .register(BlendCurveCommand)
             .expect("unique built-in command");
         registry
@@ -2786,6 +2796,17 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("ArraySrf"))
             .is_some_and(|i| self.commands[*i].remember_surface_array_preferences(value))
+    }
+    pub fn blend_curve_preferences(&self) -> blend_curve::Preferences {
+        self.lookup
+            .get(&normalize_command_name("BlendCrv"))
+            .and_then(|i| self.commands[*i].blend_curve_preferences())
+            .unwrap_or_default()
+    }
+    pub fn remember_blend_curve_preferences(&self, value: blend_curve::Preferences) -> bool {
+        self.lookup
+            .get(&normalize_command_name("BlendCrv"))
+            .is_some_and(|i| self.commands[*i].remember_blend_curve_preferences(value))
     }
     pub fn arc_blend_preferences(&self) -> arc_blend::Preferences {
         self.lookup

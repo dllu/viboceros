@@ -26,7 +26,8 @@ impl VibocerosApp {
                 && !self.picking_ellipse_curve()
                 && !self.picking_line_normal()
                 && !self.picking_curve_line()
-                && (self.arc_blend_session.is_none() || self.plane_prompt.is_some())
+                && ((self.arc_blend_session.is_none() && self.blend_curve_session.is_none())
+                    || self.plane_prompt.is_some())
                 && !self.picking_line_curve()
                 && !self.picking_arc_extension_curve()
                 && self

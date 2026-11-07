@@ -386,7 +386,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
             || self.picking_curve_line()
-            || self.picking_arc_blend()
+            || (self.picking_arc_blend() || self.picking_blend_curve())
             || self.picking_line_curve()
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
@@ -421,6 +421,12 @@ impl eframe::App for VibocerosApp {
                 self.arc_blend_session
                     .as_ref()?
                     .cursor_curve(self.plane_prompt.is_some())
+            })
+            .or_else(|| {
+                self.blend_curve_session
+                    .as_ref()
+                    .filter(|_| self.plane_prompt.is_none())?
+                    .cursor_curve()
             })
             .or(normal_curve)
             .or_else(|| {
@@ -739,7 +745,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
                 || self.picking_curve_line()
-                || self.picking_arc_blend()
+                || (self.picking_arc_blend() || self.picking_blend_curve())
                 || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
@@ -1039,8 +1045,9 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active)
             .and_then(surface_point_grid::Session::preview);
-        let selecting_perpendicular =
-            model_input_active && (self.picking_curve_line() || self.picking_arc_blend());
+        let selecting_perpendicular = model_input_active
+            && (self.picking_curve_line()
+                || (self.picking_arc_blend() || self.picking_blend_curve()));
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1198,15 +1205,27 @@ impl eframe::App for VibocerosApp {
                                 .refinement_prompt
                                 .as_ref()
                                 .and_then(refinement::Prompt::control_removal),
+                            blend_curve: self
+                                .blend_curve_session
+                                .as_ref()
+                                .filter(|s| {
+                                    model_input_active && self.plane_prompt.is_none() && !s.flip
+                                })
+                                .map(|s| s.preview_input()),
                             arc_blend: self
                                 .arc_blend_session
                                 .as_ref()
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
                                 .map(|s| s.preview_input()),
                             preview_curve: self
-                                .arc_blend_session
+                                .blend_curve_session
                                 .as_ref()
                                 .and_then(|s| s.preview_input().preview())
+                                .or_else(|| {
+                                    self.arc_blend_session
+                                        .as_ref()
+                                        .and_then(|s| s.preview_input().preview())
+                                })
                                 .or(preview_curve.as_deref())
                                 .or_else(|| {
                                     subcurve_preview

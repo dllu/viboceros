@@ -232,6 +232,14 @@ impl VibocerosApp {
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
         if self
+            .blend_curve_session
+            .as_ref()
+            .is_some_and(|s| s.input.ready() && !s.flip)
+            && self.plane_prompt.is_none()
+        {
+            return;
+        }
+        if self
             .arc_blend_session
             .as_ref()
             .is_some_and(|s| s.input.ready())
@@ -265,6 +273,7 @@ impl VibocerosApp {
             && !self.picking_spiral_rail()
             && !self.picking_conic_curve()
             && !self.picking_arc_blend()
+            && !self.picking_blend_curve()
             && !self.picking_rectangle_curve()
             && !self.picking_ellipse_curve()
             && !self.picking_line_curve()
@@ -321,6 +330,7 @@ impl VibocerosApp {
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
             || self.picking_arc_blend()
+            || self.picking_blend_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
             || self.picking_line_curve()
@@ -451,6 +461,12 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_blend_curve() {
+            if let [pick] = picks.as_slice() {
+                self.pick_blend_curve(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
         if self.picking_arc_blend() {
             if let [pick] = picks.as_slice() {
                 self.pick_arc_blend_curve(Some(pick.object), Some(pick.index));
@@ -640,7 +656,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
-        if self.arc_blend_session.is_some() && self.plane_prompt.is_none() {
+        if (self.arc_blend_session.is_some() || self.blend_curve_session.is_some())
+            && self.plane_prompt.is_none()
+        {
             return;
         }
         if self.edge_pattern_prompt.is_some() {

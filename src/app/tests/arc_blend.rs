@@ -98,12 +98,17 @@ pub(super) fn frame(
     context: &egui::Context,
     events: Vec<egui::Event>,
 ) -> (ViewportOutput, egui::Rect) {
-    let picking = app.picking_arc_blend();
+    let picking = app.picking_arc_blend() || app.picking_blend_curve();
     let input = ViewportInput {
         drafting: app.viewport_drafting_input(false, false),
         object_filter: picking.then_some(viboceros_command::ObjectSelectionFilter::Curves),
         edge_pick: picking,
         curve_or_edge_pick: picking,
+        blend_curve: app
+            .blend_curve_session
+            .as_ref()
+            .filter(|s| !s.flip && app.plane_prompt.is_none())
+            .map(|s| s.preview_input()),
         arc_blend: app
             .arc_blend_session
             .as_ref()
@@ -112,11 +117,18 @@ pub(super) fn frame(
         edge_curve: app
             .arc_blend_session
             .as_ref()
-            .and_then(|s| s.cursor_curve(app.plane_prompt.is_some())),
+            .and_then(|s| s.cursor_curve(app.plane_prompt.is_some()))
+            .or_else(|| {
+                app.blend_curve_session
+                    .as_ref()
+                    .filter(|_| app.plane_prompt.is_none())?
+                    .cursor_curve()
+            }),
         preview_curve: app
             .arc_blend_session
             .as_ref()
-            .and_then(|s| s.preview_input().preview()),
+            .and_then(|s| s.preview_input().preview())
+            .or_else(|| app.blend_curve_session.as_ref()?.preview_input().preview()),
         ..Default::default()
     };
     let mut output = ViewportOutput::default();

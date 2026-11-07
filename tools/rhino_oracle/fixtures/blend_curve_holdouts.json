@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "g3_arc",
+      "case": "g3_arc"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "g4_arc",
+      "case": "g4_arc"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "g3_cubic",
+      "case": "g3_cubic"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "g4_cubic",
+      "case": "g4_cubic"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "pick_point",
+      "case": "pick_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "pick_point_trim",
+      "case": "pick_point_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "pick_point_join",
+      "case": "pick_point_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "join_without_trim",
+      "case": "join_without_trim"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "g2_handle_start",
+      "case": "g2_handle_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "g1_handle_start",
+      "case": "g1_handle_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "flip_by_pick",
+      "case": "flip_by_pick"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "flip_by_number",
+      "case": "flip_by_number"
+    }
+  ]
+}

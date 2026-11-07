@@ -22,6 +22,7 @@ ArrayPolar
 ArraySrf
 Bend
 Blend
+BlendCrv
 BlendEdge
 BlendSrf
 Block

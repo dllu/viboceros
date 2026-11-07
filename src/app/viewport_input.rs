@@ -53,6 +53,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.array_curve_surface_session {
                 s.pointer = output.selection_pointer;
             }
+            if let Some(s) = &mut self.blend_curve_session {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.arc_blend_session {
                 s.pointer = output.selection_pointer;
             }
@@ -71,6 +74,18 @@ impl VibocerosApp {
             if let Some(s) = &mut self.tangent_session {
                 s.pointer = output.selection_pointer;
             }
+        }
+        if let Some(handle) = output.blend_curve_handle.take() {
+            self.select_blend_curve_handle(handle);
+            return true;
+        }
+        if let Some(t) = output.blend_curve_hover {
+            self.hover_blend_curve_parameter(t);
+        }
+        if let Some(t) = output.blend_curve_parameter
+            && self.accept_blend_curve_parameter(t)
+        {
+            return true;
         }
         if let Some(handle) = output.arc_blend_handle.take() {
             self.select_arc_blend_handle(handle);
@@ -293,6 +308,7 @@ impl VibocerosApp {
                 || self.picking_ellipse_curve()
                 || self.picking_curve_line()
                 || self.picking_arc_blend()
+                || self.picking_blend_curve()
                 || self.picking_line_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()

@@ -18,6 +18,7 @@ impl VibocerosApp {
         self.line_input = None;
         self.curve_line = None;
         self.arc_blend_session = None;
+        self.blend_curve_session = None;
         self.line_accepted_point = None;
         if self.inset_session.take().is_some() {
             self.component_selection.clear();

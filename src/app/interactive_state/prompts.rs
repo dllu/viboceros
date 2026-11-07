@@ -120,6 +120,7 @@ impl InteractiveCommand {
                 points: [Some(_), Some(_), None],
             } => "Angle: pick the second direction's start (Esc cancels)",
             Self::Angle { .. } => "Angle: pick the second direction's end (Esc cancels)",
+            Self::BlendCurve => "BlendCrv: select sources, adjust the blend, then Enter",
             Self::ArcBlend => {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"
             }

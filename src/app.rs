@@ -234,6 +234,7 @@ use interactive_state::{
     InteractiveIsocurveDirection, InteractiveMeshSphereTopology, InteractiveScaleKind,
 };
 mod arc_blend;
+mod blend_curve;
 #[cfg(test)]
 mod crease_native_tests;
 mod curve_line;
@@ -420,6 +421,7 @@ pub struct VibocerosApp {
     line_normal: Option<line_normal::Session>,
     curve_line: Option<curve_line::Session>,
     arc_blend_session: Option<arc_blend::Session>,
+    blend_curve_session: Option<blend_curve::Session>,
     line_accepted_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -610,6 +612,7 @@ impl VibocerosApp {
             line_normal: None,
             curve_line: None,
             arc_blend_session: None,
+            blend_curve_session: None,
             line_accepted_point: None,
             drafting_plane: None,
             point_filter: None,
@@ -948,6 +951,9 @@ impl VibocerosApp {
         if self.continue_loft(&input) {
             return;
         }
+        if self.continue_blend_curve(&input) {
+            return;
+        }
         if self.continue_arc_blend(&input) {
             return;
         }
@@ -1170,6 +1176,7 @@ impl VibocerosApp {
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
             || self.continue_surface_point_grid(input)
+            || self.continue_blend_curve(input)
             || self.continue_arc_blend(input)
             || self.try_continue_line(input)
             || self.try_continue_points(input)

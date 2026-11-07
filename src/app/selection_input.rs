@@ -113,6 +113,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_blend_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_arc_blend_curve(click.object_id, None) {
             return;
         }

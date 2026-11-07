@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "shape_start_g2",
+      "case": "shape_start_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "shape_start_g1",
+      "case": "shape_start_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "shape_end_g2",
+      "case": "shape_end_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "slide_start",
+      "case": "slide_start"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "flip_both",
+      "case": "flip_both"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "pick_point_near_start",
+      "case": "pick_point_near_start"
+    }
+  ]
+}

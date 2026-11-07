@@ -112,6 +112,7 @@ mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
 mod arc_blend;
 mod arc_tilted;
+mod blend_curve;
 mod tangent;
 pub use tangent::TangentPreview;
 mod edge_point;
@@ -372,6 +373,7 @@ pub struct ViewportInput<'a> {
     pub line_input: Option<viboceros_command::line::Input>,
     pub curve_line_input: Option<&'a viboceros_command::line::curve_input::Input>,
     pub arc_blend: Option<&'a viboceros_command::arc_blend::Input>,
+    pub blend_curve: Option<&'a viboceros_command::blend_curve::Input>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
@@ -512,6 +514,7 @@ impl Default for ViewportInput<'_> {
             line_input: None,
             curve_line_input: None,
             arc_blend: None,
+            blend_curve: None,
             normal_surface: None,
             mesh_constraint: None,
             surface_curve_close_point: None,
@@ -604,6 +607,9 @@ impl Default for ViewportInput<'_> {
 pub struct ViewportOutput {
     pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
     pub arc_blend_hover: Option<Real>,
+    pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
+    pub blend_curve_hover: Option<Real>,
+    pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub direction_click: Option<ObjectId>,
     pub insert_point: Option<(
@@ -1957,6 +1963,22 @@ impl Viewport {
                     drafting.snap_options(),
                 )
             });
+        let blend_shape_parameter = input
+            .blend_curve
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none())
+            .and_then(|getter| {
+                self.blend_curve_shape_parameter(
+                    getter,
+                    response.hover_pos()?,
+                    rect,
+                    document,
+                    drafting.snap_options(),
+                )
+            });
+        let blend_parameter = input
+            .blend_curve
+            .filter(|getter| getter.active_handle().is_some())
+            .and_then(|_| blend_shape_parameter.or(edge_cursor.map(|c| c.parameter)));
         let (affine_preview, affine_preview_update) =
             input.affine_preview.map_or((None, None), |preview| {
                 self.resolve_affine_preview(
@@ -2690,6 +2712,9 @@ impl Viewport {
                 drafting_cursor.map(|c| c.point),
             );
         }
+        if let Some(getter) = input.blend_curve {
+            self.paint_blend_curve_handles(&painter, rect, getter);
+        }
         if let Some(getter) = input.arc_blend {
             self.paint_arc_blend_handles(&painter, rect, getter);
         }
@@ -3206,6 +3231,22 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
+            blend_curve_handle: (response.clicked_by(PointerButton::Primary)
+                || response.drag_started_by(PointerButton::Primary))
+            .then(|| {
+                let pointer = if response.drag_started_by(PointerButton::Primary) {
+                    ui.input(|i| i.pointer.press_origin())?
+                } else {
+                    response.interact_pointer_pos()?
+                };
+                self.pick_blend_curve_handle(pointer, rect, input.blend_curve?)
+            })
+            .flatten(),
+            blend_curve_hover: response.hovered().then_some(blend_parameter).flatten(),
+            blend_curve_parameter: (response.clicked_by(PointerButton::Primary)
+                || response.drag_stopped_by(PointerButton::Primary))
+            .then_some(blend_parameter)
+            .flatten(),
             arc_blend_handle: (response.clicked_by(PointerButton::Primary)
                 || response.drag_started_by(PointerButton::Primary))
             .then(|| {

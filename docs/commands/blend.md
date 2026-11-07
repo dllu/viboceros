@@ -1,5 +1,6 @@
 # Blend
 
+For adjustable curve contacts and handles, use [BlendCrv](blend-curve.md).
 For surface edges, use [BlendSrf](blend-srf.md).
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/blend.htm)

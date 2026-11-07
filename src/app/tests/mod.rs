@@ -22,6 +22,7 @@ mod array_curve_surface;
 mod array_surface;
 mod bend;
 mod bezier_selection;
+mod blend_curve;
 mod blend_edge;
 mod blend_surface;
 mod block_manager;
@@ -438,6 +439,7 @@ pub(super) fn test_app() -> VibocerosApp {
         tangent_session: None,
         arc_extension_session: None,
         arc_blend_session: None,
+        blend_curve_session: None,
         arc_tilted_session: None,
         arc_length_session: None,
         arc_deform_session: None,

@@ -20,3 +20,17 @@ pub fn blend_curve(
         &mut super::knot_refinement::interpolate_endpoints,
     )
 }
+
+/// Interpolate already oriented contacts with the same native endpoint solver.
+pub fn blend_curve_from_jets(
+    jets: [viboceros_geometry::CurveBlendJet; 2],
+    options: CurveBlendOptions,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::try_blend_curve_from_jets_with_interpolation(
+        jets,
+        options,
+        tolerance,
+        &mut super::knot_refinement::interpolate_endpoints,
+    )
+}

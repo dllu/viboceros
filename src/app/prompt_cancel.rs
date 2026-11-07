@@ -16,6 +16,9 @@ impl VibocerosApp {
         if self.discard_curve_boolean_subcurve() {
             return;
         }
+        if self.cancel_blend_curve_adjustment() {
+            return;
+        }
         if self.cancel_arc_blend_adjustment() {
             return;
         }

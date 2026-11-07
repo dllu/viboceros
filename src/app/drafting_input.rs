@@ -156,7 +156,9 @@ impl VibocerosApp {
             InteractiveCommand::DraftPullPoints { start } => {
                 return self.accept_draft_pull_point(start, point);
             }
-            InteractiveCommand::DraftPullCurve | InteractiveCommand::ArcBlend => return false,
+            InteractiveCommand::DraftPullCurve
+            | InteractiveCommand::ArcBlend
+            | InteractiveCommand::BlendCurve => return false,
             InteractiveCommand::ProjectPlane { .. } => {
                 return self.accept_project_plane_point(point);
             }

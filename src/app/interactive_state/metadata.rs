@@ -39,6 +39,7 @@ impl InteractiveCommand {
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
             Self::ArcBlend => "ArcBlend",
+            Self::BlendCurve => "BlendCrv",
             Self::EvaluatePoint => "EvaluatePt",
             Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
@@ -233,7 +234,8 @@ impl InteractiveCommand {
                 [_, Some(point), _] => Some(point),
                 [point, _, _] => point,
             },
-            Self::ArcBlend
+            Self::BlendCurve
+            | Self::ArcBlend
             | Self::Point
             | Self::BlockEditAdd
             | Self::BlockEditBasePoint
