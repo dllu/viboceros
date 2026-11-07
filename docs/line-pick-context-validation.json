@@ -1,0 +1,681 @@
+{
+  "scope": "Shared bounded projected NURBS location, used by viewport edge/curve picks, with eight retained refinement intervals; native fixed Tangent source calibration in Top, Front and Perspective.",
+  "baseline_revision": "b3d9a210e74bb9e600db77f12bfd2037d79f68ee",
+  "implementation_revision": "55dd04d346700318e191cd9bdc64a05fae33a794",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "native_observations": 14,
+  "matching_native_workflows_per_build": 14,
+  "native_physical_picks": 28,
+  "public_pick_context_queries_per_build": 14,
+  "archive_round_trips_per_build": 28,
+  "maximum_native_public_pick_to_fixed_contact_difference": 1.0871341952950884e-12,
+  "maximum_coefficient_and_sample_difference": 3.2501849733559626e-08,
+  "maximum_source_projection_difference": 6.476292251441264e-09,
+  "cases": [
+    {
+      "id": "pick_circle_perspective",
+      "portable_command_error": 1.4049687235340715e-09,
+      "portable_ui_error": 1.4049687235340715e-09,
+      "portable_source_error": 8.330525422700224e-10,
+      "native_command_error": 1.4049687235340715e-09,
+      "native_ui_error": 1.4049687235340715e-09,
+      "native_source_error": 8.330525422700224e-10
+    },
+    {
+      "id": "pick_tilted_perspective",
+      "portable_command_error": 2.516774344485384e-09,
+      "portable_ui_error": 2.516774344485384e-09,
+      "portable_source_error": 1.6554502229180784e-09,
+      "native_command_error": 2.516774344485384e-09,
+      "native_ui_error": 2.516774344485384e-09,
+      "native_source_error": 1.6554502229180784e-09
+    },
+    {
+      "id": "pick_cubic_perspective",
+      "portable_command_error": 4.2308780181447507e-10,
+      "portable_ui_error": 4.2308780181447507e-10,
+      "portable_source_error": 4.241736022377121e-10,
+      "native_command_error": 4.2308780181447507e-10,
+      "native_ui_error": 4.2308780181447507e-10,
+      "native_source_error": 4.241736022377121e-10
+    },
+    {
+      "id": "pick_circle_top",
+      "portable_command_error": 5.387906121256947e-09,
+      "portable_ui_error": 5.387906121256947e-09,
+      "portable_source_error": 3.268228101115395e-09,
+      "native_command_error": 5.387906121256947e-09,
+      "native_ui_error": 5.387906121256947e-09,
+      "native_source_error": 3.268228101115395e-09
+    },
+    {
+      "id": "pick_circle_far",
+      "portable_command_error": 1.6673078620257334e-08,
+      "portable_ui_error": 1.6673078620257334e-08,
+      "portable_source_error": 3.972789462055503e-09,
+      "native_command_error": 1.6673078620257334e-08,
+      "native_ui_error": 1.6673078620257334e-08,
+      "native_source_error": 3.972789462055503e-09
+    },
+    {
+      "id": "pick_circle_quarter",
+      "portable_command_error": 5.388709958724133e-10,
+      "portable_ui_error": 5.388709958724133e-10,
+      "portable_source_error": 3.2077466305582056e-10,
+      "native_command_error": 5.388709958724133e-10,
+      "native_ui_error": 5.388709958724133e-10,
+      "native_source_error": 3.2077466305582056e-10
+    },
+    {
+      "id": "pick_tilted_top",
+      "portable_command_error": 2.1050361453944788e-10,
+      "portable_ui_error": 2.1050361453944788e-10,
+      "portable_source_error": 1.0225039984832106e-10,
+      "native_command_error": 2.1050361453944788e-10,
+      "native_ui_error": 2.1050361453944788e-10,
+      "native_source_error": 1.0225039984832106e-10
+    },
+    {
+      "id": "pick_tilted_front",
+      "portable_command_error": 5.651994428035323e-09,
+      "portable_ui_error": 5.651994428035323e-09,
+      "portable_source_error": 1.9477947385598723e-09,
+      "native_command_error": 5.651994428035323e-09,
+      "native_ui_error": 5.651994428035323e-09,
+      "native_source_error": 1.9477947385598723e-09
+    },
+    {
+      "id": "pick_cubic_front",
+      "portable_command_error": 2.5506596634645444e-09,
+      "portable_ui_error": 2.5506596634645444e-09,
+      "portable_source_error": 2.5506596634645444e-09,
+      "native_command_error": 2.5506596634645444e-09,
+      "native_ui_error": 2.5506596634645444e-09,
+      "native_source_error": 2.5506596634645444e-09
+    },
+    {
+      "id": "pick_arc_perspective",
+      "portable_command_error": 3.2501849733559626e-08,
+      "portable_ui_error": 3.2501849733559626e-08,
+      "portable_source_error": 6.476292251441264e-09,
+      "native_command_error": 3.2501849733559626e-08,
+      "native_ui_error": 3.2501849733559626e-08,
+      "native_source_error": 6.476292251441264e-09
+    },
+    {
+      "id": "pick_fixed_bothsides",
+      "portable_command_error": 2.5340725073874637e-09,
+      "portable_ui_error": 2.5340725073874637e-09,
+      "portable_source_error": 8.330610771988593e-10,
+      "native_command_error": 2.5340725073874637e-09,
+      "native_ui_error": 2.5340725073874637e-09,
+      "native_source_error": 8.330610771988593e-10
+    },
+    {
+      "id": "pick_fixed_planar",
+      "portable_command_error": 1.4049868248969808e-09,
+      "portable_ui_error": 1.4049868248969808e-09,
+      "portable_source_error": 8.33066872583903e-10,
+      "native_command_error": 1.4049868248969808e-09,
+      "native_ui_error": 1.4049868248969808e-09,
+      "native_source_error": 8.33066872583903e-10
+    },
+    {
+      "id": "pick_circle_length",
+      "portable_command_error": 1.1781349009349892e-09,
+      "portable_ui_error": 1.1781349009349892e-09,
+      "portable_source_error": 8.33066872583903e-10,
+      "native_command_error": 1.1781349009349892e-09,
+      "native_ui_error": 1.1781349009349892e-09,
+      "native_source_error": 8.33066872583903e-10
+    },
+    {
+      "id": "pick_cubic_negative",
+      "portable_command_error": 5.480343465833849e-10,
+      "portable_ui_error": 5.480343465833849e-10,
+      "portable_source_error": 4.241738301865184e-10,
+      "native_command_error": 5.480343465833849e-10,
+      "native_ui_error": 5.480343465833849e-10,
+      "native_source_error": 4.241738301865184e-10
+    }
+  ],
+  "resolved_input_calibration": {
+    "previous_record": "docs/line-tangent-rays-validation.json",
+    "previous_case": "ray_fixed_elevated",
+    "replacement_case": "pick_circle_perspective",
+    "native_output_and_input_ray_identical": true,
+    "world_metric_station_difference": 0.0001124234922827986,
+    "explanation": "World-space viewing-line distance and screen-space distance select different perspective stations. Public PickFrustumTest corroborates the native fixed contact. Independent projected queries resolve the earlier replay difference without using output geometry as an input."
+  },
+  "projection_work_bounds": {
+    "maximum_spans": 4096,
+    "sampling_intervals_per_span": 16,
+    "retained_intervals": 8,
+    "allocated_interval_slots": 9,
+    "refinement_iterations": 48
+  },
+  "captures": [
+    {
+      "family": "line_pick_context",
+      "observations": 4,
+      "raw_sha256": "38a5298bff6c090d23b2b109cca61fe7fd7fb387774b9c710c41b920720a0fbb",
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "line_pick_context_holdouts",
+      "observations": 10,
+      "raw_sha256": "31b9f29de7b8e80e7cb9f28971c26fa90373de68f785d3aa4cff9e40d20cac80",
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "projection-geometry",
+      "status": 0
+    },
+    {
+      "name": "pick-command-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-command-native",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-native",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-native",
+      "status": 0
+    },
+    {
+      "name": "normal-command-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "move-normal-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-command-native",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-native",
+      "status": 0
+    },
+    {
+      "name": "move-normal-native",
+      "status": 0
+    },
+    {
+      "name": "reference-command-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-command-native",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-native",
+      "status": 0
+    },
+    {
+      "name": "line-command-portable",
+      "status": 0
+    },
+    {
+      "name": "line-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "line-command-native",
+      "status": 0
+    },
+    {
+      "name": "line-ui-native",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "lines-command-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "points-portable",
+      "status": 0
+    },
+    {
+      "name": "curves-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-command-native",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-native",
+      "status": 0
+    },
+    {
+      "name": "points-native",
+      "status": 0
+    },
+    {
+      "name": "curves-native",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "grid-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "polyline-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "grid-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "polyline-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "input_calibration": "Independently prescribed curves are minimized through the public pick-frustum transform targeting [0,0]. Public picked points and constructed output coordinates are expected values only; they do not seed or fit the Rust query. Fixed endpoints use the pre-click viewing line.",
+  "execution": "Native captures used private Xvfb sessions; egui checks are windowless.",
+  "limits": [
+    "The bounded sampler/refiner is a numerical locator, not a certified global minimum. Eye-plane crossings, remote coordinates, singular projections and exhaustive ambiguous picks remain unqualified.",
+    "Fourteen native contexts qualify the shared projection query and fixed-line replays. Windowless viewport events cover the application integration; arbitrary native camera replication and general pick-frustum admission/depth ranking remain unqualified.",
+    "Coefficients, weights, knots, domains, attributes and 33 locally evaluated output samples are compared. Independent native PointAt output sampling, continuous distance and comparative speed remain unqualified.",
+    "Earlier native tangent-search failures remain unresolved. The old mouse record and its historical world-metric replay diagnostic remain immutable."
+  ],
+  "implementation_git_sha256": {
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-command/tests/line_pick_context.rs": "530ec04eb38753177e31d7433c2914cd6b1632b90da2e3b9018c695f04491115",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-command/tests/support/line_pick_context.rs": "b3280ef9531de91e6b0c5f7583172a81413973ef6340f7a285f691365267188b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-command/tests/support/line_tangent.rs": "a7f3e6fbac2b9d2ddbc08eb1423c7419d7d993a28d7eeb5f2cd9fe840fbac604",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-geometry/src/curve_projected_point.rs": "d901b258d73394fca09f197bf344400a6bc93e0f4c0a85983b6d4ebd4183cfc8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-geometry/src/lib.rs": "38bd686d64b69651679ada2c821f875431838d0ca255f5f9395315ab95c65d80",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:crates/viboceros-geometry/tests/curve_projected_point.rs": "2a65bcfe0c16a938adc0597854c97c8c940751ccfacb7eb345dc4d53b64aff1f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/architecture/viewport.md": "640b47ca7b4551ca2799fccc5061471b08339cbf9847c627f9a0e366cccb7629",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/commands/line-tangent-mouse.md": "23e204b45a2c1715360eedbd491a639aa99208dfd99106b24670454981f9be31",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/curve-picking.md": "801d99a5f24d6463aea6a0409dec18a17e7cc5c23f209976a74aa46a4a9d7853",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/arc-extension-native.log.gz": "e85113b34e43dc6c06aecb73d97fc7e3c8c734ca0f35753f9064a9cbc967e407",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/arc-extension-portable.log.gz": "36a95979eced10077c8e126f4f6887f2ef4c9f2c1757bf91b127d0d8275d97c4",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/capture-line_pick_context.log.gz": "22591df70825b5639195116d190dc5d2f549be0897e04a879d568b9235e1360c",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/capture-line_pick_context_holdouts.log.gz": "497759cb617bbd4bcde56caa0639b1da78965900c539e2f96e1554778c617898",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/captures.json": "3036374aec759293ba4e201fa4f222e4fe7e4efac233beec0ea7eebab5153cec",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/checks.json": "64c5269e6210b00e02f89ae0929769eae54513517d4af42bd98a0ee7c8273d0b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/clippy-all-features.log.gz": "e24e1c735d0510c52d96373d71227b7626d4b2fde827c7e27c49d4242eacd011",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/clippy-portable.log.gz": "4ab144f8a59c7eb2a1b7cb5e7ce31e1ceef7f600fa0133b5e72333cf9fa6edb8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/commands-native.log.gz": "2e9ceae46e27bc99fda0b2fea95bc9ac18fb9cea9324b03c32a1a6e58a4adbc7",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/commands-portable.log.gz": "5902533a2eacdde97f17851065fe9431665af0ef871fc39d46cc92667de8ffd4",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/corners-native.log.gz": "2c36ef9fff8645529c3eea113acbcf49b8b57cbbbaff63f681a571dcf37847e3",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/corners-portable.log.gz": "500914a4aac9df7461e9198e20ac02bc6904d3d3c1ee08d64e3aab6ff8dcca08",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/curves-native.log.gz": "cf5d5a140881ac8fed99a207eec15e2574cdfb51db886e44bfeca57bda1b3525",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/curves-portable.log.gz": "508618db9ea20d3865cbe6f5a7c70a7670204ed1f67a104d8a41a4af1bf0870f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/grid-native.log.gz": "ac7020d22472b76edf26bb75e7462aa6bdc7f2a6b686bd796865f9ac6002dbbc",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/grid-portable.log.gz": "a3a64b705622c060f45ee2b9a3676f97c6fae6ebc7edca51fc15f42d0ddcb974",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/history.log.gz": "bee585b3e426a2d110ea4ab353bf4a51bf26b45ed51bf01df971b41a7fb3545f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/line-command-native.log.gz": "c792f09416122a56a9bc8c42a1bc4136f40860a139a07a3ee9f4edfa67266f04",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/line-command-portable.log.gz": "e5f7da03616141de180037f63b92ca2d43235310aa682c95d4d73f4702b3cc9a",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/line-ui-native.log.gz": "e7ee01e3d01ed9417d35b3d2d18713d47e65485b4e729d75795c8fc5b6a37bfc",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/line-ui-portable.log.gz": "362e295322ecb06d306e12ef1e2c4a7b010d840afb7fc4fe0d34e898d76fe04e",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/lines-command-native.log.gz": "88345e7cff19f6576ff61c51e1e69a030a5edb016ab1d8cf095372956adef644",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/lines-command-portable.log.gz": "32fdce5d100dfaae450f122b14bf7285151b6f22d0f4476962e18e0359b34067",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/lines-ui-native.log.gz": "405d1ddf43f6f37b9c12f8aafea57d468dc946db3abff2076a1458e74da28bb9",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/lines-ui-portable.log.gz": "85ed97ff775eb0aac2a73155a069bb1b89a2098edf5f2083f526ffeee80194de",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/move-normal-native.log.gz": "ed3bad07569f13d697832cd3e2e311f8cf515d450cd86d812dc717f0a54aaddc",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/move-normal-portable.log.gz": "ba4f6bed47f11f973b06d3a1b3bbfc6c6dd7d12130e252f25b4b1d572ce830da",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/normal-command-native.log.gz": "251781b46a06ca0e356f0443a434bf30df1b6ea954fafcf9935f6240e020e4c5",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/normal-command-portable.log.gz": "5d0d7a345648370da380c25f6daea80ad33d8ec32088780b91779b49bc27f254",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/normal-ui-native.log.gz": "447e9d04dd09ff39b359d37ad3b882a75a9477d3908dd1a3364b387bc950901e",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/normal-ui-portable.log.gz": "93d4bd252535c13f1ca69e5cf342f8649b9a32fa599f1602b4571e7f1eadb673",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/perpendicular-command-native.log.gz": "c4e37e2886d57bb37a5902acd1b1ea013887c406dd171216541fe403de79677f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/perpendicular-command-portable.log.gz": "5706c933ea9a32ef34a4a0b7c71c2172be277e1b1f6aa8cd59cee876ba334ac8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/perpendicular-ui-native.log.gz": "f4d452b973ad2105b125984cd4024bdbfe087d70284c6e83798602f924e10402",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/perpendicular-ui-portable.log.gz": "bb7d3c7b57c878293d516aa026b600acb885ac60b703dc28d8fcea5d5f772294",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-command-native.log.gz": "e0d41a741d19993dd6de08e821482a38048419a1ed64eeada83ad0a43a187d79",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-command-portable.log.gz": "ae877cb1e6b6d801970b79c3ba93c0d9a52bccdd9522f62065cede6ab1160b3e",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-ui-native.log.gz": "777d159ced25151418b378414959029312875277c62409493be50d0109a074b5",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-ui-portable.log.gz": "a609f72d397152baf61849c41ef70b2993b0275e7769b8f0ba4437cf5d67b664",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-viewport-native.log.gz": "27641e0875201f2b9dcf813e4731f9265df9cad3a4a1475e3b08959886fa8d25",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/pick-viewport-portable.log.gz": "eba27a3e60ce7892e6dfca53a6d2ba6c105f622d0c3e56dd3088e92d32581c7b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/plane-native.log.gz": "b5d3612035236d4e7d87f5c8f21a96e4281b713b367b2f1bd074d39420329f73",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/plane-portable.log.gz": "bf30bd2cba6b5d58682300304f4bbcf119365cee07dae6c824c307361b34c6cd",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/points-native.log.gz": "981f6fe20bccda46542eab77d20f61c97cb2613c2a5412952ee4498e53d200e7",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/points-portable.log.gz": "124861bc3ddd3f56672370b61ce9be2e0053e8daacd4f2864e16128e4bab49e8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/polyline-native.log.gz": "af8721b9c8ed58e93417f51f7e474d7d6816fb1f4e8361df3e95725be2a0dd4e",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/polyline-portable.log.gz": "26d8a89fbbcc9e756531ecb13f14c0af5d955065cdecdf6edfc0378ac538fc91",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/primitive-input-native.log.gz": "48aad0f532f3d366e7934ff25dbed8bd8eb89962e9dc7a5a89550c2f9dd04dd9",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/primitive-input-portable.log.gz": "55b11e2aa61874900cae083dfd4c63de3baa974831ba6134841645d117b20d10",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/projection-geometry.log.gz": "70c3a5ebe737f202f606f521df775adb4829238d6d297a5427c45beba444922b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/python.log.gz": "9770b762124069e8f97fc0abb1ecb39e917750207a8b14579225b40068c6fa89",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/rectangle-native.log.gz": "dff265b1d7f8f44f14d33db17c063a56a44bee94134473ac3ba2800283ffd6d5",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/rectangle-portable.log.gz": "938ae4e41a66c559df3a84c5db4983a559d0d04deee7127145487d3ad69d42f3",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/reference-command-native.log.gz": "cbe993717c4ae5cfc1c011797c2dc12a44b89c99b039c66dc34a01b8340594e8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/reference-command-portable.log.gz": "7fd934ef7bb3e3d7b4289c2e974d0bc3b850d228cb21b37ba3c21dc398cc14ea",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/reference-ui-native.log.gz": "9dd05fc4d135f587562c881328162f83699c2e54ca10bc2e913d2fb41da78edb",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/reference-ui-portable.log.gz": "d888abe19b06ad13e837504abeb27ff206ea529959b65ee1cee54f3f356c0e96",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/registry.log.gz": "2912f942354c5c1d6d31309dc6a05211874b3801ee89ee926ade2cea0a83eadb",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/subd-native.log.gz": "d60450f8f8e8c039330c96dd06e5faccc51cc5687b138c9d01d45d72b156aa94",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-boundary-command-native.log.gz": "54321e213172da3668ff83cc10409e884b5a072806b7e4bb476f33815b63935b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-boundary-command-portable.log.gz": "0f51cee417e89eb56192d9b4db1fc0e365375a5662b332a89eccd099ad5494a4",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-boundary-ui-native.log.gz": "90e78068756837ac6a4b53615c72361f9bcf208ffde8e8570a311a2055e6d573",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-boundary-ui-portable.log.gz": "d4557a9e86cc7676a61f16dba40f72ad0dc9ab4e32a181a9dd83bce82bfbe270",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-command-native.log.gz": "0ff7617b08fabfb0e1d9565f94a1dcd7bce539fea5c17f2ee355bb842c97deae",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-command-portable.log.gz": "16d521110a0ffdae2d5a396a9dfdb7d926e968a84b9b1c73cd948f0d374ea5f5",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-rays-command-native.log.gz": "01ef3ed6072dc8673899f421c528a597de973b5f0f5d90116c3dc263c0f78262",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-rays-command-portable.log.gz": "418a6aec5271413fc7607ced55ad3df4f4bd75e20b02fc3560556a0f85f3dbd3",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-rays-ui-native.log.gz": "31605bc831fe55e201d0a60694b0c90a2ff7343c80d682f4da9851a705343cf9",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-rays-ui-portable.log.gz": "f18520577d77cd2972ecc0331cc120c3ce86c140e6b10d1e256628125c8cf92f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-ui-native.log.gz": "c827b75d1bc2eb678e8b02e93217447f8594e85de16bec4236e98a3c415893eb",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/tangent-ui-portable.log.gz": "30cb3af7d77a5b219e7360bdc5ed443dc5d8653bea22696d34bfa5cef2fc9b6b",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/ui-native.log.gz": "b14f1a8a4c738a6bafefaa5cced57a8d2ca8cf56803cef18aa2262ab2304a4f1",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/line-pick-context-proof/ui-portable.log.gz": "7c28f9e3d313c79b9f4a5b6c20e9090eef52d8386b024c0cfa64a42f4ae69c08",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/subd-box-qualification.json": "9d3d90ec8955b171021f6cc0b99047e4b4509d990ea5c8f580be79fc161e9947",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:docs/subd-plane-qualification.json": "68506ce1ef12456b846d7933768dd6183abe1fe3ce3ab3835ede9d3fe83c1724",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:src/app/tests/line_pick_context.rs": "afe8d7f338d771d19eb0b177c94460ceb59d2c71286ed3a4f4f8da4b07d0dacf",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:src/app/tests/mod.rs": "3adec37b8b1d46ec4688426fad05e61a17e70a4d23c2fc63b4c712a104325e82",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:src/viewport/edge_point.rs": "d01ba2179d88c98bedb277a8519ba944103b63eecfc318c1d6d5d679458f7c8a",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/check_line_pick_context.py": "15d0742636aaf90cd083f0abff1867c7f68d3b3cc7966d00f201a23f10a7576e",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/client.py": "5262d104839afcffd046da5a45494117dccd5ab5f263f43ba7376825b2e0ccef",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/conic_getter_input.py": "e1bbb31518173a6f4400338799a9eaf9e117db50f5f7392aadd9f187941383b9",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/fixtures/line_pick_context.json": "f5d4e1833d817b7e3bb0f276be7b05b81daf82e3c2c38127bac65e0035b1b226",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/fixtures/line_pick_context_holdouts.json": "a38ee481fede101625e5e1a4ad908d0a48631c416740e9ab4a66b8a06cbdc26f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/fixtures/line_pick_context_sources.json": "8852ab450c571468e1e5b7825c9bb8b640ced8fbbf2cc90bbb4188828f20e192",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/generate_line_pick_context.py": "332cbe92942cd9a25a0ca81d1bbec011325432342e5cb44a89a78675fb1ed212",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/generate_line_pick_context_holdouts.py": "5788858508b48177a6325dd005d6e7ac0f51e4fd9d545bd5f4d60f0e63fe5a8c",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/line_pick_context.py": "49efae603843c16b5b47b9cb4c255d6e7d268ee6204b7919dad117c1e3840358",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/line_pick_context_probe.py": "e3c2871938c05393a355eeccbf7dbb8628bb99d6d8122556256cacf8d5b9a5df",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/line_pick_context.json.gz": "b8f3f0fd11c10ea3e1de9b878ac5245d81de4ed9152cb54d263b0b5c6c25e9ff",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/line_pick_context_holdouts.json.gz": "51da05a66ed3603aaf5f077f523c3d44c1943c8948fa28707d951b85d0e24ce0",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/332cbe92942cd9a25a0ca81d1bbec011325432342e5cb44a89a78675fb1ed212.gz": "f58e1bd7c01547320458f6bcc4a69cc05c7a8724376f57b05017c45d5909d0c5",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/387f286c3bf892393f2c4becbbcd1fb79034504382a29e4c44af3756de204b82.gz": "e362b5864444caca65d34d0be4e4e03149c430700ab8862e5eaa28247f6ee37f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/49efae603843c16b5b47b9cb4c255d6e7d268ee6204b7919dad117c1e3840358.gz": "dda993733bb48e2113bf5fc069e8c83a5472383d3a3bd2fc2e408da8c9ec2647",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/5262d104839afcffd046da5a45494117dccd5ab5f263f43ba7376825b2e0ccef.gz": "2fa2c43d3d66c07c8205f7f51ee0b08bc55acfa3ec34755e6fa3eca9045ac9dd",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/5788858508b48177a6325dd005d6e7ac0f51e4fd9d545bd5f4d60f0e63fe5a8c.gz": "efda87f782ffdb5aac2c811344f820680adb09cbe4e4344d44252d1ed0519898",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/922cc6f031da6f9e53bba0fb10e257d27bc900674be7ce14bf5f6d6a64c1d8bd.gz": "9ac62c4400b5bd71b4717de5cfb7bf2cccc3fa60229300883d4ebb226c2b78b8",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/cf34005048e53e8cb9c6a1264f761e6ab458377c416c132f7131de0d55b52d40.gz": "b22f27a7817bfaee402eb3e672b1e3452e012b33137d2408e45fae26a6b1e3e0",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/e1bbb31518173a6f4400338799a9eaf9e117db50f5f7392aadd9f187941383b9.gz": "2d880fb944feffcb1407ae5e1127a113eeaf530478c6d6f19ac8ddd99861814f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/observations/source_snapshots/e3c2871938c05393a355eeccbf7dbb8628bb99d6d8122556256cacf8d5b9a5df.gz": "f500192b2928dc67b0fe7c9b74dc0684110889e591034858c58f3fe2da191891",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/report_line_pick_context.py": "b1a1fd1fb50981e907789724c8ba4ebad9e395e67764f96a7160d41af2224b2f",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/rhino_worker.py": "387f286c3bf892393f2c4becbbcd1fb79034504382a29e4c44af3756de204b82",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/structural_sdk.py": "cf34005048e53e8cb9c6a1264f761e6ab458377c416c132f7131de0d55b52d40",
+    "55dd04d346700318e191cd9bdc64a05fae33a794:tools/rhino_oracle/test_line_pick_context.py": "71e8abe46d146d4e382c48d7a16f5599b895d790c9a309514405d04d4df54781"
+  },
+  "evidence_sha256": {
+    "docs/line-pick-context-proof/arc-extension-native.log.gz": "e85113b34e43dc6c06aecb73d97fc7e3c8c734ca0f35753f9064a9cbc967e407",
+    "docs/line-pick-context-proof/arc-extension-portable.log.gz": "36a95979eced10077c8e126f4f6887f2ef4c9f2c1757bf91b127d0d8275d97c4",
+    "docs/line-pick-context-proof/capture-line_pick_context.log.gz": "22591df70825b5639195116d190dc5d2f549be0897e04a879d568b9235e1360c",
+    "docs/line-pick-context-proof/capture-line_pick_context_holdouts.log.gz": "497759cb617bbd4bcde56caa0639b1da78965900c539e2f96e1554778c617898",
+    "docs/line-pick-context-proof/captures.json": "3036374aec759293ba4e201fa4f222e4fe7e4efac233beec0ea7eebab5153cec",
+    "docs/line-pick-context-proof/checks.json": "28cee11d4af2ab3f275fa313764bc4e63514049103a61b882d1e4ddc39fe98a8",
+    "docs/line-pick-context-proof/clippy-all-features.log.gz": "e24e1c735d0510c52d96373d71227b7626d4b2fde827c7e27c49d4242eacd011",
+    "docs/line-pick-context-proof/clippy-portable.log.gz": "4ab144f8a59c7eb2a1b7cb5e7ce31e1ceef7f600fa0133b5e72333cf9fa6edb8",
+    "docs/line-pick-context-proof/commands-native.log.gz": "2e9ceae46e27bc99fda0b2fea95bc9ac18fb9cea9324b03c32a1a6e58a4adbc7",
+    "docs/line-pick-context-proof/commands-portable.log.gz": "5902533a2eacdde97f17851065fe9431665af0ef871fc39d46cc92667de8ffd4",
+    "docs/line-pick-context-proof/corners-native.log.gz": "2c36ef9fff8645529c3eea113acbcf49b8b57cbbbaff63f681a571dcf37847e3",
+    "docs/line-pick-context-proof/corners-portable.log.gz": "500914a4aac9df7461e9198e20ac02bc6904d3d3c1ee08d64e3aab6ff8dcca08",
+    "docs/line-pick-context-proof/curves-native.log.gz": "cf5d5a140881ac8fed99a207eec15e2574cdfb51db886e44bfeca57bda1b3525",
+    "docs/line-pick-context-proof/curves-portable.log.gz": "508618db9ea20d3865cbe6f5a7c70a7670204ed1f67a104d8a41a4af1bf0870f",
+    "docs/line-pick-context-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/line-pick-context-proof/grid-native.log.gz": "ac7020d22472b76edf26bb75e7462aa6bdc7f2a6b686bd796865f9ac6002dbbc",
+    "docs/line-pick-context-proof/grid-portable.log.gz": "a3a64b705622c060f45ee2b9a3676f97c6fae6ebc7edca51fc15f42d0ddcb974",
+    "docs/line-pick-context-proof/history.log.gz": "bee585b3e426a2d110ea4ab353bf4a51bf26b45ed51bf01df971b41a7fb3545f",
+    "docs/line-pick-context-proof/line-command-native.log.gz": "c792f09416122a56a9bc8c42a1bc4136f40860a139a07a3ee9f4edfa67266f04",
+    "docs/line-pick-context-proof/line-command-portable.log.gz": "e5f7da03616141de180037f63b92ca2d43235310aa682c95d4d73f4702b3cc9a",
+    "docs/line-pick-context-proof/line-ui-native.log.gz": "e7ee01e3d01ed9417d35b3d2d18713d47e65485b4e729d75795c8fc5b6a37bfc",
+    "docs/line-pick-context-proof/line-ui-portable.log.gz": "362e295322ecb06d306e12ef1e2c4a7b010d840afb7fc4fe0d34e898d76fe04e",
+    "docs/line-pick-context-proof/lines-command-native.log.gz": "88345e7cff19f6576ff61c51e1e69a030a5edb016ab1d8cf095372956adef644",
+    "docs/line-pick-context-proof/lines-command-portable.log.gz": "32fdce5d100dfaae450f122b14bf7285151b6f22d0f4476962e18e0359b34067",
+    "docs/line-pick-context-proof/lines-ui-native.log.gz": "405d1ddf43f6f37b9c12f8aafea57d468dc946db3abff2076a1458e74da28bb9",
+    "docs/line-pick-context-proof/lines-ui-portable.log.gz": "85ed97ff775eb0aac2a73155a069bb1b89a2098edf5f2083f526ffeee80194de",
+    "docs/line-pick-context-proof/move-normal-native.log.gz": "ed3bad07569f13d697832cd3e2e311f8cf515d450cd86d812dc717f0a54aaddc",
+    "docs/line-pick-context-proof/move-normal-portable.log.gz": "ba4f6bed47f11f973b06d3a1b3bbfc6c6dd7d12130e252f25b4b1d572ce830da",
+    "docs/line-pick-context-proof/normal-command-native.log.gz": "251781b46a06ca0e356f0443a434bf30df1b6ea954fafcf9935f6240e020e4c5",
+    "docs/line-pick-context-proof/normal-command-portable.log.gz": "5d0d7a345648370da380c25f6daea80ad33d8ec32088780b91779b49bc27f254",
+    "docs/line-pick-context-proof/normal-ui-native.log.gz": "447e9d04dd09ff39b359d37ad3b882a75a9477d3908dd1a3364b387bc950901e",
+    "docs/line-pick-context-proof/normal-ui-portable.log.gz": "93d4bd252535c13f1ca69e5cf342f8649b9a32fa599f1602b4571e7f1eadb673",
+    "docs/line-pick-context-proof/perpendicular-command-native.log.gz": "c4e37e2886d57bb37a5902acd1b1ea013887c406dd171216541fe403de79677f",
+    "docs/line-pick-context-proof/perpendicular-command-portable.log.gz": "5706c933ea9a32ef34a4a0b7c71c2172be277e1b1f6aa8cd59cee876ba334ac8",
+    "docs/line-pick-context-proof/perpendicular-ui-native.log.gz": "f4d452b973ad2105b125984cd4024bdbfe087d70284c6e83798602f924e10402",
+    "docs/line-pick-context-proof/perpendicular-ui-portable.log.gz": "bb7d3c7b57c878293d516aa026b600acb885ac60b703dc28d8fcea5d5f772294",
+    "docs/line-pick-context-proof/pick-command-native.log.gz": "e0d41a741d19993dd6de08e821482a38048419a1ed64eeada83ad0a43a187d79",
+    "docs/line-pick-context-proof/pick-command-portable.log.gz": "ae877cb1e6b6d801970b79c3ba93c0d9a52bccdd9522f62065cede6ab1160b3e",
+    "docs/line-pick-context-proof/pick-ui-native.log.gz": "777d159ced25151418b378414959029312875277c62409493be50d0109a074b5",
+    "docs/line-pick-context-proof/pick-ui-portable.log.gz": "a609f72d397152baf61849c41ef70b2993b0275e7769b8f0ba4437cf5d67b664",
+    "docs/line-pick-context-proof/pick-viewport-native.log.gz": "27641e0875201f2b9dcf813e4731f9265df9cad3a4a1475e3b08959886fa8d25",
+    "docs/line-pick-context-proof/pick-viewport-portable.log.gz": "eba27a3e60ce7892e6dfca53a6d2ba6c105f622d0c3e56dd3088e92d32581c7b",
+    "docs/line-pick-context-proof/plane-native.log.gz": "b5d3612035236d4e7d87f5c8f21a96e4281b713b367b2f1bd074d39420329f73",
+    "docs/line-pick-context-proof/plane-portable.log.gz": "bf30bd2cba6b5d58682300304f4bbcf119365cee07dae6c824c307361b34c6cd",
+    "docs/line-pick-context-proof/points-native.log.gz": "981f6fe20bccda46542eab77d20f61c97cb2613c2a5412952ee4498e53d200e7",
+    "docs/line-pick-context-proof/points-portable.log.gz": "124861bc3ddd3f56672370b61ce9be2e0053e8daacd4f2864e16128e4bab49e8",
+    "docs/line-pick-context-proof/polyline-native.log.gz": "af8721b9c8ed58e93417f51f7e474d7d6816fb1f4e8361df3e95725be2a0dd4e",
+    "docs/line-pick-context-proof/polyline-portable.log.gz": "26d8a89fbbcc9e756531ecb13f14c0af5d955065cdecdf6edfc0378ac538fc91",
+    "docs/line-pick-context-proof/primitive-input-native.log.gz": "48aad0f532f3d366e7934ff25dbed8bd8eb89962e9dc7a5a89550c2f9dd04dd9",
+    "docs/line-pick-context-proof/primitive-input-portable.log.gz": "55b11e2aa61874900cae083dfd4c63de3baa974831ba6134841645d117b20d10",
+    "docs/line-pick-context-proof/projection-geometry.log.gz": "70c3a5ebe737f202f606f521df775adb4829238d6d297a5427c45beba444922b",
+    "docs/line-pick-context-proof/python.log.gz": "78a8c77ad7fad1711df575d7874eeb5aed30f3261b1482273d3e3304ba73bb80",
+    "docs/line-pick-context-proof/rectangle-native.log.gz": "dff265b1d7f8f44f14d33db17c063a56a44bee94134473ac3ba2800283ffd6d5",
+    "docs/line-pick-context-proof/rectangle-portable.log.gz": "938ae4e41a66c559df3a84c5db4983a559d0d04deee7127145487d3ad69d42f3",
+    "docs/line-pick-context-proof/reference-command-native.log.gz": "cbe993717c4ae5cfc1c011797c2dc12a44b89c99b039c66dc34a01b8340594e8",
+    "docs/line-pick-context-proof/reference-command-portable.log.gz": "7fd934ef7bb3e3d7b4289c2e974d0bc3b850d228cb21b37ba3c21dc398cc14ea",
+    "docs/line-pick-context-proof/reference-ui-native.log.gz": "9dd05fc4d135f587562c881328162f83699c2e54ca10bc2e913d2fb41da78edb",
+    "docs/line-pick-context-proof/reference-ui-portable.log.gz": "d888abe19b06ad13e837504abeb27ff206ea529959b65ee1cee54f3f356c0e96",
+    "docs/line-pick-context-proof/registry.log.gz": "2912f942354c5c1d6d31309dc6a05211874b3801ee89ee926ade2cea0a83eadb",
+    "docs/line-pick-context-proof/subd-native.log.gz": "d60450f8f8e8c039330c96dd06e5faccc51cc5687b138c9d01d45d72b156aa94",
+    "docs/line-pick-context-proof/tangent-boundary-command-native.log.gz": "54321e213172da3668ff83cc10409e884b5a072806b7e4bb476f33815b63935b",
+    "docs/line-pick-context-proof/tangent-boundary-command-portable.log.gz": "0f51cee417e89eb56192d9b4db1fc0e365375a5662b332a89eccd099ad5494a4",
+    "docs/line-pick-context-proof/tangent-boundary-ui-native.log.gz": "90e78068756837ac6a4b53615c72361f9bcf208ffde8e8570a311a2055e6d573",
+    "docs/line-pick-context-proof/tangent-boundary-ui-portable.log.gz": "d4557a9e86cc7676a61f16dba40f72ad0dc9ab4e32a181a9dd83bce82bfbe270",
+    "docs/line-pick-context-proof/tangent-command-native.log.gz": "0ff7617b08fabfb0e1d9565f94a1dcd7bce539fea5c17f2ee355bb842c97deae",
+    "docs/line-pick-context-proof/tangent-command-portable.log.gz": "16d521110a0ffdae2d5a396a9dfdb7d926e968a84b9b1c73cd948f0d374ea5f5",
+    "docs/line-pick-context-proof/tangent-rays-command-native.log.gz": "01ef3ed6072dc8673899f421c528a597de973b5f0f5d90116c3dc263c0f78262",
+    "docs/line-pick-context-proof/tangent-rays-command-portable.log.gz": "418a6aec5271413fc7607ced55ad3df4f4bd75e20b02fc3560556a0f85f3dbd3",
+    "docs/line-pick-context-proof/tangent-rays-ui-native.log.gz": "31605bc831fe55e201d0a60694b0c90a2ff7343c80d682f4da9851a705343cf9",
+    "docs/line-pick-context-proof/tangent-rays-ui-portable.log.gz": "f18520577d77cd2972ecc0331cc120c3ce86c140e6b10d1e256628125c8cf92f",
+    "docs/line-pick-context-proof/tangent-ui-native.log.gz": "c827b75d1bc2eb678e8b02e93217447f8594e85de16bec4236e98a3c415893eb",
+    "docs/line-pick-context-proof/tangent-ui-portable.log.gz": "30cb3af7d77a5b219e7360bdc5ed443dc5d8653bea22696d34bfa5cef2fc9b6b",
+    "docs/line-pick-context-proof/ui-native.log.gz": "b14f1a8a4c738a6bafefaa5cced57a8d2ca8cf56803cef18aa2262ab2304a4f1",
+    "docs/line-pick-context-proof/ui-portable.log.gz": "7c28f9e3d313c79b9f4a5b6c20e9090eef52d8386b024c0cfa64a42f4ae69c08",
+    "docs/line-tangent-rays-validation.json": "6672399706e6b62b4e7a399f7c7e95bc74ae269b750789f3ab5ad994189199d2",
+    "tools/rhino_oracle/fixtures/line_pick_context.json": "f5d4e1833d817b7e3bb0f276be7b05b81daf82e3c2c38127bac65e0035b1b226",
+    "tools/rhino_oracle/fixtures/line_pick_context_holdouts.json": "a38ee481fede101625e5e1a4ad908d0a48631c416740e9ab4a66b8a06cbdc26f",
+    "tools/rhino_oracle/fixtures/line_pick_context_sources.json": "8852ab450c571468e1e5b7825c9bb8b640ced8fbbf2cc90bbb4188828f20e192",
+    "tools/rhino_oracle/observations/line_pick_context.json.gz": "b8f3f0fd11c10ea3e1de9b878ac5245d81de4ed9152cb54d263b0b5c6c25e9ff",
+    "tools/rhino_oracle/observations/line_pick_context_holdouts.json.gz": "51da05a66ed3603aaf5f077f523c3d44c1943c8948fa28707d951b85d0e24ce0",
+    "tools/rhino_oracle/observations/line_tangent_rays.json.gz": "bbe34feaa1992ab3a766a1d72c66168fde5ad89c63391b4c28cc05c92c189e9d",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/332cbe92942cd9a25a0ca81d1bbec011325432342e5cb44a89a78675fb1ed212.gz": "f58e1bd7c01547320458f6bcc4a69cc05c7a8724376f57b05017c45d5909d0c5",
+    "tools/rhino_oracle/observations/source_snapshots/387f286c3bf892393f2c4becbbcd1fb79034504382a29e4c44af3756de204b82.gz": "e362b5864444caca65d34d0be4e4e03149c430700ab8862e5eaa28247f6ee37f",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/441a04269f53cc52aa30fe70cde5c1d29209ec64049ce8cfea7f3349afc810d7.gz": "cf274a03f7f641d69a6822b21a16905f41e9b41883d3a9b2f40206c84a94b77b",
+    "tools/rhino_oracle/observations/source_snapshots/4683bb4761c92da70920b7402e3cce8f68e64283c407d2f1d384766a2071d3ea.gz": "270a9927c53d2fd0813a5dd006a2689be9d08994215772a6403c88a5c31faad1",
+    "tools/rhino_oracle/observations/source_snapshots/49efae603843c16b5b47b9cb4c255d6e7d268ee6204b7919dad117c1e3840358.gz": "dda993733bb48e2113bf5fc069e8c83a5472383d3a3bd2fc2e408da8c9ec2647",
+    "tools/rhino_oracle/observations/source_snapshots/5262d104839afcffd046da5a45494117dccd5ab5f263f43ba7376825b2e0ccef.gz": "2fa2c43d3d66c07c8205f7f51ee0b08bc55acfa3ec34755e6fa3eca9045ac9dd",
+    "tools/rhino_oracle/observations/source_snapshots/5788858508b48177a6325dd005d6e7ac0f51e4fd9d545bd5f4d60f0e63fe5a8c.gz": "efda87f782ffdb5aac2c811344f820680adb09cbe4e4344d44252d1ed0519898",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/922cc6f031da6f9e53bba0fb10e257d27bc900674be7ce14bf5f6d6a64c1d8bd.gz": "9ac62c4400b5bd71b4717de5cfb7bf2cccc3fa60229300883d4ebb226c2b78b8",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cf34005048e53e8cb9c6a1264f761e6ab458377c416c132f7131de0d55b52d40.gz": "b22f27a7817bfaee402eb3e672b1e3452e012b33137d2408e45fae26a6b1e3e0",
+    "tools/rhino_oracle/observations/source_snapshots/e1bbb31518173a6f4400338799a9eaf9e117db50f5f7392aadd9f187941383b9.gz": "2d880fb944feffcb1407ae5e1127a113eeaf530478c6d6f19ac8ddd99861814f",
+    "tools/rhino_oracle/observations/source_snapshots/e3c2871938c05393a355eeccbf7dbb8628bb99d6d8122556256cacf8d5b9a5df.gz": "f500192b2928dc67b0fe7c9b74dc0684110889e591034858c58f3fe2da191891"
+  }
+}
