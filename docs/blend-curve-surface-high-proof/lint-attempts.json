@@ -1,0 +1,8 @@
+[
+  {
+    "name": "clippy-portable",
+    "status": 101,
+    "log": "clippy-portable-before.log.gz",
+    "reason": "Use is_empty() instead of comparing optional object names with the empty string in the two new replay tests. Equivalent test predicate; no production behavior change."
+  }
+]

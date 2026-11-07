@@ -22,16 +22,6 @@ impl Guide {
         surface_mode: bool,
     ) -> Result<Self, CommandError> {
         let source = CapturedCurve::capture(doc, id, edge)?;
-        let surface = surface_mode
-            .then(|| {
-                super::surface::SurfaceGuide::capture(
-                    doc,
-                    id,
-                    edge.ok_or(CommandError::Usage("Select a surface edge"))?,
-                )
-            })
-            .transpose()?
-            .map(Arc::new);
         let portion = range
             .map(|(parameters, wrap)| {
                 CurvePortion::prepare(source.curve_ref(), parameters, wrap).map(Arc::new)
@@ -40,12 +30,12 @@ impl Guide {
         let c = portion
             .as_ref()
             .map_or_else(|| source.curve_ref(), |p| p.curve_ref());
-        if surface.is_none() && c.is_closed()? {
+        if !surface_mode && c.is_closed()? {
             return Err(CommandError::Usage(
                 "BlendCrv requires an open source curve",
             ));
         }
-        let end = if surface.is_some() {
+        let end = if surface_mode {
             false
         } else if portion.is_some() {
             !at_pick
@@ -55,7 +45,7 @@ impl Guide {
                 && pick.distance_to(c.evaluate(*c.domain().end())?)?
                     < pick.distance_to(c.evaluate(*c.domain().start())?)?
         };
-        let parameter = if surface.is_some() || (at_pick && portion.is_none()) {
+        let parameter = if surface_mode || (at_pick && portion.is_none()) {
             let pick = pick.ok_or(CommandError::Usage(USAGE))?;
             c.closest_parameter(pick, doc.tolerance())?
         } else if end || portion.is_some() {
@@ -63,6 +53,17 @@ impl Guide {
         } else {
             *c.domain().start()
         };
+        let surface = surface_mode
+            .then(|| {
+                super::surface::SurfaceGuide::capture(
+                    doc,
+                    id,
+                    edge.ok_or(CommandError::Usage("Select a surface edge"))?,
+                    c.evaluate(parameter)?,
+                )
+            })
+            .transpose()?
+            .map(Arc::new);
         Ok(Self {
             source,
             portion,

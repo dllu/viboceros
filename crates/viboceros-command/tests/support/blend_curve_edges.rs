@@ -53,7 +53,13 @@ pub fn geometry(value: &Value) -> Geometry {
         serde_json::from_value(value["knots_v"].clone()).unwrap(),
     )
     .unwrap();
-    Geometry::Brep(Brep::try_surface_face(surface, Tolerance::NUMERICAL_VALIDATION).unwrap())
+    Geometry::Brep(
+        Brep::try_surface_face_with_native_edge_parameters(
+            surface,
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap(),
+    )
 }
 
 pub fn setup(value: &Value) -> Document {

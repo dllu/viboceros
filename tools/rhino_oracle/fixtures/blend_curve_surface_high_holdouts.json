@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_chart_g3",
+      "case": "surface_high_chart_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_fourth_g3",
+      "case": "surface_high_fourth_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_spatial_g3",
+      "case": "surface_high_spatial_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_both_g3",
+      "case": "surface_high_both_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_shape_g3",
+      "case": "surface_high_shape_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_symmetry_g3",
+      "case": "surface_high_symmetry_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_slide_g3",
+      "case": "surface_high_slide_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_join_g3",
+      "case": "surface_high_join_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_chart_g4",
+      "case": "surface_high_chart_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_fourth_g4",
+      "case": "surface_high_fourth_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_spatial_g4",
+      "case": "surface_high_spatial_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_both_g4",
+      "case": "surface_high_both_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_shape_g4",
+      "case": "surface_high_shape_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_symmetry_g4",
+      "case": "surface_high_symmetry_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_slide_g4",
+      "case": "surface_high_slide_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_join_g4",
+      "case": "surface_high_join_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_cancel",
+      "case": "surface_high_cancel"
+    }
+  ]
+}

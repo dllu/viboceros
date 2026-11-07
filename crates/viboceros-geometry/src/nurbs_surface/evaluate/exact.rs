@@ -27,7 +27,7 @@ pub(super) struct ExactJetNet<'a> {
     second: Option<SecondNets>,
 }
 
-fn tensor(
+pub(super) fn tensor(
     net: &[Homogeneous],
     u: Direction<'_>,
     v: Direction<'_>,

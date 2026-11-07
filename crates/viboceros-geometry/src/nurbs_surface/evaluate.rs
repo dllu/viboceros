@@ -8,10 +8,12 @@ mod grid;
 mod normal;
 mod query;
 mod tensor;
+mod third;
 pub(super) use query::SurfaceQuery;
 use tensor::{
     derivative_controls_u, derivative_controls_v, evaluate_tensor_product, project_derivative,
 };
+pub use third::SurfaceJet3;
 
 #[cfg(test)]
 mod tests;
@@ -124,24 +126,7 @@ impl NurbsSurface {
         extended: bool,
         order: u8,
     ) -> Result<SurfaceJet2, GeometryError> {
-        let degrees = [self.degree_u, self.degree_v];
-        let counts = [self.control_point_count_u, self.control_point_count_v];
-        let knots = [&self.knots_u[..], &self.knots_v[..]];
-        let mut spans = [0; 2];
-        let mut continuation = false;
-        for axis in 0..2 {
-            let t = parameters[axis];
-            let k = knots[axis];
-            spans[axis] = if extended {
-                extended_span(degrees[axis], counts[axis], k, t)?
-            } else {
-                checked_span(degrees[axis], counts[axis], k, t)?
-            };
-            if sides[axis] == ParameterSide::Left && t > k[degrees[axis]] && t < k[counts[axis]] {
-                spans[axis] = k.partition_point(|value| *value < t) - 1;
-            }
-            continuation |= t < k[degrees[axis]] || t > k[counts[axis]];
-        }
+        let (spans, continuation) = self.evaluation_spans(parameters, sides, extended)?;
         // Extrapolated basis coefficients can have either sign, even when all
         // control weights are positive. Only an exactly constant active weight
         // proves W is constant under continuation (partition of unity).
@@ -173,6 +158,33 @@ impl NurbsSurface {
         // every requested world-space component is finite. Validation and span
         // selection have already succeeded; recover from the original inputs.
         result.or_else(|_| self.exact_jet_at_spans(parameters, spans, order))
+    }
+
+    fn evaluation_spans(
+        &self,
+        parameters: [Real; 2],
+        sides: [ParameterSide; 2],
+        extended: bool,
+    ) -> Result<([usize; 2], bool), GeometryError> {
+        let degrees = [self.degree_u, self.degree_v];
+        let counts = [self.control_point_count_u, self.control_point_count_v];
+        let knots = [&self.knots_u[..], &self.knots_v[..]];
+        let mut spans = [0; 2];
+        let mut continuation = false;
+        for axis in 0..2 {
+            let t = parameters[axis];
+            let k = knots[axis];
+            spans[axis] = if extended {
+                extended_span(degrees[axis], counts[axis], k, t)?
+            } else {
+                checked_span(degrees[axis], counts[axis], k, t)?
+            };
+            if sides[axis] == ParameterSide::Left && t > k[degrees[axis]] && t < k[counts[axis]] {
+                spans[axis] = k.partition_point(|value| *value < t) - 1;
+            }
+            continuation |= t < k[degrees[axis]] || t > k[counts[axis]];
+        }
+        Ok((spans, continuation))
     }
 
     fn jet_at_spans<const POLYNOMIAL: bool>(

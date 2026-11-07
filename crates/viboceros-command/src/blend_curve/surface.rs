@@ -5,30 +5,48 @@ use crate::surface_edge_reference::Edge;
 #[derive(Clone, Debug)]
 pub(super) struct SurfaceGuide {
     reference: Edge,
-    planar: bool,
+    uv: [Real; 2],
     pub angle: Real,
 }
 impl SurfaceGuide {
-    pub fn capture(doc: &Document, id: ObjectId, edge: usize) -> Result<Self, CommandError> {
+    pub fn capture(
+        doc: &Document,
+        id: ObjectId,
+        edge: usize,
+        point: Point3,
+    ) -> Result<Self, CommandError> {
         let reference = Edge::capture(doc, id, edge, None).map_err(|error| match error {
             CommandError::Usage("Specify Face=index to choose the surface on a shared edge") => {
                 CommandError::Usage("BlendCrv face selection on shared edges is not supported yet")
             }
             error => error,
         })?;
-        let planar = reference
-            .target
-            .surface
-            .plane(Tolerance::NUMERICAL_VALIDATION)?
-            .is_some();
+        let uv = reference.target.location(point, true)?.uv;
         Ok(Self {
             reference,
-            planar,
+            uv,
             angle: 0.,
         })
     }
+    pub fn move_contact(&mut self, point: Point3) -> Result<(), CommandError> {
+        self.uv = self.reference.target.location(point, true)?.uv;
+        Ok(())
+    }
+    fn normal(&self) -> Result<Vector3, CommandError> {
+        Ok(self
+            .reference
+            .target
+            .surface
+            .normal_at(self.uv[0], self.uv[1])?
+            .as_vector()
+            .scaled(if self.reference.target.reversed {
+                -1.
+            } else {
+                1.
+            })?)
+    }
     pub fn direction(&self, guide: &Guide, i: usize) -> Result<UnitVector3, CommandError> {
-        let normal = self.reference.target.source_normal(guide.point()?, true)?;
+        let normal = self.normal()?;
         self.direction_with_normal(guide, i, normal)
     }
     fn direction_with_normal(
@@ -62,23 +80,29 @@ impl SurfaceGuide {
         })
     }
     pub fn jet(&self, guide: &Guide, i: usize, order: u8) -> Result<CurveBlendJet, CommandError> {
-        if order >= 3 && !self.planar {
-            return Err(CommandError::Usage(
-                "G3/G4 surface-edge blends currently require a planar face",
-            ));
-        }
-        let location = self.reference.target.location(guide.point()?, true)?;
-        let normal = location
-            .surface
-            .normal_at(location.uv[0], location.uv[1])?
-            .as_vector()
-            .scaled(if location.reversed { -1. } else { 1. })?;
+        let normal = self.normal()?;
         let direction = self.direction_with_normal(guide, i, normal)?;
         let zero = Vector3::try_new(0., 0., 0.)?;
-        let curvature = if order >= 2 && !self.planar {
-            let shape = location
+        if order >= 3 {
+            let jet = self
+                .reference
+                .target
                 .surface
-                .curvature_at(location.uv[0], location.uv[1])?;
+                .evaluate_with_third_derivatives(self.uv[0], self.uv[1])?
+                .normal_parameter_line_jet(direction)?;
+            // Native uses the normalized straight-UV-line third target projected
+            // onto the face normal, and retains its zero-fourth default for G4.
+            return Ok(
+                CurveBlendJet::new(guide.point()?, Some(direction), jet.curvature)
+                    .with_higher_derivatives(jet.third_derivative, zero),
+            );
+        }
+        let curvature = if order >= 2 {
+            let shape = self
+                .reference
+                .target
+                .surface
+                .curvature_at(self.uv[0], self.uv[1])?;
             let a = direction.as_vector().dot(shape.directions[0].as_vector())?;
             let b = direction.as_vector().dot(shape.directions[1].as_vector())?;
             shape

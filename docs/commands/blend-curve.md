@@ -19,8 +19,8 @@ clicked locations, independently of BlendStart. Default tangents point outward,
 perpendicular to each boundary. `AtAngle_1=degrees` and `AtAngle_2=degrees` turn
 those tangents within the surface tangent plane while retaining handle lengths.
 Enter `Curves` to select an ordinary curve next. Ordinary boundary picks in
-Curves mode follow the boundary curve instead. Surface constraints support
-G0–G2 on regular faces and G3/G4 on planar faces; curved-face G3/G4 is guarded.
+Curves mode follow the boundary curve instead. Regular surface faces support
+G0–G4 using the [measured surface construction policy](../blend-curve-surface-high.md).
 
 For one endpoint, enter `Point` and pick or type a location instead of selecting
 a curve. The point is locked to G0; the curve can use G0–G4. At least one endpoint
@@ -97,7 +97,7 @@ blend derivative; this does not establish general mathematical G4 continuity.
 See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_edges
+python3 -m tools.rhino_oracle.check_blend_curve_surface_high
 ```
 
 Captures use private Xvfb; application tests are windowless. Whole closed sources,

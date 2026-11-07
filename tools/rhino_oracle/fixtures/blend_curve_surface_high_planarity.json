@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_near_plane_g2",
+      "case": "surface_high_near_plane_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_near_plane_g3",
+      "case": "surface_high_near_plane_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_near_plane_g4",
+      "case": "surface_high_near_plane_g4"
+    }
+  ]
+}

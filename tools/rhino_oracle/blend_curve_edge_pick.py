@@ -20,6 +20,10 @@ def measure(source,vp,view,pixel,host,object_id):
                 row=dict(face=int(index),reversed=bool(face.OrientationIsReversed),found=bool(found))
                 if found:
                     row.update(uv=[float(u),float(v)],point=host['_xyz'](face.PointAt(u,v)),normal=host['_xyz'](face.NormalAt(u,v)),trims=[dict(reversed=bool(trim.IsReversed()),type=str(trim.TrimType))for loop in face.Loops for trim in loop.Trims if trim.Edge is not None and trim.Edge.EdgeIndex==edge.EdgeIndex])
+                    evaluated,position,partials=face.Evaluate(u,v,3)
+                    row['third_order']=dict(success=bool(evaluated),point=host['_xyz'](position),partials=[host['_xyz'](d)for d in partials]if partials is not None else None)
+                    evaluated,position,partials=face.Evaluate(u,v,4)
+                    row['fourth_order']=dict(success=bool(evaluated),point=host['_xyz'](position),partials=[host['_xyz'](d)for d in partials]if partials is not None else None)
                 faces.append(row)
             candidates.append(dict(edge=int(edge.EdgeIndex),parameter=float(t),point=host['_xyz'](p),tangent=host['_xyz'](edge.TangentAt(t)),depth=float(depth),distance=float(distance),faces=faces))
         references=[]

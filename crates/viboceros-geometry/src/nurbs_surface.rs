@@ -26,7 +26,7 @@ mod smoothing;
 mod soft_edit;
 pub use soft_edit::SurfaceSoftEdit;
 mod wires;
-pub use evaluate::SurfaceJet2;
+pub use evaluate::{SurfaceJet2, SurfaceJet3};
 
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 

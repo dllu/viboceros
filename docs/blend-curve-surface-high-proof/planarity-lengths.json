@@ -1,0 +1,20 @@
+{
+  "surface_high_near_plane_g2": {
+    "native_domain_span": 3942.7518056027193,
+    "independent_length": 3942.751177630388,
+    "native_domain_minus_length": 0.0006279723311308771,
+    "method": "Adaptive Simpson integration of the captured polynomial derivative; absolute budget 1e-11. Expected data only."
+  },
+  "surface_high_near_plane_g3": {
+    "native_domain_span": 6343.701343601686,
+    "independent_length": 6343.7011271634665,
+    "native_domain_minus_length": 0.00021643821946781827,
+    "method": "Adaptive Simpson integration of the captured polynomial derivative; absolute budget 1e-11. Expected data only."
+  },
+  "surface_high_near_plane_g4": {
+    "native_domain_span": 8898.525280306314,
+    "independent_length": 8898.525477864643,
+    "native_domain_minus_length": -0.00019755832909140736,
+    "method": "Adaptive Simpson integration of the captured polynomial derivative; absolute budget 1e-11. Expected data only."
+  }
+}

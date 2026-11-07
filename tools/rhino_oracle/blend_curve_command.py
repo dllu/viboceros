@@ -169,3 +169,18 @@ if __package__:from .blend_curve_edge_holdouts import holdouts as edge_holdouts
 else:from blend_curve_edge_holdouts import holdouts as edge_holdouts
 EDGE_HOLDOUTS=edge_holdouts(case,pick,B)
 CASES.update(EDGE_HOLDOUTS)
+
+if __package__:from .blend_curve_surface_high_cases import discovery as surface_high_discovery
+else:from blend_curve_surface_high_cases import discovery as surface_high_discovery
+SURFACE_HIGH_DISCOVERY=surface_high_discovery(case,pick,B,CUBIC_B)
+CASES.update(SURFACE_HIGH_DISCOVERY)
+
+if __package__:from .blend_curve_surface_high_cases import holdouts as surface_high_holdouts
+else:from blend_curve_surface_high_cases import holdouts as surface_high_holdouts
+SURFACE_HIGH_HOLDOUTS=surface_high_holdouts(case,pick,CUBIC_B)
+CASES.update(SURFACE_HIGH_HOLDOUTS)
+
+if __package__:from .blend_curve_surface_high_cases import planarity as surface_high_planarity
+else:from blend_curve_surface_high_cases import planarity as surface_high_planarity
+SURFACE_HIGH_PLANARITY=surface_high_planarity(case)
+CASES.update(SURFACE_HIGH_PLANARITY)

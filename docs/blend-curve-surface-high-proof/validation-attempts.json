@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 101,
+    "log": "planarity-before.log.gz",
+    "reason": "The prior planarity shortcut discarded nonzero surface derivatives amplified by a prescribed 2000-unit handle. Native G2 mismatch was 0.00288 in normalized derivatives; remove the shortcut for G2/G3/G4."
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 101,
+    "log": "planarity-domain-before.log.gz",
+    "reason": "After removing the shortcut, the first long-handle case exceeds the unchanged parameter-domain gate. Independent integration agrees with the Rust length; all three long-handle cases remain domain diagnostics, with geometry/derivatives/history/archives replayed."
+  }
+]

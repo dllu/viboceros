@@ -211,6 +211,7 @@ pub use smoothing::{SmoothingCoordinates, SmoothingOptions};
 mod spiral;
 mod spline_collocation;
 mod surface_curvature;
+mod surface_directional;
 mod surface_distance;
 pub use surface_distance::SurfaceMinimumDistance;
 mod surface_pullback;
@@ -382,7 +383,7 @@ pub use nurbs::{
     knot_group_removal_knots, knot_removal_knots,
 };
 pub use nurbs_surface::{
-    MAX_PLANE_CONTROL_POINTS, NurbsSurface, SurfaceExtensionEdge, SurfaceJet2,
+    MAX_PLANE_CONTROL_POINTS, NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceJet3,
     SurfaceKnotDirection, SurfaceSoftEdit,
 };
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
@@ -404,6 +405,7 @@ pub use spiral::{
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN,
 };
 pub use surface_curvature::SurfaceCurvature;
+pub use surface_directional::SurfaceNormalJet3;
 pub use sweep::{
     Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection, SweepSurfaceOperations,
 };

@@ -4,7 +4,7 @@ use super::blend_curve_points::points;
 use super::blend_curve_symmetry::measurements;
 use super::line_reference::inputs as reference_inputs;
 #[path = "../../../crates/viboceros-command/tests/support/blend_curve_edges.rs"]
-mod edges;
+pub(super) mod edges;
 use super::plane_surface_native_support as native;
 use super::*;
 

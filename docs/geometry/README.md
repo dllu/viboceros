@@ -29,6 +29,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Unit directions and model tolerances](../unit-directions-and-model-tolerance.md)
 - [Primitive directions and construction-plane parameter units](../direction-adapters.md)
 - [Surface frames, arrays and orientation under UV rescaling](../surface-parameter-frames.md)
+- [Third surface partials and normalized parameter-line targets](../blend-curve-surface-high.md)
 - [Surface offsets, boundary clipping and Rhino comparisons](../surface-geodesic-offset.md)
 - [Pullback parameter units and UV border domains](../pullback-parameter-units.md)
 - [Curve-array frames and Flow direction units](../curve-direction-units.md)

@@ -2,6 +2,9 @@
 
 [Command guide](commands/blend-curve.md) · [Validation record](blend-curve-edges-validation.json)
 
+This record qualifies the initial surface-edge implementation. Curved-face
+G3/G4 now has a [separate qualification](blend-curve-surface-high.md).
+
 `Edges` selects supporting-face constraints at the clicked edge locations.
 `Curves` selects ordinary curve constraints, including boundary curves. Native
 captures establish this distinction: the same plane boundary produces a tangent
@@ -35,7 +38,7 @@ PickContext receipts record edge candidates, parameters, screen distances,
 supporting-face UVs/normals and trim orientations before input. Output geometry
 is used only as an expectation. No desktop window is opened.
 
-Curved-face G3/G4 is explicitly rejected. Alt dragging, shared-face selection,
+At the pinned initial revision, curved-face G3/G4 was rejected. Alt dragging, shared-face selection,
 seams, trimmed/closed boundaries, singular frames, arbitrary overlapping picks,
 continuous-distance proof and comparative performance remain unqualified.
 

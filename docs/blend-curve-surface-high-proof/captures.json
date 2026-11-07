@@ -1,0 +1,44 @@
+[
+  {
+    "family": "blend_curve_surface_high_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_surface_high_discovery"
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz",
+    "observation_sha256": "a5865432e3693615b15ce9da8bfe4b2997a03d4c237867edf9316286ad09f437",
+    "request_sha256": "3d7a906af3a754a1868e78a19526e49b10f793f59d2be4780960911c0bc126a4"
+  },
+  {
+    "family": "blend_curve_surface_high_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_surface_high_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz",
+    "observation_sha256": "c8494925cd31d2faba776d6b9a17093185f682826cf4eb69acf899b31373b50e",
+    "request_sha256": "ad99c62c37ce06163ba306e4878e52f88838aa1f39ae42fff9a26f0f3dd532d9"
+  },
+  {
+    "family": "blend_curve_surface_high_planarity",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_surface_high_planarity"
+    ],
+    "exit_status": 0,
+    "log": "capture-planarity.log.gz",
+    "observation_sha256": "60e090bdbc33db92a28e4349156b16fa8650adb85e0fdac509cb187de47214d3",
+    "request_sha256": "61de454ae7bbdee2ec9fd5630364b4677a073f1ac8d10a6e39c2a4eb914c1748"
+  }
+]

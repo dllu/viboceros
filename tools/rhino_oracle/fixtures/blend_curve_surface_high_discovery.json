@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_cubic_g3",
+      "case": "surface_high_cubic_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_cubic_g4",
+      "case": "surface_high_cubic_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_skew_g3",
+      "case": "surface_high_skew_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_skew_g4",
+      "case": "surface_high_skew_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_metric_g3",
+      "case": "surface_high_metric_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_metric_g4",
+      "case": "surface_high_metric_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_rational_g3",
+      "case": "surface_high_rational_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_rational_g4",
+      "case": "surface_high_rational_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_curved_edge_g3",
+      "case": "surface_high_curved_edge_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_curved_edge_g4",
+      "case": "surface_high_curved_edge_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_weighted_g3",
+      "case": "surface_high_weighted_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_weighted_g4",
+      "case": "surface_high_weighted_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_angle_g3",
+      "case": "surface_high_angle_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_reverse_g3",
+      "case": "surface_high_reverse_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_point_g3",
+      "case": "surface_high_point_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_mixed_g3",
+      "case": "surface_high_mixed_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_angle_g4",
+      "case": "surface_high_angle_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_reverse_g4",
+      "case": "surface_high_reverse_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_point_g4",
+      "case": "surface_high_point_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "surface_high_mixed_g4",
+      "case": "surface_high_mixed_g4"
+    }
+  ]
+}

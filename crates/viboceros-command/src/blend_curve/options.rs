@@ -113,7 +113,10 @@ impl Input {
                 let g = g.curve_mut().ok_or(CommandError::Usage(
                     "A point endpoint has no curve parameter",
                 ))?;
-                g.curve_ref().evaluate(t)?;
+                let point = g.curve_ref().evaluate(t)?;
+                if let Some(surface) = &mut g.surface {
+                    std::sync::Arc::make_mut(surface).move_contact(point)?;
+                }
                 g.parameter = t;
             } else if option_name_eq(stem, "Flip") {
                 let v = crate::parse_yes_no(value.trim_start_matches('_'))

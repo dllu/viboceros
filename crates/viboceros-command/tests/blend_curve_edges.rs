@@ -134,7 +134,7 @@ fn replay_workflows() {
 }
 
 #[test]
-fn unqualified_surface_orders_and_stale_parents_fail_without_mutating_the_candidate() {
+fn invalid_surface_options_and_stale_parents_fail_without_mutating_the_candidate() {
     let rows = native::read("blend_curve_edge_discovery");
     let value = &rows["results"]
         .as_array()
@@ -147,12 +147,7 @@ fn unqualified_surface_orders_and_stale_parents_fail_without_mutating_the_candid
     blend::replay(&mut input, &doc, value);
     let before = input.preview().cloned();
     let args = input.arguments().unwrap();
-    for option in [
-        "Continuity_1=G3",
-        "Continuity_1=G4",
-        "AtAngle_1=NaN",
-        "Flip1=Yes",
-    ] {
+    for option in ["AtAngle_1=NaN", "Flip1=Yes"] {
         assert!(input.option(option).is_err(), "{option}");
         assert_eq!(input.preview(), before.as_ref());
         assert_eq!(input.arguments().unwrap(), args);

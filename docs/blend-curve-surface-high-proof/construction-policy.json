@@ -1,0 +1,765 @@
+{
+  "third_order": [
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_cubic_g3",
+      "endpoint": 0,
+      "measured": [
+        1.0356819329943452e-16,
+        -2.3521936931033447e-17,
+        0.08333333333333337
+      ],
+      "parameter_line_normal_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "normal_section_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "parameter_line_error": 1.198379743291588e-16,
+      "normal_section_error": 1.198379743291588e-16
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_cubic_g3",
+      "endpoint": 1,
+      "measured": [
+        2.589204832485863e-17,
+        -4.7043873862066907e-17,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 5.369845653654187e-17,
+      "normal_section_error": 5.369845653654187e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_cubic_g4",
+      "endpoint": 0,
+      "measured": [
+        -2.568907204483756e-17,
+        5.645264863448026e-17,
+        0.0833333333333333
+      ],
+      "parameter_line_normal_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "normal_section_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "parameter_line_error": 6.3556454863465e-17,
+      "normal_section_error": 6.3556454863465e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_cubic_g4",
+      "endpoint": 1,
+      "measured": [
+        1.0275628817935023e-16,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 1.0275628817935023e-16,
+      "normal_section_error": 1.0275628817935023e-16
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_skew_g3",
+      "endpoint": 0,
+      "measured": [
+        0.005846071457645923,
+        -2.0577919462067057e-17,
+        0.011018054158174147
+      ],
+      "parameter_line_normal_target": [
+        0.005846071457645896,
+        -0.0,
+        0.011018054158174138
+      ],
+      "normal_section_target": [
+        0.005846071457645898,
+        -0.0,
+        0.011018054158174142
+      ],
+      "parameter_line_error": 3.495223102134804e-17,
+      "normal_section_error": 3.2912493655401614e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_skew_g3",
+      "endpoint": 1,
+      "measured": [
+        -2.0228474247199324e-17,
+        -3.582163247956885e-17,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 4.1138552768308564e-17,
+      "normal_section_error": 4.1138552768308564e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_skew_g4",
+      "endpoint": 0,
+      "measured": [
+        0.0058460714576459155,
+        0.0,
+        0.011018054158174166
+      ],
+      "parameter_line_normal_target": [
+        0.005846071457645896,
+        -0.0,
+        0.011018054158174138
+      ],
+      "normal_section_target": [
+        0.005846071457645898,
+        -0.0,
+        0.011018054158174142
+      ],
+      "parameter_line_error": 3.3682237275240583e-17,
+      "normal_section_error": 2.98453111774546e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_skew_g4",
+      "endpoint": 1,
+      "measured": [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 0.0,
+      "normal_section_error": 0.0
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_metric_g3",
+      "endpoint": 0,
+      "measured": [
+        0.0702790437785969,
+        -2.053563142010052e-17,
+        0.13279459034081179
+      ],
+      "parameter_line_normal_target": [
+        0.07027904377859695,
+        -0.0,
+        0.1327945903408118
+      ],
+      "normal_section_target": [
+        0.13605730041975586,
+        -0.0,
+        0.2570847937122992
+      ],
+      "parameter_line_error": 6.53725634084873e-17,
+      "normal_section_error": 0.14062301981139458
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_metric_g3",
+      "endpoint": 1,
+      "measured": [
+        -3.939870148868158e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 3.939870148868158e-17,
+      "normal_section_error": 3.939870148868158e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_metric_g4",
+      "endpoint": 0,
+      "measured": [
+        0.0702790437785969,
+        0.0,
+        0.13279459034081173
+      ],
+      "parameter_line_normal_target": [
+        0.07027904377859695,
+        -0.0,
+        0.1327945903408118
+      ],
+      "normal_section_target": [
+        0.13605730041975586,
+        -0.0,
+        0.2570847937122992
+      ],
+      "parameter_line_error": 1.0007415106216802e-16,
+      "normal_section_error": 0.14062301981139463
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_metric_g4",
+      "endpoint": 1,
+      "measured": [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 0.0,
+      "normal_section_error": 0.0
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_rational_g3",
+      "endpoint": 0,
+      "measured": [
+        1.0039725142028378e-16,
+        0.0,
+        -0.021666666666666685
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.021666666666666678
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.021666666666666678
+      ],
+      "parameter_line_error": 1.0063675442579293e-16,
+      "normal_section_error": 1.0063675442579293e-16
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_rational_g3",
+      "endpoint": 1,
+      "measured": [
+        -2.5099312855070944e-17,
+        -4.7043873862066925e-17,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 5.3320742434317184e-17,
+      "normal_section_error": 5.3320742434317184e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_rational_g4",
+      "endpoint": 0,
+      "measured": [
+        -4.851515950692202e-17,
+        0.0,
+        -0.021666666666666678
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.021666666666666678
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.021666666666666678
+      ],
+      "parameter_line_error": 4.851515950692202e-17,
+      "normal_section_error": 4.851515950692202e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_rational_g4",
+      "endpoint": 1,
+      "measured": [
+        4.8515159506922035e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 4.8515159506922035e-17,
+      "normal_section_error": 4.8515159506922035e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_curved_edge_g3",
+      "endpoint": 0,
+      "measured": [
+        0.07342390043477663,
+        0.0070890246228405085,
+        0.18511713012042286
+      ],
+      "parameter_line_normal_target": [
+        0.07342390043477665,
+        0.007089024622840535,
+        0.1851171301204229
+      ],
+      "normal_section_target": [
+        0.1379300214994365,
+        0.01331704408031295,
+        0.34775065865787647
+      ],
+      "parameter_line_error": 6.322228207671754e-17,
+      "normal_section_error": 0.17506996454478976
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_curved_edge_g3",
+      "endpoint": 1,
+      "measured": [
+        -4.310400432898303e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 4.310400432898303e-17,
+      "normal_section_error": 4.310400432898303e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_curved_edge_g4",
+      "endpoint": 0,
+      "measured": [
+        0.07342390043477659,
+        0.007089024622840531,
+        0.18511713012042283
+      ],
+      "parameter_line_normal_target": [
+        0.07342390043477665,
+        0.007089024622840535,
+        0.1851171301204229
+      ],
+      "normal_section_target": [
+        0.1379300214994365,
+        0.01331704408031295,
+        0.34775065865787647
+      ],
+      "parameter_line_error": 1.0016807685299136e-16,
+      "normal_section_error": 0.17506996454478982
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_curved_edge_g4",
+      "endpoint": 1,
+      "measured": [
+        -8.64652097483536e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 8.64652097483536e-17,
+      "normal_section_error": 8.64652097483536e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_weighted_g3",
+      "endpoint": 0,
+      "measured": [
+        0.012219565566978709,
+        0.0008485607461041391,
+        0.0400819863003145
+      ],
+      "parameter_line_normal_target": [
+        0.0122195655669787,
+        0.000848560746104196,
+        0.04008198630031454
+      ],
+      "normal_section_target": [
+        0.027250098308740815,
+        0.001892322900149966,
+        0.08938436158849718
+      ],
+      "parameter_line_error": 6.722272055003858e-17,
+      "normal_section_error": 0.05155318189008518
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_weighted_g3",
+      "endpoint": 1,
+      "measured": [
+        2.2982561648464478e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 2.2982561648464478e-17,
+      "normal_section_error": 2.2982561648464478e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_weighted_g4",
+      "endpoint": 0,
+      "measured": [
+        0.012219565566978676,
+        0.0008485607461041928,
+        0.04008198630031479
+      ],
+      "parameter_line_normal_target": [
+        0.012219565566978707,
+        0.0008485607461041969,
+        0.040081986300314544
+      ],
+      "normal_section_target": [
+        0.027250098308740766,
+        0.0018923229001499638,
+        0.08938436158849698
+      ],
+      "parameter_line_error": 2.448950402103542e-16,
+      "normal_section_error": 0.05155318189008472
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_weighted_g4",
+      "endpoint": 1,
+      "measured": [
+        4.4534760941365196e-17,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 4.4534760941365196e-17,
+      "normal_section_error": 4.4534760941365196e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_angle_g3",
+      "endpoint": 0,
+      "measured": [
+        0.18685627088564294,
+        5.1180034353862707e-17,
+        0.3530711377212493
+      ],
+      "parameter_line_normal_target": [
+        0.18685627088564305,
+        -0.0,
+        0.35307113772124954
+      ],
+      "normal_section_target": [
+        0.1928556983544679,
+        -0.0,
+        0.3644072554338334
+      ],
+      "parameter_line_error": 2.5347416857907656e-16,
+      "normal_section_error": 0.012825782422419848
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_angle_g3",
+      "endpoint": 1,
+      "measured": [
+        -6.686724928458541e-17,
+        -3.343362464229271e-17,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 7.475985743437859e-17,
+      "normal_section_error": 7.475985743437859e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_reverse_g3",
+      "endpoint": 0,
+      "measured": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 0.0,
+      "normal_section_error": 0.0
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_reverse_g3",
+      "endpoint": 1,
+      "measured": [
+        -1.03568193540625e-16,
+        -0.0,
+        -0.0833333333333333
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.08333333333333331
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.08333333333333331
+      ],
+      "parameter_line_error": 1.0449384531017644e-16,
+      "normal_section_error": 1.0449384531017644e-16
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_point_g3",
+      "endpoint": 0,
+      "measured": [
+        7.059465304485116e-18,
+        0.0,
+        0.08333333333333337
+      ],
+      "parameter_line_normal_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "normal_section_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "parameter_line_error": 5.595823408047119e-17,
+      "normal_section_error": 5.595823408047119e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_mixed_g3",
+      "endpoint": 0,
+      "measured": [
+        0.07067074756187867,
+        0.0,
+        0.13422655694264346
+      ],
+      "parameter_line_normal_target": [
+        0.07067074756187859,
+        -0.0,
+        0.1342265569426434
+      ],
+      "normal_section_target": [
+        0.13802644954193552,
+        -0.0,
+        0.2621567724723672
+      ],
+      "parameter_line_error": 1.0007415106216802e-16,
+      "normal_section_error": 0.14457845840479763
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_angle_g4",
+      "endpoint": 0,
+      "measured": [
+        0.18685627088564313,
+        -1.3827786526547008e-16,
+        0.35307113772124954
+      ],
+      "parameter_line_normal_target": [
+        0.18685627088564305,
+        -0.0,
+        0.35307113772124954
+      ],
+      "normal_section_target": [
+        0.1928556983544679,
+        -0.0,
+        0.3644072554338334
+      ],
+      "parameter_line_error": 1.6141287378077854e-16,
+      "normal_section_error": 0.01282578242241956
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_angle_g4",
+      "endpoint": 1,
+      "measured": [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 0.0,
+      "normal_section_error": 0.0
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_reverse_g4",
+      "endpoint": 0,
+      "measured": [
+        -1.284453600367014e-16,
+        0.0,
+        0.0
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "parameter_line_error": 1.284453600367014e-16,
+      "normal_section_error": 1.284453600367014e-16
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_reverse_g4",
+      "endpoint": 1,
+      "measured": [
+        2.5689072007340293e-17,
+        -0.0,
+        -0.08333333333333333
+      ],
+      "parameter_line_normal_target": [
+        0.0,
+        0.0,
+        -0.08333333333333331
+      ],
+      "normal_section_target": [
+        0.0,
+        0.0,
+        -0.08333333333333331
+      ],
+      "parameter_line_error": 2.9197969364958214e-17,
+      "normal_section_error": 2.9197969364958214e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_point_g4",
+      "endpoint": 0,
+      "measured": [
+        1.7523659194998362e-17,
+        1.7215730851244578e-17,
+        0.08333333333333331
+      ],
+      "parameter_line_normal_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "normal_section_target": [
+        -0.0,
+        -0.0,
+        0.08333333333333331
+      ],
+      "parameter_line_error": 2.4565423267775075e-17,
+      "normal_section_error": 2.4565423267775075e-17
+    },
+    {
+      "id": "blend_curve_surface_high_discovery/surface_high_mixed_g4",
+      "endpoint": 0,
+      "measured": [
+        0.07067074756187865,
+        0.0,
+        0.13422655694264357
+      ],
+      "parameter_line_normal_target": [
+        0.07067074756187859,
+        -0.0,
+        0.1342265569426434
+      ],
+      "normal_section_target": [
+        0.13802644954193552,
+        -0.0,
+        0.2621567724723672
+      ],
+      "parameter_line_error": 1.7554167342883506e-16,
+      "normal_section_error": 0.14457845840479755
+    }
+  ],
+  "fourth_order": {
+    "id": "blend_curve_surface_high_holdouts/surface_high_fourth_g4",
+    "source_normalized_fourth_normal": -1.152,
+    "blend_normalized_fourth_norm": 2.136170797493067e-16
+  }
+}
