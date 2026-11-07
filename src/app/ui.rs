@@ -417,6 +417,11 @@ impl eframe::App for VibocerosApp {
                 self.line_normal.as_ref()?.source.as_ref()?.curve()
             })
             .or_else(|| self.curve_line.as_ref()?.input.base_curve())
+            .or_else(|| {
+                self.arc_blend_session
+                    .as_ref()?
+                    .cursor_curve(self.plane_prompt.is_some())
+            })
             .or(normal_curve)
             .or_else(|| {
                 self.refinement_prompt
@@ -1193,10 +1198,15 @@ impl eframe::App for VibocerosApp {
                                 .refinement_prompt
                                 .as_ref()
                                 .and_then(refinement::Prompt::control_removal),
+                            arc_blend: self
+                                .arc_blend_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map(|s| s.preview_input()),
                             preview_curve: self
                                 .arc_blend_session
                                 .as_ref()
-                                .and_then(|s| s.input.preview())
+                                .and_then(|s| s.preview_input().preview())
                                 .or(preview_curve.as_deref())
                                 .or_else(|| {
                                     subcurve_preview

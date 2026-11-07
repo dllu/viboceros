@@ -1,0 +1,62 @@
+[
+  {
+    "family": "arc_blend_handles",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_handles"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_handles.log.gz"
+  },
+  {
+    "family": "arc_blend_handle_getters",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_handle_getters"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_handle_getters.log.gz"
+  },
+  {
+    "family": "arc_blend_handle_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_handle_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_handle_holdouts.log.gz"
+  },
+  {
+    "family": "arc_blend_balance",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_balance"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_balance.log.gz"
+  },
+  {
+    "family": "arc_blend_chord_handles",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_arc_blend_chord_handles"
+    ],
+    "exit_status": 0,
+    "log": "capture-arc_blend_chord_handles.log.gz"
+  }
+]

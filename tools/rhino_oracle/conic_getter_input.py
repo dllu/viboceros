@@ -48,7 +48,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
-    if command=='ArcBlend':prefixes=('Select','Arc','Control','Radius','Point','Ratio','Choose','Enter')
+    if command=='ArcBlend':prefixes=('Select','Set arc control','Arc','Control','Radius','Point','Ratio','Choose','Enter')
     if command=='Line':prefixes=('Select','Middle','Start','End','Angle','Length','First','Second','Direction','Point','Pivot','Bisector')
     if command=='Lines':prefixes=('Start','End','Next','Point')
     if command=='ReadCommandFile':prefixes=('Start of line','End of line','Start of polyline','Next point','Location of point object')
@@ -119,6 +119,9 @@ def drive(op,host,guides,command="Conic",start_script=None):
                         E.IfThen(confirm,block([E.Assign(item(counts,i),integer(10)),E.Assign(item(last,0),now)]+([E.Assign(stage,integer(i+1))]if i+1==len(actions)else[])+[log('\nReparameterize accepts selection %s\n'%op['id']),send_token('')]))])
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
+            if op.get('op')=='arc_blend_command' and not located:
+                transform=vp.GetPickTransform(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                clicks[-1]['pick_transform']=[[float(transform[j,k])for k in range(4)]for j in range(4)]
             if op.get('op')in('line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command'):
                 ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]

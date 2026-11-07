@@ -10,6 +10,9 @@ pub(super) struct EdgePointCursor {
     snap: Option<ObjectSnap>,
 }
 impl EdgePointCursor {
+    pub(super) fn new(parameter: Real, snap: Option<ObjectSnap>) -> Self {
+        Self { parameter, snap }
+    }
     pub(super) fn has_snap(self) -> bool {
         self.snap.is_some()
     }

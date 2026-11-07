@@ -77,7 +77,7 @@ fn picked_curve_ends_and_options_match_native_geometry_selection_history_and_arc
     }
     assert_eq!(count, 6);
 }
-fn scene() -> (VibocerosApp, Vec<ObjectId>) {
+pub(super) fn scene() -> (VibocerosApp, Vec<ObjectId>) {
     let mut app = test_app();
     for text in ["Line -5,0,0 0,0,0", "Line 5,4,0 5,9,0", "Point -10,-10,0"] {
         app.commands.execute(&mut app.document, text).unwrap();
@@ -93,7 +93,7 @@ fn scene() -> (VibocerosApp, Vec<ObjectId>) {
     app.smart_track = false;
     (app, ids)
 }
-fn frame(
+pub(super) fn frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,
@@ -104,10 +104,19 @@ fn frame(
         object_filter: picking.then_some(viboceros_command::ObjectSelectionFilter::Curves),
         edge_pick: picking,
         curve_or_edge_pick: picking,
+        arc_blend: app
+            .arc_blend_session
+            .as_ref()
+            .filter(|_| app.plane_prompt.is_none())
+            .map(|s| s.preview_input()),
+        edge_curve: app
+            .arc_blend_session
+            .as_ref()
+            .and_then(|s| s.cursor_curve(app.plane_prompt.is_some())),
         preview_curve: app
             .arc_blend_session
             .as_ref()
-            .and_then(|s| s.input.preview()),
+            .and_then(|s| s.preview_input().preview()),
         ..Default::default()
     };
     let mut output = ViewportOutput::default();
@@ -130,7 +139,11 @@ fn frame(
         .drop_without_applying_deltas();
     (output, rect)
 }
-fn click(app: &mut VibocerosApp, context: &egui::Context, p: egui::Pos2) -> ViewportOutput {
+pub(super) fn click(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    p: egui::Pos2,
+) -> ViewportOutput {
     frame(app, context, vec![egui::Event::PointerMoved(p)]);
     frame(
         app,

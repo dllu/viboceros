@@ -7,7 +7,9 @@ use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{ArcBlendOptions, NurbsCurve, Point3, PolyCurve3, Real, Tolerance};
 mod arguments;
 mod commit;
+mod handles;
 mod options;
+pub use handles::Handle;
 pub const USAGE: &str = "ArcBlend Curve=id point Curve=id point [Ratio=positive] [AlternateSolution=Yes|No] [Trim=Yes|No] [Join=Yes|No] [Parameter1=t] [Parameter2=t]";
 #[derive(Clone, Debug)]
 struct Guide {
@@ -24,6 +26,8 @@ pub struct Input {
     tolerance: Tolerance,
     curve: Option<PolyCurve3>,
     preview: Option<NurbsCurve>,
+    active_handle: Option<Handle>,
+    adjustment_curve: Option<handles::AdjustmentCurve>,
 }
 impl Input {
     pub fn new(tolerance: Tolerance) -> Self {
@@ -35,12 +39,16 @@ impl Input {
             tolerance,
             curve: None,
             preview: None,
+            active_handle: None,
+            adjustment_curve: None,
         }
     }
     pub fn reset(&mut self, tolerance: Tolerance) {
         self.guides.clear();
         self.curve = None;
         self.preview = None;
+        self.active_handle = None;
+        self.adjustment_curve = None;
         self.tolerance = tolerance;
     }
     pub fn ready(&self) -> bool {
@@ -53,10 +61,19 @@ impl Input {
         self.preview.as_ref()
     }
     pub fn prompt(&self) -> &'static str {
+        if let Some(handle) = self.active_handle {
+            return match handle {
+                Handle::Start => "Select start point location",
+                Handle::End => "Select end point location",
+                Handle::Ratio => "Set arc control polygon length ratio",
+            };
+        }
         match self.guides.len() {
             0 => "Select first curve near end",
             1 => "Select second curve near end",
-            _ => "Ratio, AlternateSolution, Trim or Join; Enter accepts, Esc cancels",
+            _ => {
+                "Pick a handle, Ratio, AlternateSolution, Trim or Join; Enter accepts, Esc cancels"
+            }
         }
     }
     pub fn reference_count(&self) -> usize {

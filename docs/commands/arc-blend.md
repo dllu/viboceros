@@ -4,7 +4,8 @@
 
 `ArcBlend` connects two open curve ends with two tangent circular arcs. Pick
 each source near the desired end, adjust options, then press Enter to commit
-the preview. Esc cancels without changing geometry or pending redo history.
+the preview. [Adjustment handles](arc-blend-handles.md) support endpoint sliding,
+positive ratios and held drags. Esc cancels without changing geometry or pending redo history.
 Source selection clears when the command starts. The result uses the current
 layer, with one undo record for the blend and any source edits.
 
@@ -50,7 +51,7 @@ python3 -m tools.rhino_oracle.check_arc_blend
 ```
 
 This is a first implementation. RadiusDifference, zero-ratio automatic
-solving, draggable handles, SubCrv and remembered Trim/Join settings remain
+solving, SubCrv and remembered Trim/Join settings remain
 unsupported. Native command comparisons cover endpoint contacts on lines;
 interior parameter edits and edge references lack native qualification.
 Three raw non-unit SDK direction cases have discontinuous native join

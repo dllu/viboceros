@@ -1,11 +1,30 @@
 //! Ordered curve picks and cached ArcBlend preview outside document history.
 use super::*;
+mod adjustment;
 use viboceros_command::arc_blend::Input;
 #[derive(Clone)]
 pub(super) struct Session {
     pub input: Input,
     pub pointer: Option<egui::Pos2>,
     binding: Option<(ObjectId, Option<usize>)>,
+    candidate: Option<(f64, Input)>,
+}
+impl Session {
+    pub(super) fn cursor_curve(
+        &self,
+        plane_prompt_active: bool,
+    ) -> Option<&viboceros_geometry::NurbsCurve> {
+        if plane_prompt_active {
+            None
+        } else {
+            self.input.adjustment_curve()
+        }
+    }
+    pub(super) fn preview_input(&self) -> &Input {
+        self.candidate
+            .as_ref()
+            .map_or(&self.input, |(_, input)| input)
+    }
 }
 impl VibocerosApp {
     pub(super) fn try_start_arc_blend(&mut self, text: &str) -> bool {
@@ -39,6 +58,7 @@ impl VibocerosApp {
             input,
             pointer: None,
             binding: None,
+            candidate: None,
         });
         self.active_command = Some(InteractiveCommand::ArcBlend);
         self.push_log(format!("> {text}"));
@@ -59,6 +79,7 @@ impl VibocerosApp {
             let s = self.arc_blend_session.as_mut().unwrap();
             s.input.reset(self.document.tolerance());
             s.binding = None;
+            s.candidate = None;
             self.push_log("ArcBlend reference changed; pick the curves again".into());
             self.arc_blend_prompt();
         }
@@ -121,6 +142,16 @@ impl VibocerosApp {
             return true;
         }
         self.validate_arc_blend();
+        if self
+            .arc_blend_session
+            .as_ref()
+            .unwrap()
+            .input
+            .active_handle()
+            .is_some()
+        {
+            return self.continue_arc_blend_adjustment(text);
+        }
         if text.is_empty() {
             let arguments = self.arc_blend_session.as_ref().unwrap().input.arguments();
             match arguments.and_then(|args| self.commands.execute(&mut self.document, &args)) {

@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_spatial_typed",
+      "case": "arc_chord_spatial_typed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_spatial_mouse",
+      "case": "arc_chord_spatial_mouse"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_alternate_ratio",
+      "case": "arc_chord_alternate_ratio"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_spatial_perspective_ratio",
+      "case": "arc_chord_spatial_perspective_ratio"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_s_typed",
+      "case": "arc_chord_s_typed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_skew_typed",
+      "case": "arc_chord_skew_typed"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_chord_spatial_perspective_mouse",
+      "case": "arc_chord_spatial_perspective_mouse"
+    }
+  ]
+}

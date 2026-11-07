@@ -110,6 +110,7 @@ mod curvature_graph;
 mod curve_sampling;
 mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
+mod arc_blend;
 mod arc_tilted;
 mod tangent;
 pub use tangent::TangentPreview;
@@ -370,6 +371,7 @@ pub struct ViewportInput<'a> {
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
     pub line_input: Option<viboceros_command::line::Input>,
     pub curve_line_input: Option<&'a viboceros_command::line::curve_input::Input>,
+    pub arc_blend: Option<&'a viboceros_command::arc_blend::Input>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
@@ -509,6 +511,7 @@ impl Default for ViewportInput<'_> {
             translation_constraint: None,
             line_input: None,
             curve_line_input: None,
+            arc_blend: None,
             normal_surface: None,
             mesh_constraint: None,
             surface_curve_close_point: None,
@@ -599,6 +602,8 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
+    pub arc_blend_hover: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub direction_click: Option<ObjectId>,
     pub insert_point: Option<(
@@ -1932,6 +1937,17 @@ impl Viewport {
             .edge_curve
             .filter(|_| !input.zoom_window && input.zoom_target.is_none())
             .and_then(|curve| {
+                if let Some(getter) = input.arc_blend
+                    && getter.active_handle() == Some(viboceros_command::arc_blend::Handle::Ratio)
+                {
+                    return self.arc_blend_ratio_cursor(
+                        getter,
+                        response.hover_pos()?,
+                        rect,
+                        document,
+                        drafting.snap_options(),
+                    );
+                }
                 self.edge_point_cursor(
                     curve,
                     input.edge_distance_parameters,
@@ -2674,6 +2690,9 @@ impl Viewport {
                 drafting_cursor.map(|c| c.point),
             );
         }
+        if let Some(getter) = input.arc_blend {
+            self.paint_arc_blend_handles(&painter, rect, getter);
+        }
         if let Some(getter) = input.arc_tilted_input {
             self.paint_tilted_arc(
                 &painter,
@@ -3109,10 +3128,11 @@ impl Viewport {
             zoom_target_result,
             zoom_target_cancelled: input.zoom_target.is_some()
                 && response.clicked_by(PointerButton::Secondary),
-            edge_parameter: response
-                .clicked_by(PointerButton::Primary)
-                .then_some(edge_parameter)
-                .flatten(),
+            edge_parameter: (response.clicked_by(PointerButton::Primary)
+                || input.arc_blend.is_some_and(|i| i.active_handle().is_some())
+                    && response.drag_stopped_by(PointerButton::Primary))
+            .then_some(edge_parameter)
+            .flatten(),
             mesh_boundary_edge_click: input
                 .mesh_boundary_edges
                 .filter(|_| {
@@ -3186,6 +3206,25 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
+            arc_blend_handle: (response.clicked_by(PointerButton::Primary)
+                || response.drag_started_by(PointerButton::Primary))
+            .then(|| {
+                self.pick_arc_blend_handle(
+                    if response.drag_started_by(PointerButton::Primary) {
+                        ui.input(|i| i.pointer.press_origin())?
+                    } else {
+                        response.interact_pointer_pos()?
+                    },
+                    rect,
+                    input.arc_blend?,
+                )
+            })
+            .flatten(),
+            arc_blend_hover: input
+                .arc_blend
+                .filter(|i| i.active_handle().is_some())
+                .and_then(|_| response.hovered().then_some(edge_cursor).flatten())
+                .map(|c| c.parameter),
             curve_line_click: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(perpendicular_hit)

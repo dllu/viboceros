@@ -72,6 +72,18 @@ impl VibocerosApp {
                 s.pointer = output.selection_pointer;
             }
         }
+        if let Some(handle) = output.arc_blend_handle.take() {
+            self.select_arc_blend_handle(handle);
+            return true;
+        }
+        if let Some(parameter) = output.arc_blend_hover {
+            self.hover_arc_blend_parameter(parameter);
+        }
+        if let Some(parameter) = output.edge_parameter
+            && self.accept_arc_blend_parameter(parameter)
+        {
+            return true;
+        }
         if let Some((id, edge, point)) = output.curve_line_click.take() {
             self.pick_curve_line_at(id, edge, point);
             self.line_accepted_point = None;

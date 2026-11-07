@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_start",
+      "case": "arc_handle_start"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_end",
+      "case": "arc_handle_end"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_ratio_quarter",
+      "case": "arc_handle_ratio_quarter"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_ratio_two",
+      "case": "arc_handle_ratio_two"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_ratio_zero",
+      "case": "arc_handle_ratio_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_handle_point",
+      "case": "arc_handle_point"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "arc_auto_skew_tangents",
+      "case": "arc_auto_skew_tangents"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_auto_skew_after_two",
+      "case": "arc_auto_skew_after_two"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_auto_skew_contact",
+      "case": "arc_auto_skew_contact"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_auto_skew_chord_end",
+      "case": "arc_auto_skew_chord_end"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_radius_skew_zero",
+      "case": "arc_radius_skew_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_auto_spatial",
+      "case": "arc_auto_spatial"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_ratio_spatial_typed_perspective",
+      "case": "arc_ratio_spatial_typed_perspective"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_spatial_hover_pick",
+      "case": "arc_spatial_hover_pick"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_alternate_old_point",
+      "case": "arc_alternate_old_point"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "arc_alternate_hover_point",
+      "case": "arc_alternate_hover_point"
+    }
+  ]
+}
