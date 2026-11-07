@@ -1,0 +1,608 @@
+{
+  "scope": "Chamfer ordered distinct open source picks, sequential distances, measurements, units, persistence, trim/join and extension options, native metadata, identity, history and archives.",
+  "baseline_revision": "bf8207b4ab47c1ed0bca09df84af7441a082cc31",
+  "implementation_revision": "f59212050f48ec97b5554d4a678886c8d6ed7b6f",
+  "full_native_parity": false,
+  "observations": 31,
+  "successful": 21,
+  "cancelled": 10,
+  "changed": 20,
+  "physical_picks": 44,
+  "point_tangent_stations": 4224,
+  "command_replays_per_build": 20,
+  "ui_replays_per_build": 30,
+  "archive_round_trips_per_build": 50,
+  "guarded_native_successes_per_build": 1,
+  "retained_failed_captures": 2,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.8030021919912542e-13,
+  "construction": "Prescribed source definitions and public getter prompts and mouse rays supply inputs. Analytic lines/arcs and exact dyadic Bernstein sphere crossings supply setbacks. NURBS interval edits use portable/usd-brep producers. Native output coefficients and 33 original point/tangent samples per curve are expectations.",
+  "execution": "Licensed Rhino ran on private Xvfb displays; egui viewport tests were windowless. Two unsuccessful cancellation drivers published zero observations and were stopped only after owned process verification. The pilot physical Escape driver predates external_keys export; its frozen driver, sent Escape and public Cancel are retained. Discovery and holdouts additionally record external key delivery.",
+  "limits": [
+    "Oversized distance 9 on a length-4 line is a captured native success whose retained line ends at x=13 while its bevel begins at x=-5. Viboceros rejects this case atomically; it is excluded from geometry parity.",
+    "Same-parent and closed-source Chamfer are unsupported. This finite corpus does not qualify arbitrary folded curves, all intersection branches, pixel equality or comparative performance. Bare other-curve extension toggling follows the two-value UI convention but has no dedicated native trajectory in this corpus.",
+    "The discovery measurement recipe supplies a redundant second anchor. Native accepts a zero second distance and ignores the subsequent coordinate at source selection; that trajectory is retained, and the holdout supplies the intended shared-anchor measurement."
+  ],
+  "cases": [
+    {
+      "id": "chamfer_getter_discovery/chamfer_after_first_pick",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 8.881784197001252e-16,
+      "portable_ui_maximum_geometry_error": 8.881784197001252e-16,
+      "native_command_maximum_geometry_error": 8.881784197001252e-16,
+      "native_ui_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_arc_extension",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 1.8030021919912542e-13,
+      "portable_ui_maximum_geometry_error": 1.8030021919912542e-13,
+      "native_command_maximum_geometry_error": 1.8030021919912542e-13,
+      "native_ui_maximum_geometry_error": 1.8030021919912542e-13
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_measured_distances",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_numeric_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_nurbs_contact",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 4.440892098500626e-16,
+      "portable_ui_maximum_geometry_error": 4.440892098500626e-16,
+      "native_command_maximum_geometry_error": 4.440892098500626e-16,
+      "native_ui_maximum_geometry_error": 4.440892098500626e-16
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_partial_distances_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_preferences_setup",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_remember_numeric",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_remember_partial_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_reverse_order",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-15
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_second_distance_default",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_zero_first",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_zero_joined",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_discovery/chamfer_zero_parts",
+      "native_result": "Success",
+      "native_changed": false,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_enter_defaults",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 5.551115123125783e-17,
+      "portable_ui_maximum_geometry_error": 5.551115123125783e-17,
+      "native_command_maximum_geometry_error": 5.551115123125783e-17,
+      "native_ui_maximum_geometry_error": 5.551115123125783e-17
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_extension_menu_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_line_extension",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 2.1316282072803006e-14,
+      "portable_ui_maximum_geometry_error": 2.1316282072803006e-14,
+      "native_command_maximum_geometry_error": 2.1316282072803006e-14,
+      "native_ui_maximum_geometry_error": 2.1316282072803006e-14
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_measure_second_after_number",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_measurement_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_negative_distance_correction",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 4.47545209131181e-16,
+      "portable_ui_maximum_geometry_error": 4.47545209131181e-16,
+      "native_command_maximum_geometry_error": 4.47545209131181e-16,
+      "native_ui_maximum_geometry_error": 4.47545209131181e-16
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_oversized",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": false
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_shared_measurement_anchor",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 2.220446049250313e-16,
+      "portable_ui_maximum_geometry_error": 2.220446049250313e-16,
+      "native_command_maximum_geometry_error": 2.220446049250313e-16,
+      "native_ui_maximum_geometry_error": 2.220446049250313e-16
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_spatial_joined",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 9.222205069512407e-16,
+      "portable_ui_maximum_geometry_error": 9.222205069512407e-16,
+      "native_command_maximum_geometry_error": 9.222205069512407e-16,
+      "native_ui_maximum_geometry_error": 9.222205069512407e-16
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_units_arithmetic",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 1.5700924586837752e-16,
+      "portable_ui_maximum_geometry_error": 1.5700924586837752e-16,
+      "native_command_maximum_geometry_error": 1.5700924586837752e-16,
+      "native_ui_maximum_geometry_error": 1.5700924586837752e-16
+    },
+    {
+      "id": "chamfer_getter_holdouts/chamfer_zero_first_joined",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_cancel_second",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_distances_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_initial_cancel",
+      "native_result": "Cancel",
+      "native_changed": false,
+      "qualified": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_joined",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 8.881784197001252e-16,
+      "portable_ui_maximum_geometry_error": 8.881784197001252e-16,
+      "native_command_maximum_geometry_error": 8.881784197001252e-16,
+      "native_ui_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_parts",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "chamfer_getter_pilot/chamfer_untrimmed",
+      "native_result": "Success",
+      "native_changed": true,
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    }
+  ],
+  "captures": [
+    {
+      "family": "chamfer_getter_pilot",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "1c773b981ef0aa15ea7b663c422c2555060637e2d9208303e5f131dbbab195c7"
+    },
+    {
+      "family": "chamfer_getter_discovery",
+      "observations": 14,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "cdf58f28af433855b2bab8ea32915b98f131059656de529e0532e6a62247fe21"
+    },
+    {
+      "family": "chamfer_getter_holdouts",
+      "observations": 11,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "7d78259e49ea71e388ee78c0d80e32fa54a63e364ae5c954bc14ca02b82cdc99"
+    }
+  ],
+  "checks": [
+    {
+      "name": "geometry",
+      "status": 0
+    },
+    {
+      "name": "chord-geometry",
+      "status": 0
+    },
+    {
+      "name": "command-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-command-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "command-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-command-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    },
+    {
+      "name": "native-connections",
+      "status": 0
+    },
+    {
+      "name": "connection-geometry",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/chamfer.rs": "801344658b8359200a84319a558fca13940567a9af63eda385a5ff497c4360b1",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/chamfer/options.rs": "0942fa6327c519e526d0fbe06443c6d59c793d022eba522c15e41fdfeb312c5e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/chamfer/prepare.rs": "385b09739c66e07fc26dbeda0630ef58366f2dbb5a585f564a647fb71ebc7cc4",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/chamfer/tests.rs": "f22744680a52f2939e606e93c9c0c5f2c4a4e67d364a01cdbc1f1fff344a89ee",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/curve_pair_edit.rs": "7ba6c5f55393ef99a99da175f62c80728bf3d38756f67ed913da1d1f166d93b7",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/fillet/prepare.rs": "43d33703c47f17798ff5c22db64cbb4227d75db218fcbcbff1169f30a423f1a8",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/src/lib.rs": "2df7b0fc7b90d465001b7c793ce762e3210f3637e360f6c12b7313daa160fe8c",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/tests/chamfer_getter.rs": "592bac7eef6c85dd95ccbf0145f149dc8497969acb4a236746e89a0ba03d88cf",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/tests/support/chamfer_getter.rs": "edb472abdaee61b1cc95dce877af789c2d4367014d99af7e285bfe979ebfb3bd",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-command/tests/support/fillet_getter.rs": "c6ba1fedab6974e5e45cbf7a2f06d9d052d745095eda2c725adb5fa8f1de3623",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve/chord_division.rs": "fb48b0be3d23e829a6acb3d8e5fee8707d7ecb9d485e111778de7da88ff7b8c6",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve/chord_division/first.rs": "f09112fcd268a36d605efb044f3ca9c6ee792a1821104bb2be0f04cadc9fd3ec",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve/chord_division/first/tests.rs": "513560a1d9b757fd7c997d40639757aeca20de347e9896167a6df35abb412979",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve_chamfer_pair.rs": "601315e7a666223926e4351f7e8729e0603e152d36359b27c5bddf79e2e94540",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve_chamfer_pair/connect.rs": "74d71553805ece146be62c0766054a91c3a781fb6d97e0b1c33cb109c1e8d2d0",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve_chamfer_pair/setback.rs": "918e4dd016c1d189d349cbf2432893864f488dc9b02cf23c5d2b4f0ffc468bf4",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve_chamfer_pair/tests.rs": "f70abb6e698b54820809b9165cb0009155fb5426d81cedb3d2ec8b86b9069d32",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:crates/viboceros-geometry/src/curve_connect_pair/backend_tests.rs": "a984059438b7f60bd4dffcf0144091833fb16952ffeeff4c31a9cde5362918da",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/architecture/application.md": "49dcb27b18661c62fc20b69578050df84ed3713db76f735b72cd624d801efc88",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/capture-discovery.log.gz": "2518234d09f1681085eee6cbd19b7e483044c8eb300d8ef4a3ba68e090891eab",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/capture-failed-cancel-token.log.gz": "b3812250de5deffe77a25873772108243f475e562b8ba3b5a9e814f467d49451",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/capture-failed-sendkeys.log.gz": "6225a8c2fa298155c18e09a47cb0cfb2f1dfd7fa96dd0d7c90487c6e2f237e82",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/capture-holdouts.log.gz": "207a63a2c90732c97763b69ef451ccaf2a2b5ac72686aab182b927c2418b1098",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/capture-pilot.log.gz": "3f5baaccbdd5e5a3982884d4a0aa86136c5cc5f5ab8343ab46eed153ee3518ac",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/captures.json": "c231a47ddb2ee0a750350492e0d08813ccff6a3dc861e9cd38c0a34667888fac",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/checks.json": "a442b0d3d22c5aa4766b5ba8a43035a74fb16b1bffc22991fbaadbe6ea5a86a3",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/chord-geometry.log.gz": "4274e5e1635342e39787dcd0b1d47c5a27ca4083935b13db061a689521c36c84",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/clippy-native.log.gz": "1769781c38f6440a45769ad0f12d376a2f7b8303ef953505580d0ce3b1556bdf",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/clippy-portable-initial.log.gz": "386fe01b6b266d09b24570e69e946a3e8f3c9f47b34691d82a7bbe3ec2657a22",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/clippy-portable.log.gz": "46cbcb02cb06946c911cd7eb4a1cff914be803a77c530777771daa70dfe94c3a",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/command-native.log.gz": "d898fbf9631c7085d7e870be2bd4887973cba128e4ae0804078a9baf514f68e4",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/command-portable.log.gz": "03c0b6ca453c1524a7f630b1f0856ee858bde5d38de5c6fe24061c99a741d81e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/connection-geometry.log.gz": "66445d534bfa8f16cf58677a288694cff5d09457b185bdb24b4b2a8b16939ffc",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/failed-cancel-token-private.png": "c7b5fe49c78d2474fa38bbf32180c452a609f7edd905e813b6c1af90ddf02aa3",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/failed-cancel-token-progress.log.gz": "2120c4831f1a7b124307ff01bcb346fb1190256480ab31c9211d08f817d2a0f8",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/failed-cancel-token.json": "63121fa3538ffb27b20971a7d5fa4de050535de2f916f8d0afa531ef757d938e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/failed-sendkeys-progress.log.gz": "c97b150f4396e5a20b4903c381063564b724abe84e730f3f764d5168514dede0",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/failed-sendkeys.json": "0f0347cfedccbfdba96977d06a0de8b8a0a81881f8ebf64dab7e64dfd50806f1",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/fillet-command-native.log.gz": "dd63633cb0b4eb5fb079a25d82a861bb548b63094103c07b023f7eaf79106fb6",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/fillet-command-portable.log.gz": "d2c369dbbd41e0802252eafa907d4a238fbc51576312f3de468e3b9768b5b289",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/fillet-ui-native.log.gz": "f174f6887ff804398807e5730ee48ebc3bd96956018bec5ddef024e18e91c6c8",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/fillet-ui-portable.log.gz": "1224d4f4218bd33f3fec539b0095a3cc0ee2c09f49a930334a005f31054c6cbb",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/geometry.log.gz": "047bcdaebdfe5bdaa785583dc7c3ff300b797ca6e300ed079897c7b62b906d83",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/library-native.log.gz": "5899126148c9bcafc61097b28a0406ef92260e3b75dfd95dc775f9558afb49fa",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/library-portable.log.gz": "e637e3de07af66a875953810ca733d1ac2fd411d9d8763df918bef08f0961ab2",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/native-connections.log.gz": "c5d7aa610c427f141c6f048eabebcdc564bc5fce527b61ee668a0c4afbaba987",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/python-subd.log.gz": "c996a03f0a416540401d4dff120c31f6c46077b421822d9bf67f40c4dfcef549",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/python.log.gz": "c0a7986c72c79b07dc52efeec0c2276f7de0fb31c8af43ae35e06513734c3358",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/subd-command-native.log.gz": "1290b296c85ff2eb107406415ca535dd6fa13686b8e36ddf31b5228519d95669",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/subd-ui-native.log.gz": "4c63b0c2d1ec5b89e4969acef6b5e16730c604dc2465d59e6faaa082c3d7a2d8",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/ui-native.log.gz": "5f40a36831793ab076c2ef75b1b8896f71b47cdcf910e473ca7e042382d005c6",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter-proof/ui-portable.log.gz": "692f470bf0570b1536046867a4f1973435dc7cfcc87fc19de4baf3429af03dcd",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/chamfer-getter.md": "7eb682230d7509a38ff52e692dcf89f99373d93bff9ed9e1d67dd9239d3a0976",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/commands/chamfer.md": "7dbcef7e9bc2693ade590a1938f092f3ff3b0dcd15a9051e4c9fc876ee358a3c",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/development/checks.md": "c39e01ad10a5f12f9f0bc95e1472372c663cbf090811210a905bab9d989303c0",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/smlib-curve-connections.md": "718f05f1d4f371ef4e3659678e73f6e45c42f504f97a55060951d39f4cbc4027",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/subd-box-qualification.json": "f88f434f87b6d5485729e146fe922ac2b52867e09b14165c6e497ea9040af556",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:docs/subd-plane-qualification.json": "6eeddb12b0b24aa0f1b197e95a4e5a0d33300d00a00bace3dc4583743e01bd65",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app.rs": "a4c1f0b0814905146e05e09d955856f825b7f44ae7428566371ca09a81212674",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/command_line.rs": "23f8beec702ce86191b352ffcbecb31b0c30b262185d7d310c2f57dd5e16f2fe",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/curve_chamfer.rs": "ae24e0099874d101a8c945cdad8293b918955c312bcbb1cb4ad06888a66440fd",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/curve_chamfer/distance.rs": "867b35744d1118a9a9e3fb127d44c3cb76258fca81fffaa4d93bf1228e44d721",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/curve_chamfer/input.rs": "b719ee3388c60bf088ee7398f8652e3b8bbaeab9a2635947c9b919fbc9d830bb",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/drafting_controls.rs": "73a34a6d7ab2decb1bd1a9fc5c99336f0ff6011e533fca547a4d853f892b32c1",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/drafting_input.rs": "d508bff14d0cc86c82166ce5daf374b24366c45ebf8e0e6cede711f3e4a30c33",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/interactive_cancel.rs": "6716874337b348e386407db57fe72d0343f523f151d9ab3ebb691071dac4d0d3",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/interactive_start.rs": "7cb4e3f9950332bf7d2c7a53d5f75f625ef1e6a0c9fa42505ab0016cad6f0048",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/interactive_state/metadata.rs": "55721c624a77f9caf03a6151855024df0416baadba16dba3d563905e151d712c",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/interactive_state/mod.rs": "36cfc8f175d4b9590e61bff53e34fa32ac00318b36d84cbe8026284a0f24c63e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/interactive_state/prompts.rs": "3c9c6b5349ac0b6b8868f62e6e5ac8f2346daf10e096a63981ed73a4cc194e64",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/object_selection.rs": "b9aec980d3be92c7fb461e0c117b2e8f7f27d878d487a1568aad0e30b6441890",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/selection_input.rs": "63e07469025908cb51676e0f050a4f9cbf134007992a6b32747590442333aeb0",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/tests/curve_chamfer.rs": "fcd063393219798516b9e6f023dca710cf07d6935fcbdddf6b3acfa9d97f9970",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/tests/curve_fillet.rs": "dd55ce7458a0a6f795116898d7199279ec670608a5e032673ffe52ebac36192f",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/tests/mod.rs": "5952ead2227d2f057e3c0fdc6ef3497227e19bb07a2968e7a7fe242cd6c53af3",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/ui.rs": "3eeeb06ce235d397f46bb29ea6dcbd50d2b3386df0a026561be33b8546113412",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:src/app/viewport_input.rs": "8f32211818b031ac5059ff25d7ee5c287f986b470c567ee9987ae26b5f18490e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/chamfer_command.py": "8b9456b6578d219ae00b9de53b9f382955c1c0ef7ddc4b6256a2066d2ff6c6c3",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/chamfer_command_probe.py": "246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/chamfer_getter_evidence.py": "13dacf77845fc1974ce98be4efee88e0b5f7bb961ff8f7eaa76a85dfa0683fec",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/chamfer_point_picker.py": "6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/check_chamfer_getter.py": "4d0881a3717676e1563e6ad216381ca0b871089bfce8a3d7eaccbbc2c319edec",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/client.py": "d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/conic_getter_input.py": "3b6d360d685d07ab9bf194dfcbd29c1c85df5dbb14c5d0a65e248d0fcb2a9436",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/fixtures/chamfer_getter_discovery.json": "297cef9509063b316ef60e923fbb4d69e9d3197e30629f5b71694a1d2ce14002",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/fixtures/chamfer_getter_holdouts.json": "0805b8fbca3bdf8768d714009c584555e30a6d587fb35aead470d8170174116e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/fixtures/chamfer_getter_pilot.json": "8cafad24445a21debd264684597072cc2e76c6d75c45ccd3f9ba7e88fa7e67ab",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/generate_chamfer_getter_discovery.py": "4ac4bdbc38ab047e9731fac931f62df798ccf7d28911f5d1b6a99f2e357ab62e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/generate_chamfer_getter_holdouts.py": "6999f7a5c37936e7058f5aaff782943b506c0a0395d080b31234c1a507d115ca",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/generate_chamfer_getter_pilot.py": "a19deec8840f02e5177f96986355f6782d27b70cf72c1b8e011fda106b4e712b",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/chamfer_getter_discovery.json.gz": "b981d2fd60b9a7536e00f7f947a9e24c17b5676cfda1699bbe8f611609a25398",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/chamfer_getter_holdouts.json.gz": "6217deb8d5d8347cdc45d68a3da67a6979d36ef522fd6e1c3a7d4cccd64b93e8",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/chamfer_getter_pilot.json.gz": "4312e912b4846deea3ac1fc0cdcd0856ac2b0e4a02c86acaca1cb108de006fbb",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/018ce6832a672604605327ef9cc782ec96dbea6bddf5d0f6a114365b43ed6bd2.gz": "bc4071cca1b6f9d636d3b18f65bc366b9601eb18815bea0aa5dd37e3f3075854",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/128a84116d27bbf02900d35274ccd26aa24aafc828d6a51354450b34c5451927.gz": "b1cd917a0c7f1d88116ce6da2ef9a0d0c22c09618ab4f61a7453e4c1a519b241",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413.gz": "f321f4f01fedb4f1f8d3e2149bba914409edc3e4b90341f512e47783c90ad5d5",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47.gz": "3cdecf39faca0ab73df3b23f6924453e9cc5a84dc96924caac59aaddb6b7c328",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/27b884b7a41fa9a702632dc91fb4917304c4ecc3e2331c8dae2dbbe99f60ab65.gz": "3d6cc24d8521c90b2b7bea49a2687dd5cdc046a574b729a85d2efd081a60c054",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/3b6d360d685d07ab9bf194dfcbd29c1c85df5dbb14c5d0a65e248d0fcb2a9436.gz": "9028069aa2a3b4cd953ddc5b0848ea64efe46f9afe626faa0c78c3207f5ae81d",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/4ac4bdbc38ab047e9731fac931f62df798ccf7d28911f5d1b6a99f2e357ab62e.gz": "7efb50768fd3fa1f66762d582547ef92c0c45e42346964b562d3072e58f5466e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/6999f7a5c37936e7058f5aaff782943b506c0a0395d080b31234c1a507d115ca.gz": "4020a99b7c8d8d17f640a80ba06b799af0585c68b86513d5246dd92a2263d17d",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102.gz": "0f050df2ee10e01f7e3c94a23f395b84f752a7cf71690ef66197b0d503c65971",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/71e577e460d76b263085705e9dc25a7a08dd657503b18fbfb7b9705968f82f7c.gz": "363befe0ea1c0f7471c0dcbbcc97c1c519a046bbdbba4fa48bcb471b11446f00",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/8b9456b6578d219ae00b9de53b9f382955c1c0ef7ddc4b6256a2066d2ff6c6c3.gz": "e76fe5e2b1406a8602ce349e6f4b67a3b4160c9bc665a6954194084d76c7b68b",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/8d6c7e57ceee563c054e448961eba437285df80de7d2ccb4e16180e750eafc36.gz": "fa94c6e2ac7ae24b02c577189551e872db2250e8dc5326a3007cc894967d5306",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/9a4de44b8f5e10da6f03f3c10f5eb4b907ae3311396864ac35e4c506754dc496.gz": "eb974baf3488143e653669ef0d7cbc7e8aea6470d47571c46f0b228f9ebb9bdf",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/a19deec8840f02e5177f96986355f6782d27b70cf72c1b8e011fda106b4e712b.gz": "6d4163b18d002bc93ee2d0ea6fdc6ebd40469635f8da9344cb8b3bb8155cb9e4",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/b6fe773d9f5b2cf679ad64ef6a92294be7ebb9be6729d6f6dfc097b9693d29a6.gz": "a39a777924f1c12354d6640c16fe5180c49f28cb5fb96940e883cfcf4642d9c1",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/observations/source_snapshots/df81b9027bec42d8d0b0ed134b80c3a718052700178516a72d00d7b9db0788c9.gz": "e540a0d2e1a82544c116b1df39c3bfa0e69d4af03215639e022c59dde3d2fa2e",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/report_chamfer_getter.py": "ba262f8d0d0aa4e8813d5b9443fd656f2d9fcc324ddbffe9b36df31792b8ea92",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/rhino_worker.py": "192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/structural_sdk.py": "b6fe773d9f5b2cf679ad64ef6a92294be7ebb9be6729d6f6dfc097b9693d29a6",
+    "f59212050f48ec97b5554d4a678886c8d6ed7b6f:tools/rhino_oracle/test_chamfer_getter.py": "47ae2703d3d36748de0e070abfbaa56d36e1a372b9c7892bafea6317f2a2aa6e"
+  },
+  "evidence_sha256": {
+    "docs/chamfer-getter-proof/capture-discovery.log.gz": "2518234d09f1681085eee6cbd19b7e483044c8eb300d8ef4a3ba68e090891eab",
+    "docs/chamfer-getter-proof/capture-failed-cancel-token.log.gz": "b3812250de5deffe77a25873772108243f475e562b8ba3b5a9e814f467d49451",
+    "docs/chamfer-getter-proof/capture-failed-sendkeys.log.gz": "6225a8c2fa298155c18e09a47cb0cfb2f1dfd7fa96dd0d7c90487c6e2f237e82",
+    "docs/chamfer-getter-proof/capture-holdouts.log.gz": "207a63a2c90732c97763b69ef451ccaf2a2b5ac72686aab182b927c2418b1098",
+    "docs/chamfer-getter-proof/capture-pilot.log.gz": "3f5baaccbdd5e5a3982884d4a0aa86136c5cc5f5ab8343ab46eed153ee3518ac",
+    "docs/chamfer-getter-proof/captures.json": "c231a47ddb2ee0a750350492e0d08813ccff6a3dc861e9cd38c0a34667888fac",
+    "docs/chamfer-getter-proof/checks.json": "fd968884b9acc1f0ed5bc01ceebc342410a65d18f3a29dabd25e8a39780312d2",
+    "docs/chamfer-getter-proof/chord-geometry.log.gz": "4274e5e1635342e39787dcd0b1d47c5a27ca4083935b13db061a689521c36c84",
+    "docs/chamfer-getter-proof/clippy-native.log.gz": "1769781c38f6440a45769ad0f12d376a2f7b8303ef953505580d0ce3b1556bdf",
+    "docs/chamfer-getter-proof/clippy-portable-initial.log.gz": "386fe01b6b266d09b24570e69e946a3e8f3c9f47b34691d82a7bbe3ec2657a22",
+    "docs/chamfer-getter-proof/clippy-portable.log.gz": "46cbcb02cb06946c911cd7eb4a1cff914be803a77c530777771daa70dfe94c3a",
+    "docs/chamfer-getter-proof/command-native.log.gz": "d898fbf9631c7085d7e870be2bd4887973cba128e4ae0804078a9baf514f68e4",
+    "docs/chamfer-getter-proof/command-portable.log.gz": "03c0b6ca453c1524a7f630b1f0856ee858bde5d38de5c6fe24061c99a741d81e",
+    "docs/chamfer-getter-proof/connection-geometry.log.gz": "66445d534bfa8f16cf58677a288694cff5d09457b185bdb24b4b2a8b16939ffc",
+    "docs/chamfer-getter-proof/failed-cancel-token-private.png": "c7b5fe49c78d2474fa38bbf32180c452a609f7edd905e813b6c1af90ddf02aa3",
+    "docs/chamfer-getter-proof/failed-cancel-token-progress.log.gz": "2120c4831f1a7b124307ff01bcb346fb1190256480ab31c9211d08f817d2a0f8",
+    "docs/chamfer-getter-proof/failed-cancel-token.json": "63121fa3538ffb27b20971a7d5fa4de050535de2f916f8d0afa531ef757d938e",
+    "docs/chamfer-getter-proof/failed-sendkeys-progress.log.gz": "c97b150f4396e5a20b4903c381063564b724abe84e730f3f764d5168514dede0",
+    "docs/chamfer-getter-proof/failed-sendkeys.json": "0f0347cfedccbfdba96977d06a0de8b8a0a81881f8ebf64dab7e64dfd50806f1",
+    "docs/chamfer-getter-proof/fillet-command-native.log.gz": "dd63633cb0b4eb5fb079a25d82a861bb548b63094103c07b023f7eaf79106fb6",
+    "docs/chamfer-getter-proof/fillet-command-portable.log.gz": "d2c369dbbd41e0802252eafa907d4a238fbc51576312f3de468e3b9768b5b289",
+    "docs/chamfer-getter-proof/fillet-ui-native.log.gz": "f174f6887ff804398807e5730ee48ebc3bd96956018bec5ddef024e18e91c6c8",
+    "docs/chamfer-getter-proof/fillet-ui-portable.log.gz": "1224d4f4218bd33f3fec539b0095a3cc0ee2c09f49a930334a005f31054c6cbb",
+    "docs/chamfer-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/chamfer-getter-proof/geometry.log.gz": "047bcdaebdfe5bdaa785583dc7c3ff300b797ca6e300ed079897c7b62b906d83",
+    "docs/chamfer-getter-proof/library-native.log.gz": "5899126148c9bcafc61097b28a0406ef92260e3b75dfd95dc775f9558afb49fa",
+    "docs/chamfer-getter-proof/library-portable.log.gz": "e637e3de07af66a875953810ca733d1ac2fd411d9d8763df918bef08f0961ab2",
+    "docs/chamfer-getter-proof/native-connections.log.gz": "c5d7aa610c427f141c6f048eabebcdc564bc5fce527b61ee668a0c4afbaba987",
+    "docs/chamfer-getter-proof/python-subd.log.gz": "c996a03f0a416540401d4dff120c31f6c46077b421822d9bf67f40c4dfcef549",
+    "docs/chamfer-getter-proof/python.log.gz": "7624f8ff01da1d9f088b9e52050dd5903065f27dc32b5bd95e846edde9c9c962",
+    "docs/chamfer-getter-proof/subd-command-native.log.gz": "1290b296c85ff2eb107406415ca535dd6fa13686b8e36ddf31b5228519d95669",
+    "docs/chamfer-getter-proof/subd-ui-native.log.gz": "4c63b0c2d1ec5b89e4969acef6b5e16730c604dc2465d59e6faaa082c3d7a2d8",
+    "docs/chamfer-getter-proof/ui-native.log.gz": "5f40a36831793ab076c2ef75b1b8896f71b47cdcf910e473ca7e042382d005c6",
+    "docs/chamfer-getter-proof/ui-portable.log.gz": "692f470bf0570b1536046867a4f1973435dc7cfcc87fc19de4baf3429af03dcd",
+    "tools/rhino_oracle/fixtures/chamfer_getter_discovery.json": "297cef9509063b316ef60e923fbb4d69e9d3197e30629f5b71694a1d2ce14002",
+    "tools/rhino_oracle/fixtures/chamfer_getter_holdouts.json": "0805b8fbca3bdf8768d714009c584555e30a6d587fb35aead470d8170174116e",
+    "tools/rhino_oracle/fixtures/chamfer_getter_pilot.json": "8cafad24445a21debd264684597072cc2e76c6d75c45ccd3f9ba7e88fa7e67ab",
+    "tools/rhino_oracle/observations/chamfer_getter_discovery.json.gz": "b981d2fd60b9a7536e00f7f947a9e24c17b5676cfda1699bbe8f611609a25398",
+    "tools/rhino_oracle/observations/chamfer_getter_holdouts.json.gz": "6217deb8d5d8347cdc45d68a3da67a6979d36ef522fd6e1c3a7d4cccd64b93e8",
+    "tools/rhino_oracle/observations/chamfer_getter_pilot.json.gz": "4312e912b4846deea3ac1fc0cdcd0856ac2b0e4a02c86acaca1cb108de006fbb",
+    "tools/rhino_oracle/observations/source_snapshots/018ce6832a672604605327ef9cc782ec96dbea6bddf5d0f6a114365b43ed6bd2.gz": "bc4071cca1b6f9d636d3b18f65bc366b9601eb18815bea0aa5dd37e3f3075854",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/128a84116d27bbf02900d35274ccd26aa24aafc828d6a51354450b34c5451927.gz": "b1cd917a0c7f1d88116ce6da2ef9a0d0c22c09618ab4f61a7453e4c1a519b241",
+    "tools/rhino_oracle/observations/source_snapshots/192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413.gz": "f321f4f01fedb4f1f8d3e2149bba914409edc3e4b90341f512e47783c90ad5d5",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47.gz": "3cdecf39faca0ab73df3b23f6924453e9cc5a84dc96924caac59aaddb6b7c328",
+    "tools/rhino_oracle/observations/source_snapshots/27b884b7a41fa9a702632dc91fb4917304c4ecc3e2331c8dae2dbbe99f60ab65.gz": "3d6cc24d8521c90b2b7bea49a2687dd5cdc046a574b729a85d2efd081a60c054",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3b6d360d685d07ab9bf194dfcbd29c1c85df5dbb14c5d0a65e248d0fcb2a9436.gz": "9028069aa2a3b4cd953ddc5b0848ea64efe46f9afe626faa0c78c3207f5ae81d",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/4ac4bdbc38ab047e9731fac931f62df798ccf7d28911f5d1b6a99f2e357ab62e.gz": "7efb50768fd3fa1f66762d582547ef92c0c45e42346964b562d3072e58f5466e",
+    "tools/rhino_oracle/observations/source_snapshots/591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158.gz": "d7961c149b90800346253f1d3c2bd85275a5e6f157970e786e6db5c79dfa6444",
+    "tools/rhino_oracle/observations/source_snapshots/6999f7a5c37936e7058f5aaff782943b506c0a0395d080b31234c1a507d115ca.gz": "4020a99b7c8d8d17f640a80ba06b799af0585c68b86513d5246dd92a2263d17d",
+    "tools/rhino_oracle/observations/source_snapshots/6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102.gz": "0f050df2ee10e01f7e3c94a23f395b84f752a7cf71690ef66197b0d503c65971",
+    "tools/rhino_oracle/observations/source_snapshots/71e577e460d76b263085705e9dc25a7a08dd657503b18fbfb7b9705968f82f7c.gz": "363befe0ea1c0f7471c0dcbbcc97c1c519a046bbdbba4fa48bcb471b11446f00",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8b9456b6578d219ae00b9de53b9f382955c1c0ef7ddc4b6256a2066d2ff6c6c3.gz": "e76fe5e2b1406a8602ce349e6f4b67a3b4160c9bc665a6954194084d76c7b68b",
+    "tools/rhino_oracle/observations/source_snapshots/8d6c7e57ceee563c054e448961eba437285df80de7d2ccb4e16180e750eafc36.gz": "fa94c6e2ac7ae24b02c577189551e872db2250e8dc5326a3007cc894967d5306",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/9a4de44b8f5e10da6f03f3c10f5eb4b907ae3311396864ac35e4c506754dc496.gz": "eb974baf3488143e653669ef0d7cbc7e8aea6470d47571c46f0b228f9ebb9bdf",
+    "tools/rhino_oracle/observations/source_snapshots/a19deec8840f02e5177f96986355f6782d27b70cf72c1b8e011fda106b4e712b.gz": "6d4163b18d002bc93ee2d0ea6fdc6ebd40469635f8da9344cb8b3bb8155cb9e4",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b6fe773d9f5b2cf679ad64ef6a92294be7ebb9be6729d6f6dfc097b9693d29a6.gz": "a39a777924f1c12354d6640c16fe5180c49f28cb5fb96940e883cfcf4642d9c1",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/df81b9027bec42d8d0b0ed134b80c3a718052700178516a72d00d7b9db0788c9.gz": "e540a0d2e1a82544c116b1df39c3bfa0e69d4af03215639e022c59dde3d2fa2e",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
