@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "radius_option_then_enter",
+      "case": "radius_option_then_enter"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_active_option_then_enter",
+      "case": "radius_active_option_then_enter"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_default_zero",
+      "case": "radius_default_zero"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_nested_negative",
+      "case": "radius_nested_negative"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "circle_repeat_positive",
+      "case": "circle_repeat_positive"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "circle_repeat_negative",
+      "case": "circle_repeat_negative"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_circle_0",
+      "case": "roundoff_circle_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_circle_1",
+      "case": "roundoff_circle_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_circle_2",
+      "case": "roundoff_circle_2"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_near_circle_0",
+      "case": "roundoff_near_circle_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_corner_0",
+      "case": "roundoff_corner_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_corner_1",
+      "case": "roundoff_corner_1"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_skew_0",
+      "case": "roundoff_skew_0"
+    },
+    {
+      "op": "arc_blend_sdk",
+      "id": "roundoff_skew_1",
+      "case": "roundoff_skew_1"
+    }
+  ]
+}

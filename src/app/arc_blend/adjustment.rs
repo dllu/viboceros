@@ -29,6 +29,9 @@ impl VibocerosApp {
         let Some(s) = &mut self.arc_blend_session else {
             return;
         };
+        if s.radius_prompt {
+            return;
+        }
         if s.candidate.as_ref().is_some_and(|(old, _)| *old == t) {
             return;
         }
@@ -37,6 +40,10 @@ impl VibocerosApp {
     }
     pub(in crate::app) fn accept_arc_blend_parameter(&mut self, t: f64) -> bool {
         if self.plane_prompt.is_some()
+            || self
+                .arc_blend_session
+                .as_ref()
+                .is_some_and(|s| s.radius_prompt)
             || self
                 .arc_blend_session
                 .as_ref()

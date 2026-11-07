@@ -24,6 +24,7 @@ pub struct Input {
     radius_difference: Option<Real>,
     last_radius_difference: Real,
     radius_target_reached: bool,
+    radius_target_deferred: bool,
     trim: bool,
     join: bool,
     tolerance: Tolerance,
@@ -40,6 +41,7 @@ impl Input {
             radius_difference: None,
             last_radius_difference: 0.,
             radius_target_reached: false,
+            radius_target_deferred: false,
             trim: false,
             join: false,
             tolerance,
@@ -56,6 +58,7 @@ impl Input {
         self.active_handle = None;
         self.adjustment_curve = None;
         self.radius_target_reached = false;
+        self.radius_target_deferred = false;
         self.tolerance = tolerance;
     }
     pub fn ready(&self) -> bool {
@@ -88,6 +91,33 @@ impl Input {
     }
     pub fn radius_difference(&self) -> Option<Real> {
         self.radius_difference
+    }
+    pub fn last_radius_difference(&self) -> Real {
+        self.last_radius_difference
+    }
+    /// The ratio getter edits its target option without accepting a new ratio.
+    pub fn remember_radius_difference(&mut self, target: Real) -> Result<(), CommandError> {
+        if !target.is_finite() {
+            return Err(CommandError::Usage(
+                "ArcBlend radius difference must be finite",
+            ));
+        }
+        self.last_radius_difference = target;
+        if self.radius_difference.is_some_and(|old| old != target) {
+            self.radius_difference = Some(target);
+            self.radius_target_deferred = true;
+            self.radius_target_reached = self.curve.as_ref().is_some_and(|curve| {
+                let [
+                    viboceros_geometry::CurveSegment3::Arc(a),
+                    viboceros_geometry::CurveSegment3::Arc(b),
+                ] = curve.segments()
+                else {
+                    return false;
+                };
+                (a.radius() - b.radius() - target).abs() <= 1. / 4_294_967_296.
+            });
+        }
+        Ok(())
     }
     pub fn warning(&self) -> Option<&'static str> {
         (self.preview.is_some() && self.radius_difference.is_some() && !self.radius_target_reached)
@@ -177,6 +207,7 @@ impl Input {
         )?;
         self.preview = Some(curve.to_nurbs()?);
         self.curve = Some(curve);
+        self.radius_target_deferred = false;
         Ok(())
     }
     pub fn arguments(&self) -> Result<String, CommandError> {
@@ -198,11 +229,15 @@ impl Input {
             })?;
             words.push(p.to_array().map(|x| x.to_string()).join(","));
         }
+        // The ratio getter can change a target without accepting another
+        // curve. Preserve that preview when committing its command arguments.
         words.extend([
-            self.radius_difference.map_or_else(
-                || format!("Ratio={}", self.geometry.ratio),
-                |r| format!("RadiusDifference={r}"),
-            ),
+            self.radius_difference
+                .filter(|_| !self.radius_target_deferred)
+                .map_or_else(
+                    || format!("Ratio={}", self.geometry.ratio),
+                    |r| format!("RadiusDifference={r}"),
+                ),
             format!("AlternateSolution={}", yes(self.geometry.alternate)),
             format!("Trim={}", yes(self.trim)),
         ]);

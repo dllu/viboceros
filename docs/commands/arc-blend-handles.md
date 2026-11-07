@@ -18,6 +18,8 @@ With this handle selected, type a positive ratio or a point. Typed points
 and object snaps project in 3D; free mouse movement uses the closest point
 between the chord and viewing line. This differs from screen-space curve
 location in Perspective. The implementation reuses the Move/Copy constraint.
+`RadiusDifference` also works inside this getter; its numeric prompt accepts
+the displayed default on Enter and returns to ratio editing.
 
 Esc discards the current adjustment preview and returns to handle selection.
 Another Esc cancels ArcBlend. `!` cancels the whole command. Deleted or

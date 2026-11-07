@@ -16,7 +16,7 @@ impl Session {
         &self,
         plane_prompt_active: bool,
     ) -> Option<&viboceros_geometry::NurbsCurve> {
-        if plane_prompt_active {
+        if plane_prompt_active || self.radius_prompt {
             None
         } else {
             self.input.adjustment_curve()
@@ -71,11 +71,19 @@ impl VibocerosApp {
     fn arc_blend_prompt(&mut self) {
         if let Some(s) = &self.arc_blend_session {
             let prompt = if s.radius_prompt {
-                "Radius difference"
+                format!("Radius difference <{}>", s.input.last_radius_difference())
+            } else if s.input.active_handle() == Some(viboceros_command::arc_blend::Handle::Ratio) {
+                format!(
+                    "{}; RadiusDifference={}; zero or end snap applies the target",
+                    s.input.prompt(),
+                    s.input.last_radius_difference()
+                )
             } else {
-                s.input.prompt()
+                s.input.prompt().into()
             };
-            let warning = s.input.warning();
+            let warning = (!s.radius_prompt && s.input.active_handle().is_none())
+                .then(|| s.input.warning())
+                .flatten();
             let message = format!("ArcBlend: {prompt}; Esc cancels");
             if let Some(warning) = warning {
                 self.push_log(warning.into());

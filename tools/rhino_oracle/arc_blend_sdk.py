@@ -24,6 +24,13 @@ for name,point,t0,t1 in [('corner',[5.,4.,0.],[1.,0.,0.],[0.,1.,0.]),('skew',[10
   a=(1./101.)+(i/17.)*(99./101.)
   RADIUS_SEARCH['search_'+name+'_'+str(i)]=dict(start=[0.,0.,0.],start_direction=unit(t0),end=point,end_direction=unit(t1),ratio=a/(1.-a))
 CASES.update(RADIUS_SEARCH)
+ROUNDOFF={}
+for name,end,t0,t1,targets in [('circle',[5.,5.,0.],[1.,0.,0.],[0.,1.,0.],[1.,-1.,1.]),('near_circle',[5.,5.00000001,0.],[1.,0.,0.],[0.,1.,0.],[1.]),('corner',[5.,4.,0.],[1.,0.,0.],[0.,1.,0.],[0.,1.]),('skew',[10.,4.,0.],[1.,0.,0.],[4.,-2.,0.],[0.,-1.])]:
+ for i,target in enumerate(targets):
+  ROUNDOFF['roundoff_'+name+'_'+str(i)]=dict(start=[0.,0.,0.],start_direction=unit(t0),end=end,end_direction=unit(t1),ratio=1.,search_target=target)
+CASES.update(ROUNDOFF)
+SEARCH_RULES={k.replace('roundoff_','rules_'):dict(v,search_rules=True)for k,v in ROUNDOFF.items()if k in ['roundoff_circle_0','roundoff_circle_1','roundoff_near_circle_0','roundoff_corner_1']}
+CASES.update(SEARCH_RULES)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_sdk'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed arc blend query')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_sdk',id=k,case=k)for k in(PILOT if names is None else names)])
@@ -42,5 +49,8 @@ def run(op,host,iterations,tolerance):
   value=observe(curve);value.update(case=recipe,success=True)
   if isinstance(curve,G.PolyCurve):value['segments']=[observe(curve.SegmentCurve(i))for i in range(curve.SegmentCount)]
   else:value['segments']=[observe(curve)]
+  if 'search_target'in recipe:
+   from arc_blend_roundoff import observe as observe_search
+   value['radius_search']=observe_search(recipe,host,observe)
   return value,0
  finally:curve.Dispose()

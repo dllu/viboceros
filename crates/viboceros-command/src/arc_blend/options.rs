@@ -30,6 +30,7 @@ impl Input {
                 return Err(CommandError::Usage("ArcBlend Ratio must be nonnegative"));
             }
             self.radius_difference = (r == 0.).then_some(self.last_radius_difference);
+            self.radius_target_deferred = false;
             if r > 0. {
                 self.geometry.ratio = r;
             }

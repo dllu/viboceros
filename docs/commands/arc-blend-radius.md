@@ -14,6 +14,13 @@ zero. Targets are recalled within the active command; settings between
 commands are not remembered. Esc cancels a numeric prompt or handle preview.
 Enter commits the complete blend in one undo step.
 
+Inside ratio editing, `RadiusDifference` opens a numeric prompt and returns
+to ratio editing. Enter accepts the displayed default; zero applies that
+target. Enter at the ratio prompt keeps the current preview. Changing an
+already active target can therefore leave a preview that misses the new
+target: the warning appears on return, and final acceptance preserves that
+curve. The next geometry adjustment solves for the new target.
+
 The search bounds the control ratio to `[0.01,100]`. At each step it compares
 the errors at the interval ends, retains the closer half and keeps the best
 sampled ratio. A target missed by this search produces a provisional blend
@@ -47,3 +54,9 @@ Historical [parallel qualification](../arc-blend-radius-validation.json)
 keeps its original scope. Nonlinear source contacts, larger scaling,
 comparative speed and continuous distance outside the same-circle cases
 remain unqualified.
+
+[Getter validation](../arc-blend-getters-validation.json) adds nine native
+workflows, including nested defaults and retained previews. Run
+`python3 -m tools.rhino_oracle.check_arc_blend_getters` for those checks and
+the earlier regressions. Fourteen partition investigations are retained
+separately; exact same-circle split and handle parity remain unqualified.

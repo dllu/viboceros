@@ -139,6 +139,25 @@ for i,target in enumerate([0.,1.,-1.]):
  RADIUS_COCIRCULAR['rg_cocircular_'+str(i)]=dict(recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['Trim=No','RadiusDifference',target]),measure_arcs=True)
 RADIUS_COCIRCULAR['rg_cocircular_alt']=dict(recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['Trim=No','AlternateSolution','RadiusDifference',0.]),measure_arcs=True)
 CASES.update(RADIUS_COCIRCULAR)
+RADIUS_GETTERS={
+ 'radius_getter_option':recipe(*S_SHAPE,options=['Trim=No',dict(click=chord(*S_SHAPE)),'RadiusDifference',5.,0.]),
+ 'radius_getter_option_then_ratio':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),'RadiusDifference',5.,.25]),
+ 'radius_main_default':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),.25,'RadiusDifference','Enter']),
+ 'radius_getter_default':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),.25,dict(click=chord(*S_SHAPE,ratio=.25)),'RadiusDifference','Enter',0.]),
+ 'radius_spatial_getter':recipe(*SPATIAL,options=[dict(click=chord(*SPATIAL)),'RadiusDifference',5.,0.]),
+}
+RADIUS_GETTERS={k:dict(v,measure_arcs=True)for k,v in RADIUS_GETTERS.items()}
+CASES.update(RADIUS_GETTERS)
+RADIUS_GETTER_HOLDOUTS={
+ 'radius_option_then_enter':recipe(*S_SHAPE,options=['Trim=No',dict(click=chord(*S_SHAPE)),'RadiusDifference',5.,'Enter']),
+ 'radius_active_option_then_enter':recipe(*S_SHAPE,options=['RadiusDifference',5.,dict(click=chord(*S_SHAPE,ratio=139./79.)),'RadiusDifference',-5.,'Enter']),
+ 'radius_default_zero':recipe(*S_SHAPE,options=['RadiusDifference',0.,dict(click=chord(*S_SHAPE)),.25,'RadiusDifference','Enter']),
+ 'radius_nested_negative':recipe(*S_SHAPE,options=[dict(click=chord(*S_SHAPE)),'RadiusDifference',-5.,0.]),
+ 'circle_repeat_positive':recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['RadiusDifference',1.]),
+ 'circle_repeat_negative':recipe([0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[0.,5.,0.],options=['RadiusDifference',-1.]),
+}
+RADIUS_GETTER_HOLDOUTS={k:dict(v,measure_arcs=True)for k,v in RADIUS_GETTER_HOLDOUTS.items()}
+CASES.update(RADIUS_GETTER_HOLDOUTS)
 def validate(op):
  if not isinstance(op,dict)or set(op)!={'op','id','case'}or op.get('op')!='arc_blend_command'or not isinstance(op.get('case'),str)or op.get('case')not in CASES or op.get('id')!=op['case']:raise ValueError('invalid fixed ArcBlend command recipe')
 def request(names=None):return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-9,angular=1e-6),operations=[dict(op='arc_blend_command',id=k,case=k)for k in(PILOT if names is None else names)])

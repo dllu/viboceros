@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "arc_blend_command",
+      "id": "radius_getter_option",
+      "case": "radius_getter_option"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_getter_option_then_ratio",
+      "case": "radius_getter_option_then_ratio"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_main_default",
+      "case": "radius_main_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_getter_default",
+      "case": "radius_getter_default"
+    },
+    {
+      "op": "arc_blend_command",
+      "id": "radius_spatial_getter",
+      "case": "radius_spatial_getter"
+    }
+  ]
+}
