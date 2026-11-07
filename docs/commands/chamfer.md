@@ -40,7 +40,19 @@ the nearest endpoint pair. The GUI also accepts options on the starting line.
 Native builds delegate NURBS extension and extraction to
 [usd-brep](../smlib-curve-connections.md).
 
-Same-parent and closed sources are unsupported. Distances consuming a complete
+Pick two locations on one polyline, polycurve or kinked NURBS to chamfer a
+junction. Neighboring smooth pieces identify the junction; flat subdivisions
+inside the original interval belong to one picked piece. The original closed
+seam remains a picking boundary. Setbacks can consume earlier spans. Closed
+parents retain their cyclic remainder; reversing the picks swaps which distance
+applies to each side. See [single-parent qualification](../chamfer-self.md).
+
+On an open parent, zero distances still split the source; Join produces a
+polycurve through the unchanged corner. Zero distances on a closed parent fail
+without an edit. One selected parent with both Pick1 and Pick2, or repeated
+explicit source IDs, supports headless calls.
+
+Distinct closed sources are unsupported. Distances consuming a complete
 source are rejected atomically. One captured oversized native success produces
 nonmeeting retained/bevel endpoints; it is documented as a compatibility gap.
 Arbitrary folded curves and all intersection branches remain unqualified.

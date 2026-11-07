@@ -582,6 +582,7 @@ mod planar_regions;
 #[path = "../../../crates/viboceros-oracle/tests/support/planar_regions.rs"]
 mod planar_regions_comparison;
 
+mod chamfer_self;
 mod curve_chamfer;
 mod curve_fillet;
 mod fillet_closed;

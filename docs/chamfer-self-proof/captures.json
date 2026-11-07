@@ -1,0 +1,58 @@
+[
+  {
+    "family": "chamfer_self_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_self_pilot"
+    ],
+    "log": "capture-pilot.log.gz",
+    "request_sha256": "70955fb4afac6dd691cf22027fb3c64f4967bbb61933cca46e245a8c06a9ece4",
+    "observation_sha256": "392cd4a18236bf084c1939d47cace40fdc7c4d25284964c2fd2d1aa86c733df5"
+  },
+  {
+    "family": "chamfer_self_discovery",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_self_discovery"
+    ],
+    "log": "capture-discovery.log.gz",
+    "request_sha256": "d46bae46aa796d15cae5caba0df5582cdeebc35604915a8a24e08c43ca667eee",
+    "observation_sha256": "031d7b246b8ec49bae9c6247e4f79749ad6eebcbf6359ffc3ded177e28bf7eb7"
+  },
+  {
+    "family": "chamfer_self_holdouts",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_self_holdouts"
+    ],
+    "log": "capture-holdouts.log.gz",
+    "request_sha256": "a68abc094d29505431ad99d5c73875e64d1b2b983122be215e371682b45a29cd",
+    "observation_sha256": "478bd3006d97303affe9329bb42b9b0dfd71fc87eec002b5c3f32e177c2f096c"
+  },
+  {
+    "family": "chamfer_self_spans",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_self_spans"
+    ],
+    "log": "capture-spans.log.gz",
+    "request_sha256": "f4d7ca596da0f03d04a1a9841f0087b8e55003a40347715a22a844f4728e1a09",
+    "observation_sha256": "ad280e046e115ec0c0ec63c13664f2e44b2a13a3953434c0e4cf13f4e9c648d0"
+  }
+]

@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_geometry::CurveContinuity;
 
-pub(super) fn all(source: &Curve3, tolerance: Tolerance) -> Result<Vec<Curve3>, CommandError> {
+pub(crate) fn all(source: &Curve3, tolerance: Tolerance) -> Result<Vec<Curve3>, CommandError> {
     match source {
         Curve3::Polyline(c) => Ok(c.segments().map(Curve3::Line).collect()),
         Curve3::PolyCurve(c) => {
@@ -46,7 +46,7 @@ pub(super) fn all(source: &Curve3, tolerance: Tolerance) -> Result<Vec<Curve3>, 
             bounds.push(*domain.end());
             bounds
                 .windows(2)
-                .map(|p| super::super::super::curve_segments::trimmed(source, p[0]..=p[1]))
+                .map(|p| crate::curve_segments::trimmed(source, p[0]..=p[1]))
                 .collect()
         }
         _ => Ok(vec![source.clone()]),

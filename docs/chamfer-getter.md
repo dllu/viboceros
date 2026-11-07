@@ -27,8 +27,9 @@ mouse events exercise source selection and measured distance input.
 
 The remaining native success uses distance 9 on a length-4 line: Rhino retains a
 line ending at x=13 but starts its bevel at x=-5. Viboceros rejects that case
-without editing the document or consuming Redo. Same-parent/closed sources and
-all possible intersection branches remain unsupported or unqualified. There is
+without editing the document or consuming Redo. Distinct closed-source pairs and all possible intersection branches remain
+unsupported or unqualified. [Single-parent Chamfer](chamfer-self.md) has a
+separate qualification. There is
 no continuous-distance, pixel-equality or comparative performance claim.
 
 Two failed cancellation drivers published no observations. Chamfer ignored

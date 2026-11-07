@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "self_open_parts_reverse_picks",
+      "case": "self_open_parts_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_open_joined_reverse_picks",
+      "case": "self_open_joined_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_parts_reverse_picks",
+      "case": "self_closed_parts_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_joined_reverse_picks",
+      "case": "self_closed_joined_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_seam_parts",
+      "case": "self_seam_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_zero_parts",
+      "case": "self_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_zero_first_parts",
+      "case": "self_zero_first_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_kinked_nurbs_parts",
+      "case": "self_kinked_nurbs_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_mixed_parts",
+      "case": "self_mixed_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_seam_joined",
+      "case": "self_seam_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_zero_joined",
+      "case": "self_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_zero_first_joined",
+      "case": "self_zero_first_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_kinked_nurbs_joined",
+      "case": "self_kinked_nurbs_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_mixed_joined",
+      "case": "self_mixed_joined"
+    }
+  ]
+}

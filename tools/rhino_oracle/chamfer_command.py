@@ -58,3 +58,14 @@ def validate(op):
 
 def request(names=None):
     return dict(protocol_version=1, iterations=1, tolerance=dict(absolute=1e-6, relative=1e-9, angular=1e-6), operations=[dict(op='chamfer_command', id=k, case=k) for k in (PILOT if names is None else names)])
+
+if __package__:
+    from . import chamfer_self_cases as _self
+else:
+    import chamfer_self_cases as _self
+SELF_PILOT=_self.pilot(case,configured,pick)
+SELF_DISCOVERY=_self.discovery(case,configured,pick)
+SELF_HOLDOUTS=_self.holdouts(case,configured,pick)
+CASES.update(SELF_PILOT);CASES.update(SELF_DISCOVERY);CASES.update(SELF_HOLDOUTS)
+SELF_SPANS=_self.spans(case,configured,pick)
+CASES.update(SELF_SPANS)

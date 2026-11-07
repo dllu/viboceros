@@ -1,5 +1,7 @@
 //! Immutable curve candidates and atomic document admission shared by pair commands.
 use super::*;
+pub(crate) mod junction;
+pub(crate) mod leaf;
 use std::sync::Arc;
 use viboceros_document::{LayerId, Object};
 use viboceros_geometry::Curve3;

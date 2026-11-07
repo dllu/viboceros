@@ -190,10 +190,6 @@ impl VibocerosApp {
             return;
         };
         let s = self.curve_chamfer_session.as_mut().unwrap();
-        if s.picks.iter().any(|(o, _)| o.id() == id) {
-            self.push_log("Select a different source curve".into());
-            return;
-        }
         s.picks.push((object, point));
         self.document
             .set_transient_selection(s.picks.iter().map(|(o, _)| o.id()))

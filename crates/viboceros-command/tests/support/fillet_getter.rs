@@ -178,7 +178,9 @@ pub fn check(doc: &Document, target: &Value, archive: bool) -> f64 {
         assert_eq!(actual.degree(), expected.degree());
         assert_eq!(
             actual.control_points().len(),
-            expected.control_points().len()
+            expected.control_points().len(),
+            "{} actual {actual:?} expected {expected:?}",
+            a.name().unwrap_or("")
         );
         for (a, b) in actual
             .control_points()
@@ -194,10 +196,14 @@ pub fn check(doc: &Document, target: &Value, archive: bool) -> f64 {
             error = error.max((a - b).abs());
         }
         for row in target["samples"].as_array().unwrap() {
-            let f = (row["parameter"].as_f64().unwrap() - *expected.domain().start())
-                / (*expected.domain().end() - *expected.domain().start());
+            // Knots already verify the original native chart. Evaluate its
+            // parameter directly: an affine remap can move a knot station by
+            // one ULP and select the other tangent at a nonsmooth junction.
             let source = object.geometry().curve_ref().unwrap();
-            let t = source.parameter_at(f.clamp(0., 1.)).unwrap();
+            let t = row["parameter"]
+                .as_f64()
+                .unwrap()
+                .clamp(*source.domain().start(), *source.domain().end());
             let sample = source.evaluate_with_tangent(t).unwrap();
             error = error.max(
                 sample

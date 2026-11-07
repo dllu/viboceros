@@ -52,7 +52,7 @@
 
 ## Curves and surfaces
 
-- [Chamfer getters, Euclidean setbacks and native document comparisons](../chamfer-getter.md)
+- [Chamfer getters and native document comparisons](../chamfer-getter.md), including [single-parent junctions and cross-span setbacks](../chamfer-self.md)
 
 - [Continuous surface/UV correspondence certificates](../surface-curve-certificates.md)
 - [Certified UV-to-spatial curve images](../certified-surface-pushups.md)

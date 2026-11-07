@@ -8,7 +8,7 @@ pub(super) fn candidate(
     options: Preferences,
     tolerance: Tolerance,
 ) -> Result<Option<([Real; 2], CircularArc3)>, CommandError> {
-    let pieces = leaf::all(source, tolerance)?;
+    let pieces = crate::curve_pair_edit::leaf::all(source, tolerance)?;
     let seeds = [
         source.as_ref().closest_parameter(picks[0], tolerance)?,
         source.as_ref().closest_parameter(picks[1], tolerance)?,

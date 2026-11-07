@@ -5,6 +5,7 @@ use viboceros_geometry::{
 };
 mod options;
 mod prepare;
+mod same_source;
 pub use options::{Arguments, Preferences, parse, parse_distance};
 pub use prepare::{Prepared, prepare};
 const USAGE: &str = "Chamfer [distance1 distance2 | Distances=d1,d2] [Sources=id1,id2] [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
@@ -18,12 +19,15 @@ impl Command for ChamferCommand {
         let ids = if let Some(ids) = args.sources {
             ids
         } else {
-            document
+            let selected = document
                 .selected_objects()
                 .map(|o| o.id())
-                .collect::<Vec<_>>()
-                .try_into()
-                .map_err(|_| CommandError::ChamferRequiresTwoCurves)?
+                .collect::<Vec<_>>();
+            match selected.as_slice() {
+                [id] if args.picks.iter().all(Option::is_some) => [*id, *id],
+                [a, b] => [*a, *b],
+                _ => return Err(CommandError::ChamferRequiresTwoCurves),
+            }
         };
         let curves = ids.map(|id| {
             document

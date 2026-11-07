@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_far_parts",
+      "case": "self_flat_far_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_far_small_parts",
+      "case": "self_flat_far_small_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_smooth_seam_parts",
+      "case": "self_smooth_seam_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_far_joined",
+      "case": "self_flat_far_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_far_small_joined",
+      "case": "self_flat_far_small_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_smooth_seam_joined",
+      "case": "self_smooth_seam_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_smooth_seam_reverse_picks",
+      "case": "self_smooth_seam_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_smooth_seam_backward",
+      "case": "self_smooth_seam_backward"
+    }
+  ]
+}

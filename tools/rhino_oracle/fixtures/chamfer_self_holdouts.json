@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "self_open_joined_backward",
+      "case": "self_open_joined_backward"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_joined_backward",
+      "case": "self_closed_joined_backward"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_interior",
+      "case": "self_interior"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_spatial",
+      "case": "self_spatial"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_nonadjacent",
+      "case": "self_nonadjacent"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_smooth_nurbs",
+      "case": "self_smooth_nurbs"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_oversized",
+      "case": "self_oversized"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_options_after_first",
+      "case": "self_options_after_first"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_nurbs_seam_parts",
+      "case": "self_nurbs_seam_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_nurbs_seam_joined",
+      "case": "self_nurbs_seam_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_zero_parts",
+      "case": "self_closed_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_span_parts",
+      "case": "self_flat_span_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_kink_span_parts",
+      "case": "self_kink_span_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_zero_joined",
+      "case": "self_closed_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_flat_span_joined",
+      "case": "self_flat_span_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_kink_span_joined",
+      "case": "self_kink_span_joined"
+    }
+  ]
+}

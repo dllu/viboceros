@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "self_open_parts",
+      "case": "self_open_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_open_joined",
+      "case": "self_open_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_open_bevel",
+      "case": "self_open_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_parts",
+      "case": "self_closed_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_joined",
+      "case": "self_closed_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_closed_bevel",
+      "case": "self_closed_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_cancel_second",
+      "case": "self_cancel_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "self_same_leaf",
+      "case": "self_same_leaf"
+    }
+  ]
+}

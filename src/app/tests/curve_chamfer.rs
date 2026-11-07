@@ -7,8 +7,11 @@ mod getters;
 
 #[test]
 fn captured_getters_preserve_distances_across_cancel_and_match_native_documents() {
+    assert_eq!(replay(&getters::FAMILIES, "CHAMFER"), 30);
+}
+pub(super) fn replay(families: &[&str], marker: &str) -> usize {
     let mut count = 0;
-    for family in getters::FAMILIES {
+    for family in families {
         let rows = native::read(family);
         let mut app = test_app();
         app.commands
@@ -17,7 +20,7 @@ fn captured_getters_preserve_distances_across_cancel_and_match_native_documents(
         for row in rows["results"].as_array().unwrap() {
             let id = row["id"].as_str().unwrap();
             let v = &row["value"];
-            println!("CHAMFER_UI_CASE {family}/{id}");
+            println!("{marker}_UI_CASE {family}/{id}");
             assert_eq!(
                 app.commands.chamfer_preferences(),
                 getters::initial(v),
@@ -100,17 +103,17 @@ fn captured_getters_preserve_distances_across_cancel_and_match_native_documents(
                         .starts_with("Unable to chamfer")
                 );
                 println!(
-                    "CHAMFER_UI_REJECTION {{\"id\":\"{family}/{id}\",\"redo_preserved\":true}}"
+                    "{marker}_UI_REJECTION {{\"id\":\"{family}/{id}\",\"redo_preserved\":true}}"
                 );
             } else {
                 let mut r = state.verify(&mut app.document, v);
                 r["id"] = serde_json::json!(format!("{family}/{id}"));
-                println!("CHAMFER_UI {r}");
+                println!("{marker}_UI {r}");
                 count += 1;
             }
         }
     }
-    assert_eq!(count, 30);
+    count
 }
 
 #[test]

@@ -9,9 +9,6 @@ pub fn prepare(
     preferences: Preferences,
 ) -> Result<Prepared, CommandError> {
     let preferences = preferences.validate()?;
-    if picks[0].0 == picks[1].0 {
-        return Err(CommandError::Usage("Pick two distinct curves to chamfer"));
-    }
     let sources = picks.map(|(id, _)| {
         document
             .object(id)
@@ -29,6 +26,15 @@ pub fn prepare(
             .ok_or(CommandError::ChamferRequiresTwoCurves)
     };
     let (first, second) = (curve(0)?, curve(1)?);
+    if picks[0].0 == picks[1].0 {
+        let plan = super::same_source::prepare(
+            &first,
+            picks.map(|(_, p)| p),
+            preferences,
+            document.tolerance(),
+        )?;
+        return Ok(Prepared::new(document, sources, plan, "Chamfer"));
+    }
     let outputs = if preferences.join && preferences.trim {
         let joined = crate::curve_connections::chamfer_joined(
             (&first, picks[0].1),
