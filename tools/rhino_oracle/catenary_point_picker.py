@@ -21,6 +21,11 @@ class CatenaryPointPicker(IdlePicker):
             for op in request['operations'] for i,a in enumerate(op['actions'])
             if isinstance(a,dict) and 'click'in a and a.get('shift',False)
         }
+        self.alt_clicks = {
+            '@catenary-click:' + op['id'] + '-' + str(i)
+            for op in request['operations'] for i,a in enumerate(op['actions'])
+            if isinstance(a,dict) and 'click'in a and a.get('alt',False)
+        }
         self.moved = {}
 
     def __call__(self, job, pids):
@@ -41,12 +46,16 @@ class CatenaryPointPicker(IdlePicker):
             return False
         if json.loads(ready.read_text()) != name:
             raise OracleProtocolError('foreign Catenary motion acknowledgement')
-        if name in self.shift_clicks:
-            subprocess.run(['xdotool','windowactivate','--sync',window,'keydown','Shift_L'],check=True,timeout=10)
+        keys = (['Shift_L']if name in self.shift_clicks else[]) + (['Alt_L']if name in self.alt_clicks else[])
+        if keys:
             try:
-                subprocess.run(['xdotool','click','1'],check=True,timeout=10)
+                subprocess.run(['xdotool','windowactivate','--sync',window,'keydown',*keys],check=True,timeout=10)
+                # An Alt-constrained getter must see movement while Alt is held,
+                # after the owned target's initial public motion acknowledgement.
+                motion=['mousemove',str(int(x)+1),y,'mousemove',x,y,'sleep','0.1']if name in self.alt_clicks else[]
+                subprocess.run(['xdotool',*motion,'click','1'],check=True,timeout=10)
             finally:
-                subprocess.run(['xdotool','keyup','Shift_L'],check=True,timeout=10)
+                subprocess.run(['xdotool','keyup',*reversed(keys)],check=True,timeout=10)
         else:
             subprocess.run([
                 'xdotool', 'windowactivate', '--sync', window, 'click', '1',

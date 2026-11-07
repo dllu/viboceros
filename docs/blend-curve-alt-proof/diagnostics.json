@@ -1,0 +1,18 @@
+[
+  {
+    "family": "blend_curve_alt_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_blend_curve_alt_pilot"
+    ],
+    "exit_status": 143,
+    "log": "capture-pilot.log.gz",
+    "observations": 8,
+    "observation_sha256": "0c1dc2d3819222402b00b18c5e569b66a6ad0fc63d1237d5e5a36b9abb91932f",
+    "request_sha256": "41ccb5de1994cb364aff6cec4936d20fe630b86056799c35fbde00a0d6c7a732",
+    "classification": "All eight inputs and immutable observations completed; the outer headless process subsequently returned 143. Retained as diagnostic evidence, not nominal terminal-success workflows."
+  }
+]

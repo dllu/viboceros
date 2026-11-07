@@ -1,6 +1,6 @@
 # Curved-face BlendCrv G3/G4
 
-[Command guide](commands/blend-curve.md) · [Validation record](blend-curve-surface-high-validation.json)
+[Command guide](commands/blend-curve.md) · [Alt editing](blend-curve-alt.md) · [Validation record](blend-curve-surface-high-validation.json)
 
 Regular supporting faces now accept G3/G4 constraints alongside the existing
 contacts, numeric angles, shape handles, Shift symmetry and mixed-source joins.
@@ -49,7 +49,7 @@ and view settings remain exact, and physical pixel/ray/face receipts are kept.
 Geometry and normalized blend derivative gates remain `1e-6`; independent
 surface partials use a `1e-8` relative gate. Thirty-nine workflows retain the
 earlier `max(2e-6, 1e-8 * native span)` parameter-domain gate. Mathematical G3/G4
-contact on arbitrary parameterizations, Alt dragging, shared/seam faces,
+contact on arbitrary parameterizations, Native held Alt dragging, shared/seam faces,
 trimmed/closed boundaries, singular frames, arbitrary ambiguous picking,
 continuous distance, comparative performance and exact Native approximate-domain
 parity remain unqualified.

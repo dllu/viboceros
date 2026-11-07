@@ -72,3 +72,23 @@ class CatenaryPointPickerTests(TestCase):
                         ['xdotool','windowactivate','--sync','owned','keydown','Shift_L'],
                         ['xdotool','click','1'],['xdotool','keyup','Shift_L'],
                     ])
+
+    def test_alt_moves_inside_the_owned_click_scope_and_releases_all_modifiers(self):
+        import subprocess
+        marker='@catenary-click:angle-0'
+        request={'operations':[{'id':'angle','actions':[{'click':[1,2,0],'shift':True,'alt':True}]}]}
+        for fail in [False,True]:
+            with self.subTest(fail=fail),tempfile.TemporaryDirectory()as directory:
+                picker=CatenaryPointPicker(request);picker.job=Path(directory)
+                (picker.job/'catenary-click-ready-angle-0.json').write_text(json.dumps(marker))
+                def send(command,**kwargs):
+                    if fail and 'click'in command:raise subprocess.CalledProcessError(1,command)
+                with mock.patch('tools.rhino_oracle.catenary_point_picker.subprocess.run',side_effect=send)as run:
+                    if fail:
+                        with self.assertRaises(subprocess.CalledProcessError):picker.send_input(marker,'1','2','owned')
+                    else:self.assertTrue(picker.send_input(marker,'1','2','owned'))
+                    self.assertEqual([c.args[0]for c in run.call_args_list],[
+                        ['xdotool','windowactivate','--sync','owned','keydown','Shift_L','Alt_L'],
+                        ['xdotool','mousemove','2','2','mousemove','1','2','sleep','0.1','click','1'],
+                        ['xdotool','keyup','Alt_L','Shift_L'],
+                    ])

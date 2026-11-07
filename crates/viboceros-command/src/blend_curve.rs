@@ -42,6 +42,7 @@ pub struct Input {
     preview: Option<NurbsCurve>,
     active: Option<Handle>,
     symmetric: bool,
+    angle_editing: bool,
     surface_edges: bool,
 }
 impl Input {
@@ -59,6 +60,7 @@ impl Input {
             preview: None,
             active: None,
             symmetric: false,
+            angle_editing: false,
             surface_edges: false,
         }
     }
@@ -89,6 +91,7 @@ impl Input {
     }
     pub fn prompt(&self) -> &'static str {
         match self.active {
+            Some(_) if self.angle_editing => "Set the handle angle in degrees or pick a direction",
             Some(Handle::Start | Handle::End) => "Select blend contact location",
             Some(_) if self.paired_handle().is_some() => {
                 "Set paired blend shape handle length or location"

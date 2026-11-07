@@ -1,0 +1,23 @@
+[
+  {
+    "name": "alt-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_alt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 101,
+    "log": "ui-compile-before.log.gz",
+    "reason": "Replace a nonexistent Vector3.add call with component-wise fused ray/plane arithmetic."
+  },
+  {
+    "name": "python",
+    "status": 1,
+    "log": "python-before-selection.log.gz",
+    "reason": "Two control observations were added during the audit, before the classification inventory was extended. Re-run the full current matrix after completing that classification."
+  }
+]

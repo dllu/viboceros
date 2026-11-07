@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "alt_baseline",
+      "case": "alt_baseline"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_select_typed",
+      "case": "alt_select_typed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_select_pointer",
+      "case": "alt_select_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_target_pointer",
+      "case": "alt_target_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_both_pointer",
+      "case": "alt_both_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_second_pointer",
+      "case": "alt_second_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_shift_pointer",
+      "case": "alt_shift_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_curved_g3",
+      "case": "alt_curved_g3"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_baseline",
+      "case": "verified_alt_baseline"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_select_typed",
+      "case": "verified_alt_select_typed"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_select_pointer",
+      "case": "verified_alt_select_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_target_pointer",
+      "case": "verified_alt_target_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_both_pointer",
+      "case": "verified_alt_both_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_second_pointer",
+      "case": "verified_alt_second_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_shift_pointer",
+      "case": "verified_alt_shift_pointer"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "verified_alt_curved_g3",
+      "case": "verified_alt_curved_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_order_g1",
+      "case": "alt_order_g1"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_order_g2",
+      "case": "alt_order_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_order_g3",
+      "case": "alt_order_g3"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_order_g4",
+      "case": "alt_order_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_off_plane",
+      "case": "alt_off_plane"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_backwards",
+      "case": "alt_backwards"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_along_edge",
+      "case": "alt_along_edge"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_negative_angle",
+      "case": "alt_negative_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_preexisting_angle",
+      "case": "alt_preexisting_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_after_length",
+      "case": "alt_after_length"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_then_length",
+      "case": "alt_then_length"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_shift_unequal",
+      "case": "alt_shift_unequal"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_numeric_angle",
+      "case": "alt_numeric_angle"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_curved_skew",
+      "case": "alt_curved_skew"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_ordinary",
+      "case": "alt_ordinary"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_mixed_join",
+      "case": "alt_mixed_join"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_cancel",
+      "case": "alt_cancel"
+    }
+  ]
+}

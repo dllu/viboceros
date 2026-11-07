@@ -1,0 +1,14 @@
+[
+  {
+    "name": "clippy-portable",
+    "status": 101,
+    "log": "clippy-portable-before.log.gz",
+    "reason": "The shared world-point handle helper is used by UI tests, while command tests now use input projection. Scope its dead-code allowance to that shared test-only helper."
+  },
+  {
+    "name": "clippy-portable",
+    "status": 101,
+    "log": "clippy-portable-second.log.gz",
+    "reason": "Alt observations do not include separate tight-length measurements. Allow the unused tight-length helper in this test module, following the shared-support import pattern."
+  }
+]

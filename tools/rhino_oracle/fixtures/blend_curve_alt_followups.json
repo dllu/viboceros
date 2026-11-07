@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "alt_existing_angle_corrected",
+      "case": "alt_existing_angle_corrected"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_numeric_negative",
+      "case": "alt_numeric_negative"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_numeric_second",
+      "case": "alt_numeric_second"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_spatial_g2",
+      "case": "alt_spatial_g2"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_spatial_g4",
+      "case": "alt_spatial_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_skew_g4",
+      "case": "alt_skew_g4"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_surface_point",
+      "case": "alt_surface_point"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_mixed_reverse",
+      "case": "alt_mixed_reverse"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "alt_contact",
+      "case": "alt_contact"
+    }
+  ]
+}

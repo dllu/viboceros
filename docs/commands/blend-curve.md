@@ -37,7 +37,9 @@ PickPoint initially points back toward the portion start. Esc discards the
 nested getter and returns to source selection.
 
 Click a contact to slide it on its source, or a shape handle to change its
-length. Click again to accept the preview; held dragging also works. Typed
+length. The nearest visible projected control determines the edit. Independent
+secondary shape controls remain pending; they do not select another handle. Click again to accept
+the preview; held dragging also works. Typed
 points project onto the constraint. Shape lengths also accept numbers with
 units, fractions and arithmetic. Moving a contact preserves handle lengths.
 Esc discards the local adjustment; another Esc cancels the command. `!` aborts
@@ -47,6 +49,13 @@ Hold Shift while selecting a shape handle to set both handle lengths together.
 Both ends must have the same G1–G4 continuity. Each handle stays on its own tangent
 constraint; contacts and mixed/G0 constraints edit independently. Pairing lasts
 for that adjustment, including when Shift is released before mouse-up.
+
+Hold Alt when selecting a surface shape handle to rotate its direction in the
+supporting tangent plane while keeping its length. Enter an angle in degrees or
+pick a direction. The mode lasts for that adjustment, even after Alt is released;
+pressing Alt only at the destination leaves the original length edit. Alt angle
+edits remain independent when Shift is held. Ordinary curve handles and contacts
+keep their usual constraints. See [Alt surface handles](../blend-curve-alt.md).
 
 Enter `Flip` and pick a source to reverse its blend tangent, or press Enter to
 flip both. `Trim=Yes` retains the chosen source portions. `Join=Yes` combines
@@ -86,7 +95,7 @@ the editor and requests new picks.
 Validation: [G0–G2](../blend-curve-validation.json),
 [G3/G4](../blend-curve-high.md), [point endpoints](../blend-curve-points.md),
 [temporary sources](../blend-curve-portions.md), [Shift editing](../blend-curve-symmetry.md),
-and [surface edges](../blend-curve-edges.md).
+[surface edges](../blend-curve-edges.md), and [Alt editing](../blend-curve-alt.md).
 Both builds check geometry, attributes, identities, selection, history, 3DM round
 trips and independent Native evaluations. Rhino reports `Nothing` with
 success=false after accepting these blends; records retain the actual document
@@ -97,11 +106,11 @@ blend derivative; this does not establish general mathematical G4 continuity.
 See the [higher-order qualification](../blend-curve-high.md).
 
 ```sh
-python3 -m tools.rhino_oracle.check_blend_curve_surface_high
+python3 -m tools.rhino_oracle.check_blend_curve_alt
 ```
 
 Captures use private Xvfb; application tests are windowless. Whole closed sources,
-zero-retained-side joins, shared/seam surface edges, Alt edits, curvature display and
-history-based re-editing remain pending. Exact hit-box/depth ranking, native
-numeric/Escape trajectories, arbitrary self-blends, continuous distance and
+zero-retained-side joins, shared/seam surface edges, curvature display and
+history-based re-editing remain pending. Arbitrary clipping/occlusion/depth ties,
+complete Native drag/Escape trajectories, arbitrary self-blends, continuous distance and
 comparative speed remain unqualified.

@@ -609,6 +609,9 @@ pub struct ViewportOutput {
     pub arc_blend_hover: Option<Real>,
     pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
     pub blend_curve_symmetric: bool,
+    pub blend_curve_angle: bool,
+    pub blend_curve_angle_hover: Option<Point3>,
+    pub blend_curve_angle_point: Option<Point3>,
     pub blend_curve_hover: Option<Real>,
     pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
@@ -745,7 +748,7 @@ pub struct Viewport {
     last_pointer: Option<Pos2>,
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
-    blend_curve_press: Option<(viboceros_command::blend_curve::Handle, bool)>,
+    blend_curve_press: Option<(viboceros_command::blend_curve::Handle, bool, bool)>,
     lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
     navigation_drag_start: Option<CameraSnapshot>,
@@ -1981,6 +1984,18 @@ impl Viewport {
         let blend_parameter = input
             .blend_curve
             .and_then(|_| blend_shape_parameter.or(edge_cursor.map(|c| c.parameter)));
+        let blend_angle_point = input
+            .blend_curve
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none())
+            .and_then(|getter| {
+                self.blend_curve_angle_point(
+                    getter,
+                    response.hover_pos()?,
+                    rect,
+                    document,
+                    drafting.snap_options(),
+                )
+            });
         let (affine_preview, affine_preview_update) =
             input.affine_preview.map_or((None, None), |preview| {
                 self.resolve_affine_preview(
@@ -3237,6 +3252,12 @@ impl Viewport {
                 .flatten(),
             blend_curve_handle: blend_curve_selection.map(|p| p.0),
             blend_curve_symmetric: blend_curve_selection.is_some_and(|p| p.1),
+            blend_curve_angle: blend_curve_selection.is_some_and(|p| p.2),
+            blend_curve_angle_hover: response.hovered().then_some(blend_angle_point).flatten(),
+            blend_curve_angle_point: (response.clicked_by(PointerButton::Primary)
+                || response.drag_stopped_by(PointerButton::Primary))
+            .then_some(blend_angle_point)
+            .flatten(),
             blend_curve_hover: response.hovered().then_some(blend_parameter).flatten(),
             blend_curve_parameter: (response.clicked_by(PointerButton::Primary)
                 || response.drag_stopped_by(PointerButton::Primary))

@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "blend_curve_command",
+      "id": "plain_alt_far_surface",
+      "case": "plain_alt_far_surface"
+    },
+    {
+      "op": "blend_curve_command",
+      "id": "plain_alt_far_ordinary",
+      "case": "plain_alt_far_ordinary"
+    }
+  ]
+}

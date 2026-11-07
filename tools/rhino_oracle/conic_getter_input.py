@@ -82,6 +82,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
     click_shift=S.Array[S.Int32]([-1]*len(actions))
+    click_alt=S.Array[S.Int32]([-1]*len(actions))
     pointer_plane=vp.GetConstructionPlane().Plane
     arc_pointer_path=S.Array[S.Int32]([0]*384);arc_pointer_count=S.Array[S.Int32]([0])
     arc_pointer_initial=S.Array[S.Int32]([0]*(2*len(actions)))
@@ -265,7 +266,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
         return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
     mouse=create(mouse_handler,host)if mouse_steps else None
     def click_handler(argument,delegate):
-        from System.Windows.Forms import MouseButtons
+        from System.Windows.Forms import MouseButtons,Control,Keys
         event=E.Parameter(argument,'event');pixel=E.Property(event,'ViewportPoint');viewport=E.Property(E.Property(E.Property(event,'View'),'ActiveViewport'),'Id')
         same_view=E.Equal(viewport,E.Constant(vp.Id,clr.GetClrType(S.Guid)))
         left=E.Equal(E.Property(event,'Button'),E.Constant(MouseButtons.Left,clr.GetClrType(MouseButtons)))
@@ -280,6 +281,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
                 expected=bool(actions[i].get('shift',False))
                 condition=E.AndAlso(condition,E.Equal(E.Property(event,'ShiftKeyDown'),E.Constant(expected)))
                 advance.append(E.Assign(item(click_shift,i),E.Condition(E.Property(event,'ShiftKeyDown'),integer(1),integer(0))))
+                modifiers=E.Convert(E.Property(None,clr.GetClrType(Control).GetProperty('ModifierKeys')),clr.GetClrType(S.Int32))
+                alt=E.NotEqual(E.And(modifiers,integer(int(Keys.Alt))),integer(0))
+                condition=E.AndAlso(condition,E.Equal(alt,E.Constant(bool(actions[i].get('alt',False)))))
+                advance.append(E.Assign(item(click_alt,i),E.Condition(alt,integer(1),integer(0))))
             if command!='Reparameterize':advance.append(E.Assign(stage,integer(i+1)))
             handlers.append(E.IfThen(condition,block(advance)))
         return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
@@ -304,7 +309,10 @@ def drive(op,host,guides,command="Conic",start_script=None):
     if clicks:
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]>=9)for c in clicks]
         if command=='BlendCrv':
-            for c in trace['clicks']:c['shift_key_down']=bool(click_shift[c['action']]==1)if click_shift[c['action']]>=0 else None
+            for c in trace['clicks']:
+                c['shift_key_down']=bool(click_shift[c['action']]==1)if click_shift[c['action']]>=0 else None
+                c['alt_key_down']=bool(click_alt[c['action']]==1)if click_alt[c['action']]>=0 else None
+            trace['alt_observation']='System.Windows.Forms.Control.ModifierKeys sampled in the public mouse-down callback'
         if command=='Reparameterize':trace['selection_enter_sent']=any(counts[c['action']]==10 for c in clicks)
         trace['snap_settings']=snap_settings
         if op.get('op')=='arc_command':trace['pointer_path']=[dict(action=int(arc_pointer_path[3*i]),pixel=[int(arc_pointer_path[3*i+1]),int(arc_pointer_path[3*i+2])])for i in range(arc_pointer_count[0])]

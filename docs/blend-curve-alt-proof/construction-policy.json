@@ -1,0 +1,63 @@
+{
+  "equivalent_outputs": [
+    {
+      "first": "verified_alt_target_pointer",
+      "second": "verified_alt_baseline",
+      "coefficient_error": 0.0
+    },
+    {
+      "first": "verified_alt_both_pointer",
+      "second": "verified_alt_select_pointer",
+      "coefficient_error": 0.0
+    },
+    {
+      "first": "alt_off_plane",
+      "second": "verified_alt_select_typed",
+      "coefficient_error": 0.0
+    }
+  ],
+  "handle_lengths": {
+    "default": [
+      3.165450115906463,
+      3.165450115906463
+    ],
+    "shift_with_unequal_peer": [
+      3.165450115906463,
+      4.999999999999999
+    ],
+    "after_length_edit": [
+      4.0,
+      3.165450115906463
+    ]
+  },
+  "numeric_angles": [
+    {
+      "id": "blend_curve_alt_verification/alt_numeric_angle",
+      "endpoint": 0,
+      "degrees": 30.0,
+      "direction_error": 1.2412670766236366e-16
+    },
+    {
+      "id": "blend_curve_alt_followups/alt_numeric_negative",
+      "endpoint": 0,
+      "degrees": -35.0,
+      "direction_error": 0.0
+    },
+    {
+      "id": "blend_curve_alt_followups/alt_numeric_second",
+      "endpoint": 1,
+      "degrees": 25.0,
+      "direction_error": 2.0014830212433605e-16
+    }
+  ],
+  "rounded_pick_moves_contact_to_corner": true,
+  "rounded_contact_preserved_angle_error": 1.1102230246251565e-16,
+  "corrected_shape_pick_error": 0.0,
+  "plain_ordinary_pick_error": 0.0,
+  "secondary_shape_control": {
+    "id": "blend_curve_alt_selection/plain_alt_far_surface",
+    "control": 3,
+    "shape_edit_implemented": false,
+    "native_normalized_tangential_acceleration": 0.18609843642442533
+  }
+}

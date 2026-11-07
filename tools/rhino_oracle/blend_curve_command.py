@@ -184,3 +184,28 @@ if __package__:from .blend_curve_surface_high_cases import planarity as surface_
 else:from blend_curve_surface_high_cases import planarity as surface_high_planarity
 SURFACE_HIGH_PLANARITY=surface_high_planarity(case)
 CASES.update(SURFACE_HIGH_PLANARITY)
+
+if __package__:from .blend_curve_alt_cases import pilot as alt_pilot
+else:from blend_curve_alt_cases import pilot as alt_pilot
+ALT_PILOT=alt_pilot(case)
+CASES.update(ALT_PILOT)
+
+if __package__:from .blend_curve_alt_cases import verification as alt_verification
+else:from blend_curve_alt_cases import verification as alt_verification
+ALT_VERIFICATION=alt_verification(case,pick,B)
+CASES.update(ALT_VERIFICATION)
+
+if __package__:from .blend_curve_alt_cases import followups as alt_followups
+else:from blend_curve_alt_cases import followups as alt_followups
+ALT_FOLLOWUPS=alt_followups(case,pick,B)
+CASES.update(ALT_FOLLOWUPS)
+
+if __package__:from .blend_curve_alt_cases import picking as alt_picking
+else:from blend_curve_alt_cases import picking as alt_picking
+ALT_PICKING=alt_picking(case,pick)
+CASES.update(ALT_PICKING)
+
+if __package__:from .blend_curve_alt_cases import plain_selection
+else:from blend_curve_alt_cases import plain_selection
+ALT_SELECTION=plain_selection(case,pick)
+CASES.update(ALT_SELECTION)

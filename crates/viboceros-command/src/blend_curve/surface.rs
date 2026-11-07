@@ -49,12 +49,33 @@ impl SurfaceGuide {
         let normal = self.normal()?;
         self.direction_with_normal(guide, i, normal)
     }
-    fn direction_with_normal(
-        &self,
-        guide: &Guide,
-        i: usize,
-        normal: Vector3,
-    ) -> Result<UnitVector3, CommandError> {
+    pub fn plane(&self, guide: &Guide) -> Result<viboceros_geometry::Plane, CommandError> {
+        Ok(viboceros_geometry::Plane::new(
+            guide.point()?,
+            self.normal()?.normalized_nonzero()?,
+        ))
+    }
+    pub fn angle_to_point(&self, guide: &Guide, point: Point3) -> Result<Real, CommandError> {
+        let normal = self.normal()?;
+        let (outward, tangent) = self.axes(guide, normal)?;
+        let delta = guide.point()?.vector_to(point)?;
+        let x = delta.dot(outward)?;
+        let y = delta.dot(tangent)?;
+        let scale = delta
+            .to_array()
+            .into_iter()
+            .map(Real::abs)
+            .fold(0., Real::max);
+        // A normal-only displacement has no in-plane direction. Reject its
+        // floating-point residue rather than turning it into an arbitrary angle.
+        if x.hypot(y) <= 64. * Real::EPSILON * scale {
+            return Err(CommandError::Usage(
+                "Pick a direction away from the blend contact",
+            ));
+        }
+        Ok(y.atan2(x).to_degrees())
+    }
+    fn axes(&self, guide: &Guide, normal: Vector3) -> Result<(Vector3, Vector3), CommandError> {
         let tangent = guide
             .curve_ref()
             .evaluate_with_tangent_on_side(guide.parameter, guide.side())?
@@ -67,7 +88,18 @@ impl SurfaceGuide {
                     1.
                 },
             )?;
-        let outward = tangent.cross(normal)?.normalized_nonzero()?.as_vector();
+        Ok((
+            tangent.cross(normal)?.normalized_nonzero()?.as_vector(),
+            tangent,
+        ))
+    }
+    fn direction_with_normal(
+        &self,
+        guide: &Guide,
+        i: usize,
+        normal: Vector3,
+    ) -> Result<UnitVector3, CommandError> {
+        let (outward, tangent) = self.axes(guide, normal)?;
         let (sin, cos) = self.angle.to_radians().sin_cos();
         let a = outward.to_array();
         let b = tangent.to_array();

@@ -5,10 +5,19 @@ impl VibocerosApp {
     pub(in crate::app) fn select_blend_curve_handle(&mut self, handle: Handle) {
         self.select_blend_curve_handle_with_symmetry(handle, false);
     }
+    #[cfg(test)]
     pub(in crate::app) fn select_blend_curve_handle_with_symmetry(
         &mut self,
         handle: Handle,
         symmetric: bool,
+    ) {
+        self.select_blend_curve_handle_with_modifiers(handle, symmetric, false);
+    }
+    pub(in crate::app) fn select_blend_curve_handle_with_modifiers(
+        &mut self,
+        handle: Handle,
+        symmetric: bool,
+        angle: bool,
     ) {
         self.validate_blend_curve();
         let Some(s) = &mut self.blend_curve_session else {
@@ -17,13 +26,51 @@ impl VibocerosApp {
         if s.flip || s.subcurve.is_some() {
             return;
         }
-        match s.input.select_handle_with_symmetry(handle, symmetric) {
+        match s
+            .input
+            .select_handle_with_modifiers(handle, symmetric, angle)
+        {
             Ok(()) => {
                 s.candidate = None;
                 self.blend_curve_prompt();
             }
             Err(e) => self.push_log(format!("Error: {e}")),
         };
+    }
+    pub(in crate::app) fn hover_blend_curve_angle_point(&mut self, point: Point3) {
+        self.validate_blend_curve();
+        let Some(s) = &mut self.blend_curve_session else {
+            return;
+        };
+        if s.input.angle_constraint().is_none() {
+            return;
+        }
+        let key = CandidateKey::Point(point);
+        if s.candidate.as_ref().is_some_and(|(old, _)| *old == key) {
+            return;
+        }
+        let mut next = s.input.clone();
+        s.candidate = next.adjust_point(point).is_ok().then_some((key, next));
+    }
+    pub(in crate::app) fn accept_blend_curve_angle_point(&mut self, point: Point3) -> bool {
+        if self.plane_prompt.is_some()
+            || self
+                .blend_curve_session
+                .as_ref()
+                .is_none_or(|s| s.input.angle_constraint().is_none())
+        {
+            return false;
+        }
+        self.hover_blend_curve_angle_point(point);
+        let s = self.blend_curve_session.as_mut().unwrap();
+        if let Some((_, mut next)) = s.candidate.take() {
+            next.finish_adjustment();
+            s.input = next;
+            self.blend_curve_prompt();
+        } else {
+            self.push_log("Error: pick a direction away from the blend contact".into());
+        }
+        true
     }
     pub(in crate::app) fn hover_blend_curve_parameter(&mut self, t: f64) {
         self.validate_blend_curve();
@@ -102,7 +149,17 @@ impl VibocerosApp {
         }
         let s = self.blend_curve_session.as_ref().unwrap();
         let mut next = s.input.clone();
-        let result = if next.shape_constraint().is_some() {
+        let result = if next.angle_constraint().is_some() {
+            if let Ok(angle) = text.parse::<f64>() {
+                next.adjust_shape_angle(angle)
+            } else if let Some(point) = self.blend_curve_point(text) {
+                next.adjust_point(point)
+            } else {
+                Err(viboceros_command::CommandError::Usage(
+                    "Enter an angle in degrees or pick a direction",
+                ))
+            }
+        } else if next.shape_constraint().is_some() {
             if let Some(length) =
                 viboceros_drafting::PointInput::parse_length_with_units(text, self.document.units())
             {

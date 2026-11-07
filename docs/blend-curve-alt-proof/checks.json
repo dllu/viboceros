@@ -1,0 +1,791 @@
+[
+  {
+    "name": "alt-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_alt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 19.964384938997682
+  },
+  {
+    "name": "alt-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_alt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 59.36663775800844
+  },
+  {
+    "name": "alt-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_alt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 19.583359922020463
+  },
+  {
+    "name": "alt-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_alt",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 59.545134056999814
+  },
+  {
+    "name": "surface-high-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 10.35205117901205
+  },
+  {
+    "name": "surface-high-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 3.8058403019967955
+  },
+  {
+    "name": "surface-high-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 10.981989859021269
+  },
+  {
+    "name": "surface-high-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_surface_high",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 3.7208681979973335
+  },
+  {
+    "name": "edge-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_edges",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.334516180999344
+  },
+  {
+    "name": "edge-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_edges",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.8492679000191856
+  },
+  {
+    "name": "edge-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_edges",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.661623082996812
+  },
+  {
+    "name": "edge-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_edges",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.8019120559911244
+  },
+  {
+    "name": "symmetry-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_symmetry",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 7.951127421023557
+  },
+  {
+    "name": "symmetry-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_symmetry",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.412282094010152
+  },
+  {
+    "name": "symmetry-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_symmetry",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.657268636976369
+  },
+  {
+    "name": "symmetry-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_symmetry",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.4523088260029908
+  },
+  {
+    "name": "portion-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_portions",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 7.6551297760161106
+  },
+  {
+    "name": "portion-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_portions",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.1388406589976512
+  },
+  {
+    "name": "portion-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_portions",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.02488921402255
+  },
+  {
+    "name": "portion-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_portions",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.1806764669890981
+  },
+  {
+    "name": "point-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve_points",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 7.528076813992811
+  },
+  {
+    "name": "point-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve_points",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.3177216309995856
+  },
+  {
+    "name": "point-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve_points",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.678760265989695
+  },
+  {
+    "name": "point-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve_points",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.3841346129775047
+  },
+  {
+    "name": "fourth-derivatives",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "fourth",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.10552281598211266
+  },
+  {
+    "name": "mixed-orders-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--test",
+      "endpoint_orders",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.08300144801614806
+  },
+  {
+    "name": "mixed-orders-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "endpoint_orders",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.10241821099771187
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.4379266560135875
+  },
+  {
+    "name": "endpoint-jets",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "curve_blend_pair",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.08457780300523154
+  },
+  {
+    "name": "blend-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 7.423892338993028
+  },
+  {
+    "name": "blend-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 3.8038149739732035
+  },
+  {
+    "name": "blend-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 8.38497158701648
+  },
+  {
+    "name": "blend-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::blend_curve",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 3.7948674359940924
+  },
+  {
+    "name": "native-blend-interpolation",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "curve_blend",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.21984895499190316
+  },
+  {
+    "name": "arc-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::arc_blend",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.8028331600071397
+  },
+  {
+    "name": "arc-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::arc_blend",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.6785948350152466
+  },
+  {
+    "name": "pick-viewport-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "viewport::edge_point",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.19473623199155554
+  },
+  {
+    "name": "pick-viewport-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "viewport::edge_point",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.1991373679775279
+  },
+  {
+    "name": "normal-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::line_normal",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.9866129510046449
+  },
+  {
+    "name": "normal-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::line_normal",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.0080967569956556
+  },
+  {
+    "name": "primitive-input-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::primitive_input",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.13903833800577559
+  },
+  {
+    "name": "primitive-input-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::primitive_input",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.15996600198559463
+  },
+  {
+    "name": "registry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "tests::document::registry"
+    ],
+    "status": 0,
+    "seconds": 31.037585792015307
+  },
+  {
+    "name": "history",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-document",
+      "--lib"
+    ],
+    "status": 0,
+    "seconds": 10.524392582010478
+  },
+  {
+    "name": "commands-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "srf_pt",
+      "--test",
+      "plane_surface",
+      "--test",
+      "plane_surface_native",
+      "--test",
+      "plane_completion",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 49.241730320005445
+  },
+  {
+    "name": "subd-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.19877919199644
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 36.75848840799881
+  },
+  {
+    "name": "clippy-all-features",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--all-features",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 38.709534805995645
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_command_file",
+      "tools.rhino_oracle.test_point_grid_input",
+      "tools.rhino_oracle.test_srf_pt",
+      "tools.rhino_oracle.test_srf_pt_followup",
+      "tools.rhino_oracle.test_plane_surface",
+      "tools.rhino_oracle.test_plane_completion",
+      "tools.rhino_oracle.test_rectangle",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane",
+      "tools.rhino_oracle.test_lines",
+      "tools.rhino_oracle.test_line_construction",
+      "tools.rhino_oracle.test_line_reference",
+      "tools.rhino_oracle.test_line_normal",
+      "tools.rhino_oracle.test_line_perpendicular",
+      "tools.rhino_oracle.test_line_tangent",
+      "tools.rhino_oracle.test_line_tangent_boundary",
+      "tools.rhino_oracle.test_line_tangent_rays",
+      "tools.rhino_oracle.test_line_pick_context",
+      "tools.rhino_oracle.test_arc_blend",
+      "tools.rhino_oracle.test_arc_blend_handles",
+      "tools.rhino_oracle.test_arc_blend_radius",
+      "tools.rhino_oracle.test_arc_blend_radius_general",
+      "tools.rhino_oracle.test_arc_blend_getters",
+      "tools.rhino_oracle.test_arc_blend_preferences",
+      "tools.rhino_oracle.test_arc_blend_sources",
+      "tools.rhino_oracle.test_arc_blend_subcurves",
+      "tools.rhino_oracle.test_blend_curve",
+      "tools.rhino_oracle.test_blend_curve_high",
+      "tools.rhino_oracle.test_blend_curve_points",
+      "tools.rhino_oracle.test_blend_curve_portions",
+      "tools.rhino_oracle.test_blend_curve_symmetry",
+      "tools.rhino_oracle.test_catenary_point_picker",
+      "tools.rhino_oracle.test_blend_curve_edges",
+      "tools.rhino_oracle.test_blend_curve_surface_high",
+      "tools.rhino_oracle.test_blend_curve_alt"
+    ],
+    "status": 0,
+    "seconds": 146.529304435011
+  }
+]

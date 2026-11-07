@@ -36,6 +36,8 @@ pub fn accepted(value: &Value) -> bool {
 #[path = "blend_curve/picks.rs"]
 mod picks;
 pub use picks::{source_edge, source_pick};
+// Shared UI replays still use world targets; command replays use input projection.
+#[allow(dead_code)]
 pub fn handle(input: &Input, point: viboceros_geometry::Point3) -> Handle {
     input
         .control_points()
@@ -89,17 +91,24 @@ impl Getter {
                     )
                     .unwrap();
             }
-        } else if let Some(p) = a.get("click") {
+        } else if a.get("click").is_some() {
             if input.active_handle().is_some() {
-                input
-                    .adjust_shape_length(shape_parameter(input, value, index))
-                    .unwrap();
+                if input.angle_constraint().is_some() {
+                    input
+                        .adjust_point(angle_point(input, value, index))
+                        .unwrap();
+                } else {
+                    input
+                        .adjust_shape_length(shape_parameter(input, value, index))
+                        .unwrap();
+                }
                 input.finish_adjustment();
             } else {
                 input
-                    .select_handle_with_symmetry(
-                        handle(input, native::point(p)),
+                    .select_handle_with_modifiers(
+                        handle_at_click(input, value, index),
                         a["shift"].as_bool().unwrap_or(false),
+                        a["alt"].as_bool().unwrap_or(false),
                     )
                     .unwrap();
             }
@@ -111,6 +120,13 @@ impl Getter {
                 input.adjust_point(native::point(a)).unwrap();
                 input.finish_adjustment();
             }
+        } else if let Some(number) = a["number"].as_str() {
+            if input.angle_constraint().is_some() {
+                input.adjust_shape_angle(number.parse().unwrap()).unwrap();
+            } else {
+                input.adjust_shape_length(number.parse().unwrap()).unwrap();
+            }
+            input.finish_adjustment();
         } else if a == "Point" {
             self.point_prompt = true;
         } else if a == "Flip" {
@@ -131,6 +147,61 @@ impl Getter {
         }
         true
     }
+}
+/// The actual projected click, rather than its pre-rounding authored world aim,
+/// determines the nearest visible control. Only public input projection enters.
+pub fn control_index_at_click(input: &Input, value: &Value, action: usize) -> usize {
+    let click = value["input_trace"][0]["clicks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["action"].as_u64() == Some(action as u64))
+        .unwrap();
+    let matrix: [[f64; 4]; 4] = serde_json::from_value(click["pick_transform"].clone()).unwrap();
+    input
+        .preview()
+        .unwrap()
+        .control_points()
+        .iter()
+        .enumerate()
+        .min_by(|a, b| {
+            let distance = |point: viboceros_geometry::Point3| {
+                let [x, y, z] = point.to_array();
+                let p = [x, y, z, 1.];
+                let h: [f64; 4] =
+                    std::array::from_fn(|i| (0..4).map(|j| matrix[i][j] * p[j]).sum());
+                (h[0] / h[3]).hypot(h[1] / h[3])
+            };
+            distance(a.1.point()).total_cmp(&distance(b.1.point()))
+        })
+        .unwrap()
+        .0
+}
+pub fn handle_at_click(input: &Input, value: &Value, action: usize) -> Handle {
+    let index = control_index_at_click(input, value, action);
+    let alt = value["prescribed_case"]["actions"][action]["alt"]
+        .as_bool()
+        .unwrap_or(false);
+    input
+        .handle_for_control_point(index, alt)
+        .expect("secondary control shape editing is not yet implemented")
+}
+
+/// Intersect an input viewing ray with the independently captured tangent plane.
+pub fn angle_point(input: &Input, value: &Value, index: usize) -> viboceros_geometry::Point3 {
+    let plane = input.angle_constraint().unwrap();
+    let click = value["input_trace"][0]["clicks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["action"].as_u64() == Some(index as u64))
+        .unwrap();
+    let from = native::point(&click["ray"][0]);
+    let to = native::point(&click["ray"][1]);
+    let direction = from.vector_to(to).unwrap();
+    let t = -plane.signed_distance_to(from).unwrap()
+        / plane.normal().as_vector().dot(direction).unwrap();
+    from.translated(direction.scaled(t).unwrap()).unwrap()
 }
 /// Project the public Native click ray onto the active shape constraint.
 /// Its measured output curve is not used to construct the edit.
