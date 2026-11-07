@@ -1,0 +1,1732 @@
+{
+  "scope": "General signed radius targets, ordinary/alternate biarcs, backward directions, contact re-solving, trimming and warned partial solutions.",
+  "baseline_revision": "99b91ed5bb098d787b5870af3c054710c63de3a5",
+  "implementation_revision": "43a821c3c30cd2e4fd3d70e97db6419493311c43",
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "new_native_observations": 99,
+  "retained_native_target_observations": 28,
+  "matching_native_geometry_workflows_per_build": 79,
+  "matching_native_nurbs_representation_workflows_per_build": 77,
+  "coincident_circle_partition_diagnostics_per_build": 2,
+  "matching_public_sdk_curves": 48,
+  "native_physical_picks": 162,
+  "archive_round_trips_per_build": 158,
+  "final_native_failed_target_warnings": 49,
+  "independent_sdk_point_tangent_stations": 4752,
+  "independent_command_point_tangent_stations": 7689,
+  "maximum_public_sdk_error": 1.1439738045737613e-11,
+  "maximum_independent_native_geometry_error": 5.169426317069007e-07,
+  "maximum_qualified_representation_error": 5.169426317069007e-07,
+  "cases": [
+    {
+      "id": "arc_blend_radius_cocircular/rg_cocircular_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 8.881784197001252e-16,
+      "portable_command_geometry_error": 1.7763568394002505e-15,
+      "portable_ui_representation_error": 8.881784197001252e-16,
+      "portable_ui_geometry_error": 1.7763568394002505e-15,
+      "native_command_representation_error": 8.881784197001252e-16,
+      "native_command_geometry_error": 1.7763568394002505e-15,
+      "native_ui_representation_error": 8.881784197001252e-16,
+      "native_ui_geometry_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "arc_blend_radius_cocircular/rg_cocircular_1",
+      "representation_parity": false,
+      "portable_command_representation_error": 0.22901869203193703,
+      "portable_command_geometry_error": 6.297869092928723e-13,
+      "portable_ui_representation_error": 0.22901869203193703,
+      "portable_ui_geometry_error": 6.297869092928723e-13,
+      "native_command_representation_error": 0.22901869203193703,
+      "native_command_geometry_error": 6.297869092928723e-13,
+      "native_ui_representation_error": 0.22901869203193703,
+      "native_ui_geometry_error": 6.297869092928723e-13
+    },
+    {
+      "id": "arc_blend_radius_cocircular/rg_cocircular_2",
+      "representation_parity": false,
+      "portable_command_representation_error": 0.004637729327427564,
+      "portable_command_geometry_error": 2.1580828650519868e-10,
+      "portable_ui_representation_error": 0.004637729327427564,
+      "portable_ui_geometry_error": 2.1580828650519868e-10,
+      "native_command_representation_error": 0.004637729327427564,
+      "native_command_geometry_error": 2.1580828650519868e-10,
+      "native_ui_representation_error": 0.004637729327427564,
+      "native_ui_geometry_error": 2.1580828650519868e-10
+    },
+    {
+      "id": "arc_blend_radius_cocircular/rg_cocircular_alt",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.7763906117083025e-15,
+      "portable_command_geometry_error": 2.8435583831733384e-15,
+      "portable_ui_representation_error": 3.7763906117083025e-15,
+      "portable_ui_geometry_error": 2.8435583831733384e-15,
+      "native_command_representation_error": 3.7763906117083025e-15,
+      "native_command_geometry_error": 2.8435583831733384e-15,
+      "native_ui_representation_error": 3.7763906117083025e-15,
+      "native_ui_geometry_error": 2.8435583831733384e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.3322676295501878e-15,
+      "portable_command_geometry_error": 4.8405723873656825e-14,
+      "portable_ui_representation_error": 1.3322676295501878e-15,
+      "portable_ui_geometry_error": 4.8405723873656825e-14,
+      "native_command_representation_error": 1.3322676295501878e-15,
+      "native_command_geometry_error": 4.8405723873656825e-14,
+      "native_ui_representation_error": 1.3322676295501878e-15,
+      "native_ui_geometry_error": 4.8405723873656825e-14
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 9.930136612989092e-16,
+      "portable_command_geometry_error": 6.217248937900877e-15,
+      "portable_ui_representation_error": 9.930136612989092e-16,
+      "portable_ui_geometry_error": 6.217248937900877e-15,
+      "native_command_representation_error": 9.930136612989092e-16,
+      "native_command_geometry_error": 6.217248937900877e-15,
+      "native_ui_representation_error": 9.930136612989092e-16,
+      "native_ui_geometry_error": 6.217248937900877e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 9.930136612989092e-16,
+      "portable_command_geometry_error": 6.217248937900877e-15,
+      "portable_ui_representation_error": 9.930136612989092e-16,
+      "portable_ui_geometry_error": 6.217248937900877e-15,
+      "native_command_representation_error": 9.930136612989092e-16,
+      "native_command_geometry_error": 6.217248937900877e-15,
+      "native_ui_representation_error": 9.930136612989092e-16,
+      "native_ui_geometry_error": 6.217248937900877e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0529223847277046e-07,
+      "portable_command_geometry_error": 1.0529223899293358e-07,
+      "portable_ui_representation_error": 1.0529223847277046e-07,
+      "portable_ui_geometry_error": 1.0529223899293358e-07,
+      "native_command_representation_error": 1.0529223847277046e-07,
+      "native_command_geometry_error": 1.0529223899293358e-07,
+      "native_ui_representation_error": 1.0529223847277046e-07,
+      "native_ui_geometry_error": 1.0529223899293358e-07
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0529223847277046e-07,
+      "portable_command_geometry_error": 1.0529223899293358e-07,
+      "portable_ui_representation_error": 1.0529223847277046e-07,
+      "portable_ui_geometry_error": 1.0529223899293358e-07,
+      "native_command_representation_error": 1.0529223847277046e-07,
+      "native_command_geometry_error": 1.0529223899293358e-07,
+      "native_ui_representation_error": 1.0529223847277046e-07,
+      "native_ui_geometry_error": 1.0529223899293358e-07
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_5",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0529223847277046e-07,
+      "portable_command_geometry_error": 1.0529223899293358e-07,
+      "portable_ui_representation_error": 1.0529223847277046e-07,
+      "portable_ui_geometry_error": 1.0529223899293358e-07,
+      "native_command_representation_error": 1.0529223847277046e-07,
+      "native_command_geometry_error": 1.0529223899293358e-07,
+      "native_ui_representation_error": 1.0529223847277046e-07,
+      "native_ui_geometry_error": 1.0529223899293358e-07
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_6",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.526950232651298e-14,
+      "portable_command_geometry_error": 1.5608014232872923e-14,
+      "portable_ui_representation_error": 1.526950232651298e-14,
+      "portable_ui_geometry_error": 1.5608014232872923e-14,
+      "native_command_representation_error": 1.526950232651298e-14,
+      "native_command_geometry_error": 1.5608014232872923e-14,
+      "native_ui_representation_error": 1.526950232651298e-14,
+      "native_ui_geometry_error": 1.5608014232872923e-14
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_7",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.526950232651298e-14,
+      "portable_command_geometry_error": 1.5608014232872923e-14,
+      "portable_ui_representation_error": 1.526950232651298e-14,
+      "portable_ui_geometry_error": 1.5608014232872923e-14,
+      "native_command_representation_error": 1.526950232651298e-14,
+      "native_command_geometry_error": 1.5608014232872923e-14,
+      "native_ui_representation_error": 1.526950232651298e-14,
+      "native_ui_geometry_error": 1.5608014232872923e-14
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_8",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.831026719408895e-15,
+      "portable_command_geometry_error": 4.440892098500626e-15,
+      "portable_ui_representation_error": 1.831026719408895e-15,
+      "portable_ui_geometry_error": 4.440892098500626e-15,
+      "native_command_representation_error": 1.831026719408895e-15,
+      "native_command_geometry_error": 4.440892098500626e-15,
+      "native_ui_representation_error": 1.831026719408895e-15,
+      "native_ui_geometry_error": 4.440892098500626e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_corner_9",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.6645352591003757e-15,
+      "portable_command_geometry_error": 2.220446049250313e-14,
+      "portable_ui_representation_error": 2.6645352591003757e-15,
+      "portable_ui_geometry_error": 2.220446049250313e-14,
+      "native_command_representation_error": 2.6645352591003757e-15,
+      "native_command_geometry_error": 2.220446049250313e-14,
+      "native_ui_representation_error": 2.6645352591003757e-15,
+      "native_ui_geometry_error": 2.220446049250313e-14
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.5121479338940403e-15,
+      "portable_command_geometry_error": 2.808666774861361e-15,
+      "portable_ui_representation_error": 2.5121479338940403e-15,
+      "portable_ui_geometry_error": 2.808666774861361e-15,
+      "native_command_representation_error": 2.5121479338940403e-15,
+      "native_command_geometry_error": 2.808666774861361e-15,
+      "native_ui_representation_error": 2.5121479338940403e-15,
+      "native_ui_geometry_error": 2.808666774861361e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.9860273225978185e-15,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.9860273225978185e-15,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.9860273225978185e-15,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_10",
+      "representation_parity": true,
+      "portable_command_representation_error": 4.782987168225453e-15,
+      "portable_command_geometry_error": 3.552713678800501e-15,
+      "portable_ui_representation_error": 4.782987168225453e-15,
+      "portable_ui_geometry_error": 3.552713678800501e-15,
+      "native_command_representation_error": 4.782987168225453e-15,
+      "native_command_geometry_error": 3.552713678800501e-15,
+      "native_ui_representation_error": 4.782987168225453e-15,
+      "native_ui_geometry_error": 3.552713678800501e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_11",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.580361673049448e-15,
+      "portable_command_geometry_error": 5.329070518200751e-15,
+      "portable_ui_representation_error": 3.580361673049448e-15,
+      "portable_ui_geometry_error": 5.329070518200751e-15,
+      "native_command_representation_error": 3.580361673049448e-15,
+      "native_command_geometry_error": 5.329070518200751e-15,
+      "native_ui_representation_error": 3.580361673049448e-15,
+      "native_ui_geometry_error": 5.329070518200751e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.9860273225978185e-15,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.9860273225978185e-15,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.9860273225978185e-15,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.9860273225978185e-15,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.9860273225978185e-15,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.9860273225978185e-15,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.5121479338940403e-15,
+      "portable_command_geometry_error": 2.9790409838967277e-15,
+      "portable_ui_representation_error": 2.5121479338940403e-15,
+      "portable_ui_geometry_error": 2.9790409838967277e-15,
+      "native_command_representation_error": 2.5121479338940403e-15,
+      "native_command_geometry_error": 2.9790409838967277e-15,
+      "native_ui_representation_error": 2.5121479338940403e-15,
+      "native_ui_geometry_error": 2.9790409838967277e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_5",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.9860273225978185e-15,
+      "portable_command_geometry_error": 2.8435583831733384e-15,
+      "portable_ui_representation_error": 1.9860273225978185e-15,
+      "portable_ui_geometry_error": 2.8435583831733384e-15,
+      "native_command_representation_error": 1.9860273225978185e-15,
+      "native_command_geometry_error": 2.8435583831733384e-15,
+      "native_ui_representation_error": 1.9860273225978185e-15,
+      "native_ui_geometry_error": 2.8435583831733384e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_6",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.220446049250313e-15,
+      "portable_command_geometry_error": 2.808666774861361e-15,
+      "portable_ui_representation_error": 2.220446049250313e-15,
+      "portable_ui_geometry_error": 2.808666774861361e-15,
+      "native_command_representation_error": 2.220446049250313e-15,
+      "native_command_geometry_error": 2.808666774861361e-15,
+      "native_ui_representation_error": 2.220446049250313e-15,
+      "native_ui_geometry_error": 2.808666774861361e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_7",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.76822190084106e-15,
+      "portable_command_geometry_error": 3.614624287906422e-15,
+      "portable_ui_representation_error": 3.76822190084106e-15,
+      "portable_ui_geometry_error": 3.614624287906422e-15,
+      "native_command_representation_error": 3.76822190084106e-15,
+      "native_command_geometry_error": 3.614624287906422e-15,
+      "native_ui_representation_error": 3.76822190084106e-15,
+      "native_ui_geometry_error": 3.614624287906422e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_8",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.76822190084106e-15,
+      "portable_command_geometry_error": 3.614624287906422e-15,
+      "portable_ui_representation_error": 3.76822190084106e-15,
+      "portable_ui_geometry_error": 3.614624287906422e-15,
+      "native_command_representation_error": 3.76822190084106e-15,
+      "native_command_geometry_error": 3.614624287906422e-15,
+      "native_ui_representation_error": 3.76822190084106e-15,
+      "native_ui_geometry_error": 3.614624287906422e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_9",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.76822190084106e-15,
+      "portable_command_geometry_error": 3.614624287906422e-15,
+      "portable_ui_representation_error": 3.76822190084106e-15,
+      "portable_ui_geometry_error": 3.614624287906422e-15,
+      "native_command_representation_error": 3.76822190084106e-15,
+      "native_command_geometry_error": 3.614624287906422e-15,
+      "native_ui_representation_error": 3.76822190084106e-15,
+      "native_ui_geometry_error": 3.614624287906422e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_scale_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.220446049250313e-16,
+      "portable_command_geometry_error": 4.440892098500626e-16,
+      "portable_ui_representation_error": 2.220446049250313e-16,
+      "portable_ui_geometry_error": 4.440892098500626e-16,
+      "native_command_representation_error": 2.220446049250313e-16,
+      "native_command_geometry_error": 4.440892098500626e-16,
+      "native_ui_representation_error": 2.220446049250313e-16,
+      "native_ui_geometry_error": 4.440892098500626e-16
+    },
+    {
+      "id": "arc_blend_radius_general/rg_skew_scale_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.0009065111038244e-13,
+      "portable_command_geometry_error": 1.7053025658242404e-13,
+      "portable_ui_representation_error": 2.0009065111038244e-13,
+      "portable_ui_geometry_error": 1.7053025658242404e-13,
+      "native_command_representation_error": 2.0009065111038244e-13,
+      "native_command_geometry_error": 1.7053025658242404e-13,
+      "native_ui_representation_error": 2.0009065111038244e-13,
+      "native_ui_geometry_error": 1.7053025658242404e-13
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.0137621733714643e-15,
+      "portable_command_geometry_error": 2.8457249041605285e-15,
+      "portable_ui_representation_error": 2.0137621733714643e-15,
+      "portable_ui_geometry_error": 2.8457249041605285e-15,
+      "native_command_representation_error": 2.0137621733714643e-15,
+      "native_command_geometry_error": 2.8457249041605285e-15,
+      "native_ui_representation_error": 2.0137621733714643e-15,
+      "native_ui_geometry_error": 2.8457249041605285e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.7555010819726127e-15,
+      "portable_command_geometry_error": 3.062686598583602e-15,
+      "portable_ui_representation_error": 2.7555010819726127e-15,
+      "portable_ui_geometry_error": 3.062686598583602e-15,
+      "native_command_representation_error": 2.7555010819726127e-15,
+      "native_command_geometry_error": 3.062686598583602e-15,
+      "native_ui_representation_error": 2.7555010819726127e-15,
+      "native_ui_geometry_error": 3.062686598583602e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.0350724194510405e-15,
+      "portable_command_geometry_error": 3.367473164340296e-15,
+      "portable_ui_representation_error": 2.0350724194510405e-15,
+      "portable_ui_geometry_error": 3.367473164340296e-15,
+      "native_command_representation_error": 2.0350724194510405e-15,
+      "native_command_geometry_error": 3.367473164340296e-15,
+      "native_ui_representation_error": 2.0350724194510405e-15,
+      "native_ui_geometry_error": 3.367473164340296e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.897149936107019e-15,
+      "portable_command_geometry_error": 2.434909185329438e-15,
+      "portable_ui_representation_error": 1.897149936107019e-15,
+      "portable_ui_geometry_error": 2.434909185329438e-15,
+      "native_command_representation_error": 1.897149936107019e-15,
+      "native_command_geometry_error": 2.434909185329438e-15,
+      "native_ui_representation_error": 1.897149936107019e-15,
+      "native_ui_geometry_error": 2.434909185329438e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.3314683517128287e-15,
+      "portable_command_geometry_error": 2.8457249041605285e-15,
+      "portable_ui_representation_error": 2.3314683517128287e-15,
+      "portable_ui_geometry_error": 2.8457249041605285e-15,
+      "native_command_representation_error": 2.3314683517128287e-15,
+      "native_command_geometry_error": 2.8457249041605285e-15,
+      "native_ui_representation_error": 2.3314683517128287e-15,
+      "native_ui_geometry_error": 2.8457249041605285e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_5",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.552713678800501e-15,
+      "portable_command_geometry_error": 2.2009313928704765e-15,
+      "portable_ui_representation_error": 3.552713678800501e-15,
+      "portable_ui_geometry_error": 2.2009313928704765e-15,
+      "native_command_representation_error": 3.552713678800501e-15,
+      "native_command_geometry_error": 2.2009313928704765e-15,
+      "native_ui_representation_error": 3.552713678800501e-15,
+      "native_ui_geometry_error": 2.2009313928704765e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_6",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.708749087754957e-15,
+      "portable_command_geometry_error": 4.152056925331523e-15,
+      "portable_ui_representation_error": 5.708749087754957e-15,
+      "portable_ui_geometry_error": 4.152056925331523e-15,
+      "native_command_representation_error": 5.708749087754957e-15,
+      "native_command_geometry_error": 4.152056925331523e-15,
+      "native_ui_representation_error": 5.708749087754957e-15,
+      "native_ui_geometry_error": 4.152056925331523e-15
+    },
+    {
+      "id": "arc_blend_radius_general/rg_spatial_7",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.035072419451041e-15,
+      "portable_command_geometry_error": 2.6645352591003757e-15,
+      "portable_ui_representation_error": 2.035072419451041e-15,
+      "portable_ui_geometry_error": 2.6645352591003757e-15,
+      "native_command_representation_error": 2.035072419451041e-15,
+      "native_command_geometry_error": 2.6645352591003757e-15,
+      "native_ui_representation_error": 2.035072419451041e-15,
+      "native_ui_geometry_error": 2.6645352591003757e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_corner_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 8.188600426433445e-15,
+      "portable_command_geometry_error": 9.493542985708791e-15,
+      "portable_ui_representation_error": 8.188600426433445e-15,
+      "portable_ui_geometry_error": 9.493542985708791e-15,
+      "native_command_representation_error": 8.188600426433445e-15,
+      "native_command_geometry_error": 9.493542985708791e-15,
+      "native_ui_representation_error": 8.188600426433445e-15,
+      "native_ui_geometry_error": 9.493542985708791e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_corner_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 4.8401606780046014e-08,
+      "portable_command_geometry_error": 4.676229999509464e-08,
+      "portable_ui_representation_error": 4.8401606780046014e-08,
+      "portable_ui_geometry_error": 4.676229999509464e-08,
+      "native_command_representation_error": 4.8401606780046014e-08,
+      "native_command_geometry_error": 4.676229999509464e-08,
+      "native_ui_representation_error": 4.8401606780046014e-08,
+      "native_ui_geometry_error": 4.676229999509464e-08
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_corner_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 4.8401606780046014e-08,
+      "portable_command_geometry_error": 4.676229999509464e-08,
+      "portable_ui_representation_error": 4.8401606780046014e-08,
+      "portable_ui_geometry_error": 4.676229999509464e-08,
+      "native_command_representation_error": 4.8401606780046014e-08,
+      "native_command_geometry_error": 4.676229999509464e-08,
+      "native_ui_representation_error": 4.8401606780046014e-08,
+      "native_ui_geometry_error": 4.676229999509464e-08
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_corner_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 4.8401606780046014e-08,
+      "portable_command_geometry_error": 4.676229999509464e-08,
+      "portable_ui_representation_error": 4.8401606780046014e-08,
+      "portable_ui_geometry_error": 4.676229999509464e-08,
+      "native_command_representation_error": 4.8401606780046014e-08,
+      "native_command_geometry_error": 4.676229999509464e-08,
+      "native_ui_representation_error": 4.8401606780046014e-08,
+      "native_ui_geometry_error": 4.676229999509464e-08
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_skew_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.069285293757275e-07,
+      "portable_command_geometry_error": 2.4411602717598436e-07,
+      "portable_ui_representation_error": 5.069285293757275e-07,
+      "portable_ui_geometry_error": 2.4411602717598436e-07,
+      "native_command_representation_error": 5.069285293757275e-07,
+      "native_command_geometry_error": 2.4411602717598436e-07,
+      "native_ui_representation_error": 5.069285293757275e-07,
+      "native_ui_geometry_error": 2.4411602717598436e-07
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_skew_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.069285293757275e-07,
+      "portable_command_geometry_error": 2.4411602717598436e-07,
+      "portable_ui_representation_error": 5.069285293757275e-07,
+      "portable_ui_geometry_error": 2.4411602717598436e-07,
+      "native_command_representation_error": 5.069285293757275e-07,
+      "native_command_geometry_error": 2.4411602717598436e-07,
+      "native_ui_representation_error": 5.069285293757275e-07,
+      "native_ui_geometry_error": 2.4411602717598436e-07
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_spatial_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.4210854715202004e-14,
+      "portable_command_geometry_error": 8.62265274246159e-15,
+      "portable_ui_representation_error": 1.4210854715202004e-14,
+      "portable_ui_geometry_error": 8.62265274246159e-15,
+      "native_command_representation_error": 1.4210854715202004e-14,
+      "native_command_geometry_error": 8.62265274246159e-15,
+      "native_ui_representation_error": 1.4210854715202004e-14,
+      "native_ui_geometry_error": 8.62265274246159e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_alt_spatial_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.4210854715202004e-14,
+      "portable_command_geometry_error": 8.62265274246159e-15,
+      "portable_ui_representation_error": 1.4210854715202004e-14,
+      "portable_ui_geometry_error": 8.62265274246159e-15,
+      "native_command_representation_error": 1.4210854715202004e-14,
+      "native_command_geometry_error": 8.62265274246159e-15,
+      "native_ui_representation_error": 1.4210854715202004e-14,
+      "native_ui_geometry_error": 8.62265274246159e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_back_both",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.146481285578375e-08,
+      "portable_command_geometry_error": 4.676230096606579e-08,
+      "portable_ui_representation_error": 5.146481285578375e-08,
+      "portable_ui_geometry_error": 4.676230096606579e-08,
+      "native_command_representation_error": 5.146481285578375e-08,
+      "native_command_geometry_error": 4.676230096606579e-08,
+      "native_ui_representation_error": 5.146481285578375e-08,
+      "native_ui_geometry_error": 4.676230096606579e-08
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_back_start",
+      "representation_parity": true,
+      "portable_command_representation_error": 7.993605777301127e-15,
+      "portable_command_geometry_error": 4.424238753131249e-14,
+      "portable_ui_representation_error": 7.993605777301127e-15,
+      "portable_ui_geometry_error": 4.424238753131249e-14,
+      "native_command_representation_error": 7.993605777301127e-15,
+      "native_command_geometry_error": 4.424238753131249e-14,
+      "native_ui_representation_error": 7.993605777301127e-15,
+      "native_ui_geometry_error": 4.424238753131249e-14
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_contact_skew",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.76822190084106e-15,
+      "portable_command_geometry_error": 4.440892098500626e-15,
+      "portable_ui_representation_error": 3.76822190084106e-15,
+      "portable_ui_geometry_error": 4.440892098500626e-15,
+      "native_command_representation_error": 3.76822190084106e-15,
+      "native_command_geometry_error": 4.440892098500626e-15,
+      "native_ui_representation_error": 3.76822190084106e-15,
+      "native_ui_geometry_error": 4.440892098500626e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_contact_spatial",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.9984014443252818e-15,
+      "portable_command_geometry_error": 1.9327528864636273e-15,
+      "portable_ui_representation_error": 1.9984014443252818e-15,
+      "portable_ui_geometry_error": 1.9327528864636273e-15,
+      "native_command_representation_error": 1.9984014443252818e-15,
+      "native_command_geometry_error": 1.9327528864636273e-15,
+      "native_ui_representation_error": 1.9984014443252818e-15,
+      "native_ui_geometry_error": 1.9327528864636273e-15
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_corner_scale_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.845244707300918e-10,
+      "portable_command_geometry_error": 9.128742206598872e-10,
+      "portable_ui_representation_error": 5.845244707300918e-10,
+      "portable_ui_geometry_error": 9.128742206598872e-10,
+      "native_command_representation_error": 5.845244707300918e-10,
+      "native_command_geometry_error": 9.128742206598872e-10,
+      "native_ui_representation_error": 5.845244707300918e-10,
+      "native_ui_geometry_error": 9.128742206598872e-10
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_corner_scale_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.169426317069007e-07,
+      "portable_command_geometry_error": 5.169426317069007e-07,
+      "portable_ui_representation_error": 5.169426317069007e-07,
+      "portable_ui_geometry_error": 5.169426317069007e-07,
+      "native_command_representation_error": 5.169426317069007e-07,
+      "native_command_geometry_error": 5.169426317069007e-07,
+      "native_ui_representation_error": 5.169426317069007e-07,
+      "native_ui_geometry_error": 5.169426317069007e-07
+    },
+    {
+      "id": "arc_blend_radius_general_holdouts/rg_trim_skew",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.66205343881779e-15,
+      "portable_command_geometry_error": 4.440892098500626e-15,
+      "portable_ui_representation_error": 3.66205343881779e-15,
+      "portable_ui_geometry_error": 4.440892098500626e-15,
+      "native_command_representation_error": 3.66205343881779e-15,
+      "native_command_geometry_error": 4.440892098500626e-15,
+      "native_ui_representation_error": 3.66205343881779e-15,
+      "native_ui_geometry_error": 4.440892098500626e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.2878587085651816e-14,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.2878587085651816e-14,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.2878587085651816e-14,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.2878587085651816e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.2878587085651816e-14,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.2878587085651816e-14,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.2878587085651816e-14,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.2878587085651816e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0937950820210114e-15,
+      "portable_command_geometry_error": 7.549516567451064e-15,
+      "portable_ui_representation_error": 1.0937950820210114e-15,
+      "portable_ui_geometry_error": 7.549516567451064e-15,
+      "native_command_representation_error": 1.0937950820210114e-15,
+      "native_command_geometry_error": 7.549516567451064e-15,
+      "native_ui_representation_error": 1.0937950820210114e-15,
+      "native_ui_geometry_error": 7.549516567451064e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0547118733938987e-15,
+      "portable_command_geometry_error": 5.1958437552457326e-14,
+      "portable_ui_representation_error": 1.0547118733938987e-15,
+      "portable_ui_geometry_error": 5.1958437552457326e-14,
+      "native_command_representation_error": 1.0547118733938987e-15,
+      "native_command_geometry_error": 5.1958437552457326e-14,
+      "native_ui_representation_error": 1.0547118733938987e-15,
+      "native_ui_geometry_error": 5.1958437552457326e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 9.930136612989092e-16,
+      "portable_command_geometry_error": 6.217248937900877e-15,
+      "portable_ui_representation_error": 9.930136612989092e-16,
+      "portable_ui_geometry_error": 6.217248937900877e-15,
+      "native_command_representation_error": 9.930136612989092e-16,
+      "native_command_geometry_error": 6.217248937900877e-15,
+      "native_ui_representation_error": 9.930136612989092e-16,
+      "native_ui_geometry_error": 6.217248937900877e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_5",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.0529223847277046e-07,
+      "portable_command_geometry_error": 1.0529223899293358e-07,
+      "portable_ui_representation_error": 1.0529223847277046e-07,
+      "portable_ui_geometry_error": 1.0529223899293358e-07,
+      "native_command_representation_error": 1.0529223847277046e-07,
+      "native_command_geometry_error": 1.0529223899293358e-07,
+      "native_ui_representation_error": 1.0529223847277046e-07,
+      "native_ui_geometry_error": 1.0529223899293358e-07
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_6",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.897149936107019e-15,
+      "portable_command_geometry_error": 5.773159728050814e-15,
+      "portable_ui_representation_error": 1.897149936107019e-15,
+      "portable_ui_geometry_error": 5.773159728050814e-15,
+      "native_command_representation_error": 1.897149936107019e-15,
+      "native_command_geometry_error": 5.773159728050814e-15,
+      "native_ui_representation_error": 1.897149936107019e-15,
+      "native_ui_geometry_error": 5.773159728050814e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_7",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.526950232651298e-14,
+      "portable_command_geometry_error": 1.5608014232872923e-14,
+      "portable_ui_representation_error": 1.526950232651298e-14,
+      "portable_ui_geometry_error": 1.5608014232872923e-14,
+      "native_command_representation_error": 1.526950232651298e-14,
+      "native_command_geometry_error": 1.5608014232872923e-14,
+      "native_ui_representation_error": 1.526950232651298e-14,
+      "native_ui_geometry_error": 1.5608014232872923e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_8",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.580361673049448e-15,
+      "portable_command_geometry_error": 1.479372180313021e-14,
+      "portable_ui_representation_error": 3.580361673049448e-15,
+      "portable_ui_geometry_error": 1.479372180313021e-14,
+      "native_command_representation_error": 3.580361673049448e-15,
+      "native_command_geometry_error": 1.479372180313021e-14,
+      "native_ui_representation_error": 3.580361673049448e-15,
+      "native_ui_geometry_error": 1.479372180313021e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_9",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.580361673049448e-15,
+      "portable_command_geometry_error": 1.479372180313021e-14,
+      "portable_ui_representation_error": 3.580361673049448e-15,
+      "portable_ui_geometry_error": 1.479372180313021e-14,
+      "native_command_representation_error": 3.580361673049448e-15,
+      "native_command_geometry_error": 1.479372180313021e-14,
+      "native_ui_representation_error": 3.580361673049448e-15,
+      "native_ui_geometry_error": 1.479372180313021e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_corner_from_s",
+      "representation_parity": true,
+      "portable_command_representation_error": 9.930136612989092e-16,
+      "portable_command_geometry_error": 6.217248937900877e-15,
+      "portable_ui_representation_error": 9.930136612989092e-16,
+      "portable_ui_geometry_error": 6.217248937900877e-15,
+      "native_command_representation_error": 9.930136612989092e-16,
+      "native_command_geometry_error": 6.217248937900877e-15,
+      "native_ui_representation_error": 9.930136612989092e-16,
+      "native_ui_geometry_error": 6.217248937900877e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.552713678800501e-15,
+      "portable_command_geometry_error": 7.105427357601002e-15,
+      "portable_ui_representation_error": 3.552713678800501e-15,
+      "portable_ui_geometry_error": 7.105427357601002e-15,
+      "native_command_representation_error": 3.552713678800501e-15,
+      "native_command_geometry_error": 7.105427357601002e-15,
+      "native_ui_representation_error": 3.552713678800501e-15,
+      "native_ui_geometry_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.831026719408895e-15,
+      "portable_command_geometry_error": 8.881784197001252e-15,
+      "portable_ui_representation_error": 1.831026719408895e-15,
+      "portable_ui_geometry_error": 8.881784197001252e-15,
+      "native_command_representation_error": 1.831026719408895e-15,
+      "native_command_geometry_error": 8.881784197001252e-15,
+      "native_ui_representation_error": 1.831026719408895e-15,
+      "native_ui_geometry_error": 8.881784197001252e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.9860273225978185e-15,
+      "portable_command_geometry_error": 1.4210854715202004e-14,
+      "portable_ui_representation_error": 1.9860273225978185e-15,
+      "portable_ui_geometry_error": 1.4210854715202004e-14,
+      "native_command_representation_error": 1.9860273225978185e-15,
+      "native_command_geometry_error": 1.4210854715202004e-14,
+      "native_ui_representation_error": 1.9860273225978185e-15,
+      "native_ui_geometry_error": 1.4210854715202004e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.831026719408895e-15,
+      "portable_command_geometry_error": 5.329070518200751e-15,
+      "portable_ui_representation_error": 1.831026719408895e-15,
+      "portable_ui_geometry_error": 5.329070518200751e-15,
+      "native_command_representation_error": 1.831026719408895e-15,
+      "native_command_geometry_error": 5.329070518200751e-15,
+      "native_ui_representation_error": 1.831026719408895e-15,
+      "native_ui_geometry_error": 5.329070518200751e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.580361673049448e-15,
+      "portable_command_geometry_error": 1.9539925233402755e-14,
+      "portable_ui_representation_error": 3.580361673049448e-15,
+      "portable_ui_geometry_error": 1.9539925233402755e-14,
+      "native_command_representation_error": 3.580361673049448e-15,
+      "native_command_geometry_error": 1.9539925233402755e-14,
+      "native_ui_representation_error": 3.580361673049448e-15,
+      "native_ui_geometry_error": 1.9539925233402755e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_5",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.6645352591003757e-15,
+      "portable_command_geometry_error": 7.105427357601002e-15,
+      "portable_ui_representation_error": 2.6645352591003757e-15,
+      "portable_ui_geometry_error": 7.105427357601002e-15,
+      "native_command_representation_error": 2.6645352591003757e-15,
+      "native_command_geometry_error": 7.105427357601002e-15,
+      "native_ui_representation_error": 2.6645352591003757e-15,
+      "native_ui_geometry_error": 7.105427357601002e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_parallel_6",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.808666774861361e-15,
+      "portable_command_geometry_error": 1.0658141036401503e-14,
+      "portable_ui_representation_error": 2.808666774861361e-15,
+      "portable_ui_geometry_error": 1.0658141036401503e-14,
+      "native_command_representation_error": 2.808666774861361e-15,
+      "native_command_geometry_error": 1.0658141036401503e-14,
+      "native_ui_representation_error": 2.808666774861361e-15,
+      "native_ui_geometry_error": 1.0658141036401503e-14
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_skew_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.66205343881779e-15,
+      "portable_command_geometry_error": 2.6645352591003757e-15,
+      "portable_ui_representation_error": 3.66205343881779e-15,
+      "portable_ui_geometry_error": 2.6645352591003757e-15,
+      "native_command_representation_error": 3.66205343881779e-15,
+      "native_command_geometry_error": 2.6645352591003757e-15,
+      "native_ui_representation_error": 3.66205343881779e-15,
+      "native_ui_geometry_error": 2.6645352591003757e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_skew_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.972054645195637e-15,
+      "portable_command_geometry_error": 2.7012892057857038e-15,
+      "portable_ui_representation_error": 3.972054645195637e-15,
+      "portable_ui_geometry_error": 2.7012892057857038e-15,
+      "native_command_representation_error": 3.972054645195637e-15,
+      "native_command_geometry_error": 2.7012892057857038e-15,
+      "native_ui_representation_error": 3.972054645195637e-15,
+      "native_ui_geometry_error": 2.7012892057857038e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_skew_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 1.7763568394002505e-15,
+      "portable_command_geometry_error": 1.9860273225978185e-15,
+      "portable_ui_representation_error": 1.7763568394002505e-15,
+      "portable_ui_geometry_error": 1.9860273225978185e-15,
+      "native_command_representation_error": 1.7763568394002505e-15,
+      "native_command_geometry_error": 1.9860273225978185e-15,
+      "native_ui_representation_error": 1.7763568394002505e-15,
+      "native_ui_geometry_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_skew_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 4.782987168225453e-15,
+      "portable_command_geometry_error": 3.552713678800501e-15,
+      "portable_ui_representation_error": 4.782987168225453e-15,
+      "portable_ui_geometry_error": 3.552713678800501e-15,
+      "native_command_representation_error": 4.782987168225453e-15,
+      "native_command_geometry_error": 3.552713678800501e-15,
+      "native_ui_representation_error": 4.782987168225453e-15,
+      "native_ui_geometry_error": 3.552713678800501e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_skew_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 3.76822190084106e-15,
+      "portable_command_geometry_error": 3.614624287906422e-15,
+      "portable_ui_representation_error": 3.76822190084106e-15,
+      "portable_ui_geometry_error": 3.614624287906422e-15,
+      "native_command_representation_error": 3.76822190084106e-15,
+      "native_command_geometry_error": 3.614624287906422e-15,
+      "native_ui_representation_error": 3.76822190084106e-15,
+      "native_ui_geometry_error": 3.614624287906422e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_spatial_0",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.2232198742534223e-15,
+      "portable_command_geometry_error": 2.375591537845244e-15,
+      "portable_ui_representation_error": 2.2232198742534223e-15,
+      "portable_ui_geometry_error": 2.375591537845244e-15,
+      "native_command_representation_error": 2.2232198742534223e-15,
+      "native_command_geometry_error": 2.375591537845244e-15,
+      "native_ui_representation_error": 2.2232198742534223e-15,
+      "native_ui_geometry_error": 2.375591537845244e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_spatial_1",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.0350724194510405e-15,
+      "portable_command_geometry_error": 3.367473164340296e-15,
+      "portable_ui_representation_error": 2.0350724194510405e-15,
+      "portable_ui_geometry_error": 3.367473164340296e-15,
+      "native_command_representation_error": 2.0350724194510405e-15,
+      "native_command_geometry_error": 3.367473164340296e-15,
+      "native_ui_representation_error": 2.0350724194510405e-15,
+      "native_ui_geometry_error": 3.367473164340296e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_spatial_2",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.0350724194510405e-15,
+      "portable_command_geometry_error": 3.367473164340296e-15,
+      "portable_ui_representation_error": 2.0350724194510405e-15,
+      "portable_ui_geometry_error": 3.367473164340296e-15,
+      "native_command_representation_error": 2.0350724194510405e-15,
+      "native_command_geometry_error": 3.367473164340296e-15,
+      "native_ui_representation_error": 2.0350724194510405e-15,
+      "native_ui_geometry_error": 3.367473164340296e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_spatial_3",
+      "representation_parity": true,
+      "portable_command_representation_error": 2.3314683517128287e-15,
+      "portable_command_geometry_error": 2.8457249041605285e-15,
+      "portable_ui_representation_error": 2.3314683517128287e-15,
+      "portable_ui_geometry_error": 2.8457249041605285e-15,
+      "native_command_representation_error": 2.3314683517128287e-15,
+      "native_command_geometry_error": 2.8457249041605285e-15,
+      "native_ui_representation_error": 2.3314683517128287e-15,
+      "native_ui_geometry_error": 2.8457249041605285e-15
+    },
+    {
+      "id": "arc_blend_radius_targets/rd_spatial_4",
+      "representation_parity": true,
+      "portable_command_representation_error": 5.329070518200751e-15,
+      "portable_command_geometry_error": 9.880984919163893e-15,
+      "portable_ui_representation_error": 5.329070518200751e-15,
+      "portable_ui_geometry_error": 9.880984919163893e-15,
+      "native_command_representation_error": 5.329070518200751e-15,
+      "native_command_geometry_error": 9.880984919163893e-15,
+      "native_ui_representation_error": 5.329070518200751e-15,
+      "native_ui_geometry_error": 9.880984919163893e-15
+    }
+  ],
+  "captures": [
+    {
+      "family": "arc_blend_radius_sdk",
+      "observations": 48,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "9a71b6155badbd5fa1b44e24679aecf2b872873bfb56f681f394f09e606952ca"
+    },
+    {
+      "family": "arc_blend_radius_general",
+      "observations": 32,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "091b61f0ca9042b5631bd97e4de44a463c518649186159946c3a533f604ffd87"
+    },
+    {
+      "family": "arc_blend_radius_general_holdouts",
+      "observations": 15,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "816c96025cb4606581301d6e228cd6f520e1539e7afd344f0864d63536e39a0b"
+    },
+    {
+      "family": "arc_blend_radius_cocircular",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "2d4936494c5b95b0136d4f37caab5decdf33b6eee981c8f5ff448d9c696052e7"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "radius-search-sdk",
+      "status": 0
+    },
+    {
+      "name": "general-command-portable",
+      "status": 0
+    },
+    {
+      "name": "general-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "general-command-native",
+      "status": 0
+    },
+    {
+      "name": "general-ui-native",
+      "status": 0
+    },
+    {
+      "name": "radius-command-portable",
+      "status": 0
+    },
+    {
+      "name": "radius-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "radius-command-native",
+      "status": 0
+    },
+    {
+      "name": "radius-ui-native",
+      "status": 0
+    },
+    {
+      "name": "handles-command-portable",
+      "status": 0
+    },
+    {
+      "name": "handles-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "handles-command-native",
+      "status": 0
+    },
+    {
+      "name": "handles-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-geometry",
+      "status": 0
+    },
+    {
+      "name": "arc-command-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-command-native",
+      "status": 0
+    },
+    {
+      "name": "arc-ui-native",
+      "status": 0
+    },
+    {
+      "name": "projection-geometry",
+      "status": 0
+    },
+    {
+      "name": "pick-command-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-portable",
+      "status": 0
+    },
+    {
+      "name": "pick-command-native",
+      "status": 0
+    },
+    {
+      "name": "pick-ui-native",
+      "status": 0
+    },
+    {
+      "name": "pick-viewport-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-rays-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-boundary-ui-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "tangent-command-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-ui-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-command-native",
+      "status": 0
+    },
+    {
+      "name": "perpendicular-ui-native",
+      "status": 0
+    },
+    {
+      "name": "normal-command-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "move-normal-portable",
+      "status": 0
+    },
+    {
+      "name": "normal-command-native",
+      "status": 0
+    },
+    {
+      "name": "normal-ui-native",
+      "status": 0
+    },
+    {
+      "name": "move-normal-native",
+      "status": 0
+    },
+    {
+      "name": "reference-command-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-portable",
+      "status": 0
+    },
+    {
+      "name": "reference-command-native",
+      "status": 0
+    },
+    {
+      "name": "reference-ui-native",
+      "status": 0
+    },
+    {
+      "name": "arc-extension-native",
+      "status": 0
+    },
+    {
+      "name": "line-command-portable",
+      "status": 0
+    },
+    {
+      "name": "line-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-portable",
+      "status": 0
+    },
+    {
+      "name": "rectangle-portable",
+      "status": 0
+    },
+    {
+      "name": "line-command-native",
+      "status": 0
+    },
+    {
+      "name": "line-ui-native",
+      "status": 0
+    },
+    {
+      "name": "primitive-input-native",
+      "status": 0
+    },
+    {
+      "name": "rectangle-native",
+      "status": 0
+    },
+    {
+      "name": "registry",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "lines-command-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "points-portable",
+      "status": 0
+    },
+    {
+      "name": "curves-portable",
+      "status": 0
+    },
+    {
+      "name": "lines-command-native",
+      "status": 0
+    },
+    {
+      "name": "lines-ui-native",
+      "status": 0
+    },
+    {
+      "name": "points-native",
+      "status": 0
+    },
+    {
+      "name": "curves-native",
+      "status": 0
+    },
+    {
+      "name": "commands-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "grid-portable",
+      "status": 0
+    },
+    {
+      "name": "corners-portable",
+      "status": 0
+    },
+    {
+      "name": "plane-portable",
+      "status": 0
+    },
+    {
+      "name": "polyline-portable",
+      "status": 0
+    },
+    {
+      "name": "commands-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "grid-native",
+      "status": 0
+    },
+    {
+      "name": "corners-native",
+      "status": 0
+    },
+    {
+      "name": "plane-native",
+      "status": 0
+    },
+    {
+      "name": "polyline-native",
+      "status": 0
+    },
+    {
+      "name": "subd-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-all-features",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "construction": "Independent tangent-length equation shared by construction and allocation-free trial radius evaluation. Halve the interval toward the endpoint with smaller target error and retain the best sampled fraction. Target residual uses public ON_ZERO_TOLERANCE. Native coordinates are expected values only.",
+  "execution": "All captures used private Xvfb sessions; application and egui tests are windowless.",
+  "limits": [
+    "This inferred bounded search reproduces native partial solutions; it can discard mathematically attainable targets. It is not a global closest-radius solver.",
+    "Two same-circle nonzero targets have different internal arc partitions and NURBS data. Complete-curve native samples and supporting circle/sweep bounds verify geometric equality, including 3DM. Their coefficient differences remain explicit diagnostics; native ratio-handle station parity for these two cases is unqualified.",
+    "Native qualification includes planar/spatial lines, alternate solutions, backward directions, contact edits, trimming, scaling from 0.1 to 10, close targets and failed targets. Nonlinear source contacts, larger scaling, continuous distance outside the coincident-circle cases and speed comparisons remain unqualified.",
+    "Cross-command remembered radius/Trim/Join settings, SubCrv and general handle hit-box/depth ranking remain unsupported or unqualified. Historical records retain their original scope and diagnostics."
+  ],
+  "implementation_git_sha256": {
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/src/arc_blend.rs": "6b6303150783bc43ef68455a88aeb8f7bc8b29bbdea6050b48e4b469853f8d5d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/tests/arc_blend.rs": "3d64ab72d114d2b9085a961ac93e96b037ecfdad1d862e71480a87aa34098ca6",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/tests/arc_blend_radius.rs": "ec946a0fc244f484ce6c271676ab9668d785d645143da913c230c435bf901cf4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/tests/arc_blend_radius_general.rs": "78a071b1385de91fc6e681426fb5c42b78a8e37f6d64552856e753df70d9a530",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/tests/support/arc_blend_radius.rs": "0660df128b22747db42950611669c54bf1e9d9b991d94e5bb5e6038361ffb0b1",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-command/tests/support/arc_blend_radius_general.rs": "e33e3bf1de2e92248d07dfb104b383dadeae550d53df5ee8024574ef09f797e4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/arc_blend.rs": "10e198c4192020bdec1d0497322645e924b3f2e57fc53bcaf7884f9af79840c5",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/arc_blend/join.rs": "d8d914015db0fe747e6183be335ff6cfc84b293ddcf34b0125d759ef5fb1b347",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/arc_blend/parallel.rs": "fae8fa37a4cda8e727d60b6ac757a0740500df4011293bfe95d00666f201eb90",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/arc_blend/radius.rs": "f3a769b5a3ad02813f43790632e5c947de321f2918010c830ecbece980c554a4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/arc_blend/radius/tests.rs": "8533a8d1784a8f42a24d32ca33e3ec5993af98cc77186f519eb5e31204d8f98c",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:crates/viboceros-geometry/src/lib.rs": "ea2610036b77bcf6ffaef5368ddb24db3b7feaa7b1aef8bfeaead52028c4b0ad",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-command-native.log.gz": "0fdc945d18e3ce51d84ec799d339f2e7f9904b9012d71690a3c171af8a043bb0",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-command-portable.log.gz": "7d33522ee9983b2a86a540ad6e1f93e31968f23f3e1f1dbbd990610ccf68d193",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-extension-native.log.gz": "daeb19a99ccc7df6345e713d7ef7526e572dfa43270a60cab2e3c940a8850661",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-extension-portable.log.gz": "144f92ebc9b58b6c76fe2bd77e26b4ab7eac18be3e2a7f3a73f88eeb59060e28",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-geometry.log.gz": "66ef0d3f40f92a4cb97a6244c4324aa5e82d8a1cc8253f582c948f7c99314a35",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-ui-native.log.gz": "cfb4a671cd89e0cef5a0190add1712dcb907d7e45419a1398fbc4c17533bb6b0",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/arc-ui-portable.log.gz": "16c0678671699aeb5e80f5eed53db6689d10b4726c711bd3f1067896b616722b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/capture-arc_blend_radius_cocircular.log.gz": "ed7d09b503479b23f28e4c9a926d542863a1540d8a779aea0ab9986a81e7be3d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general.log.gz": "ddf5bebf0c0e4fe6070d9cea6088056c12e131cfb572458d1fd967a3a91bfb4a",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general_holdouts.log.gz": "7904602ab0b013922d08369047980c7a4c3d69740a88848e52a2de1ec8040437",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/capture-arc_blend_radius_sdk.log.gz": "d77ac7f94f9dc10e3cc9b02128b1f9da28d8c6eac25db5f2da5e3ae339eb3b64",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/captures.json": "552eeb74616bdca48c6924f20a85ba9292eec06942c55bfa328886971eeb7f80",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/checks.json": "3ae0391a3ecaa040e2792e73fdfd2cf2d7591c1a51b6cd7e9fdb0d23730b3358",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/clippy-all-features.log.gz": "119663139ab1db75248633fd52e388d834df7440cacb24c798a5818325528dfa",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/clippy-portable.log.gz": "151f57e7c1df193bec2503afbf651197866e9b4a7c8432ffae3bee64254988dd",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/commands-native.log.gz": "23f8565c8f4fbdb014d56cc644aae9e6724ac8e76f202c41eae1cfdf032fb8d4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/commands-portable.log.gz": "cf737c7c580563338fd51af7c9b10dfd2b1136e04827c51354c548526c0ce9ec",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/corners-native.log.gz": "f5c864d690fe4f5ebd0f48ccc153fe9b4b91a840c55a15bfca19d904ef48b3cc",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/corners-portable.log.gz": "644e96baec5aeba68fac7bfddce74b73b5206e0ade8557732ae2800e15a55b22",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/curves-native.log.gz": "161dc4007b89dd2c84f02124d08b49fbe5c0d2edd1ef33e47c8de71e232a6a3f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/curves-portable.log.gz": "6583d685b1d4f8ce773514ed753ba325e0374d888294bfef046c101f7f5944ee",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/general-command-native.log.gz": "fda004fea32fa9891009bebe253b8003755e8824d8afce2ca31616ab53d2f0c7",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/general-command-portable.log.gz": "14e946a331dd8a739a31320852f739404bcf16b39854af52c9a7e6b13ad4d214",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/general-ui-native.log.gz": "07ba1d06b6f7f7fbe039363b65e566efca68314cf676f7d5a0032169ccb13861",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/general-ui-portable.log.gz": "a4b19d9868e3b1c73bb016852c059689f6497985eabce84ac482f8ef903729ad",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/grid-native.log.gz": "a6fa1a8e969f518c4381a21b6a5c09ed48cf0821e6f557cb170439baabe84a7e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/grid-portable.log.gz": "992d65606a0248f296d9d5218deb928b99e1d053b0be1c38c559e72b57fe4218",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/handles-command-native.log.gz": "1aa870a8ae0378387d7357d328fbedc1034a79b893a6b1bcdf3b9ed53c144713",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/handles-command-portable.log.gz": "e77766ca0c8f15d298a66759363d0479624110d525485ef556472ec2baaaa993",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/handles-ui-native.log.gz": "0e606af1eb3b208624e3c449b1645f36fdc94d5ebfc553b8cb5f2b2ddca1dddb",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/handles-ui-portable.log.gz": "3effb89235cf67cfb29b258d1d0578bac154709a45a8f80ad136d7befdb8f5c4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/history.log.gz": "111f7d3513c5f89aa37307c58ca82f95ba45921641ef465b07be3dcb2eeb4957",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/line-command-native.log.gz": "57ae920ee6fc5fe1239456602ce88bc87a2bd5f558df47220df5c38ab81f2335",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/line-command-portable.log.gz": "e0b384ef7126046535536ca1e16f3ee82f64e778c857fd364ad95f61c1ec931f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/line-ui-native.log.gz": "1f87ec4b115f31ce39d48a0ee97d1f5eec71a99f324452a321e92701d8bd1c48",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/line-ui-portable.log.gz": "8bf880a736d5f8b5e538d8961364c436d24225bfc51a738e8fb9ff07000b5096",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/lines-command-native.log.gz": "4adca0380a6d42ccb8bcec4efaf0d205de218d615391c3048c2ffce4e1095265",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/lines-command-portable.log.gz": "47adf0673a4c19e08494130dbc59715944af7c23faf4dc01651e21930df4018f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/lines-ui-native.log.gz": "5d395e689676aa88bd9ed4b70db94e3577c522c9cb72e277f1ea79bfa8ce5464",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/lines-ui-portable.log.gz": "e7b737f67f0894bb8584540b7c9ecb83f56e050f8cb38cd2a65a76cdb84d13f1",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/move-normal-native.log.gz": "c1c20d0866ca71eb1a4007ec212fded2e6a33e214b2ec6b821e931f692aeae7e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/move-normal-portable.log.gz": "0f6a297595c7297504e1753164d63abd6f9468f7743fac3cb5d481c96246ef64",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/normal-command-native.log.gz": "7b9d73ace4abb0c4576e643f8707afbba2417945c824240e939fd73eacbaa93c",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/normal-command-portable.log.gz": "ecd74d9adc05b27c4a15463a9b5539338d2b7d38e997ff08b0f2836203122475",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/normal-ui-native.log.gz": "388da6b30a2505ed61bd7dde4ad3523ed771e0150983a35a10ac3ced49e55cc8",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/normal-ui-portable.log.gz": "18ffa908f57732067f9bff0277b0075b833197ad197fa83fa025034a6d7a8575",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/perpendicular-command-native.log.gz": "cd23af9fd5321ada8a8a67022268ea94092a8c2d173e402d095e0b4fe344b4c4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/perpendicular-command-portable.log.gz": "af30377054cb2548621e8cb29c3c46ad01bfd952140a9f6445579b5dc9e153b8",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/perpendicular-ui-native.log.gz": "7af436c0766100d45b5f6ded19884772d0ea71679913cf78926e00e7b9bad188",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/perpendicular-ui-portable.log.gz": "7580caabb8913241029ab1cfc4f0195c3dba1063f4fd08fb2cb2ccbdbd71783b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-command-native.log.gz": "9ed463ba6ae8371a88956a8b5487a93d6802c5f9f74ee72eea4808f82f1d00cb",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-command-portable.log.gz": "a2e31e135ef0e2f782aafa58a7c27a4c5ca331bde221996d37bb19b579e62222",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-ui-native.log.gz": "3f84d8e8d9c8f01d3080f58c422970a2e6364b349daf17d78858e944c720ba0f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-ui-portable.log.gz": "e060f272fa1f336b3911d17fb3b26260fface29aa9cc2c7fe019b6b8b751ca93",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-viewport-native.log.gz": "28bb4a6f3afbe683a396e49b4e4bd5b422b28bc4aaad37591c4fcefa435653db",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/pick-viewport-portable.log.gz": "7c698d3c50c88782ff749b411cdc8225748fb6069a548b5dacf97f0f31aefd1b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/plane-native.log.gz": "4d73a7592fce50092b665abf783834f95c750f0ad0c87fc90e55bed5fdfd31e6",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/plane-portable.log.gz": "f0396b2ac3a0b856a1fc74ef238fe6d8bbd764e26536dc934c77bccdf636122f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/points-native.log.gz": "77fdf952a9ed16d0fc37a999bad524ef61b134ecea3911d60e252e490fd9bc1d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/points-portable.log.gz": "d8b3673f781c814c32e5d9163a9d4ecee397b8d06d146440e867184b7db2ca2b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/polyline-native.log.gz": "f81f782f176afed5c0bd3e125006a032743d28bfb2fead210f9df9779a2be293",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/polyline-portable.log.gz": "8e5e1c408289572efd8a24ebce2acdfdf8e0ac3b100e7cd4b0356efc7befaed4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/primitive-input-native.log.gz": "80a3b63d7fe5b15bd142b45ee159cbaa36ebea66d070e92c85b401bb3c1b5b53",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/primitive-input-portable.log.gz": "4a1da3120027f15d567719e9e9be476fd525e34d31418ab0f8efd203f93e9ecc",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/projection-geometry.log.gz": "ce6b282455f3f3f115fc789a9b818ff21d6d4934e01d75d0bb0fff7bb12be9a5",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/python.log.gz": "c7c12e23d8f0adefb1c3e6ff957d280eba6033e90409bdee41581012f5f81a01",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/radius-command-native.log.gz": "ae1eaf5a82cb1a72c3289932af98d1fe9f86a42cb6bfae99b361677ea23adb4c",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/radius-command-portable.log.gz": "2b9418c3fda52bab2afd32e3563849e182ed78c7372611dd86072b6738f580c8",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/radius-search-sdk.log.gz": "b632bd526c30b72f280811297bfae284856e4cd2066d5523a8039588f67d72b3",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/radius-ui-native.log.gz": "e7f48174ff89e99756887ef0cff9d289008bedace50527b81ea87c415a691634",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/radius-ui-portable.log.gz": "add229f085ffe9e9576fba9c8f94f0f76702a30000ee2788d1f4ea5a20489eef",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/rectangle-native.log.gz": "faf4eff353e7a49657d92abbc091b06a467bc9873469ca90434a0bb4b2ffdf11",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/rectangle-portable.log.gz": "c513baf5094152c6dd260dfdea349c5568e75335ef1a45b6198cda6281a60097",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/reference-command-native.log.gz": "1dbd151a072a3906d0f1513dabcc2ec766b7217da6afd1c9262ecb19b7124f98",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/reference-command-portable.log.gz": "803f53fb439e040b5a54b4f01c68b9c3da86fbb25f990e77e53a59abc186d02b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/reference-ui-native.log.gz": "d06563d9fbccce1ed7a3b8354d0fe20c01e553b0fbb5d6fbd6e3bc4230da549e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/reference-ui-portable.log.gz": "e5aabc5429088d56c0cd6873591cde236bdbb0be44623d55c9e1cbfa5310c509",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/registry.log.gz": "470e92d7e437fe4848d506a7765e82d93af4a883a488905e4446a4a46f4aa51b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/subd-native.log.gz": "72f59b6f7be68d8f2714bbdbaa110bf8127387a4eced2a8a86c0687577d55ee6",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-boundary-command-native.log.gz": "e02ba6570a2757f1d9a2ca2aaf164fe5a57f5406376784538594d62248a1d86a",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-boundary-command-portable.log.gz": "ef2b73737df473d98e2f35d35697cbe5c2fa189a2559a7183d54c2debdf1dfc5",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-boundary-ui-native.log.gz": "30e9760183727deff8bed776fef0efd2f5b2adc5b958c750cb2512da5725694a",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-boundary-ui-portable.log.gz": "8982bc337192874559b7e32a6c2b9765171668580fbaad1473232fe60e4ffa47",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-command-native.log.gz": "9e3fbeee07333665d8edb18d2a54395202b5fb6d122a17c86af5cbbdb37ffa1e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-command-portable.log.gz": "a7eb3245d729f75b86b36efb8724db35a42abecd1f67040a03f1e37e3f6dad96",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-rays-command-native.log.gz": "8ab87323d3b2c4b1ba99c52e46efb2d41dbdb94f50dbdce11c690d1b0e06f21f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-rays-command-portable.log.gz": "144bcb81f2f010b2557926acee4adae7e360ffcbb07cab4f78c7486a7d691757",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-rays-ui-native.log.gz": "a7c102cdb5dfed3ba7b20ee6a186254953701f2427cd0bf2154db52aacb1de47",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-rays-ui-portable.log.gz": "872026e04e251dc2fc8672fb6f782e07f503bf677967dd3a98f8b5bc2ff6af6f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-ui-native.log.gz": "900d18e751e1b2c15deb644c73eb6736d3384ea99ec25cae452a53ce0829e672",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/tangent-ui-portable.log.gz": "7e6ba08848b6f0b01440f562ca4ac6fb67a558016e811507649c19445ccf0c61",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/ui-native.log.gz": "824ebc408c4d5a43e249925ac28dfe426f16c284bdfeded96f8ec43570cd799b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/arc-blend-radius-general-proof/ui-portable.log.gz": "ad20ba7f8a8e6e062b76dd40fcf4213e137e3a5a10b03535d73f4e067b083e46",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/commands/arc-blend-handles.md": "fea3c2721779790e809e30dff93bbeb92b7ee26da611034ab47789e1b6c6597a",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/commands/arc-blend-radius.md": "a64c6f61101879c2386ec3499908529bfb594e291308938f18fd1ae0bf9b56be",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/commands/arc-blend.md": "3a16e6b0a12d1aa168eab4de1c923861816507e85fe24f4081f1c10ea315d2e5",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/subd-box-qualification.json": "c23cd619c39e02fc1768beb3eae7e19351400806bc2b0c3bbab6944f384cfce5",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:docs/subd-plane-qualification.json": "6f940f49cd93003c28f21b7f0f0be72bd4eb004f5b06fc0d1861d0d0092fb11d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:src/app/tests/arc_blend.rs": "6926bf0eab6e0a92e061cc1424d59ea5b20bcd90c3a04dd4fea40489b872e15b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:src/app/tests/arc_blend_radius.rs": "5b2a0087d1310d25b1efab0e042d26cfec9fc661c40f7ae38e63af94dab15004",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:src/app/tests/arc_blend_radius_general.rs": "5614b81995dfd5e3849043b8aaea2ea6626a7c6b02f8287bb1cd06872acd830d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:src/app/tests/mod.rs": "18088ba8d29747c27ed99eddb4a6a0fe53c6a2faab8ca5bcf09e7b8e1a89cdc3",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/arc_blend_command.py": "9598b77b8215e6dc3955c2e9c2d70e77fc3f58a953838d72c5d2b2a120e90415",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/arc_blend_general_evidence.py": "2d028a72d124e6d67ad7cceca82ccf447571f46963029b59c7e589fe2e312e65",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/arc_blend_sdk.py": "16131613fb6adde20226725b85034f62f41a73645e4c64331de7a373a2184c6d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/check_arc_blend_radius_general.py": "408a4e971afd922a37eb3aafdc17598919e0aa0085b3152b4456cfbed6d79646",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/fixtures/arc_blend_radius_cocircular.json": "6ecf8158221266f507682e6d7e78290ee6091d380be8c0955bd548dc3a07fd92",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/fixtures/arc_blend_radius_general.json": "846f1e93c9f7b57feab709e702c30ac5510c1c151421a0b89ebfe8b02d6ad038",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/fixtures/arc_blend_radius_general_holdouts.json": "97f6130648e4567f0dada9c43578f954b793a2049fc17edbdfe236fd87e284ba",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/fixtures/arc_blend_radius_sdk.json": "3987625b26c85e8f5007c93ae717cf99340ce8d91df5f552e2dd00a132a440ae",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/generate_arc_blend_radius_cocircular.py": "6cfc7a586749cfe09228dcce9c404e6f4ab58b3d2caf810c8205a986a535c23e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/generate_arc_blend_radius_general.py": "8a84035638c15e1bbe73b1e97cb0e99565f92dfcc7d07119087657bbf3809d2b",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/generate_arc_blend_radius_general_holdouts.py": "e3b7cdbfe50095623256a0ad9a32cca548956eb4e9d6cdadc1f7d3435d58253d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/generate_arc_blend_radius_sdk.py": "1f7a430ac4c5cb4fefdcd058d744f8ecab9e87fc72ec15312e288195032c37d2",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/arc_blend_radius_cocircular.json.gz": "4c806738a1d8b076f9406327934300ed311a53d415e22a8333ca77dce5ca0025",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/arc_blend_radius_general.json.gz": "d1732decc5f36b0fc5f6486f4b192b5b2b76372efe56dc544ac6a4c89841cb80",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/arc_blend_radius_general_holdouts.json.gz": "133707705c4011bde0c1b724da6f17d9ab63bb72b820de526373995f2dd16826",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/arc_blend_radius_sdk.json.gz": "1af653472c3c1e472a33dd89ad238d7ff88de76fab2f58f09535e20d87814174",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/16131613fb6adde20226725b85034f62f41a73645e4c64331de7a373a2184c6d.gz": "c2d5f054a8195004f0e5eb8012e9d02b52a9c99ccbb25d90c0cc8539a78daaf4",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/1f7a430ac4c5cb4fefdcd058d744f8ecab9e87fc72ec15312e288195032c37d2.gz": "a5dcaf81e9eb2e3e6117e6f918a29761df9f583b72e7352393e2841eb483bf15",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/4e2a9c3c3c77c7817193bc99909ff1f18b34f22c8b01a728abb185b421ab4390.gz": "26b55b70690e8cd57c0f8ac11943c95a0ce79f0e5e536f478fdf2c4883dc930e",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/6cfc7a586749cfe09228dcce9c404e6f4ab58b3d2caf810c8205a986a535c23e.gz": "5fc18b1954d53ef03a2cf439d0f24180e04de577f60621f86476029de3adeb89",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/8a84035638c15e1bbe73b1e97cb0e99565f92dfcc7d07119087657bbf3809d2b.gz": "35fe52e9fed16103c92f8b5b0edd6a83b4ad3221ff9992cb06c8d97ea46ddeb9",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/9598b77b8215e6dc3955c2e9c2d70e77fc3f58a953838d72c5d2b2a120e90415.gz": "2689f2f1205fb157a45f10f08e05d6fe9fdb279bddfe8cc5267c1f5d399abb8f",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/e3b7cdbfe50095623256a0ad9a32cca548956eb4e9d6cdadc1f7d3435d58253d.gz": "c9f73b70d5b7b16dc8126c08891c78bb45fabb99d6c6b91bfead8a5cf024f02a",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/observations/source_snapshots/ebfec758162c139d9f690928111f991de543cdcb12625b38205603978dda7f2b.gz": "992ded37bffc7b34b840cee1e058cb7260857ce1e66cff08687e62c4cc8ff56d",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/report_arc_blend_radius_general.py": "1deb255276dc895ca82a85ccbe704d3a89357042ab50c4b7613f575131807e28",
+    "43a821c3c30cd2e4fd3d70e97db6419493311c43:tools/rhino_oracle/test_arc_blend_radius_general.py": "09e547827679154e5f03b2864c0e82e95fd6cc28147c8b914190963bdac74c69"
+  },
+  "evidence_sha256": {
+    "docs/arc-blend-radius-general-proof/arc-command-native.log.gz": "0fdc945d18e3ce51d84ec799d339f2e7f9904b9012d71690a3c171af8a043bb0",
+    "docs/arc-blend-radius-general-proof/arc-command-portable.log.gz": "7d33522ee9983b2a86a540ad6e1f93e31968f23f3e1f1dbbd990610ccf68d193",
+    "docs/arc-blend-radius-general-proof/arc-extension-native.log.gz": "daeb19a99ccc7df6345e713d7ef7526e572dfa43270a60cab2e3c940a8850661",
+    "docs/arc-blend-radius-general-proof/arc-extension-portable.log.gz": "144f92ebc9b58b6c76fe2bd77e26b4ab7eac18be3e2a7f3a73f88eeb59060e28",
+    "docs/arc-blend-radius-general-proof/arc-geometry.log.gz": "66ef0d3f40f92a4cb97a6244c4324aa5e82d8a1cc8253f582c948f7c99314a35",
+    "docs/arc-blend-radius-general-proof/arc-ui-native.log.gz": "cfb4a671cd89e0cef5a0190add1712dcb907d7e45419a1398fbc4c17533bb6b0",
+    "docs/arc-blend-radius-general-proof/arc-ui-portable.log.gz": "16c0678671699aeb5e80f5eed53db6689d10b4726c711bd3f1067896b616722b",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_cocircular.log.gz": "ed7d09b503479b23f28e4c9a926d542863a1540d8a779aea0ab9986a81e7be3d",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general.log.gz": "ddf5bebf0c0e4fe6070d9cea6088056c12e131cfb572458d1fd967a3a91bfb4a",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_general_holdouts.log.gz": "7904602ab0b013922d08369047980c7a4c3d69740a88848e52a2de1ec8040437",
+    "docs/arc-blend-radius-general-proof/capture-arc_blend_radius_sdk.log.gz": "d77ac7f94f9dc10e3cc9b02128b1f9da28d8c6eac25db5f2da5e3ae339eb3b64",
+    "docs/arc-blend-radius-general-proof/captures.json": "552eeb74616bdca48c6924f20a85ba9292eec06942c55bfa328886971eeb7f80",
+    "docs/arc-blend-radius-general-proof/checks.json": "c766a86eaeb77f1e864b6db78e9d2715a6e1feee977fa293c29e1b4e77c6d98f",
+    "docs/arc-blend-radius-general-proof/clippy-all-features.log.gz": "119663139ab1db75248633fd52e388d834df7440cacb24c798a5818325528dfa",
+    "docs/arc-blend-radius-general-proof/clippy-portable.log.gz": "151f57e7c1df193bec2503afbf651197866e9b4a7c8432ffae3bee64254988dd",
+    "docs/arc-blend-radius-general-proof/commands-native.log.gz": "23f8565c8f4fbdb014d56cc644aae9e6724ac8e76f202c41eae1cfdf032fb8d4",
+    "docs/arc-blend-radius-general-proof/commands-portable.log.gz": "cf737c7c580563338fd51af7c9b10dfd2b1136e04827c51354c548526c0ce9ec",
+    "docs/arc-blend-radius-general-proof/corners-native.log.gz": "f5c864d690fe4f5ebd0f48ccc153fe9b4b91a840c55a15bfca19d904ef48b3cc",
+    "docs/arc-blend-radius-general-proof/corners-portable.log.gz": "644e96baec5aeba68fac7bfddce74b73b5206e0ade8557732ae2800e15a55b22",
+    "docs/arc-blend-radius-general-proof/curves-native.log.gz": "161dc4007b89dd2c84f02124d08b49fbe5c0d2edd1ef33e47c8de71e232a6a3f",
+    "docs/arc-blend-radius-general-proof/curves-portable.log.gz": "6583d685b1d4f8ce773514ed753ba325e0374d888294bfef046c101f7f5944ee",
+    "docs/arc-blend-radius-general-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/arc-blend-radius-general-proof/general-command-native.log.gz": "fda004fea32fa9891009bebe253b8003755e8824d8afce2ca31616ab53d2f0c7",
+    "docs/arc-blend-radius-general-proof/general-command-portable.log.gz": "14e946a331dd8a739a31320852f739404bcf16b39854af52c9a7e6b13ad4d214",
+    "docs/arc-blend-radius-general-proof/general-ui-native.log.gz": "07ba1d06b6f7f7fbe039363b65e566efca68314cf676f7d5a0032169ccb13861",
+    "docs/arc-blend-radius-general-proof/general-ui-portable.log.gz": "a4b19d9868e3b1c73bb016852c059689f6497985eabce84ac482f8ef903729ad",
+    "docs/arc-blend-radius-general-proof/grid-native.log.gz": "a6fa1a8e969f518c4381a21b6a5c09ed48cf0821e6f557cb170439baabe84a7e",
+    "docs/arc-blend-radius-general-proof/grid-portable.log.gz": "992d65606a0248f296d9d5218deb928b99e1d053b0be1c38c559e72b57fe4218",
+    "docs/arc-blend-radius-general-proof/handles-command-native.log.gz": "1aa870a8ae0378387d7357d328fbedc1034a79b893a6b1bcdf3b9ed53c144713",
+    "docs/arc-blend-radius-general-proof/handles-command-portable.log.gz": "e77766ca0c8f15d298a66759363d0479624110d525485ef556472ec2baaaa993",
+    "docs/arc-blend-radius-general-proof/handles-ui-native.log.gz": "0e606af1eb3b208624e3c449b1645f36fdc94d5ebfc553b8cb5f2b2ddca1dddb",
+    "docs/arc-blend-radius-general-proof/handles-ui-portable.log.gz": "3effb89235cf67cfb29b258d1d0578bac154709a45a8f80ad136d7befdb8f5c4",
+    "docs/arc-blend-radius-general-proof/history.log.gz": "111f7d3513c5f89aa37307c58ca82f95ba45921641ef465b07be3dcb2eeb4957",
+    "docs/arc-blend-radius-general-proof/line-command-native.log.gz": "57ae920ee6fc5fe1239456602ce88bc87a2bd5f558df47220df5c38ab81f2335",
+    "docs/arc-blend-radius-general-proof/line-command-portable.log.gz": "e0b384ef7126046535536ca1e16f3ee82f64e778c857fd364ad95f61c1ec931f",
+    "docs/arc-blend-radius-general-proof/line-ui-native.log.gz": "1f87ec4b115f31ce39d48a0ee97d1f5eec71a99f324452a321e92701d8bd1c48",
+    "docs/arc-blend-radius-general-proof/line-ui-portable.log.gz": "8bf880a736d5f8b5e538d8961364c436d24225bfc51a738e8fb9ff07000b5096",
+    "docs/arc-blend-radius-general-proof/lines-command-native.log.gz": "4adca0380a6d42ccb8bcec4efaf0d205de218d615391c3048c2ffce4e1095265",
+    "docs/arc-blend-radius-general-proof/lines-command-portable.log.gz": "47adf0673a4c19e08494130dbc59715944af7c23faf4dc01651e21930df4018f",
+    "docs/arc-blend-radius-general-proof/lines-ui-native.log.gz": "5d395e689676aa88bd9ed4b70db94e3577c522c9cb72e277f1ea79bfa8ce5464",
+    "docs/arc-blend-radius-general-proof/lines-ui-portable.log.gz": "e7b737f67f0894bb8584540b7c9ecb83f56e050f8cb38cd2a65a76cdb84d13f1",
+    "docs/arc-blend-radius-general-proof/move-normal-native.log.gz": "c1c20d0866ca71eb1a4007ec212fded2e6a33e214b2ec6b821e931f692aeae7e",
+    "docs/arc-blend-radius-general-proof/move-normal-portable.log.gz": "0f6a297595c7297504e1753164d63abd6f9468f7743fac3cb5d481c96246ef64",
+    "docs/arc-blend-radius-general-proof/normal-command-native.log.gz": "7b9d73ace4abb0c4576e643f8707afbba2417945c824240e939fd73eacbaa93c",
+    "docs/arc-blend-radius-general-proof/normal-command-portable.log.gz": "ecd74d9adc05b27c4a15463a9b5539338d2b7d38e997ff08b0f2836203122475",
+    "docs/arc-blend-radius-general-proof/normal-ui-native.log.gz": "388da6b30a2505ed61bd7dde4ad3523ed771e0150983a35a10ac3ced49e55cc8",
+    "docs/arc-blend-radius-general-proof/normal-ui-portable.log.gz": "18ffa908f57732067f9bff0277b0075b833197ad197fa83fa025034a6d7a8575",
+    "docs/arc-blend-radius-general-proof/perpendicular-command-native.log.gz": "cd23af9fd5321ada8a8a67022268ea94092a8c2d173e402d095e0b4fe344b4c4",
+    "docs/arc-blend-radius-general-proof/perpendicular-command-portable.log.gz": "af30377054cb2548621e8cb29c3c46ad01bfd952140a9f6445579b5dc9e153b8",
+    "docs/arc-blend-radius-general-proof/perpendicular-ui-native.log.gz": "7af436c0766100d45b5f6ded19884772d0ea71679913cf78926e00e7b9bad188",
+    "docs/arc-blend-radius-general-proof/perpendicular-ui-portable.log.gz": "7580caabb8913241029ab1cfc4f0195c3dba1063f4fd08fb2cb2ccbdbd71783b",
+    "docs/arc-blend-radius-general-proof/pick-command-native.log.gz": "9ed463ba6ae8371a88956a8b5487a93d6802c5f9f74ee72eea4808f82f1d00cb",
+    "docs/arc-blend-radius-general-proof/pick-command-portable.log.gz": "a2e31e135ef0e2f782aafa58a7c27a4c5ca331bde221996d37bb19b579e62222",
+    "docs/arc-blend-radius-general-proof/pick-ui-native.log.gz": "3f84d8e8d9c8f01d3080f58c422970a2e6364b349daf17d78858e944c720ba0f",
+    "docs/arc-blend-radius-general-proof/pick-ui-portable.log.gz": "e060f272fa1f336b3911d17fb3b26260fface29aa9cc2c7fe019b6b8b751ca93",
+    "docs/arc-blend-radius-general-proof/pick-viewport-native.log.gz": "28bb4a6f3afbe683a396e49b4e4bd5b422b28bc4aaad37591c4fcefa435653db",
+    "docs/arc-blend-radius-general-proof/pick-viewport-portable.log.gz": "7c698d3c50c88782ff749b411cdc8225748fb6069a548b5dacf97f0f31aefd1b",
+    "docs/arc-blend-radius-general-proof/plane-native.log.gz": "4d73a7592fce50092b665abf783834f95c750f0ad0c87fc90e55bed5fdfd31e6",
+    "docs/arc-blend-radius-general-proof/plane-portable.log.gz": "f0396b2ac3a0b856a1fc74ef238fe6d8bbd764e26536dc934c77bccdf636122f",
+    "docs/arc-blend-radius-general-proof/points-native.log.gz": "77fdf952a9ed16d0fc37a999bad524ef61b134ecea3911d60e252e490fd9bc1d",
+    "docs/arc-blend-radius-general-proof/points-portable.log.gz": "d8b3673f781c814c32e5d9163a9d4ecee397b8d06d146440e867184b7db2ca2b",
+    "docs/arc-blend-radius-general-proof/polyline-native.log.gz": "f81f782f176afed5c0bd3e125006a032743d28bfb2fead210f9df9779a2be293",
+    "docs/arc-blend-radius-general-proof/polyline-portable.log.gz": "8e5e1c408289572efd8a24ebce2acdfdf8e0ac3b100e7cd4b0356efc7befaed4",
+    "docs/arc-blend-radius-general-proof/primitive-input-native.log.gz": "80a3b63d7fe5b15bd142b45ee159cbaa36ebea66d070e92c85b401bb3c1b5b53",
+    "docs/arc-blend-radius-general-proof/primitive-input-portable.log.gz": "4a1da3120027f15d567719e9e9be476fd525e34d31418ab0f8efd203f93e9ecc",
+    "docs/arc-blend-radius-general-proof/projection-geometry.log.gz": "ce6b282455f3f3f115fc789a9b818ff21d6d4934e01d75d0bb0fff7bb12be9a5",
+    "docs/arc-blend-radius-general-proof/python.log.gz": "420021e8448e151526f196ec921a52afc437b48fa43de6d2f2e9717b79ccf6ff",
+    "docs/arc-blend-radius-general-proof/radius-command-native.log.gz": "ae1eaf5a82cb1a72c3289932af98d1fe9f86a42cb6bfae99b361677ea23adb4c",
+    "docs/arc-blend-radius-general-proof/radius-command-portable.log.gz": "2b9418c3fda52bab2afd32e3563849e182ed78c7372611dd86072b6738f580c8",
+    "docs/arc-blend-radius-general-proof/radius-search-sdk.log.gz": "b632bd526c30b72f280811297bfae284856e4cd2066d5523a8039588f67d72b3",
+    "docs/arc-blend-radius-general-proof/radius-ui-native.log.gz": "e7f48174ff89e99756887ef0cff9d289008bedace50527b81ea87c415a691634",
+    "docs/arc-blend-radius-general-proof/radius-ui-portable.log.gz": "add229f085ffe9e9576fba9c8f94f0f76702a30000ee2788d1f4ea5a20489eef",
+    "docs/arc-blend-radius-general-proof/rectangle-native.log.gz": "faf4eff353e7a49657d92abbc091b06a467bc9873469ca90434a0bb4b2ffdf11",
+    "docs/arc-blend-radius-general-proof/rectangle-portable.log.gz": "c513baf5094152c6dd260dfdea349c5568e75335ef1a45b6198cda6281a60097",
+    "docs/arc-blend-radius-general-proof/reference-command-native.log.gz": "1dbd151a072a3906d0f1513dabcc2ec766b7217da6afd1c9262ecb19b7124f98",
+    "docs/arc-blend-radius-general-proof/reference-command-portable.log.gz": "803f53fb439e040b5a54b4f01c68b9c3da86fbb25f990e77e53a59abc186d02b",
+    "docs/arc-blend-radius-general-proof/reference-ui-native.log.gz": "d06563d9fbccce1ed7a3b8354d0fe20c01e553b0fbb5d6fbd6e3bc4230da549e",
+    "docs/arc-blend-radius-general-proof/reference-ui-portable.log.gz": "e5aabc5429088d56c0cd6873591cde236bdbb0be44623d55c9e1cbfa5310c509",
+    "docs/arc-blend-radius-general-proof/registry.log.gz": "470e92d7e437fe4848d506a7765e82d93af4a883a488905e4446a4a46f4aa51b",
+    "docs/arc-blend-radius-general-proof/subd-native.log.gz": "72f59b6f7be68d8f2714bbdbaa110bf8127387a4eced2a8a86c0687577d55ee6",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-command-native.log.gz": "e02ba6570a2757f1d9a2ca2aaf164fe5a57f5406376784538594d62248a1d86a",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-command-portable.log.gz": "ef2b73737df473d98e2f35d35697cbe5c2fa189a2559a7183d54c2debdf1dfc5",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-ui-native.log.gz": "30e9760183727deff8bed776fef0efd2f5b2adc5b958c750cb2512da5725694a",
+    "docs/arc-blend-radius-general-proof/tangent-boundary-ui-portable.log.gz": "8982bc337192874559b7e32a6c2b9765171668580fbaad1473232fe60e4ffa47",
+    "docs/arc-blend-radius-general-proof/tangent-command-native.log.gz": "9e3fbeee07333665d8edb18d2a54395202b5fb6d122a17c86af5cbbdb37ffa1e",
+    "docs/arc-blend-radius-general-proof/tangent-command-portable.log.gz": "a7eb3245d729f75b86b36efb8724db35a42abecd1f67040a03f1e37e3f6dad96",
+    "docs/arc-blend-radius-general-proof/tangent-rays-command-native.log.gz": "8ab87323d3b2c4b1ba99c52e46efb2d41dbdb94f50dbdce11c690d1b0e06f21f",
+    "docs/arc-blend-radius-general-proof/tangent-rays-command-portable.log.gz": "144bcb81f2f010b2557926acee4adae7e360ffcbb07cab4f78c7486a7d691757",
+    "docs/arc-blend-radius-general-proof/tangent-rays-ui-native.log.gz": "a7c102cdb5dfed3ba7b20ee6a186254953701f2427cd0bf2154db52aacb1de47",
+    "docs/arc-blend-radius-general-proof/tangent-rays-ui-portable.log.gz": "872026e04e251dc2fc8672fb6f782e07f503bf677967dd3a98f8b5bc2ff6af6f",
+    "docs/arc-blend-radius-general-proof/tangent-ui-native.log.gz": "900d18e751e1b2c15deb644c73eb6736d3384ea99ec25cae452a53ce0829e672",
+    "docs/arc-blend-radius-general-proof/tangent-ui-portable.log.gz": "7e6ba08848b6f0b01440f562ca4ac6fb67a558016e811507649c19445ccf0c61",
+    "docs/arc-blend-radius-general-proof/ui-native.log.gz": "824ebc408c4d5a43e249925ac28dfe426f16c284bdfeded96f8ec43570cd799b",
+    "docs/arc-blend-radius-general-proof/ui-portable.log.gz": "ad20ba7f8a8e6e062b76dd40fcf4213e137e3a5a10b03535d73f4e067b083e46",
+    "docs/arc-blend-radius-proof/arc-command-native.log.gz": "56ed6e6a8bde7972bf0a6489f450cdc70e1d58fcec7ba601c00463d64463ca94",
+    "docs/arc-blend-radius-proof/arc-command-portable.log.gz": "84bf04b62c88eec223616e6548d6426c21b910d2c5909d4c805e96bd3eec25ff",
+    "docs/arc-blend-radius-proof/arc-extension-native.log.gz": "4a829d071da00eb97324ac165da1a7d12798e8a26f4ee9b6244302b345a16a31",
+    "docs/arc-blend-radius-proof/arc-extension-portable.log.gz": "bd5ee59e10d34bdd47bc1778a9aeebc0d775bf161ba4182b094ec0e3b505ff42",
+    "docs/arc-blend-radius-proof/arc-geometry.log.gz": "246f7d4fd11d309c36f0bd5a91c7329a976fb146b23cd0b6a9848e4625384f7e",
+    "docs/arc-blend-radius-proof/arc-ui-native.log.gz": "5f619e4dbf6a01c3b6bb3fda49dec87146a3f22fe0daf84156de86889b5472f2",
+    "docs/arc-blend-radius-proof/arc-ui-portable.log.gz": "130e9e15180ed343cf854edd04d04c90f9fef17c67a18ff4ca44510f0cccf807",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_parallel.log.gz": "73a5cc62af89a46c387cdb1109c384995152c61bbce94ee22f01c837d07556d2",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_recall.log.gz": "a0af650e1a531c486985ef323ebbced02833bc63a71da007aa9a6a99e9fbd6bd",
+    "docs/arc-blend-radius-proof/capture-arc_blend_radius_targets.log.gz": "6b2a0e84b235f35e3e418aa53de3c9f4b8be880da813d320b300c47d19543ee9",
+    "docs/arc-blend-radius-proof/captures.json": "5d6bd49cf8f6d5d6b0c1b5942c2a144faa6741a9c93c3b56523c098b0bf54a66",
+    "docs/arc-blend-radius-proof/checks.json": "241896d6b3a1eaac78919babc9ff112a412fa2497ba0c9facec066d44b6ec85f",
+    "docs/arc-blend-radius-proof/clippy-all-features.log.gz": "71571f99ade85a163081e51c6d2dbdad1b6bc873175181f258daf12437cf6b96",
+    "docs/arc-blend-radius-proof/clippy-portable.log.gz": "fda471ee2aeb8d069cf8fe1866480a214f771abc0404a2847a62b73ca96240bd",
+    "docs/arc-blend-radius-proof/commands-native.log.gz": "5994572990a24dec6fa1f3b33f6bd1b6899fa1890d63c810a2fa76b758f65aca",
+    "docs/arc-blend-radius-proof/commands-portable.log.gz": "486d2477c0a3f614147e586a703171a72eaafbba4ed91cbd58f24960d9d1bf16",
+    "docs/arc-blend-radius-proof/corners-native.log.gz": "fa9d9bb53103c5283da469da330dd48615821fdb220f0eb1493b0375e6abc09a",
+    "docs/arc-blend-radius-proof/corners-portable.log.gz": "94ea182bf8346595bc190b1daf196a12099ccc4e12fa5b06b900d9ff4f4bdf78",
+    "docs/arc-blend-radius-proof/curves-native.log.gz": "bd89ec9b905b6ad3248bc53e084df1cf35b1a85fd945a6e1ff528858e635557e",
+    "docs/arc-blend-radius-proof/curves-portable.log.gz": "589c98503ff548e4355cf83c0ff41172998758af0e00d5fd487b2171dff16b31",
+    "docs/arc-blend-radius-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/arc-blend-radius-proof/grid-native.log.gz": "0ffc00a9077ef8803607d336917bd3ad55a2186a1398cec9f6157514b09199c4",
+    "docs/arc-blend-radius-proof/grid-portable.log.gz": "b52b67acdf4710ffcbd7f33dec1a5487d4123d4607decbf2bd89fb1b1c889072",
+    "docs/arc-blend-radius-proof/handles-command-native.log.gz": "f757a414048b2ecb3aa6f13c1efa32a415157eb0f6c50a8fa52026fd071f27b8",
+    "docs/arc-blend-radius-proof/handles-command-portable.log.gz": "7884d3b7798912a4b87b7528232f5c8619dfce55f7b86435bb146565358c311e",
+    "docs/arc-blend-radius-proof/handles-ui-native.log.gz": "cad7e3b58d9af3eaab9db6f75de3abf6ca6f1c3ee8418496615c2c0030d1dce5",
+    "docs/arc-blend-radius-proof/handles-ui-portable.log.gz": "729409c6d5c248d033040ec9cebe97f5331a25dfc963d98177927129648ed22a",
+    "docs/arc-blend-radius-proof/history.log.gz": "fd02eb0c78348b5d4194201019f66f6df4d026bb7d3bffdd55ebb3fb0435105e",
+    "docs/arc-blend-radius-proof/line-command-native.log.gz": "ddef6dc88ed25b923d375de51257d0b156cef611b6cf3aef1616a65aebe2cbab",
+    "docs/arc-blend-radius-proof/line-command-portable.log.gz": "90345726f3ef2149f972bc8b7d16c223125439670a06cbfa60bdb6e44286419d",
+    "docs/arc-blend-radius-proof/line-ui-native.log.gz": "2c6ec01982be90c49183452a42962c641e6ab51220253162a35ccc76f44f8ed0",
+    "docs/arc-blend-radius-proof/line-ui-portable.log.gz": "f222bc5cb8e6972e24b759d9d1b31306dd3dc9d8a4119155317baa926c0a601d",
+    "docs/arc-blend-radius-proof/lines-command-native.log.gz": "5b3d47bca3aedfb9b105bd14be19e895cf7784669c5314f1c8c20d11e0328ee4",
+    "docs/arc-blend-radius-proof/lines-command-portable.log.gz": "a2d28185562e74411296d418306f3de7152f1e96813b518e8a735fb2b4d0520b",
+    "docs/arc-blend-radius-proof/lines-ui-native.log.gz": "8dc1ad558a4a92b76d595b7e7dbfdf0d68db4d2a0d8b1c0cebf7bb9e78fbb5e1",
+    "docs/arc-blend-radius-proof/lines-ui-portable.log.gz": "42447e9271199c1aa332052972647622c2f5a3b6417a2bdf5c47b5ddf7a581e7",
+    "docs/arc-blend-radius-proof/move-normal-native.log.gz": "0195aa17cbf7ffaae2cb9c0cc77fc64300e5cb53ce1cbe72e4cc0a39b8b176c8",
+    "docs/arc-blend-radius-proof/move-normal-portable.log.gz": "a5fa37982427e3efabeecda791440797565cf43911e1a4b8505079ecd34a3e97",
+    "docs/arc-blend-radius-proof/normal-command-native.log.gz": "3bde2183c37626d3b45e8167fb91ef0240888e37deb59e211cf2610c1efcc513",
+    "docs/arc-blend-radius-proof/normal-command-portable.log.gz": "83f695aebf8388a1a68b13280c474c25822bed5a44f77bdf5e6b7241288d9275",
+    "docs/arc-blend-radius-proof/normal-ui-native.log.gz": "7817793841480c5b14f8fab71a0b46511a727f69458923bba4da11fbeb0218b5",
+    "docs/arc-blend-radius-proof/normal-ui-portable.log.gz": "200422385c7ebefe08e453968252d6861da2efb318de669d05f0d1c579961e31",
+    "docs/arc-blend-radius-proof/perpendicular-command-native.log.gz": "10cdd6f0f99c0c743b6eeacf1cf97bc4e0cc0a6aef28de664d0e0af1990ade87",
+    "docs/arc-blend-radius-proof/perpendicular-command-portable.log.gz": "4df2ca74d2c803b5b609f5329adeea053627118ff574dd42c6f5b2cc7d5910b2",
+    "docs/arc-blend-radius-proof/perpendicular-ui-native.log.gz": "f0e566baf5349b73b1f35ce47b32e4ead5ad75762f0bbece9d8c907888f46aa0",
+    "docs/arc-blend-radius-proof/perpendicular-ui-portable.log.gz": "0d8424a9e603ad575cdb6ac2463d5d4f676c75f7358408457dcb4547431ea0ad",
+    "docs/arc-blend-radius-proof/pick-command-native.log.gz": "336c0d239d9debf78bf79079cbd0224c48f57ceccdd43854e69470277979a051",
+    "docs/arc-blend-radius-proof/pick-command-portable.log.gz": "ec1e35e7a5cf7a64a85b683ac67bdca819ff13959cfb51782c36057a02a5fa72",
+    "docs/arc-blend-radius-proof/pick-ui-native.log.gz": "b62847b6522168c570591bbcf0fc3b1d170fd8e978c874bf74f217c1f47cb209",
+    "docs/arc-blend-radius-proof/pick-ui-portable.log.gz": "d1bbe05193c6942e4ad82d5b34773a513cbc858ebde91ad6de6fad24a031b4d6",
+    "docs/arc-blend-radius-proof/pick-viewport-native.log.gz": "df095d5920b3ffbbc9c191f110e1b1d87312c399ff71af61abaf3d81003bc2db",
+    "docs/arc-blend-radius-proof/pick-viewport-portable.log.gz": "84dbbba406ec7cafc94e934697a13fc863aa9fd40df7fa23c8a865e3ff7d99f1",
+    "docs/arc-blend-radius-proof/plane-native.log.gz": "cc1f88ff1c8872777a3f7490d07039718aad723c70feff183aca4db827e40bf6",
+    "docs/arc-blend-radius-proof/plane-portable.log.gz": "a4802c3c80fbafc243544a766a8187a62e9bd308099285d3f5fbb7c454bc7c48",
+    "docs/arc-blend-radius-proof/points-native.log.gz": "b0952d4a34950bdcee73a9fe62437f74e0531f3b7267fbcd5ba55d4a5b006137",
+    "docs/arc-blend-radius-proof/points-portable.log.gz": "e0da620a32b663a9c944dabbadd51728f18a3e5b60e5e8e39794a6e6cfce1472",
+    "docs/arc-blend-radius-proof/polyline-native.log.gz": "ef0bbd313c2b0f0caf730826d293d6ccc031c4c7e8ea87dad284f147ae387547",
+    "docs/arc-blend-radius-proof/polyline-portable.log.gz": "375c3bbbe138fcba0ab94751149eec32b81a70163b9896075d365700b277c6f8",
+    "docs/arc-blend-radius-proof/primitive-input-native.log.gz": "ee9468123084dd38a1d3cf387d40e1b58640c4e31a4f17f02bbf0e288405c069",
+    "docs/arc-blend-radius-proof/primitive-input-portable.log.gz": "2b357a44666d1366787fa4c410e618be27743e59e0bc73f34c8db85ec365c9a9",
+    "docs/arc-blend-radius-proof/projection-geometry.log.gz": "97982904d246ece95a37e76835ffba9b75e09ba69562cce08e95178b82ba276b",
+    "docs/arc-blend-radius-proof/python.log.gz": "c716e45bb82beea2f2b28bf7d28ba0c5c4902e0696222b9a8c91816f79a6b0c7",
+    "docs/arc-blend-radius-proof/radius-command-native.log.gz": "88fd237d7194ae8bc09413d210d91e666535ac5358b967f0f25f6d2f291a5ae9",
+    "docs/arc-blend-radius-proof/radius-command-portable.log.gz": "b562a97c2650bcba70b7619206a52517cb3423ec87b24ed8beb28c18b381d907",
+    "docs/arc-blend-radius-proof/radius-ui-native.log.gz": "f8cfa213c16805f01f85d9b20b41dca7d12b7949dc705d98b236c1698beb010b",
+    "docs/arc-blend-radius-proof/radius-ui-portable.log.gz": "0c354ce1b17df53bfef96922a1022365874ee1d1eaaf1be18271368ca45c28df",
+    "docs/arc-blend-radius-proof/rectangle-native.log.gz": "149892dc25f673c12bdd0dceae488ce8d7b5554aa125d014f0e592ea8e7ae988",
+    "docs/arc-blend-radius-proof/rectangle-portable.log.gz": "7b7ac012ebf4ca3776f7c714b54920980c9cfcf24aa7945372681899ba220b72",
+    "docs/arc-blend-radius-proof/reference-command-native.log.gz": "8b6b02d3e77d3335be6531ff60958d1f65d324afaa44913f97122a8d9a467af6",
+    "docs/arc-blend-radius-proof/reference-command-portable.log.gz": "ba875bb36f68b3abbd2eb2857fad421c90836c91fa0e51ddb1727d9115c02586",
+    "docs/arc-blend-radius-proof/reference-ui-native.log.gz": "f1726c9ef826a1d0f47b6816c67c91fd5e16c73b5f921044d3e8a0544513aa79",
+    "docs/arc-blend-radius-proof/reference-ui-portable.log.gz": "5088ea52f7259e7947ed7859163bc6688eca6f82bc48db4d2bc13a9d7a970c82",
+    "docs/arc-blend-radius-proof/registry.log.gz": "d8f1ded42c6039e9438a49bb9f9138dfdfe8e353c11174b6c9c487696760388c",
+    "docs/arc-blend-radius-proof/subd-native.log.gz": "f3450b09734db898ff7988e41e22eb55eb312289520cc72e0dc44dbff0890202",
+    "docs/arc-blend-radius-proof/tangent-boundary-command-native.log.gz": "e9351088e768153f269d2d960f15b603f8998b442a8a15a843eb89a5c664f325",
+    "docs/arc-blend-radius-proof/tangent-boundary-command-portable.log.gz": "f603862f387ea604f0f39b6aecd11460e9bb7229f82c47c970e0cf1d98f35d9c",
+    "docs/arc-blend-radius-proof/tangent-boundary-ui-native.log.gz": "686cb54435f9abf40afc55afcd68ea6f65e1035bc446f4d597eb3e0421a7f517",
+    "docs/arc-blend-radius-proof/tangent-boundary-ui-portable.log.gz": "a8a58b3675a6c4d95fe47bb5e3ca5c44999c5c3d0f01b02fca63e2ae6ee2b815",
+    "docs/arc-blend-radius-proof/tangent-command-native.log.gz": "1f54de28cca822dfbef6ca15e5d9cd3e183beccb015641d157b80e929403d8dc",
+    "docs/arc-blend-radius-proof/tangent-command-portable.log.gz": "f1617e5a51dae92462cf4f72ffba9c8dd21c44635071af0d757a50b371fb413b",
+    "docs/arc-blend-radius-proof/tangent-rays-command-native.log.gz": "dc41bf01a29f514fe76c167b132021426cde647907ad9941f3b6ea0a66fb121c",
+    "docs/arc-blend-radius-proof/tangent-rays-command-portable.log.gz": "50f19d575e537eb4ca96759a47da6af6c7323dc588da8e8717141331bee4ec92",
+    "docs/arc-blend-radius-proof/tangent-rays-ui-native.log.gz": "6335efab9ab77c0b555b728e2150177251bcc045466800bdfe56f7dbb8790a73",
+    "docs/arc-blend-radius-proof/tangent-rays-ui-portable.log.gz": "3b067c3aaa7d51ff83c8deef427808d6d08ecd18b9060ceb82f6b833eb5c71c4",
+    "docs/arc-blend-radius-proof/tangent-ui-native.log.gz": "80c339f0dcfc3ed4df511e916d64688e534fdac8eefc771dee139f0a8798d34f",
+    "docs/arc-blend-radius-proof/tangent-ui-portable.log.gz": "8a37b59dc0507a548e61a2c53309a86d9bcedc720c1df578f5889f2e4f1ae63c",
+    "docs/arc-blend-radius-proof/ui-native.log.gz": "62c3ea5888dadea83168b1195f13d2c69792667a0d266fd2a12841f8fd5f998f",
+    "docs/arc-blend-radius-proof/ui-portable.log.gz": "3b1bc1636f92f553dbb3e5acbd7d178dd8fbfa38553d67972b70cf6cd096a0c1",
+    "docs/arc-blend-radius-validation.json": "6a9b455a11f61fd65c33783bfc8016c9a51bd32554426d78343d025cb6b8438a",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_cocircular.json": "6ecf8158221266f507682e6d7e78290ee6091d380be8c0955bd548dc3a07fd92",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_general.json": "846f1e93c9f7b57feab709e702c30ac5510c1c151421a0b89ebfe8b02d6ad038",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_general_holdouts.json": "97f6130648e4567f0dada9c43578f954b793a2049fc17edbdfe236fd87e284ba",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_parallel.json": "497c9163c95cf59680f47ff5f2f858b3f996239a4d2fa7194962f8846e20c752",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_recall.json": "2bfb236ca9aea8e71f6d39a9907c215b229562bc84706f878fca294a52ce40be",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_sdk.json": "3987625b26c85e8f5007c93ae717cf99340ce8d91df5f552e2dd00a132a440ae",
+    "tools/rhino_oracle/fixtures/arc_blend_radius_targets.json": "6894a7e70697157a17567fafa2b36a0a491b08e202121df16523eb166970e89e",
+    "tools/rhino_oracle/observations/arc_blend_radius_cocircular.json.gz": "4c806738a1d8b076f9406327934300ed311a53d415e22a8333ca77dce5ca0025",
+    "tools/rhino_oracle/observations/arc_blend_radius_general.json.gz": "d1732decc5f36b0fc5f6486f4b192b5b2b76372efe56dc544ac6a4c89841cb80",
+    "tools/rhino_oracle/observations/arc_blend_radius_general_holdouts.json.gz": "133707705c4011bde0c1b724da6f17d9ab63bb72b820de526373995f2dd16826",
+    "tools/rhino_oracle/observations/arc_blend_radius_parallel.json.gz": "a9f60e914df8d095aa7b12263b1aa836d1c1b412e9aa7b25c3f7846b5ab71f2a",
+    "tools/rhino_oracle/observations/arc_blend_radius_recall.json.gz": "13a5762a9f2adc1138c2c9aea8758b7289c1a148b708b2aea974eeac9b27731e",
+    "tools/rhino_oracle/observations/arc_blend_radius_sdk.json.gz": "1af653472c3c1e472a33dd89ad238d7ff88de76fab2f58f09535e20d87814174",
+    "tools/rhino_oracle/observations/arc_blend_radius_targets.json.gz": "57f6790e22bc8c4f1526fd6d91dd7f0eaa6594aec3bdc6d566e3fd7da397de5e",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/16131613fb6adde20226725b85034f62f41a73645e4c64331de7a373a2184c6d.gz": "c2d5f054a8195004f0e5eb8012e9d02b52a9c99ccbb25d90c0cc8539a78daaf4",
+    "tools/rhino_oracle/observations/source_snapshots/1a10cb1eef1cda1f984bb17b4d1fad77b6b0e95cc9a96fa6bb2946f46c45291a.gz": "9d044ee25d590ea21c1ec9009dd58f471d6128514c8f7d303c90149ad8a4848b",
+    "tools/rhino_oracle/observations/source_snapshots/1f7a430ac4c5cb4fefdcd058d744f8ecab9e87fc72ec15312e288195032c37d2.gz": "a5dcaf81e9eb2e3e6117e6f918a29761df9f583b72e7352393e2841eb483bf15",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/4e2a9c3c3c77c7817193bc99909ff1f18b34f22c8b01a728abb185b421ab4390.gz": "26b55b70690e8cd57c0f8ac11943c95a0ce79f0e5e536f478fdf2c4883dc930e",
+    "tools/rhino_oracle/observations/source_snapshots/5928215b3f0b6ea8604ebe805b9ef9c7c972773a7340867e3e0c93ad3aa32bb8.gz": "32bd2b8806334cf5f3e7a7d1cf1cb71a9029fde7ae6f344d776d6ed1970e794c",
+    "tools/rhino_oracle/observations/source_snapshots/5fb3d80aa677dd812aae4425f5795e126459952bed74ff99a12d70ca850e75c9.gz": "c0f1e6c954d0d0d4e135b9e15c12f17c2c7dbfc5cc122f48d01d59155b5f91ca",
+    "tools/rhino_oracle/observations/source_snapshots/6cfc7a586749cfe09228dcce9c404e6f4ab58b3d2caf810c8205a986a535c23e.gz": "5fc18b1954d53ef03a2cf439d0f24180e04de577f60621f86476029de3adeb89",
+    "tools/rhino_oracle/observations/source_snapshots/7662c0330ed8808cbcef7a1af92226cddd8611d5cabb6dbb1a32add963c8a897.gz": "711c7a21735afeaafc7e0e6cafc6b6b707435f9ac9dbac66a8e5e6ff41936007",
+    "tools/rhino_oracle/observations/source_snapshots/76cc9fe80168a39c01b8fb1a3b886d3107bc0873354fb45588b9b910d2210f09.gz": "4e2c12f8e640c841d599a87dbc96b829208e9ef5607f47221cbd13bb91048850",
+    "tools/rhino_oracle/observations/source_snapshots/7b848e3a01b2b610d3e3c8637bdeae0a0bee3c7b72e8e8f31e35eab5e35d5bde.gz": "74ffb6684c45bcae78693f801767a39bee87dc7a7057d2447cfd5ba358be1e07",
+    "tools/rhino_oracle/observations/source_snapshots/82b39169d45fc3693b76f6ad4aeb3c85f03599877f2be558092476261cac909f.gz": "76564ff150fbb24d945e6be8280903bc6a3513ad5b7b038775ba4e5e460b05ac",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8a84035638c15e1bbe73b1e97cb0e99565f92dfcc7d07119087657bbf3809d2b.gz": "35fe52e9fed16103c92f8b5b0edd6a83b4ad3221ff9992cb06c8d97ea46ddeb9",
+    "tools/rhino_oracle/observations/source_snapshots/8d9309103749f61ed0b9f73f21da6cb1f636952c1ceda7d53159373c00641740.gz": "ba2321fcff09d4b0815507c741ced5729e1fab031742ba1eec9ae60e0c5b2e34",
+    "tools/rhino_oracle/observations/source_snapshots/910111dca7c445d0b716a45a1a22c155fec6396f0d833dc2705b5fc3dabb5697.gz": "cf2ff9d9700bc10cf2bd51e0a8e18dd4729025664ab0d60f414e58eb6d13658a",
+    "tools/rhino_oracle/observations/source_snapshots/9598b77b8215e6dc3955c2e9c2d70e77fc3f58a953838d72c5d2b2a120e90415.gz": "2689f2f1205fb157a45f10f08e05d6fe9fdb279bddfe8cc5267c1f5d399abb8f",
+    "tools/rhino_oracle/observations/source_snapshots/96f35243435a37cd7c4a97efdf9050b861671a8d22ed3b8ca23e0feac6095582.gz": "4972a4c14f2b7cfa64d99e144fc3aad2e86a3920e8863f09401f72e3193cda7e",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/a8224b82f97a7ba5ab2b8799415f57e7a032e03182256de4623ac6d8d11ad201.gz": "545a29dc66783da8e8fae12f0891b4d8164c9f899deef16aca25e29cb93b385a",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/beeac393ed78dd00c82d23bfe3ddeacb5ed6139c8b3350b4fa3d199713356d35.gz": "6bfabcaab0ff6c3ff837d7fe47cd318c2579b012748b9d6f571c6a327536238b",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/da7bc5a81d072e2851553a4d66a6deb3519032e641e7b9947257503b40ac639d.gz": "bf860bed73725719492d9cba7d482f68387d6f9239d141062a02b3b18f690eef",
+    "tools/rhino_oracle/observations/source_snapshots/e3b7cdbfe50095623256a0ad9a32cca548956eb4e9d6cdadc1f7d3435d58253d.gz": "c9f73b70d5b7b16dc8126c08891c78bb45fabb99d6c6b91bfead8a5cf024f02a",
+    "tools/rhino_oracle/observations/source_snapshots/ebfec758162c139d9f690928111f991de543cdcb12625b38205603978dda7f2b.gz": "992ded37bffc7b34b840cee1e058cb7260857ce1e66cff08687e62c4cc8ff56d"
+  }
+}
