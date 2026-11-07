@@ -1,0 +1,492 @@
+{
+  "scope": "Ordered Fillet picks, dynamic numbers and two-point distances, source identity and attributes, separate current-layer arcs, continuation preferences, cancellation, and shared cached preview/commit geometry.",
+  "baseline_revision": "989b580f12992ca2cc45755557b1ad9c5543ee98",
+  "implementation_revision": "110a4ac00774603ed91107d2876a6c812acd1b95",
+  "full_native_parity": false,
+  "observations": 29,
+  "complete": 25,
+  "diagnostics": 4,
+  "successful": 16,
+  "changed": 14,
+  "cancelled": 9,
+  "picks": 41,
+  "samples": 3300,
+  "images": 8,
+  "rejected_join_options": 2,
+  "retained_failed_captures": 2,
+  "successful_command_replays_per_build": 16,
+  "ui_replays_per_build": 25,
+  "archive_round_trips_per_build": 41,
+  "viewport_combinations_per_build": 12,
+  "windowless_source_picks_per_build": 4,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 2.308516504778274e-14,
+  "input_evidence": "Prescribed source definitions, calibrated public source picks, explicit settings and initial Native getter prompts construct replays. Native output coefficients, domains, PointAt/TangentAt evaluations and pixels are expectations only. The cancellation/default test reuses one registry without reseeding between the captured commands.",
+  "construction": "The shared portable/usd-brep fillet producers generate cached candidates. Native contacts restore the newly constructed arc-length chart after leaving the unit-radius working frame. Retained lines and the joined first-source origin retain their source charts. The same prepared geometry commits atomically; selected originals and temporary prospective pieces are drawn separately during preview.",
+  "execution": "Licensed Rhino captures use private Xvfb displays. Application and viewport tests are windowless.",
+  "limits": [
+    "Four published input-driver diagnostics are excluded: two pilots omitted a radius value; two dynamic cases omitted the final acceptance Enter. A dispatch failure and a later overlapping-pick Selection Menu attempt each published zero observations; their producer closures and diagnostics are retained. The latter family was repeated with separated curved-source picks.",
+    "Geometry qualification covers the retained corpus, not every source or a continuous distance bound. Closed/self-source fillets, arbitrary branch choices, complete invalid-input trajectories, pixels, alternate native display settings and comparative performance remain unqualified. Existing smooth rational-extension and fully consumed added-segment limits remain. Preview scene construction scales with the document size for each changed candidate."
+  ],
+  "cases": [
+    {
+      "id": "fillet_getter_discovery/dynamic_ready_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_discovery/ordered_joined",
+      "portable_command_maximum_geometry_error": 8.889523087327298e-16,
+      "portable_ui_maximum_geometry_error": 8.889523087327298e-16,
+      "native_command_maximum_geometry_error": 8.889523087327298e-16,
+      "native_ui_maximum_geometry_error": 8.889523087327298e-16
+    },
+    {
+      "id": "fillet_getter_discovery/ordered_parts",
+      "portable_command_maximum_geometry_error": 6.437483255009884e-16,
+      "portable_ui_maximum_geometry_error": 6.437483255009884e-16,
+      "native_command_maximum_geometry_error": 6.437483255009884e-16,
+      "native_ui_maximum_geometry_error": 6.437483255009884e-16
+    },
+    {
+      "id": "fillet_getter_final/cancel_changed_preview",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_final/curved_contact_separated",
+      "portable_command_maximum_geometry_error": 5.596045210340387e-15,
+      "portable_ui_maximum_geometry_error": 5.596045210340387e-15,
+      "native_command_maximum_geometry_error": 2.308516504778274e-14,
+      "native_ui_maximum_geometry_error": 2.308516504778274e-14
+    },
+    {
+      "id": "fillet_getter_final/measured_then_enter",
+      "portable_command_maximum_geometry_error": 1.446055667095694e-15,
+      "portable_ui_maximum_geometry_error": 1.446055667095694e-15,
+      "native_command_maximum_geometry_error": 1.446055667095694e-15,
+      "native_ui_maximum_geometry_error": 1.446055667095694e-15
+    },
+    {
+      "id": "fillet_getter_final/numeric_then_enter",
+      "portable_command_maximum_geometry_error": 9.155133597044475e-16,
+      "portable_ui_maximum_geometry_error": 9.155133597044475e-16,
+      "native_command_maximum_geometry_error": 9.155133597044475e-16,
+      "native_ui_maximum_geometry_error": 9.155133597044475e-16
+    },
+    {
+      "id": "fillet_getter_final/remember_preview_radius",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_final/repeated_numbers",
+      "portable_command_maximum_geometry_error": 6.437483255009884e-16,
+      "portable_ui_maximum_geometry_error": 6.437483255009884e-16,
+      "native_command_maximum_geometry_error": 6.437483255009884e-16,
+      "native_ui_maximum_geometry_error": 6.437483255009884e-16
+    },
+    {
+      "id": "fillet_getter_final/spatial_joined",
+      "portable_command_maximum_geometry_error": 2.3584074455849093e-15,
+      "portable_ui_maximum_geometry_error": 2.3584074455849093e-15,
+      "native_command_maximum_geometry_error": 2.3584074455849093e-15,
+      "native_ui_maximum_geometry_error": 2.3584074455849093e-15
+    },
+    {
+      "id": "fillet_getter_final/zero_joined_confirmed",
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_final/zero_parts",
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_final/zero_untrimmed_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_holdouts/cancel_radius_setting",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_holdouts/cancel_second",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_holdouts/dynamic_distance_cancel",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_holdouts/dynamic_enter",
+      "portable_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "portable_ui_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_ui_maximum_geometry_error": 1.3461454173580023e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/dynamic_options",
+      "portable_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "portable_ui_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_ui_maximum_geometry_error": 1.3461454173580023e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/extended_arcs",
+      "portable_command_maximum_geometry_error": 2.220446049250313e-15,
+      "portable_ui_maximum_geometry_error": 2.220446049250313e-15,
+      "native_command_maximum_geometry_error": 2.220446049250313e-15,
+      "native_ui_maximum_geometry_error": 2.220446049250313e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/fixed_no_trim",
+      "portable_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "portable_ui_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_command_maximum_geometry_error": 1.3461454173580023e-15,
+      "native_ui_maximum_geometry_error": 1.3461454173580023e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/options_after_first",
+      "portable_command_maximum_geometry_error": 1.0934428697813141e-15,
+      "portable_ui_maximum_geometry_error": 1.0934428697813141e-15,
+      "native_command_maximum_geometry_error": 1.0934428697813141e-15,
+      "native_ui_maximum_geometry_error": 1.0934428697813141e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/remember_cancelled_radius",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_holdouts/reverse_pick_order",
+      "portable_command_maximum_geometry_error": 2.288783399261119e-15,
+      "portable_ui_maximum_geometry_error": 2.288783399261119e-15,
+      "native_command_maximum_geometry_error": 2.288783399261119e-15,
+      "native_ui_maximum_geometry_error": 2.288783399261119e-15
+    },
+    {
+      "id": "fillet_getter_holdouts/zero_joined",
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_getter_pilot/cancel_first",
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    }
+  ],
+  "diagnostic_cases": {
+    "fillet_getter_pilot/fixed_joined": "Radius value prompt or final acceptance Enter omitted by the driver",
+    "fillet_getter_pilot/dynamic_cancel": "Radius value prompt or final acceptance Enter omitted by the driver",
+    "fillet_getter_holdouts/dynamic_numeric": "Radius value prompt or final acceptance Enter omitted by the driver",
+    "fillet_getter_holdouts/dynamic_distance": "Radius value prompt or final acceptance Enter omitted by the driver"
+  },
+  "captures": [
+    {
+      "family": "fillet_getter_pilot",
+      "observations": 3,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "02bea1570163c314da8bc5a95faa40bb5723fbd0c584bdd7e6b9d151983413b5"
+    },
+    {
+      "family": "fillet_getter_discovery",
+      "observations": 3,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "6af6408138196fa914cd715bee3a9206fe981c39e80a5864014165eb9ab8ec93"
+    },
+    {
+      "family": "fillet_getter_holdouts",
+      "observations": 13,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c4b9b48a8d9cac19553539903370144582f3a95c83089781455c222db9c94831"
+    },
+    {
+      "family": "fillet_getter_final",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "06166f3c65dccc2dbee1e7646535bba5bcdccc393dec0ac310d1ede8177b368c"
+    }
+  ],
+  "checks": [
+    {
+      "name": "command-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "blend-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "native-contacts",
+      "status": 0
+    },
+    {
+      "name": "command-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "blend-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/src/fillet.rs": "c7083bc024b2b2806e4a2fec03880567e8d8a27e8edfd6f2faa809a18e720fcd",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/src/fillet/options.rs": "30be6c5bd76c313ef20e07335da72232354fac6447803bab339f6f1fcc3911fd",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/src/fillet/prepare.rs": "ac3581470035839c4e21ee94cb4257d51a597e0b3c79593df5ae26154259853c",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/src/fillet/tests.rs": "9b194c362977006e37512e16b9c356c1393e486664da571ff4f4b99cfa3500cd",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/src/lib.rs": "5b069dbcf3cd3b00f59f50cc5eb5bb92c507c666ed60766b9c0c084f7d9c0b12",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/tests/fillet_getter.rs": "4a5f59ab333ec8f1a0ae8472d4d30ff4b04026ebf40d56d209ee05852a279d91",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-command/tests/support/fillet_getter.rs": "758a7f4be51f419075b4d7339eb729b939ff6bffde1b0ee693439a03e17f301d",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "33cf10f5e9bce8e8a4049b0fa8a39347a50c05c06d443058d3f8def9e67980c1",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:crates/viboceros-smlib/tests/fillet_contacts.rs": "85bc251d3ef3103fbc29a03cd1b81df7364eb9319eef04973bd983786b81c8ad",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/commands/curves-index.md": "3423f768e4571303569cb88fefc428fda6930ec59beecfda2f34587b0ca5ad5f",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/commands/fillet.md": "9c65f2c9ce5366549d856e4a370280043e8b47fd6bea3162f3a63ea50ccd3c86",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/blend-ui-native.log.gz": "193150ba9b8df02cce850bf0c738b614511fa254fd707807f35196ff56537f73",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/blend-ui-portable.log.gz": "aab064f1de67c2b4dfaf278b78a95ba46edbf04a72e37367454ca8a0900febf5",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-attempts.json": "ce2fd3b44acf0539e156835cff47571641959dcd2b13140078c54e3929005177",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-discovery.log.gz": "a00b13a183fd3d944a2297d59d801f8f8eef981ac4e678086396304bc8199bab",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-final.log.gz": "244717ff5cfef99d93aad1be5c911a2d7fa5837189d78be9271a20a33d85b397",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-holdouts.log.gz": "4848ab4acd8bb5404705859b2836914928315ec7432c5eafa1d80c912a1f09bd",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-pilot-dispatch-failure.log.gz": "fdf925a34e111c5e4aa6b4e2d686c23e540dc158dfde312e0bfbbac974b53ad6",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-pilot-stalled.png": "1615571b9b00fde5aff91f3fec0a6e9828c97dc549c588f9d83be0811555e937",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-pilot.log.gz": "b2a0ab95b899b0d0ac63241528dde6c78c1b22cbd1e39a7f9ccf46940d5cfc69",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/capture-verification-selection-failure.log.gz": "e91f9b5aa8e4ee82b9bfb4d559e0d2f073819ffdfdaf46b9436b7253fe29f4ab",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/captures.json": "7c38ebf30ef7e6aaec0af4451064630c41c40b589e27c0cdf0240e8cbecd5ba3",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/checks.json": "92ebeb817159cf1e82003c0f7a17adb05e894b6769beb1cb2a2c8cd0bffeb94d",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/clippy-native.log.gz": "77abc9499678eb0ea7fc5d09cda3bd3f77169f4b0799c11f3a5a562920876ca0",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/clippy-portable.log.gz": "ef67017c4cacebd1a758ca60697aa21f3787b0c85af9d899084a01b83cd1241a",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/command-native.log.gz": "665564e9699cde7fd19400ac7aa8236eeb3614e7e49ea340aa74d20fecd8ea32",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/command-portable.log.gz": "a8dff2c2226ae750453c665f2ec4c3bf871a92aebabb603e6e35ab90261dbec1",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/comparison-analytic-parameter-chart.log.gz": "8b9c532d4d8e7a5a5d29140656d6287fcb20e3cb7922fa7ef12ef8dcc472eb10",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/legacy-library-diagnostic-compile.log.gz": "92b64f38c9191ec9ca475f6e11b1db6eb5aa08b1c720d3947a5ca78d17b45ac0",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/legacy-library-first.log.gz": "990878c7f7e880024844cdd751182f4dc21ec1053c1c180e3ab10c22b90a1bdc",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/legacy-reselection-retains-action-order.log.gz": "aca770da620a03772ddef942ce84e346bd9f30540cd6cf17453e6f0d58cb2b82",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/legacy-selection-order.log.gz": "90d546294f756e3418b2b9cf55df6ba330354cf77033c1fbf0f35a7267db1ce3",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/library-native.log.gz": "2a0dcd455e23e24d68fbad0432c674f5c8fde5c7e39f2ce5a73f2bfb882bc122",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/library-portable.log.gz": "343cc4061e1126e66e8409d796e3518ebd7156255a9a4609042197aed98fa27a",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/manual-intervention.json": "256d006ffe842bfdc9ec2a843bd3a4478009b13ff6d62a35a08f93f9a2acd538",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/mouse-helper-before-layout.log.gz": "ea18d31662870969c8076089eb88ec3c625797ae106adbb475eb4da5c205b6c0",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/native-arc-domain-inspection.log.gz": "3c1496c364fb436daecc658c49b0e5a94484d2d7bd9e852bd09cf408d22bbc7e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/native-contacts.log.gz": "4f5610abd08afe549d802229a0f855a12caaad454ad00af8301c039cefa63b48",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/native-curved-source-first.log.gz": "ee65353f5bee1460d600df298635ab1557c3d677ff3690c8f1a2746212420960",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/python-subd.log.gz": "17d51455f774bd077db52baddb9b18502fe5b029edc1a4771c061c919ef78a72",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/python.log.gz": "21a0a12c4281044e70c62d8068d50f0ef3e815c09e80d1a55467e5d3acc3eada",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/retained-line-domain.log.gz": "336f6ffc1be0a8e75481cd593018a455b16ec3278e6bc13775db730540535a66",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/reversed-joined-domain.log.gz": "d1f0c9ac67f811e906ac96ab2b66982d2e00899b2677b87396870b9b0675f616",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/subd-command-native.log.gz": "8869698c400218dec9acfdd50e79becfe3d9572cee71b6a470a766cd8f22abe6",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/subd-ui-native.log.gz": "df9009e98f0c1104418ebc1a5954496d841cae6b4c5ba92c56353aaaa8cc96cb",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/ui-helper-array-inference.log.gz": "03abbe96e87184054207719fe8c902201d2f88fbe2a279676dbdc5af0e3e0d14",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/ui-native.log.gz": "89dc309b7700e14da876bcf3e4cf20db54e61344b72b0f27eacb995719c0beaa",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/ui-portable.log.gz": "e5cf0c385d0be02306600510dfc1ac450265117ad5913fdb91adf14e95e23fe1",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/ui-selection-replay-and-gpu-callback.log.gz": "56019b7e7e599e0dcfd0a745d14d30c24fba62093f207f40e8397d630660021b",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/validation-attempts.json": "5a76f558103a1a5676593034562ab0b22c5be011bbaff485a1e35d50dcf6f584",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter-proof/verification-selection-menu.png": "343b6c9c707666729ed3a6f0d6731de17ae4d5b61cd30b9ef2100929a7452a63",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/fillet-getter.md": "74ebafa7907b456bd0594a579e1687cb175a99abb15c504dcf925e8182b76be3",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/smlib-native-fillet-contacts.md": "f61127814ac70ecc1881337e5fb0572a0a193e81e216d042575cb91933bb9648",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/subd-box-qualification.json": "739563a3818342bf187ec08aff763c93118e59e1de9dd3426064b21ec913bd3e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:docs/subd-plane-qualification.json": "069d8bcc27df991dc205510d42c081e58773013a77e708e040bd68ee626a3fbb",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app.rs": "07a7dbb92871709b5b6f99f67475d9a2f2a570f31f76099874f8020e05ed9b73",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/command_line.rs": "08fe15392b8b079be1ac164b691428c5f92594baed2f2b339f8f3b93db7ef060",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/curve_fillet.rs": "a8bed4fde38d3629863d9123c2eb64cdef975545c27edf594d2dd1f046cb526e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/curve_fillet/input.rs": "512d06846c62f70eb4d930108c6055ca9e1fd815b6da82377a345ea5f5cbef7a",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/curve_fillet/radius.rs": "7cf7bfedec83fd6d4b71d4cf69965d37ca2056e90c3fbbc837c5441931beaaaf",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/drafting_controls.rs": "ac2dfb5788d4e54f54b08e3fbdf264831259bfb66631437bc0b1bf74d06fc9f7",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/drafting_input.rs": "99e114291d168cec7b7838e89c44867e4a54c2c9f8a62cec1d36053c316faf3b",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/interactive_cancel.rs": "0440e51e37332374ff86feaacee54beed7c51f4222897d0409c8068501a461ba",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/interactive_start.rs": "c9d1a24d213623f37d7d08d6734399ab3ecf2d6a833356cd164cf22551aa16a8",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/interactive_state/metadata.rs": "3578dabff353849b32de3e3c6f4c3d5994cfb19f2d48518d0dd5d577b05ccd1c",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/interactive_state/mod.rs": "3fbf7d45693cdad9c61d6547f57cde01fe9e0d3e92c30b321333ed6c4aacd0e0",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/interactive_state/prompts.rs": "45ad78dfadc9fd7a349d6bbedff03b6034862a381656f81bc129c1b94698524c",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/object_selection.rs": "7a3b6080ea49b4d29612bcf375730bc1d98e8ae84a577fd88255c0aa62689245",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/selection_input.rs": "d3aa4dd38d58e6b194911b52e2ec70700674fc456564b9c21842eb92560544c3",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/tests/curve_fillet.rs": "130ceef61995f0bc0f15906d2d4c0d295c1df1fa315dee834879849ba64b6984",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/tests/mod.rs": "1523117e188b903afad5b4e59ec7d8facdd0600d138b86caafba2a590065025c",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/ui.rs": "9653dfc1c31b184557ffa60276983f4d6e4bf6dd272c2eeedd2ec1045080cd8a",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/app/viewport_input.rs": "a3c12a8baa15656345923e98cc9c3edec896446852345741fa1144394140ac30",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:src/viewport/scene.rs": "4d42e36a7ed1a02ad79c33d925c6d0ef5e4fe735279b59b2e01ad268e387c531",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/check_fillet_getter.py": "50f823ab3eb94e93a07b43fc47a4999c0f1569ebe3d474e1e051f2ad838718d6",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/client.py": "ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/conic_getter_input.py": "78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fillet_command.py": "4be3749e486a566819eb546eb7367efa5e6e87a2b86ab7818be8819d1431b34d",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fillet_command_probe.py": "cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fillet_getter_evidence.py": "48dd0b63e926b12f456a4f297734b17c5b5f57e5f7353f0b171a0f5edf132bf1",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fixtures/fillet_getter_discovery.json": "0b6f4be228ac27d587da5b3b1e32b98105d9fb5968e9dbe294f2dcfca1a12a95",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fixtures/fillet_getter_final.json": "7eda38e1e8d0ebc5557de06130a2141088cca6034fe8291eb114ef88443e5026",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fixtures/fillet_getter_holdouts.json": "5282eb19abf9e5ad3dd27f8da41580e814ca4ce9e81cecf810280e80b97d426b",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fixtures/fillet_getter_pilot.json": "47117c3c4d3c3b8424c019d109f874f2b59e7a6332444933a0ade8133f43d2b7",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/fixtures/fillet_getter_verification.json": "185491041c3d166782a375659e2f39098a5d861c08708c1d3deae804f1d235ca",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/generate_fillet_getter_discovery.py": "c29081c1d9624198fbafa6fd906e1fa196f1dfc0f1ab523e79910247e20c6248",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/generate_fillet_getter_final.py": "381b8a6526c497dbf9768a8bafc3bba89e32383e497caf649d2a51169e12412f",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/generate_fillet_getter_holdouts.py": "dce5831914d2f5ca373ea38eac77995bb0760c7299a6f72f0b0fb4073dfb4418",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/generate_fillet_getter_pilot.py": "22c7221c70e6b77bacef74877c4bb8844115471cc6a00d8b68e9badb7beb4f15",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/generate_fillet_getter_verification.py": "1143b6c899bc2b0d6e0e404e030368f5d582fd2557daadced4f0cf0150ac64de",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/fillet_getter_discovery.json.gz": "91ddfcd31fafaa0e7cbe29928bec6a66166ea8f73c492a9d8058a8d2a34ce686",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/fillet_getter_final.json.gz": "75ca8b1b90d5f3db51705b7fbc0451c684f6f8d081be2e0344aba02e420be2fe",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/fillet_getter_holdouts.json.gz": "b2c4e999dcc0d66e234b7624aaccd5b5eb4dbd441ab34c22e77f13a940d35a60",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/fillet_getter_pilot.json.gz": "19d78824f36c9399bdcd67b158671c52c7746e89e0fc488930c06e3d7a23eaec",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/10d9b3bf3e495e69ecec837550e3c1b808ae14158271cd86bb9ba22f46834fdd.gz": "44a8c13821c172bd5370d186f2a68fb5a28316664e363f91f2d74f12ad9cb674",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/1143b6c899bc2b0d6e0e404e030368f5d582fd2557daadced4f0cf0150ac64de.gz": "b6b76b120b11426d0ea5c2423db086ac267299a7e7d6d6fe0042bd03f603aab4",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/22c7221c70e6b77bacef74877c4bb8844115471cc6a00d8b68e9badb7beb4f15.gz": "a4f675ac827468426cd5535319d42a77e4ae406c8221e8be2c0468857bb735ab",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/23e185da308fce19613c40fa38e1cfc8a59998566c7f3c10ecfe5d2c223d3234.gz": "32736f471f97fb9f0a605158f78e9d95860f4c25c803598d9a538fc0997a76ab",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/26b551a60674819c4ac33dfef70a23a4753f2fe33509528130d7989d5e25706a.gz": "5487a0e54e4fba2c34c30974a542584b8607830155bd68c03398c112db4fe4c6",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/335282cc1824c3dbc940b5235be3190a0a895a7a6289c74f068e3ece4cab1485.gz": "706c3d7f1c03458c9b096257d8bc6d1ec7d901f2d7e9259c9f47c198b6b94112",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/381b8a6526c497dbf9768a8bafc3bba89e32383e497caf649d2a51169e12412f.gz": "4523e56c411db04769b181b8d371eb950050e8b46dc40b43676cf2cb62dab86c",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9.gz": "ab7aa676392930d72c3954751a10cb81dcf9151eb3111a4be27a4f5375017935",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da.gz": "feeb2535f264a3bd71854d71997e4a41a67683160150018f071e96cde445f89e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/8645f3a41728e29875cb18e7fd24767e19443137ef8e1489c185f296679bf2f4.gz": "a242002c6f15f6586de5fca4476c07786c09fd528608a15dc83328ffdc7c7930",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/9d76662341d28c3283e9e02979ecc31f378f969738b17fcbef92127d2d478146.gz": "159d1b3a48e89f6afbbf68d0005282e723d15cb3f48052b6ef6a19a800ec0049",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/c29081c1d9624198fbafa6fd906e1fa196f1dfc0f1ab523e79910247e20c6248.gz": "3f44676707b780bad65b97bb21408b994aa6d65789b298cb7e28be4d2440f411",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/c6760eb4b40197d8ed34f21072b4b6b87935b048ff29cc5d717f3a53c404eef9.gz": "14cd7608d8679846e3b60ae0ad1c4e2a1bd78e6f224c7cdfc177ac8cc6eca693",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/d0faecb0ecce4568cd9ad8fb969a4d90c03599f8a2dbbd0e5206967c0d96f583.gz": "fe302bc0775732b60a40df891ea1a12c5fcbae47b2c64753057cfdc0ea2b232e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/dce5831914d2f5ca373ea38eac77995bb0760c7299a6f72f0b0fb4073dfb4418.gz": "b6d45f7212072e4663aa8c8227b2085f2c6358a143f3f36a0ccea291b33d081f",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/ece673e7a565bcc7198270c2130e69a699fd783ee8e7c4a54a31505d7529166f.gz": "01079eb09f8530526e52a5e32d364027453e3d8e19ea902a371a773ab3d41bd8",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/observations/source_snapshots/ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85.gz": "e2e7daf1ce6bbd83b220b65c3f8586bd2826447b1a27fb06027664a2313ffe6e",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/report_fillet_getter.py": "e2d4af979aa45bfdad1fea4df3e679ab117d9e1a00336fa081f5f29165ebe403",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/rhino_worker.py": "63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/structural_sdk.py": "ece673e7a565bcc7198270c2130e69a699fd783ee8e7c4a54a31505d7529166f",
+    "110a4ac00774603ed91107d2876a6c812acd1b95:tools/rhino_oracle/test_fillet_getter.py": "9e41bd4ca6c4da017c275633a10c11f6263d281998846d2e8a785265caa6b65e"
+  },
+  "evidence_sha256": {
+    "docs/fillet-getter-proof/blend-ui-native.log.gz": "193150ba9b8df02cce850bf0c738b614511fa254fd707807f35196ff56537f73",
+    "docs/fillet-getter-proof/blend-ui-portable.log.gz": "aab064f1de67c2b4dfaf278b78a95ba46edbf04a72e37367454ca8a0900febf5",
+    "docs/fillet-getter-proof/capture-attempts.json": "ce2fd3b44acf0539e156835cff47571641959dcd2b13140078c54e3929005177",
+    "docs/fillet-getter-proof/capture-discovery.log.gz": "a00b13a183fd3d944a2297d59d801f8f8eef981ac4e678086396304bc8199bab",
+    "docs/fillet-getter-proof/capture-final.log.gz": "244717ff5cfef99d93aad1be5c911a2d7fa5837189d78be9271a20a33d85b397",
+    "docs/fillet-getter-proof/capture-holdouts.log.gz": "4848ab4acd8bb5404705859b2836914928315ec7432c5eafa1d80c912a1f09bd",
+    "docs/fillet-getter-proof/capture-pilot-dispatch-failure.log.gz": "fdf925a34e111c5e4aa6b4e2d686c23e540dc158dfde312e0bfbbac974b53ad6",
+    "docs/fillet-getter-proof/capture-pilot-stalled.png": "1615571b9b00fde5aff91f3fec0a6e9828c97dc549c588f9d83be0811555e937",
+    "docs/fillet-getter-proof/capture-pilot.log.gz": "b2a0ab95b899b0d0ac63241528dde6c78c1b22cbd1e39a7f9ccf46940d5cfc69",
+    "docs/fillet-getter-proof/capture-verification-selection-failure.log.gz": "e91f9b5aa8e4ee82b9bfb4d559e0d2f073819ffdfdaf46b9436b7253fe29f4ab",
+    "docs/fillet-getter-proof/captures.json": "7c38ebf30ef7e6aaec0af4451064630c41c40b589e27c0cdf0240e8cbecd5ba3",
+    "docs/fillet-getter-proof/checks.json": "dc9ce3d8a23ba00d3ebf52aea4416fe273e901d6e622521eb83d91c6e9f37126",
+    "docs/fillet-getter-proof/clippy-native.log.gz": "77abc9499678eb0ea7fc5d09cda3bd3f77169f4b0799c11f3a5a562920876ca0",
+    "docs/fillet-getter-proof/clippy-portable.log.gz": "ef67017c4cacebd1a758ca60697aa21f3787b0c85af9d899084a01b83cd1241a",
+    "docs/fillet-getter-proof/command-native.log.gz": "665564e9699cde7fd19400ac7aa8236eeb3614e7e49ea340aa74d20fecd8ea32",
+    "docs/fillet-getter-proof/command-portable.log.gz": "a8dff2c2226ae750453c665f2ec4c3bf871a92aebabb603e6e35ab90261dbec1",
+    "docs/fillet-getter-proof/comparison-analytic-parameter-chart.log.gz": "8b9c532d4d8e7a5a5d29140656d6287fcb20e3cb7922fa7ef12ef8dcc472eb10",
+    "docs/fillet-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-getter-proof/legacy-library-diagnostic-compile.log.gz": "92b64f38c9191ec9ca475f6e11b1db6eb5aa08b1c720d3947a5ca78d17b45ac0",
+    "docs/fillet-getter-proof/legacy-library-first.log.gz": "990878c7f7e880024844cdd751182f4dc21ec1053c1c180e3ab10c22b90a1bdc",
+    "docs/fillet-getter-proof/legacy-reselection-retains-action-order.log.gz": "aca770da620a03772ddef942ce84e346bd9f30540cd6cf17453e6f0d58cb2b82",
+    "docs/fillet-getter-proof/legacy-selection-order.log.gz": "90d546294f756e3418b2b9cf55df6ba330354cf77033c1fbf0f35a7267db1ce3",
+    "docs/fillet-getter-proof/library-native.log.gz": "2a0dcd455e23e24d68fbad0432c674f5c8fde5c7e39f2ce5a73f2bfb882bc122",
+    "docs/fillet-getter-proof/library-portable.log.gz": "343cc4061e1126e66e8409d796e3518ebd7156255a9a4609042197aed98fa27a",
+    "docs/fillet-getter-proof/manual-intervention.json": "256d006ffe842bfdc9ec2a843bd3a4478009b13ff6d62a35a08f93f9a2acd538",
+    "docs/fillet-getter-proof/mouse-helper-before-layout.log.gz": "ea18d31662870969c8076089eb88ec3c625797ae106adbb475eb4da5c205b6c0",
+    "docs/fillet-getter-proof/native-arc-domain-inspection.log.gz": "3c1496c364fb436daecc658c49b0e5a94484d2d7bd9e852bd09cf408d22bbc7e",
+    "docs/fillet-getter-proof/native-contacts.log.gz": "4f5610abd08afe549d802229a0f855a12caaad454ad00af8301c039cefa63b48",
+    "docs/fillet-getter-proof/native-curved-source-first.log.gz": "ee65353f5bee1460d600df298635ab1557c3d677ff3690c8f1a2746212420960",
+    "docs/fillet-getter-proof/python-subd.log.gz": "17d51455f774bd077db52baddb9b18502fe5b029edc1a4771c061c919ef78a72",
+    "docs/fillet-getter-proof/python.log.gz": "2451317c599e9f1a6c39f633bd6024fd3f20a66f94060dc689696cdf93191f0a",
+    "docs/fillet-getter-proof/retained-line-domain.log.gz": "336f6ffc1be0a8e75481cd593018a455b16ec3278e6bc13775db730540535a66",
+    "docs/fillet-getter-proof/reversed-joined-domain.log.gz": "d1f0c9ac67f811e906ac96ab2b66982d2e00899b2677b87396870b9b0675f616",
+    "docs/fillet-getter-proof/subd-command-native.log.gz": "8869698c400218dec9acfdd50e79becfe3d9572cee71b6a470a766cd8f22abe6",
+    "docs/fillet-getter-proof/subd-ui-native.log.gz": "df9009e98f0c1104418ebc1a5954496d841cae6b4c5ba92c56353aaaa8cc96cb",
+    "docs/fillet-getter-proof/ui-helper-array-inference.log.gz": "03abbe96e87184054207719fe8c902201d2f88fbe2a279676dbdc5af0e3e0d14",
+    "docs/fillet-getter-proof/ui-native.log.gz": "89dc309b7700e14da876bcf3e4cf20db54e61344b72b0f27eacb995719c0beaa",
+    "docs/fillet-getter-proof/ui-portable.log.gz": "e5cf0c385d0be02306600510dfc1ac450265117ad5913fdb91adf14e95e23fe1",
+    "docs/fillet-getter-proof/ui-selection-replay-and-gpu-callback.log.gz": "56019b7e7e599e0dcfd0a745d14d30c24fba62093f207f40e8397d630660021b",
+    "docs/fillet-getter-proof/validation-attempts.json": "5a76f558103a1a5676593034562ab0b22c5be011bbaff485a1e35d50dcf6f584",
+    "docs/fillet-getter-proof/verification-selection-menu.png": "343b6c9c707666729ed3a6f0d6731de17ae4d5b61cd30b9ef2100929a7452a63",
+    "tools/rhino_oracle/fixtures/fillet_getter_discovery.json": "0b6f4be228ac27d587da5b3b1e32b98105d9fb5968e9dbe294f2dcfca1a12a95",
+    "tools/rhino_oracle/fixtures/fillet_getter_final.json": "7eda38e1e8d0ebc5557de06130a2141088cca6034fe8291eb114ef88443e5026",
+    "tools/rhino_oracle/fixtures/fillet_getter_holdouts.json": "5282eb19abf9e5ad3dd27f8da41580e814ca4ce9e81cecf810280e80b97d426b",
+    "tools/rhino_oracle/fixtures/fillet_getter_pilot.json": "47117c3c4d3c3b8424c019d109f874f2b59e7a6332444933a0ade8133f43d2b7",
+    "tools/rhino_oracle/fixtures/fillet_getter_verification.json": "185491041c3d166782a375659e2f39098a5d861c08708c1d3deae804f1d235ca",
+    "tools/rhino_oracle/observations/fillet_getter_discovery.json.gz": "91ddfcd31fafaa0e7cbe29928bec6a66166ea8f73c492a9d8058a8d2a34ce686",
+    "tools/rhino_oracle/observations/fillet_getter_final.json.gz": "75ca8b1b90d5f3db51705b7fbc0451c684f6f8d081be2e0344aba02e420be2fe",
+    "tools/rhino_oracle/observations/fillet_getter_holdouts.json.gz": "b2c4e999dcc0d66e234b7624aaccd5b5eb4dbd441ab34c22e77f13a940d35a60",
+    "tools/rhino_oracle/observations/fillet_getter_pilot.json.gz": "19d78824f36c9399bdcd67b158671c52c7746e89e0fc488930c06e3d7a23eaec",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/10d9b3bf3e495e69ecec837550e3c1b808ae14158271cd86bb9ba22f46834fdd.gz": "44a8c13821c172bd5370d186f2a68fb5a28316664e363f91f2d74f12ad9cb674",
+    "tools/rhino_oracle/observations/source_snapshots/1143b6c899bc2b0d6e0e404e030368f5d582fd2557daadced4f0cf0150ac64de.gz": "b6b76b120b11426d0ea5c2423db086ac267299a7e7d6d6fe0042bd03f603aab4",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/22c7221c70e6b77bacef74877c4bb8844115471cc6a00d8b68e9badb7beb4f15.gz": "a4f675ac827468426cd5535319d42a77e4ae406c8221e8be2c0468857bb735ab",
+    "tools/rhino_oracle/observations/source_snapshots/23e185da308fce19613c40fa38e1cfc8a59998566c7f3c10ecfe5d2c223d3234.gz": "32736f471f97fb9f0a605158f78e9d95860f4c25c803598d9a538fc0997a76ab",
+    "tools/rhino_oracle/observations/source_snapshots/26b551a60674819c4ac33dfef70a23a4753f2fe33509528130d7989d5e25706a.gz": "5487a0e54e4fba2c34c30974a542584b8607830155bd68c03398c112db4fe4c6",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/335282cc1824c3dbc940b5235be3190a0a895a7a6289c74f068e3ece4cab1485.gz": "706c3d7f1c03458c9b096257d8bc6d1ec7d901f2d7e9259c9f47c198b6b94112",
+    "tools/rhino_oracle/observations/source_snapshots/381b8a6526c497dbf9768a8bafc3bba89e32383e497caf649d2a51169e12412f.gz": "4523e56c411db04769b181b8d371eb950050e8b46dc40b43676cf2cb62dab86c",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158.gz": "d7961c149b90800346253f1d3c2bd85275a5e6f157970e786e6db5c79dfa6444",
+    "tools/rhino_oracle/observations/source_snapshots/63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9.gz": "ab7aa676392930d72c3954751a10cb81dcf9151eb3111a4be27a4f5375017935",
+    "tools/rhino_oracle/observations/source_snapshots/78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da.gz": "feeb2535f264a3bd71854d71997e4a41a67683160150018f071e96cde445f89e",
+    "tools/rhino_oracle/observations/source_snapshots/8645f3a41728e29875cb18e7fd24767e19443137ef8e1489c185f296679bf2f4.gz": "a242002c6f15f6586de5fca4476c07786c09fd528608a15dc83328ffdc7c7930",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/9d76662341d28c3283e9e02979ecc31f378f969738b17fcbef92127d2d478146.gz": "159d1b3a48e89f6afbbf68d0005282e723d15cb3f48052b6ef6a19a800ec0049",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c29081c1d9624198fbafa6fd906e1fa196f1dfc0f1ab523e79910247e20c6248.gz": "3f44676707b780bad65b97bb21408b994aa6d65789b298cb7e28be4d2440f411",
+    "tools/rhino_oracle/observations/source_snapshots/c6760eb4b40197d8ed34f21072b4b6b87935b048ff29cc5d717f3a53c404eef9.gz": "14cd7608d8679846e3b60ae0ad1c4e2a1bd78e6f224c7cdfc177ac8cc6eca693",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/d0faecb0ecce4568cd9ad8fb969a4d90c03599f8a2dbbd0e5206967c0d96f583.gz": "fe302bc0775732b60a40df891ea1a12c5fcbae47b2c64753057cfdc0ea2b232e",
+    "tools/rhino_oracle/observations/source_snapshots/dc9ef1af1cbabfd4fa141e2b6963c626ddcd52d8253f9f07e816ca84ca52667d.gz": "fb49a0a9c8d9c939a32509de5006f4eee7a9b9fd5df8de01e687de3341b6a228",
+    "tools/rhino_oracle/observations/source_snapshots/dce5831914d2f5ca373ea38eac77995bb0760c7299a6f72f0b0fb4073dfb4418.gz": "b6d45f7212072e4663aa8c8227b2085f2c6358a143f3f36a0ccea291b33d081f",
+    "tools/rhino_oracle/observations/source_snapshots/e484d0667f813db685dccb4810bc86e1a785a64dd61ba4a30f5ecf553591d93d.gz": "f2debfa6c3f13ab8bdb2a92438b2e3d4a7d2bab9b3a743e0297d725640ac6d33",
+    "tools/rhino_oracle/observations/source_snapshots/ece673e7a565bcc7198270c2130e69a699fd783ee8e7c4a54a31505d7529166f.gz": "01079eb09f8530526e52a5e32d364027453e3d8e19ea902a371a773ab3d41bd8",
+    "tools/rhino_oracle/observations/source_snapshots/ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85.gz": "e2e7daf1ce6bbd83b220b65c3f8586bd2826447b1a27fb06027664a2313ffe6e",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
