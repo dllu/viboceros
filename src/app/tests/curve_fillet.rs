@@ -183,7 +183,7 @@ pub(super) fn mouse_picks(app: &mut VibocerosApp, ids: [ObjectId; 2], points: [P
     assert!(app.curve_fillet_session.as_ref().unwrap().scene().is_some());
 }
 
-fn mouse_frame(
+pub(super) fn mouse_frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,

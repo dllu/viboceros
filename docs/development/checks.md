@@ -52,6 +52,8 @@
 
 ## Curves and surfaces
 
+- [Chamfer getters, Euclidean setbacks and native document comparisons](../chamfer-getter.md)
+
 - [Continuous surface/UV correspondence certificates](../surface-curve-certificates.md)
 - [Certified UV-to-spatial curve images](../certified-surface-pushups.md)
 - [ApplyCrv document mapping, picking and native evidence](../commands/apply-curves.md)

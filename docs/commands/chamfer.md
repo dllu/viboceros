@@ -1,37 +1,46 @@
 # Chamfer
 
-[Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/chamfer.htm)
+[Command reference](README.md) · [Qualification](../chamfer-getter.md)
 
-Select two open curves, then run
-`Chamfer 0.5 1` or `Chamfer Distances=0.5,1`. The distances are measured from the intersection along the
-first and second selected curves. The command trims or extends those ends,
-adds a straight bevel, and joins the result into a selected polycurve. Undo
-restores both sources.
+Start `Chamfer`, pick the first curve near the desired end, then pick the second.
+The second pick commits immediately. `Distances` asks for the first distance,
+then the second; Enter at the second getter uses the first distance. A number at
+curve selection starts the same sequence. Values accept units and arithmetic,
+such as `0.02in` and `1/2`.
 
-`Pick1=x,y,z` and `Pick2=x,y,z` choose the participating ends; otherwise the
-nearest pair of endpoints is used. `Join=No` creates two retained source
-curves and a bevel. `Trim=No` retains the originals and adds only the bevel.
-The bevel inherits the first source's attributes and groups. Separate
-retained curves inherit their respective sources' attributes and groups.
+Two points measure the first distance. The next point measures the second from
+the same starting point. If the first distance was numeric, two points measure
+the second. Accepted values persist across cancellation, including a first
+distance accepted before cancelling the second getter. Escape cancels without
+editing geometry or consuming pending Redo.
 
-`ExtendArcsBy=Arc|Line` chooses a circular continuation or a tangent line
-for nonmeeting arcs. `ExtendOtherCurvesBy=Line|Smooth` chooses a tangent line
-or a smooth continuation for nonmeeting NURBS. The defaults are `Arc` and
-`Line`. The selected ends are connected first; each chamfer distance is then
-measured along the connected curve from the meeting point. Native arc and
-NURBS pieces are retained when the chosen continuation supports them.
-Earlier polycurve leaves are preserved. Zero distances on both sides produce
-a sharp join when trimming is enabled.
+Distances are straight-line distances from the intersection to each cut point.
+`Trim=Yes` is the default. `Join=No` retains each source ID, attributes and groups,
+and adds an unnamed, ungrouped bevel on the current layer. `Join=Yes` replaces
+the first source in place with the joined curve and removes the second source.
+`Trim=No` retains both originals and adds only the bevel; Join is unavailable.
+Results are deselected. Undo/Redo and 3DM preserve geometry and metadata.
 
-Linux `native-smlib` builds use
-[usd-brep producers](../smlib-curve-connections.md) for smooth NURBS
-connections and partial retained NURBS pieces.
+`ExtendArcsBy=Arc|Line` selects circular or tangent continuation.
+`ExtendOtherCurvesBy=Line|Smooth` selects tangent or smooth NURBS continuation.
+Defaults are `Arc` and `Line`. Bare extension, Join and Trim options toggle their
+values. Retained pieces preserve native arc/NURBS geometry and parameter charts.
+A setback can cross an extension into the original curve. Zero distances with
+Join=No can finish without an edit; Join=Yes keeps the sharp joined corner.
 
-The solver rejects chamfers that consume an entire connected source curve.
-A setback may cross a tangent extension and continue into the original arc or
-NURBS. Smooth NURBS extension currently supports the curve pairs handled by
-Connect; rational smooth extension can differ from Rhino.
+Headless calls support two selected curves or explicit ordered sources:
 
-The current tests cover analytic line and arc geometry, smooth NURBS length
-setbacks, and command Undo. A live Rhino output comparison for this command
-is still pending.
+```text
+Chamfer Distances=0.5,1 Join=Yes
+Chamfer Sources=first-id,second-id Pick1=3,0,0 Pick2=4,1,0 Distances=0.5,1
+```
+
+`Chamfer 0.5 1` remains a batch shorthand. Without Pick1/Pick2, batch calls use
+the nearest endpoint pair. The GUI also accepts options on the starting line.
+Native builds delegate NURBS extension and extraction to
+[usd-brep](../smlib-curve-connections.md).
+
+Same-parent and closed sources are unsupported. Distances consuming a complete
+source are rejected atomically. One captured oversized native success produces
+nonmeeting retained/bevel endpoints; it is documented as a compatibility gap.
+Arbitrary folded curves and all intersection branches remain unqualified.

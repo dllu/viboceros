@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_shared_measurement_anchor",
+      "case": "chamfer_shared_measurement_anchor"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_measure_second_after_number",
+      "case": "chamfer_measure_second_after_number"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_enter_defaults",
+      "case": "chamfer_enter_defaults"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_negative_distance_correction",
+      "case": "chamfer_negative_distance_correction"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_units_arithmetic",
+      "case": "chamfer_units_arithmetic"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_measurement_cancel",
+      "case": "chamfer_measurement_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_extension_menu_cancel",
+      "case": "chamfer_extension_menu_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_line_extension",
+      "case": "chamfer_line_extension"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_spatial_joined",
+      "case": "chamfer_spatial_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_oversized",
+      "case": "chamfer_oversized"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_zero_first_joined",
+      "case": "chamfer_zero_first_joined"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_preferences_setup",
+      "case": "chamfer_preferences_setup"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_partial_distances_cancel",
+      "case": "chamfer_partial_distances_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_remember_partial_cancel",
+      "case": "chamfer_remember_partial_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_second_distance_default",
+      "case": "chamfer_second_distance_default"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_numeric_cancel",
+      "case": "chamfer_numeric_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_remember_numeric",
+      "case": "chamfer_remember_numeric"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_measured_distances",
+      "case": "chamfer_measured_distances"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_after_first_pick",
+      "case": "chamfer_after_first_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_reverse_order",
+      "case": "chamfer_reverse_order"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_zero_parts",
+      "case": "chamfer_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_zero_joined",
+      "case": "chamfer_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_zero_first",
+      "case": "chamfer_zero_first"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_arc_extension",
+      "case": "chamfer_arc_extension"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_nurbs_contact",
+      "case": "chamfer_nurbs_contact"
+    }
+  ]
+}

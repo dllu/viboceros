@@ -1,0 +1,36 @@
+{
+  "family": "chamfer_getter_pilot",
+  "native_observations": 0,
+  "sources": {
+    "generate_chamfer_getter_pilot.py": "8d6c7e57ceee563c054e448961eba437285df80de7d2ccb4e16180e750eafc36",
+    "structural_sdk.py": "b6fe773d9f5b2cf679ad64ef6a92294be7ebb9be6729d6f6dfc097b9693d29a6",
+    "rhino_worker.py": "192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413",
+    "client.py": "df81b9027bec42d8d0b0ed134b80c3a718052700178516a72d00d7b9db0788c9",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "chamfer_command_probe.py": "246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47",
+    "chamfer_command.py": "27b884b7a41fa9a702632dc91fb4917304c4ecc3e2331c8dae2dbbe99f60ab65",
+    "line_scene_probe.py": "591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "128a84116d27bbf02900d35274ccd26aa24aafc828d6a51354450b34c5451927",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "request_sha256": "8cafad24445a21debd264684597072cc2e76c6d75c45ccd3f9ba7e88fa7e67ab",
+  "owned_pid": 8256,
+  "settings_scheme": "VibocerosOracleChamferGetterPilot20261107",
+  "reason": "Chamfer ignores typed _Cancel; first getter remains active. No observations published.",
+  "exit_status": 1,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_chamfer_getter_pilot"
+  ]
+}

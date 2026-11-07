@@ -121,6 +121,7 @@ impl InteractiveCommand {
             } => "Angle: pick the second direction's start (Esc cancels)",
             Self::Angle { .. } => "Angle: pick the second direction's end (Esc cancels)",
             Self::BlendCurve => "BlendCrv: select sources, adjust the blend, then Enter",
+            Self::Chamfer { .. } => "Chamfer: pick two curve ends; Distances / Join / Trim",
             Self::Fillet { .. } => "Fillet: pick two curve ends; Radius / Join / Trim / Dynamic",
             Self::ArcBlend => {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"

@@ -3,6 +3,7 @@ use super::*;
 use crate::exact_scalar::{Rational, rational};
 use num_bigint::BigInt;
 use num_traits::{Signed, Zero};
+mod first;
 mod roots;
 use roots::first_root;
 
@@ -74,26 +75,7 @@ impl CurveRef<'_> {
             return Ok(points);
         }
         let nurbs = self.to_nurbs()?;
-        let spans = nurbs.try_bezier_spans()?;
-        // Chord traversal needs a finite rational curve, not an arc-length
-        // integral. Validate denominators independently, including poles in
-        // spans after the last reachable chord station.
-        for span in &spans {
-            let weights = span
-                .control_points()
-                .iter()
-                .map(|p| rational(p.weight()))
-                .collect::<Vec<_>>();
-            if first_root(
-                &weights,
-                [*span.domain().start(), *span.domain().end()],
-                None,
-            )?
-            .is_some()
-            {
-                return Err(GeometryError::ZeroWeightAtParameter);
-            }
-        }
+        let spans = validated_spans(&nurbs)?;
         let mut parameter = *nurbs.domain().start();
         let mut point = self.start_point()?;
         let mut stations = vec![CurveDivisionPoint {
@@ -136,6 +118,27 @@ impl CurveRef<'_> {
         }
         Ok(stations)
     }
+}
+
+fn validated_spans(nurbs: &NurbsCurve) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let spans = nurbs.try_bezier_spans()?;
+    for span in &spans {
+        let weights = span
+            .control_points()
+            .iter()
+            .map(|p| rational(p.weight()))
+            .collect::<Vec<_>>();
+        if first_root(
+            &weights,
+            [*span.domain().start(), *span.domain().end()],
+            None,
+        )?
+        .is_some()
+        {
+            return Err(GeometryError::ZeroWeightAtParameter);
+        }
+    }
+    Ok(spans)
 }
 
 fn native_parameter(

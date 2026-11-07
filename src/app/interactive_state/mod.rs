@@ -90,6 +90,9 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum InteractiveCommand {
+    Chamfer {
+        anchor: Option<Point3>,
+    },
     Fillet {
         anchor: Option<Point3>,
     },

@@ -444,9 +444,10 @@ use boolean_intersection::BooleanIntersectionCommand;
 use boolean_union::BooleanUnionCommand;
 pub mod blend_edge;
 mod cap;
-mod chamfer;
+pub mod chamfer;
 pub mod chamfer_edge;
 mod connect;
+mod curve_pair_edit;
 mod edge_blend_input;
 mod extract_surface;
 pub mod fillet;
@@ -1033,6 +1034,7 @@ pub struct CommandRegistry {
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
+    chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
@@ -1880,7 +1882,7 @@ impl CommandRegistry {
             .register(FilletCommand(registry.fillet_preferences.clone()))
             .expect("unique built-in command");
         registry
-            .register(ChamferCommand)
+            .register(ChamferCommand(registry.chamfer_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(ConnectCommand)
@@ -2809,6 +2811,16 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("BlendCrv"))
             .is_some_and(|i| self.commands[*i].remember_blend_curve_preferences(value))
+    }
+    pub fn chamfer_preferences(&self) -> chamfer::Preferences {
+        self.chamfer_preferences.get()
+    }
+    pub fn remember_chamfer_preferences(
+        &self,
+        preferences: chamfer::Preferences,
+    ) -> Result<(), CommandError> {
+        self.chamfer_preferences.set(preferences.validate()?);
+        Ok(())
     }
     pub fn fillet_preferences(&self) -> fillet::Preferences {
         self.fillet_preferences.get()

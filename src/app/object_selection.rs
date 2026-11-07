@@ -481,7 +481,7 @@ impl VibocerosApp {
                 .selecting()
                 .then_some(ObjectSelectionFilter::Parametric);
         }
-        if self.picking_curve_fillet() {
+        if self.picking_curve_chamfer() || self.picking_curve_fillet() {
             return Some(ObjectSelectionFilter::Curves);
         }
         if self.picking_line_curve()

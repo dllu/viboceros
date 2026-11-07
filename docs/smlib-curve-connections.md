@@ -11,7 +11,7 @@ both terminal spans, independently check intersection parameters and meeting
 positions, and extract the retained intervals with the same native producers.
 
 Chamfer also uses native extraction for partial retained NURBS leaves after
-measuring its two arc-length setbacks. Fillet uses
+finding its two Euclidean chord setbacks. Fillet uses
 [native NURBS contacts](smlib-native-fillet-contacts.md) and
 [contact extraction](smlib-fillet-contacts.md) with shared corner ordering and
 analytic policies. Picking, analytic
@@ -51,8 +51,8 @@ capture is still blocked by the
 [Rational smooth Connect parity](commands/connect.md) remains unresolved.
 Its eight retained Rhino probes reject some operations or extend only the
 line; mathematical continuation here can produce different document geometry.
-Chamfer has native/portable and command regression coverage, but a live Rhino
-comparison is pending. Whole-model compatibility and performance against
+[Chamfer getter qualification](chamfer-getter.md) now compares live Rhino
+geometry, metadata, history and UI workflows in both builds. Whole-model compatibility and performance against
 native Rhino remain further work.
 
 ```sh

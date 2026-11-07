@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_initial_cancel",
+      "case": "chamfer_initial_cancel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_parts",
+      "case": "chamfer_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_joined",
+      "case": "chamfer_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_untrimmed",
+      "case": "chamfer_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_cancel_second",
+      "case": "chamfer_cancel_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "chamfer_distances_cancel",
+      "case": "chamfer_distances_cancel"
+    }
+  ]
+}

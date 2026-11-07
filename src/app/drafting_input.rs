@@ -10,6 +10,9 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if let Some(accepted) = self.accept_curve_chamfer_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_curve_fillet_point(point) {
             return accepted;
         }
@@ -165,6 +168,7 @@ impl VibocerosApp {
             InteractiveCommand::DraftPullCurve
             | InteractiveCommand::ArcBlend
             | InteractiveCommand::BlendCurve
+            | InteractiveCommand::Chamfer { .. }
             | InteractiveCommand::Fillet { .. } => return false,
             InteractiveCommand::ProjectPlane { .. } => {
                 return self.accept_project_plane_point(point);

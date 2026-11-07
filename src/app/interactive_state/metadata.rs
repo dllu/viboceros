@@ -38,6 +38,7 @@ impl InteractiveCommand {
             Self::Insert { .. } => "Insert",
             Self::Angle { .. } => "Angle",
             Self::Point => "Point",
+            Self::Chamfer { .. } => "Chamfer",
             Self::Fillet { .. } => "Fillet",
             Self::ArcBlend => "ArcBlend",
             Self::BlendCurve => "BlendCrv",
@@ -185,6 +186,7 @@ impl InteractiveCommand {
             Self::DraftPullCurve => None,
             Self::SurfaceArray { base }
             | Self::CurveArray { base }
+            | Self::Chamfer { anchor: base }
             | Self::Fillet { anchor: base }
             | Self::ShortPath { start: base }
             | Self::InterpolateCurveOnSurface { anchor: base }

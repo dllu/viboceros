@@ -338,6 +338,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if let Some(p) = &self.curve_boolean_prompt {
                                 if p.selecting() {"Select curves; Enter continues, Esc cancels"} else {"Pick regions or AllRegions; DeleteInput / CombineRegions / Output / SimplifyCurves; Enter accepts, Esc cancels"}
+                            } else if let Some(p) = &self.curve_chamfer_session {
+                                p.hint()
                             } else if let Some(p) = &self.curve_fillet_session {
                                 p.hint()
                             } else if let Some(p) = &self.fillet_surface_prompt {

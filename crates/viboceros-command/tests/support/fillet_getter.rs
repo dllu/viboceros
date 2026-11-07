@@ -16,12 +16,24 @@ pub const FAMILIES: [&str; 4] = [
 pub fn diagnostic(value: &Value) -> bool {
     value["input_trace"][0]["errors"] != json!([])
 }
+pub fn command_name(value: &Value) -> &str {
+    value["events"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find_map(|e| {
+            e["name"]
+                .as_str()
+                .filter(|n| ["Fillet", "Chamfer"].contains(n))
+        })
+        .unwrap()
+}
 pub fn success(value: &Value) -> bool {
     value["events"]
         .as_array()
         .unwrap()
         .iter()
-        .find(|e| e["name"] == "Fillet")
+        .find(|e| e["name"] == command_name(value))
         .unwrap()["result"]
         == "Success"
 }
@@ -202,14 +214,14 @@ pub fn check(doc: &Document, target: &Value, archive: bool) -> f64 {
         }
         if error > 1e-6 {
             eprintln!(
-                "Fillet curve {} actual {actual:?} expected {expected:?}",
+                "Curve pair {} actual {actual:?} expected {expected:?}",
                 a.name().unwrap_or("")
             );
         }
     }
     assert!(
         error <= 1e-6,
-        "Fillet Native coefficients, domains, points and tangents: {error:e}"
+        "Native curve pair coefficients, domains, points and tangents: {error:e}"
     );
     error
 }
@@ -253,7 +265,7 @@ impl State {
         let changed = value["history_changed"].as_bool().unwrap();
         assert_eq!(doc.can_undo(), changed);
         if changed {
-            assert_eq!(doc.undo_label(), Some("Fillet"));
+            assert_eq!(doc.undo_label(), Some(command_name(value)));
             doc.undo().unwrap();
             error = error.max(check(doc, &value["undo"], false));
             self.identities(doc, &value["undo"]);

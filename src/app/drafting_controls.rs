@@ -25,6 +25,11 @@ impl VibocerosApp {
                     .as_ref()
                     .is_none_or(curve_fillet::Session::wants_point)
                     || self.plane_prompt.is_some())
+                && (self
+                    .curve_chamfer_session
+                    .as_ref()
+                    .is_none_or(curve_chamfer::Session::wants_point)
+                    || self.plane_prompt.is_some())
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()

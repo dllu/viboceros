@@ -56,6 +56,9 @@ impl VibocerosApp {
             if let Some(s) = &mut self.blend_curve_session {
                 s.pointer = output.selection_pointer;
             }
+            if let Some(s) = &mut self.curve_chamfer_session {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.curve_fillet_session {
                 s.pointer = output.selection_pointer;
             }

@@ -12,6 +12,52 @@ impl From<GeometryError> for Failure {
 }
 
 #[test]
+fn chamfer_does_not_retry_a_failed_nurbs_producer_on_the_opposite_line_end() {
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let first = Curve3::NurbsCurve(
+        NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap(),
+    );
+    let second =
+        Curve3::Line(LineSegment::try_new(p(3., 3.), p(3., 4.), Tolerance::DEFAULT).unwrap());
+    let calls = std::cell::Cell::new(0);
+    let mut extend = |curve: &NurbsCurve, range| {
+        calls.set(calls.get() + 1);
+        if calls.get() == 1 {
+            Err(Failure::Producer)
+        } else {
+            Ok(curve.try_extended_to(range)?)
+        }
+    };
+    let mut trim = |curve: &NurbsCurve, range| Ok(curve.try_trimmed(range)?);
+    let mut clamp = |_: &NurbsCurve, _| panic!("Chamfer must not clamp a source endpoint");
+    let mut operations = CurveExtensionOperations {
+        extend: &mut extend,
+        trim: &mut trim,
+        clamp_endpoint: &mut clamp,
+    };
+    assert_eq!(
+        crate::try_chamfer_curves_joined_with_operations(
+            (&first, p(2., 1.)),
+            (&second, p(3., 3.)),
+            [0.2, 0.3],
+            crate::CurveChamferExtensionStyles {
+                other: CurveOtherExtensionStyle::Smooth,
+                ..Default::default()
+            },
+            Tolerance::DEFAULT,
+            &mut operations
+        ),
+        Err(Failure::Producer)
+    );
+    assert_eq!(calls.get(), 1);
+}
+
+#[test]
 fn producer_failures_propagate_through_connect_fillet_and_chamfer_without_mutating_sources() {
     let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
     let first = Curve3::NurbsCurve(

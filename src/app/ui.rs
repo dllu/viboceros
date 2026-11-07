@@ -45,6 +45,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_curve_chamfer();
         self.validate_curve_fillet();
         self.validate_curve_boolean();
         self.validate_chain();
