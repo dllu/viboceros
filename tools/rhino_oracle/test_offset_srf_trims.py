@@ -25,10 +25,10 @@ class TrimOffsetTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'headless capture receipt'): evidence.collect(proof)
 
     def test_missing_or_nonfinite_replay_is_rejected(self):
-        if not (PROOF/'command-native.log.gz').exists(): self.skipTest('replays follow implementation')
+        if not (PROOF/'trim-command-native.log.gz').exists(): self.skipTest('replays follow implementation')
         with tempfile.TemporaryDirectory(dir=ROOT/'docs') as directory:
             proof=ROOT/directory/'proof'; shutil.copytree(PROOF,proof)
-            path=proof/'command-native.log.gz'; lines=gzip.decompress(path.read_bytes()).decode().splitlines(keepends=True)
+            path=proof/'trim-command-native.log.gz'; lines=gzip.decompress(path.read_bytes()).decode().splitlines(keepends=True)
             i=next(i for i,line in enumerate(lines) if line.startswith('TRIM_OFFSET_COMMAND '))
             row=json.loads(lines[i].split(' ',1)[1])
             for key,value in [('maximum_geometry_error',float('nan')),('maximum_geometry_error',-1.),('maximum_field_error',1.)]:
@@ -48,5 +48,16 @@ class TrimOffsetTests(unittest.TestCase):
         if not path.exists(): self.skipTest('record follows implementation commit')
         value=json.loads(path.read_bytes())
         self.assertEqual(value,report.build(PROOF,value['implementation_revision']))
+
+    def test_each_split_native_command_run_must_pass(self):
+        for name in ['command-native','trim-command-native']:
+            path=PROOF/(name+'.log.gz')
+            if not path.exists(): self.skipTest('replays follow implementation')
+            with tempfile.TemporaryDirectory(dir=ROOT/'docs') as directory:
+                proof=ROOT/directory/'proof'; shutil.copytree(PROOF,proof)
+                altered=proof/path.name
+                text=gzip.decompress(path.read_bytes()).decode().replace('test result: ok.','test result: FAILED.')
+                altered.write_bytes(gzip.compress(text.encode(),mtime=0))
+                with self.assertRaisesRegex(ValueError,'failed replay'): report.comparisons(proof)
 
 if __name__=='__main__': unittest.main()

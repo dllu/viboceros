@@ -10,6 +10,13 @@ from .report_offset_srf_tolerance import requested, gate, result, sha
 
 BASELINE='da985d13cb206ee07b8cf18e6725e2d02c9de103'
 
+def replay_text(path):
+    text=gzip.decompress(path.read_bytes()).decode()
+    if re.search(r'^test result: (?!ok\.)',text,re.MULTILINE) or re.search(
+        r'^test result: ok\. [1-9][0-9]* passed; 0 failed; 0 ignored;',text,re.MULTILINE)is None:
+        raise ValueError('failed replay')
+    return text
+
 def comparisons(proof=PROOF):
     rows,captures,counts,paths=collect(proof)
     names=set(rows)-set(DIAGNOSTICS)
@@ -24,11 +31,10 @@ def comparisons(proof=PROOF):
         expected={k for k in names if result(rows[k])!='Success' or (k!='offset_th_rational' if mode=='native' else rows[k]['prescribed_case']['curves'][0]['type']=='normal_surface')}
         for stage in ['command','ui']:
             path=proof/(stage+'-'+mode+'.log.gz'); paths.add(path)
-            text=gzip.decompress(path.read_bytes()).decode()
+            text=replay_text(path)
             if (stage,mode)==('command','native'):
                 extra=proof/'trim-command-native.log.gz'; paths.add(extra)
-                text+='\n'+gzip.decompress(extra.read_bytes()).decode()
-            if re.search(r'test result: ok\. [1-9][0-9]* passed; 0 failed; 0 ignored;',text)is None: raise ValueError('failed replay')
+                text+='\n'+replay_text(extra)
             seen=set()
             for prefix,group in [('TOLERANCE_OFFSET',names-trims),('TRIM_OFFSET',trims)]:
                 prefix+='_'+stage.upper()
