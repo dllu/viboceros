@@ -1,0 +1,191 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_aligned_position",
+      "case": "match_h_aligned_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_aligned_tangency",
+      "case": "match_h_aligned_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_aligned_curvature",
+      "case": "match_h_aligned_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_rational_position",
+      "case": "match_h_rational_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_rational_tangency",
+      "case": "match_h_rational_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_rational_curvature",
+      "case": "match_h_rational_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_linear_position",
+      "case": "match_h_linear_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_linear_tangency",
+      "case": "match_h_linear_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_linear_curvature",
+      "case": "match_h_linear_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quadratic_position",
+      "case": "match_h_quadratic_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quadratic_tangency",
+      "case": "match_h_quadratic_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quadratic_curvature",
+      "case": "match_h_quadratic_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quartic_position",
+      "case": "match_h_quartic_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quartic_tangency",
+      "case": "match_h_quartic_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_quartic_curvature",
+      "case": "match_h_quartic_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_unequal_cross_position",
+      "case": "match_h_unequal_cross_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_unequal_cross_tangency",
+      "case": "match_h_unequal_cross_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_unequal_cross_curvature",
+      "case": "match_h_unequal_cross_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_position",
+      "case": "match_h_average_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_tangency",
+      "case": "match_h_average_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_curvature",
+      "case": "match_h_average_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_reverse_position",
+      "case": "match_h_average_reverse_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_reverse_tangency",
+      "case": "match_h_average_reverse_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_average_reverse_curvature",
+      "case": "match_h_average_reverse_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_closest_position",
+      "case": "match_h_closest_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_closest_tangency",
+      "case": "match_h_closest_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_closest_curvature",
+      "case": "match_h_closest_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_refine_position",
+      "case": "match_h_refine_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_refine_tangency",
+      "case": "match_h_refine_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_refine_curvature",
+      "case": "match_h_refine_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_preserve_tangency",
+      "case": "match_h_iso_preserve_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_preserve_curvature",
+      "case": "match_h_iso_preserve_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_matchtarget_tangency",
+      "case": "match_h_iso_matchtarget_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_matchtarget_curvature",
+      "case": "match_h_iso_matchtarget_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_perpendicular_tangency",
+      "case": "match_h_iso_perpendicular_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_h_iso_perpendicular_curvature",
+      "case": "match_h_iso_perpendicular_curvature"
+    }
+  ]
+}

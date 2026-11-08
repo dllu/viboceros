@@ -143,6 +143,11 @@ pub use surface_rebuild::{
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
 mod endpoint_interpolation;
+mod surface_match;
+pub use surface_match::{
+    SurfaceMatchIso, SurfaceMatchOperations, SurfaceMatchOptions, try_match_nurbs_surfaces,
+    try_match_nurbs_surfaces_with_operations,
+};
 mod surface_blend;
 pub use endpoint_interpolation::{EndpointInterpolation, try_interpolate_endpoints};
 mod surface_tween;

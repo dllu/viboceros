@@ -84,6 +84,8 @@ pub enum GeometryError {
     SurfaceIntersectionBackendFailed { message: String },
     #[error("endpoint interpolation failed: {context}")]
     InvalidEndpointInterpolation { context: &'static str },
+    #[error("surface matching failed: {context}")]
+    InvalidSurfaceMatch { context: &'static str },
     #[error("surface blend failed: {context}")]
     InvalidSurfaceBlend { context: &'static str },
     #[error("{operation} is unsupported for block instances")]

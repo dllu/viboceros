@@ -6369,6 +6369,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') == 'match_surface_sdk':
+        from match_surface_sdk import run
+        return run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'merge_surface_orientation_sdk':
         from merge_surface_orientation_sdk import run
         return run(operation, globals(), iterations, tolerance)

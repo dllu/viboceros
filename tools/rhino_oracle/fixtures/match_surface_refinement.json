@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_position_1e-05",
+      "case": "match_a_position_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_position_1e-06",
+      "case": "match_a_position_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_position_1e-07",
+      "case": "match_a_position_1e-07"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_tangency_1e-05",
+      "case": "match_a_tangency_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_tangency_1e-06",
+      "case": "match_a_tangency_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_tangency_1e-07",
+      "case": "match_a_tangency_1e-07"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_curvature_1e-05",
+      "case": "match_a_curvature_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_curvature_1e-06",
+      "case": "match_a_curvature_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_a_curvature_1e-07",
+      "case": "match_a_curvature_1e-07"
+    }
+  ]
+}

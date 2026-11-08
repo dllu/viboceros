@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_first_west",
+      "case": "match_o_first_west"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_first_north",
+      "case": "match_o_first_north"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_first_south",
+      "case": "match_o_first_south"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_target_east",
+      "case": "match_o_target_east"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_target_south",
+      "case": "match_o_target_south"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_target_north",
+      "case": "match_o_target_north"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_first_reversed_v",
+      "case": "match_o_first_reversed_v"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_o_both_transpose",
+      "case": "match_o_both_transpose"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_position",
+      "case": "match_v_polynomial_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_refine_position",
+      "case": "match_v_polynomial_refine_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_tangency",
+      "case": "match_v_polynomial_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_refine_tangency",
+      "case": "match_v_polynomial_refine_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_curvature",
+      "case": "match_v_polynomial_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_polynomial_refine_curvature",
+      "case": "match_v_polynomial_refine_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_position",
+      "case": "match_v_rational_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_refine_position",
+      "case": "match_v_rational_refine_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_tangency",
+      "case": "match_v_rational_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_refine_tangency",
+      "case": "match_v_rational_refine_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_curvature",
+      "case": "match_v_rational_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_rational_refine_curvature",
+      "case": "match_v_rational_refine_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_multi_position",
+      "case": "match_v_multi_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_multi_tangency",
+      "case": "match_v_multi_tangency"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_multi_curvature",
+      "case": "match_v_multi_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_v_transverse_basis",
+      "case": "match_v_transverse_basis"
+    }
+  ]
+}

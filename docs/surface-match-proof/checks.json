@@ -1,0 +1,162 @@
+[
+  {
+    "name": "surface-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 60.2348576229997
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 51.42528644297272
+  },
+  {
+    "name": "surface-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.067785760969855
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 42.886496261984576
+  },
+  {
+    "name": "kernel-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "surface_merge",
+      "--test",
+      "sheets",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 5.380368915968575
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.9272960380185395
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 63.09663139702752
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 116.73379274597391
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.6160023660049774
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_surface_match",
+      "tools.rhino_oracle.test_merge_surfaces",
+      "tools.rhino_oracle.test_merge_surface_command",
+      "tools.rhino_oracle.test_merge_surface_command_record",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_capture_family",
+      "tools.rhino_oracle.test_structural_sdk"
+    ],
+    "status": 0,
+    "seconds": 3.4840625129872933
+  }
+]

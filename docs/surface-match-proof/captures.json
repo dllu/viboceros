@@ -1,0 +1,82 @@
+[
+  {
+    "family": "match_surface_pilot",
+    "archive": "observations/match_surface_pilot.json.gz",
+    "log": "match_surface_pilot.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_match_surface_pilot"
+    ],
+    "exit_status": 0,
+    "classification": "owned headless capture",
+    "request_sha256": "5065c417e6711f1db2d9cef6e7faa272dd0a57cb498d646dbede0330eb635674",
+    "observation_sha256": "d556da3b18612d705472971b1aa217bd133f603bdefe08fd2e1ff9323f9027c6"
+  },
+  {
+    "family": "match_surface_holdouts",
+    "archive": "observations/match_surface_holdouts.json.gz",
+    "log": "match_surface_holdouts.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_match_surface_holdouts"
+    ],
+    "exit_status": 0,
+    "classification": "owned headless capture",
+    "request_sha256": "fb805939db0d4e0c4419e1303c34c899351d156216714d5f62f9c27cfd58a48e",
+    "observation_sha256": "5c25923f37a0aa9def77e7510cf7fcc67c50dd40b49347b1c2d466d169b84deb"
+  },
+  {
+    "family": "match_surface_final",
+    "archive": "observations/match_surface_final.json.gz",
+    "log": "match_surface_final.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_match_surface_final"
+    ],
+    "exit_status": null,
+    "classification": "supplemental; launcher exit not retained; all recipes independently repeated in oriented",
+    "request_sha256": "f5ab89d58d816d8fe45b850fc2c384f621414be81a67685720aefca69930edd2",
+    "observation_sha256": "58db2117de7e2e824c4a7bd516f8c87e81802c5d53a7b99175af286ab05682b8"
+  },
+  {
+    "family": "match_surface_refinement",
+    "archive": "observations/match_surface_refinement.json.gz",
+    "log": "match_surface_refinement.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_match_surface_refinement"
+    ],
+    "exit_status": 0,
+    "classification": "owned headless capture",
+    "request_sha256": "612d713a16701737a831fe7d9f28fd38acb0b10f8342f03317e70e2ea551b359",
+    "observation_sha256": "e71a39cef0ed3331fe695f01d0ca4e4e659497f244d8c62bc6f77b5e2c02e0c1"
+  },
+  {
+    "family": "match_surface_oriented",
+    "archive": "observations/match_surface_oriented.json.gz",
+    "log": "match_surface_oriented.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_match_surface_oriented"
+    ],
+    "exit_status": 0,
+    "classification": "owned headless capture",
+    "request_sha256": "c012812e8ac8fcb7cd3c5f6febbb7b4a05aabda532df8a6430812382b53bbd9e",
+    "observation_sha256": "e1e7ed8d67a0b4fcb80d462d47f6fd8c0ee2c17314b9edda508fc6e0932f1014"
+  }
+]

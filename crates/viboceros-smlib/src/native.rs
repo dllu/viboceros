@@ -71,7 +71,9 @@ pub use surface_fillet::{
     fillet_surfaces, fillet_surfaces_with_parents,
 };
 mod surface_blend;
+mod surface_match;
 pub use surface_blend::{blend_surfaces, trim_blend_parent};
+pub use surface_match::match_surface_supports;
 mod morph_preview;
 pub use morph_preview::{morph_preview_operations, prepare_morph_preview_curve};
 #[cfg(test)]

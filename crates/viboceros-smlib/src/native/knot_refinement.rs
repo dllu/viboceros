@@ -577,3 +577,10 @@ pub fn remove_periodic_surface_knot(
         solve_interpolation(job, None, Some(shift))
     })
 }
+
+/// One checked multi-channel solve for a surface-match boundary strip.
+pub(super) fn solve_surface_match_interpolation(
+    input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
+) -> Result<Vec<f64>, Error> {
+    solve_interpolation(input, None, None)
+}
