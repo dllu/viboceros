@@ -17,6 +17,10 @@ def replay_text(path):
         raise ValueError('failed replay')
     return text
 
+def maximum_error(cases, metric):
+    return max(c.get(stage+'_'+mode+'_'+metric,0.) for c in cases.values()
+        for stage in ['command','ui'] for mode in ['portable','native'])
+
 def comparisons(proof=PROOF):
     rows,captures,counts,paths=collect(proof)
     names=set(rows)-set(DIAGNOSTICS)
@@ -69,15 +73,13 @@ def build(proof,revision):
         'crates/viboceros-geometry/src/brep/surface_edit/isocurve.rs',
         'crates/viboceros-smlib/native/brep_export.cpp',
         'crates/viboceros-smlib/src/native/shape.rs'}.issubset(changed): raise ValueError('missing implementation')
-    values=lambda suffix:[v for c in cases.values() for k,v in c.items() if k.endswith(suffix)]
     return dict(scope='Non-Loose OffsetSrf open single-face trimmed sheets.',
         baseline_revision=BASELINE,implementation_revision=revision,full_native_parity=False,
         continuous_true_offset_bound=False,performance_qualified=False,**counts,
         qualified_successful=31,qualified_cancelled=5,portable_supported=22,native_supported=35,
-        archive_round_trips=114,maximum_geometry_difference=max(values('_maximum_geometry_error')),
-        maximum_product_sampled_field_error=max(v for c in cases.values() for k,v in c.items()
-            if k.endswith('_maximum_field_error') and '_native_maximum_' not in k),
-        maximum_native_sampled_field_error=max(values('_native_maximum_field_error')),
+        archive_round_trips=114,maximum_geometry_difference=maximum_error(cases,'maximum_geometry_error'),
+        maximum_product_sampled_field_error=maximum_error(cases,'maximum_field_error'),
+        maximum_native_sampled_field_error=maximum_error(cases,'native_maximum_field_error'),
         execution='Both new licensed Rhino 8 captures and the failed import attempt used private Xvfb sessions. All thirty-nine outcomes remain, including a hidden-option diagnostic and the earlier two input diagnostics. Rust checks open no windows.',
         implementation='Offset the untrimmed support surface using one quarter of the requested tolerance for its native fit, then preserve original UV loops and face orientation. Export only the support; restrict extended domains without reparameterization. Rebuild spatial trim images with continuous surface/curve certificates at one quarter of document tolerance. Piecewise axis-aligned UV trims retain their original parameter clock and rational isocurves; other trims use bounded fitting.',
         comparison='Authored inputs and independent source-normal displacements; native output coefficients are expectations only. Reference B-reps are admitted at max(document tolerance, requested fit tolerance), recorded per case; Rhino edge/UV fits can exceed document tolerance. Product validation retains document tolerance. Command and UI replays check geometry, metadata, identity, selection, pure previews, cancellation, actual Undo/Redo and SaveAs/Open3DM. Geometry uses bidirectional finite valid trimmed-face and boundary stations, epsilon 1e-6 for planes or max(1e-5,2*requested) for curved refits. Product source-normal station residuals must be <=requested+1e-10; native residuals are recorded separately.',

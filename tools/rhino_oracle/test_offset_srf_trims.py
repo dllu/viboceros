@@ -8,6 +8,14 @@ from . import offset_srf_trims_evidence as evidence, report_offset_srf_trims as 
 from .check_offset_srf_trims import ROOT, PROOF
 
 class TrimOffsetTests(unittest.TestCase):
+    def test_native_build_product_errors_are_distinct_from_reference_errors(self):
+        cases={'one':dict(command_native_maximum_field_error=.4,
+                command_native_native_maximum_field_error=.2),
+            'two':dict(ui_portable_maximum_field_error=.3,
+                ui_portable_native_maximum_field_error=.1)}
+        self.assertEqual(report.maximum_error(cases,'maximum_field_error'),.4)
+        self.assertEqual(report.maximum_error(cases,'native_maximum_field_error'),.2)
+
     def test_captures_failures_and_input_diagnostics_are_retained(self):
         rows,captures,counts,_=evidence.collect()
         self.assertEqual((len(rows),len(captures)),(39,5))
