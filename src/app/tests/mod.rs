@@ -585,6 +585,7 @@ mod planar_regions_comparison;
 mod chamfer_branch;
 mod chamfer_closed;
 mod chamfer_extension;
+mod chamfer_open;
 mod chamfer_self;
 mod curve_chamfer;
 mod curve_fillet;

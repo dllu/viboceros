@@ -104,3 +104,18 @@ BRANCH_SEAMS=_branch.seams(EXTENSION_PILOT)
 CASES.update(BRANCH_SEAMS)
 BRANCH_VERIFICATION=_branch.verification(EXTENSION_PILOT)
 CASES.update(BRANCH_VERIFICATION)
+
+if __package__:
+    from . import chamfer_open_cases as _open
+else:
+    import chamfer_open_cases as _open
+OPEN_PILOT=_open.pilot(case,configured,pick)
+CASES.update(OPEN_PILOT)
+OPEN_HOLDOUTS=_open.holdouts(case,configured,pick)
+CASES.update(OPEN_HOLDOUTS)
+OPEN_CURVES=_open.curves_and_joins(case,configured,pick)
+CASES.update(OPEN_CURVES)
+OPEN_CHOICES=_open.extension_choices(case,configured,pick)
+CASES.update(OPEN_CHOICES)
+OPEN_OVERLAPS=_open.overlap_choices(case,configured,pick)
+CASES.update(OPEN_OVERLAPS)

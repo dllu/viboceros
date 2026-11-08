@@ -1,40 +1,38 @@
 //! Native bounded line supports, including style-dependent collinear contacts.
-use super::*;
-use viboceros_geometry::{BoundingBox3, LineSegment};
+use super::{closed::Contacts, line_supports, support};
+use crate::CommandError;
+use viboceros_geometry::{
+    Curve3, CurveCurveIntersectionEvent, CurveOtherExtensionStyle, Point3, Real, Tolerance,
+};
 
-pub(super) fn solve(
+pub(crate) struct Solution {
+    pub contacts: Contacts,
+    pub own_support_ends: bool,
+}
+
+pub(crate) fn solve(
     curves: [&Curve3; 2],
     seed: [Real; 2],
-    options: Preferences,
+    style: CurveOtherExtensionStyle,
+    join: bool,
     tolerance: Tolerance,
-) -> Result<Option<Contacts>, CommandError> {
-    let [Curve3::Line(first), Curve3::Line(second)] = curves else {
+) -> Result<Option<Solution>, CommandError> {
+    let Some(supports) = line_supports::curves(curves, style)? else {
         return Ok(None);
     };
-    let bounds =
-        BoundingBox3::from_points([first.start(), first.end(), second.start(), second.end()])?;
-    let padding = 100. * bounds.min().distance_to(bounds.max())?;
-    let mut supports = Vec::with_capacity(2);
-    for line in [first, second] {
-        // Native Line uses a pair-bounds distance; Smooth uses source spans.
-        let fraction = if options.styles.other == CurveOtherExtensionStyle::Smooth {
-            50.
-        } else {
-            padding / line.length()?
-        };
-        let domain = line.domain();
-        let width = *domain.end() - *domain.start();
-        supports.push(Curve3::Line(
-            LineSegment::try_new(
-                line.point_at(-fraction)?,
-                line.point_at(1. + fraction)?,
-                Tolerance::NUMERICAL_VALIDATION,
-            )?
-            .try_reparameterized(
-                *domain.start() - fraction * width..=*domain.end() + fraction * width,
-            )?,
-        ));
-    }
+    Ok(Some(from_supports(
+        curves, seed, &supports, style, join, tolerance,
+    )?))
+}
+
+pub(crate) fn from_supports(
+    curves: [&Curve3; 2],
+    seed: [Real; 2],
+    supports: &[Curve3; 2],
+    style: CurveOtherExtensionStyle,
+    join: bool,
+    tolerance: Tolerance,
+) -> Result<Solution, CommandError> {
     let events = crate::curve_intersections::events(
         &supports[0].as_ref().to_nurbs()?,
         &supports[1].as_ref().to_nurbs()?,
@@ -45,7 +43,7 @@ pub(super) fn solve(
         let hits = match event {
             CurveCurveIntersectionEvent::Point(hit) => [Some(hit), None],
             CurveCurveIntersectionEvent::Overlap(span) => {
-                if options.styles.other == CurveOtherExtensionStyle::Smooth {
+                if style == CurveOtherExtensionStyle::Smooth {
                     // Smooth retains each source's own support endpoint. Rank
                     // the two aligned endpoint pairs using physical pick travel.
                     let same_direction =
@@ -73,16 +71,19 @@ pub(super) fn solve(
                         }
                     }
                     let (_, parameters, mut points) = best.unwrap();
-                    if options.join {
+                    if join {
                         points = [points[0].midpoint(points[1])?; 2];
                     }
-                    return Ok(Some(Contacts {
-                        parameters,
-                        points,
-                        insertion: None,
-                        reset_arc_domains: [false; 2],
-                        retain_end: None,
-                    }));
+                    return Ok(Solution {
+                        own_support_ends: true,
+                        contacts: Contacts {
+                            parameters,
+                            points,
+                            insertion: None,
+                            reset_arc_domains: [false; 2],
+                            retain_end: None,
+                        },
+                    });
                 }
                 [Some(span.start()), Some(span.end())]
             }
@@ -102,11 +103,14 @@ pub(super) fn solve(
     let (_, parameters, point) = best.ok_or(CommandError::Usage(
         "Unable to intersect curves or curve extensions",
     ))?;
-    Ok(Some(Contacts {
-        parameters,
-        points: [point; 2],
-        insertion: None,
-        reset_arc_domains: [false; 2],
-        retain_end: None,
-    }))
+    Ok(Solution {
+        own_support_ends: false,
+        contacts: Contacts {
+            parameters,
+            points: [point; 2],
+            insertion: None,
+            reset_arc_domains: [false; 2],
+            retain_end: None,
+        },
+    })
 }

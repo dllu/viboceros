@@ -3,7 +3,6 @@ use super::{prepare::Plan, *};
 use crate::curve_pair_edit::{closed::Contacts, support};
 use viboceros_geometry::CurveCurveIntersectionEvent;
 mod admission;
-mod lines;
 
 pub(super) fn prepare(
     curves: [&Curve3; 2],
@@ -24,9 +23,15 @@ pub(super) fn prepare(
         curves[1].as_ref().closest_parameter(picks[1], tolerance)?,
     ];
     if closed == [false, false]
-        && let Some(contacts) = lines::solve(curves, seed, options, tolerance)?
+        && let Some(contacts) = crate::curve_pair_edit::line_contacts::solve(
+            curves,
+            seed,
+            options.styles.other,
+            options.join,
+            tolerance,
+        )?
     {
-        return admission::prepare(curves, seed, closed, contacts, options, tolerance);
+        return admission::prepare(curves, seed, closed, contacts.contacts, options, tolerance);
     }
     let mut working = curves.map(Clone::clone);
     let mut events = support::intersections([&working[0], &working[1]], tolerance)?;

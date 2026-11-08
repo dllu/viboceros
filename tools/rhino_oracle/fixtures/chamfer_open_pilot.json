@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_parts",
+      "case": "open_chamfer_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_joined",
+      "case": "open_chamfer_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_untrimmed",
+      "case": "open_chamfer_zero_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_parts",
+      "case": "open_chamfer_oversized_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_joined",
+      "case": "open_chamfer_oversized_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_untrimmed",
+      "case": "open_chamfer_oversized_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_consumed_parts",
+      "case": "open_chamfer_consumed_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_normal_parts",
+      "case": "open_chamfer_normal_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_zero_parts",
+      "case": "open_chamfer_crossing_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_zero_joined",
+      "case": "open_chamfer_crossing_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_parts",
+      "case": "open_chamfer_crossing_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_joined",
+      "case": "open_chamfer_crossing_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_parallel_zero_untrimmed",
+      "case": "open_chamfer_parallel_zero_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_extension_zero_parts",
+      "case": "open_chamfer_extension_zero_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_reverse_oversized_parts",
+      "case": "open_chamfer_reverse_oversized_parts"
+    }
+  ]
+}

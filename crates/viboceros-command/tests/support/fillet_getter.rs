@@ -260,3 +260,7 @@ pub use state::State;
 pub fn read(family: &str) -> Value {
     history::read(family)
 }
+
+pub fn archive(doc: &mut Document, value: &Value) -> f64 {
+    state::archive(doc, value)
+}

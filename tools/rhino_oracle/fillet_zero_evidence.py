@@ -12,7 +12,11 @@ EXPECTED_COUNTS = {'observations': 40, 'successful': 35, 'cancelled': 1, 'failed
 
 INVALID = {'fillet_zero_pilot/zero_two_circles_joined', 'fillet_zero_holdouts/zero_two_circles_joined_reverse'}
 
-def collect_captures(proof, receipts, families, invalid, expected_counts):
+def collect_captures(proof, receipts, families, invalid, expected_counts,
+                     recipes_module=recipes, result_fn=result, invalid_validator=None,
+                     cancel_token='_Cancel'):
+    recipes = recipes_module
+    result = result_fn
     paths = set(proof.glob('*')) | {HERE / 'run_headless.sh'}
     rows, captures = {}, []
     if [r['family'] for r in receipts] != list(families): raise ValueError('capture inventory')
@@ -38,7 +42,8 @@ def collect_captures(proof, receipts, families, invalid, expected_counts):
                 for obj in value[phase]:
                     if not obj['native_valid']:
                         key = family+'/'+row['id']
-                        if key not in invalid or phase not in ['after','redo'] or obj['native_type'] != 'PolyCurve' or obj.get('invalid_geometry') is not True or obj.get('curve_domain') is not None or obj.get('curve_endpoints') != [None,None] or 'curve' in obj: raise ValueError('unexpected invalid native geometry')
+                        valid_layout = invalid_validator(obj) if invalid_validator else (obj.get('curve_domain') is None and obj.get('curve_endpoints') == [None,None])
+                        if key not in invalid or phase not in ['after','redo'] or obj['native_type'] != 'PolyCurve' or obj.get('invalid_geometry') is not True or not valid_layout or 'curve' in obj: raise ValueError('unexpected invalid native geometry')
                     elif 'curve' in obj and len(obj.get('samples',[]))!=33: raise ValueError('native geometry witnesses')
             if normalized(value['after']) != normalized(value['redo']) or normalized(value['before']) != normalized(value['undo']): raise ValueError('native history')
             if not value['history_changed'] and normalized(value['before']) != normalized(value['after']): raise ValueError('uncommitted model edit')
@@ -50,7 +55,7 @@ def collect_captures(proof, receipts, families, invalid, expected_counts):
             clicks = trace.get('clicks', [])
             if len(clicks) != sum(isinstance(a,dict) and 'curve' in a and 'pick' in a for a in value['prescribed_case']['actions']) or any(not c['motion_acknowledged'] or not c['click_acknowledged'] or len(c['ray']) != 2 or 'sight_point' not in c for c in clicks): raise ValueError('public mouse receipts')
             cancels=[i for i,a in enumerate(value['prescribed_case']['actions']) if a=='Cancel']
-            if [s['action'] for s in trace['sent'] if s['token']=='_Cancel'] != cancels: raise ValueError('cancellation token receipt')
+            if [s['action'] for s in trace['sent'] if s['token']==cancel_token] != cancels: raise ValueError('cancellation token receipt')
             rows[family + '/' + row['id']] = value
     counts = dict(observations=len(rows), successful=sum(result(v) == 'Success' for v in rows.values()), cancelled=sum(result(v) == 'Cancel' for v in rows.values()), failed=sum(result(v) == 'Failure' for v in rows.values()), changed=sum(v['history_changed'] for v in rows.values()), invalid_outputs=sum(not o['native_valid'] for v in rows.values() for o in v['after']), images=sum(len(v['input_trace'][0].get('viewport_snapshots', [])) for v in rows.values()), physical_picks=sum(len(v['input_trace'][0].get('clicks',[])) for v in rows.values()), point_tangent_stations=sum(len(o.get('samples', [])) for v in rows.values() for phase in ['before', 'after'] for o in v[phase]))
     if {key for key,v in rows.items() if any(not o['native_valid']for o in v['after'])} != invalid: raise ValueError('invalid control inventory')

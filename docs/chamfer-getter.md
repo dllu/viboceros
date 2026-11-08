@@ -15,8 +15,8 @@ equations to find the first crossing in the original parameter chart. One query
 finds one setback without generating all equal-chord stations. Existing
 portable/usd-brep operations trim or extend retained pieces.
 
-Three immutable licensed-Rhino captures contain 31 completed workflows: 21
-successes and ten cancellations. Both builds replay 20 supported successes
+The original three licensed-Rhino captures contain 31 completed workflows: 21
+successes and ten cancellations. That qualification replayed 20 supported successes
 through prepared and explicit-source APIs and 30 workflows through the UI.
 Checks compare coefficients, knots, native parameter samples, tangents,
 attributes, groups, IDs, selection, Undo/Redo and 50 3DM round trips per build at
@@ -25,9 +25,10 @@ negative-value correction, units, arithmetic, reversed order, zero distances,
 arc and tangent extensions, NURBS contact and tilted lines. Synthetic viewport
 mouse events exercise source selection and measured distance input.
 
-The remaining native success uses distance 9 on a length-4 line: Rhino retains a
-line ending at x=13 but starts its bevel at x=-5. Viboceros rejects that case
-without editing the document or consuming Redo. Further behavior has separate [single-parent](chamfer-self.md) and
+The initially excluded success uses distance 9 on a length-4 line: Rhino retains
+a line ending at x=13 but starts its bevel at x=-5. The [open-contact
+qualification](chamfer-open.md) now matches that result and corrects the old
+zero-distance history inference, preserving the original archives. Further behavior has separate [single-parent](chamfer-self.md) and
 [distinct closed-source](chamfer-closed.md) qualifications. All possible
 intersection branches remain unqualified. There is
 no continuous-distance, pixel-equality or comparative performance claim.

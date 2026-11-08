@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Qualification](../chamfer-getter.md)
 
-Start `Chamfer`, pick the first curve near the desired end, then pick the second.
+Start `Chamfer`, pick the first curve on the side to retain, then pick the second.
 The second pick commits immediately. `Distances` asks for the first distance,
 then the second; Enter at the second getter uses the first distance. A number at
 curve selection starts the same sequence. Values accept units and arithmetic,
@@ -25,8 +25,10 @@ Results are deselected. Undo/Redo and 3DM preserve geometry and metadata.
 `ExtendOtherCurvesBy=Line|Smooth` selects tangent or smooth NURBS continuation.
 Defaults are `Arc` and `Line`. Bare extension, Join and Trim options toggle their
 values. Retained pieces preserve native arc/NURBS geometry and parameter charts.
-A setback can cross an extension into the original curve. Zero distances with
-Join=No can finish without an edit; Join=Yes keeps the sharp joined corner.
+A setback can cross an extension into the original curve. Zero-distance trimming
+records replacements even when geometry is identical, clearing pending Redo.
+Without trimming, zero distances make no edit after a contact is found.
+Join=Yes keeps the sharp joined corner.
 
 Headless calls support two selected curves or explicit ordered sources:
 
@@ -67,6 +69,10 @@ continuation. Closed-source intersection choices and setback directions follow
 the native parameter chart, so moving a closed seam can affect the result.
 See [end and seam selection](../chamfer-branch.md).
 
-Distances consuming a complete source are rejected atomically. One captured oversized native success produces
-nonmeeting retained/bevel endpoints; it is documented as a compatibility gap.
-Arbitrary folded curves and all intersection branches remain unqualified.
+At complete consumption, separate outputs keep the original piece; joining omits
+the consumed piece. Oversized lines and tangent NURBS continuations can produce
+separate retained pieces that do not meet the bevel, matching Native behavior.
+Circular setbacks can wrap into a major arc. Invalid disconnected joins are
+rejected without edits or Redo loss. See [open-curve contact and consumption
+coverage](../chamfer-open.md). Arbitrary folded curves and all intersection
+branches remain unqualified.

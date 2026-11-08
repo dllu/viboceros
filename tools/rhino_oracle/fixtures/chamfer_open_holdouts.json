@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_second",
+      "case": "open_chamfer_oversized_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_both",
+      "case": "open_chamfer_oversized_both"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_below",
+      "case": "open_chamfer_oversized_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_above",
+      "case": "open_chamfer_oversized_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_oversized_near",
+      "case": "open_chamfer_oversized_near"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_reversed_first",
+      "case": "open_chamfer_reversed_first"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_reversed_second",
+      "case": "open_chamfer_reversed_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_reversed_both",
+      "case": "open_chamfer_reversed_both"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_scaled_oversized",
+      "case": "open_chamfer_scaled_oversized"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_consumed_joined",
+      "case": "open_chamfer_consumed_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_oversized",
+      "case": "open_chamfer_crossing_oversized"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_spatial_oversized",
+      "case": "open_chamfer_spatial_oversized"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_cancel_second",
+      "case": "open_chamfer_cancel_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_line",
+      "case": "open_chamfer_collinear_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_smooth",
+      "case": "open_chamfer_collinear_smooth"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_skew_trimmed",
+      "case": "open_chamfer_skew_trimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_skew_untrimmed",
+      "case": "open_chamfer_skew_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_nurbs",
+      "case": "open_chamfer_zero_nurbs"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_arc_arc",
+      "case": "open_chamfer_zero_arc_arc"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_arc_line",
+      "case": "open_chamfer_zero_arc_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_nurbs_line",
+      "case": "open_chamfer_zero_nurbs_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_zero_nurbs_smooth",
+      "case": "open_chamfer_zero_nurbs_smooth"
+    }
+  ]
+}

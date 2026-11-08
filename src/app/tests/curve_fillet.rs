@@ -167,6 +167,11 @@ fn ready() -> (VibocerosApp, [ObjectId; 2]) {
 }
 
 pub(super) fn mouse_picks(app: &mut VibocerosApp, ids: [ObjectId; 2], points: [Point3; 2]) {
+    mouse_source_picks(app, ids, points);
+    assert!(app.curve_fillet_session.as_ref().unwrap().scene().is_some());
+}
+
+pub(super) fn mouse_source_picks(app: &mut VibocerosApp, ids: [ObjectId; 2], points: [Point3; 2]) {
     let context = egui::Context::default();
     let (_, rect) = mouse_frame(app, &context, Vec::new());
     for (index, world) in points.into_iter().enumerate() {
@@ -192,7 +197,6 @@ pub(super) fn mouse_picks(app: &mut VibocerosApp, ids: [ObjectId; 2], points: [P
             app.handle_viewport_action(output);
         }
     }
-    assert!(app.curve_fillet_session.as_ref().unwrap().scene().is_some());
 }
 
 pub(super) fn mouse_frame(

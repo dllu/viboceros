@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_smooth_overlap",
+      "case": "open_chamfer_smooth_overlap"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_smooth_separated",
+      "case": "open_chamfer_smooth_separated"
+    }
+  ]
+}

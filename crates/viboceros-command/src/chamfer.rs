@@ -4,6 +4,7 @@ use viboceros_geometry::{
     CurveArcExtensionStyle, CurveChamferExtensionStyles, CurveOtherExtensionStyle,
 };
 mod closed;
+mod open;
 mod options;
 mod prepare;
 mod same_source;

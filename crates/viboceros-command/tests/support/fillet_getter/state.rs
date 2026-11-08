@@ -59,17 +59,21 @@ impl State {
             error = error.max(check(doc, &value["pending_redo"], false));
             doc.undo().unwrap();
         }
-        let directory = tempfile::tempdir().unwrap();
-        let path = directory.path().join("fillet.3dm");
-        let registry = CommandRegistry::with_builtins();
-        registry
-            .execute(doc, &format!("SaveAs {}", path.display()))
-            .unwrap();
-        let mut restored = Document::new(doc.tolerance());
-        registry
-            .execute(&mut restored, &format!("Open3dm {}", path.display()))
-            .unwrap();
-        error = error.max(check(&restored, &value["after"], true));
+        error = error.max(archive(doc, &value["after"]));
         json!({"maximum_geometry_error":error,"archives":1,"changed":changed,"success":success(value)})
     }
+}
+
+pub(super) fn archive(doc: &mut Document, value: &Value) -> f64 {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("fillet.3dm");
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(doc, &format!("SaveAs {}", path.display()))
+        .unwrap();
+    let mut restored = Document::new(doc.tolerance());
+    registry
+        .execute(&mut restored, &format!("Open3dm {}", path.display()))
+        .unwrap();
+    check(&restored, value, true)
 }

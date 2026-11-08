@@ -1,0 +1,72 @@
+[
+  {
+    "family": "chamfer_open_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_open_pilot"
+    ],
+    "request_sha256": "e63eb5a8bb19bce48c698c469981133b3b04747ed9460ae37a51559939f02407",
+    "observation_sha256": "fee9ad3de1d41e5a7e6c9f22dda1a860f1c95bfac00bec614331eebc5303f2ec",
+    "log": "capture-pilot.log.gz"
+  },
+  {
+    "family": "chamfer_open_holdouts",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_open_holdouts"
+    ],
+    "request_sha256": "3584ad5bc3c11e0985c858fb1902c9db10b94323f5c21b0fa2d926b8008308bd",
+    "observation_sha256": "1ff0b7ab3a905d36ec776d2af698e89a966e71a2387ab464b61f3317d3f60e38",
+    "log": "capture-holdouts.log.gz"
+  },
+  {
+    "family": "chamfer_open_curves",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_open_curves"
+    ],
+    "request_sha256": "e8aed43279548ddf4724ddad5c806bf6470a66f65471f1aa664cbc050a42729b",
+    "observation_sha256": "390603cd468a87cd14489a64d5118bbe7729367da26494f614c300362dd018b5",
+    "log": "capture-curves.log.gz"
+  },
+  {
+    "family": "chamfer_open_choices",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_open_choices"
+    ],
+    "request_sha256": "47c37792f54f5f237278abf50c95c17ad3dbbc37ea20db654282ebdada43e61f",
+    "observation_sha256": "dde11a3c7e60736a4a4abc3be2ecfd1e0b579537bfc203e4c16488e6a649f89a",
+    "log": "capture-choices.log.gz"
+  },
+  {
+    "family": "chamfer_open_overlaps",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_open_overlaps"
+    ],
+    "request_sha256": "70e01edccf3fc98798d246e71fc27ef62c0defb0629792f83c146b4b170e97c4",
+    "observation_sha256": "18456c6579f3a128af5854800b6af3dbd267c88f183782ce9bd9b5871aee4e89",
+    "log": "capture-overlaps.log.gz"
+  }
+]

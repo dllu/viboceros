@@ -16,7 +16,7 @@ mod reference_inputs;
 fn ordered_sources_preserve_native_geometry_attributes_identity_history_and_archives() {
     let mut count = 0;
     for family in chamfer_inputs::FAMILIES {
-        for row in native::read(family)["results"].as_array().unwrap() {
+        for row in inputs::read(family)["results"].as_array().unwrap() {
             let id = row["id"].as_str().unwrap();
             let v = &row["value"];
             if !inputs::success(v) {
@@ -61,7 +61,7 @@ fn ordered_sources_preserve_native_geometry_attributes_identity_history_and_arch
             count += 1;
         }
     }
-    assert_eq!(count, 20);
+    assert_eq!(count, 21);
 }
 
 #[test]

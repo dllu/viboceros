@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_smooth_short",
+      "case": "open_chamfer_smooth_short"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_smooth_unequal",
+      "case": "open_chamfer_smooth_unequal"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_smooth_upper",
+      "case": "open_chamfer_smooth_upper"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_arc_beyond_reversed",
+      "case": "open_chamfer_arc_beyond_reversed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_reversed",
+      "case": "open_chamfer_nurbs_consumed_reversed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_untrimmed",
+      "case": "open_chamfer_nurbs_consumed_untrimmed"
+    }
+  ]
+}

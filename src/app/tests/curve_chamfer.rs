@@ -7,12 +7,12 @@ mod getters;
 
 #[test]
 fn captured_getters_preserve_distances_across_cancel_and_match_native_documents() {
-    assert_eq!(replay(&getters::FAMILIES, "CHAMFER"), 30);
+    assert_eq!(replay(&getters::FAMILIES, "CHAMFER"), 31);
 }
 pub(super) fn replay(families: &[&str], marker: &str) -> usize {
     let mut count = 0;
     for family in families {
-        let rows = native::read(family);
+        let rows = inputs::read(family);
         let mut app = test_app();
         app.commands
             .remember_chamfer_preferences(getters::initial(&rows["results"][0]["value"]))
@@ -20,14 +20,19 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
         for row in rows["results"].as_array().unwrap() {
             let id = row["id"].as_str().unwrap();
             let v = &row["value"];
+            let rejected = getters::unsupported(id)
+                || v["after"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|o| o["native_valid"] == false);
             println!("{marker}_UI_CASE {family}/{id}");
-            assert_eq!(
-                app.commands.chamfer_preferences(),
-                getters::initial(v),
-                "{id}"
+            assert!(
+                getters::matches_display(app.commands.chamfer_preferences(), getters::initial(v)),
+                "{id}: exact stored options disagree with rounded native display"
             );
             app.document = inputs::setup(v);
-            if getters::unsupported(id) && !app.document.can_redo() {
+            if rejected && !app.document.can_redo() {
                 app.commands
                     .execute(&mut app.document, "Point 90,91,92")
                     .unwrap();
@@ -99,7 +104,7 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                     getters::final_options(v)
                 );
             }
-            if getters::unsupported(id) {
+            if rejected {
                 assert_eq!(
                     before,
                     app.document
@@ -118,6 +123,18 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 println!(
                     "{marker}_UI_REJECTION {{\"id\":\"{family}/{id}\",\"redo_preserved\":true}}"
                 );
+                if family.starts_with("chamfer_open_") {
+                    let mut original = v["before"].clone();
+                    for object in original.as_array_mut().unwrap() {
+                        object["selected"] = serde_json::json!(0);
+                    }
+                    let error = inputs::check(&app.document, &original, false)
+                        .max(inputs::archive(&mut app.document.clone(), &original));
+                    println!(
+                        "{marker}_INVALID_UI {}",
+                        serde_json::json!({"id":format!("{family}/{id}"),"archives":1,"maximum_geometry_error":error,"redo_preserved":true,"native_invalid":true})
+                    );
+                }
             } else {
                 let mut r = state.verify(&mut app.document, v);
                 r["id"] = serde_json::json!(format!("{family}/{id}"));

@@ -4,6 +4,8 @@ pub(crate) mod boundary_continuation;
 pub(crate) mod closed;
 pub(crate) mod junction;
 pub(crate) mod leaf;
+pub(crate) mod line_contacts;
+pub(crate) mod line_supports;
 pub(crate) mod support;
 use std::sync::Arc;
 use viboceros_document::{LayerId, Object, ReplacementHistory};

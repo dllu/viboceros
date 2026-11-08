@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_consumed_joined_second",
+      "case": "open_chamfer_consumed_joined_second"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_consumed_joined_both",
+      "case": "open_chamfer_consumed_joined_both"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_consumed_parts",
+      "case": "open_chamfer_crossing_consumed_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_consumed_joined",
+      "case": "open_chamfer_crossing_consumed_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_oversized_joined",
+      "case": "open_chamfer_crossing_oversized_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_line_parts",
+      "case": "open_chamfer_collinear_line_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_line_joined",
+      "case": "open_chamfer_collinear_line_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_line_untrimmed",
+      "case": "open_chamfer_collinear_line_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_smooth_parts",
+      "case": "open_chamfer_collinear_smooth_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_smooth_joined",
+      "case": "open_chamfer_collinear_smooth_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_smooth_untrimmed",
+      "case": "open_chamfer_collinear_smooth_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_collinear_smooth_zero_joined",
+      "case": "open_chamfer_collinear_smooth_zero_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_line_parts",
+      "case": "open_chamfer_nurbs_consumed_line_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_line_joined",
+      "case": "open_chamfer_nurbs_consumed_line_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_smooth_parts",
+      "case": "open_chamfer_nurbs_consumed_smooth_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_nurbs_consumed_smooth_joined",
+      "case": "open_chamfer_nurbs_consumed_smooth_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_arc_normal",
+      "case": "open_chamfer_arc_normal"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_arc_beyond",
+      "case": "open_chamfer_arc_beyond"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_arc_beyond_joined",
+      "case": "open_chamfer_arc_beyond_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_arc_outside",
+      "case": "open_chamfer_arc_outside"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_nurbs_parts",
+      "case": "open_chamfer_crossing_nurbs_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_nurbs_joined",
+      "case": "open_chamfer_crossing_nurbs_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_arc_parts",
+      "case": "open_chamfer_crossing_arc_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "open_chamfer_crossing_arc_joined",
+      "case": "open_chamfer_crossing_arc_joined"
+    }
+  ]
+}
