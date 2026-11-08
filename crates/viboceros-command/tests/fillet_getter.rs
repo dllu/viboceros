@@ -17,7 +17,7 @@ fn ordered_command_and_prepared_geometry_match_native_identity_metadata_and_hist
     let mut count = 0;
     for family in inputs::FAMILIES {
         let mut previous = Preferences::default();
-        for row in native::read(family)["results"].as_array().unwrap() {
+        for row in inputs::read(family)["results"].as_array().unwrap() {
             let value = &row["value"];
             let options = inputs::final_options(value, previous);
             previous = Preferences {

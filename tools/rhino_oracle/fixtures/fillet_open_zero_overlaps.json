@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_short",
+      "case": "open_zero_collinear_short"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_unequal",
+      "case": "open_zero_collinear_unequal"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_long",
+      "case": "open_zero_collinear_long"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_separated",
+      "case": "open_zero_collinear_separated"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_reverse_first",
+      "case": "open_zero_collinear_reverse_first"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_reverse_second",
+      "case": "open_zero_collinear_reverse_second"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_reverse_both",
+      "case": "open_zero_collinear_reverse_both"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_reverse_picks",
+      "case": "open_zero_collinear_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_spatial",
+      "case": "open_zero_collinear_spatial"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_overlap",
+      "case": "open_zero_overlap"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear_joined",
+      "case": "open_zero_collinear_joined"
+    }
+  ]
+}

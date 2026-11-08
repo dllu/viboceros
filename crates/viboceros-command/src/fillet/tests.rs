@@ -33,6 +33,7 @@ fn join_and_trim_options_control_sources_and_arc() {
         ("Fillet 0.5 Join=No Trim=No", 3, true, 1),
         ("Fillet 0.5 Join=Yes Trim=No", 3, true, 1),
         ("Fillet 0 Join=No Trim=Yes", 2, true, 0),
+        ("Fillet 0 Join=Yes Trim=Yes", 1, false, 0),
     ] {
         let mut document = Document::default();
         registry.execute(&mut document, "Line 0,0,0 4,0,0").unwrap();
@@ -59,11 +60,8 @@ fn join_and_trim_options_control_sources_and_arc() {
             arc_count,
             "{command}"
         );
-        let edited = command != "Fillet 0 Join=No Trim=Yes";
-        assert_eq!(document.can_undo(), edited);
-        if edited {
-            registry.execute(&mut document, "Undo").unwrap();
-        }
+        assert!(document.can_undo(), "{command}");
+        registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 }

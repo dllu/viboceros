@@ -1200,12 +1200,19 @@ static std::unique_ptr<VbCurveIntersections> copy_curve_intersections(
             require(s.m_eSolutionType==SM_ST_SINGLE_VALUE || s.m_eSolutionType==SM_ST_RANGE_OF_VALUES,
                 "Unsupported native curve intersection solution");
             const bool overlap=s.m_eSolutionType==SM_ST_RANGE_OF_VALUES;
-            const double ta=s.m_vStart[0],tb=s.m_vStart[1];
-            const double ea=overlap?s.m_vEnd[0]:ta,eb=overlap?s.m_vEnd[1]:tb;
-            require(std::isfinite(ta) && std::isfinite(tb) && std::isfinite(ea) && std::isfinite(eb)
-                && ta>=a.GetMin() && ta<=a.GetMax() && ea>=a.GetMin() && ea<=a.GetMax()
-                && tb>=b.GetMin() && tb<=b.GetMax() && eb>=b.GetMin() && eb<=b.GetMax(),
-                "Invalid native curve intersection parameters");
+            const auto parameter=[](double t,const SmExtent1d &domain) {
+                const double lo=domain.GetMin(),hi=domain.GetMax();
+                const double slack=64*std::numeric_limits<double>::epsilon()*
+                    std::max(std::abs(lo),std::abs(hi));
+                // Permit only endpoint roundoff. Rust independently checks
+                // original-curve residuals and sampled overlap interiors.
+                require(std::isfinite(t) && t>=lo-slack && t<=hi+slack,
+                    "Invalid native curve intersection parameters");
+                return std::clamp(t,lo,hi);
+            };
+            const double ta=parameter(s.m_vStart[0],a),tb=parameter(s.m_vStart[1],b);
+            const double ea=overlap?parameter(s.m_vEnd[0],a):ta;
+            const double eb=overlap?parameter(s.m_vEnd[1],b):tb;
             result->events.push_back({overlap?1:0,{ta,ea},{tb,eb}});
         }
         return result;

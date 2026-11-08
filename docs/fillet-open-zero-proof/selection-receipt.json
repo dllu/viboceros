@@ -1,0 +1,17 @@
+{
+  "pid": 418184,
+  "display": ":99",
+  "runtime": "/tmp/viboceros-oracle-runtime.ZH1leyAr",
+  "window": "0xc00015",
+  "case": "open_zero_collinear_long",
+  "action": 7,
+  "selection": "curve - guide1",
+  "keys": [
+    "Down",
+    "Return"
+  ],
+  "private_owned_window": true,
+  "screenshot_sha256": "c6db4237df95ef99cad9d85bd63e9fb4dc71b41cf6cb0ea576f328f513607324",
+  "key_delivery": "XSendEvent Down/Return did not close menu; sent XTest Escape to the still-focused private menu",
+  "usable_source_pick": false
+}

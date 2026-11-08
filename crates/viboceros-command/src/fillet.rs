@@ -5,9 +5,11 @@ use viboceros_geometry::{
 };
 mod closed;
 mod contacts;
+mod open;
 mod options;
 mod prepare;
 mod same_source;
+mod zero;
 pub use options::{Arguments, Preferences, parse, parse_radius};
 pub use prepare::{Prepared, prepare};
 const USAGE: &str = "Fillet [Radius=distance] [Sources=id,id] [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [Dynamic=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";

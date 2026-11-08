@@ -1,8 +1,9 @@
 //! Zero radius intersects supports and retains only the picked open portion.
-use super::*;
+use super::{prepare::Plan, *};
 use crate::curve_pair_edit::{closed::Contacts, support};
 use viboceros_geometry::CurveCurveIntersectionEvent;
 mod admission;
+mod lines;
 
 pub(super) fn prepare(
     curves: [&Curve3; 2],
@@ -18,6 +19,15 @@ pub(super) fn prepare(
             deleted: Vec::new(),
         });
     }
+    let seed = [
+        curves[0].as_ref().closest_parameter(picks[0], tolerance)?,
+        curves[1].as_ref().closest_parameter(picks[1], tolerance)?,
+    ];
+    if closed == [false, false]
+        && let Some(contacts) = lines::solve(curves, seed, options, tolerance)?
+    {
+        return admission::prepare(curves, seed, closed, contacts, options, tolerance);
+    }
     let mut working = curves.map(Clone::clone);
     let mut events = support::intersections([&working[0], &working[1]], tolerance)?;
     let mut reset_arc_domains = [false; 2];
@@ -25,9 +35,10 @@ pub(super) fn prepare(
         for i in 0..2 {
             if !closed[i] && !matches!(curves[i], Curve3::Line(_)) {
                 use crate::curve_pair_edit::boundary_continuation::{self, Styles};
+                let boundary = support::curve(curves[1 - i], curves[i], tolerance)?;
                 working[i] = boundary_continuation::to_boundary(
                     curves[i],
-                    curves[1 - i],
+                    &boundary,
                     picks[i],
                     Styles {
                         arc: options.styles.arc,

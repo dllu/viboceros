@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_short",
+      "case": "stable_open_zero_collinear_short"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_unequal",
+      "case": "stable_open_zero_collinear_unequal"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_long",
+      "case": "stable_open_zero_collinear_long"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_separated",
+      "case": "stable_open_zero_collinear_separated"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_reverse_first",
+      "case": "stable_open_zero_collinear_reverse_first"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_reverse_second",
+      "case": "stable_open_zero_collinear_reverse_second"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_reverse_both",
+      "case": "stable_open_zero_collinear_reverse_both"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_reverse_picks",
+      "case": "stable_open_zero_collinear_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_spatial",
+      "case": "stable_open_zero_collinear_spatial"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_overlap",
+      "case": "stable_open_zero_overlap"
+    },
+    {
+      "op": "fillet_command",
+      "id": "stable_open_zero_collinear_joined",
+      "case": "stable_open_zero_collinear_joined"
+    }
+  ]
+}

@@ -9,11 +9,11 @@ def completed(signals, kind):
 
 
 def audit(value):
-    from .fillet_getter_evidence import normalized
     h = value['undo_observation']
     actual = completed(h['undo_signals'],'undo')
     if actual is not value['history_changed'] or actual is not h['undo_succeeded']: raise ValueError('actual native Undo classification')
-    if h['geometry_changed'] is not (normalized(value['before']) != normalized(value['after'])): raise ValueError('native geometry classification')
+    scene = lambda rows: [dict(o,selected=0) for o in rows]
+    if h['geometry_changed'] is not (scene(value['before']) != scene(value['after'])): raise ValueError('native scene classification')
     if h['undo_command_succeeded'] is not True or [(e['name'],e['result'])for e in h['undo_events']] != [('Undo','Success')]: raise ValueError('Undo command receipt')
     if actual:
         if not completed(h['redo_signals'],'redo') or h['redo_succeeded'] is not True or h['redo_command_succeeded'] is not True or [(e['name'],e['result'])for e in h['redo_events']] != [('Redo','Success')]: raise ValueError('actual native Redo classification')

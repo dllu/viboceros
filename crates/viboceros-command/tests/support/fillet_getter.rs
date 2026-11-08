@@ -1,10 +1,9 @@
 //! Prescribed inputs and independent Native geometry/document expectations.
 use super::{native, reference_inputs};
 use serde_json::{Value, json};
-use std::collections::BTreeMap;
-use viboceros_command::{CommandRegistry, fillet::Preferences};
+use viboceros_command::fillet::Preferences;
 use viboceros_document::{Document, Geometry, ObjectColorSource, ObjectId};
-use viboceros_geometry::Point3;
+use viboceros_geometry::{CurveArcExtensionStyle, CurveOtherExtensionStyle, Point3};
 
 pub const FAMILIES: [&str; 4] = [
     "fillet_getter_pilot",
@@ -55,6 +54,20 @@ pub fn public_options(prompt: &str, mut defaults: Preferences) -> Preferences {
     }
     if let Some(v) = value("Dynamic") {
         defaults.dynamic = v == "Yes";
+    }
+    if let Some(v) = value("ExtendArcsBy") {
+        defaults.styles.arc = match v {
+            "Arc" => CurveArcExtensionStyle::Arc,
+            "Line" => CurveArcExtensionStyle::Line,
+            _ => panic!("Native arc extension style"),
+        };
+    }
+    if let Some(v) = value("ExtendOtherCurvesBy") {
+        defaults.styles.other = match v {
+            "Line" => CurveOtherExtensionStyle::Line,
+            "Smooth" => CurveOtherExtensionStyle::Smooth,
+            _ => panic!("Native other extension style"),
+        };
     }
     defaults
 }
@@ -237,71 +250,13 @@ pub fn check(doc: &Document, target: &Value, archive: bool) -> f64 {
     error
 }
 
-pub struct State {
-    ids: BTreeMap<String, ObjectId>,
-}
-impl State {
-    pub fn capture(doc: &Document) -> Self {
-        Self {
-            ids: doc
-                .objects()
-                .map(|o| (o.attributes().name().unwrap_or("").into(), o.id()))
-                .collect(),
-        }
-    }
-    fn identities(&self, doc: &Document, target: &Value) {
-        for row in target.as_array().unwrap() {
-            let name = row["attributes"]["name"].as_str().unwrap();
-            if row["guide"] == true || row["source"] == true {
-                assert!(doc.object(self.ids[name]).is_some());
-            } else {
-                assert!(
-                    doc.objects()
-                        .any(|o| o.attributes().name().unwrap_or("") == name
-                            && !self.ids.values().any(|old| *old == o.id()))
-                );
-            }
-        }
-        for (name, id) in &self.ids {
-            if !target.as_array().unwrap().iter().any(|r| {
-                r["attributes"]["name"] == *name && (r["guide"] == true || r["source"] == true)
-            }) {
-                assert!(doc.object(*id).is_none());
-            }
-        }
-    }
-    pub fn verify(&self, doc: &mut Document, value: &Value) -> Value {
-        let mut error = check(doc, &value["after"], false);
-        self.identities(doc, &value["after"]);
-        let changed = value["history_changed"].as_bool().unwrap();
-        assert_eq!(doc.can_undo(), changed);
-        if changed {
-            assert_eq!(doc.undo_label(), Some(command_name(value)));
-            doc.undo().unwrap();
-            error = error.max(check(doc, &value["undo"], false));
-            self.identities(doc, &value["undo"]);
-            assert!(!doc.can_undo());
-            doc.redo().unwrap();
-            error = error.max(check(doc, &value["redo"], false));
-            self.identities(doc, &value["redo"]);
-            assert!(!doc.can_redo());
-        } else if value["prescribed_case"]["pending_redo"] == true {
-            assert!(doc.can_redo());
-            doc.redo().unwrap();
-            error = error.max(check(doc, &value["pending_redo"], false));
-            doc.undo().unwrap();
-        }
-        let directory = tempfile::tempdir().unwrap();
-        let path = directory.path().join("fillet.3dm");
-        let registry = CommandRegistry::with_builtins();
-        registry
-            .execute(doc, &format!("SaveAs {}", path.display()))
-            .unwrap();
-        let mut restored = Document::new(doc.tolerance());
-        registry
-            .execute(&mut restored, &format!("Open3dm {}", path.display()))
-            .unwrap();
-        error = error.max(check(&restored, &value["after"], true));
-        json!({"maximum_geometry_error":error,"archives":1,"changed":changed,"success":success(value)})
-    }
+#[path = "fillet_getter/history.rs"]
+mod history;
+#[path = "fillet_getter/state.rs"]
+mod state;
+pub use history::history_recorded;
+pub use state::State;
+
+pub fn read(family: &str) -> Value {
+    history::read(family)
 }

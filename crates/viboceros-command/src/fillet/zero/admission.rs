@@ -1,4 +1,4 @@
-//! Normalize endpoint contacts and retain explicit zero-radius replacements in history.
+//! Normalize contacts and retain explicit zero-radius replacements in history.
 use super::*;
 use crate::curve_pair_edit::Target;
 use viboceros_document::ReplacementHistory;
@@ -39,6 +39,12 @@ pub(super) fn prepare(
             }
         }
     }
+    // A default nearest-end pick can coincide with the contact. At the start
+    // there is only one nonempty side to retain, even when seed == contact.
+    contacts.retain_end = Some(std::array::from_fn(|i| {
+        contacts.parameters[i] == *curves[i].as_ref().domain().start()
+            || seed[i] > contacts.parameters[i]
+    }));
     let mut plan = crate::curve_pair_edit::closed::prepare(
         curves,
         seed,

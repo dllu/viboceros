@@ -139,6 +139,27 @@ ZERO_HISTORY_CONTROL={'history_'+name:dict(deepcopy(recipe),capture_undo='diagno
 ZERO_HISTORY_CONTROL['history_zero_meeting_parts']=dict(deepcopy(ZERO_HOLDOUTS['zero_meeting_parts']),capture_undo='diagnostic')
 CASES.update(ZERO_HISTORY_CONTROL)
 
+if __package__:
+    from . import fillet_open_zero_cases as _open_zero
+else:
+    import fillet_open_zero_cases as _open_zero
+OPEN_ZERO_PILOT=_open_zero.pilot(case,explicit,pick)
+CASES.update(OPEN_ZERO_PILOT)
+OPEN_ZERO_HOLDOUTS=_open_zero.holdouts(case,explicit,pick)
+CASES.update(OPEN_ZERO_HOLDOUTS)
+OPEN_ZERO_OVERLAPS=_open_zero.overlaps(case,explicit,pick)
+CASES.update(OPEN_ZERO_OVERLAPS)
+OPEN_ZERO_OVERLAP_FINAL={'stable_'+name:deepcopy(recipe)for name,recipe in OPEN_ZERO_OVERLAPS.items()}
+_long=OPEN_ZERO_OVERLAP_FINAL['stable_open_zero_collinear_long']
+_a=_long['curves'][0]['end'][0];_b=_long['curves'][1]
+_long['actions'][-2]['pick']=[.8*_a,0.,0.]
+_long['actions'][-1]['pick']=[_b['start'][0]+.2*(_b['end'][0]-_b['start'][0]),0.,0.]
+CASES.update(OPEN_ZERO_OVERLAP_FINAL)
+OPEN_ZERO_BOUNDS=_open_zero.bounds(case,explicit,pick)
+CASES.update(OPEN_ZERO_BOUNDS)
+OPEN_ZERO_ORIENTATIONS=_open_zero.orientations(case,explicit,pick)
+CASES.update(OPEN_ZERO_ORIENTATIONS)
+
 
 def validate(op):
     if not isinstance(op, dict) or set(op) != {'op', 'id', 'case'} or op.get('op') != 'fillet_command' or not isinstance(op.get('case'), str) or op.get('case') not in CASES or op.get('id') != op['case']:

@@ -1,0 +1,21 @@
+{
+  "pid": 418184,
+  "cmdline": [
+    "/home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe",
+    "/nosplash",
+    "/scheme=VibocerosOracleFilletOpenZeroOverlaps20261108",
+    "/runscript=-_RunPythonScript Z:\\tmp\\viboceros-rhino-oracle-q3d0letv\\rhino_worker.py"
+  ],
+  "private_display": ":99",
+  "job": "/tmp/viboceros-rhino-oracle-q3d0letv",
+  "menu": "Selection Menu",
+  "first_pick_pixel": [
+    1254,
+    413
+  ],
+  "second_pick_pixel": [
+    1255,
+    413
+  ],
+  "reason": "Unresponsive Selection Menu after one-pixel-separated authored picks; terminate only this verified owned process."
+}

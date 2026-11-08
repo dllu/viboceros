@@ -19,7 +19,8 @@ groups. `Join=Yes` additionally combines both sources and the arc into a
 polycurve, retaining the first picked source's identity and metadata. A separate
 fillet arc is new, unnamed, ungrouped geometry on the current layer. Results are
 deselected, and one Undo restores the sources. With radius zero, there is no
-inserted arc; an already meeting pair with Join=No can remain a successful no-op.
+inserted arc. Trimming an already meeting pair still records a replacement and
+clears pending Redo, even when its geometry is identical.
 
 `Trim=No` retains both complete sources and adds only the arc. Join is unavailable
 until Trim is restored. Radius, Join, Trim and extension choices persist for the
@@ -38,7 +39,8 @@ extension options. See [closed-source evidence](../fillet-closed.md) and
 
 With radius zero, intersecting or extended open partners trim to the picked
 intersection without an arc. `Trim=No` is a no-op. An already meeting open piece
-can still record a replacement and clear Redo. See [zero-radius behavior](../fillet-zero.md).
+can still record a replacement and clear Redo. See [zero-radius behavior for open
+curves](../fillet-open-zero.md) and [closed-source coverage](../fillet-zero.md).
 
 On one parent, Trim retains the two open ends or one cyclic closed remainder.
 Join replaces that parent in place; without Join, a second open remainder is new,
@@ -54,7 +56,7 @@ Fillet Sources=id1,id2 Pick1=3.7,0,0 Pick2=4,0.3,0 Radius=0.5 Join=No
 Fillet Sources=id,id Pick1=2.5,0,0 Pick2=4,1.5,0 Radius=0.5 Join=Yes
 ```
 
-For open sources, picks identify an end; they do not need to lie exactly on a curve. Line ends may be
+For open sources, picks identify a retained side; they do not need to lie exactly on a curve. Line ends may be
 extended to their supporting-line intersection. `ExtendArcsBy=Arc|Line`
 continues nonmeeting arcs on their supporting circle or adds a tangent line.
 `ExtendOtherCurvesBy=Line|Smooth` adds a tangent line or smoothly continues a

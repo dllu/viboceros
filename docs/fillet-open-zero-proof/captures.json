@@ -1,0 +1,72 @@
+[
+  {
+    "family": "fillet_open_zero_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_open_zero_pilot"
+    ],
+    "exit_status": 0,
+    "request_sha256": "4a8348272f0a516fa2590101b14635da52ae3382af790b0b43bf863e0e2457a6",
+    "observation_sha256": "46eae21d69b807fe271acb0b1ce8ea9c2f68f0f168da730c0a5b1b243b8864b9",
+    "log": "capture-pilot.log.gz"
+  },
+  {
+    "family": "fillet_open_zero_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_open_zero_holdouts"
+    ],
+    "exit_status": 0,
+    "request_sha256": "49598b9f288dd2d314249a0a5b7b6167dfa2542c85ad37076ddb9aa1503d4eef",
+    "observation_sha256": "54394a96aa79c86f1bd849e7138abc22d8ca775ac5a66b9b4467722b4a77aed3",
+    "log": "capture-holdouts.log.gz"
+  },
+  {
+    "family": "fillet_open_zero_overlap_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_open_zero_overlap_final"
+    ],
+    "exit_status": 0,
+    "request_sha256": "af6459f2b1cd9483e83cb3fcf9a5d9807387b94cfd156508fc7178ea04ef3b2a",
+    "observation_sha256": "29b62ac5187144969a2c3f1547c3218c106bd69ecd33798b131683e4fc65e306",
+    "log": "capture-overlap_final.log.gz"
+  },
+  {
+    "family": "fillet_open_zero_bounds",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_open_zero_bounds"
+    ],
+    "exit_status": 0,
+    "request_sha256": "1cfdb3184873c1cadebda2ecdde834e71720418f6425ad4e468caa3a134308e4",
+    "observation_sha256": "4d35a55d0b8bc1f1a454dd41fbdbf53300fde1577d5db5e838ed69c1b43ff7c5",
+    "log": "capture-bounds.log.gz"
+  },
+  {
+    "family": "fillet_open_zero_orientations",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_open_zero_orientations"
+    ],
+    "exit_status": 0,
+    "request_sha256": "2bd402c3bcf73e4905e58f4035354ab30ca57f84d8fd4b3365b9d24281c7e41c",
+    "observation_sha256": "723a2807cf7dac04f750f51b2ca348c3e6413acdb9e4b60a1702e26df20da307",
+    "log": "capture-orientations.log.gz"
+  }
+]

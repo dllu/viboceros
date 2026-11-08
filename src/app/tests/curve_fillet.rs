@@ -27,7 +27,7 @@ pub(super) fn replay_filtered(
     let mut count = 0;
     for family in families {
         let mut previous = viboceros_command::fillet::Preferences::default();
-        for row in native::read(family)["results"].as_array().unwrap() {
+        for row in inputs::read(family)["results"].as_array().unwrap() {
             let value = &row["value"];
             let options = inputs::initial(value, previous);
             previous = viboceros_command::fillet::Preferences {
@@ -105,6 +105,7 @@ pub(super) fn replay_filtered(
             if family.starts_with("fillet_self_")
                 || family.starts_with("fillet_continuation_")
                 || family.starts_with("fillet_zero_")
+                || family.starts_with("fillet_open_zero_")
             {
                 let outcome = value["events"]
                     .as_array()
@@ -120,7 +121,7 @@ pub(super) fn replay_filtered(
                         "Unable to fillet these curves"
                     );
                 }
-                if outcome == "Success" && value["history_changed"] == false {
+                if outcome == "Success" && !inputs::history_recorded(value) {
                     assert!(
                         app.command_log
                             .back()

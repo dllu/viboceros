@@ -1,7 +1,6 @@
 //! Contact-first fillets: a closed parent is retained in full, never opened.
 use super::{prepare::Plan, *};
 mod continuation;
-mod zero;
 
 pub(super) fn prepare(
     curves: [&Curve3; 2],
@@ -10,9 +9,6 @@ pub(super) fn prepare(
     options: Preferences,
     tolerance: Tolerance,
 ) -> Result<Plan, CommandError> {
-    if options.radius == 0. {
-        return zero::prepare(curves, picks, closed, options, tolerance);
-    }
     let seed = [
         curves[0].as_ref().closest_parameter(picks[0], tolerance)?,
         curves[1].as_ref().closest_parameter(picks[1], tolerance)?,

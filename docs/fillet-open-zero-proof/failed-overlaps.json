@@ -1,0 +1,41 @@
+{
+  "family": "fillet_open_zero_overlaps",
+  "exit_status": 1,
+  "native_observations": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_open_zero_overlaps"
+  ],
+  "request_sha256": "f83755d696919906c204bd0747c14e116a1940401634deb74d486308754fe4f2",
+  "sources": {
+    "generate_fillet_open_zero_overlaps.py": "febf81b814010a5e7f436f9c5f7028e9934e7bdc6a00a6ef7b6dc7bf9a142554",
+    "structural_sdk.py": "cb7bbd77aa3e081b601d4afc4f69216197cbc893473948ed9dcae0fb5d0ec223",
+    "rhino_worker.py": "85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5",
+    "client.py": "d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "fillet_command_probe.py": "8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579",
+    "fillet_command.py": "14605f5b314c04c44c294215d919b9c13d8c38b61ed5d3ad464ba05b879ce2b4",
+    "fillet_closed_cases.py": "c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae",
+    "fillet_self_cases.py": "6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2",
+    "fillet_continuation_cases.py": "97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6",
+    "fillet_zero_cases.py": "7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97",
+    "fillet_open_zero_cases.py": "c4fcbd89406dae10154daf67eb6b4a60879b5ad010ba2ad97ce2639df4476c94",
+    "blend_curve_display_capture.py": "987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56",
+    "line_scene_probe.py": "a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "log": "failed-overlaps.log.gz",
+  "reason": "The long-line picks projected one pixel apart and opened an unresponsive Selection Menu. The owned Rhino PID and settings scheme were verified before termination. No observations published."
+}

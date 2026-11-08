@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_collinear_parts",
+      "case": "open_zero_smooth_collinear_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_collinear_unequal",
+      "case": "open_zero_smooth_collinear_unequal"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_collinear_reversed",
+      "case": "open_zero_smooth_collinear_reversed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_collinear_joined",
+      "case": "open_zero_smooth_collinear_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_far_line",
+      "case": "open_zero_far_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_far_smooth",
+      "case": "open_zero_far_smooth"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_far_beyond",
+      "case": "open_zero_far_beyond"
+    }
+  ]
+}

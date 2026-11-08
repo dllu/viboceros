@@ -4,6 +4,8 @@ use viboceros_geometry::{
     CurveCurveIntersectionEvent, NurbsCurve, Point3, Tolerance, WeightedPoint3,
 };
 use viboceros_smlib::curve_intersection_events;
+#[path = "curve_intersections/bounded_lines.rs"]
+mod bounded_lines;
 fn curve(xy: &[[f64; 2]], domain: [f64; 2], gauge: f64, plane: usize) -> NurbsCurve {
     let degree = xy.len() - 1;
     let points = xy

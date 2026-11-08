@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "open_zero_reverse_parts",
+      "case": "open_zero_reverse_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_reverse_joined",
+      "case": "open_zero_reverse_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_crossing_parts",
+      "case": "open_zero_crossing_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_crossing_joined",
+      "case": "open_zero_crossing_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_crossing_reverse",
+      "case": "open_zero_crossing_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_meeting_arc",
+      "case": "open_zero_meeting_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_meeting_nurbs",
+      "case": "open_zero_meeting_nurbs"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_arc_arc",
+      "case": "open_zero_arc_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_arc_line",
+      "case": "open_zero_arc_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_nurbs_line",
+      "case": "open_zero_nurbs_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_nurbs_smooth",
+      "case": "open_zero_nurbs_smooth"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_spatial",
+      "case": "open_zero_spatial"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_noncoplanar",
+      "case": "open_zero_noncoplanar"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_skew_parts",
+      "case": "open_zero_skew_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_skew_untrimmed",
+      "case": "open_zero_skew_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_collinear",
+      "case": "open_zero_collinear"
+    }
+  ]
+}

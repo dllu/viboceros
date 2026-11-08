@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "open_zero_meeting_parts",
+      "case": "open_zero_meeting_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_meeting_joined",
+      "case": "open_zero_meeting_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_meeting_untrimmed",
+      "case": "open_zero_meeting_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_parallel_parts",
+      "case": "open_zero_parallel_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_parallel_untrimmed",
+      "case": "open_zero_parallel_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_extension_parts",
+      "case": "open_zero_extension_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_dynamic_cancel",
+      "case": "open_zero_dynamic_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_dynamic_accept",
+      "case": "open_zero_dynamic_accept"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_to_positive",
+      "case": "open_zero_to_positive"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_from_positive",
+      "case": "open_zero_from_positive"
+    }
+  ]
+}

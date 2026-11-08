@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_orientation_translated",
+      "case": "open_zero_smooth_orientation_translated"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_orientation_vertical",
+      "case": "open_zero_smooth_orientation_vertical"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_orientation_negative",
+      "case": "open_zero_smooth_orientation_negative"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_orientation_tilted",
+      "case": "open_zero_smooth_orientation_tilted"
+    },
+    {
+      "op": "fillet_command",
+      "id": "open_zero_smooth_orientation_dominant",
+      "case": "open_zero_smooth_orientation_dominant"
+    }
+  ]
+}

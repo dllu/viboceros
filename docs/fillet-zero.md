@@ -49,8 +49,8 @@ python3 -m tools.rhino_oracle.check_fillet_zero
 Captures use private Xvfb displays; egui/application checks open no windows.
 Authored definitions and pre-command sight points supply inputs. Native outputs
 serve only as expectations, with a 1e-6 model gate. This is finite coverage of
-distinct pairs containing a closed source. Distinct-open and same-parent paths
-remain separate. Arbitrary overlaps, tied contacts, folded continuations, rational
+distinct pairs containing a closed source. [Coverage for two open curves](fillet-open-zero.md)
+and same-parent behavior have separate fixtures. Arbitrary overlaps, tied contacts, folded continuations, rational
 poles, nonplanar closed curves, tiny positive radii and corner contacts remain
 unqualified. There is no continuous-distance, pixel-equality or comparative
 performance claim.
