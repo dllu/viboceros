@@ -1,0 +1,1487 @@
+{
+  "scope": "Open untrimmed rational OffsetSrf supports with G2 breaks and smooth source normals.",
+  "baseline_revision": "715527ed7d8ae0fb52f3be9a6c7a7fec0c6daaca",
+  "implementation_revision": "029a03f6bd45d776301f229e7efec8a4eb350c0b",
+  "observations": 48,
+  "Success": 40,
+  "qualified": 45,
+  "Cancel": 8,
+  "diagnostics": 3,
+  "failed_attempts": 1,
+  "portable_supported": 23,
+  "native_supported": 45,
+  "archive_round_trips": 136,
+  "geometry_baseline": {
+    "revision": "715527ed7d8ae0fb52f3be9a6c7a7fec0c6daaca",
+    "implementation_revision": "a2452ac0d5fd0b6f98a1ca936c7b6806d858d11b",
+    "tests_passed": 2870,
+    "tests_ignored": 10,
+    "unchanged_git_trees": {
+      "crates/viboceros-geometry": "dc709e64d10197c93f14ed71640bed3de6a9f0cf",
+      "crates/viboceros-opennurbs": "e5b8c8d59aac14b56bb577c3828dc7abe74717df",
+      "third_party/opennurbs": "23fc677ba06e49212296ca75fab7fb6c2851b4ce"
+    }
+  },
+  "implementation": "Fit smooth source patches in inherited parameters through SMLib. Insert the union of corresponding support knots before independent finite source-normal admission and ordinary continuous boundary sewing at document tolerance. Preflight the unchanged one-million-station budget before refinement. Preserve face sense and command history policy.",
+  "comparison": "Authored inputs only; retained native coefficients are expectations. All retained API/UI geometry, metadata, preview purity, actual history and archive gates replay. Model-space epsilon remains 1e-6 for planes or max(1e-5,2*requested) for curved refits. Product normal-field stations remain bounded by requested+1e-10. Native reference admission uses max(document,requested); product validation retains document tolerance.",
+  "rational_edges": "Fresh rational cases compare face/edge/vertex counts, trim kinds, inherited charts, normal sense and bidirectional finite stored-edge samples. One final BothSides case explicitly retains product face counts [4,4] versus native [4,3]; its finite surface images, every spatial edge against the other shape, and exterior boundary sets use the same positional epsilon. Equal internal subdivisions are not claimed for that case.",
+  "full_native_parity": false,
+  "continuous_true_offset_bound": false,
+  "rhino_performance_qualified": false,
+  "maximum_geometry_difference": 0.0004664797806917676,
+  "maximum_product_sampled_field_error": 8.034305747188272e-06,
+  "maximum_native_sampled_field_error": 0.00046647996745662057,
+  "limits": [
+    "One retained skin has an additional internal product edge; native subdivision parity and derivative/normal-angle parity remain unqualified.",
+    "Finite station checks do not certify continuous distance to the ideal offset. Singularities, collapse, self-intersections and arbitrarily fine requests remain unqualified.",
+    "Trimmed curvature breaks, G1 creases, closed supports and solid rational walls retain their existing paths and exclusions. Earlier unrelated geometry exclusions remain."
+  ],
+  "captures": [
+    {
+      "family": "offset_srf_tolerance_pilot",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "f0ccde24f3576431b8d30da3443f973c0ee66a290ff13cd56a286c7a0f793020"
+    },
+    {
+      "family": "offset_srf_tolerance_holdouts",
+      "observations": 15,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "199e3bf6bad18f78d0bafc8b195493275ee75ee82d7bf6b473503b59ec9b8d06"
+    },
+    {
+      "family": "offset_srf_tolerance_final",
+      "observations": 7,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e2f637045a88e047b7279bdcd536b38fae09957a58ddcdeba0be93bed73910c6"
+    },
+    {
+      "family": "offset_srf_trims",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "22b93ea4a5ce3fce1be9b0c693e02314ebf695da1c9a202efd3d3ed827a294b3"
+    },
+    {
+      "family": "offset_srf_trims_final",
+      "observations": 1,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "d0906f1d7dc81fadf52732541ee1454cafa6be0c13c696a7ada6ef8c5ba78c29"
+    },
+    {
+      "family": "offset_srf_rational_pilot",
+      "observations": 3,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "100cd7adcc4b8ba2fa2b31184fc5bd3df16c260f1b6795935e7eeb851d77c471"
+    },
+    {
+      "family": "offset_srf_rational_holdouts",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "9ff08656aaeac931defcdc5530337864548c703ba84dc3d15fb8ec3b5abdb9e8"
+    },
+    {
+      "family": "offset_srf_rational_final",
+      "observations": 2,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "946fc0df2faac69023af66d288490872c47d990998d5fb107a009437a3f2feca"
+    }
+  ],
+  "cases": [
+    {
+      "id": "offset_rf_cubic_postselect",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-05,
+      "epsilon": 2e-05,
+      "native_reference_tolerance": 1e-05,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 5.449914638437509e-06,
+      "command_native_maximum_field_error": 7.271950837658566e-09,
+      "command_native_native_maximum_field_error": 3.98212637607067e-06,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 5.449914638437509e-06,
+      "ui_native_maximum_field_error": 7.271950837658566e-09,
+      "ui_native_native_maximum_field_error": 3.98212637607067e-06
+    },
+    {
+      "id": "offset_rf_two_axes_both",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            4,
+            12,
+            9
+          ],
+          [
+            3,
+            10,
+            8
+          ]
+        ],
+        "product": [
+          [
+            4,
+            12,
+            9
+          ],
+          [
+            4,
+            12,
+            9
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 7.935273582138712e-05,
+      "command_native_maximum_field_error": 8.690258863789917e-09,
+      "command_native_native_maximum_field_error": 7.352009006836672e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            4,
+            12,
+            9
+          ],
+          [
+            3,
+            10,
+            8
+          ]
+        ],
+        "product": [
+          [
+            4,
+            12,
+            9
+          ],
+          [
+            4,
+            12,
+            9
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 7.935273582138712e-05,
+      "ui_native_maximum_field_error": 8.690258863789917e-09,
+      "ui_native_native_maximum_field_error": 7.352009006836672e-05
+    },
+    {
+      "id": "offset_rh_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-05,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_topology": {
+        "native": [],
+        "product": []
+      },
+      "command_portable_maximum_geometry_error": 2.7012892057857038e-15,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_topology": {
+        "native": [],
+        "product": []
+      },
+      "ui_portable_maximum_geometry_error": 2.7012892057857038e-15,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_topology": {
+        "native": [],
+        "product": []
+      },
+      "command_native_maximum_geometry_error": 2.7012892057857038e-15,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_topology": {
+        "native": [],
+        "product": []
+      },
+      "ui_native_maximum_geometry_error": 2.7012892057857038e-15,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_rh_reversed_chart",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 3.0267992500990573e-05,
+      "command_native_maximum_field_error": 5.7744838010781725e-09,
+      "command_native_native_maximum_field_error": 3.0271907692451128e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 3.0267992500990573e-05,
+      "ui_native_maximum_field_error": 5.7744838010781725e-09,
+      "ui_native_native_maximum_field_error": 3.0271907692451128e-05
+    },
+    {
+      "id": "offset_rh_two_axes",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            4,
+            12,
+            9
+          ]
+        ],
+        "product": [
+          [
+            4,
+            12,
+            9
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 3.4665039640844075e-05,
+      "command_native_maximum_field_error": 5.8413529132748674e-09,
+      "command_native_native_maximum_field_error": 2.77095354412072e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            4,
+            12,
+            9
+          ]
+        ],
+        "product": [
+          [
+            4,
+            12,
+            9
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 3.4665039640844075e-05,
+      "ui_native_maximum_field_error": 5.8413529132748674e-09,
+      "ui_native_native_maximum_field_error": 2.77095354412072e-05
+    },
+    {
+      "id": "offset_rh_v_break",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 3.257112607044955e-05,
+      "command_native_maximum_field_error": 4.268703750846537e-09,
+      "command_native_native_maximum_field_error": 3.257296663774781e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 3.257112607044955e-05,
+      "ui_native_maximum_field_error": 4.268703750846537e-09,
+      "ui_native_native_maximum_field_error": 3.257296663774781e-05
+    },
+    {
+      "id": "offset_rp_both",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ],
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ],
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 6.0542650836942287e-05,
+      "command_native_maximum_field_error": 6.112067404316817e-09,
+      "command_native_native_maximum_field_error": 6.0543815387543935e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ],
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ],
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 6.0542650836942287e-05,
+      "ui_native_maximum_field_error": 6.112067404316817e-09,
+      "ui_native_native_maximum_field_error": 6.0543815387543935e-05
+    },
+    {
+      "id": "offset_rp_fine",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-05,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 7.09065025525806e-07,
+      "command_native_maximum_field_error": 6.112067404316817e-09,
+      "command_native_native_maximum_field_error": 7.086503147608955e-07,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 7.09065025525806e-07,
+      "ui_native_maximum_field_error": 6.112067404316817e-09,
+      "ui_native_native_maximum_field_error": 7.086503147608955e-07
+    },
+    {
+      "id": "offset_rp_negative",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "command_native_maximum_geometry_error": 3.632173373254705e-05,
+      "command_native_maximum_field_error": 5.7577728166239014e-09,
+      "command_native_native_maximum_field_error": 3.6326289232739556e-05,
+      "ui_native_topology": {
+        "native": [
+          [
+            2,
+            7,
+            6
+          ]
+        ],
+        "product": [
+          [
+            2,
+            7,
+            6
+          ]
+        ]
+      },
+      "ui_native_maximum_geometry_error": 3.632173373254705e-05,
+      "ui_native_maximum_field_error": 5.7577728166239014e-09,
+      "ui_native_native_maximum_field_error": 3.6326289232739556e-05
+    },
+    {
+      "id": "offset_te_batch",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 2.3535809635495546e-05,
+      "command_native_maximum_field_error": 6.936145105427759e-06,
+      "command_native_native_maximum_field_error": 1.7048054435731435e-05,
+      "ui_native_maximum_geometry_error": 2.3535809635495546e-05,
+      "ui_native_maximum_field_error": 6.936145105427759e-06,
+      "ui_native_native_maximum_field_error": 1.7048054435731435e-05
+    },
+    {
+      "id": "offset_te_both",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 3.0906750089071515e-05,
+      "command_native_maximum_field_error": 8.034305747188272e-06,
+      "command_native_native_maximum_field_error": 3.199043664671209e-05,
+      "ui_native_maximum_geometry_error": 3.0906750089071515e-05,
+      "ui_native_maximum_field_error": 8.034305747188272e-06,
+      "ui_native_native_maximum_field_error": 3.199043664671209e-05
+    },
+    {
+      "id": "offset_te_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_te_delete_postselect",
+      "native_result": "Success",
+      "qualified": false,
+      "reason": "DeleteInput was sent while hidden with Solid=No; Rhino ignored it. A fresh capture sets it while Solid=Yes before offsetting an open sheet."
+    },
+    {
+      "id": "offset_te_fine",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-05,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 2.2836193714131497e-06,
+      "command_native_maximum_field_error": 4.046843241931096e-08,
+      "command_native_native_maximum_field_error": 1.5529490979112437e-06,
+      "ui_native_maximum_geometry_error": 2.2836193714131497e-06,
+      "ui_native_maximum_field_error": 4.046843241931096e-08,
+      "ui_native_native_maximum_field_error": 1.5529490979112437e-06
+    },
+    {
+      "id": "offset_te_narrow",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 1.5246372738565867e-05,
+      "command_native_maximum_field_error": 4.712372736122232e-06,
+      "command_native_native_maximum_field_error": 1.3995535590548322e-05,
+      "ui_native_maximum_geometry_error": 1.5246372738565867e-05,
+      "ui_native_maximum_field_error": 4.712372736122232e-06,
+      "ui_native_native_maximum_field_error": 1.3995535590548322e-05
+    },
+    {
+      "id": "offset_te_negative",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 1.8948218865630306e-05,
+      "command_native_maximum_field_error": 4.790922187545482e-06,
+      "command_native_native_maximum_field_error": 1.987534807230849e-05,
+      "ui_native_maximum_geometry_error": 1.8948218865630306e-05,
+      "ui_native_maximum_field_error": 4.790922187545482e-06,
+      "ui_native_native_maximum_field_error": 1.987534807230849e-05
+    },
+    {
+      "id": "offset_te_reversed",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 2.3535858881037256e-05,
+      "command_native_maximum_field_error": 8.034305747188272e-06,
+      "command_native_native_maximum_field_error": 1.7048054435795203e-05,
+      "ui_native_maximum_geometry_error": 2.3535858881037256e-05,
+      "ui_native_maximum_field_error": 8.034305747188272e-06,
+      "ui_native_native_maximum_field_error": 1.7048054435795203e-05
+    },
+    {
+      "id": "offset_tef_delete_postselect",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 2.2492079019519336e-05,
+      "command_native_maximum_field_error": 4.201095357393648e-06,
+      "command_native_native_maximum_field_error": 1.7048054435731435e-05,
+      "ui_native_maximum_geometry_error": 2.2492079019519336e-05,
+      "ui_native_maximum_field_error": 4.201095357393648e-06,
+      "ui_native_native_maximum_field_error": 1.7048054435731435e-05
+    },
+    {
+      "id": "offset_tf_bezier_finer",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-07,
+      "epsilon": 1e-05,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 4.816592382235341e-07,
+      "command_native_maximum_field_error": 7.702516754817442e-09,
+      "command_native_native_maximum_field_error": 3.6491822556825115e-07,
+      "ui_native_maximum_geometry_error": 4.816592382235341e-07,
+      "ui_native_maximum_field_error": 7.702516754817442e-09,
+      "ui_native_native_maximum_field_error": 3.6491822556825115e-07
+    },
+    {
+      "id": "offset_tf_default_document",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.003,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.003,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tf_default_follow",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.004,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.004,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tf_postselect",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0002,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tf_postselect_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 0.0002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0002,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tf_remember_document",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.003,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tf_remember_set",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 0.0002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0002,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_after_escape",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_bezier_both",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 0.0001437451301097546,
+      "command_native_maximum_field_error": 4.812802256488409e-07,
+      "command_native_native_maximum_field_error": 6.828043723431992e-05,
+      "ui_native_maximum_geometry_error": 0.0001437451301097546,
+      "ui_native_maximum_field_error": 4.812802256488409e-07,
+      "ui_native_native_maximum_field_error": 6.828043723431992e-05
+    },
+    {
+      "id": "offset_th_bezier_coarse",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.001,
+      "epsilon": 0.002,
+      "native_reference_tolerance": 0.001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 0.0004664797806917676,
+      "command_native_maximum_field_error": 7.702516754817442e-09,
+      "command_native_native_maximum_field_error": 0.00046647996745662057,
+      "ui_native_maximum_geometry_error": 0.0004664797806917676,
+      "ui_native_maximum_field_error": 7.702516754817442e-09,
+      "ui_native_native_maximum_field_error": 0.00046647996745662057
+    },
+    {
+      "id": "offset_th_bezier_fine",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-05,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 3.0694484392396894e-06,
+      "command_native_maximum_field_error": 7.702516754817442e-09,
+      "command_native_native_maximum_field_error": 2.0173429614587793e-06,
+      "ui_native_maximum_geometry_error": 3.0694484392396894e-06,
+      "ui_native_maximum_field_error": 7.702516754817442e-09,
+      "ui_native_native_maximum_field_error": 2.0173429614587793e-06
+    },
+    {
+      "id": "offset_th_bezier_solid",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 5.673873535339419e-05,
+      "command_native_maximum_field_error": 7.702516754817442e-09,
+      "command_native_native_maximum_field_error": 5.673873535297711e-05,
+      "ui_native_maximum_geometry_error": 5.673873535339419e-05,
+      "ui_native_maximum_field_error": 7.702516754817442e-09,
+      "ui_native_native_maximum_field_error": 5.673873535297711e-05
+    },
+    {
+      "id": "offset_th_default_option",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_explicit_document",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_explicit_new_document",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.003,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.003,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_getter_escape",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_getter_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_inline",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0003,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0003,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_loose_toggle",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0002,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_th_rational",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 4.2536166280917726e-05,
+      "command_native_maximum_field_error": 6.112067404316817e-09,
+      "command_native_native_maximum_field_error": 4.403395266590202e-05,
+      "ui_native_maximum_geometry_error": 4.2536166280917726e-05,
+      "ui_native_maximum_field_error": 6.112067404316817e-09,
+      "ui_native_native_maximum_field_error": 4.403395266590202e-05
+    },
+    {
+      "id": "offset_th_trimmed",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 0.0002,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_atomic_decline": true,
+      "ui_portable_atomic_decline": true,
+      "command_native_maximum_geometry_error": 2.2492079019519336e-05,
+      "command_native_maximum_field_error": 4.201095357393648e-06,
+      "command_native_native_maximum_field_error": 1.7048054435731435e-05,
+      "ui_native_maximum_geometry_error": 2.2492079019519336e-05,
+      "ui_native_maximum_field_error": 4.201095357393648e-06,
+      "ui_native_native_maximum_field_error": 1.7048054435731435e-05
+    },
+    {
+      "id": "offset_th_units",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_default",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 1e-06,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 1e-06,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_document",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.003,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.003,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_getter_cancel",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "Two Escapes were sent; the redundant second key may have entered the following command."
+    },
+    {
+      "id": "offset_tp_getter_keep",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "The following command received no owned input after the two-Escape pilot; a fresh session repeats Enter retention."
+    },
+    {
+      "id": "offset_tp_menu",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_negative",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.002,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.002,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    },
+    {
+      "id": "offset_tp_remember",
+      "native_result": "Success",
+      "qualified": true,
+      "requested_tolerance": 0.0001,
+      "epsilon": 1e-06,
+      "native_reference_tolerance": 0.0001,
+      "command_portable_maximum_geometry_error": 0.0,
+      "command_portable_maximum_field_error": 0.0,
+      "command_portable_native_maximum_field_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_field_error": 0.0,
+      "ui_portable_native_maximum_field_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "command_native_maximum_field_error": 0.0,
+      "command_native_native_maximum_field_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_field_error": 0.0,
+      "ui_native_native_maximum_field_error": 0.0
+    }
+  ],
+  "checks": [
+    {
+      "name": "command-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "offset-library-portable",
+      "status": 0
+    },
+    {
+      "name": "offset-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "shell-command-portable",
+      "status": 0
+    },
+    {
+      "name": "shell-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "native-sheet-export",
+      "status": 0
+    },
+    {
+      "name": "native-rational-fit",
+      "status": 0
+    },
+    {
+      "name": "trim-curvature-guard",
+      "status": 0
+    },
+    {
+      "name": "command-native",
+      "status": 0
+    },
+    {
+      "name": "trim-command-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "offset-library-native",
+      "status": 0
+    },
+    {
+      "name": "offset-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "shell-command-native",
+      "status": 0
+    },
+    {
+      "name": "shell-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/src/offset_surface/native.rs": "c05f3da7fc9c99120c04a4363a279d1110f9103b0f99b5d839cbc22e6776758e",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/src/offset_surface/native/partitioned.rs": "5be05a1d7f8f873d13ca4bbaec1dc2c9fc34ce65e2e754af5523e10ac6963ca0",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/src/offset_surface/native/partitioned/alignment.rs": "bf4750598c79ff7a996db1383b4058bdd2770aeac3485ba852f21c9d335dcd14",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/src/offset_surface/native/partitioned/alignment/tests.rs": "ba74ba48d743e943eee2bf59e4037b1ba318b824d53efb18b6dfed89ecaab0ff",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/tests/offset_surface_tolerance.rs": "48b661f448fc47216164ce828e31415dd9ed948485397b7ff79cf9f2aa5d6082",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/tests/support/offset_surface_loose.rs": "1c0e88ea925334d0695b5fa15135be1e01f8d3030d98817cec632d0f4a435e38",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/tests/support/offset_surface_rational.rs": "d57e85652019112dd61d04387f30cc52e2c38f90acc76b4fbb846176c4366976",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/tests/support/offset_surface_rational_partition.rs": "c96ee65e19559522d3e49d04fcbb9423efa93c79ff450f4b06d7f915180317ff",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-command/tests/support/offset_surface_tolerance.rs": "eb953f9e9c57ffebf9aa89d7ddb42c142bd7076ab77654173fcf92d8fa749b49",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/native/bridge.cpp": "407c5126d62fd3ef83b3bd5d054af99bc8667f1d7d97ef70f9d25419b6904078",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/native/surface_offset.h": "a182ff38d5d10a361affed655c90e7514f6b8b6341a434c7c939aa1d7c15f6d8",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/src/lib.rs": "6b372bfc0992ec93feff763172e12ddb31ad07831d787e0049ae2c43ddb6beff",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/src/native.rs": "bacaf617b081025340a2ef884907314e4f411ff3bf305257b65749164a754eef",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/src/native/surface_offset.rs": "5fba58be30d97c0df49dcf9b40b7e2589b23ccb9b25dc35da0a100c134428adb",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:crates/viboceros-smlib/tests/surface_offset.rs": "9e72d1730ffeb350ec977f685a5b3dc6ed3ceb20a6d4c0ef8db2ffe5295b4b18",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/commands/offset-srf.md": "432aa071141f7149df8b3f46b786d948ed2516750d3464a8c11eadf9a13997ab",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-rational-proof/captures.json": "a542e791134fee97a677857e0d37034d0066e0ab4fca8dd3ff6794f0978adcbf",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-rational-proof/final-capture.log.gz": "a7104ae3143c38dc43ffdad83bdefcaa48963be5ea5ea262b302f03ab040e4f5",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-rational-proof/holdouts-capture.log.gz": "69ff6a2f408ea4ab569afb3450678e300f8b702fcc123cf9da97e50f5accd741",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-rational-proof/pilot-capture.log.gz": "ba97f4439e9e159f94e17612cb5cd424ed7516be57daa382a5055a358e844e99",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-rational.md": "3b43df00825989992faaca49d19e088bc4aa9f478098de245ea5b17e9b4e1c96",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-tolerance.md": "ac0dfca11f0da2b1849ff7ef08e210de6b47bd2a01d45d04a8e8c3f9c2f9c742",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:docs/offset-srf-trims.md": "89ff9a5937e90998a3ea3bb83a73aaaee5947058396901ea7fbe5a5a9227cc04",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:src/app/tests/offset_surface_tolerance.rs": "c6bda3334fb77f407ceff1012f89f6389e29f2d769bd9a7a4463d60fa35060e5",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/check_offset_srf_rational.py": "fac6c7c79a162ce99023e0d5ad3ded93a7e0064bb0d62d95ee4bb3386cce8589",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/fixtures/offset_srf_rational_final.json": "e0dfcd2c166eba89f8342fd04a6224c25e8f79f42a63a03ca36e3e4f50a57d8e",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/fixtures/offset_srf_rational_holdouts.json": "49fba837a952dac903a9914f4dd435d755dd23f8edad7a94183211a38a263b27",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/fixtures/offset_srf_rational_pilot.json": "f5fbff40ec2f8b69ecbf7f7f831e23be3682509fd9e77e36b0a64d1f0d7c3694",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/generate_offset_srf_rational_final.py": "14b61650c377c177207b8dd73de4eac81538badb943a8d228ecc0393e2b9db10",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/generate_offset_srf_rational_holdouts.py": "cca4787a123f9bd3e8a683a421199da4916f0fade9019894124bca5b2f2b8ed8",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/generate_offset_srf_rational_pilot.py": "e0d9f6ed2b72857cd888d4a86e1d04db268f8466213de090feef0d376e437ee7",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/offset_srf_rational_final.json.gz": "3f577ca2833c6539cb47d880773a77634cf41a88bff2b672eae2286642e8a16d",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/offset_srf_rational_holdouts.json.gz": "dcc4f765d3d92aca1a1922a95c3f03e69af6c9f96cbd86c4ea1095473be2afd1",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/offset_srf_rational_pilot.json.gz": "b415938c318324731db542fcf21f904e04851f118e3978bce32c706e80b3d87f",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/14b61650c377c177207b8dd73de4eac81538badb943a8d228ecc0393e2b9db10.gz": "9600d2fa77c8f9b988d8c95f267f798f957ce833d1416fce2d88809a49d95482",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/185842ab84656a8bace244c35b439a13d41460cab40d5b38c3b0d336a8997897.gz": "a96f692c5752a210fa76f2ba7cd261bea567e7d092455d73554efd93fc064686",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/38094230a98fad89382d6b65895e60cf056885ba57fac60e38b3a67361a409d9.gz": "c713ea96405ac06e08ae341f7cc41e32c621069b4596c92b932417be685653bc",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/44340062cb176251a9dcb7235e6e625fd5ba7ca4ea8a085c47af12f6d3d90f2c.gz": "0bf67eb7c27b0a608c4249194437d4422191cce6d53176966a28b63c75b0f6e0",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/4f611f22b3fa3024d3265d5bf9b20bd31ff6ad63c74cc8db561681e29a964606.gz": "015b8572496c6b426eca29ddec6f797e16195b8efe061e75a9a237aa91dfe193",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/830861ce1b102cd6ad10093968798d8579251acd1031b48fa5ae383ea738b68c.gz": "ed51c17fb7e3590cf3bee8e9c1b70c2fd33c28b5a26247b81d0b7c335c10ca62",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/9d7cf0bcd8f09c2be094c4751160a53841c66d2e9adb1c113adfc9a8bc19643a.gz": "b3262daad6652a14922d057dddc377f4015df0a2afb72b647c28d8f5f309d67c",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/cca4787a123f9bd3e8a683a421199da4916f0fade9019894124bca5b2f2b8ed8.gz": "f60afde0ce4e4ce952731a63ca9658f14022035f8d82d34db1410dc50eb098e5",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/d45d0bc2e73bdf52dba12cb39c51d225d328a705a9b8c8b3c98f6873dfbf70a4.gz": "4e58ac336a47852fc5e60cb55c64e58b62007f5572523fd795dee1bdc65e3437",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/observations/source_snapshots/e0d9f6ed2b72857cd888d4a86e1d04db268f8466213de090feef0d376e437ee7.gz": "c9609dc4cc5f52d7baaeed9301d482560e0d13db60fe31b9dee816b9adc54c52",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/offset_srf_rational_evidence.py": "99e76e80c7a3bb8c83dcfbc34d09e9dcdb3698b2e9359f1e6432172222ff0fee",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/offset_surface_command.py": "4f611f22b3fa3024d3265d5bf9b20bd31ff6ad63c74cc8db561681e29a964606",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/offset_surface_rational_cases.py": "185842ab84656a8bace244c35b439a13d41460cab40d5b38c3b0d336a8997897",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/offset_surface_rational_final_cases.py": "44340062cb176251a9dcb7235e6e625fd5ba7ca4ea8a085c47af12f6d3d90f2c",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/report_offset_srf_rational.py": "3ecad73f1b2719f65ddc1c8d29232e8193f42af93a6e27f2ecbd7ece083698d9",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/rhino_worker.py": "d45d0bc2e73bdf52dba12cb39c51d225d328a705a9b8c8b3c98f6873dfbf70a4",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/structural_sdk.py": "38094230a98fad89382d6b65895e60cf056885ba57fac60e38b3a67361a409d9",
+    "029a03f6bd45d776301f229e7efec8a4eb350c0b:tools/rhino_oracle/test_offset_srf_rational.py": "c74e21e33907b7754bd377f6747e604a14bfdc86898f63de6411ca97e4ddbb34"
+  },
+  "evidence_sha256": {
+    "docs/certificate-norm-proof/geometry.log.gz": "c58cf92bf176be7999fe5757ce43bdd20214d74ba90251d835c0218e5dcb0ec4",
+    "docs/certificate-norm-validation.json": "6aed18a3d58a9e6b20bd778f15cfc64c3461c57c62f1f6117362ab8abe510c59",
+    "docs/offset-srf-rational-proof/captures.json": "a542e791134fee97a677857e0d37034d0066e0ab4fca8dd3ff6794f0978adcbf",
+    "docs/offset-srf-rational-proof/checks.json": "719cfa9ab4551bd97b501ea721a4dc1a9ace3be03552a3d99dc850ff28a6522f",
+    "docs/offset-srf-rational-proof/clippy-native.log.gz": "2090a3e048f34d5dbc03bd4bce7c7dc9170e49765759886071619938b0e35686",
+    "docs/offset-srf-rational-proof/clippy-portable.log.gz": "345593f81a3ca3d03223e9d1dc453b59fc46d51a24f9830871d3ad424ec2b379",
+    "docs/offset-srf-rational-proof/command-native.log.gz": "0b76fe7d44d57da9ced07932e672cb581faca6282d7beabdfb754ac839e243de",
+    "docs/offset-srf-rational-proof/command-portable.log.gz": "031cb127cccab82f9d1f272bda7b8f6d0f564ca15b227c9b3c2d294530c63503",
+    "docs/offset-srf-rational-proof/final-capture.log.gz": "a7104ae3143c38dc43ffdad83bdefcaa48963be5ea5ea262b302f03ab040e4f5",
+    "docs/offset-srf-rational-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/offset-srf-rational-proof/holdouts-capture.log.gz": "69ff6a2f408ea4ab569afb3450678e300f8b702fcc123cf9da97e50f5accd741",
+    "docs/offset-srf-rational-proof/native-rational-fit.log.gz": "6faf8aca796e72106b97a1969ddb549fe9339fe7cd12b5202b524f206eab2ab5",
+    "docs/offset-srf-rational-proof/native-sheet-export.log.gz": "d42a9807f7c80d159db5d7682f11214b08d834aef2ad2f40b40e3baf5e39f9a8",
+    "docs/offset-srf-rational-proof/offset-library-native.log.gz": "6cbb5901ca4bdf0f3bc36a6284775fb81ca7b433ba544818e9bd18c60e0ca6bd",
+    "docs/offset-srf-rational-proof/offset-library-portable.log.gz": "eee5052754a5b04229eafebdcbeb3fbcafab8bcf1a8db160138c8859dfa29848",
+    "docs/offset-srf-rational-proof/offset-regressions-native.log.gz": "742e28ce18df23e25edbd441ec1780e6c103dc3b9f1f9b823926544de05562c0",
+    "docs/offset-srf-rational-proof/offset-regressions-portable.log.gz": "81e16cb00f9edc738d0c711dc889ec1c6d678886c39d5309956a6840d88370a7",
+    "docs/offset-srf-rational-proof/pilot-capture.log.gz": "ba97f4439e9e159f94e17612cb5cd424ed7516be57daa382a5055a358e844e99",
+    "docs/offset-srf-rational-proof/python-subd.log.gz": "d979a44ed1e2286d0610eabcd0da6d85b8c86fc63bb0e580e3ef4cde0569645a",
+    "docs/offset-srf-rational-proof/python.log.gz": "636cc829558cd3f867c8957158267e1c8ed58262df0eeed70369ec6f693b4574",
+    "docs/offset-srf-rational-proof/shell-command-native.log.gz": "821f97a3bf3e07f8c6938fe381a3022fe2dbe8f3792288924e10c4ecb37daeb8",
+    "docs/offset-srf-rational-proof/shell-command-portable.log.gz": "c76b054c3b2a19386ce44e970ee138f1b37d4c5ceab98eb1302e30dfef3a8b9b",
+    "docs/offset-srf-rational-proof/shell-ui-native.log.gz": "1ef2acefbb3e9f5847646b5174a6ed53388350b556da055040c15de183358e16",
+    "docs/offset-srf-rational-proof/shell-ui-portable.log.gz": "aa8e4e5483dc8c020997c69ac1ba87c3778f6cea3cfb8a9065bdc84f93f8bb7e",
+    "docs/offset-srf-rational-proof/subd-command-native.log.gz": "74d97655e4fe18854de7cdafa5d853442fa73082d0a75a17f13a89e5776696af",
+    "docs/offset-srf-rational-proof/subd-ui-native.log.gz": "4539484e9c1915408cd317e9786a00032ff2d2b8fa55da74040e796d54688cd4",
+    "docs/offset-srf-rational-proof/trim-command-native.log.gz": "e01cd4061df4f667b2f93b74277f6bc01612f6ce3cef1780beb58b8e1d200a46",
+    "docs/offset-srf-rational-proof/trim-curvature-guard.log.gz": "92172327c01fec334ac52291b91a05807da6cff4a87d48a1373d297363a7e880",
+    "docs/offset-srf-rational-proof/ui-native.log.gz": "65418dbd512868eb184ba0f94c464c37a7612b5b475e8374daf1a5bc6203031f",
+    "docs/offset-srf-rational-proof/ui-portable.log.gz": "a2f5fe92bad8c287e05b0515002b4c05ad77e42c7fdeb30fb4c77235cf994d34",
+    "docs/offset-srf-tolerance-proof/captures.json": "097e61a4f903ceb013d155b83db4296124a62956f3e024c861efec04a98f9d12",
+    "docs/offset-srf-tolerance-proof/final-capture.log.gz": "cc9f990df8a5f8ab94890c6b75e586f4d64c15c54ca4ac3cbb84951d5fe14fe3",
+    "docs/offset-srf-tolerance-proof/holdouts-capture.log.gz": "9486090d9ee9a63f1284e19db5f4efe27d55c15cbeae9ed07cfac98077bccf6d",
+    "docs/offset-srf-tolerance-proof/pilot-capture.log.gz": "2ce860b64161d760c8236a845727b48639576be4af0f217b63e913135582d149",
+    "docs/offset-srf-trims-proof/capture-0.log.gz": "c4c5216a1d6e2e04ef9405f7bfee665493b4cc22b04e46ab4058395c32fb1567",
+    "docs/offset-srf-trims-proof/capture-1.log.gz": "2c0aaa8fba37dfd2018dd3db2a20add300e4459b976a3fa10210b1169407a32f",
+    "docs/offset-srf-trims-proof/captures.json": "39b5a49bbb21e88f5adc1456f74c70b1df0c0b7c69fc80bef430f8d246323918",
+    "docs/offset-srf-trims-proof/final-capture.log.gz": "52f2be375cbe67c9728e478d33359cd3498996f903cd83e184156489c422ce5c",
+    "tools/rhino_oracle/fixtures/offset_srf_rational_final.json": "e0dfcd2c166eba89f8342fd04a6224c25e8f79f42a63a03ca36e3e4f50a57d8e",
+    "tools/rhino_oracle/fixtures/offset_srf_rational_holdouts.json": "49fba837a952dac903a9914f4dd435d755dd23f8edad7a94183211a38a263b27",
+    "tools/rhino_oracle/fixtures/offset_srf_rational_pilot.json": "f5fbff40ec2f8b69ecbf7f7f831e23be3682509fd9e77e36b0a64d1f0d7c3694",
+    "tools/rhino_oracle/fixtures/offset_srf_tolerance_final.json": "62b4c4f51ca3090f235254de59f0588397b149ab9735261566435ba8e09cbe12",
+    "tools/rhino_oracle/fixtures/offset_srf_tolerance_holdouts.json": "041bd25a265152ebfabe138ef7cc1417aba140b052246335727ff57b50f58e8e",
+    "tools/rhino_oracle/fixtures/offset_srf_tolerance_pilot.json": "585d84005511a28fcc59d3fc2232f37dcfe5a11482b7fc8d98364eb1b010ac44",
+    "tools/rhino_oracle/fixtures/offset_srf_trims.json": "f5783e3e1e44f3a3598e42dcfc5f1c78a3ec9c5ef5a002b22f1c4b2803c576b2",
+    "tools/rhino_oracle/fixtures/offset_srf_trims_final.json": "41f7298266d12147bc70eefcc5621c38afa3d9659ecc64678d9c71cb5188fd3e",
+    "tools/rhino_oracle/observations/failures/offset_srf_trims-b0d8ac5627c792f665b392e8a5dba607c8557c823c3eb77c76b0e03b00fb1578.json.gz": "43ef77cf82188f732d00eb76c0332ab4015956bf48015995c156dd2a6af2942b",
+    "tools/rhino_oracle/observations/offset_srf_rational_final.json.gz": "3f577ca2833c6539cb47d880773a77634cf41a88bff2b672eae2286642e8a16d",
+    "tools/rhino_oracle/observations/offset_srf_rational_holdouts.json.gz": "dcc4f765d3d92aca1a1922a95c3f03e69af6c9f96cbd86c4ea1095473be2afd1",
+    "tools/rhino_oracle/observations/offset_srf_rational_pilot.json.gz": "b415938c318324731db542fcf21f904e04851f118e3978bce32c706e80b3d87f",
+    "tools/rhino_oracle/observations/offset_srf_tolerance_final.json.gz": "2f3400a055f91be8d19bb77096b969dc7150ca5844fc97106acc93429d563971",
+    "tools/rhino_oracle/observations/offset_srf_tolerance_holdouts.json.gz": "69becc5ce66a47e6a09737dfc4460f9b08b1e42609f8c913dca00230d89a6a06",
+    "tools/rhino_oracle/observations/offset_srf_tolerance_pilot.json.gz": "fb19ec0525a7a59bf4e15e4641066ae65cf1cca22590f3a3cedf44fbc6d4c984",
+    "tools/rhino_oracle/observations/offset_srf_trims.json.gz": "a10f00294b2b1160267cb457d3a9a9b335fb74726592497a7f4c7efb1e220074",
+    "tools/rhino_oracle/observations/offset_srf_trims_final.json.gz": "3a83d7d790ef329a1ff6f906e7c643809e7447a4d6fa26e586f811a00df7ab8b",
+    "tools/rhino_oracle/observations/source_snapshots/004a657518e1775d807a669912367833d2f584a251d768973404a6f967f79ca9.gz": "eb2737b4ecc8624f21116490954a0a5e7806c23d0944d8d6cc19a56dee099220",
+    "tools/rhino_oracle/observations/source_snapshots/057a187ab18e1bcce82c4a4d0af84c24f37e9db0b8aad6854cbca7c4e96853a2.gz": "416d510bef193e63ba9d6e613d4e1880f8abdc899def11c887dd0d2649bf369b",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/11973ad693a12fa808765c7933711b0d8b3d71d0b50dac5679c5e9be57cc8c26.gz": "9c3f16e67cfb15a257e96ce0cba1a936d940a3c7a2ebec0bc1ba1f35e522ed30",
+    "tools/rhino_oracle/observations/source_snapshots/14b61650c377c177207b8dd73de4eac81538badb943a8d228ecc0393e2b9db10.gz": "9600d2fa77c8f9b988d8c95f267f798f957ce833d1416fce2d88809a49d95482",
+    "tools/rhino_oracle/observations/source_snapshots/15875dedd59dc1380dbbace275c476b3bc4ad38c6a319b6a49e0c013a5f5d718.gz": "ccf5d19355ac509bb35b74cc60299a1350cd0d755303235c4dd62af583903f59",
+    "tools/rhino_oracle/observations/source_snapshots/185842ab84656a8bace244c35b439a13d41460cab40d5b38c3b0d336a8997897.gz": "a96f692c5752a210fa76f2ba7cd261bea567e7d092455d73554efd93fc064686",
+    "tools/rhino_oracle/observations/source_snapshots/19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea.gz": "a0915729dfe899182644cc4de03f9d67b2227e00c98494e0ba8a5e3743809c15",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/22b8be3e413932ca57fdb6b2add069be2647b9e49b3d25ebdce3f5901081b988.gz": "82bd374adaa94aec4ca11b5af8539e293f5e761fcb5d597d9e97dae71964e9d1",
+    "tools/rhino_oracle/observations/source_snapshots/234c99aaf72fb5d9ec44ffc133f93845d57b7a7a4eb3b1f8fbc0d4b03e8ea692.gz": "14520d15edff7faec87387e4caf9b88866f4a483913656753f3b340124ac5c97",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/38094230a98fad89382d6b65895e60cf056885ba57fac60e38b3a67361a409d9.gz": "c713ea96405ac06e08ae341f7cc41e32c621069b4596c92b932417be685653bc",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3f0f52b0dacea393946eb3ba870ea29fd28224a3ae0cc60843fee5c1d7de9540.gz": "c31d88c183f722ecbdd097c6755bd5d5bfac23968c7de3ffc9e5b5b7a5ffc247",
+    "tools/rhino_oracle/observations/source_snapshots/41b9564b6f5d04d042892766d503e0feead644bb52e1e9bfb2badeff1626fb39.gz": "7e571ca88d02faa261a9a4af19c1561cca027940f05a8437b0f48b76a6e29507",
+    "tools/rhino_oracle/observations/source_snapshots/44340062cb176251a9dcb7235e6e625fd5ba7ca4ea8a085c47af12f6d3d90f2c.gz": "0bf67eb7c27b0a608c4249194437d4422191cce6d53176966a28b63c75b0f6e0",
+    "tools/rhino_oracle/observations/source_snapshots/4f611f22b3fa3024d3265d5bf9b20bd31ff6ad63c74cc8db561681e29a964606.gz": "015b8572496c6b426eca29ddec6f797e16195b8efe061e75a9a237aa91dfe193",
+    "tools/rhino_oracle/observations/source_snapshots/507ae23ede223806986fd3047b8b1af41eb8950528623e9e20d75308eaef4809.gz": "448d1aec68e3ee6d266c5e16afdac668cc42b26acb9ddc3d01a83c4fe9b0ad43",
+    "tools/rhino_oracle/observations/source_snapshots/550849bec841cb0fc91213af51f24223d07f36766e8fecea8962d43de052679f.gz": "3b6af19926b3ea3ee397b532aabec2d5dfcaa702dc5d3370f1499137e089b900",
+    "tools/rhino_oracle/observations/source_snapshots/60c6d4c3a1a09a007cbc592d3e02167e9ed27245468b0cbaaf4f16fdcaff39dd.gz": "46ad789332a7a1c8f451af9443471805f53641708ddb632d8687313541ac2621",
+    "tools/rhino_oracle/observations/source_snapshots/658e310f5c2a547b93042e5ec0a296e8c34ecc0384e22dd4cc0f17974de6723a.gz": "2646e033e010351bce2c5ce0695da40f0f9c3c64d5430220cf5e6837398ae79d",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/7a3088c7bf78706dac781ef2e6a4f1eea6bf2c749052ebf7a1b328cee2ae6ab9.gz": "2e3ecd7fa1dc6ffffb6e79e5c4784433dc61e2b573307e56b9fdf8549d7907f4",
+    "tools/rhino_oracle/observations/source_snapshots/830861ce1b102cd6ad10093968798d8579251acd1031b48fa5ae383ea738b68c.gz": "ed51c17fb7e3590cf3bee8e9c1b70c2fd33c28b5a26247b81d0b7c335c10ca62",
+    "tools/rhino_oracle/observations/source_snapshots/86514d0f396fd0c52cb8420d63390c657f8f8b5a3322f2364c2b6b29fe247e30.gz": "bbbb8a94e1a33a977a5a7ed37c1b769478ff2897283c695644a936ffaac376e0",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8aeff4414378cad8f5b25e6668566c6d0054d7d53dcc1c9043e19a76d91dd19e.gz": "c2d390b5d8dc029e9292a26fbfc565f18cd7bd9f1268736c492ae07d1c926edb",
+    "tools/rhino_oracle/observations/source_snapshots/95dca93b9147328ae4c21280475ee6d638c56da873f0e6eb2c20cd4f7350ad51.gz": "115e78e29319563ea200b1441bee4ce453cf2cdb39c160515d3cf010e82c6750",
+    "tools/rhino_oracle/observations/source_snapshots/96eb47da229a75980aeab3929e0b17bbbe360285b3b611646e9262e2e0a3a521.gz": "47ecb3f619a35a1082dbb229472cf3bdf5e393bf96289f0fdc9363ab4e922a76",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/9d7cf0bcd8f09c2be094c4751160a53841c66d2e9adb1c113adfc9a8bc19643a.gz": "b3262daad6652a14922d057dddc377f4015df0a2afb72b647c28d8f5f309d67c",
+    "tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "tools/rhino_oracle/observations/source_snapshots/a76b17140912f447246d02277bc24b9b700785dd9330779a73bff569bd8f8f27.gz": "9dc3c2f557ce80a2a5a91cd0c1748b176c2fbb9b53e5b16df91fdb98e7734bc7",
+    "tools/rhino_oracle/observations/source_snapshots/aff06db8c5feb51d8e098c98684f60ebfe02bf333b6b408c9651ad2276602983.gz": "4bf2a9652a07166af83bf25083128b9fae65b4d6c915318a47ae211d22d33622",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c7546446ac35416963d4499407506ce710f185c232508a379f414d1f5770f08a.gz": "65bc247c33b439a60d2ebe50773aaf8c33a5d2cbe958bedad48fe797500b34a9",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cca4787a123f9bd3e8a683a421199da4916f0fade9019894124bca5b2f2b8ed8.gz": "f60afde0ce4e4ce952731a63ca9658f14022035f8d82d34db1410dc50eb098e5",
+    "tools/rhino_oracle/observations/source_snapshots/ce387495dede48211bba0775e83651908e9b68c8a70788ea634fa04ddc9b0852.gz": "124d259d4c51550a111b2a296308bb55fc5c4eeed0b7a1e3596e84160bd8510d",
+    "tools/rhino_oracle/observations/source_snapshots/d45d0bc2e73bdf52dba12cb39c51d225d328a705a9b8c8b3c98f6873dfbf70a4.gz": "4e58ac336a47852fc5e60cb55c64e58b62007f5572523fd795dee1bdc65e3437",
+    "tools/rhino_oracle/observations/source_snapshots/d9bb43054f4372768205c1e2e64ec6954a0144f680d7366f6f6291a1ef9dd783.gz": "1b24adaadf6cbd09ec082220d7f40dd506289f9e13447dcb34ea757a08e72259",
+    "tools/rhino_oracle/observations/source_snapshots/e0d9f6ed2b72857cd888d4a86e1d04db268f8466213de090feef0d376e437ee7.gz": "c9609dc4cc5f52d7baaeed9301d482560e0d13db60fe31b9dee816b9adc54c52",
+    "tools/rhino_oracle/observations/source_snapshots/f7e97b7aa798ead1565cf11823f859424fdc4a4f7110f3d233167e25e3583c1b.gz": "3278ca23f0d4046e7a6d3e972cdaf048fca7e205c2cfdd4ceb13b70546eda18a",
+    "tools/rhino_oracle/observations/source_snapshots/fddf1c0c9e976bddf511d599bade312f56c7f4ab65e9224f19fea75ca3bb6f33.gz": "dcbab4999864b2b73a065a79743cc3254a5aa40a7716fd55febbdd47e3113f95",
+    "tools/rhino_oracle/observations/source_snapshots/ff7de036e73ef61c924358eb130c38344387c034a373820b5eb77b70f93ead9d.gz": "cf2083922f23e1e72421a2afb4b6372ea867c3f96f34b033404659d3a07145f7",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}

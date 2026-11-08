@@ -1,0 +1,370 @@
+[
+  {
+    "name": "command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "offset_surface_tolerance",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 34.815652234014124
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 179.70476942695677
+  },
+  {
+    "name": "offset-library-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "offset_surface::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 33.12214303103974
+  },
+  {
+    "name": "offset-regressions-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "offset_surface_getter",
+      "--test",
+      "offset_surface_loose",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 157.4334841259988
+  },
+  {
+    "name": "shell-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "shell_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 28.850139326008502
+  },
+  {
+    "name": "shell-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::shell",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 22.25792119698599
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 40.83979694201844
+  },
+  {
+    "name": "native-sheet-export",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "sheets"
+    ],
+    "status": 0,
+    "seconds": 3.080082924978342
+  },
+  {
+    "name": "native-rational-fit",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "surface_offset"
+    ],
+    "status": 0,
+    "seconds": 3.0826932989875786
+  },
+  {
+    "name": "trim-curvature-guard",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_tolerance",
+      "trimmed_curvature_breaks",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 19.272971639991738
+  },
+  {
+    "name": "command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_tolerance",
+      "--",
+      "--nocapture",
+      "--skip",
+      "trimmed_offsets"
+    ],
+    "status": 0,
+    "seconds": 302.1396620630403
+  },
+  {
+    "name": "trim-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_tolerance",
+      "trimmed_offsets",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 439.48649884195765
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1131.7729252470308
+  },
+  {
+    "name": "offset-library-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "offset_surface::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 94.1867212090292
+  },
+  {
+    "name": "offset-regressions-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_getter",
+      "--test",
+      "offset_surface_loose",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 162.6463788409601
+  },
+  {
+    "name": "shell-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "shell_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 77.72435743699316
+  },
+  {
+    "name": "shell-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::shell",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 60.87019404000603
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 1.2914572620065883
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.731230998993851
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_offset_srf_tolerance",
+      "tools.rhino_oracle.test_offset_srf_loose",
+      "tools.rhino_oracle.test_offset_surface_getter",
+      "tools.rhino_oracle.test_shell_native",
+      "tools.rhino_oracle.test_capture_family",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_offset_srf_trims",
+      "tools.rhino_oracle.test_certificate_norm",
+      "tools.rhino_oracle.test_offset_srf_rational"
+    ],
+    "status": 0,
+    "seconds": 17.105946799973026
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.207537763984874
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.33751982997637
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.644086281012278
+  }
+]

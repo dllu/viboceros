@@ -72,5 +72,5 @@ Open single-face [trimmed offsets](../offset-srf-trims.md) preserve their UV loo
 and holes, with certified spatial trim images on the fitted support surface.
 
 Open untrimmed [rational curvature-break surfaces](../offset-srf-rational.md)
-use separate fitted patches and certified joins. Targeted checks cover this path;
-wider native parity qualification remains pending.
+use separate fitted patches and certified joins. Finite native API/UI comparisons
+cover this path; one BothSides case retains an extra internal product edge.

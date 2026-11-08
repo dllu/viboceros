@@ -12,6 +12,10 @@ uses explicit void-region topology and native SwapUV to encode reversed normals;
 this can change parameterization and face-flip representation. Mixed open/closed
 components and nonmanifold sheet inputs fail before model changes.
 
+[Trimmed single-face offsets](offset-srf-trims.md) retain authored UV loops.
+[Open rational supports with curvature breaks](offset-srf-rational.md) fit
+their inherited charts and join them at the original document tolerance.
+
 Native offset/shell operations work on private geometry with explicit creation
 accuracy. Shared tolerance is restored on success and failure. Offset geometry
 is transferred with an explicit NURBS approximation tolerance and checked native
@@ -24,7 +28,7 @@ Sources remain untouched until all results are staged. The later
 current-layer copies, source replacement, selection and Undo/Redo policies.
 Surface picking accepts polysurfaces in native builds and retains typed inputs.
 
-Five new [warped-patch SDK captures](../tools/rhino_oracle/observations/offset_warped_face_geometry.json)
+Five [warped-patch SDK captures](../tools/rhino_oracle/observations/offset_warped_face_geometry.json)
 qualify signed offsets, both sides and wall solids. Tests sample ideal normal
 offset points against returned surfaces within 1e-8 and compare wall volume
 against the recorded Rhino integrals within 2e-6. Existing planar and analytic

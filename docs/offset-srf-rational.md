@@ -30,7 +30,9 @@ retain their original rational-case decline and revision pins.
 
 Trimmed curvature breaks, G1 creases, closed supports and solid walls retain
 their existing paths and exclusions. Portable builds retain their curved-offset
-limits. Full matrix qualification is in progress.
+limits. The [finite qualification record](offset-srf-rational-validation.json)
+covers 45 native cases and 136 API/UI 3DM round trips across both builds.
+Three diagnostic observations and an earlier failed capture remain recorded.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_offset
