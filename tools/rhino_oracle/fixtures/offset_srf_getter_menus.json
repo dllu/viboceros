@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_m_negative_default",
+      "case": "offset_m_negative_default"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_m_negative_cancel",
+      "case": "offset_m_negative_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_m_negative_number",
+      "case": "offset_m_negative_number"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_m_zero_number",
+      "case": "offset_m_zero_number"
+    }
+  ]
+}

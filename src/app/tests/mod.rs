@@ -185,7 +185,6 @@ mod nurbs_pack_actions;
 mod nurbs_selection;
 mod nurbs_subd_selection;
 mod object_selection;
-#[cfg(feature = "native-smlib")]
 mod offset_surface;
 #[path = "../../../crates/viboceros-oracle/tests/support/observation.rs"]
 mod oracle_observation;
@@ -433,6 +432,7 @@ pub(super) fn test_app() -> VibocerosApp {
         surface_offset_session: None,
         short_path_session: None,
         offset_subd_session: None,
+        offset_surface_session: None,
         extrude_subd_session: None,
         inset_session: None,
         mesh_polyline_session: None,

@@ -27,6 +27,13 @@ impl VibocerosApp {
             self.component_selection.clear();
         }
         self.offset_subd_session = None;
+        if self
+            .offset_surface_session
+            .take()
+            .is_some_and(|s| s.postselected)
+        {
+            self.document.clear_selection();
+        }
         self.remap_cplane_session = None;
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;

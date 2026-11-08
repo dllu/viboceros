@@ -3,6 +3,21 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self.picking_offset_surface_sources()
+            && let Some((object, _)) = output.face_click
+        {
+            self.apply_selection_click(SelectionClick {
+                object_id: Some(object),
+                mode: SelectionMode::Add,
+            });
+            return true;
+        }
+        if self.offset_surface_session.is_some()
+            && let Some((object, _)) = output.face_click
+            && self.flip_offset_surface_input(Some(object))
+        {
+            return true;
+        }
         if let Some(picks) = output.chain_click.take() {
             if self.chain_prompt.is_some() {
                 self.pick_chain(picks);

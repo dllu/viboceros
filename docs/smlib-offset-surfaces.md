@@ -19,9 +19,10 @@ achieved bound. Exact solid export continues to reject geometry that requires
 approximation. This is a kernel-reported bound, not a whole-boundary proof.
 
 BothSides creates separate offset sheets or a wall spanning the two offsets.
-Sources remain untouched until all results are staged, and attributes/groups,
-DeleteInput, selection and Undo/Redo retain the shared command flow. Surface
-picking accepts polysurfaces in native builds and retains typed distance/options.
+Sources remain untouched until all results are staged. The later
+[interactive command qualification](offset-surface-getters.md) establishes
+current-layer copies, source replacement, selection and Undo/Redo policies.
+Surface picking accepts polysurfaces in native builds and retains typed inputs.
 
 Five new [warped-patch SDK captures](../tools/rhino_oracle/observations/offset_warped_face_geometry.json)
 qualify signed offsets, both sides and wall solids. Tests sample ideal normal

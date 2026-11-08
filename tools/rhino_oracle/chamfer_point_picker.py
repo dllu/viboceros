@@ -4,9 +4,10 @@ from .arc_point_picker import ArcPointPicker
 
 
 class ChamferPointPicker(ArcPointPicker):
+    key_prefix='@chamfer-escape:'
     def __init__(self, request):
         super().__init__(request)
-        self.keys = {'@chamfer-escape:' + op['id'] + '-' + str(i): (op['id'], i)
+        self.keys = {self.key_prefix + op['id'] + '-' + str(i): (op['id'], i)
                      for op in request['operations'] for i, a in enumerate(op['actions']) if a == 'Cancel'}
         self.cases.update(self.keys)
 

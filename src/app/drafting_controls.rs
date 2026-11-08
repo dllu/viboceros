@@ -18,6 +18,10 @@ impl VibocerosApp {
                 && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
                 && self.offset_subd_session.is_none()
+                && self
+                    .offset_surface_session
+                    .as_ref()
+                    .is_none_or(offset_surface::Session::wants_point)
                 && self.extrude_subd_session.is_none()
                 && self.inset_session.is_none()
                 && (self

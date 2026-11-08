@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_zero",
+      "case": "offset_h_zero"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_zero_solid",
+      "case": "offset_h_zero_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_tiny",
+      "case": "offset_h_tiny"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_negative_both",
+      "case": "offset_h_negative_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_double_flip",
+      "case": "offset_h_double_flip"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_reversed",
+      "case": "offset_h_reversed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_tilted",
+      "case": "offset_h_tilted"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_trimmed",
+      "case": "offset_h_trimmed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_two",
+      "case": "offset_h_two"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_units",
+      "case": "offset_h_units"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_distance_points",
+      "case": "offset_h_distance_points"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_through",
+      "case": "offset_h_through"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_through_flip",
+      "case": "offset_h_through_flip"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_through_outside",
+      "case": "offset_h_through_outside"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_through_two",
+      "case": "offset_h_through_two"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_h_through_trimmed",
+      "case": "offset_h_through_trimmed"
+    }
+  ]
+}

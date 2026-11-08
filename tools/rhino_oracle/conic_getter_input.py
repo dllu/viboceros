@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic",start_script=None):
-    if command not in ("Chamfer","Fillet","BlendCrv","ArcBlend","Line","Lines","ReadCommandFile","SrfPtGrid","SrfControlPtGrid","SrfPt","Plane","TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("OffsetSrf","Chamfer","Fillet","BlendCrv","ArcBlend","Line","Lines","ReadCommandFile","SrfPtGrid","SrfControlPtGrid","SrfPt","Plane","TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     if command=='InsertPoint' and op.get('view_target_offset_z'):
         target=vp.CameraTarget
@@ -50,6 +50,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
     if command in('ArcBlend','BlendCrv'):prefixes=('Select','Set arc control','Arc','Control','Radius','Point','Ratio','Choose','Enter','Start','End','Current','Adjust','Continuity','Flip','Trim','Join','Press')
     if command=='BlendCrv':prefixes+=('Pick',)
+    if command=='OffsetSrf':prefixes=('Select','Offset','Distance','Through','Point','First point for distance','Second point for distance','Second distance point','Solid','BothSides','DeleteInput','Tolerance','Loose','Corner')
     if command=='Chamfer':prefixes=('Select', 'First', 'Second', 'Chamfer', 'Distance', 'Start', 'End', 'Join', 'Trim', 'Extend')
     if command=='Fillet':prefixes=('Select', 'Fillet radius', 'Radius', 'First', 'Second', 'Start', 'End', 'Join', 'Trim', 'Extend', 'Dynamic')
     if command=='Line':prefixes=('Select','Middle','Start','End','Angle','Length','First','Second','Direction','Point','Pivot','Bisector')
@@ -110,8 +111,8 @@ def drive(op,host,guides,command="Conic",start_script=None):
         if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
         located=command in('Chamfer','Fillet','BlendCrv','ArcBlend','Line','SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('chamfer_command','fillet_command','arc_blend_command','blend_curve_command','line_pick_context','line_tangent_mouse','line_tangent_rays','line_tangent_arcs','line_tangent','line_perpendicular','line_normal','line_reference','subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
-        if command=='Chamfer' and a=='Cancel':
-            body=E.IfThen(base,block(advance+[log('\nPICK @chamfer-escape:'+op['id']+'-'+str(i)+' 0 0\n')]));tokens.append('Escape')
+        if command in ('Chamfer','OffsetSrf') and a=='Cancel':
+            body=E.IfThen(base,block(advance+[log('\nPICK '+('@chamfer-escape:'if command=='Chamfer'else'@offset-srf-escape:')+op['id']+'-'+str(i)+' 0 0\n')]));tokens.append('Escape')
         elif command=='BlendCrv'and isinstance(a,dict)and set(a)=={'wait_prompt'}:
             body=E.IfThen(prompt_gate(a['wait_prompt']),block(advance+[log('\nBlendCrv observed prompt '+a['wait_prompt']+'\n')]))
             tokens.append(None)
@@ -139,7 +140,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
             if op.get('op')in('arc_blend_command','blend_curve_command') and not located:
                 transform=vp.GetPickTransform(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 clicks[-1]['pick_transform']=[[float(transform[j,k])for k in range(4)]for j in range(4)]
-            if op.get('op')in('chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command'):
+            if op.get('op')in('offset_surface_command','chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command'):
                 ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]
                 ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
@@ -200,7 +201,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
                             from blend_curve_pick_context import measure
                             clicks[-1]['pick_context']=measure(source,vp,view,pixel,host,guides[a['curve']])
                         ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
-                        if op.get('op')in('chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command'):
+                        if op.get('op')in('offset_surface_command','chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command'):
                             clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]
                             sight=R.Geometry.LineCurve(ray)
                             try:
@@ -240,8 +241,8 @@ def drive(op,host,guides,command="Conic",start_script=None):
                 if a['transparent']!='CurvatureGraphOff':raise ValueError('unsupported owned transparent display command')
                 token="'_"+a['transparent'];gate=base
             elif isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
-            elif command in('Chamfer','Fillet','BlendCrv','ArcBlend','Line')and isinstance(a,dict)and set(a)=={'number'}:token=a['number'];gate=base
-            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('Chamfer','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else selection
+            elif command in('OffsetSrf','Chamfer','Fillet','BlendCrv','ArcBlend','Line')and isinstance(a,dict)and set(a)=={'number'}:token=a['number'];gate=base
+            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('OffsetSrf','Chamfer','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else selection
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:
@@ -250,7 +251,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
                     token=number_token(a)
                 else:token=repr(float(a))
                 gate=base
-            if op.get('op')in('chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command') and a=='Enter':token=''
+            if op.get('op')in('offset_surface_command','chamfer_command','fillet_command','line_perpendicular','line_tangent','line_tangent_arcs','line_tangent_rays','line_tangent_mouse','line_pick_context','arc_blend_command','blend_curve_command') and a=='Enter':token=''
             if command=='Reparameterize':
                 gate=number_prompt
                 if a=='Enter':token=''

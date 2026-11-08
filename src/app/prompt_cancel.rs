@@ -6,6 +6,9 @@ impl VibocerosApp {
         if self.abort_command_file() {
             return;
         }
+        if self.cancel_offset_surface_distance() {
+            return;
+        }
         if self.layer_prompt.is_some() {
             self.cancel_layer_prompt();
             return;

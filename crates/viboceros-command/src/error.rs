@@ -422,6 +422,8 @@ pub enum CommandError {
         "OffsetSrf requires planar surfaces or exact canonical spheres, cylinders, and tori, standalone or as supported single-face B-reps"
     )]
     OffsetSurfaceRequiresPlanarFaces,
+    #[error("OffsetSrf sources or document tolerance changed; select the sources again")]
+    OffsetSurfaceStale,
     #[error("OffsetSrf Solid=Yes requires a single closed boundary loop per surface")]
     OffsetSurfaceSolidRequiresOneLoop,
     #[error("OffsetSrf sphere offset collapses or inverts the sphere")]

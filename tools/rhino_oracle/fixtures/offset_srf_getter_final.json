@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_distance_points",
+      "case": "offset_f_distance_points"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_zero_solid_delete",
+      "case": "offset_f_zero_solid_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_zero_both_solid",
+      "case": "offset_f_zero_both_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_through_below",
+      "case": "offset_f_through_below"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_through_both",
+      "case": "offset_f_through_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_through_solid",
+      "case": "offset_f_through_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_through_cancel",
+      "case": "offset_f_through_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_f_cancel_selection",
+      "case": "offset_f_cancel_selection"
+    }
+  ]
+}

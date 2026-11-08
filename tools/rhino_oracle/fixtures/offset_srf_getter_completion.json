@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_c_through_cancel",
+      "case": "offset_c_through_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_c_zero_both_delete",
+      "case": "offset_c_zero_both_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_c_distance_keep",
+      "case": "offset_c_distance_keep"
+    }
+  ]
+}

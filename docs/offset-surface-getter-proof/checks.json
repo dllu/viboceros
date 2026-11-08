@@ -1,0 +1,310 @@
+[
+  {
+    "name": "command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "offset_surface_getter",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 91.33483122801408
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 146.3315719300299
+  },
+  {
+    "name": "library-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 51.74981522199232
+  },
+  {
+    "name": "direction-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::direction",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 12.827870102017187
+  },
+  {
+    "name": "curve_fillet-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::curve_fillet",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.0857193219708279
+  },
+  {
+    "name": "curve_chamfer-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::curve_chamfer",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 2.135101639025379
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 56.517178912006784
+  },
+  {
+    "name": "command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_getter",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 97.50556517305085
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 159.38179684302304
+  },
+  {
+    "name": "library-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 97.2500982080237
+  },
+  {
+    "name": "direction-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::direction",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 12.427287767000962
+  },
+  {
+    "name": "curve_fillet-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::curve_fillet",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.6681009639869444
+  },
+  {
+    "name": "curve_chamfer-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::curve_chamfer",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.9928446700214408
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 56.260545673954766
+  },
+  {
+    "name": "native-producers",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "shell",
+      "--test",
+      "sheets",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 6.228825044003315
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 8.71474309003679
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_offset_native",
+      "tools.rhino_oracle.test_surface_offset_command",
+      "tools.rhino_oracle.test_chamfer_getter",
+      "tools.rhino_oracle.test_chamfer_open",
+      "tools.rhino_oracle.test_offset_surface_getter"
+    ],
+    "status": 0,
+    "seconds": 4.606609876034781
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 53.79943358601304
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.89690981199965
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.8207336770137772
+  }
+]

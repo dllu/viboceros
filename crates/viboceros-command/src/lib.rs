@@ -330,7 +330,7 @@ pub mod inset;
 mod object_name;
 mod offset_mesh;
 pub mod offset_subd;
-mod offset_surface;
+pub mod offset_surface;
 mod pipe;
 pub mod point_selection;
 pub mod polyline_on_mesh;
@@ -1033,6 +1033,7 @@ pub struct CommandRegistry {
     point_deviation: std::sync::Arc<point_deviation::Session>,
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
+    offset_surface_options: std::sync::Arc<remembered::Remembered<offset_surface::Options>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
     commands: Vec<Box<dyn Command>>,
@@ -1359,7 +1360,9 @@ impl CommandRegistry {
             .register(PipeCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
-            .register(OffsetSurfaceCommand)
+            .register(OffsetSurfaceCommand(
+                registry.offset_surface_options.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(MeshCommand)
@@ -2811,6 +2814,17 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("BlendCrv"))
             .is_some_and(|i| self.commands[*i].remember_blend_curve_preferences(value))
+    }
+    pub fn offset_surface_options(&self) -> offset_surface::Options {
+        self.offset_surface_options.get()
+    }
+    pub fn remember_offset_surface_options(
+        &self,
+        options: offset_surface::Options,
+    ) -> Result<(), CommandError> {
+        self.offset_surface_options
+            .set(options.validate()?.remembered());
+        Ok(())
     }
     pub fn chamfer_preferences(&self) -> chamfer::Preferences {
         self.chamfer_preferences.get()

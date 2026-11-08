@@ -136,6 +136,7 @@ impl VibocerosApp {
         if self.start_inset(input)
             || self.start_extrude_subd(input)
             || self.start_offset_subd(input, false)
+            || self.start_offset_surface(input, false)
         {
             return true;
         }

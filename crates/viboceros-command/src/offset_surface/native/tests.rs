@@ -26,6 +26,7 @@ fn warped_offset_faces_match_ideal_normals_and_public_rhino_outcomes() {
             solid: case.contains("wall"),
             both_sides: case.contains("two_side"),
             delete_input: false,
+            flip_all: false,
         };
         let output = offset(
             &Geometry::NurbsSurface(source.clone()),
@@ -115,8 +116,8 @@ fn closed_box_offsets_create_shifted_solid_and_wall_with_atomic_history() {
                 ),
             )
             .unwrap();
-        assert_eq!(doc.objects().count(), 1);
-        let Geometry::Brep(brep) = doc.objects().next().unwrap().geometry() else {
+        assert_eq!(doc.objects().count(), if solid { 1 } else { 2 });
+        let Geometry::Brep(brep) = doc.objects().last().unwrap().geometry() else {
             panic!("native polysurface")
         };
         assert!(brep.is_solid());
@@ -156,6 +157,7 @@ fn box_offsets_match_public_sdk_and_retain_its_empty_wall_observations() {
             solid: false,
             both_sides: false,
             delete_input: false,
+            flip_all: false,
         };
         let Geometry::Brep(result) =
             offset(&Geometry::Brep(source), options, Tolerance::DEFAULT).unwrap()

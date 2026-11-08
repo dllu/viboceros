@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_plain",
+      "case": "offset_q_plain"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_negative",
+      "case": "offset_q_negative"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_solid_keep",
+      "case": "offset_q_solid_keep"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_solid_delete",
+      "case": "offset_q_solid_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_both",
+      "case": "offset_q_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_both_solid",
+      "case": "offset_q_both_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_flip",
+      "case": "offset_q_flip"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_click_flip",
+      "case": "offset_q_click_flip"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_number_cancel",
+      "case": "offset_q_number_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_zero_cancel",
+      "case": "offset_q_zero_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_distance_cancel",
+      "case": "offset_q_distance_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_postselect",
+      "case": "offset_q_postselect"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_postselect_cancel",
+      "case": "offset_q_postselect_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_postselect_delete",
+      "case": "offset_q_postselect_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_q_through",
+      "case": "offset_q_through"
+    }
+  ]
+}

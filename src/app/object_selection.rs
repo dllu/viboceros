@@ -1478,6 +1478,13 @@ impl VibocerosApp {
                 self.try_start_interactive_command(&command);
                 return true;
             }
+            if pending.description.command == "OffsetSrf" {
+                self.object_prompt = None;
+                if self.start_offset_surface(&command, pending.postselected) {
+                    return true;
+                }
+                self.object_prompt = Some(pending.clone());
+            }
             if pending.description.command == "OffsetSubD" {
                 self.object_prompt = None;
                 if self.start_offset_subd(&command, pending.postselected) {

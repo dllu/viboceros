@@ -256,6 +256,7 @@ mod move_normal;
 mod named_view;
 mod object_selection;
 mod offset_subd;
+mod offset_surface;
 mod orient_curve;
 mod orient_edge;
 mod orient_points;
@@ -488,6 +489,7 @@ pub struct VibocerosApp {
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
     offset_subd_session: Option<offset_subd::Session>,
+    offset_surface_session: Option<offset_surface::Session>,
     extrude_subd_session: Option<extrude_subd::Session>,
     inset_session: Option<inset::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
@@ -681,6 +683,7 @@ impl VibocerosApp {
             surface_offset_session: None,
             short_path_session: None,
             offset_subd_session: None,
+            offset_surface_session: None,
             extrude_subd_session: None,
             inset_session: None,
             mesh_polyline_session: None,
@@ -871,6 +874,7 @@ impl VibocerosApp {
         if self.continue_inset(&input)
             || self.continue_extrude_subd(&input)
             || self.continue_offset_subd(&input)
+            || self.continue_offset_surface(&input)
         {
             return;
         }
@@ -1187,6 +1191,7 @@ impl VibocerosApp {
             || self.try_continue_stretch(input)
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
+            || self.continue_offset_surface(input)
             || self.continue_surface_point_grid(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)

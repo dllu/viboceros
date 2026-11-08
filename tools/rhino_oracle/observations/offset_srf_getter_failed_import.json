@@ -1,0 +1,31 @@
+{
+  "request": "fixtures/offset_srf_getter_qualified.json",
+  "request_sha256": "d226a3ba2c80435168aa8b00430e6fb803441e067dde36c453c096c9c155f06f",
+  "sources": {
+    "generate_offset_srf_getter_qualified.py": "c1be8555c12fb21a9b443a1b65b470b8318401f9c44ada9fd004a84322d704c4",
+    "structural_sdk.py": "b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04",
+    "rhino_worker.py": "3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a",
+    "client.py": "4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "chamfer_point_picker.py": "781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c",
+    "offset_surface_point_picker.py": "22b8be3e413932ca57fdb6b2add069be2647b9e49b3d25ebdce3f5901081b988",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+    "offset_surface_command_probe.py": "15875dedd59dc1380dbbace275c476b3bc4ad38c6a319b6a49e0c013a5f5d718",
+    "offset_surface_command.py": "4ecaaa691f21cc24a3e5ac6dd1175098836b509b292ed418080e7079a9f66044",
+    "line_scene_probe.py": "a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0",
+    "move_normal_probe.py": "d9bb43054f4372768205c1e2e64ec6954a0144f680d7366f6f6291a1ef9dd783",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "2e02ad8301172f166680fd86b8b9d1ac878f044fcda3e12bf9791a9f770d5137",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+  },
+  "log": "observations/offset_srf_getter_failed_import.log.gz",
+  "response_retained": false,
+  "qualified_workflows": 0,
+  "error": "IronPython 2 rejected the recipe module: only one ** allowed. Client removed the temporary response after reporting the SyntaxError; no geometry is qualified by this attempt."
+}

@@ -15,6 +15,7 @@ impl InteractiveCommand {
             Self::OrientCurveToEdge => "OrientCrvToEdge",
             Self::OffsetCurveOnSurface => "OffsetCrvOnSrf",
             Self::OffsetSubD => "OffsetSubD",
+            Self::OffsetSurface { .. } => "OffsetSrf",
             Self::ExtrudeSubD => "ExtrudeSubD",
             Self::Inset => "Inset",
             Self::ShortPath { .. } => "ShortPath",
@@ -188,6 +189,7 @@ impl InteractiveCommand {
             | Self::CurveArray { base }
             | Self::Chamfer { anchor: base }
             | Self::Fillet { anchor: base }
+            | Self::OffsetSurface { anchor: base }
             | Self::ShortPath { start: base }
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }

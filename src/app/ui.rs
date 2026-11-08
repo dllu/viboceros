@@ -47,6 +47,7 @@ impl eframe::App for VibocerosApp {
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
+        self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
         self.validate_length_choices();
@@ -301,6 +302,13 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.picking_mesh_trim_target() {
             Some(FacePickMode::MeshAny)
+        } else if self.picking_offset_surface_sources()
+            || self
+                .offset_surface_session
+                .as_ref()
+                .is_some_and(|s| !s.wants_point())
+        {
+            Some(FacePickMode::SurfaceAndBrepAny)
         } else if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
         } else if self.picking_fillet_surface()
@@ -764,6 +772,7 @@ impl eframe::App for VibocerosApp {
                 .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.curve_fillet_session.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.offset_surface_session.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.curve_boolean_prompt.as_ref().and_then(|p| p.scene())),
             self.rebuild_preview
                 .as_ref()
@@ -898,26 +907,31 @@ impl eframe::App for VibocerosApp {
                     .and_then(|p| p.excluded())
             });
         let selection_allowed_objects = self
-            .object_prompt
+            .offset_surface_session
             .as_ref()
-            .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
+            .map(|s| s.ids())
             .or_else(|| {
-                self.reparameterize_prompt
+                self.object_prompt
                     .as_ref()
-                    .filter(|p| p.selecting())
-                    .and_then(|p| p.source_id())
-                    .map(|id| [id].into_iter().collect())
-            })
-            .or_else(|| {
-                self.refinement_prompt
-                    .as_ref()
-                    .filter(|p| p.selecting())
-                    .map(|p| {
-                        self.document
-                            .selectable_objects()
-                            .filter(|o| p.accepts(o.geometry()))
-                            .map(|o| o.id())
-                            .collect()
+                    .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
+                    .or_else(|| {
+                        self.reparameterize_prompt
+                            .as_ref()
+                            .filter(|p| p.selecting())
+                            .and_then(|p| p.source_id())
+                            .map(|id| [id].into_iter().collect())
+                    })
+                    .or_else(|| {
+                        self.refinement_prompt
+                            .as_ref()
+                            .filter(|p| p.selecting())
+                            .map(|p| {
+                                self.document
+                                    .selectable_objects()
+                                    .filter(|o| p.accepts(o.geometry()))
+                                    .map(|o| o.id())
+                                    .collect()
+                            })
                     })
             });
         let selection_allowed_objects = if self
@@ -1387,7 +1401,11 @@ impl eframe::App for VibocerosApp {
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
                             curvature_graph: curvature_graph_view.as_ref(),
-                            direction_analysis: direction_analysis_view.as_ref(),
+                            direction_analysis: self
+                                .offset_surface_session
+                                .as_ref()
+                                .map(|s| s.directions())
+                                .or(direction_analysis_view.as_ref()),
                             draft_angle_analysis: draft_angle_analysis_view.as_ref(),
                             curvature_analysis: curvature_analysis_view.as_ref(),
                             face_packs: face_pack_view.as_ref(),
