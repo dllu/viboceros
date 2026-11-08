@@ -17,7 +17,9 @@ pub fn prepare(
     options: Options,
     flips: &BTreeSet<ObjectId>,
 ) -> Result<Prepared, CommandError> {
-    let options = options.validate()?;
+    let options = options
+        .validate()?
+        .normalize_tolerance(document.tolerance());
     let sources = document.selected_objects().cloned().collect::<Vec<_>>();
     if sources.is_empty() {
         return Err(CommandError::NoObjectsSelected);

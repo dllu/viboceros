@@ -190,6 +190,7 @@ mod nurbs_subd_selection;
 mod object_selection;
 mod offset_surface;
 mod offset_surface_loose;
+mod offset_surface_tolerance;
 #[path = "../../../crates/viboceros-oracle/tests/support/observation.rs"]
 mod oracle_observation;
 mod orient_curve;

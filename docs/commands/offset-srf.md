@@ -4,9 +4,9 @@
 
 Run `OffsetSrf`, select surfaces and press Enter. Preselected surfaces go directly
 to the direction stage. Click an input or use `FlipAll` to reverse its direction.
-Edit the distance, `Solid`, `BothSides`, or `Loose`, then press Enter to accept the cached
+Edit the distance, `Tolerance`, `Solid`, `BothSides`, or `Loose`, then press Enter to accept the cached
 preview. `DeleteInput` is available with `Solid=Yes`. Esc cancels without changing
-geometry or discarding Redo. The distance and boolean choices survive cancellation;
+geometry or discarding Redo. The distance, tolerance and boolean choices survive cancellation;
 direction flips apply only to the current invocation.
 
 Type a signed distance, including units or arithmetic such as `1/8cm`.
@@ -19,12 +19,17 @@ It computes the shared signed distance from the closest selected underlying
 surface, including portions outside a face's trims. Other selected
 objects use that distance and their own chosen directions.
 
+`Tolerance` opens a nonnegative length prompt when `Loose=No`. Enter keeps the
+current value; `Default` or zero follows document tolerance. One Esc cancels the
+whole command. See [tolerance behavior and validation](../offset-srf-tolerance.md).
+
 Complete command/API invocations also accept explicit inputs:
 
 ```text
 OffsetSrf 2
 OffsetSrf Distance=0.5cm Solid=Yes DeleteInput=Yes
 OffsetSrf ThroughPoint=2,1,0.75 BothSides=Yes
+OffsetSrf 0.5 Tolerance=0.0001
 ```
 
 Copies use the current layer, remain unselected, and leave preselected inputs
@@ -41,8 +46,8 @@ oppositely oriented coincident faces. These finite rectangular cases match the
 [native getter qualification](../offset-surface-getters.md).
 
 The initial product preferences are distance 1, Sharp corners, and all booleans
-No. Factory Rhino defaults have not been established. Round corners and
-explicit tolerance options remain unsupported. Document changes invalidate a
+No; tolerance follows the document. Factory Rhino defaults have not been established.
+Round corners remain unsupported. Document changes invalidate a
 preview; all geometry is prepared before one atomic history edit.
 
 Both builds support planar sheets and exact canonical spheres, cylinders, cones
@@ -61,4 +66,4 @@ Loose is unavailable when an input has multiple faces or interior creases.
 Linux `--features native-smlib` adds [usd-brep offsets](../smlib-offset-surfaces.md)
 for general trimmed sheets, free-form surfaces and polysurfaces. Its broad corner,
 collapse and self-intersection behavior remains separately qualified. The getter
-captures establish finite planar workflows, not complete curved-surface parity.
+captures establish finite workflows, not complete curved-surface parity.

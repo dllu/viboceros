@@ -32,7 +32,7 @@ use analytic::*;
 #[cfg(any(not(feature = "native-smlib"), test))]
 use planar::*;
 
-const USAGE: &str = "OffsetSrf [distance|Distance=value] [Corner=Sharp] [ThroughPoint=x,y,z] [Solid=Yes|No] [BothSides=Yes|No] [Loose=Yes|No] [DeleteInput=Yes|No] [FlipAll]";
+const USAGE: &str = "OffsetSrf [distance|Distance=value] [Corner=Sharp] [ThroughPoint=x,y,z] [Solid=Yes|No] [BothSides=Yes|No] [Loose=Yes|No] [Tolerance=value|Default] [DeleteInput=Yes|No] [FlipAll]";
 
 pub(super) struct OffsetSurfaceCommand(pub std::sync::Arc<remembered::Remembered<Options>>);
 
@@ -89,6 +89,7 @@ impl OffsetSurfaceCommand {
             options.distance =
                 through_distance(document, point, options.flip_all, &BTreeSet::new())?;
         }
+        options = options.normalize_tolerance(document.tolerance());
         self.0.set(options.remembered());
         if options.loose
             && !arguments.iter().any(|a| {

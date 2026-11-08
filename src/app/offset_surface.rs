@@ -5,6 +5,7 @@ use viboceros_command::offset_surface::{self as solver, Options, Prepared};
 use viboceros_document::Object;
 
 mod input;
+mod tolerance;
 
 pub(super) struct Session {
     sources: Vec<Object>,
@@ -17,6 +18,7 @@ pub(super) struct Session {
     flips: BTreeSet<ObjectId>,
     pub(super) postselected: bool,
     distance_menu: bool,
+    tolerance_menu: bool,
     through_point: bool,
     distance_start: Option<Point3>,
     pub(super) candidate: Option<Prepared>,
@@ -28,7 +30,9 @@ pub(super) struct Session {
 impl Session {
     #[cfg(test)]
     pub(super) fn getter(&self) -> Option<&'static str> {
-        if self.distance_menu {
+        if self.tolerance_menu {
+            Some("Tolerance")
+        } else if self.distance_menu {
             Some("Distance")
         } else if self.through_point {
             Some("ThroughPoint")
@@ -54,16 +58,20 @@ impl Session {
         self.distance_menu || self.through_point
     }
     pub(super) fn hint(&self) -> &'static str {
-        if self.through_point {
+        if self.tolerance_menu {
+            "Offset tolerance; Default or 0 follows the document tolerance"
+        } else if self.through_point {
             "Through point; accepts the offset immediately"
         } else if self.distance_start.is_some() {
             "Second point for offset distance"
         } else if self.distance_menu {
             "Positive offset distance or first distance point; Enter accepts a positive default"
-        } else if self.loose_available {
+        } else if self.loose_available && self.options.loose {
             "Click a source to flip; Distance / ThroughPoint / Solid / BothSides / Loose / FlipAll; Enter accepts, Esc cancels"
+        } else if self.loose_available {
+            "Click a source to flip; Distance / Tolerance / ThroughPoint / Solid / BothSides / Loose / FlipAll; Enter accepts, Esc cancels"
         } else {
-            "Click a source to flip; Distance / ThroughPoint / Solid / BothSides / FlipAll; Enter accepts, Esc cancels"
+            "Click a source to flip; Distance / Tolerance / ThroughPoint / Solid / BothSides / FlipAll; Enter accepts, Esc cancels"
         }
     }
     fn current(&self, doc: &Document) -> bool {
@@ -177,12 +185,13 @@ impl VibocerosApp {
             tolerance: self.document.tolerance(),
             layer: self.document.current_layer_id(),
             units: self.document.units().clone(),
-            options: input.options,
+            options: input.options.normalize_tolerance(self.document.tolerance()),
             loose_available,
             delete_available,
             flips: BTreeSet::new(),
             postselected,
             distance_menu: false,
+            tolerance_menu: false,
             through_point: false,
             distance_start: None,
             candidate: None,
@@ -199,7 +208,9 @@ impl VibocerosApp {
             },
         });
         self.commands
-            .remember_offset_surface_options(input.options)
+            .remember_offset_surface_options(
+                input.options.normalize_tolerance(self.document.tolerance()),
+            )
             .expect("validated offset options");
         self.active_command = Some(InteractiveCommand::OffsetSurface { anchor: None });
         self.update_offset_surface_preview();
@@ -208,6 +219,14 @@ impl VibocerosApp {
     }
     fn log_offset_surface(&mut self) {
         if let Some(s) = &self.offset_surface_session {
+            if s.tolerance_menu {
+                self.push_log(format!(
+                    "OffsetSrf: {} <{}> (Default)",
+                    s.hint(),
+                    s.options.effective_tolerance(self.document.tolerance())
+                ));
+                return;
+            }
             if s.distance_menu {
                 let default = if s.options.distance == 0. {
                     1.
@@ -217,10 +236,15 @@ impl VibocerosApp {
                 self.push_log(format!("OffsetSrf: {} <{}>", s.hint(), default));
                 return;
             }
-            let mut arguments = s.options.prompt_arguments();
+            let display = Options {
+                tolerance: s.options.effective_tolerance(self.document.tolerance()),
+                loose: s.options.loose && s.loose_available,
+                ..s.options
+            };
+            let mut arguments = display.prompt_arguments();
             if !s.loose_available {
                 arguments = arguments.replace(
-                    if s.options.loose {
+                    if display.loose {
                         " Loose=Yes"
                     } else {
                         " Loose=No"
@@ -313,6 +337,9 @@ impl VibocerosApp {
         };
         if s.wants_point() {
             return false;
+        }
+        if s.tolerance_menu {
+            return true;
         }
         if let Some(id) = id.filter(|id| s.sources.iter().any(|o| o.id() == *id)) {
             if !s.flips.remove(&id) {

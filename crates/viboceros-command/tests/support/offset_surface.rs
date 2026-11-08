@@ -178,7 +178,7 @@ impl State {
         &self,
         d: &mut Document,
         v: &Value,
-        check: fn(&Document, &Value, bool) -> f64,
+        check: impl Fn(&Document, &Value, bool) -> f64,
     ) -> Value {
         let mut error = check(d, &v["after"], false);
         self.identities(d, &v["after"]);

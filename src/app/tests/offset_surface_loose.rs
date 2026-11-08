@@ -3,7 +3,7 @@ use super::offset_surface::inputs;
 use super::{brep_comparison, plane_surface_native_support as native, *};
 #[path = "../../../crates/viboceros-command/tests/support/offset_surface_loose.rs"]
 #[allow(dead_code)]
-mod loose;
+pub(super) mod loose;
 
 #[test]
 fn loose_offsets_replay_native_getters_previews_cancel_and_admission() {

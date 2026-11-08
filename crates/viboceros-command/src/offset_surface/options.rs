@@ -1,6 +1,8 @@
 //! Command preferences are independent of model history and direction picks.
 use super::*;
 use viboceros_geometry::LengthUnitSystem;
+#[cfg(test)]
+mod tests;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
@@ -10,6 +12,8 @@ pub struct Options {
     pub delete_input: bool,
     pub flip_all: bool,
     pub loose: bool,
+    /// Zero follows the current document's absolute tolerance.
+    pub tolerance: Real,
 }
 
 impl Default for Options {
@@ -21,13 +25,14 @@ impl Default for Options {
             delete_input: false,
             flip_all: false,
             loose: false,
+            tolerance: 0.,
         }
     }
 }
 
 impl Options {
     pub fn validate(self) -> Result<Self, CommandError> {
-        if !self.distance.is_finite() {
+        if !self.distance.is_finite() || !self.tolerance.is_finite() || self.tolerance < 0. {
             return Err(CommandError::Usage(USAGE));
         }
         Ok(self)
@@ -38,19 +43,42 @@ impl Options {
             ..self
         }
     }
+    pub fn effective_tolerance(self, model: Tolerance) -> Real {
+        if self.tolerance == 0. {
+            model.absolute()
+        } else {
+            self.tolerance
+        }
+    }
+    pub fn normalize_tolerance(self, model: Tolerance) -> Self {
+        Self {
+            tolerance: if self.tolerance == model.absolute() {
+                0.
+            } else {
+                self.tolerance
+            },
+            ..self
+        }
+    }
     pub fn arguments(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         format!(
-            "Corner=Sharp Distance={} Solid={} BothSides={} Loose={} DeleteInput={}",
+            "Corner=Sharp Distance={} Solid={} BothSides={} Loose={} Tolerance={} DeleteInput={}",
             self.distance,
             yes(self.solid),
             yes(self.both_sides),
             yes(self.loose),
+            self.tolerance,
             yes(self.delete_input)
         )
     }
     pub fn prompt_arguments(self) -> String {
         let text = self.arguments();
+        let text = if self.loose {
+            text.replace(&format!(" Tolerance={}", self.tolerance), "")
+        } else {
+            text
+        };
         if self.solid {
             text
         } else {
@@ -77,7 +105,7 @@ pub fn parse(
     mut options: Options,
     units: &LengthUnitSystem,
 ) -> Result<Input, CommandError> {
-    let mut seen = [false; 7];
+    let mut seen = [false; 8];
     let mut through_point = None;
     let mut i = 0;
     while i < args.len() {
@@ -109,6 +137,13 @@ pub fn parse(
         } else if option_name_eq(name, "Distance") {
             options.distance = distance(value, units)?;
             0
+        } else if option_name_eq(name, "Tolerance") {
+            options.tolerance = if option_name_eq(value, "Default") {
+                0.
+            } else {
+                distance(value, units)?
+            };
+            7
         } else {
             let value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
             if option_name_eq(name, "Solid") {

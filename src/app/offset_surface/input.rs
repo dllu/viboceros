@@ -7,9 +7,9 @@ impl VibocerosApp {
             return false;
         }
         self.validate_offset_surface();
-        let Some(s) = &self.offset_surface_session else {
+        if self.offset_surface_session.is_none() {
             return true;
-        };
+        }
         let text = text.trim();
         let word = text.trim_start_matches('_');
         if word.eq_ignore_ascii_case("Cancel") || text == "!" {
@@ -18,6 +18,10 @@ impl VibocerosApp {
             }
             return true;
         }
+        if self.continue_offset_surface_tolerance(text) {
+            return true;
+        }
+        let s = self.offset_surface_session.as_ref().unwrap();
         if text.is_empty() {
             if s.through_point {
                 self.log_offset_surface();
@@ -119,7 +123,7 @@ impl VibocerosApp {
                     self.push_log("Loose is available when every input is a single surface without interior creases".into());
                     return true;
                 }
-                let options = input.options;
+                let options = input.options.normalize_tolerance(self.document.tolerance());
                 if let Some(point) = input.through_point {
                     let s = self.offset_surface_session.as_mut().unwrap();
                     s.options = options;

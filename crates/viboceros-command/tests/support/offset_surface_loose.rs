@@ -165,6 +165,15 @@ pub fn setup(v: &Value) -> Document {
     d
 }
 pub fn check(d: &Document, target: &Value, archive: bool) -> f64 {
+    check_with(d, target, archive, 1e-6, brep_comparison::geometry::error)
+}
+pub fn check_with(
+    d: &Document,
+    target: &Value,
+    archive: bool,
+    epsilon: f64,
+    geometry: impl Fn(&Brep, &Value, Tolerance) -> f64,
+) -> f64 {
     let rows = target.as_array().unwrap();
     assert_eq!(d.objects().len(), rows.len());
     let mut error = 0_f64;
@@ -189,10 +198,13 @@ pub fn check(d: &Document, target: &Value, archive: bool) -> f64 {
                     }
                     _ => panic!("surface geometry"),
                 };
-                brep_comparison::geometry::error(&b, r, d.tolerance())
+                geometry(&b, r, d.tolerance())
             }
         });
     }
-    assert!(error <= 1e-6, "Loose OffsetSrf geometry error {error:e}");
+    assert!(
+        error <= epsilon,
+        "OffsetSrf geometry error {error:e}, gate {epsilon:e}"
+    );
     error
 }
