@@ -1,0 +1,6 @@
+[
+  {
+    "archive": "observations/failures/merge_surfaces_pilot-31e4e1cab7d9aee45a8ba39b77e4207b9bb0d3ef27c194df4dc488f1df4e2b47.json.gz",
+    "error": "rhino probe failed: ValueError at operation merge_plane_sharp: start: Attempted relative import in non-package"
+  }
+]

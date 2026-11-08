@@ -63,6 +63,8 @@ pub use curve_blend::{blend_curve, blend_curve_from_endpoint_jets, blend_curve_f
 pub use curve_offset::{curve_offset_operations, offset_curve_parts, offset_curve_through_point};
 mod surface_offset;
 pub use surface_offset::offset_surface;
+mod surface_merge;
+pub use surface_merge::{SurfaceMergeOptions, merge_surface_supports};
 mod surface_fillet;
 pub use surface_fillet::{
     SurfaceFilletOptions, SurfaceFilletParentMode, SurfaceFilletResult, SurfaceFilletSide,

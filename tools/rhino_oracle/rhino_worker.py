@@ -14252,6 +14252,9 @@ def _execute(operation, iterations, tolerance):
         from selected_coplanar_faces_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'merge_surfaces_sdk':
+        from merge_surfaces_sdk import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'merge_coplanar_faces':
         from coplanar_faces_probe import run
         return run(operation, globals(), iterations, tolerance)

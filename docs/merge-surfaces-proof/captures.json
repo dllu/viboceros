@@ -1,0 +1,47 @@
+[
+  {
+    "family": "merge_surfaces_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surfaces_pilot"
+    ],
+    "exit_status": 0,
+    "log": "pilot-capture.log.gz",
+    "archive": "observations/merge_surfaces_pilot.json.gz",
+    "observation_sha256": "91b9e856f405cf5e7ff96bd992d89669e55b8ef26e151aea404a0f757e47986e",
+    "request_sha256": "3dd328c3fd7e81221d0a3e1e8af8e1066ef69bc62515d4dde95ee21087b8d01e"
+  },
+  {
+    "family": "merge_surfaces_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surfaces_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "holdouts-capture.log.gz",
+    "archive": "observations/merge_surfaces_holdouts.json.gz",
+    "observation_sha256": "e0d81d6e8177028e5bd60b70a5b5beae963d6384ed88634bbd4155538347f7c6",
+    "request_sha256": "addb75fdc87777fb360a22b71e6206e72a740e9b66cd871eeca0ab3758c9ee33"
+  },
+  {
+    "family": "merge_surfaces_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surfaces_final"
+    ],
+    "exit_status": 0,
+    "log": "final-capture.log.gz",
+    "archive": "observations/merge_surfaces_final.json.gz",
+    "observation_sha256": "7653351af7cdf3d236c9693eeeb01c22f2a836ff025f7114d4a86246adac8363",
+    "request_sha256": "c94e23766f3d9c3d1d868a2487c05e5bece2004dd712d832ba829cba540cd4a4"
+  }
+]

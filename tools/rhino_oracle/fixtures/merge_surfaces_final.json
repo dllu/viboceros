@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_gauge_sharp_large",
+      "case": "merge_gauge_sharp_large"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_gauge_sharp_small",
+      "case": "merge_gauge_sharp_small"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_gauge_smooth_large",
+      "case": "merge_gauge_smooth_large"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_gauge_smooth_small",
+      "case": "merge_gauge_smooth_small"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_degrees_nonunit",
+      "case": "merge_degrees_nonunit"
+    }
+  ]
+}

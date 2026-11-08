@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_plane_sharp",
+      "case": "merge_plane_sharp"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_plane_smooth",
+      "case": "merge_plane_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_cubic_sharp",
+      "case": "merge_cubic_sharp"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_cubic_smooth_zero",
+      "case": "merge_cubic_smooth_zero"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_cubic_smooth_half",
+      "case": "merge_cubic_smooth_half"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_cubic_smooth_one",
+      "case": "merge_cubic_smooth_one"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_cubic_sharp_zero",
+      "case": "merge_cubic_sharp_zero"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_rational_sharp",
+      "case": "merge_rational_sharp"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_rational_smooth",
+      "case": "merge_rational_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_small_gap",
+      "case": "merge_small_gap"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_large_gap",
+      "case": "merge_large_gap"
+    }
+  ]
+}

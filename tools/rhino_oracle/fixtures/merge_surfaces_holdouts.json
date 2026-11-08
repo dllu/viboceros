@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_quadratic_smooth",
+      "case": "merge_quadratic_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_quartic_smooth",
+      "case": "merge_quartic_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_quartic_quarter",
+      "case": "merge_quartic_quarter"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_degrees_two_four",
+      "case": "merge_degrees_two_four"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_gap_smooth",
+      "case": "merge_gap_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_nonunit_sharp",
+      "case": "merge_nonunit_sharp"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_nonunit_smooth",
+      "case": "merge_nonunit_smooth"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_along_degrees",
+      "case": "merge_along_degrees"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_internal_full",
+      "case": "merge_internal_full"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_internal_simple",
+      "case": "merge_internal_simple"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_second_u",
+      "case": "merge_second_u"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_second_v",
+      "case": "merge_second_v"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_second_transpose",
+      "case": "merge_second_transpose"
+    },
+    {
+      "op": "merge_surfaces_sdk",
+      "id": "merge_bowed_boundary",
+      "case": "merge_bowed_boundary"
+    }
+  ]
+}

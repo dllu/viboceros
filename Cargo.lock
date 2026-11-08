@@ -3874,6 +3874,7 @@ name = "viboceros-smlib"
 version = "0.1.0"
 dependencies = [
  "cmake",
+ "flate2",
  "i_overlay",
  "serde_json",
  "tempfile",
