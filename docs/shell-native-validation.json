@@ -1,0 +1,764 @@
+{
+  "scope": "Shell thickness getters, remembered options, zero-thickness topology and native document admission.",
+  "baseline_revision": "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3",
+  "implementation_revision": "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a",
+  "full_native_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "observations": 40,
+  "command_observations": 25,
+  "qualified_commands": 24,
+  "successful_commands": 17,
+  "cancelled_commands": 8,
+  "diagnostics": 1,
+  "sdk_geometry_cases": 9,
+  "sdk_sign_cases": 6,
+  "physical_picks": 22,
+  "retained_failed_attempts": 5,
+  "native_admissions": 17,
+  "native_no_admission_controls": 7,
+  "portable_admissions": 5,
+  "portable_no_admission_controls": 7,
+  "command_and_ui_archive_round_trips": {
+    "native": 48,
+    "portable": 24
+  },
+  "windowless_pointer_picks_per_build": 2,
+  "getter_epsilon": 1e-06,
+  "sdk_epsilon": 2e-06,
+  "maximum_getter_geometry_difference": 6.474608987538192e-15,
+  "maximum_sdk_geometry_difference": 1.0000000010279564e-06,
+  "execution": "Five immutable licensed Rhino captures ran on private Xvfb displays. All 40 observations are retained: 25 command outcomes, nine geometry SDK cases and six two-sign SDK discoveries. The command discovery with an invalid inline macro remains diagnostic. Five earlier failed attempts retain logs, requests and frozen producers; their temporary native responses were not retained and qualify no geometry. Rust UI and pointer checks ran without windows.",
+  "inputs": "Product sources use authored boxes, cylinder dimensions and opening points. Accepted numeric values and source face picks drive replays. Initial public prompts seed provisional preferences. Native output coefficients and topology serve only as expectations.",
+  "comparison": "Bidirectional tolerance-aware trimmed-face grids and trim stations, oriented normals at regular chart sites, edge stations and vertices where partitions correspond, solid flags, wall volume, bounds, source identity, names, layers, colors, groups, selection, actual Undo/Redo and 3DM round trips. Getter boundary differences use 1e-6. SDK differences use the combined 2e-6 allowance for two independently requested 1e-6 approximations plus 64 machine epsilons at coordinate scale; volume uses boundary area times model tolerance.",
+  "admission": "DeleteInput=Yes retains source identity for the first material region; No copies source attributes and groups. Outputs are unselected. Zero thickness doubles the retained skins with opposite normals, shares the opening rim and duplicates interior edges. The closed topology has zero material volume and is available in both builds.",
+  "repairs": "The public SDK recipe uses positive thickness for inward walls; the kernel adapter keeps its own negative offset convention. Exported roundoff UV joints use continuous edge-deviation certificates. Scan overlaps and incident endpoint events now use a consistent parameter slab, fixing a reproduced remote ring-membership error.",
+  "limits": [
+    "Circular SDK walls have different face partitions and polar cap charts between the kernels. Their oriented boundary geometry and mass are compared; matching internal seams, face/edge/vertex counts and pole normals are not claimed.",
+    "Portable positive-thickness Shell still requires the native kernel. General self-intersections, arbitrary singular inputs, near-collapsed material, disconnected zero-thickness partition policy, new-piece identity/order, rendering materials, unobserved user data, History EditThickness, live preview and comparative speed remain unqualified.",
+    "The finite native getter recipes cover numeric thickness, one explicit unit suffix, Enter/Escape, physical source picks, replacement/copy admission and two-object batches. Preselection convenience, inline API options, factory preferences, arbitrary unit systems and point-measured thickness do not have complete native getter parity."
+  ],
+  "cases": [
+    {
+      "id": "shell_getter_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_getter_delete",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_getter_inline",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "The discovery used an inline Thickness macro, entered its subgetter, rejected DeleteInput there and timed out; it qualifies no admission."
+    },
+    {
+      "id": "shell_getter_keep",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_getter_negative",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_getter_zero",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_h_batch_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.66205343881779e-15,
+      "ui_native_maximum_geometry_error": 3.66205343881779e-15
+    },
+    {
+      "id": "shell_h_batch_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.66205343881779e-15,
+      "ui_native_maximum_geometry_error": 3.66205343881779e-15
+    },
+    {
+      "id": "shell_h_batch_zero_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "command_native_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_native_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "shell_h_batch_zero_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "command_native_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_native_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "shell_h_picked_thickness",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.0427504709815294e-15,
+      "ui_native_maximum_geometry_error": 3.0427504709815294e-15
+    },
+    {
+      "id": "shell_h_selection_number",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.552713678800501e-15,
+      "ui_native_maximum_geometry_error": 3.552713678800501e-15
+    },
+    {
+      "id": "shell_h_side",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 6.474608987538192e-15,
+      "ui_native_maximum_geometry_error": 6.474608987538192e-15
+    },
+    {
+      "id": "shell_h_thickness_enter",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 4.242156220644677e-15,
+      "ui_native_maximum_geometry_error": 4.242156220644677e-15
+    },
+    {
+      "id": "shell_h_zero_direct",
+      "native_result": "Success",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "command_native_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_native_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "shell_q_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 6.297029969676175e-15,
+      "ui_native_maximum_geometry_error": 6.297029969676175e-15
+    },
+    {
+      "id": "shell_q_distance_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_q_distance_enter",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 6.005475377567802e-15,
+      "ui_native_maximum_geometry_error": 6.0044490637300816e-15
+    },
+    {
+      "id": "shell_q_half",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.2770391163218097e-15,
+      "ui_native_maximum_geometry_error": 3.2770391163218097e-15
+    },
+    {
+      "id": "shell_q_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 6.297029969676175e-15,
+      "ui_native_maximum_geometry_error": 6.297029969676175e-15
+    },
+    {
+      "id": "shell_q_negative",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 6.297029969676175e-15,
+      "ui_native_maximum_geometry_error": 6.297029969676175e-15
+    },
+    {
+      "id": "shell_q_picked_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 0.0,
+      "ui_portable_maximum_geometry_error": 0.0,
+      "command_native_maximum_geometry_error": 0.0,
+      "ui_native_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "shell_q_units",
+      "native_result": "Success",
+      "qualified": true,
+      "command_native_maximum_geometry_error": 3.2770391163218097e-15,
+      "ui_native_maximum_geometry_error": 3.2770391163218097e-15
+    },
+    {
+      "id": "shell_q_zero_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "command_native_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_native_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "shell_q_zero_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "command_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_portable_maximum_geometry_error": 8.881784197001252e-16,
+      "command_native_maximum_geometry_error": 8.881784197001252e-16,
+      "ui_native_maximum_geometry_error": 8.881784197001252e-16
+    }
+  ],
+  "sdk_cases": [
+    {
+      "actual_topology": [
+        [
+          16,
+          24,
+          10
+        ]
+      ],
+      "geometry_gate": 2.000000142108547e-06,
+      "id": "shell_adjacent",
+      "maximum_geometry_error": 6.0044490637300816e-15,
+      "native_topology": [
+        [
+          16,
+          24,
+          10
+        ]
+      ],
+      "volume_error": 8.526512829121202e-14,
+      "volume_gate": 0.00046600000000000005
+    },
+    {
+      "actual_topology": [
+        [
+          4,
+          8,
+          4
+        ]
+      ],
+      "geometry_gate": 2.0000001136868376e-06,
+      "id": "shell_cylinder_both",
+      "maximum_geometry_error": 1.0000000010279564e-06,
+      "native_topology": [
+        [
+          6,
+          9,
+          5
+        ]
+      ],
+      "volume_error": 3.95020422701009e-05,
+      "volume_gate": 0.0005073672135547516
+    },
+    {
+      "actual_topology": [
+        [
+          6,
+          9,
+          5
+        ]
+      ],
+      "geometry_gate": 2.0000001136868376e-06,
+      "id": "shell_cylinder_bottom",
+      "maximum_geometry_error": 1.3094978143889056e-07,
+      "native_topology": [
+        [
+          6,
+          9,
+          6
+        ]
+      ],
+      "volume_error": 8.921163043851266e-07,
+      "volume_gate": 0.0005843362335677345
+    },
+    {
+      "actual_topology": [
+        [
+          6,
+          9,
+          5
+        ]
+      ],
+      "geometry_gate": 2.0000001136868376e-06,
+      "id": "shell_cylinder_top",
+      "maximum_geometry_error": 1.0000000010279564e-06,
+      "native_topology": [
+        [
+          6,
+          9,
+          6
+        ]
+      ],
+      "volume_error": 3.0452970804617507e-05,
+      "volume_gate": 0.000584336233567726
+    },
+    {
+      "actual_topology": [
+        [
+          8,
+          12,
+          6
+        ],
+        [
+          8,
+          12,
+          6
+        ]
+      ],
+      "geometry_gate": 2.000000142108547e-06,
+      "id": "shell_disconnected",
+      "maximum_geometry_error": 6.224293738038379e-15,
+      "native_topology": [
+        [
+          8,
+          12,
+          6
+        ],
+        [
+          8,
+          12,
+          6
+        ]
+      ],
+      "volume_error": 3.552713678800501e-14,
+      "volume_gate": 0.00012400000000000003
+    },
+    {
+      "actual_topology": [
+        [
+          16,
+          24,
+          10
+        ]
+      ],
+      "geometry_gate": 2.000000142108547e-06,
+      "id": "shell_opposite",
+      "maximum_geometry_error": 6.775128927624021e-15,
+      "native_topology": [
+        [
+          16,
+          24,
+          10
+        ]
+      ],
+      "volume_error": 8.526512829121202e-14,
+      "volume_gate": 0.00044800000000000005
+    },
+    {
+      "actual_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "geometry_gate": 2.0007106280008883e-06,
+      "id": "shell_shifted",
+      "maximum_geometry_error": 0.0,
+      "native_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "volume_error": 3.398668013687711e-10,
+      "volume_gate": 0.000516
+    },
+    {
+      "actual_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "geometry_gate": 2.000000142108547e-06,
+      "id": "shell_side",
+      "maximum_geometry_error": 6.466036496704424e-15,
+      "native_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "volume_error": 1.7053025658242404e-13,
+      "volume_gate": 0.000556
+    },
+    {
+      "actual_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "geometry_gate": 2.000000142108547e-06,
+      "id": "shell_top",
+      "maximum_geometry_error": 6.005475377567802e-15,
+      "native_topology": [
+        [
+          16,
+          24,
+          11
+        ]
+      ],
+      "volume_error": 5.684341886080802e-14,
+      "volume_gate": 0.0005160000000000001
+    }
+  ],
+  "captures": [
+    {
+      "family": "shell_getter_pilot",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "78778974255c776d4869d37a3f9ed0410f6f6d6a55d4fd0c72824bdb89132419"
+    },
+    {
+      "family": "shell_getter_qualified",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "f5365756d282bb5d015a3a5c2a318cf20eac1d09a60bdc42c3f43772e771a9c6"
+    },
+    {
+      "family": "shell_getter_holdouts",
+      "observations": 9,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "af871f8bc7d601cd762691df172b4b88687a0ffd323e3c8dfc9ae465b1eafd53"
+    },
+    {
+      "family": "shell_sdk_signed",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "34593eba80581daeff3a3d170aad6d18fd000f502bed64f24d3f43d73fa95aba"
+    },
+    {
+      "family": "shell_sdk_geometry",
+      "observations": 9,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "28b3196264b485a3e980a52146a0ab8e92cae12e579783f8c1d853a97b113118"
+    }
+  ],
+  "checks": [
+    {
+      "name": "command-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "oracle-portable",
+      "status": 0
+    },
+    {
+      "name": "offset-command-portable",
+      "status": 0
+    },
+    {
+      "name": "offset-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "command-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "oracle-native",
+      "status": 0
+    },
+    {
+      "name": "offset-command-native",
+      "status": 0
+    },
+    {
+      "name": "offset-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "geometry",
+      "status": 0
+    },
+    {
+      "name": "native-producers",
+      "status": 0
+    },
+    {
+      "name": "native-joints",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/lib.rs": "b63aae3fe5c41f111be51f8dd402bd4d437c0099c4011dbbfdeb1f84e728c775",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/shell.rs": "caca9f8992f38b82ebc0d31960547b0bd86ef01032183ebb78223dddaf80e64a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/shell/native.rs": "39e6af105360cd5d92fc02106c866413bd4e6b080aed58dc6d2b9716fec483a3",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/shell/options.rs": "01cd190855fd779ecc2f452e0c81b786a4489e1c2ce3b6886affe858c39d5c3e",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/shell/tests.rs": "db47b1e80a64815f0335fff12c943e474164fa54cc055175202b4355365e2c34",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/src/shell/zero.rs": "398ed38668a00ed82ba87607d88a4a4393ffe7192c921fc0c34ca8f7971259bc",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/tests/shell_native.rs": "6d31a099898c8758dd5e336bccde3844260abbd229c31a975b8a145ab49ab6c2",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/tests/support/shell.rs": "870d6705eb55c1f45996654ce8c6bd3990c0d34dd121572e5476fcfa48c1d4a4",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/tests/support/shell/captured.rs": "0ffe7fb4aa0e59f755ff2da8052dc9a7ec2a83d381067f1057434d06757fde9c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/tests/support/shell/check.rs": "fa2485087e562d1798619b12dfb65600c77f50dc860ac5f65e8e7d4b7f22377e",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-command/tests/support/shell/geometry.rs": "e1156b813de75d4eb2cc28f27b5601195f2d723fd83bf71f5a52fa809f52371c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-geometry/src/brep.rs": "309f94972dfb04d2a51289f1aa4da4270f035aa2119e8c183ae7d7a93241449a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-geometry/src/brep/trim_scan.rs": "f1d51ccff5095e6c7699a764f5ae3c3a9d7029eef6aa21ca089b9119a23835c5",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-geometry/src/brep/trim_scan/tests.rs": "40a91a210086c33060562f4ab5ae834d4b6944915c27b7b9938e934bb45fd30b",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-oracle/src/shell.rs": "b26cfd6893b4a1ad2e474d30cfa20d696dbd655b415b58c5f96443b2be496210",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:crates/viboceros-smlib/src/native/shape.rs": "cfcf45f87ceecf98e7665a829023bcf05c4c813962d008c333fa9a4a30073dd4",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/commands/shell.md": "b72223ffc54c03c3216870f40e405be961d553339427e1caf9ae79e352386b97",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/capture-shell_getter_holdouts.log.gz": "fadd03e00f82ca293ff3bedf4134472d7b3085c6aff8ef94ea6be8a055438e40",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/capture-shell_getter_pilot.log.gz": "bb4f9d410ff0d486c3ea2aa03cae4c59bf5bfce905a17e1ec5bacd5cc7d0c85a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/capture-shell_getter_qualified.log.gz": "6d90d1b114b69ff41d695b9b9547387fcebbc57cdc14849529fc219403314d20",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/capture-shell_sdk_geometry.log.gz": "04919b5642164bc68411d16f89c8bd8f72d00200e0c9b17019fe542c6370c256",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/capture-shell_sdk_signed.log.gz": "e28adfbebf44fc5950fd4c4227d84e4760c5d1412d8f494303520ede35106516",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/captures.json": "b8ec5320c6cc67f65adf0786d676583f03d52a961c1093da421155209ee1ddc4",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/geometry-full-before-extraction.json": "319632c3fbc838cd2383baf8b9ec6d677a3772cfd8c028e7447426d3329cd720",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/geometry-full-before-extraction.log.gz": "6f7633ad5ba3adfdeb9b521dbc363060414eaa0842f9c495b793f7810dd330ce",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/getter-dispatch-failure.json": "3694f8b7b92e5eb7831f904267b2b588f78e11d60a5b0507b5549121b50523c8",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/getter-dispatch-failure.log.gz": "7a4920a64c185dadcb6f97bc9c89a5da8d48c0530d0d2ae14fa994bd756a550f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/getter-number-dispatch-failure.json": "45574899f2a03012734fa11ac3f7e1191f9da38ed008d1db1177f68e69ab44a1",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/getter-number-dispatch-failure.log.gz": "e85bcfe534d99992e6a94fd126ce20293f36148100f9e55501b681de9031b730",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-finite-failure.json": "987857c361d0649f4ede9c5f1043aa0a475aeb3420049118823e384bd3ad30f6",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-finite-failure.log.gz": "c7ed1470d1afe6d7e2039a27fd6f237d21d5d47eb54a1a10df0ec1be238218f3",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-import-failure.json": "2db25b6d390d900a5ea4b7e7b9116868d8b00e00e7c0c2ba0291ee3d3c97ad1c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-import-failure.log.gz": "5323b7ac556b473f1ee6237f1def9c10e254f21fb591ea2781a09c25ef2b5793",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-negative-distance-failure.json": "2396b17d6eb3c406d270a9631ede9ca4c6ca6308fe4ef59478efa5536cabb64c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/sdk-negative-distance-failure.log.gz": "47980ad9de8390b0e66e079d7d200e291eee86392c1448801f0517899aeb1d7a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/trim-scan-baseline.json": "1c63f535cfc8bd2c63c3a8fc96b05505cb78624e97dd139e7d702d6ddd504c42",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/trim-scan-baseline.log.gz": "84300b433e4393476c81b55eeb099c600033dd3ac62032b94ed6f563da64bf69",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-native-proof/trim-scan-reproducer.rs.gz": "0a68f020b152b18dba7fe0c16542cb4d2046965820077a308b5341880a253aec",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:docs/shell-qualification.json": "cd635d7c93070a09a5035f60db9630bd491fe3c74f78d03947ea724ab676ab4f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:src/app/prompt_cancel.rs": "9d5d49345fd2489e9fd377f82568ef8403830306ab57948ac1aa12a17b505288",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:src/app/shell.rs": "a98fc0267b4fe97fb9a5c5ba4173e95065b407a66fd2bc25d462094e8ee46ccb",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:src/app/tests/shell.rs": "c03e2141ca25b63a27207f5ef8fb452f9f1d56ad245d9220c5c0650cf0530f48",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:src/app/tests/shell/mouse.rs": "fbd4d69493f89d2ff8c5d376c6726dcd9dc3895e30dfe20e5d4ffd96f41381d8",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/capture_family.py": "c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/check_shell_native.py": "213c12d0cdff3b9bb10ecf7f72391c31bec648a2531582ed995c916eb16335ec",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/client.py": "a76b17140912f447246d02277bc24b9b700785dd9330779a73bff569bd8f8f27",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/conic_getter_input.py": "7a3088c7bf78706dac781ef2e6a4f1eea6bf2c749052ebf7a1b328cee2ae6ab9",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_getter_holdouts.json": "bbcf0e02772745aad293bc28f05cd7b8b899cfc9e7bb29d9595f1ea0c05b30eb",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_getter_pilot.json": "6cb58209d225a4411c8bb501f986e1ea94e687a7b8ee2ca6b59850281e774c4f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_getter_qualified.json": "6901082304610262728372d129e356c3d861d5ffbaa0f5e17272576ab99d5743",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_sdk_baseline.json": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_sdk_geometry.json": "c173f870ce57e869f71c875bf70e12e090eb6816a444c424d76064b254dd030f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/fixtures/shell_sdk_signed.json": "4a46004e989169a224823c8964c9924e4f7576a872a993d62e26db414332eb96",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_getter_holdouts.py": "8d9fc6ae0e8cab445d69869ee7de0e662ad843c411b86310ae20e8cd94f07671",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_getter_pilot.py": "3e0e69a580db0a793151c4f4119c972538cf81f8be0b612222e32adbcb645c3f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_getter_qualified.py": "ab0473c1acd5c452b7e3933f29e8b9ee403741fbb2abd06370b1e3f10c2e7e90",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_sdk_baseline.py": "6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_sdk_geometry.py": "6a72e7ab3cd25f7912dbd4c19d57694b420d734ff5400d6dd429d357da091b0e",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/generate_shell_sdk_signed.py": "03c0aed3253ead65c17ad858463c98906672315f7a9a8ce63708a8b70b5ae073",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/shell_getter_holdouts.json.gz": "e184dd65fb0a5316c99c7c9c5dc3c187d16f5dd7dc3d3628b146712d76dd7989",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/shell_getter_pilot.json.gz": "6918e8a83b451b0697f456fb18f105c4dd5efbbb44034af1eee045ff0c37cac9",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/shell_getter_qualified.json.gz": "6cdbdf1da798a35218608b2799582196c058d58a42d4f8ed6ac71f1da9bfa2dc",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/shell_sdk_geometry.json.gz": "7f239d308f15b12946700c20a99127a7aed73b49c6f0c774433bc1dd81dccdd5",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/shell_sdk_signed.json.gz": "0aa37102749a855e5bb025a47883d8d620ada49993cfce2a881aa189236251bb",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/03c0aed3253ead65c17ad858463c98906672315f7a9a8ce63708a8b70b5ae073.gz": "b6b5424f3d9b57774b05943b61857366b7071db51b8b6e40c2c5316630941878",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/16f79950da52fa5fffa207101c282ef31634095292a2bd18d79a3a4e03c93c49.gz": "e9c628aa89381fc5a0ec448c05b747179918a7656b4fd8402ad99c8701ddab8a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea.gz": "a0915729dfe899182644cc4de03f9d67b2227e00c98494e0ba8a5e3743809c15",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/26719f1e101df80ae4270289743c485d46d0aeee904f437502baa7a95b704190.gz": "05c8ca14773581419d5099cca9e4a13c0f63d652ddd9ca066d7a2393bf7474ba",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/3e0e69a580db0a793151c4f4119c972538cf81f8be0b612222e32adbcb645c3f.gz": "7b52cbf1d53b575d5a2c5078efce42d01536b0ad89fe00a506707c0ac5e95cae",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/4cbbdf741c6b8d952c0c104bf04dc64c744140d84507a61077632c761b5e5eb6.gz": "66046d2860d5498dc95d73003868a5697c0a6c7a9355bde93fe66db8b844e5e9",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/5009dcbfde123de862f51b0d5bf8ca74a145a44defa0335a00b6b6e6469ceb0f.gz": "a8f7d97b0abbaa4e2d4ca96fc4e7f643867c79b8bf79f82484ca67860c2cb145",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/53f049596a26442a729895a1c50ac4f52e8c9c37d7194fb5ab57164a4a5d7777.gz": "c96f6126f067f3231cb51ad151e5db75ca12c47c8a85a9ccdcc26299140577f7",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/6a72e7ab3cd25f7912dbd4c19d57694b420d734ff5400d6dd429d357da091b0e.gz": "dfe835e93a3bf8950ab61db84f6f5e86c9999489565f1498034f04e5a048b1f2",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/6aca9da8b6e359217959777b6cd078118937a032a724498b86dc8ed398d89168.gz": "c08b99c31f5291d7f6118345dd259e96953d471c2b420e55aadfb4d7e9012a7f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5.gz": "357cd0a5ef69a44ae9f6edd25752c81d6b58dc794cb6ddda71ded441b495768b",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6.gz": "06fbfb9434fca2e2956d3a5d9c5d1c608935003ad06d078694a881ba0ebd23d6",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/7a3088c7bf78706dac781ef2e6a4f1eea6bf2c749052ebf7a1b328cee2ae6ab9.gz": "2e3ecd7fa1dc6ffffb6e79e5c4784433dc61e2b573307e56b9fdf8549d7907f4",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/8d9fc6ae0e8cab445d69869ee7de0e662ad843c411b86310ae20e8cd94f07671.gz": "1d3739f5fb0c3627bfa1f129248228db31590ac7b45915ee82098e031dfd046c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/8dcd91d8c8394db33bb3b325abe1649a326974fca7dfb7097fc5c23d161e1896.gz": "33256aff562176cf089a411f208be02008d467afe0e2980500853dcfaaa5efa5",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/a76b17140912f447246d02277bc24b9b700785dd9330779a73bff569bd8f8f27.gz": "9dc3c2f557ce80a2a5a91cd0c1748b176c2fbb9b53e5b16df91fdb98e7734bc7",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/ab0473c1acd5c452b7e3933f29e8b9ee403741fbb2abd06370b1e3f10c2e7e90.gz": "173dc07a484613dbb8d4c4c10235721fea7a783bc159aed8f87f14e46d001afe",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/ac95252dda37ecf53b593769b06043b67ad8951892d0310d40ef3c7863c77743.gz": "61846d2c1f2aec2fafc0d26f5a4f3e7d8f9b9f4afe87dda9fe675d5d29d7233a",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/b07dff3bc0bb3a6506ab59ad846b22f80b60649d8bc0d0b0bd18c238bb32344f.gz": "5941f20ceaafbf4a7336119abdf78838a5239cfa8073bcb72b08925b3dd7bf1f",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/b2f10841f896a107ec8f21e15cd375018ba4bb1e939238fedb4c4084679310f7.gz": "ce7040fec3a371478a584a0305e8cb325a5a3c2d0c41ec68b924cf3912fb3f88",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/e8e49faf879e806b53a0bcb91500a8ce2cf4b58ff9dada5527582420e7b75def.gz": "6109c1ab28eb7c0bf7450b00c3b66f99244cda269b1f98f61b579bd25345e76e",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/f79a1df7c6180e4bd10093c49ec9af3776380621821c16df3bac81dc84d58f7c.gz": "63aa3133875aa330880cbe600945802bec0f30d4139197c7e432df047d9e36db",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/observations/source_snapshots/ff4e123a192897e19a44df73e91ae13b1cefe28c391af575ca070193683c1db7.gz": "6cc144f3e5b235bc7b506d7e362cf144f4b2dae78f33146676e8351e768aa4bf",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/report_shell_native.py": "9b1bc1b85ebaa40fc07db6853ec54e405f11d26b87144f8135b5c2eef6d58500",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/rhino_worker.py": "19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/shell_command.py": "8dcd91d8c8394db33bb3b325abe1649a326974fca7dfb7097fc5c23d161e1896",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/shell_command_probe.py": "26719f1e101df80ae4270289743c485d46d0aeee904f437502baa7a95b704190",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/shell_native_evidence.py": "2cb453453bd816021f0254d862c932ab701658091ce18b30541bf052911383b3",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/shell_point_picker.py": "b2f10841f896a107ec8f21e15cd375018ba4bb1e939238fedb4c4084679310f7",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/shell_probe.py": "16f79950da52fa5fffa207101c282ef31634095292a2bd18d79a3a4e03c93c49",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/structural_sdk.py": "4cbbdf741c6b8d952c0c104bf04dc64c744140d84507a61077632c761b5e5eb6",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/test_capture_family.py": "da1c89164d194580eacdd532fb0213793672960bcb1bba146ab28863a41ac422",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/test_shell.py": "f2ad37a966712768ab666d68cd509d01f1846e4e39d23806604e50733952a58c",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/test_shell_command.py": "169e0b4bb60f263f204a76b24c5f0eed2994570938f0d579e2e9a99f7c974134",
+    "3897502f31b0f675c0c1c8a2d74e8e1e62a1264a:tools/rhino_oracle/test_shell_native.py": "6d3d8eb865bb683d82fa607d4c0913929faae11405a16b8151fbdfdebb4c028e"
+  },
+  "evidence_sha256": {
+    "docs/shell-native-proof/capture-shell_getter_holdouts.log.gz": "fadd03e00f82ca293ff3bedf4134472d7b3085c6aff8ef94ea6be8a055438e40",
+    "docs/shell-native-proof/capture-shell_getter_pilot.log.gz": "bb4f9d410ff0d486c3ea2aa03cae4c59bf5bfce905a17e1ec5bacd5cc7d0c85a",
+    "docs/shell-native-proof/capture-shell_getter_qualified.log.gz": "6d90d1b114b69ff41d695b9b9547387fcebbc57cdc14849529fc219403314d20",
+    "docs/shell-native-proof/capture-shell_sdk_geometry.log.gz": "04919b5642164bc68411d16f89c8bd8f72d00200e0c9b17019fe542c6370c256",
+    "docs/shell-native-proof/capture-shell_sdk_signed.log.gz": "e28adfbebf44fc5950fd4c4227d84e4760c5d1412d8f494303520ede35106516",
+    "docs/shell-native-proof/captures.json": "b8ec5320c6cc67f65adf0786d676583f03d52a961c1093da421155209ee1ddc4",
+    "docs/shell-native-proof/checks.json": "62fa396f7530770016344de7ae6df614a56b5f53db54100bf1950376df7a0f6e",
+    "docs/shell-native-proof/clippy-native.log.gz": "94855bc6e4865935a4fd0e0d69f5b80d8f85ee4826cbab520ce79af3f2219dfa",
+    "docs/shell-native-proof/clippy-portable.log.gz": "9682e8b82c59488258c1931c42d3c932cb19333eae6191facb2db4f0a783b329",
+    "docs/shell-native-proof/command-native.log.gz": "61518b5f712e804d1ca60c5b8a77d62537d3943eebb82e8851d7f00f7bb7308d",
+    "docs/shell-native-proof/command-portable.log.gz": "dc29e668807c1ba8a79e89a59af8be587b8d2dea0c0ebb1dcd6c9a2dbf97069e",
+    "docs/shell-native-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/shell-native-proof/geometry-full-before-extraction.json": "319632c3fbc838cd2383baf8b9ec6d677a3772cfd8c028e7447426d3329cd720",
+    "docs/shell-native-proof/geometry-full-before-extraction.log.gz": "6f7633ad5ba3adfdeb9b521dbc363060414eaa0842f9c495b793f7810dd330ce",
+    "docs/shell-native-proof/geometry.log.gz": "a105e35dba0fd236c29abd76cd286713ba831a916edd08338a289e96bd9d8ce9",
+    "docs/shell-native-proof/getter-dispatch-failure.json": "3694f8b7b92e5eb7831f904267b2b588f78e11d60a5b0507b5549121b50523c8",
+    "docs/shell-native-proof/getter-dispatch-failure.log.gz": "7a4920a64c185dadcb6f97bc9c89a5da8d48c0530d0d2ae14fa994bd756a550f",
+    "docs/shell-native-proof/getter-number-dispatch-failure.json": "45574899f2a03012734fa11ac3f7e1191f9da38ed008d1db1177f68e69ab44a1",
+    "docs/shell-native-proof/getter-number-dispatch-failure.log.gz": "e85bcfe534d99992e6a94fd126ce20293f36148100f9e55501b681de9031b730",
+    "docs/shell-native-proof/library-native.log.gz": "47423d4d10781c63fec45812922783594b30f45461e4a07b81108c25cc102489",
+    "docs/shell-native-proof/library-portable.log.gz": "4b0b5869b45ed0941a9e8b89a0ad9f98d61844ac65c3aef1517e276eeda4f243",
+    "docs/shell-native-proof/native-joints.log.gz": "3dc255776806862911e922a55ca5f1e3ebe3a22eeecf70be6f5ccc966592ca13",
+    "docs/shell-native-proof/native-producers.log.gz": "4e147e2059b61c9684e8261a4aab745f13a4cef946c43cb7e79f1f4f7f4aef2e",
+    "docs/shell-native-proof/offset-command-native.log.gz": "7eba78bb97b94b6b60b76ecb96143a4160a4dba6167968d7fe318df37265779c",
+    "docs/shell-native-proof/offset-command-portable.log.gz": "e5423612d20b47f2e753f60dc9ac3170bcbae8f0d12140a823696ee5ca72c2b2",
+    "docs/shell-native-proof/offset-ui-native.log.gz": "3811eec3dd03d543675c675b26e4433865cc5b63cd0e8fb8fad06d0bb21a9ca7",
+    "docs/shell-native-proof/offset-ui-portable.log.gz": "30b917cc8c27ae2a14b373aaa8afdc361fea8a2a8d20537b403f8bdd19124921",
+    "docs/shell-native-proof/oracle-native.log.gz": "d4d12741996007264705daba6ccecc7e7c6c61314f68a56d127da67591817ed3",
+    "docs/shell-native-proof/oracle-portable.log.gz": "55d622b0efefed6f70a7039912d1d390374fc3a45b7e7d6de1ac7ab04d5e667c",
+    "docs/shell-native-proof/python-subd.log.gz": "c7ccab0b14b64a7a9d14aa9b868524d15abd82e4231ffc3dc9a381599d132199",
+    "docs/shell-native-proof/python.log.gz": "b99228b68f6d369875cbb97301ea7adf776bee2692129e7f47c7167140abb0d9",
+    "docs/shell-native-proof/sdk-finite-failure.json": "987857c361d0649f4ede9c5f1043aa0a475aeb3420049118823e384bd3ad30f6",
+    "docs/shell-native-proof/sdk-finite-failure.log.gz": "c7ed1470d1afe6d7e2039a27fd6f237d21d5d47eb54a1a10df0ec1be238218f3",
+    "docs/shell-native-proof/sdk-import-failure.json": "2db25b6d390d900a5ea4b7e7b9116868d8b00e00e7c0c2ba0291ee3d3c97ad1c",
+    "docs/shell-native-proof/sdk-import-failure.log.gz": "5323b7ac556b473f1ee6237f1def9c10e254f21fb591ea2781a09c25ef2b5793",
+    "docs/shell-native-proof/sdk-negative-distance-failure.json": "2396b17d6eb3c406d270a9631ede9ca4c6ca6308fe4ef59478efa5536cabb64c",
+    "docs/shell-native-proof/sdk-negative-distance-failure.log.gz": "47980ad9de8390b0e66e079d7d200e291eee86392c1448801f0517899aeb1d7a",
+    "docs/shell-native-proof/subd-command-native.log.gz": "91eb4e396e60c675249061146fd7e7dd89ddb858ddcf8bfc904ac02305629d58",
+    "docs/shell-native-proof/subd-ui-native.log.gz": "f9d63a7eda94deede917f73b7d5ef7e2825220dab40f4242ecc229bb90f55dc8",
+    "docs/shell-native-proof/trim-scan-baseline.json": "1c63f535cfc8bd2c63c3a8fc96b05505cb78624e97dd139e7d702d6ddd504c42",
+    "docs/shell-native-proof/trim-scan-baseline.log.gz": "84300b433e4393476c81b55eeb099c600033dd3ac62032b94ed6f563da64bf69",
+    "docs/shell-native-proof/trim-scan-reproducer.rs.gz": "0a68f020b152b18dba7fe0c16542cb4d2046965820077a308b5341880a253aec",
+    "docs/shell-native-proof/ui-native.log.gz": "a6ad2cfc65dd948fca1dfccbf85bfff89e3a1a3b2588bbb29e36ea4d13444715",
+    "docs/shell-native-proof/ui-portable.log.gz": "0aa2fab5b6b556ab416d6137a753808a25d7318c3c059ddf1a6420d47ae24179",
+    "tools/rhino_oracle/fixtures/shell_getter_holdouts.json": "bbcf0e02772745aad293bc28f05cd7b8b899cfc9e7bb29d9595f1ea0c05b30eb",
+    "tools/rhino_oracle/fixtures/shell_getter_pilot.json": "6cb58209d225a4411c8bb501f986e1ea94e687a7b8ee2ca6b59850281e774c4f",
+    "tools/rhino_oracle/fixtures/shell_getter_qualified.json": "6901082304610262728372d129e356c3d861d5ffbaa0f5e17272576ab99d5743",
+    "tools/rhino_oracle/fixtures/shell_sdk_baseline.json": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+    "tools/rhino_oracle/fixtures/shell_sdk_geometry.json": "c173f870ce57e869f71c875bf70e12e090eb6816a444c424d76064b254dd030f",
+    "tools/rhino_oracle/fixtures/shell_sdk_signed.json": "4a46004e989169a224823c8964c9924e4f7576a872a993d62e26db414332eb96",
+    "tools/rhino_oracle/observations/shell_getter_holdouts.json.gz": "e184dd65fb0a5316c99c7c9c5dc3c187d16f5dd7dc3d3628b146712d76dd7989",
+    "tools/rhino_oracle/observations/shell_getter_pilot.json.gz": "6918e8a83b451b0697f456fb18f105c4dd5efbbb44034af1eee045ff0c37cac9",
+    "tools/rhino_oracle/observations/shell_getter_qualified.json.gz": "6cdbdf1da798a35218608b2799582196c058d58a42d4f8ed6ac71f1da9bfa2dc",
+    "tools/rhino_oracle/observations/shell_sdk_geometry.json.gz": "7f239d308f15b12946700c20a99127a7aed73b49c6f0c774433bc1dd81dccdd5",
+    "tools/rhino_oracle/observations/shell_sdk_signed.json.gz": "0aa37102749a855e5bb025a47883d8d620ada49993cfce2a881aa189236251bb",
+    "tools/rhino_oracle/observations/source_snapshots/03c0aed3253ead65c17ad858463c98906672315f7a9a8ce63708a8b70b5ae073.gz": "b6b5424f3d9b57774b05943b61857366b7071db51b8b6e40c2c5316630941878",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/16f79950da52fa5fffa207101c282ef31634095292a2bd18d79a3a4e03c93c49.gz": "e9c628aa89381fc5a0ec448c05b747179918a7656b4fd8402ad99c8701ddab8a",
+    "tools/rhino_oracle/observations/source_snapshots/19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea.gz": "a0915729dfe899182644cc4de03f9d67b2227e00c98494e0ba8a5e3743809c15",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/26719f1e101df80ae4270289743c485d46d0aeee904f437502baa7a95b704190.gz": "05c8ca14773581419d5099cca9e4a13c0f63d652ddd9ca066d7a2393bf7474ba",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a.gz": "d64863c61d74ae5325e3357de4f3f62106867473e8e37a0c6b353763046f1671",
+    "tools/rhino_oracle/observations/source_snapshots/3e0e69a580db0a793151c4f4119c972538cf81f8be0b612222e32adbcb645c3f.gz": "7b52cbf1d53b575d5a2c5078efce42d01536b0ad89fe00a506707c0ac5e95cae",
+    "tools/rhino_oracle/observations/source_snapshots/4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241.gz": "1f49fe3acfa930bd909b3a1dbaad439de634080ed9aeb31a13f87d9c31e9e698",
+    "tools/rhino_oracle/observations/source_snapshots/4cbbdf741c6b8d952c0c104bf04dc64c744140d84507a61077632c761b5e5eb6.gz": "66046d2860d5498dc95d73003868a5697c0a6c7a9355bde93fe66db8b844e5e9",
+    "tools/rhino_oracle/observations/source_snapshots/5009dcbfde123de862f51b0d5bf8ca74a145a44defa0335a00b6b6e6469ceb0f.gz": "a8f7d97b0abbaa4e2d4ca96fc4e7f643867c79b8bf79f82484ca67860c2cb145",
+    "tools/rhino_oracle/observations/source_snapshots/53f049596a26442a729895a1c50ac4f52e8c9c37d7194fb5ab57164a4a5d7777.gz": "c96f6126f067f3231cb51ad151e5db75ca12c47c8a85a9ccdcc26299140577f7",
+    "tools/rhino_oracle/observations/source_snapshots/6a72e7ab3cd25f7912dbd4c19d57694b420d734ff5400d6dd429d357da091b0e.gz": "dfe835e93a3bf8950ab61db84f6f5e86c9999489565f1498034f04e5a048b1f2",
+    "tools/rhino_oracle/observations/source_snapshots/6aca9da8b6e359217959777b6cd078118937a032a724498b86dc8ed398d89168.gz": "c08b99c31f5291d7f6118345dd259e96953d471c2b420e55aadfb4d7e9012a7f",
+    "tools/rhino_oracle/observations/source_snapshots/6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5.gz": "357cd0a5ef69a44ae9f6edd25752c81d6b58dc794cb6ddda71ded441b495768b",
+    "tools/rhino_oracle/observations/source_snapshots/6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6.gz": "06fbfb9434fca2e2956d3a5d9c5d1c608935003ad06d078694a881ba0ebd23d6",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/7a3088c7bf78706dac781ef2e6a4f1eea6bf2c749052ebf7a1b328cee2ae6ab9.gz": "2e3ecd7fa1dc6ffffb6e79e5c4784433dc61e2b573307e56b9fdf8549d7907f4",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8d9fc6ae0e8cab445d69869ee7de0e662ad843c411b86310ae20e8cd94f07671.gz": "1d3739f5fb0c3627bfa1f129248228db31590ac7b45915ee82098e031dfd046c",
+    "tools/rhino_oracle/observations/source_snapshots/8dcd91d8c8394db33bb3b325abe1649a326974fca7dfb7097fc5c23d161e1896.gz": "33256aff562176cf089a411f208be02008d467afe0e2980500853dcfaaa5efa5",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/a76b17140912f447246d02277bc24b9b700785dd9330779a73bff569bd8f8f27.gz": "9dc3c2f557ce80a2a5a91cd0c1748b176c2fbb9b53e5b16df91fdb98e7734bc7",
+    "tools/rhino_oracle/observations/source_snapshots/ab0473c1acd5c452b7e3933f29e8b9ee403741fbb2abd06370b1e3f10c2e7e90.gz": "173dc07a484613dbb8d4c4c10235721fea7a783bc159aed8f87f14e46d001afe",
+    "tools/rhino_oracle/observations/source_snapshots/ac95252dda37ecf53b593769b06043b67ad8951892d0310d40ef3c7863c77743.gz": "61846d2c1f2aec2fafc0d26f5a4f3e7d8f9b9f4afe87dda9fe675d5d29d7233a",
+    "tools/rhino_oracle/observations/source_snapshots/b07dff3bc0bb3a6506ab59ad846b22f80b60649d8bc0d0b0bd18c238bb32344f.gz": "5941f20ceaafbf4a7336119abdf78838a5239cfa8073bcb72b08925b3dd7bf1f",
+    "tools/rhino_oracle/observations/source_snapshots/b2f10841f896a107ec8f21e15cd375018ba4bb1e939238fedb4c4084679310f7.gz": "ce7040fec3a371478a584a0305e8cb325a5a3c2d0c41ec68b924cf3912fb3f88",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04.gz": "dd4be524a901b12081e1b065dcccf2aa45f3fa5d8cf86c020de21b89e3bbb200",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d9bb43054f4372768205c1e2e64ec6954a0144f680d7366f6f6291a1ef9dd783.gz": "1b24adaadf6cbd09ec082220d7f40dd506289f9e13447dcb34ea757a08e72259",
+    "tools/rhino_oracle/observations/source_snapshots/e8e49faf879e806b53a0bcb91500a8ce2cf4b58ff9dada5527582420e7b75def.gz": "6109c1ab28eb7c0bf7450b00c3b66f99244cda269b1f98f61b579bd25345e76e",
+    "tools/rhino_oracle/observations/source_snapshots/f79a1df7c6180e4bd10093c49ec9af3776380621821c16df3bac81dc84d58f7c.gz": "63aa3133875aa330880cbe600945802bec0f30d4139197c7e432df047d9e36db",
+    "tools/rhino_oracle/observations/source_snapshots/ff4e123a192897e19a44df73e91ae13b1cefe28c391af575ca070193683c1db7.gz": "6cc144f3e5b235bc7b506d7e362cf144f4b2dae78f33146676e8351e768aa4bf",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}

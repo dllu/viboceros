@@ -1,0 +1,346 @@
+[
+  {
+    "name": "command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "shell_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 74.87606920098187
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::shell",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 132.0015950030065
+  },
+  {
+    "name": "library-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "shell::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 40.92938082898036
+  },
+  {
+    "name": "oracle-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--lib",
+      "shell::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 42.76863039296586
+  },
+  {
+    "name": "offset-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "offset_surface_getter",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 73.89549720997456
+  },
+  {
+    "name": "offset-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 63.9052909759921
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 73.2490762899979
+  },
+  {
+    "name": "command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "shell_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 115.53710109100211
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::shell",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 178.46442722599022
+  },
+  {
+    "name": "library-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "shell::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 32.25413464999292
+  },
+  {
+    "name": "oracle-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "shell::",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 30.581170107994694
+  },
+  {
+    "name": "offset-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "offset_surface_getter",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 74.17185094102751
+  },
+  {
+    "name": "offset-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::offset_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 68.47964837698964
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 42.5562972749467
+  },
+  {
+    "name": "geometry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "brep::"
+    ],
+    "status": 0,
+    "seconds": 133.46177234500647
+  },
+  {
+    "name": "native-producers",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "shell",
+      "--test",
+      "brep_transfer",
+      "--test",
+      "brep_import",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 9.65800004301127
+  },
+  {
+    "name": "native-joints",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--lib",
+      "native::brep::joints",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 3.705583350965753
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.842060353024863
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_capture_family",
+      "tools.rhino_oracle.test_shell",
+      "tools.rhino_oracle.test_shell_command",
+      "tools.rhino_oracle.test_shell_native",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_offset_surface_getter"
+    ],
+    "status": 0,
+    "seconds": 4.830363810004201
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.13767890800955
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.53877674299292
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.6314415779779665
+  }
+]
