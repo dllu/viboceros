@@ -1,9 +1,9 @@
 {
   "scope": "Native investigation evidence; custom tolerance fitting remains unqualified.",
-  "native_observations": 78,
-  "owned_launches": 14,
+  "native_observations": 89,
+  "owned_launches": 16,
   "command_rows": 30,
-  "sdk_rows": 48,
+  "sdk_rows": 59,
   "custom_fitting_qualified": false,
   "separately_qualified_menu_rows": [
     "match_tol_complete_menus"
@@ -16,6 +16,8 @@
     "A loose source fit can keep four transverse controls; a tighter fit can need six. More stringent positional sweeps produce five or thirteen even for a boundary that is geometrically coincident after matching.",
     "Public global/local curve closest-point, both surface closest-point directions and curve deviation queries report near-machine-precision agreement in the retained audit cases."
   ],
+  "prefit_hypothesis": "An initial 45 MatchToCurve calls return null because the target BrepEdge direction is reversed. A second launch checks reversed copies and natural isocurves, returning surfaces. For the gap recipe, refinement returns seven or eleven transverse controls rather than the five from CreateFromMatch. The public operation is not a direct substitute for positional preparation.",
+  "prefit_queries": 69,
   "sdk_density": {
     "match_tol_sdk_curvature_1e-05": [
       4,
@@ -239,6 +241,20 @@
       "observations": 3,
       "exit_status": 0,
       "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_prefit_audit",
+      "kind": "sdk",
+      "observations": 9,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_prefit_directions",
+      "kind": "sdk",
+      "observations": 2,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
     }
   ],
   "evidence_sha256": {
@@ -254,9 +270,11 @@
     "docs/surface-match-tolerance-evidence/capture-local-query.log.gz": "e7fa58b8e0c964101e60629973ab8adda351f5a74dbb7b619d714d8b99c2b5a9",
     "docs/surface-match-tolerance-evidence/capture-matches.log.gz": "80f215411108b441cd57ae11a40ecef87b8c4eca06996bd0de274264fa4eb606",
     "docs/surface-match-tolerance-evidence/capture-mirrors.log.gz": "d648288738b910f68d797cdb6305dd24023bbe25ecec4747e1c611a538ab4a4d",
+    "docs/surface-match-tolerance-evidence/capture-prefit-directions.log.gz": "75f35aba954f103eac58743904d2070b7f1a01ff29ef52c58fead67973628e64",
+    "docs/surface-match-tolerance-evidence/capture-prefit.log.gz": "27b57fffccd21435271fcbca827100d7f4217650783f6854d11cdbfb04d18360",
     "docs/surface-match-tolerance-evidence/capture-sdk.log.gz": "93e8418b151ab1d0a1efab5750253ff5fd179c2f8141f61e5d015e57c66f086d",
     "docs/surface-match-tolerance-evidence/capture-sweep.log.gz": "19ed3db423d5b4241ef44f4e07405d3a80d649ec6e73ac71b89d5a709258c71a",
-    "docs/surface-match-tolerance-evidence/captures.json": "80c15e044ee65cfe0dd4fbd6e20bedbf4e52226fe6ecffcac27b88560b9dddcc",
+    "docs/surface-match-tolerance-evidence/captures.json": "98bfc60265a7bc72cee138968fa2d75d2fdf5186e2e4c6a9b1931b7162e66e81",
     "tools/rhino_oracle/fixtures/match_surface_closest_audit.json": "ae835fa0836852f0daa4b3bbeb963a086d14c7b59f89347ad5e6c47ce8c85370",
     "tools/rhino_oracle/fixtures/match_surface_command_tolerance_defaults.json": "380d2692b5c3eaa54c6ed6b88e0947b706338f78a058a8e711c31315c5efb629",
     "tools/rhino_oracle/fixtures/match_surface_command_tolerance_discovery.json": "540fb23e444db5d0c5959ca8ea2cf4934ee8d280ffbc3d4207951947c7d4a498",
@@ -268,6 +286,8 @@
     "tools/rhino_oracle/fixtures/match_surface_inverse_query_audit.json": "39d011d44f88e426abdbff03947686716e21805c93871694b33459fddc598fb2",
     "tools/rhino_oracle/fixtures/match_surface_local_closest_audit.json": "95fbc720b20fb70a2b44e65372bd7ed9583ecb064888b7e47f0f0533722810bb",
     "tools/rhino_oracle/fixtures/match_surface_local_query_audit.json": "c9740db0e52d0dfc273dea7387982938365b82d4fedfa5ddb54008c672323e64",
+    "tools/rhino_oracle/fixtures/match_surface_prefit_audit.json": "8942cf51a67af4f20e801bc9618669b7ca3d0873e72325f1f84baa6e0f1367d8",
+    "tools/rhino_oracle/fixtures/match_surface_prefit_directions.json": "410b641a1cd56cf88d403a200cb1e08444c0a438f3ab713ef46f0683920ed092",
     "tools/rhino_oracle/fixtures/match_surface_tolerance_mirrors.json": "2ae9eabed3a158b2a906d651dae9d01981a9ff45780c1c2b4d160f38b5fa33a9",
     "tools/rhino_oracle/fixtures/match_surface_tolerance_sweep.json": "307e8e1e229c2c173f45fd511fe5d9eeabdeb8815a0578bd7d4b03e4469c8a94",
     "tools/rhino_oracle/fixtures/match_surface_tolerances_sdk.json": "05327b6d13df4c754703dbeb01931195a39777f467f4caf0a606a125775d574a",
@@ -282,6 +302,8 @@
     "tools/rhino_oracle/observations/match_surface_inverse_query_audit.json.gz": "5ed87f2bfc50e6ffe11f4e5994290c90e46d04bde67fad9f162a26d6febdd917",
     "tools/rhino_oracle/observations/match_surface_local_closest_audit.json.gz": "d5788498f1b5f3161851b0757d90683dc3323cc241332900b1dc60ba27357c23",
     "tools/rhino_oracle/observations/match_surface_local_query_audit.json.gz": "15a76873cb7e837f31376a5872e06353fea8f3ea7b537e0a0e1cbc3522a1bfbb",
+    "tools/rhino_oracle/observations/match_surface_prefit_audit.json.gz": "b9c0de7705f5151a3cfa35842b4516e119e41fd904e70dab43e2c7bc0c6eaff4",
+    "tools/rhino_oracle/observations/match_surface_prefit_directions.json.gz": "a6460d68762101fd0287c683cfaa9c1d786ed8a7d1a6fbdf328f7fa4d89549f5",
     "tools/rhino_oracle/observations/match_surface_tolerance_mirrors.json.gz": "66939d3055d1c9eab281d27e00206692f9fea17c9c64d182590455724289711f",
     "tools/rhino_oracle/observations/match_surface_tolerance_sweep.json.gz": "d9334aaf3f73c013e4184ec7fbf0cc830e48f73a348152460571128d52300bd9",
     "tools/rhino_oracle/observations/match_surface_tolerances_sdk.json.gz": "4703a0d88ffaa45956ac69490096e222948e6dc3cecdcd158d5b71c03bf93561",
@@ -291,10 +313,13 @@
     "tools/rhino_oracle/observations/source_snapshots/195dd0ee980652aed9b5770073b162546d467683727ff4d0409f1c4d2abc3acc.gz": "dd00946788632cea930dd7f2f15150a149f87ec16b1f7493085eaa66a561cd3c",
     "tools/rhino_oracle/observations/source_snapshots/19abb212fb76f56f268f212d4607fb28d8b52c8335387bbda36b7f33cd6c6a52.gz": "56780ee4eec8e4238ab879fdcbc11e4757d3a474cd40b6248fcf9913bb912dbd",
     "tools/rhino_oracle/observations/source_snapshots/1bac44d86f1bd59386c552d699a68d776ee104a63f8d2ad4a862b4fecc5422d4.gz": "7f83b7a4b940cdb24f35fc9b9508894336d75eda9f4235a1dfd9306ddf9a08a0",
+    "tools/rhino_oracle/observations/source_snapshots/200f0cd3599ffdcf4ec21f7bea7fd347b684c64daa9d402603ee3bbe0bc40ef5.gz": "b00cdd365f639be25a055e92572af448cc270b213fc457a263709045563a847a",
     "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
     "tools/rhino_oracle/observations/source_snapshots/219ce44fde71311f7ddcfe132af8de807fac837b74377ecae3b5a5bd764c1dfe.gz": "ef610c1011588519c380b5a28a32f4adc07826e6be604673ecae11beded29dd9",
     "tools/rhino_oracle/observations/source_snapshots/25126917164439b7c302e2953b91ccd201e7cb439cc64d90b04c53c7f1800de0.gz": "c6dd22bcbd0716d2e9f633bc50c00ad202f56f7c006a6faaf5b2fac0ce6a1057",
+    "tools/rhino_oracle/observations/source_snapshots/2531354f0bc91bb6b222032fd4637b1448dbb099f13bea37d3869c510a50662c.gz": "74ffa85609e6a174835968ad2cb850358139bbf16ca38aa017435e461df9cb98",
     "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2afe9b8a468661a91c9d78e8627c25f6b2a7d84eb624d7dd8b90ad0469be730d.gz": "88e652853bad316a99f43ec7d72bb35cb2b8f1a3819273351ce0fa0264b2e148",
     "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
     "tools/rhino_oracle/observations/source_snapshots/3b3bc350d0d47b6c355fcb0cc4a36ff1ce105bea3c675e624e0a62f0c750a706.gz": "c968c1027d90bedb21eb740d23a472ed16d6fe86eb7950c44bf9cfebb202de06",
     "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
@@ -311,12 +336,14 @@
     "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
     "tools/rhino_oracle/observations/source_snapshots/7b1d5513c712946867f0b487dd14fbde9fb331743942c9d22ced936320d227f6.gz": "97da47546131fb3739a7c3c4e87d03c967b0b4343878ca7ac00deaea017ce13c",
     "tools/rhino_oracle/observations/source_snapshots/7bd2a77c697324e930fc84298f54a8979acb9ecc70daf60ff65aa73ad510f85a.gz": "51ff1c392055bd3c15c8315bdf5e69639d1766ee3625a5609f92ef769e1fb36d",
+    "tools/rhino_oracle/observations/source_snapshots/7f909b2f9fdb30bf9e18ad56a987bc9a77272e230c0e1ceec56cbcd5562010b4.gz": "081c70ac90716e6bbce40902d330e3074c5e77a557ccd4f097a11b2707e9c87b",
     "tools/rhino_oracle/observations/source_snapshots/83ffa3c4a156f2fabdc9213cc886c44ff92d56066e964737bfbc2a331e3a51dc.gz": "99ecf7ea2fa120a9b0715b21ad0360e2fa8093aec114969736aaad7d7d09891a",
     "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
     "tools/rhino_oracle/observations/source_snapshots/893914873e2c032f3137ff87920dbdc7709617e5a1fb0ad2d95b1d00c2a333a0.gz": "d93d0d9b3641380e5a992bb47af046c51cfa075bd5fbe27f4696305d3b1ee158",
     "tools/rhino_oracle/observations/source_snapshots/94a16926b846461fdd15a507fc174fec490c0ec2d9dc53d7985acf078e51c374.gz": "28d7af124c02c60ddb1ba31ddcc8ec3b5afbc7e5acb2d0358c595221432f55cf",
     "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
     "tools/rhino_oracle/observations/source_snapshots/a59c7ec478199b1bb89044f038e3007eaa8ed7bad191445df74e47ee8c9f4807.gz": "a61bc4a8cd440b3e59d135c016ef0ebd0def3e65a2a9466ec20e4983876ff739",
+    "tools/rhino_oracle/observations/source_snapshots/aaf783756fa96311227b4a38d8346af3881d96e20365287dc25657b5b3d540c7.gz": "cf7f81a9f16c6e94f6a07a049de0bfc0eba7f3c2765b44f77f55b341750e0d9a",
     "tools/rhino_oracle/observations/source_snapshots/ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a.gz": "44ca3d8a2e09e17b6135535a805c58e28d08808fb5bf8db6ff14578b936f908f",
     "tools/rhino_oracle/observations/source_snapshots/af4df6e046bd63b5c61b849389f48a31210b7370e74c73ba5652eaa67f90d84f.gz": "d82eb4664f785cc0610171cc285c42bba379a157c133f352b28f7901b9260690",
     "tools/rhino_oracle/observations/source_snapshots/b182d2b4b5297e39f302f2400cc75382fb47277fbe9d8b331c7aae36367cf222.gz": "fc69c08b8defa4abe0540ef50f54b03f88d68cac6b2d58aad377d54a459064e6",
@@ -330,6 +357,7 @@
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/cca6b459a5799ba0113d49cb60f612d49c0bc18f3a977a36429aad281f74526f.gz": "ff4442bf9613ac3a4b59d58858bb877555137be23407326aee4d8e2ed458f19d",
     "tools/rhino_oracle/observations/source_snapshots/d92003894442230bb5eb3a41e19767d8ec748e2c24663d3b5c53def300914f94.gz": "caa5472dafdc86b6d62b2912dc33bce50e54bc13b9165316cfd37fa7e5d24218",
+    "tools/rhino_oracle/observations/source_snapshots/e01a7ff5e45908328042789d81794155a41686ccb77b6873ff9069e589d76bee.gz": "6986d722a23354fd6bf0aebeaad4662011f8eecea3f5e50b1982a33029af3584",
     "tools/rhino_oracle/observations/source_snapshots/e2acb8cff552fd9d2b0f62aab74194a9ab4697f5c5960a554d60e2d8139b1a18.gz": "167db0578c34d22a7e35634a4cdfc28f5cef85de84f44369e0536e563851caf6",
     "tools/rhino_oracle/observations/source_snapshots/e2b8c45f4d0f4a6b5213a4a440c029850984049f2be172ef4f19d75a3fa5ab3d.gz": "9eda6b6562d0aa136a3f06deda470d54cde13f0ab88ccbf617ae110d632b0718",
     "tools/rhino_oracle/observations/source_snapshots/e6bd3fc56d46944b6987de1ae0a921dcc67f7fed59a88e17341d015e6db83059.gz": "5b35a936b656471738af48af7fcb8326afaeb8d152c9b4d202de0b5931abc76e",

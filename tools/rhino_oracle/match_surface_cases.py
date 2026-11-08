@@ -202,3 +202,23 @@ for factor in [0.,.001,.01,.1,1.,10.]:
     value.update(distance_tolerance=1e-6,angle_tolerance=.1,curvature_tolerance=.05,audit=True)
     GAP_SWEEP['match_tol_gap_'+str(factor)]=value
 CASES.update(copy.deepcopy(DEVIATION_QUERY_AUDIT));CASES.update(copy.deepcopy(GAP_SWEEP))
+
+# Public MatchToCurve is a hypothesis for positional preparation, not an
+# assumed implementation detail of Brep.CreateFromMatch.
+PREFIT_AUDIT={}
+for label,base in [('full_gap',GAP_SWEEP['match_tol_gap_1.0']),
+                   ('small_gap',GAP_SWEEP['match_tol_gap_0.1']),
+                   ('large_gap',GAP_SWEEP['match_tol_gap_10.0'])]:
+    for distance in [1e-8,1e-6,1e-5]:
+        value=copy.deepcopy(base)
+        value.update(distance_tolerance=distance,match_to_curve_levels=[0,1,2,3,4])
+        PREFIT_AUDIT['match_prefit_'+label+'_'+str(distance)]=value
+CASES.update(copy.deepcopy(PREFIT_AUDIT))
+
+PREFIT_DIRECTIONS={}
+for label,base in [('gap',GAP_SWEEP['match_tol_gap_1.0']),
+                   ('coincident',TOLERANCE_MIRRORS['match_tol_already_matched_rational'])]:
+    value=copy.deepcopy(base)
+    value.update(match_to_curve_levels=[0,4],match_to_curve_variants=True)
+    PREFIT_DIRECTIONS['match_prefit_directions_'+label]=value
+CASES.update(copy.deepcopy(PREFIT_DIRECTIONS))

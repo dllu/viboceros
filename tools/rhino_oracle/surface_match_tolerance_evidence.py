@@ -20,6 +20,8 @@ FAMILIES={
  'match_surface_inverse_query_audit':('sdk','INVERSE_QUERY_AUDIT'),
  'match_surface_gap_sweep':('sdk','GAP_SWEEP'),
  'match_surface_deviation_query_audit':('sdk','DEVIATION_QUERY_AUDIT'),
+ 'match_surface_prefit_audit':('sdk','PREFIT_AUDIT'),
+ 'match_surface_prefit_directions':('sdk','PREFIT_DIRECTIONS'),
 }
 
 
@@ -64,7 +66,7 @@ def collect(proof=PROOF):
                         or any(not c['motion_acknowledged'] or not c['click_acknowledged']for c in trace.get('clicks',[]))):raise ValueError('incomplete owned tolerance command')
             elif not v['success'] or not v['source_unchanged'] or v['output'] is None:raise ValueError('incomplete owned tolerance SDK result')
             rows[key]=v
-    if len(rows)!=78 or sum(r['observations']for r in captures if r['kind']=='command')!=30:raise ValueError('tolerance observation scope')
+    if len(rows)!=89 or sum(r['observations']for r in captures if r['kind']=='command')!=30:raise ValueError('tolerance observation scope')
     return rows,captures,paths
 
 
@@ -74,7 +76,7 @@ def summary():
     audits=[v['audit']for v in rows.values()if 'audit' in v]
     samples=[s for a in audits for s in a['samples']]
     return dict(scope='Native investigation evidence; custom tolerance fitting remains unqualified.',
-        native_observations=len(rows),owned_launches=len(captures),command_rows=30,sdk_rows=48,custom_fitting_qualified=False,
+        native_observations=len(rows),owned_launches=len(captures),command_rows=30,sdk_rows=59,custom_fitting_qualified=False,
         separately_qualified_menu_rows=['match_tol_complete_menus'],
         instrumentation_defect='Three local_closest_audit rows executed local queries but overwrote their fields. They remain diagnostic; the later local_query_audit launch retains the queries.',
         observations=[
@@ -83,6 +85,8 @@ def summary():
             'Changing only curvature tolerance from 1e-5 to 100 percent leaves the four captured loose-angle surfaces identical.',
             'A loose source fit can keep four transverse controls; a tighter fit can need six. More stringent positional sweeps produce five or thirteen even for a boundary that is geometrically coincident after matching.',
             'Public global/local curve closest-point, both surface closest-point directions and curve deviation queries report near-machine-precision agreement in the retained audit cases.'],
+        prefit_hypothesis='An initial 45 MatchToCurve calls return null because the target BrepEdge direction is reversed. A second launch checks reversed copies and natural isocurves, returning surfaces. For the gap recipe, refinement returns seven or eleven transverse controls rather than the five from CreateFromMatch. The public operation is not a direct substitute for positional preparation.',
+        prefit_queries=sum(len(v.get('prefit_audit',[]))for v in rows.values()),
         sdk_density={k:definitions(v)for k,v in rows.items()if k.startswith(('match_tol_sweep_','match_tol_mirror_','match_tol_gap_','match_tol_sdk_','match_tol_already_matched_'))},
         public_query_max_distance=dict(
             curve_closest=max(s['distance']for s in samples),

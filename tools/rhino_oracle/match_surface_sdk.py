@@ -44,6 +44,35 @@ def run(op,host,iterations,tolerance):
         value=dict(prescribed_case=recipe,inputs=before,source_unchanged=True,success=bool(success),
             output=record(matched) if matched is not None else None,
             target=record(changed_target) if changed_target is not None else None)
+        if recipe.get('match_to_curve_levels'):
+            value['prefit_audit']=[]
+            variants=[('edge',False,0.)]
+            if recipe.get('match_to_curve_variants'):
+                variants=[(kind,reverse,10.)for kind in ['edge','iso']for reverse in [False,True]]+[
+                    ('iso',False,0.),('iso',False,-1.)]
+            for kind,reverse,limit in variants:
+                curve=(edge(breps[1],recipe['target_side']).DuplicateCurve() if kind=='edge' else
+                    sources[1].IsoCurve(1,sources[1].Domain(0).Min))
+                try:
+                    if reverse:curve.Reverse()
+                    for level in recipe['match_to_curve_levels']:
+                        prefit=sources[0].MatchToCurve(getattr(G.IsoStatus,recipe['side']),
+                            curve,limit,limit,recipe['distance_tolerance'],level)
+                        prefit_brep=None
+                        try:
+                            if prefit is not None:prefit_brep=prefit.ToBrep()
+                            value['prefit_audit'].append(dict(level=level,kind=kind,reverse=reverse,limit=limit,
+                                output=record(prefit_brep) if prefit_brep is not None else None))
+                        finally:
+                            if prefit_brep is not None:prefit_brep.Dispose()
+                            if prefit is not None:prefit.Dispose()
+                finally:curve.Dispose()
+            if [record(b)for b in breps]!=before:raise ValueError('prefit audit mutated an owned input')
+            for original,source in zip(before,sources):
+                check=source.ToBrep()
+                try:
+                    if record(check)!=original:raise ValueError('prefit audit mutated an owned surface')
+                finally:check.Dispose()
         if recipe.get('audit') and matched is not None:
             support=matched.Faces[0].UnderlyingSurface();reference=breps[1].Faces[0].UnderlyingSurface()
             edge_curve=reference.IsoCurve(1,reference.Domain(0).Min)

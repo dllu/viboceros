@@ -1,8 +1,8 @@
 # Surface matching tolerance investigation
 
-The [native catalog](surface-match-tolerance-investigation.json) retains 78
-Rhino 8.32 observations from 14 completed private-display launches: 30 command
-rows and 48 public SDK rows. Recipes, frozen producer sources, launch receipts
+The [native catalog](surface-match-tolerance-investigation.json) retains 89
+Rhino 8.32 observations from 16 completed private-display launches: 30 command
+rows and 59 public SDK rows. Recipes, frozen producer sources, launch receipts
 and logs are checked by:
 
 ```sh
@@ -39,3 +39,10 @@ directions and curve-deviation queries returned near-machine-precision boundary
 agreement. They have not explained the extra refinement. Three earlier local
 query audit rows overwrote their recorded local fields; those diagnostic rows
 are retained, with corrected queries in a later independent capture.
+
+An additional 69 public `NurbsSurface.MatchToCurve` queries test positional
+preparation. The first 45 calls return null with the target BrepEdge's original
+direction. Reversed copies and natural isocurves succeed in the second launch,
+but return seven or eleven transverse controls for the gap case where
+`Brep.CreateFromMatch` returns five. This operation is not a direct replacement
+for the missing preparation policy.

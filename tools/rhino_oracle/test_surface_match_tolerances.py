@@ -5,7 +5,7 @@ from .surface_match_tolerance_evidence import ROOT,PROOF,collect,summary
 
 class SurfaceMatchToleranceEvidenceTests(unittest.TestCase):
     def test_owned_inventory_and_known_instrumentation_defect(self):
-        rows,captures,_=collect();self.assertEqual((len(rows),len(captures)),(78,14))
+        rows,captures,_=collect();self.assertEqual((len(rows),len(captures)),(89,16))
         self.assertFalse(summary()['custom_fitting_qualified'])
         for key in ['match_local_closest_audit_rational_position','match_local_closest_audit_rational_curvature','match_local_closest_audit_polynomial_position']:
             self.assertTrue(rows[key]['prescribed_case']['local_closest_audit'])
@@ -15,6 +15,21 @@ class SurfaceMatchToleranceEvidenceTests(unittest.TestCase):
         rows,_,_=collect();values=[rows['match_tol_sdk_curvature_'+str(x)]for x in [1e-5,.05,1.,100.]]
         self.assertTrue(all(v['output']==values[0]['output']for v in values[1:]))
         self.assertEqual([v['audit']['settings']['curvature']for v in values],[1e-5,.05,1.,100.])
+    def test_prefit_direction_checks_do_not_qualify_a_substitute_fitter(self):
+        rows,_,_=collect()
+        early=[q for k,v in rows.items()if k.startswith('match_prefit_') and not k.startswith('match_prefit_directions_') for q in v['prefit_audit']]
+        self.assertEqual(len(early),45);self.assertTrue(all(q['output'] is None for q in early))
+        for key in ['gap','coincident']:
+            value=rows['match_prefit_directions_'+key];queries=value['prefit_audit']
+            self.assertEqual(len(queries),12)
+            for q in queries:
+                aligned=(q['kind']=='iso')!=q['reverse']
+                self.assertEqual(q['output'] is not None,aligned)
+                if aligned and q['level']==4:
+                    expected=4 if key=='coincident' else (7 if q['limit']>0 else 11)
+                    self.assertEqual(q['output']['surfaces'][0]['control_count'],[4,expected])
+            self.assertEqual(value['output']['surfaces'][0]['control_count'],[4,5 if key=='gap' else 4])
+        self.assertEqual(summary()['prefit_queries'],69)
     def test_missing_status_and_duplicate_launches_cannot_be_hidden(self):
         with tempfile.TemporaryDirectory() as directory:
             proof=Path(directory)/'proof';shutil.copytree(PROOF,proof);path=proof/'captures.json';receipts=json.loads(path.read_bytes())

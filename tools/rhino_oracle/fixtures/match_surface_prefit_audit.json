@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_full_gap_1e-08",
+      "case": "match_prefit_full_gap_1e-08"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_full_gap_1e-06",
+      "case": "match_prefit_full_gap_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_full_gap_1e-05",
+      "case": "match_prefit_full_gap_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_small_gap_1e-08",
+      "case": "match_prefit_small_gap_1e-08"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_small_gap_1e-06",
+      "case": "match_prefit_small_gap_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_small_gap_1e-05",
+      "case": "match_prefit_small_gap_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_large_gap_1e-08",
+      "case": "match_prefit_large_gap_1e-08"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_large_gap_1e-06",
+      "case": "match_prefit_large_gap_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_large_gap_1e-05",
+      "case": "match_prefit_large_gap_1e-05"
+    }
+  ]
+}

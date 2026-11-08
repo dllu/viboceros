@@ -93,4 +93,27 @@ class SurfaceMatchTests(unittest.TestCase):
             self.assertEqual(output.Dispose.call_count,int(stage!='native'))
 
 
+    def test_prefit_hypothesis_disposes_curves_and_checks_owned_surfaces(self):
+        key='match_prefit_full_gap_1e-06';recipe=dict(sdk.CASES[key],audit=False)
+        for stage in ['success','mutation','native']:
+            host,sources,breps,output,_,_,_,helper=self.host()
+            curve=NS(Dispose=mock.Mock())
+            breps[1].Faces[0].Loops[0].Trims[0].Edge.DuplicateCurve=mock.Mock(return_value=curve)
+            checks=[type(b)(b.name)for b in breps]
+            for source,b,check in zip(sources,breps,checks):source.ToBrep.side_effect=[b,check]
+            sources[0].MatchToCurve=mock.Mock(return_value=None)
+            if stage=='mutation':checks[0].changed=True
+            if stage=='native':sources[0].MatchToCurve.side_effect=ValueError('native failure')
+            with self.subTest(stage=stage),mock.patch.dict(sdk.CASES,{key:recipe}),mock.patch.dict('sys.modules',{'brep_join_probe':helper}):
+                if stage=='success':
+                    value,_=sdk.run(dict(op='match_surface_sdk',id=key,case=key),host,1,request([])['tolerance'])
+                    self.assertEqual([q['level']for q in value['prefit_audit']],[0,1,2,3,4])
+                    self.assertTrue(all(q['output'] is None for q in value['prefit_audit']))
+                else:
+                    with self.assertRaises(ValueError):sdk.run(dict(op='match_surface_sdk',id=key,case=key),host,1,request([])['tolerance'])
+            curve.Dispose.assert_called_once()
+            for obj in sources+breps+[output]:obj.Dispose.assert_called_once()
+            checks[0].Dispose.assert_has_calls([] if stage=='native' else [mock.call()])
+            self.assertEqual(checks[1].Dispose.call_count,int(stage=='success'))
+
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_directions_gap",
+      "case": "match_prefit_directions_gap"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_prefit_directions_coincident",
+      "case": "match_prefit_directions_coincident"
+    }
+  ]
+}

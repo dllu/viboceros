@@ -208,5 +208,35 @@
     "archive": "observations/match_surface_deviation_query_audit.json.gz",
     "request_sha256": "3581596d9154df2fa7cd161644e87bb0c455b7490b2ee73259062fe16ea09068",
     "observation_sha256": "ef823666fc953de241d8f37a7e28ade98cd52ca821d7b388e397772f98b7a776"
+  },
+  {
+    "family": "match_surface_prefit_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_prefit_audit > /tmp/match-tolerance-prefit.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-prefit.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-prefit.log.gz",
+    "archive": "observations/match_surface_prefit_audit.json.gz",
+    "request_sha256": "8942cf51a67af4f20e801bc9618669b7ca3d0873e72325f1f84baa6e0f1367d8",
+    "observation_sha256": "5d126021c926cbae3cc66bff0aa39949b16e6d3174e3d00b1cb54bbf0134ec4d"
+  },
+  {
+    "family": "match_surface_prefit_directions",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_prefit_directions > /tmp/match-tolerance-prefit-directions.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-prefit-directions.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-prefit-directions.log.gz",
+    "archive": "observations/match_surface_prefit_directions.json.gz",
+    "request_sha256": "410b641a1cd56cf88d403a200cb1e08444c0a438f3ab713ef46f0683920ed092",
+    "observation_sha256": "bd220af84f8daede1e0efcca5d0e0769442fbf1daf85068b016b91cd6c21d34f"
   }
 ]
