@@ -1,0 +1,15 @@
+{
+  "error": "IronPython validation: math.isfinite unavailable",
+  "captured_native_results": 0,
+  "request": "tools/rhino_oracle/fixtures/shell_sdk_baseline.json",
+  "request_sha256": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+  "sources": {
+    "generate_shell_sdk_baseline.py": "6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5",
+    "shell_probe.py": "5009dcbfde123de862f51b0d5bf8ca74a145a44defa0335a00b6b6e6469ceb0f",
+    "client.py": "4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241",
+    "rhino_worker.py": "3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a",
+    "structural_sdk.py": "b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "log_sha256": "eae1b5a57f1041fca27e96dd98b9ca9fbefbcb5cc42a9453c52beddb1c5664c8"
+}

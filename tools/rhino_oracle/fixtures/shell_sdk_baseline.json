@@ -1,0 +1,186 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "shell",
+      "id": "shell_top",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "opening_points": [
+        [
+          5,
+          4,
+          6
+        ]
+      ],
+      "thickness": 1.0
+    },
+    {
+      "op": "shell",
+      "id": "shell_opposite",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "opening_points": [
+        [
+          5,
+          4,
+          6
+        ],
+        [
+          5,
+          4,
+          0
+        ]
+      ],
+      "thickness": 1.0
+    },
+    {
+      "op": "shell",
+      "id": "shell_adjacent",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "opening_points": [
+        [
+          5,
+          4,
+          6
+        ],
+        [
+          10,
+          4,
+          3
+        ]
+      ],
+      "thickness": 1.0
+    },
+    {
+      "op": "shell",
+      "id": "shell_side",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "opening_points": [
+        [
+          10,
+          4,
+          3
+        ]
+      ],
+      "thickness": 1.0
+    },
+    {
+      "op": "shell",
+      "id": "shell_shifted",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          10000,
+          -30000,
+          50000
+        ],
+        "max": [
+          10010,
+          -29992,
+          50006
+        ]
+      },
+      "opening_points": [
+        [
+          10005,
+          -29996,
+          50006
+        ]
+      ],
+      "thickness": 1.0
+    },
+    {
+      "op": "shell",
+      "id": "shell_disconnected",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "opening_points": [
+        [
+          5,
+          4,
+          0
+        ],
+        [
+          5,
+          4,
+          6
+        ],
+        [
+          5,
+          0,
+          3
+        ],
+        [
+          5,
+          8,
+          3
+        ]
+      ],
+      "thickness": 1.0
+    }
+  ]
+}

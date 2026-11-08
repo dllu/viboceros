@@ -1034,6 +1034,7 @@ pub struct CommandRegistry {
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
     offset_surface_options: std::sync::Arc<remembered::Remembered<offset_surface::Options>>,
+    shell_options: std::sync::Arc<remembered::Remembered<shell::ShellOptions>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
     commands: Vec<Box<dyn Command>>,
@@ -1525,7 +1526,7 @@ impl CommandRegistry {
             .register(extrude_surface::ExtrudeSurfaceCommand)
             .expect("unique built-in command");
         registry
-            .register(shell::ShellCommand)
+            .register(shell::ShellCommand(registry.shell_options.clone()))
             .expect("unique built-in command");
         registry
             .register(extrude_surface_tapered::ExtrudeSurfaceTaperedCommand)
@@ -2817,6 +2818,13 @@ impl CommandRegistry {
     }
     pub fn offset_surface_options(&self) -> offset_surface::Options {
         self.offset_surface_options.get()
+    }
+    pub fn shell_options(&self) -> shell::ShellOptions {
+        self.shell_options.get()
+    }
+    pub fn remember_shell_options(&self, options: shell::ShellOptions) -> Result<(), CommandError> {
+        self.shell_options.set(options.validate()?);
+        Ok(())
     }
     pub fn remember_offset_surface_options(
         &self,

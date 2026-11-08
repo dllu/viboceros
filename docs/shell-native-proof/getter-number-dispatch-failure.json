@@ -1,0 +1,31 @@
+{
+  "error": "Shell raw number token fell through to curve reference dispatch at shell_q_units",
+  "captured_native_results": 0,
+  "raw_response_retained": false,
+  "request": "tools/rhino_oracle/fixtures/shell_getter_qualified.json",
+  "request_sha256": "6901082304610262728372d129e356c3d861d5ffbaa0f5e17272576ab99d5743",
+  "sources": {
+    "generate_shell_getter_qualified.py": "ab0473c1acd5c452b7e3933f29e8b9ee403741fbb2abd06370b1e3f10c2e7e90",
+    "client.py": "53f049596a26442a729895a1c50ac4f52e8c9c37d7194fb5ab57164a4a5d7777",
+    "rhino_worker.py": "19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea",
+    "structural_sdk.py": "4cbbdf741c6b8d952c0c104bf04dc64c744140d84507a61077632c761b5e5eb6",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "chamfer_point_picker.py": "781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c",
+    "shell_point_picker.py": "b2f10841f896a107ec8f21e15cd375018ba4bb1e939238fedb4c4084679310f7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+    "shell_command_probe.py": "26719f1e101df80ae4270289743c485d46d0aeee904f437502baa7a95b704190",
+    "shell_command.py": "e8e49faf879e806b53a0bcb91500a8ce2cf4b58ff9dada5527582420e7b75def",
+    "line_scene_probe.py": "a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0",
+    "move_normal_probe.py": "d9bb43054f4372768205c1e2e64ec6954a0144f680d7366f6f6291a1ef9dd783",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "f79a1df7c6180e4bd10093c49ec9af3776380621821c16df3bac81dc84d58f7c",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7"
+  },
+  "log_sha256": "1430a123165f144def39c531d9ab859b80e9151cd7b0159d8e4dbc53b8605232"
+}

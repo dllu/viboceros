@@ -49,7 +49,7 @@ impl VibocerosApp {
         } else if self.merge_face_prompt.take().is_some() {
             self.push_log("MergeCoplanarFace canceled".into());
         } else if self.shell_prompt.is_some() {
-            self.cancel_shell_prompt(true);
+            self.try_continue_shell("Cancel");
         } else if self.surface_path_prompt.take().is_some() {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {

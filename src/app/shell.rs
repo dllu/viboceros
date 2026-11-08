@@ -26,7 +26,11 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let Ok(parsed) = ShellInput::parse(&words.collect::<Vec<_>>()) else {
+        let Ok(parsed) = ShellInput::parse_with_options(
+            &words.collect::<Vec<_>>(),
+            self.document.units(),
+            self.commands.shell_options(),
+        ) else {
             return false;
         };
         if parsed.faces.is_some() {
@@ -46,6 +50,9 @@ impl VibocerosApp {
             return true;
         }
         self.cancel_interactive_command(false);
+        self.commands
+            .remember_shell_options(parsed.options)
+            .expect("validated Shell options");
         self.shell_prompt = Some(ShellPrompt {
             options: parsed.options,
             tolerance: self.document.tolerance(),
@@ -71,12 +78,31 @@ impl VibocerosApp {
             return false;
         }
         if input.is_empty() {
+            if prompt.awaiting_thickness {
+                prompt.awaiting_thickness = false;
+                self.shell_prompt = Some(prompt);
+                self.push_log(format!(
+                    "Shell: select faces to remove ({})",
+                    prompt.options.command_options()
+                ));
+                self.command_input.clear();
+                return true;
+            }
             self.finish_shell_prompt();
             self.command_input.clear();
             return true;
         }
         if input.trim_start_matches('_').eq_ignore_ascii_case("Cancel") {
-            self.cancel_shell_prompt(true);
+            if prompt.awaiting_thickness {
+                prompt.awaiting_thickness = false;
+                self.shell_prompt = Some(prompt);
+                self.push_log(format!(
+                    "Shell: select faces to remove ({})",
+                    prompt.options.command_options()
+                ));
+            } else {
+                self.cancel_shell_prompt(true);
+            }
             self.command_input.clear();
             return true;
         }
@@ -151,6 +177,9 @@ impl VibocerosApp {
             .update(&normalized.iter().map(String::as_str).collect::<Vec<_>>())
         {
             Ok(()) => {
+                self.commands
+                    .remember_shell_options(prompt.options)
+                    .expect("validated Shell options");
                 prompt.awaiting_thickness = false;
                 self.shell_prompt = Some(prompt);
                 self.push_log(prompt.options.command_options());
@@ -180,8 +209,8 @@ impl VibocerosApp {
         let picks = match self.component_selection.checked_picks(&self.document) {
             Ok(p) if !p.is_empty() => p,
             Ok(_) => {
-                self.shell_prompt = Some(prompt);
-                self.push_log("Error: select at least one face to remove".into());
+                self.component_selection.clear();
+                self.push_log("Shell canceled".into());
                 return;
             }
             Err(e) => {

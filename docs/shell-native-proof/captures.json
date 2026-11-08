@@ -1,0 +1,72 @@
+[
+  {
+    "family": "shell_getter_pilot",
+    "log": "capture-shell_getter_pilot.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_shell_getter_pilot"
+    ],
+    "exit_status": 0,
+    "request_sha256": "6cb58209d225a4411c8bb501f986e1ea94e687a7b8ee2ca6b59850281e774c4f",
+    "observation_sha256": "78778974255c776d4869d37a3f9ed0410f6f6d6a55d4fd0c72824bdb89132419"
+  },
+  {
+    "family": "shell_getter_qualified",
+    "log": "capture-shell_getter_qualified.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_shell_getter_qualified"
+    ],
+    "exit_status": 0,
+    "request_sha256": "6901082304610262728372d129e356c3d861d5ffbaa0f5e17272576ab99d5743",
+    "observation_sha256": "f5365756d282bb5d015a3a5c2a318cf20eac1d09a60bdc42c3f43772e771a9c6"
+  },
+  {
+    "family": "shell_getter_holdouts",
+    "log": "capture-shell_getter_holdouts.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_shell_getter_holdouts"
+    ],
+    "exit_status": 0,
+    "request_sha256": "bbcf0e02772745aad293bc28f05cd7b8b899cfc9e7bb29d9595f1ea0c05b30eb",
+    "observation_sha256": "af871f8bc7d601cd762691df172b4b88687a0ffd323e3c8dfc9ae465b1eafd53"
+  },
+  {
+    "family": "shell_sdk_signed",
+    "log": "capture-shell_sdk_signed.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_shell_sdk_signed"
+    ],
+    "exit_status": 0,
+    "request_sha256": "4a46004e989169a224823c8964c9924e4f7576a872a993d62e26db414332eb96",
+    "observation_sha256": "34593eba80581daeff3a3d170aad6d18fd000f502bed64f24d3f43d73fa95aba"
+  },
+  {
+    "family": "shell_sdk_geometry",
+    "log": "capture-shell_sdk_geometry.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_shell_sdk_geometry"
+    ],
+    "exit_status": 0,
+    "request_sha256": "c173f870ce57e869f71c875bf70e12e090eb6816a444c424d76064b254dd030f",
+    "observation_sha256": "28b3196264b485a3e980a52146a0ab8e92cae12e579783f8c1d853a97b113118"
+  }
+]

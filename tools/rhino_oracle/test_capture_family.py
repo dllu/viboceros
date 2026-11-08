@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from . import capture_family
+from .client import OracleError
 
 
 class CaptureFamilyTests(unittest.TestCase):
@@ -112,6 +113,22 @@ class CaptureFamilyTests(unittest.TestCase):
             self.capture()
         self.assertEqual(archive.read_bytes(), before)
         self.assertFalse(self.output.exists())
+
+    def test_failed_batch_keeps_completed_rows_request_and_original_producers(self):
+        response = dict(results=[dict(id='one', value=dict(valid=True))], error='second operation failed')
+        error = OracleError('native probe failed'); error.raw_response = response
+        self.run.side_effect = error
+        with self.assertRaisesRegex(OracleError, 'native probe failed'):
+            self.capture()
+        self.assertFalse(self.output.exists())
+        files = list((self.root/'observations/failures').glob('*.json.gz'))
+        self.assertEqual(len(files), 1)
+        failure = json.loads(gzip.decompress(files[0].read_bytes()))
+        self.assertEqual(failure['response'], response)
+        self.assertEqual(failure['provenance']['request_sha256'], hashlib.sha256(self.fixture.read_bytes()).hexdigest())
+        for name, digest in failure['provenance']['sources'].items():
+            self.assertEqual(gzip.decompress((self.root/'observations/source_snapshots'/(digest+'.gz')).read_bytes()),
+                             (self.root/name).read_bytes())
 
 
 if __name__ == '__main__':

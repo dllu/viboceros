@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "shell_command",
+      "id": "shell_getter_keep",
+      "case": "shell_getter_keep"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_getter_delete",
+      "case": "shell_getter_delete"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_getter_cancel",
+      "case": "shell_getter_cancel"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_getter_negative",
+      "case": "shell_getter_negative"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_getter_zero",
+      "case": "shell_getter_zero"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_getter_inline",
+      "case": "shell_getter_inline"
+    }
+  ]
+}

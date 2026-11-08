@@ -258,4 +258,16 @@ impl Shape {
         self.model
             .to_brep_with_approximation(tolerance, Some(approximation))
     }
+
+    /// Transfer approximated NURBS with exact closure of roundoff-sized UV
+    /// joints. Every endpoint adjustment must preserve the trim's spatial
+    /// image within a continuously certified edge-deviation bound.
+    pub fn to_brep_approximated_with_closed_uv_joints(
+        &self,
+        tolerance: Tolerance,
+        approximation: f64,
+    ) -> Result<Brep, Error> {
+        self.model
+            .to_brep_with_closed_uv_joints(tolerance, Some(approximation))
+    }
 }

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-geometry",
+    "--lib"
+  ],
+  "passed": 2863,
+  "failed": 0,
+  "ignored": 10,
+  "stage": "After the trim scan fix and before extracting its unchanged predicates into brep/trim_scan.rs. The final check runner repeats the B-rep tests after extraction."
+}

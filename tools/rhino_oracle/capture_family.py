@@ -3,7 +3,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
-from .client import OracleClient
+from .client import OracleClient, OracleError
 
 HERE = Path(__file__).resolve().parent
 
@@ -28,17 +28,10 @@ def capture(family, query, sources, scheme, timeout=1200):
     sources = list(dict.fromkeys([*sources, 'capture_family.py']))
     frozen = {name: (HERE / name).read_bytes() for name in sources}
     digest = lambda data: hashlib.sha256(data).hexdigest()
-    print('Capturing {} cases: {}'.format(len(query['operations']), family), flush=True)
-    data = OracleClient(settings_scheme=scheme).run_rhino(query, timeout=timeout)
-    for name, original in frozen.items():
-        if (HERE / name).read_bytes() != original:
-            raise ValueError('producer changed during capture: ' + name)
-    if fixture.read_bytes() != encoded:
-        raise ValueError('fixture changed during capture: ' + family)
-    if [r['id'] for r in data['results']] != [o['id'] for o in query['operations']]:
-        raise ValueError('native coverage differs: ' + family)
-    data['provenance'] = dict(request_sha256=digest(encoded),
-                              sources={name: digest(content) for name, content in frozen.items()})
+    provenance = dict(request_sha256=digest(encoded),
+                      sources={name: digest(content) for name, content in frozen.items()})
+    # Freeze before launch so failed imports and partial batches retain the
+    # exact producers as well as successful captures.
     for content in frozen.values():
         archive = HERE / ('observations/source_snapshots/' + digest(content) + '.gz')
         if archive.exists():
@@ -47,6 +40,29 @@ def capture(family, query, sources, scheme, timeout=1200):
         else:
             with archive.open('xb') as stream:
                 stream.write(gzip.compress(content, mtime=0))
+    print('Capturing {} cases: {}'.format(len(query['operations']), family), flush=True)
+    try:
+        data = OracleClient(settings_scheme=scheme).run_rhino(query, timeout=timeout)
+    except OracleError as error:
+        failure = dict(family=family, error=str(error), provenance=provenance,
+                       response=getattr(error, 'raw_response', None))
+        content = (json.dumps(failure, indent=2, allow_nan=False) + '\n').encode()
+        directory = HERE / 'observations/failures'
+        directory.mkdir(exist_ok=True)
+        path = directory / (family + '-' + digest(content) + '.json.gz')
+        if not path.exists():
+            with path.open('xb') as stream:
+                stream.write(gzip.compress(content, mtime=0))
+        print('Retained failed capture: ' + str(path), flush=True)
+        raise
+    for name, original in frozen.items():
+        if (HERE / name).read_bytes() != original:
+            raise ValueError('producer changed during capture: ' + name)
+    if fixture.read_bytes() != encoded:
+        raise ValueError('fixture changed during capture: ' + family)
+    if [r['id'] for r in data['results']] != [o['id'] for o in query['operations']]:
+        raise ValueError('native coverage differs: ' + family)
+    data['provenance'] = provenance
     with output.open('x') as stream:
         stream.write(json.dumps(data, indent=2, allow_nan=False) + '\n')
     print('Recorded ' + family, flush=True)

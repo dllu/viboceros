@@ -1,0 +1,15 @@
+{
+  "error": "CreateShell(-thickness) did not return valid solid walls for shell_top",
+  "captured_native_results": 0,
+  "request": "tools/rhino_oracle/fixtures/shell_sdk_baseline.json",
+  "request_sha256": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+  "sources": {
+    "generate_shell_sdk_baseline.py": "6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5",
+    "shell_probe.py": "6aca9da8b6e359217959777b6cd078118937a032a724498b86dc8ed398d89168",
+    "client.py": "53f049596a26442a729895a1c50ac4f52e8c9c37d7194fb5ab57164a4a5d7777",
+    "rhino_worker.py": "19b897f91d327072144b6db50989ae811212ae8807c39b2ecf12dc36ad67f0ea",
+    "structural_sdk.py": "4cbbdf741c6b8d952c0c104bf04dc64c744140d84507a61077632c761b5e5eb6",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "log_sha256": "b909bc32b6c5aa5e06d5bc59daabe3aba74e7ed810648ea2951cff2f657148d7"
+}

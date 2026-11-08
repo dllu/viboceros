@@ -1,0 +1,16 @@
+{
+  "baseline_revision": "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-geometry",
+    "--lib",
+    "almost_horizontal_hole_boundary",
+    "--",
+    "--nocapture"
+  ],
+  "setup": "At the baseline, add cfg(test) mod trim_scan_tests beside transform_tests in brep.rs and expand the frozen reproducer into brep/trim_scan_tests.rs.",
+  "reproducer_sha256": "18890f0a4dc642839a1073b96b714f9e6b3c93f199ba86e9fbb6415a19203a8a",
+  "result": "A point to the right of the hole was incorrectly excluded."
+}

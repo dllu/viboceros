@@ -20,7 +20,7 @@ class ShellTests(TestCase):
         class Faces(list):
             @property
             def Count(self): return len(self)
-        source.Faces = Faces([NS(ClosestPoint=lambda p:(True, 0, 0),
+        source.Faces = Faces([NS(ClosestPoint=lambda p:(True, 0, 0), IsPointOnFace=lambda u,v:'Interior',
                                  PointAt=lambda u,v:NS(DistanceTo=lambda p:0)),
                               NS(ClosestPoint=lambda p:(False, 0, 0))])
         output = mock.Mock(IsSolid=True, IsValid=True)
@@ -28,7 +28,7 @@ class ShellTests(TestCase):
         output.GetBoundingBox.return_value = NS(Min=[0,0,0], Max=[10,8,6])
         mass = mock.Mock(Volume=240.)
         Brep.CreateShell = mock.Mock(return_value=[output])
-        G = NS(Brep=Brep, Point3d=lambda *xyz:xyz, VolumeMassProperties=NS(Compute=mock.Mock(return_value=mass)))
+        G = NS(Brep=Brep, Point3d=lambda *xyz:xyz, PointFaceRelation=NS(Interior='Interior'), VolumeMassProperties=NS(Compute=mock.Mock(return_value=mass)))
         host = {'Rhino':NS(Geometry=G), '_object_source':lambda *args:source,
                 '_measure':lambda n,f:(f(),0), '_xyz':lambda p:p}
         return host, source, output, mass
@@ -36,7 +36,7 @@ class ShellTests(TestCase):
     def test_signed_inward_distance_face_resolution_and_disposal(self):
         host, source, output, mass = self.host()
         value, _ = run(request()['operations'][0], host, 1, request()['tolerance'])
-        host['Rhino'].Geometry.Brep.CreateShell.assert_called_once_with(source, [0], -1., 1e-6)
+        host['Rhino'].Geometry.Brep.CreateShell.assert_called_once_with(source, [0], 1., 1e-6)
         self.assertEqual(value['breps'][0]['volume'], 240.)
         for item in (source, output, mass): item.Dispose.assert_called_once()
 
@@ -52,3 +52,11 @@ class ShellTests(TestCase):
                 run(request()['operations'][0], host, 1, request()['tolerance'])
             source.Dispose.assert_called_once()
             if stage in ('invalid', 'mass'): output.Dispose.assert_called_once()
+
+    def test_underlying_surface_outside_face_trim_is_rejected(self):
+        host, source, output, mass = self.host()
+        source.Faces[0].IsPointOnFace = lambda u,v:'Exterior'
+        with self.assertRaisesRegex(ValueError, 'one face interior'):
+            run(request()['operations'][0], host, 1, request()['tolerance'])
+        host['Rhino'].Geometry.Brep.CreateShell.assert_not_called()
+        source.Dispose.assert_called_once()

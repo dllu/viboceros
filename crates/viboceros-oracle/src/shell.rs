@@ -6,6 +6,8 @@ pub struct Fixture {
     pub source: ObjectSource,
     pub opening_points: Vec<[f64; 3]>,
     pub thickness: f64,
+    #[serde(default)]
+    pub include_geometry: bool,
 }
 pub(super) fn run(
     f: &Fixture,
@@ -25,7 +27,9 @@ pub(super) fn run(
         let mut matches = Vec::new();
         for (i, face) in brep.faces().iter().enumerate() {
             let (u, v) = face.surface().closest_parameters(point, tolerance)?;
-            if face.surface().evaluate(u, v)?.distance_to(point)? <= tolerance.absolute() {
+            if face.surface().evaluate(u, v)?.distance_to(point)? <= tolerance.absolute()
+                && face.contains_parameters(u, v, tolerance)?
+            {
                 matches.push(i);
             }
         }
@@ -49,7 +53,7 @@ pub(super) fn run(
             &format!("Shell Thickness={} FaceRefs={refs}", f.thickness),
         )?;
         let mut outputs = Vec::new();
-        for o in doc.selected_objects() {
+        for o in doc.objects() {
             let Geometry::Brep(b) = o.geometry() else {
                 return Err(ProbeError::FixtureInvariant("Shell output is not a B-rep"));
             };
@@ -59,7 +63,11 @@ pub(super) fn run(
                 .map_err(CommandError::from)?;
             #[cfg(not(feature = "native-smlib"))]
             let bounds = b.bounds();
-            outputs.push(json!({"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":b.signed_volume(tolerance)?.abs(),"bounds":[bounds.min().to_array(),bounds.max().to_array()]}));
+            let mut row = json!({"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":b.signed_volume(tolerance)?.abs(),"bounds":[bounds.min().to_array(),bounds.max().to_array()]});
+            if f.include_geometry {
+                row["geometry"] = crate::brep_interchange::definition_record(b)?;
+            }
+            outputs.push(row);
         }
         outputs.sort_by(|a, b| {
             for axis in 0..3 {
@@ -75,6 +83,24 @@ pub(super) fn run(
         });
         Ok(json!({"breps":outputs}))
     })
+}
+#[cfg(test)]
+mod input_tests {
+    use super::*;
+    #[test]
+    fn opening_points_outside_a_circular_cap_are_rejected_before_shelling() {
+        let f: Fixture = serde_json::from_value(json!({
+            "source": {"type":"cylinder_brep", "origin":[0.,0.,0.], "radius":5., "height":8.},
+            "opening_points":[[4.9,4.9,8.]], "thickness":1.
+        }))
+        .unwrap();
+        assert!(matches!(
+            run(&f, 1, Tolerance::default()),
+            Err(ProbeError::FixtureInvariant(
+                "opening point must identify one face interior"
+            ))
+        ));
+    }
 }
 #[cfg(all(test, feature = "native-smlib"))]
 mod tests {

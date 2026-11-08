@@ -77,19 +77,13 @@
     "patch composition": "Both new patches apply with --fuzz=0 after the existing repairs and reproduce tested generated C++ byte for byte."
   },
   "source_sha256": {
-    "crates/viboceros-command/src/shell.rs": "d0a0e0547f08b79443317dd3102751ddaf33561d8d51dd1615362e76e5d7b153",
-    "crates/viboceros-command/src/shell/tests.rs": "01b2e072b6b760f893b04d33884a3d92aa1914332e88d86653dc2e1b5a7ad7c7",
-    "crates/viboceros-oracle/src/shell.rs": "cce2bc70953f2a53217218674a7f843bf6b2361112a1cc1653e741905b9d8bb9",
     "crates/viboceros-smlib/src/native/shell.rs": "9816e73fb176677fa8f0ab7fde9520badd8a423e01b0fb6f1e58e409fd6759cc",
     "crates/viboceros-smlib/tests/shell.rs": "05f6b46aa18efa609cd19cc1930899f2fcdb7ee1aaa7221478a0fe2f74b540d5",
-    "docs/commands/shell.md": "053f81166748f14817f9967338c421065d1dc3cc3cdd98c3b83f3c0e8186356a",
     "docs/shell-asan-baseline.log": "9a7d52160840ebc86ea7b7b7cd0a0353f4ad2c85927b17d683c7088b99937465",
     "docs/shell-asan-fixed.log": "632a536bdff944878d7e9b5b224a2d2fe5334a5b6f5a857c354da8c049c47ee9",
     "docs/shell-asan-isolated-loop-baseline.log": "a6f2e569ceceaacaf9c45811efe4136d82abc45ddc762a7f0467f51bd93a6109",
     "docs/shell-asan-squeezed-vertex-baseline.log": "ef56cc123044214920319240e9533da92268bf529f917816aca10ef6cb80416d",
     "docs/shell-command-asan-fixed.log": "6cf711dba4ccc2d9943e73241ed26d1e817a36073732b7274e500976623a1a3a",
-    "src/app/shell.rs": "fa592d9a9745db9400816a7b8f55e472fe0adec8e971721d22ea80c33fb93334",
-    "src/app/tests/shell.rs": "838271db23ba5ed5532e51a1538185a450013ead3630dcd6794859284899a1a0",
     "third_party/patches/usd-brep-isolated-loop-owner.patch": "226da89868d24b4b7ccdf9ae3725d7cb931cba913e7daba66bd1d2d325c946d6",
     "third_party/patches/usd-brep-proto-edge-endpoint-links.patch": "2216eaf4a8983629f5965baac562142110483e856f668aaa15f54b2e4f9a54ed",
     "third_party/usd-brep/source/SMLib/inc/SmProtoTopology.h": "ae7d0f502f9fd79d07c738c667a66924609a3267a82886e147f49c36f61c3658",
@@ -101,8 +95,6 @@
     "third_party/usd-brep/source/SM_API/src/SmApiBrep.cpp": "c1dcdf9899a386199dd9cc3ee3bef9626d324d5558a8b7b6132b19e18fb70df1",
     "tools/rhino_oracle/fixtures/shell.json": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
     "tools/rhino_oracle/observations/shell_viboceros_native.json": "f9ffa43f20d62caa6db012228dbde426822da0f6a00d9f27218a96f811eb4cd9",
-    "tools/rhino_oracle/shell_probe.py": "6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6",
-    "tools/rhino_oracle/test_shell.py": "0c52350b3e645ec2dd7b60e94e6abe4d0925f3ee0a683500cb27a7bf404b811a",
     ".gitattributes": "b62924c60939dd436f140dd0812a7df35ae083fbdd442a5dc87e7f65057cedb7"
   },
   "box_fixture_max_volume_error": 1.1368683772161603e-13,
@@ -124,5 +116,15 @@
     "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/usd-brep-limitations.md": "b5b08a42150304b2d4307698b928083442a4cd4116da0272900e017f0e20252b",
     "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742"
+  },
+  "replay_source_git_sha256": {
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:crates/viboceros-command/src/shell.rs": "d0a0e0547f08b79443317dd3102751ddaf33561d8d51dd1615362e76e5d7b153",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:crates/viboceros-command/src/shell/tests.rs": "01b2e072b6b760f893b04d33884a3d92aa1914332e88d86653dc2e1b5a7ad7c7",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:crates/viboceros-oracle/src/shell.rs": "cce2bc70953f2a53217218674a7f843bf6b2361112a1cc1653e741905b9d8bb9",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:docs/commands/shell.md": "053f81166748f14817f9967338c421065d1dc3cc3cdd98c3b83f3c0e8186356a",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:src/app/shell.rs": "fa592d9a9745db9400816a7b8f55e472fe0adec8e971721d22ea80c33fb93334",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:src/app/tests/shell.rs": "838271db23ba5ed5532e51a1538185a450013ead3630dcd6794859284899a1a0",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:tools/rhino_oracle/shell_probe.py": "6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6",
+    "17ce1e16f7de5c477fd3dbdc53e335df6905b6f3:tools/rhino_oracle/test_shell.py": "0c52350b3e645ec2dd7b60e94e6abe4d0925f3ee0a683500cb27a7bf404b811a"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "error": "IronPython import: No module named pathlib",
+  "captured_native_results": 0,
+  "request": "tools/rhino_oracle/fixtures/shell_sdk_baseline.json",
+  "request_sha256": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+  "sources": {
+    "generate_shell_sdk_baseline.py": "6be53e0926af478a1068034d0442e2c1778f5f19cb4d764b7e21d2b4e7583ca5",
+    "shell_probe.py": "6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6",
+    "client.py": "4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241",
+    "rhino_worker.py": "3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a",
+    "structural_sdk.py": "b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "log_sha256": "4887242c30e35e3ffb6e7fc5dbfae73487a11097e49d9d4a1fccb20be8cfc1d5"
+}

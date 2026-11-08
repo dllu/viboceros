@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "shell_command",
+      "id": "shell_q_keep",
+      "case": "shell_q_keep"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_delete",
+      "case": "shell_q_delete"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_half",
+      "case": "shell_q_half"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_units",
+      "case": "shell_q_units"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_negative",
+      "case": "shell_q_negative"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_zero_keep",
+      "case": "shell_q_zero_keep"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_zero_delete",
+      "case": "shell_q_zero_delete"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_distance_cancel",
+      "case": "shell_q_distance_cancel"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_distance_enter",
+      "case": "shell_q_distance_enter"
+    },
+    {
+      "op": "shell_command",
+      "id": "shell_q_picked_cancel",
+      "case": "shell_q_picked_cancel"
+    }
+  ]
+}
