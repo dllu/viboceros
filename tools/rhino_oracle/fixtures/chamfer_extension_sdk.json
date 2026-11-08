@@ -1,0 +1,1226 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Start-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Start",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Start-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Start",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Start-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Start",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-End-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "End",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-End-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "End",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-End-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "End",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Both-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Both",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Both-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Both",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "xy-Both-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            5.0,
+            0.0
+          ],
+          [
+            1.4142135623730951,
+            6.414213562373095,
+            0.0
+          ],
+          [
+            0.0,
+            7.0,
+            0.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "side": "Both",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Start-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Start-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Start-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-End-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-End-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-End-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Both-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Both-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_y-Both-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            8.2,
+            3.0,
+            4.6
+          ],
+          [
+            7.848528137423857,
+            4.414213562373095,
+            4.1313708498984765
+          ],
+          [
+            7.0,
+            5.0,
+            3.0
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          7.0,
+          -2.0,
+          3.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          0.6,
+          0.0,
+          0.8
+        ],
+        "normal": [
+          -0.8,
+          0.0,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Start-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Start-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Start-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Start",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-End-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-End-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-End-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "End",
+      "style": "Smooth"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Both-Line",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Line"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Both-Arc",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Arc"
+    },
+    {
+      "op": "chamfer_extension_sdk",
+      "id": "tilted_x-Both-Smooth",
+      "source": {
+        "type": "arc",
+        "points": [
+          [
+            2.0,
+            3.0,
+            4.0
+          ],
+          [
+            1.4142135623730951,
+            3.8485281374238567,
+            5.1313708498984765
+          ],
+          [
+            0.0,
+            4.2,
+            5.6000000000000005
+          ]
+        ]
+      },
+      "boundary": {
+        "type": "circle",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 5.0,
+        "x_axis": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          -0.8,
+          0.6
+        ]
+      },
+      "side": "Both",
+      "style": "Smooth"
+    }
+  ]
+}

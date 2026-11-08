@@ -17,6 +17,8 @@ prepared and explicit-source APIs, and 31 complete UI workflows. Coverage
 includes circular, tangent and smooth continuation, reversed picks and source
 orientation, cuts crossing into the original source, and tilted geometry.
 Verification controls explicitly set both extension styles.
+Further [end and seam selection](chamfer-branch.md) checks cover far picks,
+noncircular boundaries and shifted closed-source seams.
 
 The corpus records 5,148 native point/tangent stations, including 4,356 in the
 supported workflows. Checks compare coefficients, knots, domains, these stations,

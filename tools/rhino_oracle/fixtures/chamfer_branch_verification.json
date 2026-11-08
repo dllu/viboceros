@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_circle_below_reverse_picks",
+      "case": "branch_seam_circle_below_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_circle_above_reverse_picks",
+      "case": "branch_seam_circle_above_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_nurbs_below_reverse_picks",
+      "case": "branch_seam_nurbs_below_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_nurbs_above_reverse_picks",
+      "case": "branch_seam_nurbs_above_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_ellipse_below_reverse_picks",
+      "case": "branch_seam_ellipse_below_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_ellipse_above_reverse_picks",
+      "case": "branch_seam_ellipse_above_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_crossing_below",
+      "case": "branch_seam_crossing_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_shifted_below",
+      "case": "branch_seam_shifted_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_line_backward_below",
+      "case": "branch_seam_line_backward_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_crossing_above",
+      "case": "branch_seam_crossing_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_shifted_above",
+      "case": "branch_seam_shifted_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_line_backward_above",
+      "case": "branch_seam_line_backward_above"
+    }
+  ]
+}

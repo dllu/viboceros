@@ -62,6 +62,11 @@ closed source require `ExtendOtherCurvesBy=Line` when `ExtendArcsBy=Line`;
 the mixed Smooth setting is rejected without edits or Redo loss.
 See [closed-source qualification](../chamfer-closed.md).
 
+Nonmeeting curved sources consider both ends and choose the least added
+continuation. Closed-source intersection choices and setback directions follow
+the native parameter chart, so moving a closed seam can affect the result.
+See [end and seam selection](../chamfer-branch.md).
+
 Distances consuming a complete source are rejected atomically. One captured oversized native success produces
 nonmeeting retained/bevel endpoints; it is documented as a compatibility gap.
 Arbitrary folded curves and all intersection branches remain unqualified.

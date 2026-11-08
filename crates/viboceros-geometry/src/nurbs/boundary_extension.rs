@@ -547,6 +547,33 @@ impl NurbsCurve {
         boundary: &Self,
         tolerance: Tolerance,
     ) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
+        // A growing extrapolation probe must not enlarge the model-space
+        // intersection tolerance. A tight box at fixed absolute accuracy can
+        // prove a miss before the general pair solver scales its search to the
+        // potentially very distant probe. If bounding cannot resolve a pole or
+        // its subdivision budget, leave the decision to the original solver.
+        let fixed = Tolerance::try_new(
+            tolerance.absolute(),
+            Real::MIN_POSITIVE,
+            tolerance.angular(),
+        )?;
+        // Positive rational weights make the boundary control box an enclosure.
+        if boundary.control_points().iter().all(|p| p.weight() > 0.)
+            && let Ok(bounds) = self.tight_bounds(fixed)
+        {
+            let boundary_bounds = boundary.control_point_bounds();
+            let scale = boundary_bounds
+                .min()
+                .to_array()
+                .into_iter()
+                .chain(boundary_bounds.max().to_array())
+                .map(Real::abs)
+                .fold(0., Real::max);
+            let padding = tolerance.absolute().max(tolerance.relative() * scale);
+            if !bounding_boxes_overlap(bounds, boundary_bounds, padding) {
+                return Ok(Vec::new());
+            }
+        }
         let mut result = Vec::new();
         for hit in self.intersections_with_curve(boundary, tolerance)? {
             if self.domain().contains(&hit.first_parameter)

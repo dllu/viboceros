@@ -1,4 +1,4 @@
-//! Extend only the picked open end to the closed boundary before setback search.
+//! Choose the least added continuation to a closed boundary before setbacks.
 use super::*;
 use viboceros_geometry::{
     CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle, CurveRef, PolyCurve3,
@@ -24,7 +24,57 @@ pub(super) fn to_boundary(
     }
     let start = source.as_ref().start_point()?;
     let end = source.as_ref().end_point()?;
-    let at_start = pick.distance_to(start)? < pick.distance_to(end)?;
+    let preferred_start = pick.distance_to(start)? < pick.distance_to(end)?;
+    let bounds = boundary.as_ref().tight_bounds(tolerance)?;
+    let min = bounds.min().to_array();
+    let max = bounds.max().to_array();
+    let lower_bound = |point: Point3| -> Result<Real, CommandError> {
+        let p = point.to_array();
+        Ok(point.distance_to(Point3::try_from(std::array::from_fn(|i| {
+            p[i].clamp(min[i], max[i])
+        }))?)?)
+    };
+    let mut ends = [(true, lower_bound(start)?), (false, lower_bound(end)?)];
+    if ends[0].1 > ends[1].1 || (ends[0].1 == ends[1].1 && !preferred_start) {
+        ends.swap(0, 1);
+    }
+    let original_length = source.as_ref().length(tolerance)?;
+    let mut best = None;
+    for (at_start, lower) in ends {
+        // Any continuation must reach the boundary's enclosing box. Avoid an
+        // unbounded extrapolation search when even that lower bound is longer
+        // than the candidate already found. Include both integration errors.
+        if best.as_ref().is_some_and(|(length, _): &(Real, Curve3)| {
+            let margin = 4.
+                * tolerance
+                    .absolute()
+                    .max(tolerance.relative() * length.max(original_length));
+            lower > *length - original_length + margin
+        }) {
+            continue;
+        }
+        match from_end(source, boundary, at_start, options, tolerance) {
+            Ok(curve) => {
+                let length = curve.as_ref().length(tolerance)?;
+                if best.as_ref().is_none_or(|(old, _)| length < *old) {
+                    best = Some((length, curve));
+                }
+            }
+            Err(CommandError::Geometry(GeometryError::CurveExtensionBoundaryNotFound)) => {}
+            Err(error) => return Err(error),
+        }
+    }
+    best.map(|(_, curve)| curve)
+        .ok_or(GeometryError::CurveExtensionBoundaryNotFound.into())
+}
+
+fn from_end(
+    source: &Curve3,
+    boundary: &Curve3,
+    at_start: bool,
+    options: Preferences,
+    tolerance: Tolerance,
+) -> Result<Curve3, CommandError> {
     let side = if at_start {
         CurveExtensionSide::Start
     } else {

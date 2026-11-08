@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "branch_arc_far_pick",
+      "case": "branch_arc_far_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_arc_far_reverse",
+      "case": "branch_arc_far_reverse"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_tangent_arc_far_pick",
+      "case": "branch_tangent_arc_far_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_tangent_arc_far_reverse",
+      "case": "branch_tangent_arc_far_reverse"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_nurbs_line_far_pick",
+      "case": "branch_nurbs_line_far_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_nurbs_line_far_reverse",
+      "case": "branch_nurbs_line_far_reverse"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_nurbs_smooth_far_pick",
+      "case": "branch_nurbs_smooth_far_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_nurbs_smooth_far_reverse",
+      "case": "branch_nurbs_smooth_far_reverse"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_arc_left_boundary_pick",
+      "case": "branch_arc_left_boundary_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_tangent_arc_left_boundary_pick",
+      "case": "branch_tangent_arc_left_boundary_pick"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_tangent_arc_far_parts",
+      "case": "branch_tangent_arc_far_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_nurbs_line_far_parts",
+      "case": "branch_nurbs_line_far_parts"
+    }
+  ]
+}

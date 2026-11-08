@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_circle_below",
+      "case": "branch_seam_circle_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_circle_above",
+      "case": "branch_seam_circle_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_backward_below",
+      "case": "branch_seam_backward_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_backward_above",
+      "case": "branch_seam_backward_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_nurbs_below",
+      "case": "branch_seam_nurbs_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_nurbs_above",
+      "case": "branch_seam_nurbs_above"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_ellipse_below",
+      "case": "branch_seam_ellipse_below"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "branch_seam_ellipse_above",
+      "case": "branch_seam_ellipse_above"
+    }
+  ]
+}

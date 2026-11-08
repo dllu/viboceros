@@ -1,6 +1,67 @@
 use super::*;
 
 #[test]
+fn smooth_probe_rejects_an_ellipse_below_its_minimum_and_retains_real_hits() {
+    // C(t)=(t,6+3t+t²). Its global minimum y=3.75 stays above the
+    // ellipse, while y=4 has a genuine nearest extension hit at t=-1.
+    let source = NurbsCurve::try_new(
+        2,
+        vec![point(0., 6.), point(0.5, 7.5), point(1., 10.)],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 1e-9, 1e-6).unwrap();
+    let ellipse = crate::Ellipse3::try_new(
+        point(0., 0.),
+        5.,
+        3.,
+        Vector3::try_new(1., 0., 0.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Vector3::try_new(0., 1., 0.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        tolerance,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    for side in [
+        CurveExtensionSide::Start,
+        CurveExtensionSide::End,
+        CurveExtensionSide::Both,
+    ] {
+        assert_eq!(
+            source.try_merged_to_curve_boundaries(
+                side,
+                CurveExtensionStyle::Smooth,
+                std::slice::from_ref(&ellipse),
+                tolerance
+            ),
+            Err(GeometryError::CurveExtensionBoundaryNotFound)
+        );
+    }
+    let boundary = crate::LineSegment::try_new(point(-4., 4.), point(4., 4.), tolerance)
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let extended = source
+        .try_merged_to_curve_boundaries(
+            CurveExtensionSide::Start,
+            CurveExtensionStyle::Smooth,
+            &[boundary],
+            tolerance,
+        )
+        .unwrap();
+    assert_point_near(
+        extended.evaluate(*extended.domain().start()).unwrap(),
+        point(-1., 4.),
+    );
+}
+
+#[test]
 fn boundary_extension_uses_the_nearest_hit_beyond_each_line_end() {
     let source = NurbsCurve::try_new(
         1,

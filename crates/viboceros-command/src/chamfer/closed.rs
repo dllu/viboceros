@@ -56,7 +56,13 @@ pub(super) fn prepare(
             CurveCurveIntersectionEvent::Overlap(span) => [Some(span.start()), Some(span.end())],
         };
         for hit in hits.into_iter().flatten() {
-            let score = picks[0].distance_to(hit.point())? + picks[1].distance_to(hit.point())?;
+            let mut score = 0.;
+            for i in 0..2 {
+                if closed[i] {
+                    score +=
+                        (support::parameter(curves[i], hit.point(), tolerance)? - seeds[i]).abs();
+                }
+            }
             if best.as_ref().is_none_or(|(old, _)| score < *old) {
                 best = Some((score, hit.point()));
             }
@@ -70,10 +76,8 @@ pub(super) fn prepare(
     let mut retain_end = [false; 2];
     for i in 0..2 {
         let corner = support::parameter(curves[i], intersection, tolerance)?;
-        let domain = curves[i].as_ref().domain();
-        let width = *domain.end() - *domain.start();
         let forward = if closed[i] {
-            (seeds[i] - corner).rem_euclid(width) < width * 0.5
+            seeds[i] >= corner
         } else {
             seeds[i] > corner
         };

@@ -92,3 +92,15 @@ EXTENSION_STYLING=_extension.styling(case,configured,pick)
 CASES.update(EXTENSION_STYLING)
 EXTENSION_VERIFICATION=_extension.verification(case,configured,pick)
 CASES.update(EXTENSION_VERIFICATION)
+if __package__:
+    from . import chamfer_branch_cases as _branch
+else:
+    import chamfer_branch_cases as _branch
+BRANCH_PILOT=_branch.cases(EXTENSION_PILOT)
+CASES.update(BRANCH_PILOT)
+BRANCH_HOLDOUTS=_branch.holdouts(EXTENSION_PILOT)
+CASES.update(BRANCH_HOLDOUTS)
+BRANCH_SEAMS=_branch.seams(EXTENSION_PILOT)
+CASES.update(BRANCH_SEAMS)
+BRANCH_VERIFICATION=_branch.verification(EXTENSION_PILOT)
+CASES.update(BRANCH_VERIFICATION)
