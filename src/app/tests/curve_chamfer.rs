@@ -41,15 +41,22 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 .enumerate()
             {
                 if let Some(i) = a["curve"].as_u64() {
-                    let click = v["input_trace"][0]["clicks"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .find(|c| c["action"].as_u64() == Some(index as u64))
-                        .unwrap();
+                    let point = if let Some(p) =
+                        v["prescribed_case"]["source_seed_points"].get(i as usize)
+                    {
+                        native::point(p)
+                    } else {
+                        let click = v["input_trace"][0]["clicks"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .find(|c| c["action"].as_u64() == Some(index as u64))
+                            .unwrap();
+                        inputs::input_point(click)
+                    };
                     app.pick_curve_chamfer_at(
                         reference_inputs::guide(&app.document, i as usize),
-                        inputs::input_point(click),
+                        point,
                     );
                 } else {
                     let token = a["number"]

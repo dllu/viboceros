@@ -1,0 +1,44 @@
+[
+  {
+    "family": "chamfer_closed_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_closed_pilot"
+    ],
+    "log": "capture-pilot.log.gz",
+    "request_sha256": "b8dcaf1408f83f57ca77c16288dad36bf9b7f1aff5d3dd2959a118d7ab7837d3",
+    "observation_sha256": "e57bd0034d7826b092bcfa8f152454799dcf72aeb1a4efa672d8f2c051ad35d9"
+  },
+  {
+    "family": "chamfer_closed_verification",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_closed_verification"
+    ],
+    "log": "capture-verification.log.gz",
+    "request_sha256": "ad3f4b25d5b60310f81f00e71a7db8617e7e9a89a4b6d6b498249c3920912df1",
+    "observation_sha256": "05f9753ea90e1ec3e48d3620d0f8152de5a9c9b06cf39a52740838431e886507"
+  },
+  {
+    "family": "chamfer_closed_choices",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_chamfer_closed_choices"
+    ],
+    "log": "capture-choices.log.gz",
+    "request_sha256": "62a8e68ba6b8db793e70d626a98587698222704e6d4a3d41fadf5d542d304a39",
+    "observation_sha256": "9f144b4f784cfdc50a2465716397516c58416ce2c69ff762397ad1f6002ceeae"
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "closed_tangent_circles_parts",
+      "case": "closed_tangent_circles_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_nonlinear_nurbs_parts",
+      "case": "closed_nonlinear_nurbs_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_tangent_circles_joined",
+      "case": "closed_tangent_circles_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_nonlinear_nurbs_joined",
+      "case": "closed_nonlinear_nurbs_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_coincident_circles",
+      "case": "closed_coincident_circles"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_tangent_line",
+      "case": "closed_tangent_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_disjoint_line",
+      "case": "closed_disjoint_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_zero_untrimmed",
+      "case": "closed_zero_untrimmed"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_consumed_line",
+      "case": "closed_consumed_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_backward",
+      "case": "closed_circle_backward"
+    }
+  ]
+}

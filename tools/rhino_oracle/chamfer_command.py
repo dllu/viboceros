@@ -69,3 +69,14 @@ SELF_HOLDOUTS=_self.holdouts(case,configured,pick)
 CASES.update(SELF_PILOT);CASES.update(SELF_DISCOVERY);CASES.update(SELF_HOLDOUTS)
 SELF_SPANS=_self.spans(case,configured,pick)
 CASES.update(SELF_SPANS)
+
+if __package__:
+    from . import chamfer_closed_cases as _closed
+else:
+    import chamfer_closed_cases as _closed
+CLOSED_PILOT=_closed.pilot(case,configured,pick)
+CLOSED_HOLDOUTS=_closed.holdouts(case,configured,pick)
+CASES.update(CLOSED_PILOT);CASES.update(CLOSED_HOLDOUTS)
+CLOSED_FINAL=_closed.final(case,configured,pick)
+CLOSED_BRANCHES=_closed.branches(case,configured,pick)
+CASES.update(CLOSED_FINAL);CASES.update(CLOSED_BRANCHES)

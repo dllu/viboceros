@@ -94,6 +94,11 @@ pub fn final_options(value: &Value, defaults: Preferences) -> Preferences {
     options
 }
 pub fn picks(doc: &Document, value: &Value) -> [(ObjectId, Point3); 2] {
+    if let Some(points) = value["prescribed_case"]["source_seed_points"].as_array() {
+        return std::array::from_fn(|i| {
+            (reference_inputs::guide(doc, i), native::point(&points[i]))
+        });
+    }
     value["input_trace"][0]["clicks"]
         .as_array()
         .unwrap()

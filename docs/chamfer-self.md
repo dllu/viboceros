@@ -40,7 +40,7 @@ python3 -m tools.rhino_oracle.check_chamfer_self
 ```
 
 Captures use private Xvfb displays; application tests create no windows. Distinct
-closed-source pairs remain unsupported. This finite corpus does not qualify all
+closed-source pairs have a [separate qualification](chamfer-closed.md). This finite corpus does not qualify all
 folded, self-intersecting or oscillatory branches, a continuous distance bound,
 pixel equality or comparative performance. Shared Fillet/Chamfer regressions,
 both workspace Clippy configurations, formatting, Python protocol/evidence tests

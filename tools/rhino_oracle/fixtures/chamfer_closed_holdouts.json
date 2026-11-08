@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_joined_reverse_picks",
+      "case": "closed_circle_line_joined_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_two_circles_joined_reverse_picks",
+      "case": "closed_two_circles_joined_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_rectangle_line_parts_reverse_picks",
+      "case": "closed_rectangle_line_parts_reverse_picks"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_lower",
+      "case": "closed_circle_line_lower"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_inner",
+      "case": "closed_circle_line_inner"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_nurbs_circle_line",
+      "case": "closed_nurbs_circle_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_ellipse_line",
+      "case": "closed_ellipse_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_spatial",
+      "case": "closed_spatial"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_line_extension",
+      "case": "closed_line_extension"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_separated",
+      "case": "closed_separated"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_parts_zero",
+      "case": "closed_circle_line_parts_zero"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_joined_zero",
+      "case": "closed_circle_line_joined_zero"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_two_circles_joined_zero",
+      "case": "closed_two_circles_joined_zero"
+    }
+  ]
+}

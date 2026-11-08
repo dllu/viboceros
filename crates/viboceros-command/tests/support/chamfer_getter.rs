@@ -30,5 +30,10 @@ pub fn final_options(v: &Value) -> Preferences {
     )
 }
 pub fn unsupported(id: &str) -> bool {
-    id == "chamfer_oversized"
+    [
+        "chamfer_oversized",
+        "closed_two_circles_joined_zero",
+        "closed_consumed_line",
+    ]
+    .contains(&id)
 }

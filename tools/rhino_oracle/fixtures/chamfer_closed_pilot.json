@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_bevel",
+      "case": "closed_circle_line_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_parts",
+      "case": "closed_circle_line_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_circle_line_joined",
+      "case": "closed_circle_line_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_two_circles_bevel",
+      "case": "closed_two_circles_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_two_circles_parts",
+      "case": "closed_two_circles_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_two_circles_joined",
+      "case": "closed_two_circles_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_rectangle_line_bevel",
+      "case": "closed_rectangle_line_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_rectangle_line_parts",
+      "case": "closed_rectangle_line_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_rectangle_line_joined",
+      "case": "closed_rectangle_line_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "closed_cancel_second",
+      "case": "closed_cancel_second"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 //! Immutable curve candidates and atomic document admission shared by pair commands.
 use super::*;
+pub(crate) mod closed;
 pub(crate) mod junction;
 pub(crate) mod leaf;
 use std::sync::Arc;

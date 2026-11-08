@@ -3,6 +3,7 @@ use super::*;
 use viboceros_geometry::{
     CurveArcExtensionStyle, CurveChamferExtensionStyles, CurveOtherExtensionStyle,
 };
+mod closed;
 mod options;
 mod prepare;
 mod same_source;

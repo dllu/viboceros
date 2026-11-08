@@ -1,0 +1,40 @@
+{
+  "family": "chamfer_closed_holdouts",
+  "native_observations": 0,
+  "exit_status": 1,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_chamfer_closed_holdouts"
+  ],
+  "request_sha256": "908dbaae6101fb2711d6df12f708286e9d3852cc8c0204fd1ffbbdd3b9fb457d",
+  "sources": {
+    "generate_chamfer_closed_holdouts.py": "3462ef6d654a3b82a0bbdd11d22381dcb90ac1cb31cd64fa67b23cf68a12cf94",
+    "structural_sdk.py": "b6f8bad101640cbb1d52b16b9925c643d93f745eccc5243ded70796d66798131",
+    "rhino_worker.py": "192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413",
+    "client.py": "d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126",
+    "chamfer_point_picker.py": "6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "chamfer_command_probe.py": "246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47",
+    "chamfer_command.py": "6aa9ffd39e1f3c995c3f74c6923428e52a281e57e09de15538616ced5973c152",
+    "chamfer_self_cases.py": "dc4447fc503784bf1d38edf62ea1ae9736df6dcda90f8500cc2f9c76e2342cb2",
+    "chamfer_closed_cases.py": "340905ff761204cda04576a8f5fb34a3de8dd87f79a7efd49934fd1b4424f241",
+    "line_scene_probe.py": "591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "3b6d360d685d07ab9bf194dfcbd29c1c85df5dbb14c5d0a65e248d0fcb2a9436",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "owned_pid": 92442,
+  "settings_scheme": "VibocerosOracleChamferClosedHoldouts20261107",
+  "private_display": ":99",
+  "reason": "Perspective projection makes the second spatial pick ambiguous. Private screenshot shows Selection Menu with guide1 and guide0; typed watchdog _Cancel does not leave the getter. Owned process verified before SIGTERM. No observations published."
+}

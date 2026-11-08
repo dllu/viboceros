@@ -35,6 +35,17 @@ pub fn prepare(
         )?;
         return Ok(Prepared::new(document, sources, plan, "Chamfer"));
     }
+    let closed = [first.as_ref().is_closed()?, second.as_ref().is_closed()?];
+    if closed.iter().any(|c| *c) {
+        let plan = super::closed::prepare(
+            [&first, &second],
+            picks.map(|(_, p)| p),
+            closed,
+            preferences,
+            document.tolerance(),
+        )?;
+        return Ok(Prepared::new(document, sources, plan, "Chamfer"));
+    }
     let outputs = if preferences.join && preferences.trim {
         let joined = crate::curve_connections::chamfer_joined(
             (&first, picks[0].1),

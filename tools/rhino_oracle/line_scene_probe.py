@@ -17,8 +17,15 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
                     color=[int(a.ObjectColor.R),int(a.ObjectColor.G),int(a.ObjectColor.B)],groups=[doc.Groups.GroupName(i) for i in (a.GetGroupList() or [])]))
             if isinstance(g,G.Point):row['point']=host['_xyz'](g.Location)
             elif isinstance(g,G.Curve):
-                row['curve']=host['_nurbs_curve_definition'](g)
-                if curve_observer is not None:row.update(curve_observer(g))
+                if row['native_valid']:
+                    row['curve']=host['_nurbs_curve_definition'](g)
+                    if curve_observer is not None:row.update(curve_observer(g))
+                else:
+                    # A public command can succeed with a degenerate result.
+                    # Preserve that evidence without trying NURBS conversion.
+                    row['invalid_geometry']=True
+                    row['curve_domain']=[float(g.Domain.T0),float(g.Domain.T1)] if g.Domain.IsValid else None
+                    row['curve_endpoints']=[host['_xyz'](p) if p.IsValid else None for p in [g.PointAtStart,g.PointAtEnd]]
             elif isinstance(g,G.Brep):row.update(face_count=g.Faces.Count,surfaces=[host['_nurbs_surface_definition'](f.UnderlyingSurface())for f in g.Faces],brep=host['_interchange_brep_record'](g,include_samples=False))
             elif isinstance(g,G.Surface):row.update(face_count=1,surfaces=[host['_nurbs_surface_definition'](g)])
             else:raise ValueError('unexpected Lines output')
