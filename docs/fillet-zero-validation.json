@@ -1,0 +1,763 @@
+{
+  "scope": "Zero-radius Fillet for distinct pairs containing a closed parent, with complete source retention, picked open remainders, continuation and actual Undo/Redo observations.",
+  "baseline_revision": "d6e139375f495f24d9a17ddcad686ccbd6955df0",
+  "implementation_revision": "431988a6c810f71d0e067f407523e34286db9478",
+  "full_native_parity": false,
+  "observations": 40,
+  "successful": 35,
+  "cancelled": 1,
+  "failed": 4,
+  "changed": 30,
+  "invalid_outputs": 2,
+  "images": 0,
+  "physical_picks": 80,
+  "point_tangent_stations": 5280,
+  "geometry_changed": 29,
+  "discovery_observations": 40,
+  "history_control_observations": 3,
+  "unchanged_geometry_records": 1,
+  "maximum_native_repeat_difference": 3.552713678800501e-15,
+  "retained_failed_captures": 1,
+  "valid_native_workflows": 38,
+  "successful_command_replays_per_build": 33,
+  "qualified_ui_replays_per_build": 38,
+  "invalid_native_ui_guards_per_build": 2,
+  "api_rejections_per_build": 6,
+  "archive_round_trips_per_build": 74,
+  "windowless_source_picks_per_build": 2,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.5631947682190042e-13,
+  "construction": "Zero radius bypasses tangent-circle construction. Trim=No is an immediate no-op. Intersection candidates rank by summed unwrapped arc lengths from the picks. Infinite line charts and least-added endpoint continuation are shared with Chamfer, whose mixed-style guard remains in its adapter. Endpoint contacts normalize within model tolerance. Open-source assignments explicitly record equal replacements, preserving Native Undo and Redo semantics; closed-only zero-radius joins are rejected before constructing an empty curve. Cached prepared plans supply preview and atomic admission.",
+  "history_evidence": "Forty discovery workflows used geometry differences as a history proxy. Three separate controls show Undo and Redo command Success even when nothing can be undone or redone. A complete forty-workflow repeat observes public Command.UndoRedo begin/end pairs and snapshots, distinguishing one equal-geometry replacement from true no-ops. Native inverse records have distinct serials; each phase has its own matched pair and both phases identify the same command.",
+  "execution": "All five successful captures and the retained failed attempt ran on private Xvfb displays with isolated runtime directories. There are 83 published observations: forty discovery workflows, three history controls and forty final workflows. Both application builds ran without windows. All final workflows are accounted for: 38 valid Native outcomes are replayed and two invalid empty Native joins receive explicit preservation guards.",
+  "input_evidence": "Authored sources and pre-command physical sight points are inputs. Native coefficients, domains, point/tangent stations, metadata and actual history events are expectations only.",
+  "limits": [
+    "Two Native successful joins produce invalid empty PolyCurves. Their outputs are retained and audited but have no geometry-parity claim; Viboceros rejects these operations without a model edit or lost Redo.",
+    "Coverage is finite and concerns distinct pairs with at least one closed source. Distinct-open and same-parent paths remain separate. Arbitrary overlaps, tied intersection costs, folded continuations, nonplanar closed sources, rational poles, tiny positive radii, continuous distance bounds, pixel equality and comparative performance remain unqualified."
+  ],
+  "cases": [
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_inner",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_joined_reverse",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_lower",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_circle_line_spatial_top",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.687116766346677e-15,
+      "portable_ui_maximum_geometry_error": 5.687116766346677e-15,
+      "native_command_maximum_geometry_error": 5.687116766346677e-15,
+      "native_ui_maximum_geometry_error": 5.687116766346677e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_continuation_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.443490401604861e-15,
+      "native_ui_maximum_geometry_error": 5.443490401604861e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_continuation_nurbs_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 2.712133056839078e-14,
+      "portable_ui_maximum_geometry_error": 2.712133056839078e-14,
+      "native_command_maximum_geometry_error": 2.712133056839078e-14,
+      "native_ui_maximum_geometry_error": 2.712133056839078e-14
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_continuation_nurbs_smooth",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 1.1837419472916943e-14,
+      "portable_ui_maximum_geometry_error": 1.1837419472916943e-14,
+      "native_command_maximum_geometry_error": 1.1849778104645678e-14,
+      "native_ui_maximum_geometry_error": 1.1849778104645678e-14
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_continuation_tangent_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 6.217248937900877e-14,
+      "portable_ui_maximum_geometry_error": 6.217248937900877e-14,
+      "native_command_maximum_geometry_error": 6.217248937900877e-14,
+      "native_ui_maximum_geometry_error": 6.217248937900877e-14
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_disjoint_circles_parts",
+      "native_result": "Failure",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_disjoint_circles_untrimmed",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_disjoint_line",
+      "native_result": "Failure",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_disjoint_untrimmed",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_dynamic_accept",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_dynamic_cancel",
+      "native_result": "Cancel",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_ellipse_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 2.673771110915334e-15,
+      "portable_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "native_command_maximum_geometry_error": 2.673771110915334e-15,
+      "native_ui_maximum_geometry_error": 2.673771110915334e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_line_extension",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 1.5631947682190042e-13,
+      "portable_ui_maximum_geometry_error": 1.5631947682190042e-13,
+      "native_command_maximum_geometry_error": 1.5631947682190042e-13,
+      "native_ui_maximum_geometry_error": 1.5631947682190042e-13
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_meeting_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_meeting_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_metric_lower",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_metric_nurbs",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_metric_reverse",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_metric_upper",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_noncoplanar_intersection",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_nonlinear_nurbs",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_nurbs_circle_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-15,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_opposed",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_positive_to_zero",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_rectangle_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_seam_opposed",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_skew_line",
+      "native_result": "Failure",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_tangent_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_two_circles_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_two_circles_disjoint",
+      "native_result": "Failure",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_two_circles_joined",
+      "native_result": "Success",
+      "native_valid": false,
+      "parity_qualified": false,
+      "portable_original_archive_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_original_archive_maximum_geometry_error": 5.3593771978611406e-15,
+      "product_rejection_qualified": true,
+      "reason": "Native succeeds with an invalid empty PolyCurve; product preserves the original document and Redo."
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_two_circles_joined_reverse",
+      "native_result": "Success",
+      "native_valid": false,
+      "parity_qualified": false,
+      "portable_original_archive_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_original_archive_maximum_geometry_error": 5.3593771978611406e-15,
+      "product_rejection_qualified": true,
+      "reason": "Native succeeds with an invalid empty PolyCurve; product preserves the original document and Redo."
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_two_circles_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    },
+    {
+      "id": "fillet_zero_final/verified_zero_zero_to_positive",
+      "native_result": "Success",
+      "native_valid": true,
+      "parity_qualified": true,
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15
+    }
+  ],
+  "captures": [
+    {
+      "family": "fillet_zero_pilot",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "cf555b4c8fa58464dc00c25ec6ff4427451cc5af6dba81ff6fdb4d032780d93c"
+    },
+    {
+      "family": "fillet_zero_holdouts",
+      "observations": 24,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "93928a121a890a3b360ed087f0749185914175bcc2a05c980cf0ac51de614c64"
+    },
+    {
+      "family": "fillet_zero_verification",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "d79934dbd74eb4509bc0d6900378f8de6eda434bf5c5a8cd10f32cb0686e2317"
+    },
+    {
+      "family": "fillet_zero_history_control",
+      "observations": 3,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "bdfb68c0d33515795318f6cdc0a7b532b98208057bd455e9c0dda2a1c994e286"
+    },
+    {
+      "family": "fillet_zero_final",
+      "observations": 40,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "d17b23517dbd20bc1f813931674433ed8bcb89a8723657380da7a751e1e1eb7a"
+    }
+  ],
+  "checks": [
+    {
+      "name": "zero-command-portable",
+      "status": 0
+    },
+    {
+      "name": "zero-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "zero-command-native",
+      "status": 0
+    },
+    {
+      "name": "zero-ui-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-native",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-geometry",
+      "status": 0
+    },
+    {
+      "name": "native-producers",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/chamfer/closed.rs": "7ccf09f96d57fc7ad1bebb463165cc22386a5c9d61ff00f6f7c6a3083563b3de",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/chamfer/closed/extension.rs": "443221126ef4855a6f7ae8287a3af1576818383108af080fb1c86aaeace2636b",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/curve_pair_edit.rs": "8abb89616cd70ea752be6711c68668ae335139c3fc87a8b95d421a71f8d2bf80",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/curve_pair_edit/boundary_continuation.rs": "0db03accfe51cdc6dc0876d2eebb5d17df4c6d7829140d54c5f052433a0f49f0",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/curve_pair_edit/support.rs": "6fc1ed39510638c07e54f1f224644ef1d465bb902f27ec76c23db53b45010f1b",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/fillet/closed.rs": "f9c5291845352d03e70d801278cbf6ff9c6ed9b0c69080bf08ba2ee0b2fbd834",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/fillet/closed/continuation/search.rs": "02777098bcb9f676f7781e7cd343035e8695aaeaa66edefc2be0a6d110445f5e",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/fillet/closed/zero.rs": "ee878f9c2f5295639a0a3f497e8abb83b940c24abb5c7b337512e31337386ef2",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/src/fillet/closed/zero/admission.rs": "38953ee4aa619838783a3f23b5fb2dd9e395c3b8d98bd9efdc4e2692ddcd811b",
+    "431988a6c810f71d0e067f407523e34286db9478:crates/viboceros-command/tests/fillet_zero.rs": "80c3e9889283b46515693b62f407df41cb63343e9eaf1e8d4711ddadad760604",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/commands/fillet.md": "c1dd945f26591990501d8b141aeb27272f56bde5723e9b347a1c7345e389fa59",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/development/checks.md": "bfdcb3e21ce0b6ce2ea84147517f36962dc92b1e97159115534be29713817f35",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-closed.md": "99e325053b892a32e838e130115f5bd3075cebe3b691fb329349de69870d84b5",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/captures.json": "4bc02ed124d0d1b66b606a1e6c2ad870435045f39733534cee4d68adfe32a52e",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/chamfer-ui-native.log.gz": "7eb06297b3478af223a2cfdf040c961196494fcaeb945cf59a90bc562f5943fe",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/chamfer-ui-portable.log.gz": "01bbaf7bea797a31aac1e19f0b9c458ab86fc074827fec99e831f4fe38664012",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/checks.json": "0ba9080ef67349daf4f3b2448970c5203ea6be21fed6f4ee329f56cb66501c65",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/clippy-native.log.gz": "77a134fd0b1f8b48013672702f4d63d91842dd56aa0488306578a7292add5d51",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/clippy-portable.log.gz": "98025ed873c398f8ad7df5f83051489d23148d9a7c015f1a8c57045e3f9c8d1e",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/closed-ui-native.log.gz": "1d7ace2fbfedaab5a11ff9b00901c2585350c9eabd384a7eb043678dd67b0766",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/closed-ui-portable.log.gz": "c8700a49bf8eb016d2ca35b9e67194f29d271f7646bc4d622791053f8d15e5da",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/command-regressions-native.log.gz": "267dcf99acf93d9481a9e558194077071acc85bf89028669a7fa693cf7a1e075",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/command-regressions-portable.log.gz": "57b620359074d668918bdcf1060f63c237dbcacc8ea5c0d8d31daab07152eede",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/continuation-ui-native.log.gz": "2c43bb471a9f2238d525abd87fb43bec78ddb1c8d9859e9041ad042f30d6b3ad",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/continuation-ui-portable.log.gz": "1000bbae40d686f2ead8c74e8cd77fb66a5ce2f775b021477975450e78500989",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/failed-final.json": "4ac37ff71d71449b8452b53adbe00925e257a5632b251627baa409f82cdd7f7f",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/failed-final.log.gz": "b06b16e343c505fd9af22beba038215e4ef073d5c1373d0d6742699bfd6659c3",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/fillet-ui-native.log.gz": "111c08129bbafedbd420eb2a907cca4ea1dcd7f313d5620286f568be761b5494",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/fillet-ui-portable.log.gz": "0ba0e07e8b24dc5b7085214fda1073de90e94560e72ceaddd0bf606cf4b7f5a3",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/final-capture.json": "b88b0319bf708cf3f90f6026eb36eff35fbb46e329956a8186bcd58e18525f1e",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/final-capture.log.gz": "7152ade75e777fb7cc41ec03e7accdb5f2b2d94d67cee0c7d1594f35048a630f",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/history_control-capture.json": "9958e598cbd57be120e29dad2d682cd382701198b08d06e729431dc8185d214e",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/history_control-capture.log.gz": "77a38cdc7a608fb308b6943b1d17fd684537a44a24fb8bbc12daf400b926126a",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/holdouts-capture.log.gz": "e8578bd4d91e56aa0d79d7d1ebb5ed95ba13c9808860d7af15f8a52a7a0b3e63",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/library-native.log.gz": "00a9fd7042f1045698804a187289de93c902cb00ae5143ac4b00eadc6fd683ab",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/library-portable.log.gz": "00ae7db81b119626f328e7f592351169e8d8fd262182028df39e73a809e846fa",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/native-producers.log.gz": "720afde2220f985c5b5755f6b785844082e0ec298f4e012f339e13c2f477cb9a",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/pilot-capture.log.gz": "7fc03b889d1396815d2f940c1029b20099a65e78c748cd35c22d6f3819ec92bc",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/python-subd.log.gz": "7626b4e251dbdbc2c96aea5ed069e16a9457b469539d84e1500f390fb5f71c38",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/python.log.gz": "0c374695d8c8991995c8b92f6e0f3a6f5a9fd504fc45b4ccce13f2a6b7940909",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/self-ui-native.log.gz": "69aec717b2d8a2034b9d91041e68040e62aa78bd8ec1f9001d6551bf8c8eff28",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/self-ui-portable.log.gz": "e537e4496fc4e1b2f25930222d66111654dcff12ddfff16f1f210c3e016b4bac",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/subd-command-native.log.gz": "c86105bd7b66b31ea2c6180b8336e7d5432d2f5fa28f3d6f1692a3eaf337a4d5",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/subd-ui-native.log.gz": "4b78aef6e3df0918189b5e93317ffcd79195b1961089e8af93c2142db4f407f9",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/tangent-geometry.log.gz": "bdf54575d3d07e5cbbee89c9544edb19512b8fb8fda99662e8b0146417d9b971",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/verification-capture.log.gz": "0eef5baba91bda3738e214e742488d82ccd1e24ec7734b23050374e3a30b7d2c",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/zero-command-native.log.gz": "8770532ff3316fc94091cd816dd71399307d2f402429e50f4c58c0bd919339a2",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/zero-command-portable.log.gz": "166e3ae65116fc5e4bba02c507eb274541a6f28366f26b06c88ed5a33beb4277",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/zero-ui-native.log.gz": "87b18f8abd166103166b98fdb3c25de4c049f500503fbfbee4a9c06b7695dff2",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero-proof/zero-ui-portable.log.gz": "0d9d877a2c756374039c75769ab5f97492cebf9898c176386ebe600bd71b3ba2",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/fillet-zero.md": "0e14315edacfc460cf39a04d1285f32e7219fbdde044f721000e31d01f621e78",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/subd-box-qualification.json": "ff311c878ab88dd5f5e552c14bdbe472a2cc64cf7ebd038697dc776c2c76062d",
+    "431988a6c810f71d0e067f407523e34286db9478:docs/subd-plane-qualification.json": "0e75c8ea3d1b2e3842dddfe219c59fbf791e937f4732eaa87fcbba95946f47d8",
+    "431988a6c810f71d0e067f407523e34286db9478:src/app/tests/curve_fillet.rs": "dac46fdf8e6b68ebf10e6edd7340aa6755adc6222f366f9b3d7590e44d9b9e95",
+    "431988a6c810f71d0e067f407523e34286db9478:src/app/tests/fillet_zero.rs": "596e11bf7c874390dbb4c87e8ff9ea568ff21c0c92a1363ce90c3d8917025ac4",
+    "431988a6c810f71d0e067f407523e34286db9478:src/app/tests/mod.rs": "13b26b1ebc4b0242440fea26b992d63967bba6c55c1e6e7d3f2beae82a467180",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/check_fillet_zero.py": "75bd7c010dfd407bddfd51f82e435993b20d119889528134a7213fd7a1e5fb47",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_command.py": "ebdd6046a75015a7d8cc51a73c902579bfcf560f1fbc0288bb9627f53e9fd55c",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_command_probe.py": "8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_zero_cases.py": "7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_zero_controls.py": "e83757dba4e41da81d9eeae0b708b815a2c6bc45469aa1c9b537d24318dd2326",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_zero_evidence.py": "6984bde1f72fb6e5afe62667ec8a2f666605d39856080aac6da57dee9d568eb9",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fillet_zero_history.py": "eff55be8b7f9a40bf024dcc12a35e06bacb4269eb9d50c3c00d11bc82f68bd93",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fixtures/fillet_zero_final.json": "c75b532c10a3b7535989b6addc83ac1d3d183c4d3723544461764276d33ef9f1",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fixtures/fillet_zero_history_control.json": "b7cd7a9abe22d7022855e28f19945af1df22fc68f30bcd82254393a26a6d084c",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fixtures/fillet_zero_holdouts.json": "985964129d318b332431dd21bb7fbf651a575736ff3940958ed962ff556f0a96",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fixtures/fillet_zero_pilot.json": "cdc2a2cce2530eca41deda7d1bf98560b1aab0e654109db2156aa91dc16949eb",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/fixtures/fillet_zero_verification.json": "82246b2fd5462b2b5a12eb086ea05d787c2c96f8ddc4a01a90313d69391f8522",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/generate_fillet_zero_final.py": "dfd7596a328625e4dfa22fee65295d39fbd350526f5876472654cdb28d7df876",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/generate_fillet_zero_history_control.py": "2a200a265ef0a96b9d1a4d4efca2a5176010f092932df5425dd986b99c47b0b4",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/generate_fillet_zero_holdouts.py": "76f20276aa64a48883c84aab2980cdda4b11f3893bcc76fdbb3e5d6282dc4da8",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/generate_fillet_zero_pilot.py": "dd1f81459277a6fb9699aafcd49fdbe788c19d79dfb61953491746ecbe08d2d7",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/generate_fillet_zero_verification.py": "95bea5c8bee73682d124f05348774a56d77a8858f58244cffcf87731fa45e33a",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/line_scene_probe.py": "a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/fillet_zero_final.json.gz": "aee3746f69e4ea8d96ffcd2a006cef73e96cc8ad5da43913491162dadd7a2052",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/fillet_zero_history_control.json.gz": "949a0a0e1c5a7de8bf845fcc37e15ee204e8a9b1b34436d23520f1fcf37c1396",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/fillet_zero_holdouts.json.gz": "a4b3067217058c13661735129453e144438eb3b4fab25dab2aa14cbb66f08fb2",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/fillet_zero_pilot.json.gz": "d2a5409e523def9bbd0506d0a937a616a7c66692ac228499697137a5b13f4718",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/fillet_zero_verification.json.gz": "7109e8a59a501c34b67890ef2bfa5a28e6a983eaef1c1c51d7895bf9a7df7312",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/2a200a265ef0a96b9d1a4d4efca2a5176010f092932df5425dd986b99c47b0b4.gz": "95320f542af02dc3f369a4119213e7dd0cbc4ebd7b8c7e9114be25948acba04e",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/2f2f9415db8e471eeae66355123575f01cc085a8bc2348e030aa7cf51d55ad6e.gz": "c70d4ffc73b14eec0c927fef954b2ce2bda303010f0d98759c8b2f3bededc8a1",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/34a59c71240e4f20ee05e43bd7e8d01c49920983506db09a55d7303343add22c.gz": "5f5cccd91d91bdc8417fe54a4f07ae163e2ad89a33f1d12f6640b67801ed7671",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/6821a17d47fd14c006ab9b543591ea32722254b3c5580a3a844b4a34d51bce38.gz": "e19c7a275e952e9f104810aa8117ad15002503895aa0f7cd6e74d225141e728a",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/76f20276aa64a48883c84aab2980cdda4b11f3893bcc76fdbb3e5d6282dc4da8.gz": "8777c24b8282db8ab20e2fa52ca3cdaa215e952d70dee6d54ee7fcdffb23bf17",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97.gz": "1afaf21ed96a9116feaea9f077bc3ea21fa456c212cc4536e7c1039d1544c3af",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/8980d4f920192561f6137ef1781ca3d0056874b465c31fabc12d6439559714ca.gz": "e21d422e4028d97c47d5b8a5f62e9f2052f5db4b8aeba6c8307f03fb6c5a0622",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/8b1dc9b683b24ffb1bf6bc35334f660fdd96b4b0fa4aebfcd4a5de175d4d7aba.gz": "76cca19d6143389dfe9fac413a560d75bdbea66f96ce6db3e9d77cfa5fa43d6e",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579.gz": "560a2d48d6bb2c66e203c11a0a44b50ee799b8a26cf2c0d467ca7e3024d1d8b5",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/95bea5c8bee73682d124f05348774a56d77a8858f58244cffcf87731fa45e33a.gz": "7e64989e1e28dad6355feb40ed8674560f9906bfb1a33ac122a487ca4d5012a5",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/a3ca5da6be82efc8f3fd65d946811b1a64ed1b6bcd70ecbb249d71770ca6a7ee.gz": "b58df4615faaa0497679923915e12c59fa60902c0dc8fd0f19eb68a79e7298de",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/aad5d45d5019eaf8f3c093c509b2e4fef26811d4f88c0878d9006dc7a546874d.gz": "52a1d7a4bd713ed5c74c5811d3bf5f65849828b4c2f302c0989138975850a217",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/add32e6b2960f5dcbefd794ca4b2f3e82dd8b6dacda331b325346f63cc0c6dc6.gz": "990ebfe4012d66fbe4daf3ddacb6fea9df6036e6460c07d529035b666ca38594",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/c5c65c2337ef98f5b23da333f5850895b543abf78422e56bcf9b745ec7a3bb1c.gz": "07bd93fd2fb3c1662a9b921eb76fd8ef62f1b60b9f05fbc344f3eadca7c492bf",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/dd1f81459277a6fb9699aafcd49fdbe788c19d79dfb61953491746ecbe08d2d7.gz": "c37a884f9b97464b603df807a6306175d0ec4ea0fc7999e8d90c70fb6aaa7378",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/dfd7596a328625e4dfa22fee65295d39fbd350526f5876472654cdb28d7df876.gz": "2c47df0e78006c0bf674a14c5b395e3b50aa76e75358eb5cbd89d8d2dfffe1cf",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/observations/source_snapshots/ebdd6046a75015a7d8cc51a73c902579bfcf560f1fbc0288bb9627f53e9fd55c.gz": "6720bbd8e93319f002dbd6524673e006213103a0bc8d4df0032bfb51f1d28e78",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/report_fillet_zero.py": "25b04810310a09ccc50218fe2f3b708b99a4e2b2242e48e645b51a842b3c2bab",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/structural_sdk.py": "add32e6b2960f5dcbefd794ca4b2f3e82dd8b6dacda331b325346f63cc0c6dc6",
+    "431988a6c810f71d0e067f407523e34286db9478:tools/rhino_oracle/test_fillet_zero.py": "ee1fcc564e20fb70e13e98c19eea6407c8141dfcacae44dd627aa068cae55293"
+  },
+  "evidence_sha256": {
+    "docs/fillet-zero-proof/captures.json": "4bc02ed124d0d1b66b606a1e6c2ad870435045f39733534cee4d68adfe32a52e",
+    "docs/fillet-zero-proof/chamfer-ui-native.log.gz": "7eb06297b3478af223a2cfdf040c961196494fcaeb945cf59a90bc562f5943fe",
+    "docs/fillet-zero-proof/chamfer-ui-portable.log.gz": "01bbaf7bea797a31aac1e19f0b9c458ab86fc074827fec99e831f4fe38664012",
+    "docs/fillet-zero-proof/checks.json": "f5246f626c5261a5bc0e7416936ee0551aedf9a7d45ee992a0b82c3bd5b2c74c",
+    "docs/fillet-zero-proof/clippy-native.log.gz": "77a134fd0b1f8b48013672702f4d63d91842dd56aa0488306578a7292add5d51",
+    "docs/fillet-zero-proof/clippy-portable.log.gz": "98025ed873c398f8ad7df5f83051489d23148d9a7c015f1a8c57045e3f9c8d1e",
+    "docs/fillet-zero-proof/closed-ui-native.log.gz": "1d7ace2fbfedaab5a11ff9b00901c2585350c9eabd384a7eb043678dd67b0766",
+    "docs/fillet-zero-proof/closed-ui-portable.log.gz": "c8700a49bf8eb016d2ca35b9e67194f29d271f7646bc4d622791053f8d15e5da",
+    "docs/fillet-zero-proof/command-regressions-native.log.gz": "267dcf99acf93d9481a9e558194077071acc85bf89028669a7fa693cf7a1e075",
+    "docs/fillet-zero-proof/command-regressions-portable.log.gz": "57b620359074d668918bdcf1060f63c237dbcacc8ea5c0d8d31daab07152eede",
+    "docs/fillet-zero-proof/continuation-ui-native.log.gz": "2c43bb471a9f2238d525abd87fb43bec78ddb1c8d9859e9041ad042f30d6b3ad",
+    "docs/fillet-zero-proof/continuation-ui-portable.log.gz": "1000bbae40d686f2ead8c74e8cd77fb66a5ce2f775b021477975450e78500989",
+    "docs/fillet-zero-proof/failed-final.json": "4ac37ff71d71449b8452b53adbe00925e257a5632b251627baa409f82cdd7f7f",
+    "docs/fillet-zero-proof/failed-final.log.gz": "b06b16e343c505fd9af22beba038215e4ef073d5c1373d0d6742699bfd6659c3",
+    "docs/fillet-zero-proof/fillet-ui-native.log.gz": "111c08129bbafedbd420eb2a907cca4ea1dcd7f313d5620286f568be761b5494",
+    "docs/fillet-zero-proof/fillet-ui-portable.log.gz": "0ba0e07e8b24dc5b7085214fda1073de90e94560e72ceaddd0bf606cf4b7f5a3",
+    "docs/fillet-zero-proof/final-capture.json": "b88b0319bf708cf3f90f6026eb36eff35fbb46e329956a8186bcd58e18525f1e",
+    "docs/fillet-zero-proof/final-capture.log.gz": "7152ade75e777fb7cc41ec03e7accdb5f2b2d94d67cee0c7d1594f35048a630f",
+    "docs/fillet-zero-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-zero-proof/history_control-capture.json": "9958e598cbd57be120e29dad2d682cd382701198b08d06e729431dc8185d214e",
+    "docs/fillet-zero-proof/history_control-capture.log.gz": "77a38cdc7a608fb308b6943b1d17fd684537a44a24fb8bbc12daf400b926126a",
+    "docs/fillet-zero-proof/holdouts-capture.log.gz": "e8578bd4d91e56aa0d79d7d1ebb5ed95ba13c9808860d7af15f8a52a7a0b3e63",
+    "docs/fillet-zero-proof/library-native.log.gz": "00a9fd7042f1045698804a187289de93c902cb00ae5143ac4b00eadc6fd683ab",
+    "docs/fillet-zero-proof/library-portable.log.gz": "00ae7db81b119626f328e7f592351169e8d8fd262182028df39e73a809e846fa",
+    "docs/fillet-zero-proof/native-producers.log.gz": "720afde2220f985c5b5755f6b785844082e0ec298f4e012f339e13c2f477cb9a",
+    "docs/fillet-zero-proof/pilot-capture.log.gz": "7fc03b889d1396815d2f940c1029b20099a65e78c748cd35c22d6f3819ec92bc",
+    "docs/fillet-zero-proof/python-subd.log.gz": "7626b4e251dbdbc2c96aea5ed069e16a9457b469539d84e1500f390fb5f71c38",
+    "docs/fillet-zero-proof/python.log.gz": "751a01ccea3aaf20e7ebe6c96148007ebbf18f124647c28b8cda42235a8ac109",
+    "docs/fillet-zero-proof/self-ui-native.log.gz": "69aec717b2d8a2034b9d91041e68040e62aa78bd8ec1f9001d6551bf8c8eff28",
+    "docs/fillet-zero-proof/self-ui-portable.log.gz": "e537e4496fc4e1b2f25930222d66111654dcff12ddfff16f1f210c3e016b4bac",
+    "docs/fillet-zero-proof/subd-command-native.log.gz": "c86105bd7b66b31ea2c6180b8336e7d5432d2f5fa28f3d6f1692a3eaf337a4d5",
+    "docs/fillet-zero-proof/subd-ui-native.log.gz": "4b78aef6e3df0918189b5e93317ffcd79195b1961089e8af93c2142db4f407f9",
+    "docs/fillet-zero-proof/tangent-geometry.log.gz": "bdf54575d3d07e5cbbee89c9544edb19512b8fb8fda99662e8b0146417d9b971",
+    "docs/fillet-zero-proof/verification-capture.log.gz": "0eef5baba91bda3738e214e742488d82ccd1e24ec7734b23050374e3a30b7d2c",
+    "docs/fillet-zero-proof/zero-command-native.log.gz": "8770532ff3316fc94091cd816dd71399307d2f402429e50f4c58c0bd919339a2",
+    "docs/fillet-zero-proof/zero-command-portable.log.gz": "166e3ae65116fc5e4bba02c507eb274541a6f28366f26b06c88ed5a33beb4277",
+    "docs/fillet-zero-proof/zero-ui-native.log.gz": "87b18f8abd166103166b98fdb3c25de4c049f500503fbfbee4a9c06b7695dff2",
+    "docs/fillet-zero-proof/zero-ui-portable.log.gz": "0d9d877a2c756374039c75769ab5f97492cebf9898c176386ebe600bd71b3ba2",
+    "tools/rhino_oracle/fixtures/fillet_zero_final.json": "c75b532c10a3b7535989b6addc83ac1d3d183c4d3723544461764276d33ef9f1",
+    "tools/rhino_oracle/fixtures/fillet_zero_history_control.json": "b7cd7a9abe22d7022855e28f19945af1df22fc68f30bcd82254393a26a6d084c",
+    "tools/rhino_oracle/fixtures/fillet_zero_holdouts.json": "985964129d318b332431dd21bb7fbf651a575736ff3940958ed962ff556f0a96",
+    "tools/rhino_oracle/fixtures/fillet_zero_pilot.json": "cdc2a2cce2530eca41deda7d1bf98560b1aab0e654109db2156aa91dc16949eb",
+    "tools/rhino_oracle/fixtures/fillet_zero_verification.json": "82246b2fd5462b2b5a12eb086ea05d787c2c96f8ddc4a01a90313d69391f8522",
+    "tools/rhino_oracle/observations/fillet_zero_final.json.gz": "aee3746f69e4ea8d96ffcd2a006cef73e96cc8ad5da43913491162dadd7a2052",
+    "tools/rhino_oracle/observations/fillet_zero_history_control.json.gz": "949a0a0e1c5a7de8bf845fcc37e15ee204e8a9b1b34436d23520f1fcf37c1396",
+    "tools/rhino_oracle/observations/fillet_zero_holdouts.json.gz": "a4b3067217058c13661735129453e144438eb3b4fab25dab2aa14cbb66f08fb2",
+    "tools/rhino_oracle/observations/fillet_zero_pilot.json.gz": "d2a5409e523def9bbd0506d0a937a616a7c66692ac228499697137a5b13f4718",
+    "tools/rhino_oracle/observations/fillet_zero_verification.json.gz": "7109e8a59a501c34b67890ef2bfa5a28e6a983eaef1c1c51d7895bf9a7df7312",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/126ba00ed6297e09345fc3f7bccf18e838491e965048dfa795d9aae7afb99cfe.gz": "333fe4e89b4126e497ee68e9c1cb520465ae801f6514ee1ce55dd4897d2373b6",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875.gz": "e3501b122400374742edd8d1a49470736ac3ccc2157c187a9ea64283f2913a61",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2a200a265ef0a96b9d1a4d4efca2a5176010f092932df5425dd986b99c47b0b4.gz": "95320f542af02dc3f369a4119213e7dd0cbc4ebd7b8c7e9114be25948acba04e",
+    "tools/rhino_oracle/observations/source_snapshots/2f2f9415db8e471eeae66355123575f01cc085a8bc2348e030aa7cf51d55ad6e.gz": "c70d4ffc73b14eec0c927fef954b2ce2bda303010f0d98759c8b2f3bededc8a1",
+    "tools/rhino_oracle/observations/source_snapshots/34a59c71240e4f20ee05e43bd7e8d01c49920983506db09a55d7303343add22c.gz": "5f5cccd91d91bdc8417fe54a4f07ae163e2ad89a33f1d12f6640b67801ed7671",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2.gz": "1bc44db7771d8b09dcfea5995c42c3df5cd755d1c5bb2ac42eb8015bbd959239",
+    "tools/rhino_oracle/observations/source_snapshots/6821a17d47fd14c006ab9b543591ea32722254b3c5580a3a844b4a34d51bce38.gz": "e19c7a275e952e9f104810aa8117ad15002503895aa0f7cd6e74d225141e728a",
+    "tools/rhino_oracle/observations/source_snapshots/76f20276aa64a48883c84aab2980cdda4b11f3893bcc76fdbb3e5d6282dc4da8.gz": "8777c24b8282db8ab20e2fa52ca3cdaa215e952d70dee6d54ee7fcdffb23bf17",
+    "tools/rhino_oracle/observations/source_snapshots/7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97.gz": "1afaf21ed96a9116feaea9f077bc3ea21fa456c212cc4536e7c1039d1544c3af",
+    "tools/rhino_oracle/observations/source_snapshots/85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5.gz": "03fa9dce7bbd5d65c86881df36b5ac531679522446184c730570ab2223a0d201",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8980d4f920192561f6137ef1781ca3d0056874b465c31fabc12d6439559714ca.gz": "e21d422e4028d97c47d5b8a5f62e9f2052f5db4b8aeba6c8307f03fb6c5a0622",
+    "tools/rhino_oracle/observations/source_snapshots/8b1dc9b683b24ffb1bf6bc35334f660fdd96b4b0fa4aebfcd4a5de175d4d7aba.gz": "76cca19d6143389dfe9fac413a560d75bdbea66f96ce6db3e9d77cfa5fa43d6e",
+    "tools/rhino_oracle/observations/source_snapshots/8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579.gz": "560a2d48d6bb2c66e203c11a0a44b50ee799b8a26cf2c0d467ca7e3024d1d8b5",
+    "tools/rhino_oracle/observations/source_snapshots/95bea5c8bee73682d124f05348774a56d77a8858f58244cffcf87731fa45e33a.gz": "7e64989e1e28dad6355feb40ed8674560f9906bfb1a33ac122a487ca4d5012a5",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6.gz": "f684792001d118d95c75aa43e2a1a2d4437a23e7b760a04a09e877ef755175d8",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "tools/rhino_oracle/observations/source_snapshots/a3ca5da6be82efc8f3fd65d946811b1a64ed1b6bcd70ecbb249d71770ca6a7ee.gz": "b58df4615faaa0497679923915e12c59fa60902c0dc8fd0f19eb68a79e7298de",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/aad5d45d5019eaf8f3c093c509b2e4fef26811d4f88c0878d9006dc7a546874d.gz": "52a1d7a4bd713ed5c74c5811d3bf5f65849828b4c2f302c0989138975850a217",
+    "tools/rhino_oracle/observations/source_snapshots/add32e6b2960f5dcbefd794ca4b2f3e82dd8b6dacda331b325346f63cc0c6dc6.gz": "990ebfe4012d66fbe4daf3ddacb6fea9df6036e6460c07d529035b666ca38594",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "tools/rhino_oracle/observations/source_snapshots/c5c65c2337ef98f5b23da333f5850895b543abf78422e56bcf9b745ec7a3bb1c.gz": "07bd93fd2fb3c1662a9b921eb76fd8ef62f1b60b9f05fbc344f3eadca7c492bf",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/dd1f81459277a6fb9699aafcd49fdbe788c19d79dfb61953491746ecbe08d2d7.gz": "c37a884f9b97464b603df807a6306175d0ec4ea0fc7999e8d90c70fb6aaa7378",
+    "tools/rhino_oracle/observations/source_snapshots/dfd7596a328625e4dfa22fee65295d39fbd350526f5876472654cdb28d7df876.gz": "2c47df0e78006c0bf674a14c5b395e3b50aa76e75358eb5cbd89d8d2dfffe1cf",
+    "tools/rhino_oracle/observations/source_snapshots/ebdd6046a75015a7d8cc51a73c902579bfcf560f1fbc0288bb9627f53e9fd55c.gz": "6720bbd8e93319f002dbd6524673e006213103a0bc8d4df0032bfb51f1d28e78",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
