@@ -23,14 +23,18 @@ def main():
     import time
     from . import check_blend_curve_empty as runner
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--resume',action='store_true'); args=parser.parse_args()
+    parser.add_argument('--resume',action='store_true')
+    parser.add_argument('--rerun',action='append',default=[],metavar='CHECK',
+        help='refresh a check without removing the previous successful evidence')
+    args=parser.parse_args()
     PROOF.mkdir(exist_ok=True)
     expected=list(commands()); inventory=dict(expected)
+    if set(args.rerun)-inventory.keys(): parser.error('unknown check requested for rerun')
     saved=json.loads((PROOF/'checks.json').read_bytes()) if args.resume else []
     done={c['name']:c for c in saved}
     if len(done)!=len(saved) or any(c['name'] not in inventory or c['command']!=inventory[c['name']] for c in saved): raise ValueError('saved check commands changed')
     for name,command in expected:
-        if name in done and done[name]['status']==0: continue
+        if name not in args.rerun and name in done and done[name]['status']==0: continue
         if name=='python-subd':
             runner.PROOF=PROOF; runner.refresh_subd()
         print('Checking '+name,flush=True); start=time.monotonic()
