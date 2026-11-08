@@ -30,8 +30,9 @@ for admission: Rhino's edge/UV fits can exceed document tolerance. Product
 validation retains document tolerance.
 The trim-image certificate does not establish a continuous ideal-offset bound.
 General trimmed solids, multiple support charts, singularities and comparative
-performance are unqualified. The nonuniform rational curvature-break input
-still declines atomically. The trimmed repair also declines supports with G2
+performance are unqualified. This historical qualification retains the nonuniform rational
+curvature-break input's atomic decline; its newer [patch-fitting path](offset-srf-rational.md)
+has separate targeted checks. The trimmed repair also declines supports with G2
 breaks until separate chart fitting is available. General curved offsets require
 `native-smlib`.
 

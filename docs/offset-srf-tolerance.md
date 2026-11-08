@@ -22,7 +22,7 @@ skins. Portable builds atomically decline seven general non-Loose cases. Native
 builds in this historical qualification also declined the nonuniform rational
 and curved-trim captures because the kernel exported parameters outside their
 NURBS domains. A [subsequent repair](offset-srf-trims.md) supports the open
-curved-trim case; the nonuniform rational case remains unresolved.
+curved-trim case; the nonuniform rational case now has a separate [patch-fitting path](offset-srf-rational.md).
 Command and UI replays compare geometry, metadata, selection, identity, previews,
 actual Undo/Redo and 94 3DM round trips across both build configurations.
 

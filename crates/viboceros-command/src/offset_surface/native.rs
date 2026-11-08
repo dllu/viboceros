@@ -1,6 +1,7 @@
 //! General sheet and solid offsets through the native geometry kernel.
 use super::*;
 use viboceros_smlib::Shape;
+mod partitioned;
 #[cfg(test)]
 mod tests;
 mod trimmed;
@@ -10,6 +11,9 @@ pub(super) fn offset(
     options: Options,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
+    if let Some(result) = partitioned::offset(geometry, options, tolerance)? {
+        return Ok(result);
+    }
     if !options.solid
         && !options.both_sides
         && let Geometry::Brep(b) = geometry

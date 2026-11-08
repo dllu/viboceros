@@ -70,3 +70,7 @@ collapse and self-intersection behavior remains separately qualified. The getter
 captures establish finite workflows, not complete curved-surface parity.
 Open single-face [trimmed offsets](../offset-srf-trims.md) preserve their UV loops
 and holes, with certified spatial trim images on the fitted support surface.
+
+Open untrimmed [rational curvature-break surfaces](../offset-srf-rational.md)
+use separate fitted patches and certified joins. Targeted checks cover this path;
+wider native parity qualification remains pending.

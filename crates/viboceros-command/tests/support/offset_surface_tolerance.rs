@@ -46,12 +46,12 @@ pub fn setup(v: &Value) -> Document {
         inputs::setup(v)
     }
 }
-pub fn supported(id: &str, v: &Value) -> bool {
+pub fn supported(_id: &str, v: &Value) -> bool {
     if !inputs::success(v) {
         return true;
     }
     if cfg!(feature = "native-smlib") {
-        id != "offset_th_rational"
+        true
     } else {
         !curved(v)
     }

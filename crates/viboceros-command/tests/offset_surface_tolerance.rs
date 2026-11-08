@@ -168,3 +168,114 @@ fn unresolved_precision_declines_atomically_and_preserves_redo() {
     assert!(d.can_redo());
     assert!(!d.can_undo());
 }
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn rational_curvature_break_matches_retained_native_capture() {
+    replay(
+        tolerance::rows()
+            .into_iter()
+            .filter(|(id, _)| id == "offset_th_rational")
+            .collect(),
+        "RATIONAL_OFFSET",
+    );
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn rational_fine_fit_declines_atomically_and_preserves_redo() {
+    let (_, v) = tolerance::rows()
+        .into_iter()
+        .find(|(id, _)| id == "offset_th_rational")
+        .unwrap();
+    let mut d = tolerance::setup(&v);
+    inputs::select_sources(&mut d);
+    let before = format!("{d:?}");
+    let error = CommandRegistry::with_builtins()
+        .execute(&mut d, "OffsetSrf 0.5 Tolerance=1e-11")
+        .unwrap_err();
+    assert!(
+        error.to_string().contains("normal-offset tolerance"),
+        "{error}"
+    );
+    assert_eq!(before, format!("{d:?}"));
+    assert!(d.can_redo());
+    assert!(!d.can_undo());
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn rational_patch_sign_orientation_and_both_sides_preserve_history() {
+    use viboceros_document::Geometry;
+    use viboceros_geometry::Brep;
+    let (_, v) = tolerance::rows()
+        .into_iter()
+        .find(|(id, _)| id == "offset_th_rational")
+        .unwrap();
+    for (distance, reversed, both) in [(-0.3, false, false), (0.5, true, false), (-0.3, true, true)]
+    {
+        let mut d = tolerance::setup(&v);
+        inputs::select_sources(&mut d);
+        let id = d.selected_objects().next().unwrap().id();
+        let Geometry::NurbsSurface(source) = d.object(id).unwrap().geometry().clone() else {
+            panic!("authored source")
+        };
+        let mut b = Brep::try_surface_face(source.clone(), d.tolerance()).unwrap();
+        if reversed {
+            b.reverse_orientation();
+        }
+        d.replace_object_geometries([(id, Geometry::Brep(b))])
+            .unwrap();
+        d.clear_history().unwrap();
+        let before = d.objects().cloned().collect::<Vec<_>>();
+        let command = format!(
+            "OffsetSrf {distance} Tolerance=0.0001 DeleteInput=Yes BothSides={}",
+            if both { "Yes" } else { "No" }
+        );
+        let registry = CommandRegistry::with_builtins();
+        registry.execute(&mut d, &command).unwrap();
+        assert_eq!(d.object(id), before.iter().find(|o| o.id() == id));
+        assert_eq!(d.objects().count(), before.len() + if both { 2 } else { 1 });
+        let outputs = d
+            .objects()
+            .filter(|o| o.attributes().name().is_none())
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), if both { 2 } else { 1 });
+        for (skin, output) in outputs.into_iter().enumerate() {
+            let Geometry::Brep(b) = output.geometry() else {
+                panic!("offset shell")
+            };
+            assert_eq!(b.faces().len(), 2);
+            assert_eq!(b.edge_use_counts().iter().filter(|&&n| n == 2).count(), 1);
+            assert!(b.faces().iter().all(|f| f.is_reversed() == reversed));
+            let sign = if skin == 0 { 1. } else { -1. };
+            for f in b.faces() {
+                let s = f.surface();
+                for i in 0..=8 {
+                    for j in 0..=8 {
+                        let u = s.parameter_at_u(i as f64 / 8.).unwrap();
+                        let v = s.parameter_at_v(j as f64 / 8.).unwrap();
+                        let ideal = source
+                            .evaluate(u, v)
+                            .unwrap()
+                            .translated(
+                                source
+                                    .normal_at(u, v)
+                                    .unwrap()
+                                    .as_vector()
+                                    .scaled(distance * sign * if reversed { -1. } else { 1. })
+                                    .unwrap(),
+                            )
+                            .unwrap();
+                        assert!(ideal.distance_to(s.evaluate(u, v).unwrap()).unwrap() <= 1e-7);
+                    }
+                }
+            }
+        }
+        let after = d.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut d, "Undo").unwrap();
+        assert_eq!(before, d.objects().cloned().collect::<Vec<_>>());
+        registry.execute(&mut d, "Redo").unwrap();
+        assert_eq!(after, d.objects().cloned().collect::<Vec<_>>());
+    }
+}
