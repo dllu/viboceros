@@ -1,6 +1,6 @@
 """Owned line-construction scene and document/history observations."""
 
-def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None,completion_observer=None,source_setup=None,capture_undo=False):
+def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None,completion_observer=None,source_setup=None,capture_undo=False,sources_prepared=None,object_observer=None):
     from join_probe import observe_command
     from conic_getter_input import drive
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
@@ -29,6 +29,7 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
             elif isinstance(g,G.Brep):row.update(face_count=g.Faces.Count,surfaces=[host['_nurbs_surface_definition'](f.UnderlyingSurface())for f in g.Faces],brep=host['_interchange_brep_record'](g,include_samples=False))
             elif isinstance(g,G.Surface):row.update(face_count=1,surfaces=[host['_nurbs_surface_definition'](g)])
             else:raise ValueError('unexpected Lines output')
+            if object_observer is not None: row.update(object_observer(obj))
             rows.append(row)
         return rows
     try:
@@ -56,7 +57,9 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
             bounds.Inflate(5.);vp.ZoomBoundingBox(bounds)
             if case.get('shaded'):vp.DisplayMode=R.Display.DisplayModeDescription.FindByName('Shaded')
             vp.SetConstructionPlane(G.Plane(G.Point3d(*frame[0]),G.Vector3d(*frame[1]),G.Vector3d(*frame[2])));doc.Views.Redraw()
-        group=doc.Groups.Add('Plane source group',[source]+guides);doc.Objects.Select(source)
+        group=doc.Groups.Add('Plane source group',[source]+guides)
+        if sources_prepared is not None:sources_prepared(guides)
+        doc.Objects.Select(source)
         doc.Layers.SetCurrentLayerIndex(layers[1],True);doc.ClearUndoRecords(True)
         if case.get('pending_redo'):
             R.RhinoApp.RunScript('_Point w90,91,92',False);R.RhinoApp.RunScript('_Undo',False)

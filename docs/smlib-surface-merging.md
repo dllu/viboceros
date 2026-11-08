@@ -1,8 +1,9 @@
 # NURBS support merging
 
 The native `viboceros_smlib::merge_surface_supports` API provides the geometry
-foundation for `MergeSrf`. Command selection, previews, attributes, Undo/Redo and
-output B-rep edge construction remain in progress.
+foundation for [MergeSrf](commands/merge-srf.md). The command adds automatic
+boundary orientation, B-rep construction, selection, options and model history
+in both portable and native builds.
 
 Supply two supports with agreeing boundary traversal. The first maximum U/V
 boundary joins the second minimum U/V boundary in the requested direction.
@@ -36,9 +37,11 @@ control counts, knot clocks and 17 by 17 parameter grids within 1e-9 model units
 Native controls are expectations only. The failed initial Python import is
 retained with its frozen producers.
 
-These observations qualify the oriented support primitive. Broader closed or
-periodic cases, nonlinear boundary-speed matching, output B-rep topology,
-continuous surface-distance bounds and full command parity remain unqualified.
+These observations qualify the oriented support primitive. Additional
+[command validation](merge-srf-command-validation.json) covers automatic
+orientation and output topology. Broader closed or periodic cases, nonlinear
+boundary-speed matching, continuous surface-distance bounds and full command
+parity remain unqualified.
 See the public [MergeSrf command](https://docs.mcneel.com/rhino/8/help/en-us/commands/mergesrf.htm)
 and [MergeSurfaces API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Brep_MergeSurfaces_1.htm).
 

@@ -23,7 +23,7 @@ These pages record integration details and qualification limits. Start with
 - [parent trimming/splitting](native-surface-fillet-parents.md)
 - [Circular fillet rail correspondence](native-circular-fillet-rails.md)
 - [Native surface joining](smlib-joining.md)
-- [NURBS support merging and MergeSrf foundation](smlib-surface-merging.md)
+- [NURBS support merging and MergeSrf](smlib-surface-merging.md)
 - [UV transposes](native-uv-transpose.md)
 - [closed-component orientation](native-closed-join.md)
 - [Native pole transfer and exact NURBS copies](native-pole-transfer.md)

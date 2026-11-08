@@ -1,0 +1,66 @@
+[
+  {
+    "archive": "observations/failures/merge_surface_command_pilot-9eb529849a793f0a3bb5556aa45d692abdc34c170aea8d6fd919c63b34b343c8.json.gz",
+    "log": "pilot.capture.log.gz",
+    "exit_status": 1,
+    "error": "rhino probe failed: ValueError at operation merge_cmd_pre_sharp: start: unsupported managed curve getter command",
+    "response_retained": true,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_pilot"
+    ],
+    "request_sha256": "6eab970df4b6651e98e61fa6179fc569bbf7aa150669a13645265bc7ff9b7c1d",
+    "observation_sha256": "9eb529849a793f0a3bb5556aa45d692abdc34c170aea8d6fd919c63b34b343c8"
+  },
+  {
+    "archive": "observations/failures/merge_surface_command_pilot-8765722603a7a766a0feb5664e84c255024ac8016af2c8afb32d7fa330f1ba6d.json.gz",
+    "log": "pilot-retry.capture.log.gz",
+    "exit_status": 1,
+    "error": "incomplete owned Catenary point clicks",
+    "response_retained": false,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_pilot"
+    ],
+    "request_sha256": "6eab970df4b6651e98e61fa6179fc569bbf7aa150669a13645265bc7ff9b7c1d",
+    "observation_sha256": "8765722603a7a766a0feb5664e84c255024ac8016af2c8afb32d7fa330f1ba6d"
+  },
+  {
+    "archive": "observations/failures/merge_surface_command_pilot-331983599f5eb7ee3967b835325b84659f00da96046fc8558f79d07f452a8bc3.json.gz",
+    "log": "pilot-diagnostics.capture.log.gz",
+    "exit_status": 1,
+    "error": "incomplete owned Catenary point clicks",
+    "response_retained": true,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_pilot"
+    ],
+    "request_sha256": "6eab970df4b6651e98e61fa6179fc569bbf7aa150669a13645265bc7ff9b7c1d",
+    "observation_sha256": "331983599f5eb7ee3967b835325b84659f00da96046fc8558f79d07f452a8bc3"
+  },
+  {
+    "archive": "observations/failures/merge_surface_command_pilot-afce02e08bee36b24b1df18e3b30ead486c0cb5f490312127183870f7f2de999.json.gz",
+    "log": "pilot-scriptable.capture.log.gz",
+    "exit_status": 1,
+    "error": "incomplete owned Catenary point clicks",
+    "response_retained": true,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_pilot"
+    ],
+    "request_sha256": "6eab970df4b6651e98e61fa6179fc569bbf7aa150669a13645265bc7ff9b7c1d",
+    "observation_sha256": "afce02e08bee36b24b1df18e3b30ead486c0cb5f490312127183870f7f2de999"
+  }
+]

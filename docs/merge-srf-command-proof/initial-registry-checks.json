@@ -1,0 +1,33 @@
+{
+  "note": "The initial filter selected a units test. Retained as diagnostics; qualification uses the corrected document registry suite.",
+  "checks": [
+    {
+      "name": "registry-portable",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "builtin"
+      ],
+      "status": 0,
+      "seconds": 32.2291430280311
+    },
+    {
+      "name": "registry-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "builtin"
+      ],
+      "status": 0,
+      "seconds": 34.35219582397258
+    }
+  ]
+}

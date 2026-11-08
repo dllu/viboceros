@@ -327,6 +327,7 @@ mod mesh_trim;
 pub use mesh_trim::MeshTrimCutters;
 pub mod extrude_subd;
 pub mod inset;
+pub mod merge_surfaces;
 mod object_name;
 mod offset_mesh;
 pub mod offset_subd;
@@ -1034,6 +1035,7 @@ pub struct CommandRegistry {
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
     offset_surface_options: std::sync::Arc<remembered::Remembered<offset_surface::Options>>,
+    merge_surface_options: std::sync::Arc<remembered::Remembered<merge_surfaces::Options>>,
     shell_options: std::sync::Arc<remembered::Remembered<shell::ShellOptions>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
@@ -1363,6 +1365,11 @@ impl CommandRegistry {
         registry
             .register(OffsetSurfaceCommand(
                 registry.offset_surface_options.clone(),
+            ))
+            .expect("unique built-in command");
+        registry
+            .register(merge_surfaces::MergeSurfaceCommand(
+                registry.merge_surface_options.clone(),
             ))
             .expect("unique built-in command");
         registry
@@ -2818,6 +2825,20 @@ impl CommandRegistry {
     }
     pub fn offset_surface_options(&self) -> offset_surface::Options {
         self.offset_surface_options.get()
+    }
+    pub fn merge_surface_options(&self) -> merge_surfaces::Options {
+        self.merge_surface_options.get()
+    }
+    pub fn remember_merge_surface_options(
+        &self,
+        value: merge_surfaces::Options,
+    ) -> Result<(), CommandError> {
+        self.merge_surface_options.set(merge_surfaces::parse(
+            &[],
+            value,
+            &viboceros_geometry::LengthUnitSystem::None,
+        )?);
+        Ok(())
     }
     pub fn shell_options(&self) -> shell::ShellOptions {
         self.shell_options.get()

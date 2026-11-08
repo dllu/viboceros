@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_first_u",
+      "case": "merge_first_u"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_first_v",
+      "case": "merge_first_v"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_first_uv",
+      "case": "merge_first_uv"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_first_transpose",
+      "case": "merge_first_transpose"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_both_transpose",
+      "case": "merge_both_transpose"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_order_sharp",
+      "case": "merge_order_sharp"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_order_smooth",
+      "case": "merge_order_smooth"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_order_nonunit",
+      "case": "merge_order_nonunit"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_face_flip_0",
+      "case": "merge_face_flip_0"
+    },
+    {
+      "op": "merge_surface_orientation_sdk",
+      "id": "merge_face_flip_1",
+      "case": "merge_face_flip_1"
+    }
+  ]
+}

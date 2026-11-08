@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_pre_default",
+      "case": "merge_d_pre_default"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_post_sharp",
+      "case": "merge_d_post_sharp"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_post_smooth",
+      "case": "merge_d_post_smooth"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_cancel",
+      "case": "merge_d_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_pre_after_cancel",
+      "case": "merge_d_pre_after_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_d_cancel_one_pick",
+      "case": "merge_d_cancel_one_pick"
+    }
+  ]
+}

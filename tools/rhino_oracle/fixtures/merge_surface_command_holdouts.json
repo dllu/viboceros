@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_document_high",
+      "case": "merge_h_document_high"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_document_low_cancel",
+      "case": "merge_h_document_low_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_gap_failure",
+      "case": "merge_h_gap_failure"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_bowed_failure",
+      "case": "merge_h_bowed_failure"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_shared_pre",
+      "case": "merge_h_shared_pre"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_h_sel_last",
+      "case": "merge_h_sel_last"
+    }
+  ]
+}

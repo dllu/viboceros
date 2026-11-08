@@ -6,6 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'merge_surface_orientation_sdk': ('merge_surface_orientation_sdk', ('merge_surface_orientation_cases', 'merge_surface_cases', 'brep_join_probe', 'cap_probe')),
+    'merge_surface_command': ('merge_surface_command_probe', ('merge_surface_command', 'merge_surface_cases', 'line_scene_probe', 'join_probe', 'merge_edges_probe', 'conic_getter_input', 'managed_mouse_callback', 'snap_environment', 'number_token')),
     'merge_surfaces_sdk': ('merge_surfaces_sdk', ('merge_surface_cases', 'brep_join_probe', 'cap_probe')),
     'shell_command': ('shell_command_probe', ('shell_command','line_scene_probe','move_normal_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),
     'offset_surface_command': ('offset_surface_command_probe', ('offset_surface_command','offset_surface_loose_cases','offset_surface_loose_trim_cases','offset_surface_tolerance_cases','offset_surface_trim_cases','offset_surface_rational_cases','offset_surface_rational_final_cases','line_scene_probe','move_normal_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment','number_token')),

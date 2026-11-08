@@ -5,6 +5,9 @@ outputs below describe its default `Extrusion` mode.
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
+[MergeSrf](merge-srf.md) joins two untrimmed NURBS surfaces with automatic
+boundary orientation, smoothing options and undo/redo.
+
 ## Planar surfaces
 
 `PlanarSrf` creates exact trimmed planar B-reps from selected closed curves.

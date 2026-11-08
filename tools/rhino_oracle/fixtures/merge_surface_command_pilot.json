@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_command",
+      "id": "merge_cmd_pre_sharp",
+      "case": "merge_cmd_pre_sharp"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_cmd_pre_smooth",
+      "case": "merge_cmd_pre_smooth"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_cmd_cancel",
+      "case": "merge_cmd_cancel"
+    }
+  ]
+}

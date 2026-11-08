@@ -118,6 +118,7 @@ JoinCopy
 ShrinkTrimmedSrf
 ShrinkTrimmedSrfToEdge
 MergeAllCoplanarFaces
+MergeSrf Smooth=Yes Tolerance=0.0001 Roundness=0.5
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]

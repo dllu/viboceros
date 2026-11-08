@@ -1,0 +1,77 @@
+[
+  {
+    "family": "merge_surface_orientation",
+    "archive": "observations/merge_surface_orientation.json.gz",
+    "log": "merge_surface_orientation.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_orientation"
+    ],
+    "exit_status": 0,
+    "request_sha256": "3f22762539efc893aa617b2e2ca51cc4fa95117bb0f6f0dbc926596fbca2bb34",
+    "observation_sha256": "3767fc748787abec90e3cc3636f8a14714f4ca9176c15d7ef623df7356bc3c87"
+  },
+  {
+    "family": "merge_surface_command_discovery",
+    "archive": "observations/merge_surface_command_discovery.json.gz",
+    "log": "merge_surface_command_discovery.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_discovery"
+    ],
+    "exit_status": 0,
+    "request_sha256": "09df31706a73bcd12df45a62fe3efbfd35bfbdea07a6523dd54dd1e0c1c766fa",
+    "observation_sha256": "b2a6793123377b3c77b3df4f95135868fc2b011398df310fb1880f033ec33f6a"
+  },
+  {
+    "family": "merge_surface_command_qualified",
+    "archive": "observations/merge_surface_command_qualified.json.gz",
+    "log": "merge_surface_command_qualified.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_qualified"
+    ],
+    "exit_status": 0,
+    "request_sha256": "963f95cd32f4e072dd91d942234fa6b00ed42db7abb9dab4ced30d88424483ee",
+    "observation_sha256": "977f6ce8ff167535be4979bec63edf9e6002306d3072c25759ad47a38acc4212"
+  },
+  {
+    "family": "merge_surface_command_getters",
+    "archive": "observations/merge_surface_command_getters.json.gz",
+    "log": "merge_surface_command_getters.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_getters"
+    ],
+    "exit_status": 0,
+    "request_sha256": "991a50e1490777bd199bd673e7e3b0ae8a442ae25edbaec6d4d26419784dbe1c",
+    "observation_sha256": "5023956946c63381cc220a546048eb20d3422948f0e2f61ca2ffe891ca49f449"
+  },
+  {
+    "family": "merge_surface_command_holdouts",
+    "archive": "observations/merge_surface_command_holdouts.json.gz",
+    "log": "merge_surface_command_holdouts.capture.log.gz",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_merge_surface_command_holdouts"
+    ],
+    "exit_status": 0,
+    "request_sha256": "1c6a73ecbe362e673026bdeb3e7235313b9b708d6763f8fa7b4357b2145581c9",
+    "observation_sha256": "63d3208f651fa52d8f2254e5a839bc87b34dbeb8ff74867319ff0ce4c8a91687"
+  }
+]

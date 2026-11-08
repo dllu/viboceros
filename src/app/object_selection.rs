@@ -10,6 +10,7 @@ mod divide;
 #[allow(dead_code)]
 #[path = "../../crates/viboceros-command/tests/support/frozen_scene.rs"]
 mod frozen_scene;
+mod merge_surfaces;
 #[cfg(test)]
 mod mesh_boolean_tests;
 mod mesh_conversion;
@@ -56,6 +57,7 @@ pub(super) enum ObjectPromptPhase {
     SmoothFactor,
     SmoothSteps,
     RebuildValue(&'static str),
+    MergeSurfaceValue(&'static str),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -140,12 +142,21 @@ impl PendingObjectCommand {
             }
             ObjectPromptPhase::SmoothFactor => "SmoothFactor",
             ObjectPromptPhase::SmoothSteps => "Steps",
-            ObjectPromptPhase::RebuildValue(name) => name,
+            ObjectPromptPhase::RebuildValue(name) | ObjectPromptPhase::MergeSurfaceValue(name) => {
+                name
+            }
             _ => self.description.command,
         }
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "MergeSrf" {
+            return if matches!(self.phase, ObjectPromptPhase::MergeSurfaceValue(_)) {
+                "Enter an option value; Enter keeps it, Esc cancels MergeSrf"
+            } else {
+                "Select a pair of surfaces; the second pick merges; Smooth/Tolerance/Roundness; Esc cancels"
+            };
+        }
         if self.description.command == "Length"
             && self.phase == ObjectPromptPhase::Selecting
             && !self.subcurve_measurement
@@ -319,7 +330,7 @@ impl PendingObjectCommand {
             return "Select objects or type options; Enter finishes, Esc cancels";
         }
         match self.phase {
-            ObjectPromptPhase::RebuildValue(_) => {
+            ObjectPromptPhase::RebuildValue(_) | ObjectPromptPhase::MergeSurfaceValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
             ObjectPromptPhase::Selecting if self.description.command == "OffsetSubD" => {
@@ -866,7 +877,7 @@ impl VibocerosApp {
             | "PlaneThroughPt"
             | "Sphere FitPoints" => 3,
             "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "PlanarUnion"
-            | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" => 2,
+            | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" | "MergeSrf" => 2,
             _ => 1,
         };
         let graph_allowed = self.curvature_graph_selection_ids(description.command);
@@ -921,6 +932,12 @@ impl VibocerosApp {
             viboceros_command::point_fitting::PointFitKind::from_command(description.command)
         {
             kind.selected_point_count(&self.document) >= kind.minimum_points()
+        } else if description.command == "MergeSrf" {
+            self.document
+                .selected_objects()
+                .filter(|o| description.filter.accepts_object(o))
+                .count()
+                == 2
         } else {
             selected_objects + selected_grips >= required || length_edges
         };
@@ -1091,6 +1108,7 @@ impl VibocerosApp {
         }
         self.command_input.clear();
         self.initialize_smooth_options(input, preselected);
+        self.initialize_merge_surface_options(input);
         self.initialize_rebuild_options();
         self.initialize_divide_prompt();
         self.initialize_modify_radius(input);
@@ -1139,6 +1157,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_merge_surface_options(input) {
+            return true;
+        }
         if self.continue_length_choices(input)
             || self.continue_length_units(input)
             || self.start_length_chain(input)
@@ -1571,7 +1592,11 @@ impl VibocerosApp {
                 Err(error) => {
                     if matches!(
                         pending.description.command,
-                        "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "MeshSelfIntersect"
+                        "BooleanUnion"
+                            | "MeshBooleanUnion"
+                            | "MeshIntersect"
+                            | "MeshSelfIntersect"
+                            | "MergeSrf"
                     ) || (pending.description.command == "PlanarMesh"
                         && matches!(
                             error,

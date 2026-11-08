@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_pre_default",
+      "case": "merge_q_pre_default"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_post_sharp",
+      "case": "merge_q_post_sharp"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_post_smooth",
+      "case": "merge_q_post_smooth"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_cancel",
+      "case": "merge_q_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_pre_after_cancel",
+      "case": "merge_q_pre_after_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_cancel_one_pick",
+      "case": "merge_q_cancel_one_pick"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_post_reverse",
+      "case": "merge_q_post_reverse"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_pre_reverse",
+      "case": "merge_q_pre_reverse"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_partial_cancel",
+      "case": "merge_q_partial_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_q_getters",
+      "case": "merge_q_getters"
+    }
+  ]
+}

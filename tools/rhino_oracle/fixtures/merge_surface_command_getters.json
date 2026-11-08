@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "merge_surface_command",
+      "id": "merge_g_fraction",
+      "case": "merge_g_fraction"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_g_tolerance_cancel",
+      "case": "merge_g_tolerance_cancel"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_g_tolerance_range",
+      "case": "merge_g_tolerance_range"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_g_roundness_range",
+      "case": "merge_g_roundness_range"
+    },
+    {
+      "op": "merge_surface_command",
+      "id": "merge_g_changed_document",
+      "case": "merge_g_changed_document"
+    }
+  ]
+}

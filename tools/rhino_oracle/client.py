@@ -39,6 +39,14 @@ class OracleProtocolError(OracleError):
     """Raised when an engine returns an invalid protocol response."""
 
 
+def _record_owned_input_diagnostics(interaction, response):
+    try:
+        interaction.record_diagnostics(response)
+    except OracleError as error:
+        error.raw_response = response
+        raise
+
+
 @dataclass(frozen=True)
 class OperationComparison:
     """Correctness and raw harness timings, not a kernel-speed comparison."""
@@ -223,7 +231,7 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
-        for operation_kind, label in [('shell_command','Shell command'),('offset_surface_command','OffsetSrf command'),('chamfer_command','Chamfer command'),('fillet_command','Fillet command'),('blend_curve_command','Adjustable curve blend command'),('arc_blend_command','Arc blend command'),('arc_blend_sdk','Arc blend SDK'),('line_pick_context','Line pick context'),('line_tangent_mouse','Line Tangent mouse confirmation'),('line_tangent_rays','Line Tangent viewing rays'),('tangent_zero_sdk','Tangent zero SDK'),('line_tangent_arcs_sdk','Line Tangent SDK'),('line_tangent_arcs','Line Tangent Arcs'),('line_tangent','Line Tangent'),('line_perpendicular','Line Perpendicular'),('line_normal','Line Normal'),('line_reference','Line references'),('line_construction','Line construction'),('lines_command','Lines'),('command_file','Command-file'),('point_grid_input','Point-grid'),('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
+        for operation_kind, label in [('merge_surface_command','MergeSrf command'),('shell_command','Shell command'),('offset_surface_command','OffsetSrf command'),('chamfer_command','Chamfer command'),('fillet_command','Fillet command'),('blend_curve_command','Adjustable curve blend command'),('arc_blend_command','Arc blend command'),('arc_blend_sdk','Arc blend SDK'),('line_pick_context','Line pick context'),('line_tangent_mouse','Line Tangent mouse confirmation'),('line_tangent_rays','Line Tangent viewing rays'),('tangent_zero_sdk','Tangent zero SDK'),('line_tangent_arcs_sdk','Line Tangent SDK'),('line_tangent_arcs','Line Tangent Arcs'),('line_tangent','Line Tangent'),('line_perpendicular','Line Perpendicular'),('line_normal','Line Normal'),('line_reference','Line references'),('line_construction','Line construction'),('lines_command','Lines'),('command_file','Command-file'),('point_grid_input','Point-grid'),('plane_surface_command','Plane'),('srf_pt_command','SrfPt')]:
             if any(op.get('op') == operation_kind for op in request.get('operations', [])):
                 operations = request['operations']
                 if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
@@ -512,6 +520,10 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='merge_surface_command' for op in request.get('operations', [])):
+            from .merge_surface_command import CASES
+            from .merge_surface_point_picker import MergeSurfacePointPicker
+            interaction=MergeSurfacePointPicker(dict(request,operations=[dict(op,actions=CASES[op['case']]['actions'])for op in request['operations']]))
         if any(op.get('op')=='shell_command' for op in request.get('operations', [])):
             from .shell_command import CASES
             from .shell_point_picker import ShellPointPicker
@@ -2267,7 +2279,7 @@ Rhino.RhinoApp.Idle += execute_owned_controls
             # when a later operation fails validation.
             error.raw_response = response
             raise
-        if any(op.get('op')in('shell_command','chamfer_command','offset_surface_command')for op in request.get('operations',[])):interaction.record_diagnostics(response)
+        if any(op.get('op')in('merge_surface_command','shell_command','chamfer_command','offset_surface_command')for op in request.get('operations',[])):_record_owned_input_diagnostics(interaction,response)
         if any(op.get('op')=='line_tangent_mouse'for op in request.get('operations',[])):interaction.record_diagnostics(response)
         if any(op.get('op')in('arc_blend_command','blend_curve_command')for op in request.get('operations',[])):interaction.record_diagnostics(response)
         if any(op.get('op')=='line_pick_context'for op in request.get('operations',[])):interaction.record_diagnostics(response)
