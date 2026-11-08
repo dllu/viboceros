@@ -27,6 +27,7 @@ fn warped_offset_faces_match_ideal_normals_and_public_rhino_outcomes() {
             both_sides: case.contains("two_side"),
             delete_input: false,
             flip_all: false,
+            loose: false,
         };
         let output = offset(
             &Geometry::NurbsSurface(source.clone()),
@@ -158,6 +159,7 @@ fn box_offsets_match_public_sdk_and_retain_its_empty_wall_observations() {
             both_sides: false,
             delete_input: false,
             flip_all: false,
+            loose: false,
         };
         let Geometry::Brep(result) =
             offset(&Geometry::Brep(source), options, Tolerance::DEFAULT).unwrap()
