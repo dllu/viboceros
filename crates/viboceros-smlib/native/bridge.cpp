@@ -600,6 +600,16 @@ extern "C" int vb_shape_brep(const VbSolid *shape, double approximation, VbBrep 
     });
 }
 
+extern "C" int vb_shape_surface(const VbSolid *shape, double approximation, VbSurfaceData **out,
+                                 char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(shape && shape->value && out, "Invalid support surface export");
+        *out = vb_export_single_surface(*shape->value, approximation);
+    });
+}
+
 extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
                                   const size_t *components, size_t component_count,
                                   const int *inward, VbSolid **out, char *error, size_t capacity) {

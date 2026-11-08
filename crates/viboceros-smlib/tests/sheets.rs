@@ -110,3 +110,106 @@ fn periodic_sheet_round_trip_retains_seams_and_boundary_curves() {
     assert!(output.edge_use_counts().contains(&2));
     assert!((output.area(Tolerance::DEFAULT).unwrap() - 12. * std::f64::consts::PI).abs() < 1e-8);
 }
+
+#[test]
+fn single_support_export_checks_budget_face_count_and_source_immutability() {
+    for reversed in [false, true] {
+        let input = if reversed {
+            plane().reversed()
+        } else {
+            plane()
+        };
+        let shape = Shape::from_brep(&input, Tolerance::DEFAULT).unwrap();
+        let before = shape.to_brep(Tolerance::DEFAULT).unwrap();
+        for distance in [-0.5, 0.5] {
+            let offset = shape.offset(distance, false).unwrap();
+            let surface = offset.to_single_surface_approximated(1e-5).unwrap();
+            for u in [0., 0.3, 1.] {
+                for v in [0., 0.7, 1.] {
+                    let p = surface
+                        .evaluate(
+                            surface.parameter_at_u(u).unwrap(),
+                            surface.parameter_at_v(v).unwrap(),
+                        )
+                        .unwrap();
+                    assert!((p.z() - distance * if reversed { -1. } else { 1. }).abs() < 1e-10);
+                }
+            }
+        }
+        for budget in [0., -1., f64::NAN, f64::INFINITY] {
+            assert!(shape.to_single_surface_approximated(budget).is_err());
+        }
+        assert!(
+            shape
+                .offset(0.5, true)
+                .unwrap()
+                .to_single_surface_approximated(1e-5)
+                .is_err()
+        );
+        assert_eq!(shape.to_brep(Tolerance::DEFAULT).unwrap(), before);
+        assert_eq!(
+            input,
+            if reversed {
+                plane().reversed()
+            } else {
+                plane()
+            }
+        );
+    }
+}
+
+#[test]
+fn curved_support_export_respects_authored_normal_offset_stations() {
+    let heights = [
+        [0., 0.2, -0.1, 0.3],
+        [0.1, 0.8, 0.7, -0.2],
+        [0., 0.6, 1.1, 0.1],
+        [0.2, 0.1, 0., -0.2],
+    ];
+    let controls = heights
+        .into_iter()
+        .enumerate()
+        .flat_map(|(j, row)| {
+            row.into_iter()
+                .enumerate()
+                .map(move |(i, z)| point(i as f64 * 1.7, j as f64 * 1.2, z))
+        })
+        .collect();
+    let knots = vec![0., 0., 0., 0., 1., 1., 1., 1.];
+    let source = NurbsSurface::try_new(3, 3, 4, 4, controls, knots.clone(), knots).unwrap();
+    let brep = Brep::try_surface_face(source.clone(), Tolerance::DEFAULT).unwrap();
+    let shape = Shape::from_brep(&brep, Tolerance::DEFAULT).unwrap();
+    let before = shape.to_brep(Tolerance::DEFAULT).unwrap();
+    for distance in [-0.3, 0.5] {
+        let started = std::time::Instant::now();
+        let fitted = shape
+            .offset_with_accuracy(distance, false, 2.5e-5)
+            .unwrap()
+            .to_single_surface_approximated(2.5e-5)
+            .unwrap();
+        for u in [0., 0.25, 0.5, 0.75, 1.] {
+            for v in [0., 0.25, 0.5, 0.75, 1.] {
+                let p = source
+                    .evaluate(u, v)
+                    .unwrap()
+                    .translated(
+                        source
+                            .normal_at(u, v)
+                            .unwrap()
+                            .as_vector()
+                            .scaled(distance)
+                            .unwrap(),
+                    )
+                    .unwrap();
+                assert!(p.distance_to(fitted.evaluate(u, v).unwrap()).unwrap() <= 1e-4);
+            }
+        }
+        println!(
+            "OFFSET_SUPPORT {distance} {}x{} {:?}",
+            fitted.control_point_count_u(),
+            fitted.control_point_count_v(),
+            started.elapsed()
+        );
+    }
+    assert_eq!(shape.to_brep(Tolerance::DEFAULT).unwrap(), before);
+}

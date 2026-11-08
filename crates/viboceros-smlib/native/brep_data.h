@@ -56,6 +56,7 @@ class SmSurface;
 #include <vector>
 VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0);
 VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface);
+VbSurfaceData *vb_export_single_surface(const SmBrep &shape, double approximation);
 VbSurfaceData *vb_export_curve(const SmBSplineCurve &curve);
 VbSurfaceData *vb_copy_nurbs_payload(const VbNurbsData &data);
 // Clamped query geometry, owned by the caller; use under the shared kernel lock.

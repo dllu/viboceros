@@ -9,6 +9,7 @@
 #include <SmFace.h>
 #include <SmFaceuse.h>
 #include <SmLoopuse.h>
+#include <SmOffsetSurface.h>
 #include <SmRegion.h>
 #include <SmVertex.h>
 #include <SmVertexuse.h>
@@ -185,6 +186,39 @@ SmBrep *vb_copy_brep(const SmBrep &source) {
     check(status, "copy boundary representation");
     require(copy != nullptr, "Missing copied boundary representation");
     return copy.release();
+}
+
+VbSurfaceData *vb_export_single_surface(const SmBrep &source, double approximation) {
+    require(std::isfinite(approximation) && approximation > 0,
+            "Invalid support surface approximation tolerance");
+    std::unique_ptr<SmBrep> copy(vb_copy_brep(source));
+    SmTArray<SmFace *> faces;
+    copy->GetFaces(faces);
+    require(faces.GetSize() == 1, "Support surface export requires one face");
+    const auto *surface = faces[0]->GetSurface();
+    if (surface->IsKindOf(SmOffsetSurface_TYPE)) {
+        const auto *offset = static_cast<const SmOffsetSurface *>(surface);
+        auto *base = offset->GetBaseSurface();
+        if (base->IsKindOf(SmBSplineSurface_TYPE)) {
+            SmBSplineSurface *raw = nullptr;
+            // Native spline conversion populates caches on our private copy.
+            auto *spline = static_cast<SmBSplineSurface *>(base);
+            const auto status = spline->ApproximateOffsetSurface(
+                *faces[0]->GetContext(), offset->GetOffsetDistance(), approximation, raw);
+            std::unique_ptr<SmBSplineSurface> fitted(raw);
+            check(status, "approximate offset support surface");
+            require(fitted != nullptr, "Missing fitted offset support surface");
+            return vb_export_surface(*fitted);
+        }
+    }
+    double achieved = 0;
+    check(faces[0]->ApproximateWithBSpline(approximation, achieved),
+          "approximate support surface");
+    require(std::isfinite(achieved) && achieved <= approximation,
+            "Support surface approximation exceeded requested tolerance");
+    surface = faces[0]->GetSurface();
+    require(surface->IsKindOf(SmBSplineSurface_TYPE), "Missing NURBS support surface");
+    return vb_export_surface(*static_cast<const SmBSplineSurface *>(surface));
 }
 
 VbBrep *vb_export_brep(const SmBrep &source, double approximation) {

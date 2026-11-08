@@ -2,6 +2,13 @@ use super::*;
 use viboceros_geometry::Brep;
 
 unsafe extern "C" {
+    fn vb_shape_surface(
+        shape: *const NativeSolid,
+        approximation: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_bounds(
         shape: *const NativeSolid,
         bounds: *mut f64,
@@ -269,5 +276,25 @@ impl Shape {
     ) -> Result<Brep, Error> {
         self.model
             .to_brep_with_closed_uv_joints(tolerance, Some(approximation))
+    }
+
+    /// Fit and export one face's underlying surface without its edges or trims.
+    /// Works on a private copy with an explicit kernel fitting tolerance.
+    /// Does not certify a continuous ideal-offset error or transfer face sense.
+    pub fn to_single_surface_approximated(
+        &self,
+        approximation: f64,
+    ) -> Result<NurbsSurface, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_surface(
+                self.model.handle.as_ptr(),
+                approximation,
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        brep::surface_from_native(pointer)
     }
 }
