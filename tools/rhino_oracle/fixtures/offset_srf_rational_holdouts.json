@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rh_reversed_chart",
+      "case": "offset_rh_reversed_chart"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rh_v_break",
+      "case": "offset_rh_v_break"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rh_two_axes",
+      "case": "offset_rh_two_axes"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rh_cancel",
+      "case": "offset_rh_cancel"
+    }
+  ]
+}

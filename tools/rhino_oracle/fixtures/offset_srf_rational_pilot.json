@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rp_negative",
+      "case": "offset_rp_negative"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rp_both",
+      "case": "offset_rp_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rp_fine",
+      "case": "offset_rp_fine"
+    }
+  ]
+}

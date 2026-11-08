@@ -5367,6 +5367,20 @@ def _object_source(definition, tolerance):
             mesh.Dispose()
     if kind == "surface":
         return _nurbs_surface_from_definition(definition)
+    if kind == "untrimmed_brep":
+        surface = _nurbs_surface_from_definition(definition["surface"])
+        try:
+            brep = surface.ToBrep()
+        finally:
+            surface.Dispose()
+        if brep is None:
+            raise ValueError("could not construct untrimmed surface B-rep")
+        if definition.get("reversed", False):
+            brep.Flip()
+        if not brep.IsValid:
+            brep.Dispose()
+            raise ValueError("invalid untrimmed surface B-rep")
+        return brep
     if kind == "brep":
         return _trimmed_brep_from_definition(definition, tolerance)
     if kind == "cylinder_brep":
