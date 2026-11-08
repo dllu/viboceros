@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "continuation_opposed_0_6_parts",
+      "case": "continuation_opposed_0_6_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_opposed_0_6_arc_only",
+      "case": "continuation_opposed_0_6_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_opposed_0_7_parts",
+      "case": "continuation_opposed_0_7_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_opposed_0_7_arc_only",
+      "case": "continuation_opposed_0_7_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_right_pick",
+      "case": "continuation_smooth_right_pick"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_opposed_backward",
+      "case": "continuation_opposed_backward"
+    }
+  ]
+}

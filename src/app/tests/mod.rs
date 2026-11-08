@@ -589,4 +589,5 @@ mod chamfer_self;
 mod curve_chamfer;
 mod curve_fillet;
 mod fillet_closed;
+mod fillet_continuation;
 mod fillet_self;

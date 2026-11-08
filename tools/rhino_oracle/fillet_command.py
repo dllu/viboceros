@@ -106,6 +106,19 @@ CASES.update(SELF_BRANCHES)
 SELF_LIMITS = self_limits(case, explicit, pick)
 CASES.update(SELF_LIMITS)
 
+if __package__:
+    from . import fillet_continuation_cases as _continuation
+else:
+    import fillet_continuation_cases as _continuation
+CONTINUATION_PILOT=_continuation.pilot(case,explicit,pick)
+CASES.update(CONTINUATION_PILOT)
+CONTINUATION_HOLDOUTS=_continuation.holdouts(case,explicit,pick)
+CASES.update(CONTINUATION_HOLDOUTS)
+CONTINUATION_VERIFICATION=_continuation.verification(case,explicit,pick)
+CASES.update(CONTINUATION_VERIFICATION)
+CONTINUATION_BRANCHES=_continuation.branches(case,explicit,pick)
+CASES.update(CONTINUATION_BRANCHES)
+
 
 def validate(op):
     if not isinstance(op, dict) or set(op) != {'op', 'id', 'case'} or op.get('op') != 'fillet_command' or not isinstance(op.get('case'), str) or op.get('case') not in CASES or op.get('id') != op['case']:

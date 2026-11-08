@@ -1,0 +1,26 @@
+{
+  "family": "fillet_continuation_sdk",
+  "exit_status": 1,
+  "native_observations": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_continuation_sdk"
+  ],
+  "log": "failed-sdk.log.gz",
+  "request_sha256": "86266f7d42276a024491fcf2dd298ec35b4d9e316f00128fb28e98b0af19afa8",
+  "sources": {
+    "generate_fillet_continuation_sdk.py": "4c2523b0773ccad4daca5fb93e8f4f0e3e669940be9141fa4d1ac1c194f7d702",
+    "fillet_continuation_sdk.py": "e771061ba7dcc68a76a40493c0365e07961f1f215f56e44e9ed2220c22430877",
+    "structural_sdk.py": "2c97805454ae7a5ef64fc5a89407194bd67394242dd1adeb22272eb2cf21caae",
+    "rhino_worker.py": "85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5",
+    "client.py": "d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd",
+    "observations/fillet_continuation_pilot.json.gz": "50b0ab42535edd1b980234b5f5816239228e8e12515de41c69e0b1d024ff85b2",
+    "observations/fillet_continuation_holdouts.json.gz": "6e4eefccdc0a445a04e0db598e402cd5b7dbd946d9b78ef9aaae80ace84326ac",
+    "observations/fillet_continuation_verification.json.gz": "32fa71baf736f9da1386c63042bfaac484e8c11cef7b676b5aaf15acea51ceae"
+  },
+  "error": "AttributeError: Arc has no AngleRadians property; the public property is Angle"
+}

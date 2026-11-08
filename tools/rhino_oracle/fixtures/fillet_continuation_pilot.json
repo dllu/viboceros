@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_parts",
+      "case": "continuation_arc_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_joined",
+      "case": "continuation_arc_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_arc_only",
+      "case": "continuation_arc_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_tangent_arc_parts",
+      "case": "continuation_tangent_arc_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_tangent_arc_joined",
+      "case": "continuation_tangent_arc_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_tangent_arc_arc_only",
+      "case": "continuation_tangent_arc_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_line_parts",
+      "case": "continuation_nurbs_line_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_line_joined",
+      "case": "continuation_nurbs_line_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_line_arc_only",
+      "case": "continuation_nurbs_line_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_smooth_parts",
+      "case": "continuation_nurbs_smooth_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_smooth_joined",
+      "case": "continuation_nurbs_smooth_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_smooth_arc_only",
+      "case": "continuation_nurbs_smooth_arc_only"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_dynamic_accept",
+      "case": "continuation_dynamic_accept"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_dynamic_cancel",
+      "case": "continuation_dynamic_cancel"
+    }
+  ]
+}

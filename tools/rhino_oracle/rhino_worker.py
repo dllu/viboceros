@@ -6355,6 +6355,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') == 'fillet_continuation_sdk':
+        from fillet_continuation_sdk import run
+        return run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'chamfer_extension_sdk':
         from chamfer_extension_sdk import run
         return run(operation, globals(), iterations, tolerance)

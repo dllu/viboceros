@@ -1,0 +1,61 @@
+[
+  {
+    "family": "fillet_continuation_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_continuation_pilot"
+    ],
+    "request_sha256": "ee9ceff56fb0ac1443574fab35f64b4f45acfb3878b4ed88ebf4b35876583d4c",
+    "observation_sha256": "e59e848b116d8e31af3cd1e8d06a97a41faa0a5b13cd3cec39aff6c955cc65f5",
+    "log": "pilot-capture.log.gz"
+  },
+  {
+    "family": "fillet_continuation_holdouts",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_continuation_holdouts"
+    ],
+    "request_sha256": "be6239b46d4419481d14cb2a8f9448ee4dd09153dbbf1aea658e370eb41ac0d9",
+    "observation_sha256": "466b7110dbba498b6becbdc2187b4812f2f4f193a0d23dd40f6f09c6ebf4568d",
+    "log": "holdouts-capture.log.gz"
+  },
+  {
+    "family": "fillet_continuation_verification",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_continuation_verification"
+    ],
+    "request_sha256": "b2c92130d151156fa3eadf88776560e917f567c724860a04b047458ebfab08f8",
+    "observation_sha256": "5f21a3bf558d8c3df28af23e71f67731d2600036ee5fcf243352f8c63e2319df",
+    "log": "verification-capture.log.gz",
+    "warnings": [
+      "SyntaxWarning: invalid decimal literal (scale<1.else); producer spacing corrected after capture"
+    ]
+  },
+  {
+    "family": "fillet_continuation_branches",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_continuation_branches"
+    ],
+    "request_sha256": "34519afbe4ce24151976a309569da6695e48bef501687c93b6b752c3b43a5d3c",
+    "observation_sha256": "d54c11f8434f0d52202e57d0581173eae4ad9be6db52990490d3be0201be0301",
+    "log": "branches-capture.log.gz"
+  }
+]

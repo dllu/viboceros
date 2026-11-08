@@ -31,7 +31,10 @@ Picks choose their local tangent contacts. Trim changes only the open partner,
 retaining the side picked. Join includes the arc and any retained open piece,
 leaving closed parents intact. An open first source keeps its identity and groups;
 a closed first source supplies attributes to a new, ungrouped polycurve. With
-Join=No, the new arc uses the current layer. See [closed-source evidence](../fillet-closed.md).
+Join=No, the new arc uses the current layer. A nonmeeting open partner can continue
+on its supporting circle, endpoint tangent or smooth NURBS chart, using the same
+extension options. See [closed-source evidence](../fillet-closed.md) and
+[continuation behavior and limits](../fillet-continuation.md).
 
 On one parent, Trim retains the two open ends or one cyclic closed remainder.
 Join replaces that parent in place; without Join, a second open remainder is new,
@@ -65,8 +68,8 @@ in a normalized geometry frame, with independent radius and tangency checks.
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
 fillets that consume an entire added segment can still be rejected. The distinct closed-source solver currently requires a radius
-above the document's absolute tolerance; zero radius, corner contacts and extension
-of open curved partners remain unqualified. Smooth rational NURBS extension can differ
+above the document's absolute tolerance; zero radius and corner contacts remain
+unqualified. Smooth rational NURBS extension can differ
 from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.

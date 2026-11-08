@@ -52,6 +52,7 @@
 
 ## Curves and surfaces
 
+- [Fillet getters](../fillet-getter.md), [closed sources](../fillet-closed.md), [single-parent junctions](../fillet-self.md) and [nonmeeting curved partners](../fillet-continuation.md)
 - [Chamfer getters and native document comparisons](../chamfer-getter.md), including [single-parent junctions](../chamfer-self.md) and [distinct closed sources](../chamfer-closed.md)
 
 - [Continuous surface/UV correspondence certificates](../surface-curve-certificates.md)

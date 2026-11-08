@@ -94,7 +94,7 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 "{id}: {:?}",
                 app.command_log
             );
-            if family.starts_with("fillet_self_") {
+            if family.starts_with("fillet_self_") || family.starts_with("fillet_continuation_") {
                 let outcome = value["events"]
                     .as_array()
                     .unwrap()

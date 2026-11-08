@@ -1,0 +1,14 @@
+{
+  "family": "fillet_continuation_sdk",
+  "exit_status": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_continuation_sdk"
+  ],
+  "request_sha256": "86266f7d42276a024491fcf2dd298ec35b4d9e316f00128fb28e98b0af19afa8",
+  "observation_sha256": "2cff0ef05e07232cc3fc9d401350ee1705cc509eebe4d0367f6b74a6953f830c",
+  "log": "sdk-capture.log.gz"
+}

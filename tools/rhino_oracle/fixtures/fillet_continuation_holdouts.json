@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_reverse_picks",
+      "case": "continuation_arc_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_tangent_arc_reverse_picks",
+      "case": "continuation_tangent_arc_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_line_reverse_picks",
+      "case": "continuation_nurbs_line_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_smooth_reverse_picks",
+      "case": "continuation_nurbs_smooth_reverse_picks"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_backward",
+      "case": "continuation_arc_backward"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_nurbs_smooth_backward",
+      "case": "continuation_nurbs_smooth_backward"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_arc_larger_radius",
+      "case": "continuation_arc_larger_radius"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_tangent_arc_larger_radius",
+      "case": "continuation_tangent_arc_larger_radius"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_disjoint_arc_parts",
+      "case": "continuation_disjoint_arc_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_disjoint_arc_joined",
+      "case": "continuation_disjoint_arc_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_disjoint_tangent_arc",
+      "case": "continuation_disjoint_tangent_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_disjoint_smooth",
+      "case": "continuation_disjoint_smooth"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_spatial",
+      "case": "continuation_spatial"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_disjoint_too_small",
+      "case": "continuation_disjoint_too_small"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_miss",
+      "case": "continuation_smooth_miss"
+    }
+  ]
+}

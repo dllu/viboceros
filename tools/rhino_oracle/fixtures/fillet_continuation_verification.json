@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_bridge_0_5",
+      "case": "continuation_smooth_bridge_0_5"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_bridge_0_6",
+      "case": "continuation_smooth_bridge_0_6"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_bridge_0_7",
+      "case": "continuation_smooth_bridge_0_7"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_bridge_0_8",
+      "case": "continuation_smooth_bridge_0_8"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_bridge_1_0",
+      "case": "continuation_smooth_bridge_1_0"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_span_0_25",
+      "case": "continuation_smooth_span_0_25"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_span_0_5",
+      "case": "continuation_smooth_span_0_5"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_span_2_0",
+      "case": "continuation_smooth_span_2_0"
+    },
+    {
+      "op": "fillet_command",
+      "id": "continuation_smooth_long_miss",
+      "case": "continuation_smooth_long_miss"
+    }
+  ]
+}

@@ -1,0 +1,619 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_nurbs_smooth_joined",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "radius": 5.0,
+          "type": "circle"
+        },
+        {
+          "degree": 2,
+          "type": "nurbs",
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ]
+            }
+          ]
+        }
+      ],
+      "radius": 0.1,
+      "picks": [
+        [
+          -2.503810422539961,
+          4.327924833910617,
+          0.0
+        ],
+        [
+          0.1632863535432513,
+          6.5165214938832055,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_disjoint_smooth",
+      "curves": [
+        {
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "radius": 3.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2
+        }
+      ],
+      "radius": 0.6,
+      "picks": [
+        [
+          -1.519190265235621,
+          2.586901802932095,
+          0.0
+        ],
+        [
+          0.15404531716004896,
+          6.485865911219086,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_bridge_0_6",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 0.6,
+      "picks": [
+        [
+          -1.5191902652356204,
+          2.586901802932095,
+          0.0
+        ],
+        [
+          0.15404531716004896,
+          6.485865911219086,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_bridge_0_7",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 0.7,
+      "picks": [
+        [
+          -1.5191902652356204,
+          2.586901802932095,
+          0.0
+        ],
+        [
+          0.15404531716004896,
+          6.485865911219086,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_bridge_0_8",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 0.8,
+      "picks": [
+        [
+          -1.5191902652356204,
+          2.586901802932095,
+          0.0
+        ],
+        [
+          0.15404531716004896,
+          6.485865911219086,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_bridge_1_0",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                7.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 1.0,
+      "picks": [
+        [
+          -1.5191902652356204,
+          2.586901802932095,
+          0.0
+        ],
+        [
+          0.15404531716004896,
+          6.485865911219086,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_span_0_25",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                6.375,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                6.8125,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 0.1,
+      "picks": [
+        [
+          -2.4913220051343057,
+          4.335125680615683,
+          0.0
+        ],
+        [
+          0.037548032475140665,
+          6.114053952168177,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "fillet_continuation_sdk",
+      "id": "continuation_smooth_span_2_0",
+      "curves": [
+        {
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                9.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                16.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "type": "nurbs"
+        }
+      ],
+      "radius": 0.6,
+      "picks": [
+        [
+          -1.51137275393186,
+          2.591476875967144,
+          0.0
+        ],
+        [
+          0.21401629752247295,
+          6.687851868172647,
+          0.0
+        ]
+      ]
+    }
+  ]
+}
