@@ -8,17 +8,32 @@ mod tolerance;
 
 #[test]
 fn tolerance_getters_previews_and_cancellation_match_native() {
+    replay(tolerance::rows(), "TOLERANCE_OFFSET");
+}
+
+#[test]
+fn trimmed_getters_previews_and_cancellation_match_native() {
+    replay(tolerance::trimmed_rows(), "TRIM_OFFSET");
+}
+
+fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
     let mut count = 0;
     let mut declined = 0;
-    for (id, v) in tolerance::rows() {
-        println!("TOLERANCE_OFFSET_UI_CASE {id}");
+    for (id, v) in rows {
+        println!("{prefix}_UI_CASE {id}");
         let mut app = test_app();
         app.document = tolerance::setup(&v);
         app.commands
             .remember_offset_surface_options(inputs::initial(&v))
             .unwrap();
         let state = inputs::State::capture(&app.document);
-        tolerance::check(&app.document, &v["before"], false, 1e-6);
+        tolerance::check(
+            &app.document,
+            &v["before"],
+            false,
+            1e-6,
+            app.document.tolerance().absolute(),
+        );
         let original = app.document.objects().cloned().collect::<Vec<_>>();
         enter(&mut app, "OffsetSrf");
         for (index, action) in v["prescribed_case"]["actions"]
@@ -85,7 +100,7 @@ fn tolerance_getters_previews_and_cancellation_match_native() {
                     app.command_log
                 );
             }
-            println!("TOLERANCE_OFFSET_UI_DECLINED {id}");
+            println!("{prefix}_UI_DECLINED {id}");
             app.cancel_current_prompt_or_selection();
             declined += 1;
             continue;
@@ -101,15 +116,22 @@ fn tolerance_getters_previews_and_cancellation_match_native() {
             (0., 0.)
         };
         let mut record = state.verify_with(&mut app.document, &v, |d, r, a| {
-            tolerance::check(d, r, a, tolerance::epsilon(&v))
+            tolerance::check(
+                d,
+                r,
+                a,
+                tolerance::epsilon(&v),
+                tolerance::reference_tolerance(&v),
+            )
         });
         record["id"] = id.into();
         record["maximum_field_error"] = field.0.into();
         record["native_maximum_field_error"] = field.1.into();
-        println!("TOLERANCE_OFFSET_UI {record}");
+        record["native_reference_tolerance"] = tolerance::reference_tolerance(&v).into();
+        println!("{prefix}_UI {record}");
         count += 1;
     }
-    println!("TOLERANCE_OFFSET_UI_COUNT {count} DECLINED {declined}");
+    println!("{prefix}_UI_COUNT {count} DECLINED {declined}");
 }
 
 #[test]

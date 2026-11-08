@@ -19,8 +19,10 @@ remain, including two input-driver diagnostics. The 28 qualified cases cover
 default/custom memory, unit conversion, inline getters, negatives, Enter, Escape,
 postselection, free-form and rational surfaces, curved trims, walls and two-sided
 skins. Portable builds atomically decline seven general non-Loose cases. Native
-builds also decline the nonuniform rational and curved-trim captures because the
-kernel exports parameters outside their NURBS domains; their geometry parity remains pending.
+builds in this historical qualification also declined the nonuniform rational
+and curved-trim captures because the kernel exported parameters outside their
+NURBS domains. A [subsequent repair](offset-srf-trims.md) supports the open
+curved-trim case; the nonuniform rational case remains unresolved.
 Command and UI replays compare geometry, metadata, selection, identity, previews,
 actual Undo/Redo and 94 3DM round trips across both build configurations.
 

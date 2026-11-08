@@ -25,6 +25,20 @@ pub fn rows() -> Vec<(String, Value)> {
 pub fn curved(v: &Value) -> bool {
     v["prescribed_case"]["curves"][0]["type"] != "normal_surface"
 }
+pub fn trimmed_rows() -> Vec<(String, Value)> {
+    ["offset_srf_trims", "offset_srf_trims_final"]
+        .into_iter()
+        .flat_map(|family| {
+            native::read(family)["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|r| r["id"] != "offset_te_delete_postselect")
+                .map(|r| (r["id"].as_str().unwrap().to_owned(), r["value"].clone()))
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
 pub fn setup(v: &Value) -> Document {
     if curved(v) {
         loose::setup(v)
@@ -33,8 +47,11 @@ pub fn setup(v: &Value) -> Document {
     }
 }
 pub fn supported(id: &str, v: &Value) -> bool {
+    if !inputs::success(v) {
+        return true;
+    }
     if cfg!(feature = "native-smlib") {
-        !matches!(id, "offset_th_rational" | "offset_th_trimmed")
+        id != "offset_th_rational"
     } else {
         !curved(v)
     }
@@ -57,14 +74,25 @@ pub fn epsilon(v: &Value) -> f64 {
     // 1e-5 model-unit comparison floor; test our requested fit separately below.
     (2. * options(v).effective_tolerance(setup(v).tolerance())).max(1e-5)
 }
-pub fn check(d: &Document, rows: &Value, archive: bool, epsilon: f64) -> f64 {
+pub fn reference_tolerance(v: &Value) -> f64 {
+    let t = setup(v).tolerance();
+    t.absolute().max(options(v).effective_tolerance(t))
+}
+pub fn reference(r: &Value, t: Tolerance, requested: f64) -> Brep {
+    // Rhino's fitted edge/UV pairs can meet the command tolerance while
+    // exceeding document tolerance. Only reference admission uses this budget.
+    let native =
+        Tolerance::try_new(t.absolute().max(requested), t.relative(), t.angular()).unwrap();
+    brep_comparison::captured::expected(r, native)
+}
+pub fn check(d: &Document, rows: &Value, archive: bool, epsilon: f64, reference_fit: f64) -> f64 {
     loose::check_with(d, rows, archive, epsilon, |b, r, t| {
         if r["guide"] == true {
             let error = brep_comparison::geometry::error(b, r, t);
             assert!(error <= 1e-6, "source error {error:e}");
             return error;
         }
-        let expected = brep_comparison::captured::expected(r, t);
+        let expected = reference(r, t, reference_fit);
         assert_eq!(b.is_solid(), expected.is_solid());
         assert_eq!(
             b.solid_orientation().unwrap(),
@@ -113,11 +141,33 @@ fn distance(p: Point3, b: &Brep, _t: Tolerance, gate: f64) -> f64 {
     }
     best
 }
-fn chart_candidate(p: Point3, b: &Brep, fu: f64, fv: f64, t: Tolerance, gate: f64) -> f64 {
+fn chart_candidate(
+    p: Point3,
+    b: &Brep,
+    fu: f64,
+    fv: f64,
+    original_uv: (f64, f64),
+    t: Tolerance,
+    gate: f64,
+) -> f64 {
     let mut best = f64::INFINITY;
     // Chart swaps/reversals are only proposals. Any accepted point must lie
     // inside the actual face trims and supplies a valid distance upper bound.
     for f in b.faces() {
+        // Trimmed supports can retain their original parameter clock while
+        // changing the active domain. Try that clock before closest-point work.
+        let s = f.surface();
+        for (u, v) in [original_uv, (original_uv.1, original_uv.0)] {
+            if s.domain_u().contains(&u)
+                && s.domain_v().contains(&v)
+                && f.contains_parameters(u, v, t).unwrap()
+            {
+                best = best.min(p.distance_to(s.evaluate(u, v).unwrap()).unwrap());
+                if best <= gate {
+                    return best;
+                }
+            }
+        }
         for (u, v) in [
             (fu, fv),
             (fv, fu),
@@ -151,7 +201,7 @@ fn directed(a: &Brep, b: &Brep, t: Tolerance, gate: f64) -> f64 {
             // trim-aware closest point when charts differ or it exceeds gate.
             let fu = (u - *s.domain_u().start()) / (*s.domain_u().end() - *s.domain_u().start());
             let fv = (v - *s.domain_v().start()) / (*s.domain_v().end() - *s.domain_v().start());
-            let candidate = chart_candidate(p, b, fu, fv, t, gate);
+            let candidate = chart_candidate(p, b, fu, fv, (u, v), t, gate);
             let cost = if candidate <= gate {
                 candidate
             } else {
@@ -186,7 +236,7 @@ pub fn field_error(d: &Document, v: &Value) -> (f64, f64) {
         .unwrap()
         .iter()
         .filter(|r| r["guide"] != true && r["source"] != true)
-        .map(|r| brep_comparison::captured::expected(r, t))
+        .map(|r| reference(r, t, o.effective_tolerance(t)))
         .collect::<Vec<_>>();
     assert!(!expected.is_empty());
     let mut native_error = 0_f64;
@@ -219,7 +269,8 @@ pub fn field_error(d: &Document, v: &Value) -> (f64, f64) {
                         )
                         .unwrap();
                     let distance = |b: &Brep| {
-                        let candidate = chart_candidate(q, b, fu, fv, t, o.effective_tolerance(t));
+                        let candidate =
+                            chart_candidate(q, b, fu, fv, (u, v), t, o.effective_tolerance(t));
                         if candidate <= o.effective_tolerance(t) {
                             candidate
                         } else {

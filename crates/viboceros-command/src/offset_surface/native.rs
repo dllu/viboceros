@@ -3,12 +3,21 @@ use super::*;
 use viboceros_smlib::Shape;
 #[cfg(test)]
 mod tests;
+mod trimmed;
 
 pub(super) fn offset(
     geometry: &Geometry,
     options: Options,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
+    if !options.solid
+        && !options.both_sides
+        && let Geometry::Brep(b) = geometry
+        && b.faces().len() == 1
+        && !b.faces()[0].is_untrimmed(tolerance)?
+    {
+        return trimmed::offset(b, options, tolerance);
+    }
     let converted;
     let source = match geometry {
         Geometry::Brep(brep) => brep,
@@ -18,7 +27,6 @@ pub(super) fn offset(
         }
         _ => return Err(CommandError::OffsetSurfaceRequiresPlanarFaces),
     };
-    let shape = Shape::from_brep(source, tolerance)?;
     let requested = options.effective_tolerance(tolerance);
     let approximation = if options.tolerance == 0. {
         requested.min(1e-8)
@@ -29,6 +37,7 @@ pub(super) fn offset(
         (requested * 0.25).min(tolerance.absolute().min(1e-8))
     };
     let accuracy = 1e-9_f64.min(requested * 0.25);
+    let shape = Shape::from_brep(source, tolerance)?;
     let result = if options.both_sides && options.solid {
         shape
             .offset_with_accuracy(-options.distance, false, accuracy)?

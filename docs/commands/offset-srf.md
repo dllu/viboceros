@@ -49,6 +49,7 @@ The initial product preferences are distance 1, Sharp corners, and all booleans
 No; tolerance follows the document. Factory Rhino defaults have not been established.
 Round corners remain unsupported. Document changes invalidate a
 preview; all geometry is prepared before one atomic history edit.
+Returning to recent option combinations reuses validated preview geometry.
 
 Both builds support planar sheets and exact canonical spheres, cylinders, cones
 and ring tori, including supported single-face B-reps. Analytic offsets retain
@@ -67,3 +68,5 @@ Linux `--features native-smlib` adds [usd-brep offsets](../smlib-offset-surfaces
 for general trimmed sheets, free-form surfaces and polysurfaces. Its broad corner,
 collapse and self-intersection behavior remains separately qualified. The getter
 captures establish finite workflows, not complete curved-surface parity.
+Open single-face [trimmed offsets](../offset-srf-trims.md) preserve their UV loops
+and holes, with certified spatial trim images on the fitted support surface.
