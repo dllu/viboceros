@@ -36,6 +36,10 @@ on its supporting circle, endpoint tangent or smooth NURBS chart, using the same
 extension options. See [closed-source evidence](../fillet-closed.md) and
 [continuation behavior and limits](../fillet-continuation.md).
 
+With radius zero, intersecting or extended open partners trim to the picked
+intersection without an arc. `Trim=No` is a no-op. An already meeting open piece
+can still record a replacement and clear Redo. See [zero-radius behavior](../fillet-zero.md).
+
 On one parent, Trim retains the two open ends or one cyclic closed remainder.
 Join replaces that parent in place; without Join, a second open remainder is new,
 ungrouped geometry with the parent's attributes. Polylines, polycurves and kinked
@@ -68,8 +72,9 @@ in a normalized geometry frame, with independent radius and tangency checks.
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
 fillets that consume an entire added segment can still be rejected. The distinct closed-source solver currently requires a radius
-above the document's absolute tolerance; zero radius and corner contacts remain
-unqualified. Smooth rational NURBS extension can differ
+above the document's absolute tolerance for positive radii; zero uses a separate
+intersection path. Corner contacts and tiny positive radii remain unqualified.
+Smooth rational NURBS extension can differ
 from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.

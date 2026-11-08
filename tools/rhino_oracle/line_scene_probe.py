@@ -1,6 +1,6 @@
 """Owned line-construction scene and document/history observations."""
 
-def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None,completion_observer=None,source_setup=None):
+def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve_observer=None,completion_observer=None,source_setup=None,capture_undo=False):
     from join_probe import observe_command
     from conic_getter_input import drive
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
@@ -79,8 +79,35 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
             R.RhinoApp.RunScript('_SelLast',False);last_selection=snapshot()
             doc.Objects.UnselectAll()
             for id in selected:doc.Objects.Select(id)
-        history_changed=[dict(o,selected=0)for o in before]!=[dict(o,selected=0)for o in after]
-        if history_changed:
+        geometry_changed=[dict(o,selected=0)for o in before]!=[dict(o,selected=0)for o in after]
+        history_changed=geometry_changed;undo_observation=None
+        if capture_undo:
+            def history_command(name):
+                mark='Owned history probe '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(mark)
+                signals=[];errors=[]
+                def changed(sender,event):
+                    try:signals.append(dict(serial=int(event.UndoSerialNumber),command_id=str(event.CommandId),begin_undo=bool(event.IsBeginUndo),end_undo=bool(event.IsEndUndo),begin_redo=bool(event.IsBeginRedo),end_redo=bool(event.IsEndRedo)))
+                    except Exception as error:errors.append(str(error))
+                R.Commands.Command.UndoRedo += changed
+                try:ok,objects,events=observe_command(R.Commands.Command,name,lambda:R.RhinoApp.RunScript('_'+name,True),snapshot,lambda:[],True)
+                finally:R.Commands.Command.UndoRedo -= changed
+                if errors:raise ValueError('UndoRedo event observer failed: '+str(errors))
+                log=R.RhinoApp.CommandHistoryWindowText.split(mark,1)[1].strip()
+                return ok,objects,events,log,signals
+            def completed(signals,kind):
+                begins=[s['serial']for s in signals if s['begin_'+kind]];ends=[s['serial']for s in signals if s['end_'+kind]]
+                if begins!=ends or len(begins)>1:raise ValueError('incomplete UndoRedo event pair')
+                return bool(begins)
+            undo_ok,undo,undo_events,undo_log,undo_signals=history_command('Undo')
+            undid=completed(undo_signals,'undo');redid=redo_ok=None;redo=after;redo_events=[];redo_log=None;redo_signals=[]
+            if undid or capture_undo=='diagnostic':
+                redo_ok,redo,redo_events,redo_log,redo_signals=history_command('Redo');redid=completed(redo_signals,'redo')
+            if capture_undo!='diagnostic':
+                history_changed=undid
+                if undid and not redid:raise ValueError('observed Undo without matching Redo')
+                if geometry_changed and not undid:raise ValueError('native edit has no Undo record')
+            undo_observation=dict(undo_succeeded=undid,redo_succeeded=redid,geometry_changed=geometry_changed,undo_command_succeeded=undo_ok,redo_command_succeeded=redo_ok,undo_events=undo_events,redo_events=redo_events,undo_history=undo_log,redo_history=redo_log,undo_signals=undo_signals,redo_signals=redo_signals)
+        elif history_changed:
             R.RhinoApp.RunScript('_Undo',False);undo=snapshot();R.RhinoApp.RunScript('_Redo',False);redo=snapshot()
         else:undo,redo=after,after
         pending_redo=None
@@ -89,6 +116,7 @@ def run_case(op,host,iterations,tolerance,case,command,capture_recall=True,curve
         value=dict(success=success,before=before,created=created,after=after,undo=undo,redo=redo,history=history,events=events,
             input_trace=traces,history_changed=history_changed,construction_plane=frame,returned_idle=True,model_tolerance=tolerance,last_selection=last_selection,pending_redo=pending_redo)
         if completion is not None:value['completion_observation']=completion
+        if undo_observation is not None:value['undo_observation']=undo_observation
         return value,0
     finally:
         R.RhinoApp.RunScript('!',False)

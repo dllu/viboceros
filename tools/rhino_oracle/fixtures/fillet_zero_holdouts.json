@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_joined_reverse",
+      "case": "zero_circle_line_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_lower",
+      "case": "zero_circle_line_lower"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_inner",
+      "case": "zero_circle_line_inner"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_nurbs_circle_line",
+      "case": "zero_nurbs_circle_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_ellipse_line",
+      "case": "zero_ellipse_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_spatial_top",
+      "case": "zero_circle_line_spatial_top"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_opposed",
+      "case": "zero_opposed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_seam_opposed",
+      "case": "zero_seam_opposed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_tangent_line",
+      "case": "zero_tangent_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_meeting_parts",
+      "case": "zero_meeting_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_meeting_joined",
+      "case": "zero_meeting_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_disjoint_untrimmed",
+      "case": "zero_disjoint_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_two_circles_joined_reverse",
+      "case": "zero_two_circles_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_two_circles_disjoint",
+      "case": "zero_two_circles_disjoint"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_noncoplanar_intersection",
+      "case": "zero_noncoplanar_intersection"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_skew_line",
+      "case": "zero_skew_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_continuation_arc",
+      "case": "zero_continuation_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_continuation_tangent_arc",
+      "case": "zero_continuation_tangent_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_continuation_nurbs_line",
+      "case": "zero_continuation_nurbs_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_continuation_nurbs_smooth",
+      "case": "zero_continuation_nurbs_smooth"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_rectangle_line",
+      "case": "zero_rectangle_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_nonlinear_nurbs",
+      "case": "zero_nonlinear_nurbs"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_positive_to_zero",
+      "case": "zero_positive_to_zero"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_zero_to_positive",
+      "case": "zero_zero_to_positive"
+    }
+  ]
+}

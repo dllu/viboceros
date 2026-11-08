@@ -119,6 +119,26 @@ CASES.update(CONTINUATION_VERIFICATION)
 CONTINUATION_BRANCHES=_continuation.branches(case,explicit,pick)
 CASES.update(CONTINUATION_BRANCHES)
 
+if __package__:
+    from . import fillet_zero_cases as _zero
+else:
+    import fillet_zero_cases as _zero
+ZERO_PILOT=_zero.pilot(case,explicit,pick,CLOSED_PILOT)
+CASES.update(ZERO_PILOT)
+ZERO_HOLDOUTS=_zero.holdouts(case,explicit,pick,CLOSED_PILOT,CLOSED_FINAL,CONTINUATION_PILOT)
+CASES.update(ZERO_HOLDOUTS)
+ZERO_VERIFICATION=_zero.verification(case,explicit,pick,CLOSED_PILOT,CLOSED_FINAL,CONTINUATION_PILOT)
+CASES.update(ZERO_VERIFICATION)
+ZERO_FINAL={'verified_'+name:dict(deepcopy(recipe),capture_undo=True)
+            for group in [ZERO_PILOT,ZERO_HOLDOUTS,ZERO_VERIFICATION]
+            for name,recipe in group.items()}
+CASES.update(ZERO_FINAL)
+ZERO_HISTORY_CONTROL={'history_'+name:dict(deepcopy(recipe),capture_undo='diagnostic')
+                      for name,recipe in ZERO_PILOT.items()
+                      if name in ['zero_circle_line_arc','zero_circle_line_parts']}
+ZERO_HISTORY_CONTROL['history_zero_meeting_parts']=dict(deepcopy(ZERO_HOLDOUTS['zero_meeting_parts']),capture_undo='diagnostic')
+CASES.update(ZERO_HISTORY_CONTROL)
+
 
 def validate(op):
     if not isinstance(op, dict) or set(op) != {'op', 'id', 'case'} or op.get('op') != 'fillet_command' or not isinstance(op.get('case'), str) or op.get('case') not in CASES or op.get('id') != op['case']:

@@ -1,24 +1,7 @@
 //! Enumerate tangent branches and rank their combined native arc-length cost.
 use super::*;
 
-pub(super) fn distance(
-    curve: &Curve3,
-    a: Real,
-    b: Real,
-    tolerance: Tolerance,
-) -> Result<Real, CommandError> {
-    if a == b {
-        return Ok(0.);
-    }
-    if let Curve3::Line(line) = curve {
-        let d = line.domain();
-        return Ok((a - b).abs() / (*d.end() - *d.start()) * line.length()?);
-    }
-    let interval = a.min(b)..=a.max(b);
-    Ok(crate::curve_segments::trimmed(curve, interval)?
-        .as_ref()
-        .length(tolerance)?)
-}
+pub(super) use crate::curve_pair_edit::support::distance;
 
 pub(super) fn score(
     curves: [&Curve3; 2],

@@ -1,0 +1,44 @@
+[
+  {
+    "family": "fillet_zero_pilot",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_zero_pilot"
+    ],
+    "request_sha256": "cdc2a2cce2530eca41deda7d1bf98560b1aab0e654109db2156aa91dc16949eb",
+    "observation_sha256": "cf555b4c8fa58464dc00c25ec6ff4427451cc5af6dba81ff6fdb4d032780d93c",
+    "log": "pilot-capture.log.gz"
+  },
+  {
+    "family": "fillet_zero_holdouts",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_zero_holdouts"
+    ],
+    "request_sha256": "985964129d318b332431dd21bb7fbf651a575736ff3940958ed962ff556f0a96",
+    "observation_sha256": "93928a121a890a3b360ed087f0749185914175bcc2a05c980cf0ac51de614c64",
+    "log": "holdouts-capture.log.gz"
+  },
+  {
+    "family": "fillet_zero_verification",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_fillet_zero_verification"
+    ],
+    "request_sha256": "82246b2fd5462b2b5a12eb086ea05d787c2c96f8ddc4a01a90313d69391f8522",
+    "observation_sha256": "d79934dbd74eb4509bc0d6900378f8de6eda434bf5c5a8cd10f32cb0686e2317",
+    "log": "verification-capture.log.gz"
+  }
+]

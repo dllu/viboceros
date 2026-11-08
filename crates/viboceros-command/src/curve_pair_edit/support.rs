@@ -1,6 +1,24 @@
 //! Infinite line intersections retain the original native parameter chart.
-use super::*;
-pub(super) fn parameter(
+use crate::CommandError;
+use viboceros_geometry::{Curve3, LineSegment, Point3, Real, Tolerance};
+
+/// Intersect finite curves and line supports spanning each partner's bounds.
+pub(crate) fn intersections(
+    curves: [&Curve3; 2],
+    tolerance: Tolerance,
+) -> Result<Vec<viboceros_geometry::CurveCurveIntersectionEvent>, CommandError> {
+    let supports = [
+        curve(curves[0], curves[1], tolerance)?,
+        curve(curves[1], curves[0], tolerance)?,
+    ];
+    crate::curve_intersections::events(
+        &supports[0].as_ref().to_nurbs()?,
+        &supports[1].as_ref().to_nurbs()?,
+        tolerance,
+    )
+}
+
+pub(crate) fn parameter(
     curve: &Curve3,
     point: Point3,
     tolerance: Tolerance,
@@ -17,7 +35,7 @@ pub(super) fn parameter(
         Ok(curve.as_ref().closest_parameter(point, tolerance)?)
     }
 }
-pub(super) fn retained(
+pub(crate) fn retained(
     curve: &Curve3,
     corner: Real,
     point: Point3,
@@ -43,7 +61,7 @@ pub(super) fn retained(
         crate::curve_segments::trimmed(curve, interval)
     }
 }
-pub(super) fn curve(
+pub(crate) fn curve(
     source: &Curve3,
     other: &Curve3,
     tolerance: Tolerance,
@@ -80,4 +98,23 @@ pub(super) fn curve(
                 ..=t1.mul_add(*d.end() - *d.start(), *d.start()),
         )?,
     ))
+}
+
+pub(crate) fn distance(
+    curve: &Curve3,
+    a: Real,
+    b: Real,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    if a == b {
+        return Ok(0.);
+    }
+    if let Curve3::Line(line) = curve {
+        let d = line.domain();
+        return Ok((a - b).abs() / (*d.end() - *d.start()) * line.length()?);
+    }
+    let interval = a.min(b)..=a.max(b);
+    Ok(crate::curve_segments::trimmed(curve, interval)?
+        .as_ref()
+        .length(tolerance)?)
 }

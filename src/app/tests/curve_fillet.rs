@@ -16,6 +16,14 @@ fn ordered_picks_dynamic_numbers_distances_and_cancellation_match_native() {
 }
 
 pub(super) fn replay(families: &[&str], marker: &str) -> usize {
+    replay_filtered(families, marker, |_| true)
+}
+
+pub(super) fn replay_filtered(
+    families: &[&str],
+    marker: &str,
+    include: impl Fn(&serde_json::Value) -> bool,
+) -> usize {
     let mut count = 0;
     for family in families {
         let mut previous = viboceros_command::fillet::Preferences::default();
@@ -26,7 +34,7 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 dynamic: false,
                 ..inputs::final_options(value, previous)
             };
-            if inputs::diagnostic(value) {
+            if inputs::diagnostic(value) || !include(value) {
                 continue;
             }
             let id = format!("{family}/{}", row["id"].as_str().unwrap());
@@ -94,7 +102,10 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 "{id}: {:?}",
                 app.command_log
             );
-            if family.starts_with("fillet_self_") || family.starts_with("fillet_continuation_") {
+            if family.starts_with("fillet_self_")
+                || family.starts_with("fillet_continuation_")
+                || family.starts_with("fillet_zero_")
+            {
                 let outcome = value["events"]
                     .as_array()
                     .unwrap()

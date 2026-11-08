@@ -1,0 +1,211 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_arc",
+      "case": "verified_zero_circle_line_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_parts",
+      "case": "verified_zero_circle_line_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_joined",
+      "case": "verified_zero_circle_line_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_two_circles_arc",
+      "case": "verified_zero_two_circles_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_two_circles_parts",
+      "case": "verified_zero_two_circles_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_two_circles_joined",
+      "case": "verified_zero_two_circles_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_line_extension",
+      "case": "verified_zero_line_extension"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_disjoint_line",
+      "case": "verified_zero_disjoint_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_dynamic_accept",
+      "case": "verified_zero_dynamic_accept"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_dynamic_cancel",
+      "case": "verified_zero_dynamic_cancel"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_joined_reverse",
+      "case": "verified_zero_circle_line_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_lower",
+      "case": "verified_zero_circle_line_lower"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_inner",
+      "case": "verified_zero_circle_line_inner"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_nurbs_circle_line",
+      "case": "verified_zero_nurbs_circle_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_ellipse_line",
+      "case": "verified_zero_ellipse_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_circle_line_spatial_top",
+      "case": "verified_zero_circle_line_spatial_top"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_opposed",
+      "case": "verified_zero_opposed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_seam_opposed",
+      "case": "verified_zero_seam_opposed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_tangent_line",
+      "case": "verified_zero_tangent_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_meeting_parts",
+      "case": "verified_zero_meeting_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_meeting_joined",
+      "case": "verified_zero_meeting_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_disjoint_untrimmed",
+      "case": "verified_zero_disjoint_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_two_circles_joined_reverse",
+      "case": "verified_zero_two_circles_joined_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_two_circles_disjoint",
+      "case": "verified_zero_two_circles_disjoint"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_noncoplanar_intersection",
+      "case": "verified_zero_noncoplanar_intersection"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_skew_line",
+      "case": "verified_zero_skew_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_continuation_arc",
+      "case": "verified_zero_continuation_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_continuation_tangent_arc",
+      "case": "verified_zero_continuation_tangent_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_continuation_nurbs_line",
+      "case": "verified_zero_continuation_nurbs_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_continuation_nurbs_smooth",
+      "case": "verified_zero_continuation_nurbs_smooth"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_rectangle_line",
+      "case": "verified_zero_rectangle_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_nonlinear_nurbs",
+      "case": "verified_zero_nonlinear_nurbs"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_positive_to_zero",
+      "case": "verified_zero_positive_to_zero"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_zero_to_positive",
+      "case": "verified_zero_zero_to_positive"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_disjoint_circles_parts",
+      "case": "verified_zero_disjoint_circles_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_disjoint_circles_untrimmed",
+      "case": "verified_zero_disjoint_circles_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_metric_upper",
+      "case": "verified_zero_metric_upper"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_metric_lower",
+      "case": "verified_zero_metric_lower"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_metric_reverse",
+      "case": "verified_zero_metric_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "verified_zero_metric_nurbs",
+      "case": "verified_zero_metric_nurbs"
+    }
+  ]
+}

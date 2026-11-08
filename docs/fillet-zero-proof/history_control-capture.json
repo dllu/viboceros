@@ -1,0 +1,14 @@
+{
+  "family": "fillet_zero_history_control",
+  "exit_status": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_zero_history_control"
+  ],
+  "request_sha256": "b7cd7a9abe22d7022855e28f19945af1df22fc68f30bcd82254393a26a6d084c",
+  "observation_sha256": "bdfb68c0d33515795318f6cdc0a7b532b98208057bd455e9c0dda2a1c994e286",
+  "log": "history_control-capture.log.gz"
+}

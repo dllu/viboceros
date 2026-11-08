@@ -1,0 +1,40 @@
+{
+  "family": "fillet_zero_final",
+  "exit_status": 1,
+  "native_observations": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_zero_final"
+  ],
+  "request_sha256": "c75b532c10a3b7535989b6addc83ac1d3d183c4d3723544461764276d33ef9f1",
+  "sources": {
+    "generate_fillet_zero_final.py": "dfd7596a328625e4dfa22fee65295d39fbd350526f5876472654cdb28d7df876",
+    "structural_sdk.py": "add32e6b2960f5dcbefd794ca4b2f3e82dd8b6dacda331b325346f63cc0c6dc6",
+    "rhino_worker.py": "85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5",
+    "client.py": "d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126",
+    "catenary_point_picker.py": "b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0",
+    "arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "fillet_command_probe.py": "8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579",
+    "fillet_command.py": "34a59c71240e4f20ee05e43bd7e8d01c49920983506db09a55d7303343add22c",
+    "fillet_closed_cases.py": "c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae",
+    "fillet_self_cases.py": "6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2",
+    "fillet_continuation_cases.py": "97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6",
+    "fillet_zero_cases.py": "7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97",
+    "blend_curve_display_capture.py": "987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56",
+    "line_scene_probe.py": "a3ca5da6be82efc8f3fd65d946811b1a64ed1b6bcd70ecbb249d71770ca6a7ee",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "conic_getter_input.py": "26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "capture_family.py": "a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd"
+  },
+  "log": "failed-final.log.gz",
+  "error": "Direct RhinoDoc.Undo succeeded on a genuine edit but RhinoDoc.Redo returned false in this script context; no observations published."
+}

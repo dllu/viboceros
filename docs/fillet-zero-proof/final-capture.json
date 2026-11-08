@@ -1,0 +1,14 @@
+{
+  "family": "fillet_zero_final",
+  "exit_status": 0,
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "python3",
+    "-m",
+    "tools.rhino_oracle.generate_fillet_zero_final"
+  ],
+  "request_sha256": "c75b532c10a3b7535989b6addc83ac1d3d183c4d3723544461764276d33ef9f1",
+  "observation_sha256": "d17b23517dbd20bc1f813931674433ed8bcb89a8723657380da7a751e1e1eb7a",
+  "log": "final-capture.log.gz"
+}

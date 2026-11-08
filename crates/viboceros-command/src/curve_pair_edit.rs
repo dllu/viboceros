@@ -1,10 +1,12 @@
 //! Immutable curve candidates and atomic document admission shared by pair commands.
 use super::*;
+pub(crate) mod boundary_continuation;
 pub(crate) mod closed;
 pub(crate) mod junction;
 pub(crate) mod leaf;
+pub(crate) mod support;
 use std::sync::Arc;
-use viboceros_document::{LayerId, Object};
+use viboceros_document::{LayerId, Object, ReplacementHistory};
 use viboceros_geometry::Curve3;
 
 #[derive(Clone, Debug)]
@@ -21,6 +23,7 @@ pub struct Prepared {
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum Target {
     Source(usize),
+    SourceWithHistory(usize, ReplacementHistory),
     New,
     FirstAttributes,
 }
@@ -84,9 +87,16 @@ impl Prepared {
         let mut outputs = Vec::new();
         for (target, geometry) in self.targets.iter().zip(self.outputs.iter()) {
             outputs.push(match *target {
-                Target::Source(i) => {
+                Target::Source(i) | Target::SourceWithHistory(i, _) => {
                     let id = self.sources[i].id();
-                    document.replace_object_geometries([(id, geometry.clone())])?;
+                    let history = match *target {
+                        Target::SourceWithHistory(_, policy) => policy,
+                        _ => ReplacementHistory::ChangesOnly,
+                    };
+                    document.replace_object_geometries_with_history(
+                        [(id, geometry.clone())],
+                        history,
+                    )?;
                     id
                 }
                 Target::New => document.add_geometry(geometry.clone())?,

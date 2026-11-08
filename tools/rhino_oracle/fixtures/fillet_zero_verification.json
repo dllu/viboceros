@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "zero_disjoint_circles_parts",
+      "case": "zero_disjoint_circles_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_disjoint_circles_untrimmed",
+      "case": "zero_disjoint_circles_untrimmed"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_metric_upper",
+      "case": "zero_metric_upper"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_metric_lower",
+      "case": "zero_metric_lower"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_metric_reverse",
+      "case": "zero_metric_reverse"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_metric_nurbs",
+      "case": "zero_metric_nurbs"
+    }
+  ]
+}

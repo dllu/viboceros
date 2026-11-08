@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_arc",
+      "case": "zero_circle_line_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_parts",
+      "case": "zero_circle_line_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_circle_line_joined",
+      "case": "zero_circle_line_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_two_circles_arc",
+      "case": "zero_two_circles_arc"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_two_circles_parts",
+      "case": "zero_two_circles_parts"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_two_circles_joined",
+      "case": "zero_two_circles_joined"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_line_extension",
+      "case": "zero_line_extension"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_disjoint_line",
+      "case": "zero_disjoint_line"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_dynamic_accept",
+      "case": "zero_dynamic_accept"
+    },
+    {
+      "op": "fillet_command",
+      "id": "zero_dynamic_cancel",
+      "case": "zero_dynamic_cancel"
+    }
+  ]
+}

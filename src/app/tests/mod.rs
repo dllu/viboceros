@@ -591,3 +591,4 @@ mod curve_fillet;
 mod fillet_closed;
 mod fillet_continuation;
 mod fillet_self;
+mod fillet_zero;
