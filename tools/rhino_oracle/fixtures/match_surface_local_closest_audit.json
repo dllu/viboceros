@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_local_closest_audit_rational_position",
+      "case": "match_local_closest_audit_rational_position"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_local_closest_audit_rational_curvature",
+      "case": "match_local_closest_audit_rational_curvature"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_local_closest_audit_polynomial_position",
+      "case": "match_local_closest_audit_polynomial_position"
+    }
+  ]
+}

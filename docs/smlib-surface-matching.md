@@ -39,7 +39,8 @@ exit receipt; all its recipes were repeated in an independent owned launch.
 
 Averaging, curve targets, trimmed and closed boundaries, broader refinement
 parameter sweeps, continuous surface-distance bounds and performance parity
-remain unqualified or pending. See the public
+remain unqualified or pending. A separate [tolerance investigation](surface-match-tolerances.md)
+retains additional native observations without qualifying custom fitting. See the public
 [matching API](https://developer.rhino3d.com/api/rhinocommon/type/rhino.geometry.brep/)
 and [settings](https://developer.rhino3d.com/api/rhinocommon/type/rhino.geometry.matchsrfsettings/).
 

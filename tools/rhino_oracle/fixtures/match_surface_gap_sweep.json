@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_0.0",
+      "case": "match_tol_gap_0.0"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_0.001",
+      "case": "match_tol_gap_0.001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_0.01",
+      "case": "match_tol_gap_0.01"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_0.1",
+      "case": "match_tol_gap_0.1"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_1.0",
+      "case": "match_tol_gap_1.0"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_gap_10.0",
+      "case": "match_tol_gap_10.0"
+    }
+  ]
+}

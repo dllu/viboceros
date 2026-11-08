@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_menu_default",
+      "case": "match_tol_menu_default"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_scalar_values",
+      "case": "match_tol_scalar_values"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_ranges",
+      "case": "match_tol_ranges"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_cancel_scalar",
+      "case": "match_tol_cancel_scalar"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_after_cancel",
+      "case": "match_tol_after_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_new_document",
+      "case": "match_tol_new_document"
+    }
+  ]
+}

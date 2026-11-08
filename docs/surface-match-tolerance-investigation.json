@@ -1,0 +1,343 @@
+{
+  "scope": "Native investigation evidence; custom tolerance fitting remains unqualified.",
+  "native_observations": 78,
+  "owned_launches": 14,
+  "command_rows": 30,
+  "sdk_rows": 48,
+  "custom_fitting_qualified": false,
+  "separately_qualified_menu_rows": [
+    "match_tol_complete_menus"
+  ],
+  "instrumentation_defect": "Three local_closest_audit rows executed local queries but overwrote their fields. They remain diagnostic; the later local_query_audit launch retains the queries.",
+  "observations": [
+    "Fresh private schemes display initial tolerance defaults 0.001 model units, 1 degree and 0.05 percent. Displayed model defaults lag subsequent document changes; explicit edits survive cancellation.",
+    "New getter entries require position >=1e-5, tangency >=0.1 degrees and curvature >=the decimal ON_SQRT_EPSILON. Empty Enter can retain a smaller displayed model default.",
+    "Changing only curvature tolerance from 1e-5 to 100 percent leaves the four captured loose-angle surfaces identical.",
+    "A loose source fit can keep four transverse controls; a tighter fit can need six. More stringent positional sweeps produce five or thirteen even for a boundary that is geometrically coincident after matching.",
+    "Public global/local curve closest-point, both surface closest-point directions and curve deviation queries report near-machine-precision agreement in the retained audit cases."
+  ],
+  "sdk_density": {
+    "match_tol_sdk_curvature_1e-05": [
+      4,
+      4
+    ],
+    "match_tol_sdk_curvature_0.05": [
+      4,
+      4
+    ],
+    "match_tol_sdk_curvature_1.0": [
+      4,
+      4
+    ],
+    "match_tol_sdk_curvature_100.0": [
+      4,
+      4
+    ],
+    "match_tol_sdk_distance_0.01": [
+      4,
+      4
+    ],
+    "match_tol_sdk_distance_1e-06": [
+      4,
+      5
+    ],
+    "match_tol_sweep_position_1e-08": [
+      4,
+      13
+    ],
+    "match_tol_sweep_position_1e-06": [
+      4,
+      5
+    ],
+    "match_tol_sweep_position_1e-05": [
+      4,
+      4
+    ],
+    "match_tol_sweep_position_0.0001": [
+      4,
+      4
+    ],
+    "match_tol_sweep_position_0.001": [
+      4,
+      4
+    ],
+    "match_tol_sweep_position_0.01": [
+      4,
+      4
+    ],
+    "match_tol_sweep_curvature_1e-08": [
+      4,
+      13
+    ],
+    "match_tol_sweep_curvature_1e-06": [
+      4,
+      5
+    ],
+    "match_tol_sweep_curvature_1e-05": [
+      4,
+      4
+    ],
+    "match_tol_sweep_curvature_0.0001": [
+      4,
+      4
+    ],
+    "match_tol_sweep_curvature_0.001": [
+      4,
+      4
+    ],
+    "match_tol_sweep_curvature_0.01": [
+      4,
+      4
+    ],
+    "match_tol_mirror_tighter": [
+      4,
+      6
+    ],
+    "match_tol_mirror_loose": [
+      4,
+      4
+    ],
+    "match_tol_mirror_document": [
+      4,
+      11
+    ],
+    "match_tol_already_matched_polynomial": [
+      4,
+      4
+    ],
+    "match_tol_already_matched_rational": [
+      4,
+      4
+    ],
+    "match_tol_gap_0.0": [
+      4,
+      4
+    ],
+    "match_tol_gap_0.001": [
+      4,
+      4
+    ],
+    "match_tol_gap_0.01": [
+      4,
+      4
+    ],
+    "match_tol_gap_0.1": [
+      4,
+      4
+    ],
+    "match_tol_gap_1.0": [
+      4,
+      5
+    ],
+    "match_tol_gap_10.0": [
+      4,
+      8
+    ]
+  },
+  "public_query_max_distance": {
+    "curve_closest": 1.781875730419429e-12,
+    "local_closest": 4.965068306494546e-16,
+    "surface_closest": 7.550332863779066e-16,
+    "inverse_surface_closest": 5.688200336284365e-16,
+    "curve_deviation": 4.3516916092736014e-13
+  },
+  "captures": [
+    {
+      "family": "match_surface_command_tolerance_discovery",
+      "kind": "command",
+      "observations": 6,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_tolerances_sdk",
+      "kind": "sdk",
+      "observations": 6,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_command_tolerance_getters",
+      "kind": "command",
+      "observations": 9,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_command_tolerance_matches",
+      "kind": "command",
+      "observations": 10,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_tolerance_sweep",
+      "kind": "sdk",
+      "observations": 16,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_command_tolerance_defaults",
+      "kind": "command",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_closest_audit",
+      "kind": "sdk",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_command_tolerance_first_custom",
+      "kind": "command",
+      "observations": 2,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_local_closest_audit",
+      "kind": "sdk",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_local_query_audit",
+      "kind": "sdk",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_tolerance_mirrors",
+      "kind": "sdk",
+      "observations": 5,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_inverse_query_audit",
+      "kind": "sdk",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_gap_sweep",
+      "kind": "sdk",
+      "observations": 6,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    },
+    {
+      "family": "match_surface_deviation_query_audit",
+      "kind": "sdk",
+      "observations": 3,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001"
+    }
+  ],
+  "evidence_sha256": {
+    "docs/surface-match-tolerance-evidence/capture-closest.log.gz": "80243ecfe5d6cd46d066643c54373c4f959e8555ec7675a89bc5fc14f740b048",
+    "docs/surface-match-tolerance-evidence/capture-defaults.log.gz": "1fcf3854b7f4ce9af4fb01404bd8434354d824b6d5a0e8a8f8dce0ea42bddd22",
+    "docs/surface-match-tolerance-evidence/capture-deviation-query.log.gz": "ba81e3e6b158b37984b415f8cd7fc39f59cd77f1581e8be7fa994616cad61c74",
+    "docs/surface-match-tolerance-evidence/capture-discovery.log.gz": "cd2edad8d37abb6a38e1ac8ed63cd50d5f0b0ef1247cbb86ed585ba021f336f4",
+    "docs/surface-match-tolerance-evidence/capture-first-custom.log.gz": "14716fcf2e3d557e01be55447de2ab39a1aa86d0883188e993b0e65e5ff21e58",
+    "docs/surface-match-tolerance-evidence/capture-gap-sweep.log.gz": "482eb01cf28c9deed728ee3edb897e9b0421a22ea441d3204d1d5126368762cc",
+    "docs/surface-match-tolerance-evidence/capture-getters.log.gz": "b469b0674c1139d34bb8245d2552a08587f353611653504bedf4a2179d4cc740",
+    "docs/surface-match-tolerance-evidence/capture-inverse-query.log.gz": "83179660d6cf3124805b940f2e0b2259293c15392d9dc0627048b884f92a47e7",
+    "docs/surface-match-tolerance-evidence/capture-local-closest.log.gz": "9e1a03ebeee2a41fead6dc452befa381d60b0636cef701f6574ce1e0a86e866e",
+    "docs/surface-match-tolerance-evidence/capture-local-query.log.gz": "e7fa58b8e0c964101e60629973ab8adda351f5a74dbb7b619d714d8b99c2b5a9",
+    "docs/surface-match-tolerance-evidence/capture-matches.log.gz": "80f215411108b441cd57ae11a40ecef87b8c4eca06996bd0de274264fa4eb606",
+    "docs/surface-match-tolerance-evidence/capture-mirrors.log.gz": "d648288738b910f68d797cdb6305dd24023bbe25ecec4747e1c611a538ab4a4d",
+    "docs/surface-match-tolerance-evidence/capture-sdk.log.gz": "93e8418b151ab1d0a1efab5750253ff5fd179c2f8141f61e5d015e57c66f086d",
+    "docs/surface-match-tolerance-evidence/capture-sweep.log.gz": "19ed3db423d5b4241ef44f4e07405d3a80d649ec6e73ac71b89d5a709258c71a",
+    "docs/surface-match-tolerance-evidence/captures.json": "80c15e044ee65cfe0dd4fbd6e20bedbf4e52226fe6ecffcac27b88560b9dddcc",
+    "tools/rhino_oracle/fixtures/match_surface_closest_audit.json": "ae835fa0836852f0daa4b3bbeb963a086d14c7b59f89347ad5e6c47ce8c85370",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_defaults.json": "380d2692b5c3eaa54c6ed6b88e0947b706338f78a058a8e711c31315c5efb629",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_discovery.json": "540fb23e444db5d0c5959ca8ea2cf4934ee8d280ffbc3d4207951947c7d4a498",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_first_custom.json": "be8027e8129dbd746b379a71f76853db25810ed95421b7b8a558c60e50d44ac1",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_getters.json": "080c2777f9bde66236df4ec616235241bd8f4ea7a524b5674883c63616531fe1",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_matches.json": "c2c02fb0c7186b60a1129038864a5a50ed85adba64f4e0deae695ac9d45804f8",
+    "tools/rhino_oracle/fixtures/match_surface_deviation_query_audit.json": "3581596d9154df2fa7cd161644e87bb0c455b7490b2ee73259062fe16ea09068",
+    "tools/rhino_oracle/fixtures/match_surface_gap_sweep.json": "df7cd9754c2f7d025b855a38b368aaf0492ddd490f33bf81fdb346b2a4980a43",
+    "tools/rhino_oracle/fixtures/match_surface_inverse_query_audit.json": "39d011d44f88e426abdbff03947686716e21805c93871694b33459fddc598fb2",
+    "tools/rhino_oracle/fixtures/match_surface_local_closest_audit.json": "95fbc720b20fb70a2b44e65372bd7ed9583ecb064888b7e47f0f0533722810bb",
+    "tools/rhino_oracle/fixtures/match_surface_local_query_audit.json": "c9740db0e52d0dfc273dea7387982938365b82d4fedfa5ddb54008c672323e64",
+    "tools/rhino_oracle/fixtures/match_surface_tolerance_mirrors.json": "2ae9eabed3a158b2a906d651dae9d01981a9ff45780c1c2b4d160f38b5fa33a9",
+    "tools/rhino_oracle/fixtures/match_surface_tolerance_sweep.json": "307e8e1e229c2c173f45fd511fe5d9eeabdeb8815a0578bd7d4b03e4469c8a94",
+    "tools/rhino_oracle/fixtures/match_surface_tolerances_sdk.json": "05327b6d13df4c754703dbeb01931195a39777f467f4caf0a606a125775d574a",
+    "tools/rhino_oracle/observations/match_surface_closest_audit.json.gz": "666c99b13dbe4785a3c79751b397bc5d61eabac8f71fd8936f01acca2d0edc9f",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_defaults.json.gz": "b9460ba540e633899fe53884a48392cf9cbf653e8f87c3ec39722a5b4c39e470",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_discovery.json.gz": "8d76115cdda9cf8e907ab4b4fd8b0c7a29ded8255658caea882a9f9c8a0d9566",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_first_custom.json.gz": "31bfa0788ee5d974c4db9069849637497985ab249d1c38c59af756094276ee20",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_getters.json.gz": "d350edfcca02e67e63fd838cb7b479c19a0d778a78e9bb77f5f2cb171459e384",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_matches.json.gz": "a1142e8f55619e7d4f258b852ebe608e0b42f4dba183ae36d6d228725f28bb56",
+    "tools/rhino_oracle/observations/match_surface_deviation_query_audit.json.gz": "eb80e4831c1d38e509e20e8acb4dda35ca78dadcbb02d3692c17217d7d757363",
+    "tools/rhino_oracle/observations/match_surface_gap_sweep.json.gz": "3984fa392610807faebd7eed57a3d28d9522884a070cd935ba1cfad9abf822d3",
+    "tools/rhino_oracle/observations/match_surface_inverse_query_audit.json.gz": "5ed87f2bfc50e6ffe11f4e5994290c90e46d04bde67fad9f162a26d6febdd917",
+    "tools/rhino_oracle/observations/match_surface_local_closest_audit.json.gz": "d5788498f1b5f3161851b0757d90683dc3323cc241332900b1dc60ba27357c23",
+    "tools/rhino_oracle/observations/match_surface_local_query_audit.json.gz": "15a76873cb7e837f31376a5872e06353fea8f3ea7b537e0a0e1cbc3522a1bfbb",
+    "tools/rhino_oracle/observations/match_surface_tolerance_mirrors.json.gz": "66939d3055d1c9eab281d27e00206692f9fea17c9c64d182590455724289711f",
+    "tools/rhino_oracle/observations/match_surface_tolerance_sweep.json.gz": "d9334aaf3f73c013e4184ec7fbf0cc830e48f73a348152460571128d52300bd9",
+    "tools/rhino_oracle/observations/match_surface_tolerances_sdk.json.gz": "4703a0d88ffaa45956ac69490096e222948e6dc3cecdcd158d5b71c03bf93561",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/179a510cbc9629ba0b337388b306d92a669d3bcc83070e0b3fe1ca8eb336adf8.gz": "4e39676be7e785cd2709f5995b55f442252f4d65c73a51f46b79211eb52567cf",
+    "tools/rhino_oracle/observations/source_snapshots/18282f2449e2920efac5ebae42a79890294fa1f4fe991c1af25f091786e852f4.gz": "aac73593932f158d3c81de0faa4ea29969bab5ebe1164676e57095fe9a4393a7",
+    "tools/rhino_oracle/observations/source_snapshots/195dd0ee980652aed9b5770073b162546d467683727ff4d0409f1c4d2abc3acc.gz": "dd00946788632cea930dd7f2f15150a149f87ec16b1f7493085eaa66a561cd3c",
+    "tools/rhino_oracle/observations/source_snapshots/19abb212fb76f56f268f212d4607fb28d8b52c8335387bbda36b7f33cd6c6a52.gz": "56780ee4eec8e4238ab879fdcbc11e4757d3a474cd40b6248fcf9913bb912dbd",
+    "tools/rhino_oracle/observations/source_snapshots/1bac44d86f1bd59386c552d699a68d776ee104a63f8d2ad4a862b4fecc5422d4.gz": "7f83b7a4b940cdb24f35fc9b9508894336d75eda9f4235a1dfd9306ddf9a08a0",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/219ce44fde71311f7ddcfe132af8de807fac837b74377ecae3b5a5bd764c1dfe.gz": "ef610c1011588519c380b5a28a32f4adc07826e6be604673ecae11beded29dd9",
+    "tools/rhino_oracle/observations/source_snapshots/25126917164439b7c302e2953b91ccd201e7cb439cc64d90b04c53c7f1800de0.gz": "c6dd22bcbd0716d2e9f633bc50c00ad202f56f7c006a6faaf5b2fac0ce6a1057",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/3b3bc350d0d47b6c355fcb0cc4a36ff1ce105bea3c675e624e0a62f0c750a706.gz": "c968c1027d90bedb21eb740d23a472ed16d6fe86eb7950c44bf9cfebb202de06",
+    "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3e0f8aa9fc2359d9945a59359c15cd9481f2c450257ff4cd8fe5f59bb0bafd65.gz": "4bc0a25760c49092b3d9319056bd7d4691ace8e21ea6e46fb72ab113bc686e10",
+    "tools/rhino_oracle/observations/source_snapshots/4057aef4e83f22149c14462494f4d7e576c5e15461d5a7ee3073fa9edb5a72d5.gz": "960d5d7e531d433712d664d9c6ae6c2804b0a451e2bb5463128c217fee60c0c8",
+    "tools/rhino_oracle/observations/source_snapshots/485e88af406d8dcc1964f6036351d95a9672e72848f643bd849a05ebc981d4d7.gz": "82de2ee732dce8ccdf40db2973c1fd946d07557a429d67490efbd3e97b9bdd7c",
+    "tools/rhino_oracle/observations/source_snapshots/568e081b7132478286f28cb376ff4cc45d92c9f2ea3d2d43e009dfd2f1d6a7c2.gz": "da548dc5b3f80b1abcd5e117a958488dfa1d9880f82484dfca944a965e26b2d0",
+    "tools/rhino_oracle/observations/source_snapshots/5ec26075f260084d7b129e38013780aa337ae3e4ec98f0988d938ff5f65c3f66.gz": "46bdb7855dc91d2a1c316ef7ddbf52fb8f4369261030d791a4df79e80d147007",
+    "tools/rhino_oracle/observations/source_snapshots/6063d09c75a74914d603867c23609de96cc2fcb1c345f73a21eafc082aa9e831.gz": "fb9fcc896dd519d2ca583d874b210d49d441747258e06ef8aa05b672507f3c63",
+    "tools/rhino_oracle/observations/source_snapshots/655bd54d448d259d73b22008bc1fc317701ac9eea87f12e8efd50b2a01a56f7a.gz": "15a202a58528bf2dc087b9014ed0ece5505b2564da2dd62e54ba8a127c233967",
+    "tools/rhino_oracle/observations/source_snapshots/68b194c3792a60523cf989563d1c94a35d0befa5259b88a358a59e44e4313dfc.gz": "d16fe8be3117313ad5e914abf23cb44d4d43bab0194c6946438a2a7ccfe99ba3",
+    "tools/rhino_oracle/observations/source_snapshots/6f96f16fc803f15d670b558a4ed540c8384d5fc415f0c1e8c7be0610ced1c23d.gz": "4f9276251512d5e922edbee7aaebfaee7ee1ef1aafbd91b6552e059b7724e1f6",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/7b1d5513c712946867f0b487dd14fbde9fb331743942c9d22ced936320d227f6.gz": "97da47546131fb3739a7c3c4e87d03c967b0b4343878ca7ac00deaea017ce13c",
+    "tools/rhino_oracle/observations/source_snapshots/7bd2a77c697324e930fc84298f54a8979acb9ecc70daf60ff65aa73ad510f85a.gz": "51ff1c392055bd3c15c8315bdf5e69639d1766ee3625a5609f92ef769e1fb36d",
+    "tools/rhino_oracle/observations/source_snapshots/83ffa3c4a156f2fabdc9213cc886c44ff92d56066e964737bfbc2a331e3a51dc.gz": "99ecf7ea2fa120a9b0715b21ad0360e2fa8093aec114969736aaad7d7d09891a",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/893914873e2c032f3137ff87920dbdc7709617e5a1fb0ad2d95b1d00c2a333a0.gz": "d93d0d9b3641380e5a992bb47af046c51cfa075bd5fbe27f4696305d3b1ee158",
+    "tools/rhino_oracle/observations/source_snapshots/94a16926b846461fdd15a507fc174fec490c0ec2d9dc53d7985acf078e51c374.gz": "28d7af124c02c60ddb1ba31ddcc8ec3b5afbc7e5acb2d0358c595221432f55cf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a59c7ec478199b1bb89044f038e3007eaa8ed7bad191445df74e47ee8c9f4807.gz": "a61bc4a8cd440b3e59d135c016ef0ebd0def3e65a2a9466ec20e4983876ff739",
+    "tools/rhino_oracle/observations/source_snapshots/ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a.gz": "44ca3d8a2e09e17b6135535a805c58e28d08808fb5bf8db6ff14578b936f908f",
+    "tools/rhino_oracle/observations/source_snapshots/af4df6e046bd63b5c61b849389f48a31210b7370e74c73ba5652eaa67f90d84f.gz": "d82eb4664f785cc0610171cc285c42bba379a157c133f352b28f7901b9260690",
+    "tools/rhino_oracle/observations/source_snapshots/b182d2b4b5297e39f302f2400cc75382fb47277fbe9d8b331c7aae36367cf222.gz": "fc69c08b8defa4abe0540ef50f54b03f88d68cac6b2d58aad377d54a459064e6",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b71ff75f3de45b70cee0498f9449819bc7fd3c4a001e5af9251f24c906b454cc.gz": "90d28cc91fb149961b7882aad1d1a222b4a882d8424d272088769f1e69b46c27",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c266686a97c0094715e02885ede024e987fef149df0d8db6daa45e4046ba2c3a.gz": "c6dedcdf513079bb14b39a649347eccaf4848a9a76e53ddbdc6f2f729330df13",
+    "tools/rhino_oracle/observations/source_snapshots/c282447b696d6e571868987bf0ac58b9619e0437b6970e58ca649da73b0811fb.gz": "214da51299cdb0cebc287c14efeeba6600d9a290b5cccb8256ae7e1ded6acec8",
+    "tools/rhino_oracle/observations/source_snapshots/c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf.gz": "7749d9f69a4254dcc7b94c38ffde21d5082d9b7e4b1e0ca11422ca776466036a",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cca6b459a5799ba0113d49cb60f612d49c0bc18f3a977a36429aad281f74526f.gz": "ff4442bf9613ac3a4b59d58858bb877555137be23407326aee4d8e2ed458f19d",
+    "tools/rhino_oracle/observations/source_snapshots/d92003894442230bb5eb3a41e19767d8ec748e2c24663d3b5c53def300914f94.gz": "caa5472dafdc86b6d62b2912dc33bce50e54bc13b9165316cfd37fa7e5d24218",
+    "tools/rhino_oracle/observations/source_snapshots/e2acb8cff552fd9d2b0f62aab74194a9ab4697f5c5960a554d60e2d8139b1a18.gz": "167db0578c34d22a7e35634a4cdfc28f5cef85de84f44369e0536e563851caf6",
+    "tools/rhino_oracle/observations/source_snapshots/e2b8c45f4d0f4a6b5213a4a440c029850984049f2be172ef4f19d75a3fa5ab3d.gz": "9eda6b6562d0aa136a3f06deda470d54cde13f0ab88ccbf617ae110d632b0718",
+    "tools/rhino_oracle/observations/source_snapshots/e6bd3fc56d46944b6987de1ae0a921dcc67f7fed59a88e17341d015e6db83059.gz": "5b35a936b656471738af48af7fcb8326afaeb8d152c9b4d202de0b5931abc76e",
+    "tools/rhino_oracle/observations/source_snapshots/e80ac25603c35fba92202b71416fe2650fe16ca1c9c360a0c3210f609d0198d4.gz": "81062fc6d8949c69c043a989f8a7960114ed678d5fd63040362e50acbe442611",
+    "tools/rhino_oracle/observations/source_snapshots/ec3e8013a734ae468eb335b7c8575e7f4304b45ff2582b759ac48593e4b5863f.gz": "cd2fdde5cbfe81884b985aaa26759b1a0efb50cbec589d045a92c626c39003e1",
+    "tools/rhino_oracle/observations/source_snapshots/ed24a194ddd8c1774c8cb94018c9c88248ce9c08aa160dcff5199b7171144f51.gz": "59a9cd7144681e25ca488324e7f3dee888492e10223fbd5c3178873b381b4df4",
+    "tools/rhino_oracle/observations/source_snapshots/f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108.gz": "77c80c5679c6ee28ddf79b28d03040a8d388dc1886dddbe47501fe662ac376ab",
+    "tools/rhino_oracle/observations/source_snapshots/f2ffb01dcd870b3ea44449ac4a1b3b499e5a73909fd7a0a1d31994b71f30422a.gz": "4e1aedba59cf819b421d7101d50b4312164b7fe0f2a39ef0d92490df40a5013b",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}

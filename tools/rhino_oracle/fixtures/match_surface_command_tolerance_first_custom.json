@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_first_custom",
+      "case": "match_tol_first_custom"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_first_custom_recall",
+      "case": "match_tol_first_custom_recall"
+    }
+  ]
+}

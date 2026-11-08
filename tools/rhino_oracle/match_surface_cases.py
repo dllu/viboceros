@@ -132,3 +132,73 @@ for name,source_op,target_op,source_side,target_side in [
 # was not retained. Repeat these recipes under a launch with an exit receipt.
 for key,value in FINAL.items():ORIENTED[key.replace('match_f_','match_v_')]=copy.deepcopy(value)
 CASES.update(copy.deepcopy(ORIENTED))
+
+TOLERANCE_HOLDOUTS={}
+for percent in [.00001,.05,1.,100.]:
+    value=copy.deepcopy(FINAL['match_f_rational_refine_curvature'])
+    value.update(angle_tolerance=.1,distance_tolerance=.001,curvature_tolerance=percent,audit=True)
+    TOLERANCE_HOLDOUTS['match_tol_sdk_curvature_'+str(percent)]=value
+for distance in [.01,.000001]:
+    value=copy.deepcopy(FINAL['match_f_rational_refine_position'])
+    value.update(angle_tolerance=.1,distance_tolerance=distance,curvature_tolerance=.05,audit=True)
+    TOLERANCE_HOLDOUTS['match_tol_sdk_distance_'+str(distance)]=value
+CASES.update(copy.deepcopy(TOLERANCE_HOLDOUTS))
+
+TOLERANCE_SWEEP={}
+for mode in ['Position','Curvature']:
+    for distance in [1e-8,1e-6,1e-5,1e-4,.001,.01]:
+        value=copy.deepcopy(FINAL['match_f_rational_refine_'+mode.lower()])
+        value.update(angle_tolerance=.1,distance_tolerance=distance,curvature_tolerance=.05,audit=True)
+        TOLERANCE_SWEEP['match_tol_sweep_'+mode.lower()+'_'+str(distance)]=value
+for scale in [.1,10.]:
+    for distance in [1e-6,.001]:
+        value=copy.deepcopy(FINAL['match_f_rational_refine_position'])
+        for source in value['sources']:
+            for control in source['control_points']:control['point']=[x*scale for x in control['point']]
+        value.update(angle_tolerance=.1,distance_tolerance=distance*scale,curvature_tolerance=.05,audit=True)
+        TOLERANCE_SWEEP['match_tol_scaled_'+str(scale)+'_'+str(distance)]=value
+CASES.update(copy.deepcopy(TOLERANCE_SWEEP))
+
+CLOSEST_AUDIT={}
+for kind,mode,distance in [('rational','Position',.01),('rational','Curvature',.001),('polynomial','Position',.01)]:
+    value=copy.deepcopy(FINAL['match_f_'+kind+'_refine_'+mode.lower()])
+    value.update(angle_tolerance=.1,distance_tolerance=distance,curvature_tolerance=.05,audit=True,surface_closest_audit=True)
+    CLOSEST_AUDIT['match_closest_audit_'+kind+'_'+mode.lower()]=value
+CASES.update(copy.deepcopy(CLOSEST_AUDIT))
+
+LOCAL_CLOSEST_AUDIT=copy.deepcopy(CLOSEST_AUDIT)
+LOCAL_CLOSEST_AUDIT={key.replace('closest_audit','local_closest_audit'):dict(value,local_closest_audit=True) for key,value in LOCAL_CLOSEST_AUDIT.items()}
+CASES.update(copy.deepcopy(LOCAL_CLOSEST_AUDIT))
+
+LOCAL_QUERY_AUDIT={key.replace('local_closest_audit','local_query_audit'):copy.deepcopy(value) for key,value in LOCAL_CLOSEST_AUDIT.items()}
+CASES.update(copy.deepcopy(LOCAL_QUERY_AUDIT))
+
+TOLERANCE_MIRRORS={}
+for name,distance,angle,curvature in [
+    ('tighter',1e-5,0.0017453292519943296,100.),
+    ('loose',.001,0.017453292519943295,.01),
+    ('document',.0001,1e-6,.05),
+]:
+    value=copy.deepcopy(FINAL['match_f_rational_refine_curvature'])
+    value.update(distance_tolerance=distance,angle_tolerance=angle,curvature_tolerance=curvature,audit=True)
+    TOLERANCE_MIRRORS['match_tol_mirror_'+name]=value
+for kind in ['polynomial','rational']:
+    value=copy.deepcopy(FINAL['match_f_'+kind+'_refine_position'])
+    value['sources'][0]=chart_edit(value['sources'][1],'reverse_u')
+    value.update(distance_tolerance=1e-6,angle_tolerance=.1,curvature_tolerance=.05,audit=True)
+    TOLERANCE_MIRRORS['match_tol_already_matched_'+kind]=value
+CASES.update(copy.deepcopy(TOLERANCE_MIRRORS))
+
+INVERSE_QUERY_AUDIT={key.replace('closest_audit','inverse_query_audit'):dict(copy.deepcopy(value),inverse_surface_audit=True) for key,value in CLOSEST_AUDIT.items()}
+CASES.update(copy.deepcopy(INVERSE_QUERY_AUDIT))
+
+DEVIATION_QUERY_AUDIT={key.replace('closest_audit','deviation_query_audit'):dict(copy.deepcopy(value),curve_deviation_audit=True) for key,value in CLOSEST_AUDIT.items()}
+GAP_SWEEP={}
+for factor in [0.,.001,.01,.1,1.,10.]:
+    value=copy.deepcopy(FINAL['match_f_rational_refine_position']);source,target=value['sources']
+    for j in range(4):
+        a=source['control_points'][j*4+3];b=target['control_points'][j*4]
+        a['point']=[q+factor*(p-q)for p,q in zip(a['point'],b['point'])]
+    value.update(distance_tolerance=1e-6,angle_tolerance=.1,curvature_tolerance=.05,audit=True)
+    GAP_SWEEP['match_tol_gap_'+str(factor)]=value
+CASES.update(copy.deepcopy(DEVIATION_QUERY_AUDIT));CASES.update(copy.deepcopy(GAP_SWEEP))

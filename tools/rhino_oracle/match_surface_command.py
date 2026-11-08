@@ -68,6 +68,19 @@ QUALIFIED['match_cmd_cancel_first_pick']=case(picks()[:1]+['Cancel'],preselected
 QUALIFIED['match_cmd_cancel_no_picks']=case(['Cancel'],preselected=True)
 CASES.update(copy.deepcopy(QUALIFIED))
 
+TOLERANCE_DISCOVERY={
+    'match_tol_menu_default':case(picks()+RESET+['Tolerances','Enter','Enter']),
+    'match_tol_scalar_values':case(picks()+RESET+['Tolerances','PositionTolerance',{'number':'0.00001'},
+        'TangencyTolerance',{'number':'0.001'},'CurvatureTolerance',{'number':'0.1'},'Enter','Enter']),
+    'match_tol_ranges':case(picks()+RESET+['Tolerances','PositionTolerance=-1','PositionTolerance=0',
+        'PositionTolerance=0.00002','TangencyTolerance=0.00001','TangencyTolerance=0',
+        'CurvatureTolerance=-1','CurvatureTolerance=0','CurvatureTolerance=0.01','Enter','Enter']),
+    'match_tol_cancel_scalar':case(picks()+RESET+['Tolerances','PositionTolerance',{'number':'0.00003'},'TangencyTolerance','Cancel']),
+    'match_tol_after_cancel':case(picks()+RESET+['Tolerances','Enter','Enter']),
+    'match_tol_new_document':case(picks()+RESET+['Tolerances','Enter','Enter'],absolute_tolerance=0.0001),
+}
+CASES.update(copy.deepcopy(TOLERANCE_DISCOVERY))
+
 TOLERANCE_GETTERS={
     'match_tol_first_cancel':case(picks()+RESET+['Tolerances','Cancel']),
     'match_tol_after_first_cancel':case(picks()+RESET+['Tolerances','Enter','Enter']),
@@ -86,3 +99,48 @@ TOLERANCE_GETTERS={
         'IsocurveDirection','Keep','Enter']),
 }
 CASES.update(copy.deepcopy(TOLERANCE_GETTERS))
+
+if __package__:
+    from .match_surface_cases import FINAL as _SURFACE_FINAL
+else:
+    from match_surface_cases import FINAL as _SURFACE_FINAL
+
+def rational(actions,**changes):
+    value=case(actions,curves=_SURFACE_FINAL['match_f_rational_refine_curvature']['sources'],**changes)
+    for a in value['actions']:
+        if isinstance(a,dict) and 'pick' in a:a['pick'][0]+=.12*a['pick'][1]
+    return value
+
+TOLERANCE_MATCHES={
+    'match_tol_refine_first_defaults':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter']),
+    'match_tol_refine_document_defaults':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter']),
+    'match_tol_refine_loose':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','PositionTolerance=0.001',
+        'TangencyTolerance=1','CurvatureTolerance=0.01','Enter','Enter']),
+    'match_tol_refine_tighter':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','PositionTolerance=0.00001',
+        'TangencyTolerance=0.1','CurvatureTolerance=100','Enter','Enter']),
+    'match_tol_refine_cancel':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','PositionTolerance=0.001',
+        'TangencyTolerance=1','CurvatureTolerance=0.001','Cancel']),
+    'match_tol_refine_after_cancel':rational(picks()+['RefineMatch=Yes','Tolerances','Enter','Enter'],absolute_tolerance=.0001),
+    'match_tol_fraction_values':case(picks()+RESET+['Tolerances','PositionTolerance',{'number':'1/1000'},
+        'TangencyTolerance',{'number':'1/2'},'CurvatureTolerance',{'number':'1/20'},'Enter','Enter']),
+    'match_tol_value_boundaries':case(picks()+RESET+['Tolerances','PositionTolerance=0.000009',
+        'PositionTolerance=0.00001','TangencyTolerance=0.099999','TangencyTolerance=0.1',
+        'CurvatureTolerance=0.00000001','CurvatureTolerance=0.00000001490116119384765625','Enter','Enter']),
+    'match_tol_value_upper_bounds':case(picks()+RESET+['Tolerances','PositionTolerance=1000',
+        'TangencyTolerance=181','TangencyTolerance=720','CurvatureTolerance=200','CurvatureTolerance=2000','Enter','Enter']),
+    'match_tol_outside_menu':case(picks()+RESET+['PositionTolerance=0.00005','TangencyTolerance=0.2',
+        'CurvatureTolerance=0.4','Tolerances','Enter','Enter']),
+}
+CASES.update(copy.deepcopy(TOLERANCE_MATCHES))
+
+TOLERANCE_DEFAULTS={
+    'match_tol_seed_document':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter']),
+    'match_tol_changed_document':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter'],absolute_tolerance=.0001),
+    'match_tol_changed_again':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter'],absolute_tolerance=.00001),
+}
+TOLERANCE_FIRST_CUSTOM={
+    'match_tol_first_custom':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','PositionTolerance=0.002',
+        'TangencyTolerance=1.5','CurvatureTolerance=0.2','Enter','Enter']),
+    'match_tol_first_custom_recall':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter'],absolute_tolerance=.0001),
+}
+CASES.update(copy.deepcopy(TOLERANCE_DEFAULTS));CASES.update(copy.deepcopy(TOLERANCE_FIRST_CUSTOM))

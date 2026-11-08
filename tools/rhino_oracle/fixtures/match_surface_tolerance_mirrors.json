@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_mirror_tighter",
+      "case": "match_tol_mirror_tighter"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_mirror_loose",
+      "case": "match_tol_mirror_loose"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_mirror_document",
+      "case": "match_tol_mirror_document"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_already_matched_polynomial",
+      "case": "match_tol_already_matched_polynomial"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_already_matched_rational",
+      "case": "match_tol_already_matched_rational"
+    }
+  ]
+}

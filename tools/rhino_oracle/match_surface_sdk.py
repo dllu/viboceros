@@ -36,7 +36,7 @@ def run(op,host,iterations,tolerance):
         settings.PreserveIso=getattr(G.PreserveIsoCurveMethod,recipe['iso'])
         settings.Average=recipe['average'];settings.MatchClosestPoints=recipe['closest_points']
         settings.ReverseMatchDirection=recipe['reverse_match'];settings.ReverseAverageTargetDirection=recipe['reverse_target']
-        settings.EnableRefinement(recipe['refine'],tolerance['absolute'],recipe.get('angle_tolerance',tolerance['angular']),.05)
+        settings.EnableRefinement(recipe['refine'],recipe.get('distance_tolerance',tolerance['absolute']),recipe.get('angle_tolerance',tolerance['angular']),recipe.get('curvature_tolerance',.05))
         success,matched,changed_target=G.Brep.CreateFromMatch(edge(breps[0],recipe['side']),edge(breps[1],recipe['target_side']),settings)
         if [record(b) for b in breps]!=before:raise ValueError('matching API mutated an owned input')
         if matched is not None and not matched.IsValid:raise ValueError('invalid surface match result')
@@ -52,6 +52,15 @@ def run(op,host,iterations,tolerance):
                 knots=support.ToNurbsSurface()
                 try: values=sorted(set(float(x) for x in knots.KnotsV))
                 finally: knots.Dispose()
+                local_seed=edge_curve.Domain.Min
+                curve_deviations=[]
+                if recipe.get('curve_deviation_audit'):
+                    source_curve=support.IsoCurve(1,support.Domain(0).Max)
+                    try:
+                        for accuracy in [1e-8,1e-6,1e-5]:
+                            result=G.Curve.GetDistancesBetweenCurves(source_curve,edge(breps[1],recipe['target_side']),accuracy)
+                            curve_deviations.append(dict(tolerance=accuracy,success=bool(result[0]),values=[float(x) for x in result[1:]] if result[0] else None))
+                    finally:source_curve.Dispose()
                 for a,b in zip(values,values[1:]):
                     for i in range(9):
                         v=a+(b-a)*i/8.;point=support.PointAt(support.Domain(0).Max,v)
@@ -60,7 +69,21 @@ def run(op,host,iterations,tolerance):
                         p=reference.PointAt(reference.Domain(0).Min,t)
                         n=support.NormalAt(support.Domain(0).Max,v);m=reference.NormalAt(reference.Domain(0).Min,t)
                         if n*m<0:m=-m
-                        samples.append(dict(v=v,target_v=t,distance=point.DistanceTo(p),angle=G.Vector3d.VectorAngle(n,m)))
+                        surface_query={}
+                        if recipe.get('inverse_surface_audit'):
+                            ok,iu,iv=support.ClosestPoint(p)
+                            if not ok:raise ValueError('inverse surface closest audit failed')
+                            surface_query['inverse_surface_closest']=dict(u=float(iu),v=float(iv),distance=float(p.DistanceTo(support.PointAt(iu,iv))))
+                        if recipe.get('local_closest_audit'):
+                            ok,local=edge_curve.LocalClosestPoint(point,local_seed)
+                            if not ok:raise ValueError('local closest audit failed')
+                            surface_query['local_closest']=dict(seed=float(local_seed),parameter=float(local),distance=float(point.DistanceTo(edge_curve.PointAt(local))))
+                            local_seed=local
+                        if recipe.get('surface_closest_audit'):
+                            ok,su,sv=reference.ClosestPoint(point)
+                            if not ok:raise ValueError('surface closest audit failed')
+                            surface_query.update(surface_closest=dict(u=float(su),v=float(sv),distance=float(point.DistanceTo(reference.PointAt(su,sv)))))
+                        samples.append(dict(surface_query,v=v,target_v=t,distance=point.DistanceTo(p),angle=G.Vector3d.VectorAngle(n,m)))
             finally:edge_curve.Dispose()
             doc=host['Rhino'].RhinoDoc.ActiveDoc
             value['audit']=dict(settings=dict(enabled=bool(settings.RefineMatch),
@@ -68,6 +91,7 @@ def run(op,host,iterations,tolerance):
                 curvature=float(settings.RefineCurvatureTolerance)),
                 document=dict(absolute=float(doc.ModelAbsoluteTolerance),angular=float(doc.ModelAngleToleranceRadians)),
                 samples=samples)
+            if recipe.get('curve_deviation_audit'):value['audit']['curve_deviations']=curve_deviations
         return value,0
     finally:
         for obj in [matched,changed_target]+breps+sources:

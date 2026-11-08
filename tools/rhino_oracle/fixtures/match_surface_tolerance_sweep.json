@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_1e-08",
+      "case": "match_tol_sweep_position_1e-08"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_1e-06",
+      "case": "match_tol_sweep_position_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_1e-05",
+      "case": "match_tol_sweep_position_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_0.0001",
+      "case": "match_tol_sweep_position_0.0001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_0.001",
+      "case": "match_tol_sweep_position_0.001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_position_0.01",
+      "case": "match_tol_sweep_position_0.01"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_1e-08",
+      "case": "match_tol_sweep_curvature_1e-08"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_1e-06",
+      "case": "match_tol_sweep_curvature_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_1e-05",
+      "case": "match_tol_sweep_curvature_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_0.0001",
+      "case": "match_tol_sweep_curvature_0.0001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_0.001",
+      "case": "match_tol_sweep_curvature_0.001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sweep_curvature_0.01",
+      "case": "match_tol_sweep_curvature_0.01"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_scaled_0.1_1e-06",
+      "case": "match_tol_scaled_0.1_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_scaled_0.1_0.001",
+      "case": "match_tol_scaled_0.1_0.001"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_scaled_10.0_1e-06",
+      "case": "match_tol_scaled_10.0_1e-06"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_scaled_10.0_0.001",
+      "case": "match_tol_scaled_10.0_0.001"
+    }
+  ]
+}

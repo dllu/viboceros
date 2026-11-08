@@ -1,0 +1,212 @@
+[
+  {
+    "family": "match_surface_command_tolerance_discovery",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_discovery > /tmp/match-tolerance-discovery.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-discovery.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-discovery.log.gz",
+    "archive": "observations/match_surface_command_tolerance_discovery.json.gz",
+    "request_sha256": "540fb23e444db5d0c5959ca8ea2cf4934ee8d280ffbc3d4207951947c7d4a498",
+    "observation_sha256": "bc68023339352535463f3522a0edcd4c2fc0a5bac4825a52b79856104e55eacc"
+  },
+  {
+    "family": "match_surface_tolerances_sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_tolerances_sdk > /tmp/match-tolerance-sdk.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-sdk.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-sdk.log.gz",
+    "archive": "observations/match_surface_tolerances_sdk.json.gz",
+    "request_sha256": "05327b6d13df4c754703dbeb01931195a39777f467f4caf0a606a125775d574a",
+    "observation_sha256": "9dde0209ba9631d8ff533c6998be1723010e67d72ae01268898ccf10ff0b4968"
+  },
+  {
+    "family": "match_surface_command_tolerance_getters",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_getters > /tmp/match-tolerance-getters.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-getters.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-getters.log.gz",
+    "archive": "observations/match_surface_command_tolerance_getters.json.gz",
+    "request_sha256": "080c2777f9bde66236df4ec616235241bd8f4ea7a524b5674883c63616531fe1",
+    "observation_sha256": "a1e7d2be6ebf87fc074718ed195299e88838f911be3613aaab9ffe7756efd8be"
+  },
+  {
+    "family": "match_surface_command_tolerance_matches",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_matches > /tmp/match-tolerance-matches.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-matches.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-matches.log.gz",
+    "archive": "observations/match_surface_command_tolerance_matches.json.gz",
+    "request_sha256": "c2c02fb0c7186b60a1129038864a5a50ed85adba64f4e0deae695ac9d45804f8",
+    "observation_sha256": "5cd5747ebc30d2865d567a04ee9aeff48da0aa08156bdfc96b00ff4d9f2323c1"
+  },
+  {
+    "family": "match_surface_tolerance_sweep",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_tolerance_sweep > /tmp/match-tolerance-sweep.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-sweep.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-sweep.log.gz",
+    "archive": "observations/match_surface_tolerance_sweep.json.gz",
+    "request_sha256": "307e8e1e229c2c173f45fd511fe5d9eeabdeb8815a0578bd7d4b03e4469c8a94",
+    "observation_sha256": "8d3587136bee8ecdbc6d22d76f326bf1f38dfdc3a7c131fd57b28c6105abb7da"
+  },
+  {
+    "family": "match_surface_command_tolerance_defaults",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_defaults > /tmp/match-tolerance-defaults.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-defaults.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-defaults.log.gz",
+    "archive": "observations/match_surface_command_tolerance_defaults.json.gz",
+    "request_sha256": "380d2692b5c3eaa54c6ed6b88e0947b706338f78a058a8e711c31315c5efb629",
+    "observation_sha256": "74ba686c2ebd2738a73024d81aa33f0a597a71ad30c3f488ba297f18c98d548f"
+  },
+  {
+    "family": "match_surface_closest_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_closest_audit > /tmp/match-tolerance-closest.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-closest.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-closest.log.gz",
+    "archive": "observations/match_surface_closest_audit.json.gz",
+    "request_sha256": "ae835fa0836852f0daa4b3bbeb963a086d14c7b59f89347ad5e6c47ce8c85370",
+    "observation_sha256": "906b44ccbf234a38aa9a9e440c9e7d45bbe69507d960d58d9feabc84bc282190"
+  },
+  {
+    "family": "match_surface_command_tolerance_first_custom",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_first_custom > /tmp/match-tolerance-first-custom.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-first-custom.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-first-custom.log.gz",
+    "archive": "observations/match_surface_command_tolerance_first_custom.json.gz",
+    "request_sha256": "be8027e8129dbd746b379a71f76853db25810ed95421b7b8a558c60e50d44ac1",
+    "observation_sha256": "b5e9988881cce61fac74f1255dcdea03b02f39c300c7c8f3443a787e0f81298b"
+  },
+  {
+    "family": "match_surface_local_closest_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_local_closest_audit > /tmp/match-tolerance-local-closest.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-local-closest.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-local-closest.log.gz",
+    "archive": "observations/match_surface_local_closest_audit.json.gz",
+    "request_sha256": "95fbc720b20fb70a2b44e65372bd7ed9583ecb064888b7e47f0f0533722810bb",
+    "observation_sha256": "8e6cb95906afb60d503086d04faf4ceffaca5c244aa06579a5cb6aa3834fce8b"
+  },
+  {
+    "family": "match_surface_local_query_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_local_query_audit > /tmp/match-tolerance-local-query.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-local-query.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-local-query.log.gz",
+    "archive": "observations/match_surface_local_query_audit.json.gz",
+    "request_sha256": "c9740db0e52d0dfc273dea7387982938365b82d4fedfa5ddb54008c672323e64",
+    "observation_sha256": "b5e033a020ff394044eff1d38a33023520c1bc2458e04f77a9f1f402f51c66c3"
+  },
+  {
+    "family": "match_surface_tolerance_mirrors",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_tolerance_mirrors > /tmp/match-tolerance-mirrors.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-mirrors.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-mirrors.log.gz",
+    "archive": "observations/match_surface_tolerance_mirrors.json.gz",
+    "request_sha256": "2ae9eabed3a158b2a906d651dae9d01981a9ff45780c1c2b4d160f38b5fa33a9",
+    "observation_sha256": "beb65fd840d5629f033815e3425439671e13e9e1903cdd738ec1a2cbdae23a24"
+  },
+  {
+    "family": "match_surface_inverse_query_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_inverse_query_audit > /tmp/match-tolerance-inverse-query.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-inverse-query.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-inverse-query.log.gz",
+    "archive": "observations/match_surface_inverse_query_audit.json.gz",
+    "request_sha256": "39d011d44f88e426abdbff03947686716e21805c93871694b33459fddc598fb2",
+    "observation_sha256": "46cf772af5ecdcda77a4c89557735f3b68ff3a472da538f9a0f13e9ec6ac66a8"
+  },
+  {
+    "family": "match_surface_gap_sweep",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_gap_sweep > /tmp/match-tolerance-gap-sweep.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-gap-sweep.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-gap-sweep.log.gz",
+    "archive": "observations/match_surface_gap_sweep.json.gz",
+    "request_sha256": "df7cd9754c2f7d025b855a38b368aaf0492ddd490f33bf81fdb346b2a4980a43",
+    "observation_sha256": "2772fced27493ba80f9d538e88f3a9a0f3b79dd2b0c8908d1676cb635c369dcc"
+  },
+  {
+    "family": "match_surface_deviation_query_audit",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_deviation_query_audit > /tmp/match-tolerance-deviation-query.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-deviation-query.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-deviation-query.log.gz",
+    "archive": "observations/match_surface_deviation_query_audit.json.gz",
+    "request_sha256": "3581596d9154df2fa7cd161644e87bb0c455b7490b2ee73259062fe16ea09068",
+    "observation_sha256": "ef823666fc953de241d8f37a7e28ade98cd52ca821d7b388e397772f98b7a776"
+  }
+]

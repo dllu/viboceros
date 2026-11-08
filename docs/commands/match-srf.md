@@ -46,6 +46,7 @@ choices. Source, topology, attributes, units or tolerance changes invalidate a
 pending preview. Averaging, curve/trimmed targets, closed boundaries, `OnSurface`,
 `MultipleMatches` and custom matching tolerances remain pending. Refinement
 uses document tolerances and can return outside the requested continuity bounds.
+See the [native tolerance investigation](../surface-match-tolerances.md).
 
 [Finite command validation](../match-surface-command-validation.json) covers 21
 native outcomes and 16 direct API edits per build, physical viewport picks,

@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_seed_document",
+      "case": "match_tol_seed_document"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_changed_document",
+      "case": "match_tol_changed_document"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_changed_again",
+      "case": "match_tol_changed_again"
+    }
+  ]
+}

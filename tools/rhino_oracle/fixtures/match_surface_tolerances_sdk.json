@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_curvature_1e-05",
+      "case": "match_tol_sdk_curvature_1e-05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_curvature_0.05",
+      "case": "match_tol_sdk_curvature_0.05"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_curvature_1.0",
+      "case": "match_tol_sdk_curvature_1.0"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_curvature_100.0",
+      "case": "match_tol_sdk_curvature_100.0"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_distance_0.01",
+      "case": "match_tol_sdk_distance_0.01"
+    },
+    {
+      "op": "match_surface_sdk",
+      "id": "match_tol_sdk_distance_1e-06",
+      "case": "match_tol_sdk_distance_1e-06"
+    }
+  ]
+}

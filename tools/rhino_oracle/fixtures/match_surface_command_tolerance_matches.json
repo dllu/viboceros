@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_first_defaults",
+      "case": "match_tol_refine_first_defaults"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_document_defaults",
+      "case": "match_tol_refine_document_defaults"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_loose",
+      "case": "match_tol_refine_loose"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_tighter",
+      "case": "match_tol_refine_tighter"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_cancel",
+      "case": "match_tol_refine_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_refine_after_cancel",
+      "case": "match_tol_refine_after_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_fraction_values",
+      "case": "match_tol_fraction_values"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_value_boundaries",
+      "case": "match_tol_value_boundaries"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_value_upper_bounds",
+      "case": "match_tol_value_upper_bounds"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_outside_menu",
+      "case": "match_tol_outside_menu"
+    }
+  ]
+}
