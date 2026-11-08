@@ -1,6 +1,8 @@
 use super::boolean_intersection::{enter, pick};
 use super::plane_surface_native_support as native;
 use super::*;
+#[path = "offset_surface/cache.rs"]
+mod cache;
 #[path = "../../../crates/viboceros-command/tests/support/offset_surface.rs"]
 #[allow(dead_code)]
 pub(super) mod inputs;

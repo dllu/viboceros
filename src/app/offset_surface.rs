@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use viboceros_command::offset_surface::{self as solver, Options, Prepared};
 use viboceros_document::Object;
 
+mod cache;
 mod input;
 mod tolerance;
 
@@ -22,12 +23,20 @@ pub(super) struct Session {
     through_point: bool,
     distance_start: Option<Point3>,
     pub(super) candidate: Option<Prepared>,
+    cache_key: Option<cache::Key>,
+    cache: cache::Cache,
+    #[cfg(test)]
+    pub(super) preview_preparations: usize,
     scene: Option<Document>,
     original_count: usize,
     directions: viboceros_command::direction::analysis::View,
 }
 
 impl Session {
+    #[cfg(test)]
+    pub(super) fn cached_previews(&self) -> usize {
+        self.cache.len()
+    }
     #[cfg(test)]
     pub(super) fn getter(&self) -> Option<&'static str> {
         if self.tolerance_menu {
@@ -195,6 +204,10 @@ impl VibocerosApp {
             through_point: false,
             distance_start: None,
             candidate: None,
+            cache_key: None,
+            cache: Default::default(),
+            #[cfg(test)]
+            preview_preparations: 0,
             scene: None,
             original_count: self.document.objects().len(),
             directions: viboceros_command::direction::analysis::View {
@@ -281,7 +294,7 @@ impl VibocerosApp {
         let Some(s) = &mut self.offset_surface_session else {
             return;
         };
-        s.candidate = None;
+        let previous = s.cache_key.take().zip(s.candidate.take());
         s.scene = None;
         let mut markers = viboceros_command::direction::collect_markers(
             s.sources.iter().map(|o| (o.id(), o.geometry())),
@@ -297,12 +310,36 @@ impl VibocerosApp {
             loose: s.options.loose && s.loose_available,
             ..s.options
         };
-        let result = solver::prepare(&self.document, effective, &s.flips).and_then(|p| {
+        let key = cache::key(effective, &s.flips);
+        // Retrieve the requested entry before inserting the active candidate,
+        // so a return to the oldest retained setting does not evict that entry.
+        let mut reused = s.cache.take(&key, &self.document);
+        if let Some((old_key, p)) = previous
+            && p.is_current(&self.document)
+        {
+            if old_key == key {
+                reused = Some(p);
+            } else {
+                s.cache.insert(old_key, p);
+            }
+        }
+        let prepared = if let Some(mut p) = reused {
+            p.set_delete_input(effective.delete_input);
+            Ok(p)
+        } else {
+            #[cfg(test)]
+            {
+                s.preview_preparations += 1;
+            }
+            solver::prepare(&self.document, effective, &s.flips)
+        };
+        let result = prepared.and_then(|p| {
             let scene = p.preview(&self.document)?;
             Ok((p, scene))
         });
         match result {
             Ok((p, scene)) => {
+                s.cache_key = Some(key);
                 s.candidate = Some(p);
                 s.scene = Some(scene);
             }
