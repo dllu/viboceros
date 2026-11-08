@@ -13,7 +13,11 @@ pending redo. Source name, layer, color, groups and UUID survive. The accepted
 source moves to the end of document order; Undo restores its original position.
 Whole-object preselection clears before picking.
 
-Options accept `Name=Value` or a name followed by a menu choice:
+Options accept `Name=Value` or a name followed by a menu choice. Choosing
+`Curvature` or `_Curvature` in a menu keeps `MatchSrf` active. See the
+[completed menu replay](../match-surface-menu-validation.json).
+
+Available options:
 
 ```text
 Mode=Position|Tangency|Curvature

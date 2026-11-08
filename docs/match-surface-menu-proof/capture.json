@@ -1,0 +1,19 @@
+{
+  "family": "match_surface_command_tolerance_getters",
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "bash",
+    "-c",
+    "python3 -m tools.rhino_oracle.generate_match_surface_command_tolerance_getters > /tmp/match-tolerance-getters.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-getters.status; exit \"$capture_result\""
+  ],
+  "exit_status": 0,
+  "log": "capture.log.gz",
+  "archive": "observations/match_surface_command_tolerance_getters.json.gz",
+  "observation_sha256": "a1e7d2be6ebf87fc074718ed195299e88838f911be3613aaab9ffe7756efd8be",
+  "request_sha256": "080c2777f9bde66236df4ec616235241bd8f4ea7a524b5674883c63616531fe1",
+  "qualified_rows": [
+    "match_tol_complete_menus"
+  ],
+  "tolerance_discovery_rows": 8
+}

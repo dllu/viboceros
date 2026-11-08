@@ -207,9 +207,13 @@ impl VibocerosApp {
             self.finish_edge_command(true);
             return true;
         }
-        if self
-            .commands
-            .recognizes(input.split_whitespace().next().unwrap_or(""))
+        // Enum values can also name commands (for example Curvature). The
+        // active getter owns a valid choice before global command routing.
+        let owns_choice = matches!(&self.edge_prompt,Some(EdgePrompt::Match(p)) if p.menu.is_some() && p.choices().iter().any(|choice|choice.eq_ignore_ascii_case(input.trim_start_matches('_'))));
+        if !owns_choice
+            && self
+                .commands
+                .recognizes(input.split_whitespace().next().unwrap_or(""))
         {
             self.finish_edge_command(true);
             return false;

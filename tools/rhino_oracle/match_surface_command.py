@@ -67,3 +67,22 @@ QUALIFIED['match_cmd_tolerances_set']=case(picks()+RESET+['Tolerances','Position
 QUALIFIED['match_cmd_cancel_first_pick']=case(picks()[:1]+['Cancel'],preselected=True)
 QUALIFIED['match_cmd_cancel_no_picks']=case(['Cancel'],preselected=True)
 CASES.update(copy.deepcopy(QUALIFIED))
+
+TOLERANCE_GETTERS={
+    'match_tol_first_cancel':case(picks()+RESET+['Tolerances','Cancel']),
+    'match_tol_after_first_cancel':case(picks()+RESET+['Tolerances','Enter','Enter']),
+    'match_tol_second_commit':case(picks()+RESET+['Tolerances','Enter','Enter']),
+    'match_tol_bare_valid':case(picks()+RESET+['Tolerances','PositionTolerance',{'number':'0.00002'},
+        'TangencyTolerance',{'number':'0.5'},'CurvatureTolerance',{'number':'0.02'},'Enter','Enter']),
+    'match_tol_bare_empty':case(picks()+RESET+['Tolerances','PositionTolerance','Enter',
+        'TangencyTolerance','Enter','CurvatureTolerance','Enter','Enter','Enter']),
+    'match_tol_bad_then_valid':case(picks()+RESET+['Tolerances','PositionTolerance',{'number':'-1'},
+        {'number':'0'},{'number':'0.00004'},'TangencyTolerance',{'number':'0.01'},{'number':'0.1'},
+        'CurvatureTolerance',{'number':'-1'},{'number':'0'},{'number':'0.2'},'Enter','Enter']),
+    'match_tol_cancel_pending':case(picks()+RESET+['Tolerances','PositionTolerance=0.00008',
+        'CurvatureTolerance=0.3','TangencyTolerance','Cancel']),
+    'match_tol_after_pending':case(picks()+RESET+['Tolerances','Enter','Enter'],absolute_tolerance=.0001),
+    'match_tol_complete_menus':case(picks()+RESET+['Mode','Tangency','PreserveOtherEnd','Curvature',
+        'IsocurveDirection','Keep','Enter']),
+}
+CASES.update(copy.deepcopy(TOLERANCE_GETTERS))

@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_first_cancel",
+      "case": "match_tol_first_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_after_first_cancel",
+      "case": "match_tol_after_first_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_second_commit",
+      "case": "match_tol_second_commit"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_bare_valid",
+      "case": "match_tol_bare_valid"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_bare_empty",
+      "case": "match_tol_bare_empty"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_bad_then_valid",
+      "case": "match_tol_bad_then_valid"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_cancel_pending",
+      "case": "match_tol_cancel_pending"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_after_pending",
+      "case": "match_tol_after_pending"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_tol_complete_menus",
+      "case": "match_tol_complete_menus"
+    }
+  ]
+}

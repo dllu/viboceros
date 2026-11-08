@@ -701,7 +701,7 @@
     "src/app/tests/face_edge_input.rs": "5391b3c46aa1278b68987f46ae5b1fb0186b1a62e7833d4a284c03b2f30ae977",
     "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
     "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
-    "src/app/tests/mod.rs": "70baa403a0b2b9a078dde5acf16ab418e5af49fad6a068807d44e50d5106b499",
+    "src/app/tests/mod.rs": "89fb673c4d34248b2fd211363f00bff32ccb4ff9159ed61b11a4cf35f356a25f",
     "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
     "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
     "src/app/tests/selection_sidebar.rs": "91e05888ec0c505b8992aeb987f09e8f712d30a269d1af34bac66ae6687f85ea",

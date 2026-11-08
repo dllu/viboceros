@@ -52,7 +52,7 @@ def drive(op,host,guides,command="Conic",start_script=None):
     if command=='BlendCrv':prefixes+=('Pick',)
     if command=='Shell':prefixes=('Select','Thickness','Shell','DeleteInput')
     if command=='OffsetSrf':prefixes=('Select','Offset','Distance','Through','Point','First point for distance','Second point for distance','Second distance point','Solid','BothSides','DeleteInput','Tolerance','Loose','Corner')
-    if command=='MatchSrf':prefixes=('Mode','Tolerance','Select','Continuity','Preserve','Average','Refine','Match','Isocurve','Distance','Tangency','Curvature','Press')
+    if command=='MatchSrf':prefixes=('Position','New','Angle','Tangent','Mode','Tolerance','Select','Continuity','Preserve','Average','Refine','Match','Isocurve','Distance','Tangency','Curvature','Press')
     if command=='MergeSrf':prefixes=('Select','Press','Merge','Smooth','Tolerance','Joining tolerance','Roundness','Surface','Change','Set')
     if command=='Chamfer':prefixes=('Select', 'First', 'Second', 'Chamfer', 'Distance', 'Start', 'End', 'Join', 'Trim', 'Extend')
     if command=='Fillet':prefixes=('Select', 'Fillet radius', 'Radius', 'First', 'Second', 'Start', 'End', 'Join', 'Trim', 'Extend', 'Dynamic')
