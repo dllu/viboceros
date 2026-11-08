@@ -1,0 +1,878 @@
+{
+  "scope": "Sharp-corner OffsetSrf selection, distance and direction editing, through-point acceptance and document admission.",
+  "baseline_revision": "b32dbd8ab56b650cba858079bcbf82a7b40a8593",
+  "implementation_revision": "5d80393e37fa074f22b0578772c02f19d4b47fc2",
+  "full_native_parity": false,
+  "observations": 56,
+  "cancelled": 15,
+  "history_records": 41,
+  "qualified": 47,
+  "qualified_cancelled": 8,
+  "qualified_history_records": 39,
+  "successful": 41,
+  "diagnostic": 9,
+  "qualified_successful": 39,
+  "physical_picks": 1,
+  "command_admissions_per_build": 39,
+  "command_no_admission_controls_per_build": 8,
+  "ui_workflows_per_build": 47,
+  "archive_round_trips_per_build": 94,
+  "windowless_pointer_picks_per_build": 4,
+  "atomic_api_controls_per_build": 10,
+  "retained_failed_import_attempts": 1,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.5383701491068513e-15,
+  "execution": "Eight immutable licensed Rhino captures ran on private Xvfb displays. All 56 outcomes are accounted for: 47 complete Sharp workflows are compared, while nine discovery or unsupported-mode observations remain separate. The failed IronPython import retains its request, frozen sources and host error; its temporary native response was not retained and it qualifies no geometry. Both product builds ran without windows.",
+  "input_evidence": "Authored corners, rectangular trims, source orientation and accepted numeric/point inputs construct product replays. Initial public prompts seed provisional preferences; exact subsequent authored values control accepted offsets. Native output surfaces, curves, topology and document rows are expectations only. One acknowledged native physical click identifies a source flip; product pointer controls exercise source selection and flipping in wireframe and shaded views.",
+  "comparison": "Finite bidirectional trimmed-face grid and trim stations, oriented normals where defined, edge stations, vertices, bounds, face/edge/vertex and trim-kind counts, names, layers, colors, groups, source identity, actual Undo/Redo and 3DM round trips. Command cancellation controls prepare without admission; UI controls replay the getters.",
+  "admission": "Copies use current-layer attributes and retain preselected sources. Open BothSides emits two objects. Nonzero Solid/DeleteInput replaces source geometry in place. Zero one-sided walls emit two coincident caps and collapsed ruled sheets; DeleteInput copies source attributes/groups onto those pieces and removes the source. Zero two-sided walls form one oppositely oriented two-face B-rep and retain source identity when replacing it.",
+  "limits": [
+    "Only Sharp corner mode is implemented. The completed Round pilot remains unqualified; Loose and explicit tolerance options remain unsupported.",
+    "Native factory preferences are not established by private-profile prompts. Rendering materials and other unobserved user data are unqualified.",
+    "Finite planar rectangular, trimmed, tilted, reversed and two-object through-point cases do not establish arbitrary curved closest-point branches, singular inputs, general solid fallback partitions, all subobject workflows, selection-distance ties, new-object creation order, continuous geometric bounds, pixel equality or comparative performance. Existing analytic and general-kernel geometry retain their separate qualifications."
+  ],
+  "cases": [
+    {
+      "id": "offset_b_negative_distance_default",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "A negative distance default cannot be accepted with Enter; the discovery timed out."
+    },
+    {
+      "id": "offset_b_through_near_second",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "offset_b_through_reverse_picks",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "offset_b_zero_distance_default",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_c_distance_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_c_through_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_c_zero_both_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_default_accept",
+      "native_result": "Success",
+      "qualified": false,
+      "reason": "Completed Corner=Round pilot; round-corner admission is outside this increment."
+    },
+    {
+      "id": "offset_f_cancel_selection",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_distance_points",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_through_below",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_through_both",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_through_cancel",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "One Escape left ThroughPoint; a second was needed to cancel the command."
+    },
+    {
+      "id": "offset_f_through_solid",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_zero_both_solid",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_f_zero_solid_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_distance_points",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "The driver did not yet recognize the second-distance-point prompt."
+    },
+    {
+      "id": "offset_h_double_flip",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_negative_both",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_reversed",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_through",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_through_flip",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_through_outside",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_through_trimmed",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_through_two",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_tilted",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 8.881784197001252e-16,
+      "portable_ui_maximum_geometry_error": 8.881784197001252e-16,
+      "native_command_maximum_geometry_error": 1.5383701491068513e-15,
+      "native_ui_maximum_geometry_error": 1.5383701491068513e-15
+    },
+    {
+      "id": "offset_h_tiny",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_trimmed",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_two",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_units",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_zero",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_h_zero_solid",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_m_negative_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_m_negative_default",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_m_negative_number",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_m_zero_number",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_menu_accept",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "Discovery macro entered a nested Distance command and timed out."
+    },
+    {
+      "id": "offset_number_cancel",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "Discovery macro supplied DeleteInput while Solid=No; native rejected that option."
+    },
+    {
+      "id": "offset_plain_accept",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "Discovery macro accepted the distance subprompt and then timed out."
+    },
+    {
+      "id": "offset_postselect_accept",
+      "native_result": "Cancel",
+      "qualified": false,
+      "reason": "Discovery macro accepted the distance subprompt and then timed out."
+    },
+    {
+      "id": "offset_prompt_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_both",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_both_solid",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 8.881784197001252e-16,
+      "native_ui_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "offset_q_click_flip",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_distance_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_flip",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_negative",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_number_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_plain",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_postselect",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_postselect_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_postselect_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_solid_delete",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_solid_keep",
+      "native_result": "Success",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "offset_q_through",
+      "native_result": "Success",
+      "qualified": false,
+      "reason": "ThroughPoint committed before the redundant final Enter could be sent."
+    },
+    {
+      "id": "offset_q_zero_cancel",
+      "native_result": "Cancel",
+      "qualified": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    }
+  ],
+  "captures": [
+    {
+      "family": "offset_srf_getter_pilot",
+      "observations": 2,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "eae1eaa57f09ba5670ed52a47b99058b0bf68fb7a021aab28f88c9b297c3782e"
+    },
+    {
+      "family": "offset_srf_getter_stages",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "ce50847f74581575df2ed72301d3973512fc7c6668a575e87a0622e14b7957bf"
+    },
+    {
+      "family": "offset_srf_getter_qualified",
+      "observations": 15,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "ed04d0c8ee9b9b77d29a06a0745fb60d49f41ed9e495ef6ee99184cd895ee51f"
+    },
+    {
+      "family": "offset_srf_getter_holdouts",
+      "observations": 16,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "9d02e8fbc97b6e31eff23b359da51a078eebbfa5468a51304d9295453e96d37c"
+    },
+    {
+      "family": "offset_srf_getter_final",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "bebcc9cf4f8199e7010bfbab5da76edd9a16bf6c29ec0698f48e6cf966aba104"
+    },
+    {
+      "family": "offset_srf_getter_completion",
+      "observations": 3,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "353c940a85c0b3eb9cf0ee139be528cac4c530f2e50e3ff125731af14d537dca"
+    },
+    {
+      "family": "offset_srf_getter_batch",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "9b0d1788da2c2caa04c92ee2bdbf2c61d87e99e38e0bda043534402a536934c9"
+    },
+    {
+      "family": "offset_srf_getter_menus",
+      "observations": 4,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "b6e0abca80f4b8272ffed6c820bda14400b4663b07f6d612fc327aea59e5d114"
+    }
+  ],
+  "checks": [
+    {
+      "name": "command-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "direction-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "curve_fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "curve_chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "command-native",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "direction-ui-native",
+      "status": 0
+    },
+    {
+      "name": "curve_fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "curve_chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "native-producers",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/error.rs": "1f45e5f459c94bd76a187ba3cc9b77f35c5ce471730a18376b8df864c184a95b",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/lib.rs": "3c0cb6ce2811da0c027723a283eb9364ac3948239c175806d8684f3f2c4ab8ef",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface.rs": "0c68569297e20dc5a011c7031419e496b5d51034dff641859a3c06d73492379d",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/analytic.rs": "2c1fd433c433245c60cf1fb528b487960edd0d3c4a13b93da82ceb354932a333",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/geometry.rs": "3b182049969355f89dc458e5b781f4419dfcc8fd4659cf7b8f4396e7f59e57f5",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/native/tests.rs": "565797d02be46f75b0466ea808adf4f72399567856730edb54cb731f2b04d5b8",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/options.rs": "63d703850fc1186bb1c332b3a3ea48a84a81f0900e2c5d0394a63b8e486b78f2",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/planar.rs": "530b03c0de4a3474e557adc2e4830529ac0767ba90d6dcf6956e4d2b9eaacdc7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/prepare.rs": "ddef133592c18c86bb5783b5fc923d39cc132e12d5963a85f3b3e060706da997",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests.rs": "a9109c81d265622e24b4b61996b75dc097bb5f4e3dadc8886f4ee6b166f72323",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests/cone.rs": "64ae1dd94e4f6f758440b97c4c150161efb3848969aabcf6d798f65d1e81d0df",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests/cylinder.rs": "775a48f262771290bc403ebe08bcb929785c18dcb1d2a5927bd7151cb1a7f7c8",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests/planar.rs": "81cd111158295e735188ee9185dbc77e9d3b16765b1357134f27d4c78e68aa4b",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests/sphere.rs": "dd4360daab4ca6f4c1095c761347523ddaed98848b9abca29c3684a3c41444f1",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/tests/torus.rs": "14320b95146e2705e1718f5f4982c46e1e34e5f09b43856e64a1865ec6755bc7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/through_point.rs": "763a1c037a74bd624ae72014f00fd563df73630a5bf34ef38c075af397e24a04",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/src/offset_surface/zero.rs": "78b19abbb5d35dafdf3116690584da7a9aca131548b5741e73bae63aaacb6c84",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/tests/offset_surface_getter.rs": "4c57fd640112341ba3a53171a973d1c3abdc600a3b65ee9229c8631f0bb0ce6c",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/tests/support/offset_surface.rs": "d5930cf948ce724f1d759d964fb41f8097db908528459d881a60a0680adcb02d",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/tests/support/offset_surface/geometry.rs": "33f9e07ab93a8e0f37b78ca901d8fc9e9d16c7fb51f78db2cbbb1aa79e5809f6",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:crates/viboceros-command/tests/support/offset_surface/input.rs": "3617ada092829486e7dcec71faed3be0d592c2d3eb79c1ca3054b1182448a087",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/commands/offset-srf.md": "87af7e9dea42ed026404be51c91a568fcd9192f3aec9136429b5f5c84172a775",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-batch.log.gz": "57a805172fc0306c9eb3f2cc432ea0a7a68f168e2c7ab7847960ba107cb62335",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-completion.log.gz": "a6c199c156e1b0b3573fd3eb96cd5a5e338a6c1848f0dc44d79a5e433bedadef",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-final.log.gz": "3250aed1cde80528b435e9ba5f9f4ff1ef4f7003e7537b6c0bb19398d8cf5fdb",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-holdouts.log.gz": "42309b22d625a5c6885e75b9b765b033c21e26b514764f8cb594323cc0299f2b",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-menus.log.gz": "9bca177e4a54e65b7358544efbc85683ea813d8f1c98cbadf622ac171853642f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-pilot.log.gz": "cca13857d2e00c69f354a9c26aa54ffa098ef566bae0843dc2566a91f15d2860",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-qualified.log.gz": "422e142b091e9b0d7ea0451880c8357b4fa42f77352e0b6eb282d525eb388671",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/capture-stages.log.gz": "b591bcc7c711bcd26871a658e4d10319408aa0f409509213e86eaf4e21ff8764",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/captures.json": "9e3eaf772660b9261d530b77a48afdb2a674ab5f724e4dc502e5e8ba08b70867",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/checks.json": "d54857eb805f791485e2ce02bfdb567ca40c3ac72ed29d1f2658b9c61fd4a9af",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/clippy-native.log.gz": "133345e3af0e037cd866d4032d19c0796ae63c28e1fdf3fd85925608a00c2b28",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/clippy-portable.log.gz": "6938718740b14c5f2fa0862c98336960ccb5c23c626f1bbc0d6c5bbca0d86201",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/command-native.log.gz": "0a6999f845e8b1d3c32ab734057f820bec7b86cc841ce95c8f0854f2b50b3767",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/command-portable.log.gz": "fb4ee6da5357dd3ec98905e055e7deac8302950b1509f5f10adabe6c0fe27d2f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/curve_chamfer-ui-native.log.gz": "802f0264f0e5db6912df37a670b09221a11387996cd4ad8b5f4e3bd43bc43f08",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/curve_chamfer-ui-portable.log.gz": "a9330f8a351db857df848eed3a4b83bb931fe0929fcd71a22c5a8c49a1490dcb",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/curve_fillet-ui-native.log.gz": "bda421d9fb615876eda2211b2eb046630141d70d82bc6c25e42c375ca6e30385",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/curve_fillet-ui-portable.log.gz": "1c7d8c0bdf85a0d536fb66bfb383ae6f315fd6c3a908fe00bd1cc54d6f2d9533",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/direction-ui-native.log.gz": "600b756ffcfca9626ec31e76922d937962df44d3be92c275f8b949534647a83f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/direction-ui-portable.log.gz": "f7e15b9bc9cff943ec552b333c23b24fcf29b43882e94a7e6e47b7d663b2cadd",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/library-native.log.gz": "9af014f06b0b2d210da4b5ffb04a20a383223dba62f38c186d75b292a1347e48",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/library-portable.log.gz": "d3c73b29ebafe1bfee24390207e89647c70b63b9d687d2183d4e88a7a3da9244",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/native-producers.log.gz": "e8429f2ee0f28f9efce6dc9800f8381eb88a499d4b95725519cd35593fde34ce",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/python-subd.log.gz": "f6fa034942ae45942f3c94ddf5cad2f5518e00a677f8f12d9e29165f83b2f0fe",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/python.log.gz": "3580e91e06035bb562ad0d5894b101a8ccda53298bf62674086c0fb33696bb8f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/subd-command-native.log.gz": "fbc9a350453a86a57e127f924d0cf231a3f450d5e3549124879e7f474dbbe6ff",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/subd-ui-native.log.gz": "95a7c7e501f0b9940ddbfdc4567610322a56463c3f16558c846d1143fde9de76",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/ui-native.log.gz": "4d56d7bb1ecfed5762376470bcad41c74525da9536e27bf7a6c6282acfc5d986",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getter-proof/ui-portable.log.gz": "48cbdfede6e5c1155391cc205fb1b02d47932eda6d5daffedab255c4f5e45e9c",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/offset-surface-getters.md": "9aa0ce189ce0c9ca44c2f77e47f604be9df9cb2ff3515196b41bc316bb519319",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/smlib-offset-provenance.json": "5908f3231e98a2c3fe8b173539a6cc1ba959d57122eb6b880bf7aa3ca8473222",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/smlib-offset-surfaces.md": "6d90595e4b5a5db4eb049cecf04f838daea3038bbcd053d5a3e87b7ac4b704e1",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/subd-box-qualification.json": "2f45b7dcf411b99231d18180464528ce631137222be87e146197f12fae64c491",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:docs/subd-plane-qualification.json": "46f9e9a21755e8f0b70b07d052b9d3f190df381f9675b9b8bcbad9d0a0e27d1a",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app.rs": "2e2c40354f3bc6076be0027e5bfc44f80590043b68a9a15e180eb9e75e63e2b8",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/command_line.rs": "3691fb3d6f138df2a64532e7fbd85ed1dc62fc62f3631e7ddf2aa1ea9c6573cf",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/drafting_controls.rs": "5f40911fd34ba8ac974c455df76f7e0856e633f3368d11d4f57db14571e916d3",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/drafting_input.rs": "5927c79394b4cc57d8bddd20281549f42d51e2476546617cad977149fe971daa",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/interactive_cancel.rs": "d11b298fd4da4f8a74cdb5c22e5e96348753b1780e34f3afc1796bf0ae752edb",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/interactive_start.rs": "ab87afd73dd424b2a5215f47889ec40161a4919a389cdaa2645bf1ba089ad06a",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/interactive_state/metadata.rs": "143d967f40767cb88570802e270c04c952db234e79c33df16beb7fd517731cc7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/interactive_state/mod.rs": "653a5e2731f59b7b4b6fa9ed6129b3eec222fea7bff88afc1e586c3620b9e493",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/interactive_state/prompts.rs": "3f26ba2bb4a5eebc255bbb6017d8637499340be3ceab3af84d609287687959e1",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/object_selection.rs": "e090aef5f6b7ff2175c995fb77f0de8b6f67c2a327fac6335e596e967eb86f39",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/offset_surface.rs": "17544788b185dcdce5a694a60c5e48e3f6bcc8fa9de0569169069225256a1fe7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/offset_surface/input.rs": "7896b7978a1981cb06b882e41766cbc7c686b5b923d0f492ea1f87c2bddcb292",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/prompt_cancel.rs": "a3334c512e35071b5cebe942c3c178df0299d3b797d7db276bfccd93bce47cc8",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/selection_input.rs": "ca7ba617ea254504a71628e7e78a043aea7b0ea7b5e56419d5ab640573c1b8d9",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/tests/mod.rs": "0b16505aab777f4a43a811cfb42e426ef894f68426176158b26f5e99a922b1be",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/tests/offset_surface.rs": "b234de451e0f2791893f7ed5945648575f435a7815e27b1e63a6a76cf8f0d0f7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/tests/offset_surface/mouse.rs": "8b30d3ddd8c4f8c83609fcc6ea1256c18ed479145ef1ff4b680f7bb56b4d5983",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/ui.rs": "c85829a9cbc67fb386e687517927581a5ee1e527c95c3d96bdfed9e1e3db9e54",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:src/app/viewport_input.rs": "eddf0748e8b187d4962bc39ec1444891a51c49d4acfd825b97327fbdbdde5356",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/chamfer_point_picker.py": "781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/check_offset_surface_getter.py": "75e273bcf4f05f6e19ecd54d88182f83893a3b893b08a4a1bce9378ba7545e9f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/client.py": "4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/conic_getter_input.py": "4a646fe1ab604570a5536b33e50b120fa1a59037898467fcc52ab6ebc17d4434",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_batch.json": "26c7cf6849d16c6e5a04f105e970d99ba6aefea516148fb34116becf621967e6",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_completion.json": "5254b7910dce3f3173ad256b73f3cd8afdb9df2d0b07867aeaeb42dae1d985b4",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_final.json": "15ebf43d8cf0297040894e53adb216efe06da94f650bf13959787b0516c0a87f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_holdouts.json": "1c50ef5c3ef11c80a0e299c947cf202d9b63a54b3c18a7d34d117d7801cacf25",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_menus.json": "ed6b9837f25f3b91f2aa861d163002ba86bf8fdd4d8df3cde6c2212174dddea0",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_pilot.json": "0b134f033c90a5e4b396b8b83da4b069d43e6a02bee9449d34605035ac7d4e41",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_qualified.json": "d226a3ba2c80435168aa8b00430e6fb803441e067dde36c453c096c9c155f06f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/fixtures/offset_srf_getter_stages.json": "1567b49f0efb817fb8c84d7ba83c293bd1b55673e9046de817bc69e7e6a7354a",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_batch.py": "21aa3d3eff2c86fc6f467deb1ec7819a4ea4e02322d7ddfd5fdf16620da0adc6",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_completion.py": "77d7455a88a40d13b8b4847a92babc72542371ae8c78aa156b9f6087a08292b2",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_final.py": "b4063c625121166cdc3805281d5b4ffd19e5fcb44b9bac7f75875630a4ab38bb",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_holdouts.py": "c6b0319b46b9a59732ccc6835a489705104f661d50365a33d4d8143e8224aee2",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_menus.py": "b55eece671773637ffaebc910688129da00c502eaccebdd7d4b42abbc15c7282",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_pilot.py": "5d2b46a9d1a96d9c555627477c5b31d3707fe184729424549c2525e137edefce",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_qualified.py": "c1be8555c12fb21a9b443a1b65b470b8318401f9c44ada9fd004a84322d704c4",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/generate_offset_srf_getter_stages.py": "3941b32b6a22da766cea3e130cca5cea101a01b8cc9966cddb70597e59edae06",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_batch.json.gz": "4692784061b5c6d86c079c7eb575accb479e117f42ed51731bae89556073a196",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_completion.json.gz": "46b77935e586701cda6377335e3ad67e3f37adaa852ffe41ac94a8e34ecf0b4e",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_failed_import.json": "c85a5e601023272b066ed23146fe07aa29de0a11b9e2deef33972dbcbc597db6",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_failed_import.log.gz": "74316ab238ddc45922f891940e92210a99b7fcb8b1e3378c8125ce05200cebf6",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_final.json.gz": "07e684a618633dab0b96a962d87e0aacc666594f1be1c370743a37c0743a208c",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_holdouts.json.gz": "fff63f43945f94da8b6f6eadd70766759c510c9537d3dab44ed0b7b4b932a095",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_menus.json.gz": "ed04bea58f7985ff6730d1fb0c96ca22c19248ceca5fd3f22bf8b09ce0a3ee59",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_pilot.json.gz": "538d3490db7004446fbba8148bec186d1b4cdb3e0315125acf980dc7e702e562",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_qualified.json.gz": "2d96eef3ecde41e5ba445d9ceee025b2bc06ccc08d6e23637e84cffe51847c9d",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/offset_srf_getter_stages.json.gz": "1a60c9e02d91e76ff596736fce2434e95392a08fcf9a18e8d542ba2b84265955",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/07e48a22a6c2b76310fddacd2e023d81f956f0fe47c2ef652a8bd42b8a278a39.gz": "297ba122a6b8a5a98d7b81ee6c8e8aa2314d3396681fc8216534f46d55213178",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/0e690bc3c4a04c5c8b998b4b619644b63061f71435d37061245b854809c36b27.gz": "849189851f2441dc7775c0f65d2b9a2b52a1cc01c1a2345c93d145d776452e78",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/15875dedd59dc1380dbbace275c476b3bc4ad38c6a319b6a49e0c013a5f5d718.gz": "ccf5d19355ac509bb35b74cc60299a1350cd0d755303235c4dd62af583903f59",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/21aa3d3eff2c86fc6f467deb1ec7819a4ea4e02322d7ddfd5fdf16620da0adc6.gz": "eb74fa9ea802898fd8e62fed01e50e3a70a2c51d3f6904675569a80e7526d14f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/22b8be3e413932ca57fdb6b2add069be2647b9e49b3d25ebdce3f5901081b988.gz": "82bd374adaa94aec4ca11b5af8539e293f5e761fcb5d597d9e97dae71964e9d1",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/22b968e8c019e6a363568918beb08e66dd5055b9155e4f948ba6ed249858c442.gz": "b7414323a9f368d74723f1fad21172d232ca20d98834b609e882d56be3639d5d",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/2e02ad8301172f166680fd86b8b9d1ac878f044fcda3e12bf9791a9f770d5137.gz": "f7b92010f778fc1c2f19be9da553414559001e102cb4476a20bb4910a883a4d8",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/3941b32b6a22da766cea3e130cca5cea101a01b8cc9966cddb70597e59edae06.gz": "f82d60489358a4f1e045ed92f7ebaf28ab02b367ceaadc5062a1b00eac02be32",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a.gz": "d64863c61d74ae5325e3357de4f3f62106867473e8e37a0c6b353763046f1671",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241.gz": "1f49fe3acfa930bd909b3a1dbaad439de634080ed9aeb31a13f87d9c31e9e698",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/4a646fe1ab604570a5536b33e50b120fa1a59037898467fcc52ab6ebc17d4434.gz": "ba5dc170ea510dbbbad04294b4f65e73ba3073df1f85fd4e967d31a2a39a6046",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/4ecaaa691f21cc24a3e5ac6dd1175098836b509b292ed418080e7079a9f66044.gz": "db2f472a5392c23ead3f095c5da9e8a26e1f4489bd30a0222a662074bc7f83eb",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/5d2b46a9d1a96d9c555627477c5b31d3707fe184729424549c2525e137edefce.gz": "4349c38e3494aead03b2f1b596be3920c61723e089a884b30343033131cc4008",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/77a9620e38a82fed3a9db5489cb4217088397b22541bccf8371ca6dd7c5b8bb4.gz": "1f49e3c5074f7d9f3ad7bb0124b53705b8e73e544bd65b1dbcb1bfde3be24229",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/77d7455a88a40d13b8b4847a92babc72542371ae8c78aa156b9f6087a08292b2.gz": "a5b69ec6b81b279b50507e1b697896c3cc6b617b21a9f4bce9e36976b3bdf38e",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/7a4d81b920d2d2a2795f803ca203fd817932fc2cc44ce82bcc81e0ace241307e.gz": "c65ce10ef19a7da9ea70b4e6a7d9eeadc677e6e1259b3ca2a17ad7b8d56a29a5",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/aa25ea352b45baa3090ac323f07d44106e407e499cd9468ab7c66cbdbc3c6abe.gz": "1691449ec580b8ae0e6cb820e6b7d0875cd78113aa8b7834ece9dd3190cecb09",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/acafc2f36b3fd0586d6f52b6ba37af22bb924cb291c8012e1025e7512352cbec.gz": "1adf8c15a6a79958c790e9b4b0b17521dd7dcf6289c9303b46afdcf8279c58c2",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/b4063c625121166cdc3805281d5b4ffd19e5fcb44b9bac7f75875630a4ab38bb.gz": "ea6397696aafa02bb3c09087fce15891525d9a390ac5486c85dcfcf2a18ba38f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04.gz": "dd4be524a901b12081e1b065dcccf2aa45f3fa5d8cf86c020de21b89e3bbb200",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/b55eece671773637ffaebc910688129da00c502eaccebdd7d4b42abbc15c7282.gz": "8249bb3b48d2a85cd25f3a7da826e07a6d1517fa2208c089ed06bc6f1a38f172",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/c1be8555c12fb21a9b443a1b65b470b8318401f9c44ada9fd004a84322d704c4.gz": "de0f8eb5b4752a81db3cd74acf14310834153cd44a512b58d658d5dd45048f59",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/c69e6be9b5039377c2bc07fda0120c55ddc9b5d69f94c66bc104184073e05498.gz": "51c08e8091a828842342ec29c9c3b054695885f3914417c705b6d0b09c9cd1ea",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/c6b0319b46b9a59732ccc6835a489705104f661d50365a33d4d8143e8224aee2.gz": "60d71b87a4f2ba1ac38eb0b7e90488ab48d19b47185a85a6e8d12fa42fdeec13",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/e40e794df9e04a44bb9eafe50cd49d5642da043415c65218aed15017a6943e78.gz": "6e88dd360c3a4d077abe71a994c681d73472a38e454e3366f552ab99ef5956d7",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/observations/source_snapshots/ec314e9f79523412f94135038a61e1151b3066547534444ee364d36a7d1165a9.gz": "a6e278c761a736bcb60a753e1919516e3bb1c4b8f27ad72887709715a61ba91a",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/offset_surface_command.py": "acafc2f36b3fd0586d6f52b6ba37af22bb924cb291c8012e1025e7512352cbec",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/offset_surface_command_probe.py": "15875dedd59dc1380dbbace275c476b3bc4ad38c6a319b6a49e0c013a5f5d718",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/offset_surface_getter_evidence.py": "4befc7edd5c2c250a1050a27565b9f1b173c4ec683cc47bc2e81c448fb4cb9ff",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/offset_surface_point_picker.py": "22b8be3e413932ca57fdb6b2add069be2647b9e49b3d25ebdce3f5901081b988",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/report_offset_surface_getter.py": "d404c45ec9ff2ca0c54d0186884947d19fc4f3518d812a37c0f50e53c04ee88f",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/rhino_worker.py": "3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/structural_sdk.py": "b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04",
+    "5d80393e37fa074f22b0578772c02f19d4b47fc2:tools/rhino_oracle/test_offset_surface_getter.py": "6461b308fa92235de6ad301957ab0abecfd5224424d751e0e1daa266ece2e6c8"
+  },
+  "evidence_sha256": {
+    "docs/offset-surface-getter-proof/capture-batch.log.gz": "57a805172fc0306c9eb3f2cc432ea0a7a68f168e2c7ab7847960ba107cb62335",
+    "docs/offset-surface-getter-proof/capture-completion.log.gz": "a6c199c156e1b0b3573fd3eb96cd5a5e338a6c1848f0dc44d79a5e433bedadef",
+    "docs/offset-surface-getter-proof/capture-final.log.gz": "3250aed1cde80528b435e9ba5f9f4ff1ef4f7003e7537b6c0bb19398d8cf5fdb",
+    "docs/offset-surface-getter-proof/capture-holdouts.log.gz": "42309b22d625a5c6885e75b9b765b033c21e26b514764f8cb594323cc0299f2b",
+    "docs/offset-surface-getter-proof/capture-menus.log.gz": "9bca177e4a54e65b7358544efbc85683ea813d8f1c98cbadf622ac171853642f",
+    "docs/offset-surface-getter-proof/capture-pilot.log.gz": "cca13857d2e00c69f354a9c26aa54ffa098ef566bae0843dc2566a91f15d2860",
+    "docs/offset-surface-getter-proof/capture-qualified.log.gz": "422e142b091e9b0d7ea0451880c8357b4fa42f77352e0b6eb282d525eb388671",
+    "docs/offset-surface-getter-proof/capture-stages.log.gz": "b591bcc7c711bcd26871a658e4d10319408aa0f409509213e86eaf4e21ff8764",
+    "docs/offset-surface-getter-proof/captures.json": "9e3eaf772660b9261d530b77a48afdb2a674ab5f724e4dc502e5e8ba08b70867",
+    "docs/offset-surface-getter-proof/checks.json": "de563ae08544005132fae0fc0adb0fc3016f38537a1124e0349e46b191db210c",
+    "docs/offset-surface-getter-proof/clippy-native.log.gz": "133345e3af0e037cd866d4032d19c0796ae63c28e1fdf3fd85925608a00c2b28",
+    "docs/offset-surface-getter-proof/clippy-portable.log.gz": "6938718740b14c5f2fa0862c98336960ccb5c23c626f1bbc0d6c5bbca0d86201",
+    "docs/offset-surface-getter-proof/command-native.log.gz": "0a6999f845e8b1d3c32ab734057f820bec7b86cc841ce95c8f0854f2b50b3767",
+    "docs/offset-surface-getter-proof/command-portable.log.gz": "fb4ee6da5357dd3ec98905e055e7deac8302950b1509f5f10adabe6c0fe27d2f",
+    "docs/offset-surface-getter-proof/curve_chamfer-ui-native.log.gz": "802f0264f0e5db6912df37a670b09221a11387996cd4ad8b5f4e3bd43bc43f08",
+    "docs/offset-surface-getter-proof/curve_chamfer-ui-portable.log.gz": "a9330f8a351db857df848eed3a4b83bb931fe0929fcd71a22c5a8c49a1490dcb",
+    "docs/offset-surface-getter-proof/curve_fillet-ui-native.log.gz": "bda421d9fb615876eda2211b2eb046630141d70d82bc6c25e42c375ca6e30385",
+    "docs/offset-surface-getter-proof/curve_fillet-ui-portable.log.gz": "1c7d8c0bdf85a0d536fb66bfb383ae6f315fd6c3a908fe00bd1cc54d6f2d9533",
+    "docs/offset-surface-getter-proof/direction-ui-native.log.gz": "600b756ffcfca9626ec31e76922d937962df44d3be92c275f8b949534647a83f",
+    "docs/offset-surface-getter-proof/direction-ui-portable.log.gz": "f7e15b9bc9cff943ec552b333c23b24fcf29b43882e94a7e6e47b7d663b2cadd",
+    "docs/offset-surface-getter-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/offset-surface-getter-proof/library-native.log.gz": "9af014f06b0b2d210da4b5ffb04a20a383223dba62f38c186d75b292a1347e48",
+    "docs/offset-surface-getter-proof/library-portable.log.gz": "d3c73b29ebafe1bfee24390207e89647c70b63b9d687d2183d4e88a7a3da9244",
+    "docs/offset-surface-getter-proof/native-producers.log.gz": "e8429f2ee0f28f9efce6dc9800f8381eb88a499d4b95725519cd35593fde34ce",
+    "docs/offset-surface-getter-proof/python-subd.log.gz": "f6fa034942ae45942f3c94ddf5cad2f5518e00a677f8f12d9e29165f83b2f0fe",
+    "docs/offset-surface-getter-proof/python.log.gz": "ac9e5037415b44977682e69fdcc2cf730ce7eb1a0a446fee2b68434ca953813f",
+    "docs/offset-surface-getter-proof/subd-command-native.log.gz": "fbc9a350453a86a57e127f924d0cf231a3f450d5e3549124879e7f474dbbe6ff",
+    "docs/offset-surface-getter-proof/subd-ui-native.log.gz": "95a7c7e501f0b9940ddbfdc4567610322a56463c3f16558c846d1143fde9de76",
+    "docs/offset-surface-getter-proof/ui-native.log.gz": "4d56d7bb1ecfed5762376470bcad41c74525da9536e27bf7a6c6282acfc5d986",
+    "docs/offset-surface-getter-proof/ui-portable.log.gz": "48cbdfede6e5c1155391cc205fb1b02d47932eda6d5daffedab255c4f5e45e9c",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_batch.json": "26c7cf6849d16c6e5a04f105e970d99ba6aefea516148fb34116becf621967e6",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_completion.json": "5254b7910dce3f3173ad256b73f3cd8afdb9df2d0b07867aeaeb42dae1d985b4",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_final.json": "15ebf43d8cf0297040894e53adb216efe06da94f650bf13959787b0516c0a87f",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_holdouts.json": "1c50ef5c3ef11c80a0e299c947cf202d9b63a54b3c18a7d34d117d7801cacf25",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_menus.json": "ed6b9837f25f3b91f2aa861d163002ba86bf8fdd4d8df3cde6c2212174dddea0",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_pilot.json": "0b134f033c90a5e4b396b8b83da4b069d43e6a02bee9449d34605035ac7d4e41",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_qualified.json": "d226a3ba2c80435168aa8b00430e6fb803441e067dde36c453c096c9c155f06f",
+    "tools/rhino_oracle/fixtures/offset_srf_getter_stages.json": "1567b49f0efb817fb8c84d7ba83c293bd1b55673e9046de817bc69e7e6a7354a",
+    "tools/rhino_oracle/observations/offset_srf_getter_batch.json.gz": "4692784061b5c6d86c079c7eb575accb479e117f42ed51731bae89556073a196",
+    "tools/rhino_oracle/observations/offset_srf_getter_completion.json.gz": "46b77935e586701cda6377335e3ad67e3f37adaa852ffe41ac94a8e34ecf0b4e",
+    "tools/rhino_oracle/observations/offset_srf_getter_failed_import.json": "c85a5e601023272b066ed23146fe07aa29de0a11b9e2deef33972dbcbc597db6",
+    "tools/rhino_oracle/observations/offset_srf_getter_failed_import.log.gz": "74316ab238ddc45922f891940e92210a99b7fcb8b1e3378c8125ce05200cebf6",
+    "tools/rhino_oracle/observations/offset_srf_getter_final.json.gz": "07e684a618633dab0b96a962d87e0aacc666594f1be1c370743a37c0743a208c",
+    "tools/rhino_oracle/observations/offset_srf_getter_holdouts.json.gz": "fff63f43945f94da8b6f6eadd70766759c510c9537d3dab44ed0b7b4b932a095",
+    "tools/rhino_oracle/observations/offset_srf_getter_menus.json.gz": "ed04bea58f7985ff6730d1fb0c96ca22c19248ceca5fd3f22bf8b09ce0a3ee59",
+    "tools/rhino_oracle/observations/offset_srf_getter_pilot.json.gz": "538d3490db7004446fbba8148bec186d1b4cdb3e0315125acf980dc7e702e562",
+    "tools/rhino_oracle/observations/offset_srf_getter_qualified.json.gz": "2d96eef3ecde41e5ba445d9ceee025b2bc06ccc08d6e23637e84cffe51847c9d",
+    "tools/rhino_oracle/observations/offset_srf_getter_stages.json.gz": "1a60c9e02d91e76ff596736fce2434e95392a08fcf9a18e8d542ba2b84265955",
+    "tools/rhino_oracle/observations/source_snapshots/07e48a22a6c2b76310fddacd2e023d81f956f0fe47c2ef652a8bd42b8a278a39.gz": "297ba122a6b8a5a98d7b81ee6c8e8aa2314d3396681fc8216534f46d55213178",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/0e690bc3c4a04c5c8b998b4b619644b63061f71435d37061245b854809c36b27.gz": "849189851f2441dc7775c0f65d2b9a2b52a1cc01c1a2345c93d145d776452e78",
+    "tools/rhino_oracle/observations/source_snapshots/15875dedd59dc1380dbbace275c476b3bc4ad38c6a319b6a49e0c013a5f5d718.gz": "ccf5d19355ac509bb35b74cc60299a1350cd0d755303235c4dd62af583903f59",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/21aa3d3eff2c86fc6f467deb1ec7819a4ea4e02322d7ddfd5fdf16620da0adc6.gz": "eb74fa9ea802898fd8e62fed01e50e3a70a2c51d3f6904675569a80e7526d14f",
+    "tools/rhino_oracle/observations/source_snapshots/22b8be3e413932ca57fdb6b2add069be2647b9e49b3d25ebdce3f5901081b988.gz": "82bd374adaa94aec4ca11b5af8539e293f5e761fcb5d597d9e97dae71964e9d1",
+    "tools/rhino_oracle/observations/source_snapshots/22b968e8c019e6a363568918beb08e66dd5055b9155e4f948ba6ed249858c442.gz": "b7414323a9f368d74723f1fad21172d232ca20d98834b609e882d56be3639d5d",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2e02ad8301172f166680fd86b8b9d1ac878f044fcda3e12bf9791a9f770d5137.gz": "f7b92010f778fc1c2f19be9da553414559001e102cb4476a20bb4910a883a4d8",
+    "tools/rhino_oracle/observations/source_snapshots/3941b32b6a22da766cea3e130cca5cea101a01b8cc9966cddb70597e59edae06.gz": "f82d60489358a4f1e045ed92f7ebaf28ab02b367ceaadc5062a1b00eac02be32",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3dbdbb1bf4dd44cc1d8d66df25a4df41c0edd7e6c1cdc75cad01438a53b7327a.gz": "d64863c61d74ae5325e3357de4f3f62106867473e8e37a0c6b353763046f1671",
+    "tools/rhino_oracle/observations/source_snapshots/4205db5a9481fa80b03b0414562436514ceb56895ec2b11c781e62ada2c5b241.gz": "1f49fe3acfa930bd909b3a1dbaad439de634080ed9aeb31a13f87d9c31e9e698",
+    "tools/rhino_oracle/observations/source_snapshots/4a646fe1ab604570a5536b33e50b120fa1a59037898467fcc52ab6ebc17d4434.gz": "ba5dc170ea510dbbbad04294b4f65e73ba3073df1f85fd4e967d31a2a39a6046",
+    "tools/rhino_oracle/observations/source_snapshots/4ecaaa691f21cc24a3e5ac6dd1175098836b509b292ed418080e7079a9f66044.gz": "db2f472a5392c23ead3f095c5da9e8a26e1f4489bd30a0222a662074bc7f83eb",
+    "tools/rhino_oracle/observations/source_snapshots/5d2b46a9d1a96d9c555627477c5b31d3707fe184729424549c2525e137edefce.gz": "4349c38e3494aead03b2f1b596be3920c61723e089a884b30343033131cc4008",
+    "tools/rhino_oracle/observations/source_snapshots/77a9620e38a82fed3a9db5489cb4217088397b22541bccf8371ca6dd7c5b8bb4.gz": "1f49e3c5074f7d9f3ad7bb0124b53705b8e73e544bd65b1dbcb1bfde3be24229",
+    "tools/rhino_oracle/observations/source_snapshots/77d7455a88a40d13b8b4847a92babc72542371ae8c78aa156b9f6087a08292b2.gz": "a5b69ec6b81b279b50507e1b697896c3cc6b617b21a9f4bce9e36976b3bdf38e",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/7a4d81b920d2d2a2795f803ca203fd817932fc2cc44ce82bcc81e0ace241307e.gz": "c65ce10ef19a7da9ea70b4e6a7d9eeadc677e6e1259b3ca2a17ad7b8d56a29a5",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/aa25ea352b45baa3090ac323f07d44106e407e499cd9468ab7c66cbdbc3c6abe.gz": "1691449ec580b8ae0e6cb820e6b7d0875cd78113aa8b7834ece9dd3190cecb09",
+    "tools/rhino_oracle/observations/source_snapshots/acafc2f36b3fd0586d6f52b6ba37af22bb924cb291c8012e1025e7512352cbec.gz": "1adf8c15a6a79958c790e9b4b0b17521dd7dcf6289c9303b46afdcf8279c58c2",
+    "tools/rhino_oracle/observations/source_snapshots/b4063c625121166cdc3805281d5b4ffd19e5fcb44b9bac7f75875630a4ab38bb.gz": "ea6397696aafa02bb3c09087fce15891525d9a390ac5486c85dcfcf2a18ba38f",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b55572c79de36cbf02d6c61045282833cdbcaeb3806cd998dc93d78db1b8dd04.gz": "dd4be524a901b12081e1b065dcccf2aa45f3fa5d8cf86c020de21b89e3bbb200",
+    "tools/rhino_oracle/observations/source_snapshots/b55eece671773637ffaebc910688129da00c502eaccebdd7d4b42abbc15c7282.gz": "8249bb3b48d2a85cd25f3a7da826e07a6d1517fa2208c089ed06bc6f1a38f172",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c1be8555c12fb21a9b443a1b65b470b8318401f9c44ada9fd004a84322d704c4.gz": "de0f8eb5b4752a81db3cd74acf14310834153cd44a512b58d658d5dd45048f59",
+    "tools/rhino_oracle/observations/source_snapshots/c69e6be9b5039377c2bc07fda0120c55ddc9b5d69f94c66bc104184073e05498.gz": "51c08e8091a828842342ec29c9c3b054695885f3914417c705b6d0b09c9cd1ea",
+    "tools/rhino_oracle/observations/source_snapshots/c6b0319b46b9a59732ccc6835a489705104f661d50365a33d4d8143e8224aee2.gz": "60d71b87a4f2ba1ac38eb0b7e90488ab48d19b47185a85a6e8d12fa42fdeec13",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d9bb43054f4372768205c1e2e64ec6954a0144f680d7366f6f6291a1ef9dd783.gz": "1b24adaadf6cbd09ec082220d7f40dd506289f9e13447dcb34ea757a08e72259",
+    "tools/rhino_oracle/observations/source_snapshots/e40e794df9e04a44bb9eafe50cd49d5642da043415c65218aed15017a6943e78.gz": "6e88dd360c3a4d077abe71a994c681d73472a38e454e3366f552ab99ef5956d7",
+    "tools/rhino_oracle/observations/source_snapshots/ec314e9f79523412f94135038a61e1151b3066547534444ee364d36a7d1165a9.gz": "a6e278c761a736bcb60a753e1919516e3bb1c4b8f27ad72887709715a61ba91a",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
