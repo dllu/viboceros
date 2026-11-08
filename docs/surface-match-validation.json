@@ -1,0 +1,1422 @@
+{
+  "scope": "One-sided open untrimmed NURBS natural-boundary matching foundation in portable and SMLib builds.",
+  "baseline_revision": "aff9941576446af2e7b51e18c2c55ddd90c46f0b",
+  "implementation_revision": "e1c05ead00ae15b24eda6f17887cf2f53897a02b",
+  "owned_headless_observations": 81,
+  "one_sided_geometry_replays_per_build": 91,
+  "qualified_capture_replays_per_build": 75,
+  "supplemental_replays_per_build": 16,
+  "pending_average_observations": 6,
+  "native_normal_audit_observations": 9,
+  "command_implemented": false,
+  "full_native_parity": false,
+  "continuous_surface_distance_qualified": false,
+  "performance_qualified": false,
+  "construction": "Evaluate independent Greville boundary jets, preserve derivative length and tangential acceleration, resolve the target second fundamental form, then solve homogeneous rows. Reset the second curvature control weight after isocurve extraction. Restore source chart clocks. Use exact single-span degree elevation and the measured short-multispan Greville rebuild.",
+  "refinement": "Insert midpoint knots only in failing transverse spans, rematch the evolving surface, and return the final insertion without rematching at the four-step cap. Captured native results can exceed requested angular tolerances.",
+  "comparison": "Degrees, counts, knots, face sense, 17 by 17 surface grids, complete boundary-curve deviation certificates, oriented endpoints/incidence, vertices and 3DM round trips. Only authored inputs enter implementation; native controls are expectations.",
+  "maximum_geometry_error": 1.7048796746957772e-15,
+  "native_maximum_sampled_refined_angle": 2.3906056383913493e-05,
+  "normal_query_rounding_floor_radians": 3e-08,
+  "limits": [
+    "MatchSrf command selection, getters, attributes and document history remain pending.",
+    "Averaging, curve targets, trimmed/closed boundaries and broader refinement parameter sweeps remain unqualified or unsupported.",
+    "Short-multispan preparation can change far-end derivatives; nonuniform cross knots affect the native G2 normal rule. No general continuous G2 or distance certificate is claimed.",
+    "One supplemental final launch has no retained launcher status. All16 recipes were repeated in an independent owned launch, and original responses remain immutable diagnostics."
+  ],
+  "captures": [
+    {
+      "family": "match_surface_pilot",
+      "observations": 12,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "d556da3b18612d705472971b1aa217bd133f603bdefe08fd2e1ff9323f9027c6"
+    },
+    {
+      "family": "match_surface_holdouts",
+      "observations": 36,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "5c25923f37a0aa9def77e7510cf7fcc67c50dd40b49347b1c2d466d169b84deb"
+    },
+    {
+      "family": "match_surface_final",
+      "observations": 16,
+      "exit_status": null,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "58db2117de7e2e824c4a7bd516f8c87e81802c5d53a7b99175af286ab05682b8"
+    },
+    {
+      "family": "match_surface_refinement",
+      "observations": 9,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e71a39cef0ed3331fe695f01d0ca4e4e659497f244d8c62bc6f77b5e2c02e0c1"
+    },
+    {
+      "family": "match_surface_oriented",
+      "observations": 24,
+      "exit_status": 0,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e1e7ed8d67a0b4fcb80d462d47f6fd8c0ee2c17314b9edda508fc6e0932f1014"
+    }
+  ],
+  "stages": {
+    "portable": [
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-05",
+        "maximum_geometry_error": 1.4075709228938102e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-06",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-07",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-05",
+        "maximum_geometry_error": 1.5700227134231492e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-06",
+        "maximum_geometry_error": 1.5700227134231492e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-07",
+        "maximum_geometry_error": 1.5700227134231492e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-05",
+        "maximum_geometry_error": 1.4075709228938102e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-06",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-07",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_curvature",
+        "maximum_geometry_error": 8.248085681524634e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_none",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_tangency",
+        "maximum_geometry_error": 6.123549298994791e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_curvature",
+        "maximum_geometry_error": 1.3909756634304308e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_curvature",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_position",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_curvature",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_position",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_tangency",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_tangency",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_curvature",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_position",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_curvature",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_position",
+        "maximum_geometry_error": 1.5700227134231492e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_tangency",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_tangency",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_transverse_basis",
+        "maximum_geometry_error": 6.110167916837201e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_curvature",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_position",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_tangency",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_curvature",
+        "maximum_geometry_error": 7.019966171215001e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_position",
+        "maximum_geometry_error": 7.019966171215001e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_tangency",
+        "maximum_geometry_error": 7.019966171215001e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_matchtarget_curvature",
+        "maximum_geometry_error": 6.707437923744493e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_matchtarget_tangency",
+        "maximum_geometry_error": 6.51281824295797e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_perpendicular_curvature",
+        "maximum_geometry_error": 6.753223014464259e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_perpendicular_tangency",
+        "maximum_geometry_error": 6.51281824295797e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_preserve_curvature",
+        "maximum_geometry_error": 6.51281824295797e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_preserve_tangency",
+        "maximum_geometry_error": 6.51281824295797e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_curvature",
+        "maximum_geometry_error": 6.683639897570833e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_tangency",
+        "maximum_geometry_error": 5.127274494396203e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_curvature",
+        "maximum_geometry_error": 6.616897139488364e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_curvature",
+        "maximum_geometry_error": 5.689496328045423e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_curvature",
+        "maximum_geometry_error": 9.132482106302566e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_position",
+        "maximum_geometry_error": 9.132482106302566e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_tangency",
+        "maximum_geometry_error": 9.132482106302566e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_curvature",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_curvature",
+        "maximum_geometry_error": 8.632859700614552e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_both_transpose",
+        "maximum_geometry_error": 1.137640067256873e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_north",
+        "maximum_geometry_error": 1.1352675097896258e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_reversed_v",
+        "maximum_geometry_error": 6.77599954797753e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_south",
+        "maximum_geometry_error": 1.1896395282205053e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_west",
+        "maximum_geometry_error": 1.2248671824964373e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_east",
+        "maximum_geometry_error": 6.775661374079847e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_north",
+        "maximum_geometry_error": 8.248085681524634e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_south",
+        "maximum_geometry_error": 6.775661374079847e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_curvature",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_none",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_curvature",
+        "maximum_geometry_error": 7.126483889934188e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_none",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_curvature",
+        "maximum_geometry_error": 1.3909756634304308e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_position",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_tangency",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_curvature",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_position",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_curvature",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_position",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_tangency",
+        "maximum_geometry_error": 8.76857674909672e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_tangency",
+        "maximum_geometry_error": 1.6424854357535661e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_curvature",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_position",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_curvature",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_position",
+        "maximum_geometry_error": 1.5700227134231492e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_tangency",
+        "maximum_geometry_error": 1.5382778185121305e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_tangency",
+        "maximum_geometry_error": 1.0477839890086522e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_transverse_basis",
+        "maximum_geometry_error": 6.110167916837201e-16,
+        "qualified_capture": true
+      }
+    ],
+    "native": [
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-05",
+        "maximum_geometry_error": 1.4612109781074611e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-06",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_curvature_1e-07",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-05",
+        "maximum_geometry_error": 1.7048796746957772e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-06",
+        "maximum_geometry_error": 1.7048796746957772e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_position_1e-07",
+        "maximum_geometry_error": 1.7048796746957772e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-05",
+        "maximum_geometry_error": 1.4612109781074611e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-06",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_a_tangency_1e-07",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_curvature",
+        "maximum_geometry_error": 1.5425747474557578e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_none",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_curvature_tangency",
+        "maximum_geometry_error": 7.649245414856266e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_curvature",
+        "maximum_geometry_error": 1.3716565586867143e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_multi_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_curvature",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_position",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_curvature",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_position",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_refine_tangency",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_polynomial_tangency",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_curvature",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_position",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_curvature",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_position",
+        "maximum_geometry_error": 1.7048796746957772e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_refine_tangency",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_rational_tangency",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_f_transverse_basis",
+        "maximum_geometry_error": 6.110167916837201e-16,
+        "qualified_capture": false
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_curvature",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_position",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_aligned_tangency",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_curvature",
+        "maximum_geometry_error": 8.01269205450519e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_position",
+        "maximum_geometry_error": 8.01269205450519e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_closest_tangency",
+        "maximum_geometry_error": 8.01269205450519e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_matchtarget_curvature",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_matchtarget_tangency",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_perpendicular_curvature",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_perpendicular_tangency",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_preserve_curvature",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_iso_preserve_tangency",
+        "maximum_geometry_error": 9.432334580265707e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_curvature",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_linear_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_curvature",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quadratic_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_curvature",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_quartic_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_curvature",
+        "maximum_geometry_error": 8.505669588361851e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_position",
+        "maximum_geometry_error": 8.505669588361851e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_rational_tangency",
+        "maximum_geometry_error": 8.505669588361851e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_curvature",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_refine_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_curvature",
+        "maximum_geometry_error": 8.554069038670859e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_h_unequal_cross_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_both_transpose",
+        "maximum_geometry_error": 9.164595183352479e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_north",
+        "maximum_geometry_error": 1.5553086459892121e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_reversed_v",
+        "maximum_geometry_error": 8.455206652451155e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_south",
+        "maximum_geometry_error": 1.2318567482278434e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_first_west",
+        "maximum_geometry_error": 1.2228216391357497e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_east",
+        "maximum_geometry_error": 9.164595183352479e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_north",
+        "maximum_geometry_error": 1.5425747474557578e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_o_target_south",
+        "maximum_geometry_error": 9.164595183352479e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_curvature",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_none",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_position_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_curvature",
+        "maximum_geometry_error": 7.424616477180742e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_none",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_tangency_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_curvature",
+        "maximum_geometry_error": 1.3716565586867143e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_position",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_multi_tangency",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_curvature",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_position",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_curvature",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_position",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_refine_tangency",
+        "maximum_geometry_error": 1.0874599459761155e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_polynomial_tangency",
+        "maximum_geometry_error": 1.6211823881569287e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_curvature",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_position",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_curvature",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_position",
+        "maximum_geometry_error": 1.7048796746957772e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_refine_tangency",
+        "maximum_geometry_error": 1.5109770140384506e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_rational_tangency",
+        "maximum_geometry_error": 1.0428675542186025e-15,
+        "qualified_capture": true
+      },
+      {
+        "archives": 1,
+        "id": "match_v_transverse_basis",
+        "maximum_geometry_error": 6.110167916837201e-16,
+        "qualified_capture": true
+      }
+    ]
+  },
+  "normal_audits": {
+    "portable": [
+      {
+        "id": "match_a_curvature_1e-05",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073423022089457e-08
+      },
+      {
+        "id": "match_a_curvature_1e-06",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_curvature_1e-07",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_position_1e-05",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_position_1e-06",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_position_1e-07",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_tangency_1e-05",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073423022089457e-08
+      },
+      {
+        "id": "match_a_tangency_1e-06",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_tangency_1e-07",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      }
+    ],
+    "native": [
+      {
+        "id": "match_a_curvature_1e-05",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073423022089457e-08
+      },
+      {
+        "id": "match_a_curvature_1e-06",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_curvature_1e-07",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_position_1e-05",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_position_1e-06",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_position_1e-07",
+        "maximum_angle": 0.05020820695864987,
+        "maximum_query_difference": 8.480108976138823e-14
+      },
+      {
+        "id": "match_a_tangency_1e-05",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073423022089457e-08
+      },
+      {
+        "id": "match_a_tangency_1e-06",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      },
+      {
+        "id": "match_a_tangency_1e-07",
+        "maximum_angle": 2.3906056383913493e-05,
+        "maximum_query_difference": 2.1073420961841548e-08
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "surface-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "surface-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "kernel-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-command/tests/match_surfaces.rs": "5c11ed438ed19b361ce90f018b739be7efafd14d19ceb755a5d07bb231202f77",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/error.rs": "61a3d5ad00ebfd7bd702eebaa157151d40e48a096f71e9188532ed0e1c49820b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/lib.rs": "6a598c47cc50243471051ec1afd074be8906ec0203c39b39a6a594b219635264",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match.rs": "e7d5780162dea162b57d54254daca733614b6ec2318e44ab3dcc17115f358a2c",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match/fit.rs": "27f6d0d64463ce270b4c5799c9852cb2e4fedb1cf3bb6eb14132adffa74bd648",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match/jets.rs": "24ce6bbc05101ddf5718a5dea3af4cfa437afe3dc336e699a549919fff59d213",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match/orientation.rs": "da8bfdeeb50ff11cac1876760bbe1cca4b6f0c509fd3658572627ce4bacc5aff",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match/prepare.rs": "ea2b278a2eaaee06c5085f2feb4d3ab9025429ffeca93946b07c98f75d306d7b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-geometry/src/surface_match/refine.rs": "f2cfd3f3950004fe421b79ff0b04aec229bb9b63bef2575faec808d83e305534",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-smlib/src/lib.rs": "8d62397cc91611322d2280ece562e4fa8ddfcf51a33bb62db4ade3b9cd722081",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-smlib/src/native.rs": "2516d4d47eabe29d2d9eb5f94f4ae3a2ead84f72164d94e20cfa8c0b0ed3cd8c",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-smlib/src/native/knot_refinement.rs": "bb3524729c254e18bd0aca9e8129ab9563ff7a667379701f66addeff4767dddd",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:crates/viboceros-smlib/src/native/surface_match.rs": "df8d5bdb94beb617eccf5b189819465829f7fad160b9375a5a6b8e10de1e1ee5",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/native-modeling.md": "89777c79bf694f4d1376cee997dd99879456349a24432969c934b18cb1d97094",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/smlib-surface-matching.md": "5899857a9ab8b2233d0d2ec9549fdcd358bee39cf964721d9d65e6fb62c2921b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/subd-box-qualification.json": "9c27930fe161e1a8c6f001126718f71e84408e75c62d5ec5a9f55b95c337d3d4",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/subd-plane-qualification.json": "2adf126a513f1d7a22544e9416c293edd8fbf0b34ccd230efe7ef05060923143",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/captures.json": "d81b07a926679ee21b128dae4944ccfe70ecb9ca8406454201515761d45e2630",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/checks.json": "17307def53ad2f0535b609e08a3dd9b535aaccfdc44f88416a44499c86bf36a5",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/clippy-native.log.gz": "24c40f93a0da70fbfb39f5508c1adb117e03379a3bdc699a7c2ac6362db7e01b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/clippy-portable.log.gz": "94bb36a5d1891139212bd2be3cd8913e54bd98e47d3227ae10304312512ad3dd",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/kernel-native.log.gz": "a09e5f2d40bee5158d6b96ae5042541c1098956dc2995b42bc2dca1cb81c9945",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/match_surface_final.capture.log.gz": "ca28147424909c52afb575abfc7b61a5b527cdaa74a8effbc67dc5a45c7f46dd",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/match_surface_holdouts.capture.log.gz": "8335b48d4d70d3d11780f96207c9484972d2364cd41a03f847bd28c1db5e1f7c",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/match_surface_oriented.capture.log.gz": "7d00774c3fe8d4228a2ba2a3dfb76796a6af8e660e318a056a3561a2ea1fcae8",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/match_surface_pilot.capture.log.gz": "8fa641bde8d03ca5b0c8eb0f8061f2deb141f5ad829177de66fda5d57ef7346b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/match_surface_refinement.capture.log.gz": "a7ff5f6a7d96a0f4dd7ecbb97e8f40168fb3c9dac8b96449bf498933529ac845",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/python-subd.log.gz": "57de3e3e4a69d341799a9de553205bad7046fc36f06c73eef4b3a782ce9f193d",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/python.log.gz": "ee58d45f27cca9a4e6159a937ce6dec7567fbc5a2dd691ff299a09cb59762d35",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/subd-command-native.log.gz": "9ecdbe63f2389fe20d3f080918f6e256e514350469ecee4c85d6b29da20c927f",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/subd-ui-native.log.gz": "c4b0d51aa2a2469e5e206fa434564bf7cea8e68262905f62989e1329ddebe447",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/surface-native.log.gz": "caaf006270e49b4d388d566506209fdfcb7dad06ff2974aa1f1bbc5a8dcc198e",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:docs/surface-match-proof/surface-portable.log.gz": "6a282cdf201742265a8e992df54d67914cbb8caaee039e9612d18835cf6d2da4",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/check_surface_match.py": "890170be573221d08320ac6d8ad0f367b941e85be62c1ed64e1f2e063c4a3bc0",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/fixtures/match_surface_final.json": "f5ab89d58d816d8fe45b850fc2c384f621414be81a67685720aefca69930edd2",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/fixtures/match_surface_holdouts.json": "fb805939db0d4e0c4419e1303c34c899351d156216714d5f62f9c27cfd58a48e",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/fixtures/match_surface_oriented.json": "c012812e8ac8fcb7cd3c5f6febbb7b4a05aabda532df8a6430812382b53bbd9e",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/fixtures/match_surface_pilot.json": "5065c417e6711f1db2d9cef6e7faa272dd0a57cb498d646dbede0330eb635674",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/fixtures/match_surface_refinement.json": "612d713a16701737a831fe7d9f28fd38acb0b10f8342f03317e70e2ea551b359",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/generate_match_surface_final.py": "1182941d70593c07aa7bae44dcf803639de36597060154e8450a51d97c9a8389",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/generate_match_surface_holdouts.py": "3111499ab70e62a51635aede6926718b64becd232fcde74d235ce9ac0a979ec6",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/generate_match_surface_oriented.py": "481e02db53858870fb31162cc8b88e58e84705feb530ba87f66d995277f959ba",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/generate_match_surface_pilot.py": "2a6fbf0e38508138bf262153e9008a24f958d665d710846da92782dce19c6918",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/generate_match_surface_refinement.py": "59f5db48123f6c0268377489b78ca424dff174f7c9b46f8f9e7e018e794efaf2",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/match_surface_cases.py": "ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/match_surface_sdk.py": "1169be6fdb4ace91bdcfbe8d3c5ea95fc445838ebdabf4af72bcbd82737235f1",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/match_surface_final.json.gz": "9e3f6850ba61a2a37ed6b502c223fc3b5ae9baeefb1b3ef5991c6f6f3356236a",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/match_surface_holdouts.json.gz": "248f5c698826e298e34b06d38ef01daa56412ff4ef834801ea8c0b71cdb7c71e",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/match_surface_oriented.json.gz": "177e673ac9dc9648338d36b01df2e6e68b5a891c86f9032b18c873f0991916cb",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/match_surface_pilot.json.gz": "30fbab6fa42e274c4b71633f404be32c42adce415a51ab67d8799b77d7b7d8f9",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/match_surface_refinement.json.gz": "4d8dd7c5f2ad05272c512c926cb89def5fd6ca28e2cc6d77121614d29c75713b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/1169be6fdb4ace91bdcfbe8d3c5ea95fc445838ebdabf4af72bcbd82737235f1.gz": "1ee7a4f9d21c60944b7de4d205bc7fdac72217ab6f1e1278712685e867da9b3a",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/1182941d70593c07aa7bae44dcf803639de36597060154e8450a51d97c9a8389.gz": "242b3419b1a99866777b1755fdea8cfdd637bfbce3c9ff69c5ebb21eff236a40",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/2a6fbf0e38508138bf262153e9008a24f958d665d710846da92782dce19c6918.gz": "8f61d418214aa6fd21b318323f60c0c3fbd9fc123c6a5a0b6a7edbeacbb89796",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/3111499ab70e62a51635aede6926718b64becd232fcde74d235ce9ac0a979ec6.gz": "d31421125066155bbec080c6fec509ec25287ab58346c6af821756417ca8499e",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/481e02db53858870fb31162cc8b88e58e84705feb530ba87f66d995277f959ba.gz": "be38f3d85507c61131fd689004b0292da92915e336a7b6425737fcf61e3f55db",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/59f5db48123f6c0268377489b78ca424dff174f7c9b46f8f9e7e018e794efaf2.gz": "870b2c676f4ada30378e1ad7c1aac7253c90999ea536eb776dc54b45ca287eeb",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/5d0fa0a0d7d304cec1c92c37ac4bf6b0f47281d3b78389eb0a421a599070e766.gz": "3e9a988ad6059dcfd5efaa3023b3b6cf116d0cf5cf32730784751cf15d71c550",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/65a1e311338ef187c8b8a626ff72fd4cfaf5ba94db81826a155d1ed660b3090e.gz": "4b04a6de84ba884ae25d1c25a80f83eba879d961c6f7cbd091f3948cbe612a5a",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/792b7d2c9b4c6b1b61c9420beacad438d6083d3fe50600174f63cac11529ac8b.gz": "f9e4aed2f5a71449091eb1283e57847fad24898fdf681bc834acc1d5e950c2c3",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/901b3c9fd4ff69bb71e22c17750b278cdbeffafef1c334bef7a1599580283dcf.gz": "681dff7c8d85c94380171150201355842a1bac2401fa185acb2585d14ab3378b",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a.gz": "44ca3d8a2e09e17b6135535a805c58e28d08808fb5bf8db6ff14578b936f908f",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/f044841c37e373fa70e23a8e942e8b6a938836fc458eeee81e8825afc1de0485.gz": "55d3c1976147ad392e55fe7fc01206618c64a59624331b427e927bfd3fac5517",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/f63607cd06ffd20c93445af0e79a289599c5420d22375adf08a058dbda3a1b5b.gz": "d080c925b3f68a541f98479812f9994dc63a877d2fc65d5d49caaedc076c09fa",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/observations/source_snapshots/fa69d1e0cfdf737724495987db4c074ad0a02c5e6092296395bb3d7c041beac0.gz": "bcaa2baba950b708a2bbc71298b833662cb5756920922f29a45c2fcb2a54aa48",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/report_surface_match.py": "43e9124b5ae6a38b0d1ce5c4e5f97ec9b264f9a985ac0d1651f539d11ecdd53f",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/rhino_worker.py": "fa69d1e0cfdf737724495987db4c074ad0a02c5e6092296395bb3d7c041beac0",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/structural_sdk.py": "f044841c37e373fa70e23a8e942e8b6a938836fc458eeee81e8825afc1de0485",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/surface_match_evidence.py": "b0c13756ff509afdc62f8898e513eefe5e41fb42499fd1a0c4cf78f5b29edb9a",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/test_surface_match.py": "9399fdbbe1b2cd4e46b9d89429ec3a4d6444cba10bf54717880555456a66f6b3",
+    "e1c05ead00ae15b24eda6f17887cf2f53897a02b:tools/rhino_oracle/test_surface_match_record.py": "eede2d9969a8ae50b5459f1aec4d33393839df0e13482f4f839e0683e31a65b8"
+  },
+  "evidence_sha256": {
+    "docs/surface-match-proof/captures.json": "d81b07a926679ee21b128dae4944ccfe70ecb9ca8406454201515761d45e2630",
+    "docs/surface-match-proof/checks.json": "17307def53ad2f0535b609e08a3dd9b535aaccfdc44f88416a44499c86bf36a5",
+    "docs/surface-match-proof/clippy-native.log.gz": "24c40f93a0da70fbfb39f5508c1adb117e03379a3bdc699a7c2ac6362db7e01b",
+    "docs/surface-match-proof/clippy-portable.log.gz": "94bb36a5d1891139212bd2be3cd8913e54bd98e47d3227ae10304312512ad3dd",
+    "docs/surface-match-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-match-proof/kernel-native.log.gz": "a09e5f2d40bee5158d6b96ae5042541c1098956dc2995b42bc2dca1cb81c9945",
+    "docs/surface-match-proof/match_surface_final.capture.log.gz": "ca28147424909c52afb575abfc7b61a5b527cdaa74a8effbc67dc5a45c7f46dd",
+    "docs/surface-match-proof/match_surface_holdouts.capture.log.gz": "8335b48d4d70d3d11780f96207c9484972d2364cd41a03f847bd28c1db5e1f7c",
+    "docs/surface-match-proof/match_surface_oriented.capture.log.gz": "7d00774c3fe8d4228a2ba2a3dfb76796a6af8e660e318a056a3561a2ea1fcae8",
+    "docs/surface-match-proof/match_surface_pilot.capture.log.gz": "8fa641bde8d03ca5b0c8eb0f8061f2deb141f5ad829177de66fda5d57ef7346b",
+    "docs/surface-match-proof/match_surface_refinement.capture.log.gz": "a7ff5f6a7d96a0f4dd7ecbb97e8f40168fb3c9dac8b96449bf498933529ac845",
+    "docs/surface-match-proof/python-subd.log.gz": "57de3e3e4a69d341799a9de553205bad7046fc36f06c73eef4b3a782ce9f193d",
+    "docs/surface-match-proof/python.log.gz": "ee58d45f27cca9a4e6159a937ce6dec7567fbc5a2dd691ff299a09cb59762d35",
+    "docs/surface-match-proof/subd-command-native.log.gz": "9ecdbe63f2389fe20d3f080918f6e256e514350469ecee4c85d6b29da20c927f",
+    "docs/surface-match-proof/subd-ui-native.log.gz": "c4b0d51aa2a2469e5e206fa434564bf7cea8e68262905f62989e1329ddebe447",
+    "docs/surface-match-proof/surface-native.log.gz": "caaf006270e49b4d388d566506209fdfcb7dad06ff2974aa1f1bbc5a8dcc198e",
+    "docs/surface-match-proof/surface-portable.log.gz": "6a282cdf201742265a8e992df54d67914cbb8caaee039e9612d18835cf6d2da4",
+    "tools/rhino_oracle/fixtures/match_surface_final.json": "f5ab89d58d816d8fe45b850fc2c384f621414be81a67685720aefca69930edd2",
+    "tools/rhino_oracle/fixtures/match_surface_holdouts.json": "fb805939db0d4e0c4419e1303c34c899351d156216714d5f62f9c27cfd58a48e",
+    "tools/rhino_oracle/fixtures/match_surface_oriented.json": "c012812e8ac8fcb7cd3c5f6febbb7b4a05aabda532df8a6430812382b53bbd9e",
+    "tools/rhino_oracle/fixtures/match_surface_pilot.json": "5065c417e6711f1db2d9cef6e7faa272dd0a57cb498d646dbede0330eb635674",
+    "tools/rhino_oracle/fixtures/match_surface_refinement.json": "612d713a16701737a831fe7d9f28fd38acb0b10f8342f03317e70e2ea551b359",
+    "tools/rhino_oracle/observations/match_surface_final.json.gz": "9e3f6850ba61a2a37ed6b502c223fc3b5ae9baeefb1b3ef5991c6f6f3356236a",
+    "tools/rhino_oracle/observations/match_surface_holdouts.json.gz": "248f5c698826e298e34b06d38ef01daa56412ff4ef834801ea8c0b71cdb7c71e",
+    "tools/rhino_oracle/observations/match_surface_oriented.json.gz": "177e673ac9dc9648338d36b01df2e6e68b5a891c86f9032b18c873f0991916cb",
+    "tools/rhino_oracle/observations/match_surface_pilot.json.gz": "30fbab6fa42e274c4b71633f404be32c42adce415a51ab67d8799b77d7b7d8f9",
+    "tools/rhino_oracle/observations/match_surface_refinement.json.gz": "4d8dd7c5f2ad05272c512c926cb89def5fd6ca28e2cc6d77121614d29c75713b",
+    "tools/rhino_oracle/observations/source_snapshots/1169be6fdb4ace91bdcfbe8d3c5ea95fc445838ebdabf4af72bcbd82737235f1.gz": "1ee7a4f9d21c60944b7de4d205bc7fdac72217ab6f1e1278712685e867da9b3a",
+    "tools/rhino_oracle/observations/source_snapshots/1182941d70593c07aa7bae44dcf803639de36597060154e8450a51d97c9a8389.gz": "242b3419b1a99866777b1755fdea8cfdd637bfbce3c9ff69c5ebb21eff236a40",
+    "tools/rhino_oracle/observations/source_snapshots/2a6fbf0e38508138bf262153e9008a24f958d665d710846da92782dce19c6918.gz": "8f61d418214aa6fd21b318323f60c0c3fbd9fc123c6a5a0b6a7edbeacbb89796",
+    "tools/rhino_oracle/observations/source_snapshots/3111499ab70e62a51635aede6926718b64becd232fcde74d235ce9ac0a979ec6.gz": "d31421125066155bbec080c6fec509ec25287ab58346c6af821756417ca8499e",
+    "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
+    "tools/rhino_oracle/observations/source_snapshots/481e02db53858870fb31162cc8b88e58e84705feb530ba87f66d995277f959ba.gz": "be38f3d85507c61131fd689004b0292da92915e336a7b6425737fcf61e3f55db",
+    "tools/rhino_oracle/observations/source_snapshots/59f5db48123f6c0268377489b78ca424dff174f7c9b46f8f9e7e018e794efaf2.gz": "870b2c676f4ada30378e1ad7c1aac7253c90999ea536eb776dc54b45ca287eeb",
+    "tools/rhino_oracle/observations/source_snapshots/5d0fa0a0d7d304cec1c92c37ac4bf6b0f47281d3b78389eb0a421a599070e766.gz": "3e9a988ad6059dcfd5efaa3023b3b6cf116d0cf5cf32730784751cf15d71c550",
+    "tools/rhino_oracle/observations/source_snapshots/65a1e311338ef187c8b8a626ff72fd4cfaf5ba94db81826a155d1ed660b3090e.gz": "4b04a6de84ba884ae25d1c25a80f83eba879d961c6f7cbd091f3948cbe612a5a",
+    "tools/rhino_oracle/observations/source_snapshots/792b7d2c9b4c6b1b61c9420beacad438d6083d3fe50600174f63cac11529ac8b.gz": "f9e4aed2f5a71449091eb1283e57847fad24898fdf681bc834acc1d5e950c2c3",
+    "tools/rhino_oracle/observations/source_snapshots/901b3c9fd4ff69bb71e22c17750b278cdbeffafef1c334bef7a1599580283dcf.gz": "681dff7c8d85c94380171150201355842a1bac2401fa185acb2585d14ab3378b",
+    "tools/rhino_oracle/observations/source_snapshots/ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a.gz": "44ca3d8a2e09e17b6135535a805c58e28d08808fb5bf8db6ff14578b936f908f",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf.gz": "7749d9f69a4254dcc7b94c38ffde21d5082d9b7e4b1e0ca11422ca776466036a",
+    "tools/rhino_oracle/observations/source_snapshots/cd1cc30f8621e47c80362e63bbc7f704b27ff51814fda51ce65819c663aa1df0.gz": "d6534cd586df60b6ab2402d54fcec50d9effa4a4c2901bba49986c9ebb47d081",
+    "tools/rhino_oracle/observations/source_snapshots/f044841c37e373fa70e23a8e942e8b6a938836fc458eeee81e8825afc1de0485.gz": "55d3c1976147ad392e55fe7fc01206618c64a59624331b427e927bfd3fac5517",
+    "tools/rhino_oracle/observations/source_snapshots/f63607cd06ffd20c93445af0e79a289599c5420d22375adf08a058dbda3a1b5b.gz": "d080c925b3f68a541f98479812f9994dc63a877d2fc65d5d49caaedc076c09fa",
+    "tools/rhino_oracle/observations/source_snapshots/fa69d1e0cfdf737724495987db4c074ad0a02c5e6092296395bb3d7c041beac0.gz": "bcaa2baba950b708a2bbc71298b833662cb5756920922f29a45c2fcb2a54aa48",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
