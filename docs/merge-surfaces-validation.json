@@ -1,0 +1,311 @@
+{
+  "scope": "Oriented untrimmed NURBS support merging before B-rep and command integration.",
+  "baseline_revision": "db0fa841f8faee64a94bd2878c7345426b14256b",
+  "implementation_revision": "0c2d57f618756dd1703783c61a0fcc301b9d6cbd",
+  "observations": 30,
+  "successful": 28,
+  "declined": 2,
+  "failed_capture_attempts": 1,
+  "implementation": "Certify complete affine boundary correspondence, import owned SMLib operands, join with zero knot-removal tolerance, restore the degree-multiple seam, then spread only its two outer knots for Smooth/Roundness. Retain first-support transverse parameters.",
+  "rational_weight_policy": "Average homogeneous seam controls without normalizing relative operand weight scales, retaining the public SDK behavior measured by four final rational cases.",
+  "comparison": "Authored operands only; native fitted controls are expectations. Compare degrees, counts, knot clocks and a 17 by 17 parameter grid per successful surface within 1e-9 model units. Input immutability, invalid options, V-direction transpose covariance and two native declines are tested.",
+  "maximum_sampled_geometry_error": 4.710277376051325e-16,
+  "interactive_command_implemented": false,
+  "brep_topology_qualified": false,
+  "continuous_surface_distance_qualified": false,
+  "rhino_performance_qualified": false,
+  "limits": [
+    "This is the support primitive for MergeSrf; command getters, automatic edge selection, history and output B-rep topology remain pending.",
+    "Boundary admission requires a supported complete affine parameter correspondence. Trimmed inputs, nonlinear edge-speed matching and broader closed/periodic cases remain unqualified.",
+    "Smoothing deliberately changes the surface. Finite native surface comparisons do not establish a continuous surface-distance or derivative-parity bound."
+  ],
+  "captures": [
+    {
+      "family": "merge_surfaces_pilot",
+      "observations": 11,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "91b9e856f405cf5e7ff96bd992d89669e55b8ef26e151aea404a0f757e47986e"
+    },
+    {
+      "family": "merge_surfaces_holdouts",
+      "observations": 14,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e0d81d6e8177028e5bd60b70a5b5beae963d6384ed88634bbd4155538347f7c6"
+    },
+    {
+      "family": "merge_surfaces_final",
+      "observations": 5,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "7653351af7cdf3d236c9693eeeb01c22f2a836ff025f7114d4a86246adac8363"
+    }
+  ],
+  "cases": [
+    {
+      "id": "merge_along_degrees",
+      "maximum_geometry_error": 2.498001805406602e-16,
+      "success": true
+    },
+    {
+      "id": "merge_bowed_boundary",
+      "success": false
+    },
+    {
+      "id": "merge_cubic_sharp",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_cubic_sharp_zero",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_cubic_smooth_half",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_cubic_smooth_one",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_cubic_smooth_zero",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_degrees_nonunit",
+      "maximum_geometry_error": 4.710277376051325e-16,
+      "success": true
+    },
+    {
+      "id": "merge_degrees_two_four",
+      "maximum_geometry_error": 3.5217877337871745e-16,
+      "success": true
+    },
+    {
+      "id": "merge_gap_smooth",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_gauge_sharp_large",
+      "maximum_geometry_error": 2.220446049250313e-16,
+      "success": true
+    },
+    {
+      "id": "merge_gauge_sharp_small",
+      "maximum_geometry_error": 3.3306690738754696e-16,
+      "success": true
+    },
+    {
+      "id": "merge_gauge_smooth_large",
+      "maximum_geometry_error": 2.7755575615628914e-16,
+      "success": true
+    },
+    {
+      "id": "merge_gauge_smooth_small",
+      "maximum_geometry_error": 3.3306690738754696e-16,
+      "success": true
+    },
+    {
+      "id": "merge_internal_full",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_internal_simple",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_large_gap",
+      "success": false
+    },
+    {
+      "id": "merge_nonunit_sharp",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_nonunit_smooth",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_plane_sharp",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_plane_smooth",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_quadratic_smooth",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_quartic_quarter",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_quartic_smooth",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_rational_sharp",
+      "maximum_geometry_error": 3.3306690738754696e-16,
+      "success": true
+    },
+    {
+      "id": "merge_rational_smooth",
+      "maximum_geometry_error": 2.220446049250313e-16,
+      "success": true
+    },
+    {
+      "id": "merge_second_transpose",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_second_u",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_second_v",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    },
+    {
+      "id": "merge_small_gap",
+      "maximum_geometry_error": 0.0,
+      "success": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "kernel-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:Cargo.lock": "fa26fec12a2ffd12903f8aa926112ebec96e0a485f29c8d0eca7286f92eccbea",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/Cargo.toml": "bd56e9de042db0e00aebb1ebbe5cb1e4e045249db53569a6c1b5552bb15ec505",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/native/bridge.cpp": "feba5fead8236504429f0ec8a3020782d0a5ffdbe4158459f83c5ce7685e1108",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/native/surface_merge.h": "84bc76c287c420c862edf401da1aef324e7a15dcf1cb5b1e2c3eed444eda8b10",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/src/lib.rs": "9f2b4c751b1a614ac2aed6dfbf68fb7df4528e88f3f0f3a8675e4302eaa0ab54",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/src/native.rs": "9d1f65f0506ec76d566fdca33fb12697abc8fc33380bcbd7a6fecf0212949bf1",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/src/native/surface_merge.rs": "024f04bd3d22d7ff15fdab8c3bc3b21facd657556460b2d0650f71cae1097865",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:crates/viboceros-smlib/tests/surface_merge.rs": "a0088dbec354199e99610515a9a78519531c0fd8a7ed816a49955a7d57e00b8e",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/merge-surfaces-proof/capture-attempts.json": "f2bd7ac3cd888406627df293b55f2159bec1fcc110d8e7f900711a4266b93f4b",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/merge-surfaces-proof/captures.json": "7258c1cf936218587ac5a9cd1003ef94a2e3998f6d28e63497a4b7e9a1cad2ad",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/merge-surfaces-proof/final-capture.log.gz": "9292a64df65ef164fdc00a461a32bb0169c57bf717b4bbd8a0ed8d7df501a699",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/merge-surfaces-proof/holdouts-capture.log.gz": "38d4efe99a232da2e6c1da080abc8aebd96e9c70199430e8d73a08d0724436f9",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/merge-surfaces-proof/pilot-capture.log.gz": "3ca03918fbfd9bac47de036027d58793eec84b6afb2daa4b542e331a5843c80f",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/native-modeling.md": "e19955f3a4c2d2d3617c41e03747aa36fe8daf33a406a12a99697d8f2fc661b4",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:docs/smlib-surface-merging.md": "77d06f7bc02d22962661f1fd6be214c9cadba092fbc790b420df7f23d2e9fb45",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/check_merge_surfaces.py": "6435cb1ddd380a6634c2bd0c9c44815f316139ee32f6e75790cf3a2e35440f34",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/fixtures/merge_surfaces_final.json": "c94e23766f3d9c3d1d868a2487c05e5bece2004dd712d832ba829cba540cd4a4",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/fixtures/merge_surfaces_holdouts.json": "addb75fdc87777fb360a22b71e6206e72a740e9b66cd871eeca0ab3758c9ee33",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/fixtures/merge_surfaces_pilot.json": "3dd328c3fd7e81221d0a3e1e8af8e1066ef69bc62515d4dde95ee21087b8d01e",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/generate_merge_surfaces_final.py": "91449ea5ccf5332b0e8078637dd1881fa4fb5ba7178d04583d6f4c6b4edfb5a5",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/generate_merge_surfaces_holdouts.py": "b85ec40211305219d257a675cf54efe1f0ccb90465b15e675d2d1b6e408be1a7",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/generate_merge_surfaces_pilot.py": "fdf6cf6a3821ad1ce0c7d09761fda87931f6ea57c65606e782cd895f0ee2d67e",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/merge_surface_cases.py": "7e88f4c1598b11f7bc53ae7fce9b8c9e9110d90ea14010ad1ee283d17e900611",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/merge_surfaces_evidence.py": "275df72f6b7c34536bae97fa72c560c2cf4476354b5be83c33b422a8cac61bd7",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/merge_surfaces_sdk.py": "5e013ad0e2a04ea583c413408462c07a6937bd329314c53038ba08965d9a216d",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/failures/merge_surfaces_pilot-31e4e1cab7d9aee45a8ba39b77e4207b9bb0d3ef27c194df4dc488f1df4e2b47.json.gz": "1d1535bc749e434dc5b224cb00b15cb98f7d505f87f7ccacf8c854e4300020ea",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/merge_surfaces_final.json.gz": "b23b25a38d96b0b25e28e8b1d1119fa39fe318fdf111edbd9d15a6d3dc91392b",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/merge_surfaces_holdouts.json.gz": "9e2d85efdd6f1eed5da3944587e30b88612c47b4a00ed363afeac244a6395862",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/merge_surfaces_pilot.json.gz": "8d32f206b43c92b94473407a06fbfd522c9528783a1f7444ba3611a942c5dfc6",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/0de5cf7cb46bad18e69536919d26648c26ceb08b48751a9eb4d851ee84214484.gz": "889896b25583b4b243075cc5b8874cc8b0f43e15d83a2aa369068430df709768",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/135bf8a884b05ef637ef93a669e8ea4589b60b0d64cd8794583769f971513fdf.gz": "a751cd4e07c8badf596704ae2f01561d31ff8ec7f1d920fd33e68855ee9d37fe",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/2afbcaf5b8acbd1256bd97061ab5f9b53e268dcb14f001c14ce5461b84f555ee.gz": "176d501f51dcd5b4718a7b08b5d20acb3b3d7dae22d834fc9973cde30e9a2e28",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/5e013ad0e2a04ea583c413408462c07a6937bd329314c53038ba08965d9a216d.gz": "e39f16ca741377930410cc412e61657ecd3d19f827d78b854b7d6ab1d3b82cb4",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/7e88f4c1598b11f7bc53ae7fce9b8c9e9110d90ea14010ad1ee283d17e900611.gz": "a8a0bc6aa656c84479b3ae998fbbadf0752146f8b6cb73913c6d2fefc0f5b038",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/91449ea5ccf5332b0e8078637dd1881fa4fb5ba7178d04583d6f4c6b4edfb5a5.gz": "18bc8ae22fe6e23c0a66a1f4417a4b284acabc901f0372590aab826a0c241429",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/b85ec40211305219d257a675cf54efe1f0ccb90465b15e675d2d1b6e408be1a7.gz": "c9ef9bd3eb706b4b07883d56642d9570fef6d9327687dadde0112316a0a44587",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf.gz": "7749d9f69a4254dcc7b94c38ffde21d5082d9b7e4b1e0ca11422ca776466036a",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/e3db0cf47b03e1191515bda3ad88fc3c7c90997b8df90a82525929fe5d7efee1.gz": "3b5955a24911ba960df40101e3e905402992b11ac8e4edf049098b7b25974d37",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/f8f63e223751c6f779ce68d90920cbb59ea33e989bcd0099ca7b685ed590b8d3.gz": "b0c19ef1bcab4c22aaafa26743b526958c48beebe1b803898befa0fc332ab9f9",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/observations/source_snapshots/fdf6cf6a3821ad1ce0c7d09761fda87931f6ea57c65606e782cd895f0ee2d67e.gz": "cc9afeb5f3f36c79031a5c32010faf99fc4b9a17358cbacb1797f07bf19bdc88",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/report_merge_surfaces.py": "c1df32ed59d465bb6cc73696e6b48e5ba6e70b9c630fda0fa9539cf2c264c8b5",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/rhino_worker.py": "f8f63e223751c6f779ce68d90920cbb59ea33e989bcd0099ca7b685ed590b8d3",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/structural_sdk.py": "135bf8a884b05ef637ef93a669e8ea4589b60b0d64cd8794583769f971513fdf",
+    "0c2d57f618756dd1703783c61a0fcc301b9d6cbd:tools/rhino_oracle/test_merge_surfaces.py": "827ecf6b77fc399c79296c91a09ff25120639f9a8f8d991daf6622ee84584284"
+  },
+  "evidence_sha256": {
+    "docs/merge-surfaces-proof/capture-attempts.json": "f2bd7ac3cd888406627df293b55f2159bec1fcc110d8e7f900711a4266b93f4b",
+    "docs/merge-surfaces-proof/captures.json": "7258c1cf936218587ac5a9cd1003ef94a2e3998f6d28e63497a4b7e9a1cad2ad",
+    "docs/merge-surfaces-proof/checks.json": "4cbcc2de954536d3b640cfd3f86147eee3967bf7eb472dfc72e0055faad0330a",
+    "docs/merge-surfaces-proof/clippy-native.log.gz": "ef5ba10ed8d2cd85012cefb88a2a4c4ac6ad37a34cb46f5acbf864e3f6c48dcb",
+    "docs/merge-surfaces-proof/clippy-portable.log.gz": "ca2bb6ca59af2b11cfba05f756a8975af2e5785be2446828e97787b0fc74bc53",
+    "docs/merge-surfaces-proof/final-capture.log.gz": "9292a64df65ef164fdc00a461a32bb0169c57bf717b4bbd8a0ed8d7df501a699",
+    "docs/merge-surfaces-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/merge-surfaces-proof/holdouts-capture.log.gz": "38d4efe99a232da2e6c1da080abc8aebd96e9c70199430e8d73a08d0724436f9",
+    "docs/merge-surfaces-proof/kernel-native.log.gz": "50614bf2012248e3e6c1b2c5c3a19c752df37c38bdc724f46c487994ec64aa32",
+    "docs/merge-surfaces-proof/pilot-capture.log.gz": "3ca03918fbfd9bac47de036027d58793eec84b6afb2daa4b542e331a5843c80f",
+    "docs/merge-surfaces-proof/python-subd.log.gz": "a98b1bc281fe15cdcabb7690d11e5bfc46d679416177bb7615f1cc12bca7347e",
+    "docs/merge-surfaces-proof/python.log.gz": "93d2ec882fa3d8b1c3da7f76bf2143e69c6962403a12535d2c566f902d1ba807",
+    "docs/merge-surfaces-proof/subd-command-native.log.gz": "52ad5a90c13c3da0ad35a2890f089f4261ed566501095bd6bbc59a12738ca75d",
+    "docs/merge-surfaces-proof/subd-ui-native.log.gz": "0466d179018486b545b8ebb0a7509c62201155a20f823ff31cae4a6600ea610c",
+    "tools/rhino_oracle/fixtures/merge_surfaces_final.json": "c94e23766f3d9c3d1d868a2487c05e5bece2004dd712d832ba829cba540cd4a4",
+    "tools/rhino_oracle/fixtures/merge_surfaces_holdouts.json": "addb75fdc87777fb360a22b71e6206e72a740e9b66cd871eeca0ab3758c9ee33",
+    "tools/rhino_oracle/fixtures/merge_surfaces_pilot.json": "3dd328c3fd7e81221d0a3e1e8af8e1066ef69bc62515d4dde95ee21087b8d01e",
+    "tools/rhino_oracle/observations/failures/merge_surfaces_pilot-31e4e1cab7d9aee45a8ba39b77e4207b9bb0d3ef27c194df4dc488f1df4e2b47.json.gz": "1d1535bc749e434dc5b224cb00b15cb98f7d505f87f7ccacf8c854e4300020ea",
+    "tools/rhino_oracle/observations/merge_surfaces_final.json.gz": "b23b25a38d96b0b25e28e8b1d1119fa39fe318fdf111edbd9d15a6d3dc91392b",
+    "tools/rhino_oracle/observations/merge_surfaces_holdouts.json.gz": "9e2d85efdd6f1eed5da3944587e30b88612c47b4a00ed363afeac244a6395862",
+    "tools/rhino_oracle/observations/merge_surfaces_pilot.json.gz": "8d32f206b43c92b94473407a06fbfd522c9528783a1f7444ba3611a942c5dfc6",
+    "tools/rhino_oracle/observations/source_snapshots/0de5cf7cb46bad18e69536919d26648c26ceb08b48751a9eb4d851ee84214484.gz": "889896b25583b4b243075cc5b8874cc8b0f43e15d83a2aa369068430df709768",
+    "tools/rhino_oracle/observations/source_snapshots/135bf8a884b05ef637ef93a669e8ea4589b60b0d64cd8794583769f971513fdf.gz": "a751cd4e07c8badf596704ae2f01561d31ff8ec7f1d920fd33e68855ee9d37fe",
+    "tools/rhino_oracle/observations/source_snapshots/2afbcaf5b8acbd1256bd97061ab5f9b53e268dcb14f001c14ce5461b84f555ee.gz": "176d501f51dcd5b4718a7b08b5d20acb3b3d7dae22d834fc9973cde30e9a2e28",
+    "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
+    "tools/rhino_oracle/observations/source_snapshots/5e013ad0e2a04ea583c413408462c07a6937bd329314c53038ba08965d9a216d.gz": "e39f16ca741377930410cc412e61657ecd3d19f827d78b854b7d6ab1d3b82cb4",
+    "tools/rhino_oracle/observations/source_snapshots/7e88f4c1598b11f7bc53ae7fce9b8c9e9110d90ea14010ad1ee283d17e900611.gz": "a8a0bc6aa656c84479b3ae998fbbadf0752146f8b6cb73913c6d2fefc0f5b038",
+    "tools/rhino_oracle/observations/source_snapshots/91449ea5ccf5332b0e8078637dd1881fa4fb5ba7178d04583d6f4c6b4edfb5a5.gz": "18bc8ae22fe6e23c0a66a1f4417a4b284acabc901f0372590aab826a0c241429",
+    "tools/rhino_oracle/observations/source_snapshots/a76b17140912f447246d02277bc24b9b700785dd9330779a73bff569bd8f8f27.gz": "9dc3c2f557ce80a2a5a91cd0c1748b176c2fbb9b53e5b16df91fdb98e7734bc7",
+    "tools/rhino_oracle/observations/source_snapshots/b85ec40211305219d257a675cf54efe1f0ccb90465b15e675d2d1b6e408be1a7.gz": "c9ef9bd3eb706b4b07883d56642d9570fef6d9327687dadde0112316a0a44587",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf.gz": "7749d9f69a4254dcc7b94c38ffde21d5082d9b7e4b1e0ca11422ca776466036a",
+    "tools/rhino_oracle/observations/source_snapshots/e3db0cf47b03e1191515bda3ad88fc3c7c90997b8df90a82525929fe5d7efee1.gz": "3b5955a24911ba960df40101e3e905402992b11ac8e4edf049098b7b25974d37",
+    "tools/rhino_oracle/observations/source_snapshots/f8f63e223751c6f779ce68d90920cbb59ea33e989bcd0099ca7b685ed590b8d3.gz": "b0c19ef1bcab4c22aaafa26743b526958c48beebe1b803898befa0fc332ab9f9",
+    "tools/rhino_oracle/observations/source_snapshots/fdf6cf6a3821ad1ce0c7d09761fda87931f6ea57c65606e782cd895f0ee2d67e.gz": "cc9afeb5f3f36c79031a5c32010faf99fc4b9a17358cbacb1797f07bf19bdc88",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
