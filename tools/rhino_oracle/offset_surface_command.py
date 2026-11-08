@@ -124,6 +124,11 @@ else:
     from offset_surface_rational_cases import RATIONAL_PILOT,RATIONAL_HOLDOUTS
 CASES.update(RATIONAL_PILOT)
 CASES.update(RATIONAL_HOLDOUTS)
+if __package__:
+    from .offset_surface_rational_final_cases import RATIONAL_FINAL
+else:
+    from offset_surface_rational_final_cases import RATIONAL_FINAL
+CASES.update(RATIONAL_FINAL)
 
 def validate(op):
     if not isinstance(op,dict) or set(op) != {'op','id','case'} or op.get('op') != 'offset_surface_command' or op.get('id') != op.get('case') or op.get('case') not in CASES:

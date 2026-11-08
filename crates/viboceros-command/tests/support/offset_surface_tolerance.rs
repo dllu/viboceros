@@ -3,6 +3,8 @@ use super::{brep_comparison, inputs, loose, native};
 use serde_json::Value;
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{Brep, BrepFace, Point3, Tolerance};
+#[path = "offset_surface_rational.rs"]
+mod rational;
 
 pub fn rows() -> Vec<(String, Value)> {
     [
@@ -38,6 +40,41 @@ pub fn trimmed_rows() -> Vec<(String, Value)> {
                 .collect::<Vec<_>>()
         })
         .collect()
+}
+pub fn rational_rows(family: &str) -> Vec<(String, Value)> {
+    assert!(matches!(family, "pilot" | "holdouts" | "final"));
+    native::read(&format!("offset_srf_rational_{family}"))["results"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|r| (r["id"].as_str().unwrap().to_owned(), r["value"].clone()))
+        .collect()
+}
+pub fn rational_topology(d: &Document, v: &Value) -> Value {
+    let product = d
+        .objects()
+        .filter(|o| o.attributes().name().is_none())
+        .map(|o| {
+            let Geometry::Brep(b) = o.geometry() else {
+                panic!("rational offset shell")
+            };
+            [b.faces().len(), b.edges().len(), b.vertices().len()]
+        })
+        .collect::<Vec<_>>();
+    let native = v["after"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|r| r["guide"] != true && r["source"] != true)
+        .map(|r| {
+            [
+                r["face_count"].as_u64().unwrap() as usize,
+                r["brep"]["edges"].as_array().unwrap().len(),
+                r["brep"]["vertices"].as_array().unwrap().len(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    serde_json::json!({"product":product,"native":native})
 }
 pub fn setup(v: &Value) -> Document {
     if curved(v) {
@@ -99,6 +136,50 @@ pub fn check(d: &Document, rows: &Value, archive: bool, epsilon: f64, reference_
             expected.solid_orientation().unwrap()
         );
         directed(b, &expected, t, epsilon).max(directed(&expected, b, t, epsilon))
+    })
+}
+/// Rational patch qualification also compares topology and stored spatial
+/// edges. Native reference admission alone uses the captured fit tolerance.
+pub fn check_rational(
+    d: &Document,
+    rows: &Value,
+    archive: bool,
+    epsilon: f64,
+    reference_fit: f64,
+) -> f64 {
+    loose::check_with(d, rows, archive, epsilon, |b, r, t| {
+        if r["guide"] == true {
+            return brep_comparison::geometry::error(b, r, t);
+        }
+        let expected = reference(r, t, reference_fit);
+        directed(b, &expected, t, epsilon)
+            .max(directed(&expected, b, t, epsilon))
+            .max(rational::topology_and_edges(b, &expected, t, epsilon))
+    })
+}
+/// The final BothSides capture has one three-chart native skin versus four
+/// product charts. Retain that exact difference while checking positional
+/// geometry and boundary sets at the ordinary fit epsilon.
+pub fn check_rational_partitions(
+    d: &Document,
+    rows: &Value,
+    archive: bool,
+    epsilon: f64,
+    reference_fit: f64,
+) -> f64 {
+    loose::check_with(d, rows, archive, epsilon, |b, r, t| {
+        if r["guide"] == true {
+            return brep_comparison::geometry::error(b, r, t);
+        }
+        let expected = reference(r, t, reference_fit);
+        let edges = if b.faces().len() == expected.faces().len() {
+            rational::topology_and_edges(b, &expected, t, epsilon)
+        } else {
+            rational::partition_difference(b, &expected, t, epsilon)
+        };
+        directed(b, &expected, t, epsilon)
+            .max(directed(&expected, b, t, epsilon))
+            .max(edges)
     })
 }
 fn stations(face: &BrepFace, t: Tolerance) -> Vec<(f64, f64)> {
@@ -268,18 +349,30 @@ pub fn field_error(d: &Document, v: &Value) -> (f64, f64) {
                                 .unwrap(),
                         )
                         .unwrap();
-                    let distance = |b: &Brep| {
-                        let candidate =
-                            chart_candidate(q, b, fu, fv, (u, v), t, o.effective_tolerance(t));
-                        if candidate <= o.effective_tolerance(t) {
+                    let distance = |pieces: &[Brep]| {
+                        let gate = o.effective_tolerance(t);
+                        // Propose valid chart images across the entire output
+                        // set before an expensive closest-point search. An
+                        // opposite BothSides skin cannot improve admission
+                        // once another skin already supplies a valid bound.
+                        let candidate = pieces
+                            .iter()
+                            .map(|b| chart_candidate(q, b, fu, fv, (u, v), t, gate))
+                            .fold(f64::INFINITY, f64::min);
+                        if candidate <= gate {
                             candidate
                         } else {
-                            candidate.min(distance(q, b, t, o.effective_tolerance(t)))
+                            candidate.min(
+                                pieces
+                                    .iter()
+                                    .map(|b| distance(q, b, t, gate))
+                                    .fold(f64::INFINITY, f64::min),
+                            )
                         }
                     };
-                    let cost = outputs.iter().map(&distance).fold(f64::INFINITY, f64::min);
+                    let cost = distance(&outputs);
                     error = error.max(cost);
-                    let cost = expected.iter().map(distance).fold(f64::INFINITY, f64::min);
+                    let cost = distance(&expected);
                     assert!(cost.is_finite());
                     native_error = native_error.max(cost);
                 }

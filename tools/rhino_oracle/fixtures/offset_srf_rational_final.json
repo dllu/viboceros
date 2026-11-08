@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rf_cubic_postselect",
+      "case": "offset_rf_cubic_postselect"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_rf_two_axes_both",
+      "case": "offset_rf_two_axes_both"
+    }
+  ]
+}

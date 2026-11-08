@@ -54,6 +54,13 @@ pub fn surface(v: &Value) -> NurbsSurface {
     .unwrap()
 }
 fn source(v: &Value, t: Tolerance) -> Geometry {
+    if v["type"] == "untrimmed_brep" {
+        let mut b = Brep::try_surface_face(surface(&v["surface"]), t).unwrap();
+        if v["reversed"] == true {
+            b.reverse_orientation();
+        }
+        return Geometry::Brep(b);
+    }
     if v["type"] == "surface" {
         let s = surface(v);
         let b = Brep::try_surface_face(s.clone(), t).unwrap();

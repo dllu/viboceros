@@ -28,5 +28,20 @@
     "archive": "observations/offset_srf_rational_holdouts.json.gz",
     "observation_sha256": "9ff08656aaeac931defcdc5530337864548c703ba84dc3d15fb8ec3b5abdb9e8",
     "request_sha256": "49fba837a952dac903a9914f4dd435d755dd23f8edad7a94183211a38a263b27"
+  },
+  {
+    "family": "offset_srf_rational_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_rational_final"
+    ],
+    "exit_status": 0,
+    "log": "final-capture.log.gz",
+    "archive": "observations/offset_srf_rational_final.json.gz",
+    "observation_sha256": "946fc0df2faac69023af66d288490872c47d990998d5fb107a009437a3f2feca",
+    "request_sha256": "e0dfcd2c166eba89f8342fd04a6224c25e8f79f42a63a03ca36e3e4f50a57d8e"
   }
 ]

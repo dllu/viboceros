@@ -5,6 +5,7 @@ from collections import Counter
 from pathlib import Path
 from .offset_surface_command import request, CASES
 from .offset_surface_rational_cases import RATIONAL_PILOT, RATIONAL_HOLDOUTS
+from .offset_surface_rational_final_cases import RATIONAL_FINAL
 from .offset_srf_loose_evidence import authored_equal
 from .offset_surface_getter_evidence import frozen, result
 from .fillet_getter_evidence import HERE, finite, normalized, sha
@@ -12,7 +13,8 @@ from .fillet_zero_history import audit
 
 PROOF=Path(__file__).resolve().parents[2]/'docs/offset-srf-rational-proof'
 FAMILIES={'offset_srf_rational_pilot':RATIONAL_PILOT,
-          'offset_srf_rational_holdouts':RATIONAL_HOLDOUTS}
+          'offset_srf_rational_holdouts':RATIONAL_HOLDOUTS,
+          'offset_srf_rational_final':RATIONAL_FINAL}
 
 def collect(proof=PROOF):
     receipts=json.loads((proof/'captures.json').read_bytes())
@@ -37,5 +39,5 @@ def collect(proof=PROOF):
             cancels=[i for i,a in enumerate(v['prescribed_case']['actions'])if a=='Cancel']
             if v['external_keys']!=[dict(action=i,key='Escape',private_owned_window=True)for i in cancels]:raise ValueError('owned cancellation receipt')
             rows[key]=v;counts['observations']+=1;counts[status]+=1
-    if dict(counts)!=dict(observations=7,Success=6,Cancel=1):raise ValueError('native coverage counts')
+    if dict(counts)!=dict(observations=9,Success=8,Cancel=1):raise ValueError('native coverage counts')
     return rows,captures,dict(counts),paths

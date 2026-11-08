@@ -26,6 +26,24 @@ fn trimmed_offsets_match_native_history_archives_and_requested_fit() {
 }
 
 #[test]
+fn rational_pilot_offsets_match_native_history_archives_and_requested_fit() {
+    replay(tolerance::rational_rows("pilot"), "RATIONAL_PILOT_OFFSET");
+}
+
+#[test]
+fn rational_holdout_offsets_match_native_history_archives_and_requested_fit() {
+    replay(
+        tolerance::rational_rows("holdouts"),
+        "RATIONAL_HOLDOUT_OFFSET",
+    );
+}
+
+#[test]
+fn rational_final_offsets_match_native_history_archives_and_requested_fit() {
+    replay(tolerance::rational_rows("final"), "RATIONAL_FINAL_OFFSET");
+}
+
+#[test]
 fn native_trim_reference_edges_are_admitted_at_their_captured_fit_budget() {
     for (id, v) in tolerance::trimmed_rows() {
         let t = tolerance::setup(&v).tolerance();
@@ -94,7 +112,14 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
         };
         println!("{prefix}_FIELD_CHECKED {id} {:?}", started.elapsed());
         let mut record = state.verify_with(&mut d, &v, |d, r, a| {
-            tolerance::check(
+            let check = if id == "offset_rf_two_axes_both" {
+                tolerance::check_rational_partitions
+            } else if prefix.starts_with("RATIONAL_") {
+                tolerance::check_rational
+            } else {
+                tolerance::check
+            };
+            check(
                 d,
                 r,
                 a,
@@ -102,6 +127,10 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
                 tolerance::reference_tolerance(&v),
             )
         });
+        if prefix.starts_with("RATIONAL_") {
+            record["rational_topology"] = tolerance::rational_topology(&d, &v);
+        }
+        record["native_partition_difference"] = (id == "offset_rf_two_axes_both").into();
         record["id"] = id.into();
         record["maximum_field_error"] = field.0.into();
         record["native_maximum_field_error"] = field.1.into();

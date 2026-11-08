@@ -1,6 +1,7 @@
 //! Fit smooth rational charts before assembling their certified common edges.
 use super::*;
 use viboceros_geometry::{CurveContinuity, NurbsSurface, join_breps};
+mod alignment;
 
 const MAX_STATIONS: usize = 1_000_000;
 
@@ -46,10 +47,18 @@ pub(super) fn offset(
         &[1.][..]
     } {
         let distance = options.distance * side * if reversed { -1. } else { 1. };
+        let sources = partition
+            .faces()
+            .iter()
+            .map(|f| f.surface())
+            .collect::<Vec<_>>();
+        let mut fitted = sources
+            .iter()
+            .map(|source| viboceros_smlib::offset_surface(source, distance, approximation))
+            .collect::<Result<Vec<_>, _>>()?;
+        alignment::supports(&mut fitted, &sources, stations)?;
         let mut pieces = Vec::with_capacity(partition.faces().len());
-        for face in partition.faces() {
-            let source = face.surface();
-            let fitted = viboceros_smlib::offset_surface(source, distance, approximation)?;
+        for (source, fitted) in sources.into_iter().zip(fitted) {
             check_fit(source, &fitted, distance, requested * 0.25, &mut stations)?;
             pieces.push(Brep::try_surface_face(fitted, tolerance)?);
         }
@@ -86,29 +95,7 @@ fn check_fit(
     limit: f64,
     remaining: &mut usize,
 ) -> Result<(), CommandError> {
-    let axes = [
-        (source.domain_u(), source.knots_u(), fitted.knots_u()),
-        (source.domain_v(), source.knots_v(), fitted.knots_v()),
-    ]
-    .map(|(domain, source, fitted)| {
-        let mut sites = source
-            .iter()
-            .chain(fitted)
-            .copied()
-            .filter(|t| domain.contains(t))
-            .collect::<Vec<_>>();
-        sites.extend(
-            (0..=16).map(|i| domain.start() + (domain.end() - domain.start()) * i as f64 / 16.),
-        );
-        sites.sort_by(f64::total_cmp);
-        sites.dedup();
-        let middle = sites
-            .windows(2)
-            .map(|w| w[0].midpoint(w[1]))
-            .collect::<Vec<_>>();
-        sites.extend(middle);
-        sites
-    });
+    let axes = station_axes(source, fitted.knots_u(), fitted.knots_v());
     let left = axes[0]
         .len()
         .checked_mul(axes[1].len())
@@ -131,4 +118,30 @@ fn check_fit(
         }
     }
     Ok(())
+}
+
+fn station_axes(source: &NurbsSurface, knots_u: &[f64], knots_v: &[f64]) -> [Vec<f64>; 2] {
+    [
+        (source.domain_u(), source.knots_u(), knots_u),
+        (source.domain_v(), source.knots_v(), knots_v),
+    ]
+    .map(|(domain, source, fitted)| {
+        let mut sites = source
+            .iter()
+            .chain(fitted)
+            .copied()
+            .filter(|t| domain.contains(t))
+            .collect::<Vec<_>>();
+        sites.extend(
+            (0..=16).map(|i| domain.start() + (domain.end() - domain.start()) * i as f64 / 16.),
+        );
+        sites.sort_by(f64::total_cmp);
+        sites.dedup();
+        let middle = sites
+            .windows(2)
+            .map(|w| w[0].midpoint(w[1]))
+            .collect::<Vec<_>>();
+        sites.extend(middle);
+        sites
+    })
 }

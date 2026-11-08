@@ -16,6 +16,24 @@ fn trimmed_getters_previews_and_cancellation_match_native() {
     replay(tolerance::trimmed_rows(), "TRIM_OFFSET");
 }
 
+#[test]
+fn rational_pilot_getters_previews_and_cancellation_match_native() {
+    replay(tolerance::rational_rows("pilot"), "RATIONAL_PILOT_OFFSET");
+}
+
+#[test]
+fn rational_holdout_getters_previews_and_cancellation_match_native() {
+    replay(
+        tolerance::rational_rows("holdouts"),
+        "RATIONAL_HOLDOUT_OFFSET",
+    );
+}
+
+#[test]
+fn rational_final_getters_previews_and_cancellation_match_native() {
+    replay(tolerance::rational_rows("final"), "RATIONAL_FINAL_OFFSET");
+}
+
 fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
     let mut count = 0;
     let mut declined = 0;
@@ -116,7 +134,14 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
             (0., 0.)
         };
         let mut record = state.verify_with(&mut app.document, &v, |d, r, a| {
-            tolerance::check(
+            let check = if id == "offset_rf_two_axes_both" {
+                tolerance::check_rational_partitions
+            } else if prefix.starts_with("RATIONAL_") {
+                tolerance::check_rational
+            } else {
+                tolerance::check
+            };
+            check(
                 d,
                 r,
                 a,
@@ -124,6 +149,10 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
                 tolerance::reference_tolerance(&v),
             )
         });
+        if prefix.starts_with("RATIONAL_") {
+            record["rational_topology"] = tolerance::rational_topology(&app.document, &v);
+        }
+        record["native_partition_difference"] = (id == "offset_rf_two_axes_both").into();
         record["id"] = id.into();
         record["maximum_field_error"] = field.0.into();
         record["native_maximum_field_error"] = field.1.into();
