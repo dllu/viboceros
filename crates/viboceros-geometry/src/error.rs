@@ -58,6 +58,8 @@ pub enum GeometryError {
     UnsupportedCurveEditPoints { context: &'static str },
     #[error("curve edit-point interpolation did not meet absolute tolerance")]
     CurveEditPointInterpolationFailed,
+    #[error("loose surface offset is unsupported: {context}")]
+    UnsupportedLooseSurfaceOffset { context: &'static str },
     #[error("mesh pull could not resolve a continuous closest path within tolerance")]
     AmbiguousMeshPull,
     #[error("mesh pull exceeded its arithmetic, subdivision, or output budget")]

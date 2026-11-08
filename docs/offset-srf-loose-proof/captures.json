@@ -1,0 +1,86 @@
+[
+  {
+    "family": "offset_srf_loose_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_pilot"
+    ],
+    "exit_status": 0,
+    "log": "pilot-capture.log.gz",
+    "request_sha256": "4d9c6340171c675b213342a8103c20f68a53316b38eaad5f7971e0b53a5e06c3",
+    "observation_sha256": "2c88209f89cff7917c021d9f3d43de8894842973c0943ac35a8e4e7215cfc5cf"
+  },
+  {
+    "family": "offset_srf_loose_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "holdouts-capture.log.gz",
+    "request_sha256": "95577812d34a1bd1d558dc0e8b39d1a819fde1ef5dc2bc604e0d2698d58ced85",
+    "observation_sha256": "03c2c1f9e7caefcb431274e3c55dd0f9d986de12358b320845b7a9f8686ba936"
+  },
+  {
+    "family": "offset_srf_loose_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_final"
+    ],
+    "exit_status": 0,
+    "log": "final-capture.log.gz",
+    "request_sha256": "d4fa64118e15e54e61f3352933289d920b56b41111d9e5cde9fdfc995616ea6b",
+    "observation_sha256": "97134657921d4b3411b0239fca334f8932204e03c1b42beb6f86157a5b6067c3"
+  },
+  {
+    "family": "offset_srf_loose_trims",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_trims"
+    ],
+    "exit_status": 0,
+    "log": "trims-capture.log.gz",
+    "request_sha256": "25a6662f60eaea8735b4009b294e94578f1e43d12f73f6145e0eae38659b3751",
+    "observation_sha256": "890402d56c8ec8421618968a5c60a63ed9c6a211af1f9bc2040a4901a2f2950f"
+  },
+  {
+    "family": "offset_srf_loose_closed",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_closed"
+    ],
+    "exit_status": 0,
+    "log": "closed-capture.log.gz",
+    "request_sha256": "c1feed9987c9932a76c7d9f4fed8ed773fe6c4d93e03c312ab891d44532ea9bd",
+    "observation_sha256": "4247baa0ff17a4920fed4603a5ccf8a19b325085d0fcb70ba594b4d9292aecc1"
+  },
+  {
+    "family": "offset_srf_loose_shells",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_loose_shells"
+    ],
+    "exit_status": 0,
+    "log": "shells-capture.log.gz",
+    "request_sha256": "3207529bc66d8b6612fedce8fdda417e92a9bd3fcb83d399ffdd0bc31e7b1f33",
+    "observation_sha256": "3c3906ed2a8709397c3258e2c0b7a697034f422c0dd561cd0b20000c099fcee8"
+  }
+]

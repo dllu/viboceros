@@ -9,6 +9,7 @@ pub struct Prepared {
     tolerance: Tolerance,
     layer: viboceros_document::LayerId,
     units: viboceros_geometry::LengthUnitSystem,
+    closed_sources: BTreeSet<ObjectId>,
 }
 
 pub fn prepare(
@@ -24,16 +25,38 @@ pub fn prepare(
     if sources.len() > MAX_SPAN_OUTPUT_OBJECTS {
         return Err(too_many_span_outputs("OffsetSrf"));
     }
+    if options.loose
+        && sources
+            .iter()
+            .any(|s| !loose_available(s.geometry(), document.tolerance()))
+    {
+        return Err(viboceros_geometry::GeometryError::UnsupportedLooseSurfaceOffset {
+            context: "Loose is available only when every input is a single surface without interior creases",
+        }.into());
+    }
     let ids = sources.iter().map(Object::id).collect::<BTreeSet<_>>();
     if !flips.is_subset(&ids) {
         return Err(CommandError::OffsetSurfaceStale);
     }
     let mut outputs = Vec::with_capacity(sources.len());
+    let mut closed_sources = BTreeSet::new();
     for source in &sources {
         if !document.is_object_selectable(source.id()) {
             return Err(CommandError::OffsetSurfaceStale);
         }
         let mut directed = options;
+        if options.loose
+            && options.solid
+            && match source.geometry() {
+                Geometry::Brep(b) => b.is_solid(),
+                Geometry::NurbsSurface(s) => {
+                    Brep::try_surface_face(s.clone(), document.tolerance())?.is_solid()
+                }
+                _ => false,
+            }
+        {
+            closed_sources.insert(source.id());
+        }
         if options.flip_all ^ flips.contains(&source.id()) {
             directed.distance = -directed.distance;
         }
@@ -41,9 +64,13 @@ pub fn prepare(
         // The kernel's combined two-face result remains useful for solid walls.
         if options.distance == 0. && options.solid {
             outputs.extend(
-                zero::wall(source.geometry(), options.both_sides, document.tolerance())?
-                    .into_iter()
-                    .map(|g| (source.id(), g)),
+                zero::wall(
+                    source.geometry(),
+                    options.both_sides || options.loose,
+                    document.tolerance(),
+                )?
+                .into_iter()
+                .map(|g| (source.id(), g)),
             );
         } else if options.both_sides && !options.solid {
             directed.both_sides = false;
@@ -77,6 +104,7 @@ pub fn prepare(
         tolerance: document.tolerance(),
         layer: document.current_layer_id(),
         units: document.units().clone(),
+        closed_sources,
     })
 }
 
@@ -138,15 +166,29 @@ impl Prepared {
                 .release_command_selection_on_history_replay(self.sources.iter().map(Object::id))?;
             document.clear_selection();
         }
-        if self.options.solid && self.options.delete_input {
-            if self.options.distance == 0. && !self.options.both_sides {
-                document.copy_object_pieces_into_source_groups(self.outputs.iter().cloned())?;
-                document.delete_objects(self.sources.iter().map(Object::id))?;
-            } else {
-                document.replace_object_geometries(self.outputs.iter().cloned())?;
-            }
+        if self.options.solid
+            && self.options.delete_input
+            && self.options.distance == 0.
+            && !self.options.both_sides
+            && !self.options.loose
+        {
+            document.copy_object_pieces_into_source_groups(self.outputs.iter().cloned())?;
+            document.delete_objects(self.sources.iter().map(Object::id))?;
         } else {
-            for (_, geometry) in &self.outputs {
+            let replaces = |id| {
+                self.options.solid
+                    && (self.options.delete_input || self.closed_sources.contains(&id))
+            };
+            let replaced = self
+                .outputs
+                .iter()
+                .filter(|(id, _)| replaces(*id))
+                .cloned()
+                .collect::<Vec<_>>();
+            if !replaced.is_empty() {
+                document.replace_object_geometries(replaced)?;
+            }
+            for (_, geometry) in self.outputs.iter().filter(|(id, _)| !replaces(*id)) {
                 document.add_geometry(geometry.clone())?;
             }
         }

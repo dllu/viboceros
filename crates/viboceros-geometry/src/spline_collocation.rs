@@ -10,7 +10,7 @@ pub(crate) mod cyclic;
 pub(crate) mod general_banded;
 #[cfg(test)]
 mod greville_tests;
-pub(crate) use axis::Axis;
+pub(crate) use axis::{Axis, Station};
 
 pub(crate) const DEGREE: usize = 3;
 

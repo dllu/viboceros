@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_plane",
+      "case": "offset_loose_plane"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_saddle",
+      "case": "offset_loose_saddle"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_bezier",
+      "case": "offset_loose_bezier"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_nonuniform",
+      "case": "offset_loose_nonuniform"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_rational",
+      "case": "offset_loose_rational"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_negative",
+      "case": "offset_loose_negative"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_both",
+      "case": "offset_loose_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_solid",
+      "case": "offset_loose_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_loose_polysurface",
+      "case": "offset_loose_polysurface"
+    }
+  ]
+}

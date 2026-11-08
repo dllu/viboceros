@@ -4,7 +4,7 @@
 
 Run `OffsetSrf`, select surfaces and press Enter. Preselected surfaces go directly
 to the direction stage. Click an input or use `FlipAll` to reverse its direction.
-Edit the distance, `Solid`, or `BothSides`, then press Enter to accept the cached
+Edit the distance, `Solid`, `BothSides`, or `Loose`, then press Enter to accept the cached
 preview. `DeleteInput` is available with `Solid=Yes`. Esc cancels without changing
 geometry or discarding Redo. The distance and boolean choices survive cancellation;
 direction flips apply only to the current invocation.
@@ -41,7 +41,7 @@ oppositely oriented coincident faces. These finite rectangular cases match the
 [native getter qualification](../offset-surface-getters.md).
 
 The initial product preferences are distance 1, Sharp corners, and all booleans
-No. Factory Rhino defaults have not been established. Round corners, Loose and
+No. Factory Rhino defaults have not been established. Round corners and
 explicit tolerance options remain unsupported. Document changes invalidate a
 preview; all geometry is prepared before one atomic history edit.
 
@@ -49,8 +49,14 @@ Both builds support planar sheets and exact canonical spheres, cylinders, cones
 and ring tori, including supported single-face B-reps. Analytic offsets retain
 their rational control nets and parameter domains; collapsing or inverting radii
 are rejected. Planar rectangles make six-face walls, while other supported closed
-profiles make exact ruled walls and caps. Portable builds reject other nonplanar
+profiles make exact ruled walls and caps. With `Loose=No`, portable builds reject other nonplanar
 surfaces, polysurfaces and planar walls with multiple boundary loops.
+
+`Loose=Yes` adds original-basis offsets of free-form single surfaces in both
+builds, including supported trimmed faces, rational weights and periodic charts.
+It interpolates normal offsets at Greville stations; the surface between those
+stations approximates a true offset. See [Loose geometry and validation](../offset-srf-loose.md).
+Loose is unavailable when an input has multiple faces or interior creases.
 
 Linux `--features native-smlib` adds [usd-brep offsets](../smlib-offset-surfaces.md)
 for general trimmed sheets, free-form surfaces and polysurfaces. Its broad corner,

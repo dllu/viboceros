@@ -79,7 +79,7 @@ impl VibocerosApp {
             self.cancel_interactive_command(false);
             return false;
         }
-        let edit = if ["Solid", "BothSides", "DeleteInput"]
+        let edit = if ["Solid", "BothSides", "DeleteInput", "Loose"]
             .iter()
             .any(|o| word.eq_ignore_ascii_case(o))
         {
@@ -87,6 +87,8 @@ impl VibocerosApp {
                 s.options.solid
             } else if word.eq_ignore_ascii_case("BothSides") {
                 s.options.both_sides
+            } else if word.eq_ignore_ascii_case("Loose") {
+                s.options.loose
             } else {
                 s.options.delete_input
             };
@@ -94,12 +96,12 @@ impl VibocerosApp {
         } else {
             word.to_owned()
         };
-        if !s.options.solid
+        if (!s.options.solid || !s.delete_available)
             && edit
                 .split_once('=')
                 .is_some_and(|(k, _)| k.eq_ignore_ascii_case("DeleteInput"))
         {
-            self.push_log("DeleteInput is available with Solid=Yes".into());
+            self.push_log("DeleteInput is available with Solid=Yes on an open input".into());
             return true;
         }
         let result = solver::parse(
@@ -109,6 +111,14 @@ impl VibocerosApp {
         );
         match result {
             Ok(input) => {
+                if !s.loose_available
+                    && edit
+                        .split_once('=')
+                        .is_some_and(|(k, _)| k.eq_ignore_ascii_case("Loose"))
+                {
+                    self.push_log("Loose is available when every input is a single surface without interior creases".into());
+                    return true;
+                }
                 let options = input.options;
                 if let Some(point) = input.through_point {
                     let s = self.offset_surface_session.as_mut().unwrap();

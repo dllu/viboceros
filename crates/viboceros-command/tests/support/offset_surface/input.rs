@@ -12,7 +12,7 @@ pub fn initial(v: &Value) -> Options {
             .nth(1)
             .map(|s| s.split_whitespace().next().unwrap().trim_end_matches(')'))
     };
-    for key in ["Distance", "Solid", "BothSides", "DeleteInput"] {
+    for key in ["Distance", "Solid", "BothSides", "DeleteInput", "Loose"] {
         if let Some(value) = value(key) {
             options = offset_surface::parse(
                 &[&format!("{key}={value}")],
@@ -22,6 +22,9 @@ pub fn initial(v: &Value) -> Options {
             .unwrap()
             .options;
         }
+    }
+    if let Some(delete) = v["prescribed_case"]["initial_delete_input"].as_bool() {
+        options.delete_input = delete;
     }
     options
 }

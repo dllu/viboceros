@@ -2,6 +2,9 @@
 use super::captured::expected;
 use super::*;
 use viboceros_geometry::{BrepFace, BrepTrimType};
+#[path = "brep_parameter_comparison.rs"]
+mod parameters;
+use parameters::error as parameter_error;
 
 fn stations(face: &BrepFace, tolerance: Tolerance) -> Vec<Point3> {
     let s = face.surface();
@@ -146,6 +149,15 @@ pub fn error(actual: &Brep, row: &Value, tolerance: Tolerance) -> f64 {
         });
         let mut best = None;
         for (slot, j) in candidates {
+            if let Some(cost) = parameter_error(face, &actual.faces()[j], tolerance) {
+                if best.is_none_or(|(_, old)| cost < old) {
+                    best = Some((slot, cost));
+                }
+                if cost <= 2e-6 {
+                    break;
+                }
+                continue;
+            }
             let alignment = normal_error(face, &actual.faces()[j], points[0], tolerance);
             if alignment > 2e-6 {
                 continue;
@@ -164,6 +176,12 @@ pub fn error(actual: &Brep, row: &Value, tolerance: Tolerance) -> f64 {
             }
         }
         let (slot, cost) = best.expect("matching oriented native face");
+        if cost > 1e-6 {
+            println!(
+                "BREP_FACE_DIFFERENCE native={i} product={} error={cost:e}",
+                unused[slot]
+            );
+        }
         let other = &actual.faces()[unused.remove(slot)];
         assert_eq!(other.loops().len(), face.loops().len());
         let trims = |f: &BrepFace| {
@@ -178,12 +196,36 @@ pub fn error(actual: &Brep, row: &Value, tolerance: Tolerance) -> f64 {
         };
         assert_eq!(trims(other), trims(face));
         error = error.max(cost);
-        for p in points {
-            error = error.max(normal_error(face, other, p, tolerance));
+        if parameter_error(face, other, tolerance).is_none() {
+            for p in points {
+                error = error.max(normal_error(face, other, p, tolerance));
+            }
         }
     }
     let curve_distance = |a: &viboceros_geometry::NurbsCurve,
                           b: &viboceros_geometry::NurbsCurve| {
+        let direct = [false, true]
+            .into_iter()
+            .map(|reversed| {
+                (0..=16)
+                    .map(|i| {
+                        let t = i as f64 / 16.;
+                        a.evaluate(a.parameter_at(t).unwrap())
+                            .unwrap()
+                            .distance_to(
+                                b.evaluate(
+                                    b.parameter_at(if reversed { 1. - t } else { t }).unwrap(),
+                                )
+                                .unwrap(),
+                            )
+                            .unwrap()
+                    })
+                    .fold(0_f64, f64::max)
+            })
+            .fold(f64::INFINITY, f64::min);
+        if direct <= 1e-6 {
+            return direct;
+        }
         (0..=16)
             .map(|i| {
                 let p = a.evaluate(a.parameter_at(i as f64 / 16.).unwrap()).unwrap();

@@ -9,6 +9,7 @@ pub struct Options {
     pub both_sides: bool,
     pub delete_input: bool,
     pub flip_all: bool,
+    pub loose: bool,
 }
 
 impl Default for Options {
@@ -19,6 +20,7 @@ impl Default for Options {
             both_sides: false,
             delete_input: false,
             flip_all: false,
+            loose: false,
         }
     }
 }
@@ -39,10 +41,11 @@ impl Options {
     pub fn arguments(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         format!(
-            "Corner=Sharp Distance={} Solid={} BothSides={} DeleteInput={}",
+            "Corner=Sharp Distance={} Solid={} BothSides={} Loose={} DeleteInput={}",
             self.distance,
             yes(self.solid),
             yes(self.both_sides),
+            yes(self.loose),
             yes(self.delete_input)
         )
     }
@@ -74,7 +77,7 @@ pub fn parse(
     mut options: Options,
     units: &LengthUnitSystem,
 ) -> Result<Input, CommandError> {
-    let mut seen = [false; 6];
+    let mut seen = [false; 7];
     let mut through_point = None;
     let mut i = 0;
     while i < args.len() {
@@ -120,6 +123,9 @@ pub fn parse(
             } else if option_name_eq(name, "FlipAll") {
                 options.flip_all = value;
                 4
+            } else if option_name_eq(name, "Loose") {
+                options.loose = value;
+                6
             } else {
                 return Err(CommandError::Usage(USAGE));
             }

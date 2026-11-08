@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_curved",
+      "case": "offset_lt_curved"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_curved_solid",
+      "case": "offset_lt_curved_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_curved_both_solid",
+      "case": "offset_lt_curved_both_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_plane_zero_solid",
+      "case": "offset_lt_plane_zero_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_trim_zero_solid",
+      "case": "offset_lt_trim_zero_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lt_batch_both",
+      "case": "offset_lt_batch_both"
+    }
+  ]
+}

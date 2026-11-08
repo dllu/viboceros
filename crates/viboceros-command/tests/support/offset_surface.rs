@@ -172,6 +172,14 @@ impl State {
         }
     }
     pub fn verify(&self, d: &mut Document, v: &Value) -> Value {
+        self.verify_with(d, v, check)
+    }
+    pub fn verify_with(
+        &self,
+        d: &mut Document,
+        v: &Value,
+        check: fn(&Document, &Value, bool) -> f64,
+    ) -> Value {
         let mut error = check(d, &v["after"], false);
         self.identities(d, &v["after"]);
         let changed = v["history_changed"].as_bool().unwrap();

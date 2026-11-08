@@ -12,6 +12,8 @@ pub(super) struct Session {
     layer: viboceros_document::LayerId,
     units: viboceros_geometry::LengthUnitSystem,
     options: Options,
+    loose_available: bool,
+    delete_available: bool,
     flips: BTreeSet<ObjectId>,
     pub(super) postselected: bool,
     distance_menu: bool,
@@ -58,6 +60,8 @@ impl Session {
             "Second point for offset distance"
         } else if self.distance_menu {
             "Positive offset distance or first distance point; Enter accepts a positive default"
+        } else if self.loose_available {
+            "Click a source to flip; Distance / ThroughPoint / Solid / BothSides / Loose / FlipAll; Enter accepts, Esc cancels"
         } else {
             "Click a source to flip; Distance / ThroughPoint / Solid / BothSides / FlipAll; Enter accepts, Esc cancels"
         }
@@ -145,12 +149,37 @@ impl VibocerosApp {
             self.document.tolerance(),
         );
         let count = sources.len();
+        let loose_available = sources
+            .iter()
+            .all(|s| solver::loose_available(s.geometry(), self.document.tolerance()));
+        let delete_available = sources.iter().any(|s| match s.geometry() {
+            Geometry::Brep(b) => !b.is_solid(),
+            Geometry::NurbsSurface(s) => {
+                viboceros_geometry::Brep::try_surface_face(s.clone(), self.document.tolerance())
+                    .is_ok_and(|b| !b.is_solid())
+            }
+            _ => false,
+        });
+        if !loose_available
+            && words[1..].iter().any(|w| {
+                w.split_once('=')
+                    .is_some_and(|(k, _)| k.trim_start_matches('_').eq_ignore_ascii_case("Loose"))
+            })
+        {
+            self.push_log(
+                "Loose is available when every input is a single surface without interior creases"
+                    .into(),
+            );
+            return true;
+        }
         self.offset_surface_session = Some(Session {
             sources,
             tolerance: self.document.tolerance(),
             layer: self.document.current_layer_id(),
             units: self.document.units().clone(),
             options: input.options,
+            loose_available,
+            delete_available,
             flips: BTreeSet::new(),
             postselected,
             distance_menu: false,
@@ -188,11 +217,28 @@ impl VibocerosApp {
                 self.push_log(format!("OffsetSrf: {} <{}>", s.hint(), default));
                 return;
             }
-            self.push_log(format!(
-                "OffsetSrf: {} ({})",
-                s.hint(),
-                s.options.prompt_arguments()
-            ));
+            let mut arguments = s.options.prompt_arguments();
+            if !s.loose_available {
+                arguments = arguments.replace(
+                    if s.options.loose {
+                        " Loose=Yes"
+                    } else {
+                        " Loose=No"
+                    },
+                    "",
+                );
+            }
+            if !s.delete_available {
+                arguments = arguments.replace(
+                    if s.options.delete_input {
+                        " DeleteInput=Yes"
+                    } else {
+                        " DeleteInput=No"
+                    },
+                    "",
+                );
+            }
+            self.push_log(format!("OffsetSrf: {} ({})", s.hint(), arguments));
         }
     }
     pub(super) fn validate_offset_surface(&mut self) {
@@ -223,7 +269,11 @@ impl VibocerosApp {
             }
         }
         s.directions.markers = markers.into();
-        let result = solver::prepare(&self.document, s.options, &s.flips).and_then(|p| {
+        let effective = Options {
+            loose: s.options.loose && s.loose_available,
+            ..s.options
+        };
+        let result = solver::prepare(&self.document, effective, &s.flips).and_then(|p| {
             let scene = p.preview(&self.document)?;
             Ok((p, scene))
         });

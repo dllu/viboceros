@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_prime_keep",
+      "case": "offset_ls_prime_keep"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_sphere_keep",
+      "case": "offset_ls_sphere_keep"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_periodic_keep",
+      "case": "offset_ls_periodic_keep"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_prime_delete",
+      "case": "offset_ls_prime_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_sphere_delete",
+      "case": "offset_ls_sphere_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_ls_periodic_delete",
+      "case": "offset_ls_periodic_delete"
+    }
+  ]
+}

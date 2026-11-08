@@ -9,6 +9,9 @@ pub(super) fn offset(
     if options.distance == 0. && !options.solid {
         return Ok(geometry.clone());
     }
+    if options.loose {
+        return loose::offset(geometry, options, tolerance);
+    }
     if let Some(offset) = spherical_offset(geometry, options, tolerance)? {
         return Ok(offset);
     }

@@ -91,6 +91,20 @@ CASES.update(FINAL)
 CASES.update(COMPLETION)
 CASES.update(BATCH)
 CASES.update(MENUS)
+if __package__:
+    from .offset_surface_loose_cases import LOOSE_PILOT, LOOSE_HOLDOUTS, LOOSE_FINAL, LOOSE_CLOSED, LOOSE_SHELLS
+else:
+    from offset_surface_loose_cases import LOOSE_PILOT, LOOSE_HOLDOUTS, LOOSE_FINAL, LOOSE_CLOSED, LOOSE_SHELLS
+CASES.update(LOOSE_PILOT)
+CASES.update(LOOSE_HOLDOUTS)
+CASES.update(LOOSE_FINAL)
+CASES.update(LOOSE_CLOSED)
+CASES.update(LOOSE_SHELLS)
+if __package__:
+    from .offset_surface_loose_trim_cases import LOOSE_TRIMS
+else:
+    from offset_surface_loose_trim_cases import LOOSE_TRIMS
+CASES.update(LOOSE_TRIMS)
 
 def validate(op):
     if not isinstance(op,dict) or set(op) != {'op','id','case'} or op.get('op') != 'offset_surface_command' or op.get('id') != op.get('case') or op.get('case') not in CASES:

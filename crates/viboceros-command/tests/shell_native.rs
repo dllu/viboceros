@@ -169,3 +169,6 @@ fn shell_sdk_box_and_circular_openings_match_native_geometry_and_mass() {
     }
     println!("SHELL_SDK_COUNT 9");
 }
+#[path = "support/brep_comparison.rs"]
+#[allow(dead_code)]
+mod brep_comparison;

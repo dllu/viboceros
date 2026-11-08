@@ -46,6 +46,9 @@ mod boolean_split_plane;
 mod boolean_split_topology;
 mod boolean_two;
 mod boolean_union;
+#[path = "../../../crates/viboceros-command/tests/support/brep_comparison.rs"]
+#[allow(dead_code)]
+mod brep_comparison;
 mod camera_archive;
 mod catenary;
 mod chain_selection;
@@ -186,6 +189,7 @@ mod nurbs_selection;
 mod nurbs_subd_selection;
 mod object_selection;
 mod offset_surface;
+mod offset_surface_loose;
 #[path = "../../../crates/viboceros-oracle/tests/support/observation.rs"]
 mod oracle_observation;
 mod orient_curve;

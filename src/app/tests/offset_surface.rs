@@ -3,7 +3,7 @@ use super::plane_surface_native_support as native;
 use super::*;
 #[path = "../../../crates/viboceros-command/tests/support/offset_surface.rs"]
 #[allow(dead_code)]
-mod inputs;
+pub(super) mod inputs;
 #[path = "offset_surface/mouse.rs"]
 mod mouse;
 

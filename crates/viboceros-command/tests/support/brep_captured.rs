@@ -5,16 +5,13 @@ use viboceros_geometry::{
     Point2, SurfaceIso, WeightedPoint2,
 };
 
-pub(super) fn expected(record: &Value, tolerance: Tolerance) -> Brep {
+pub fn expected(record: &Value, tolerance: Tolerance) -> Brep {
     let b = &record["brep"];
     let vertices = b["vertices"]
         .as_array()
         .unwrap()
         .iter()
-        .map(|v| {
-            BrepVertex::try_new(native::point(&v["point"]), v["tolerance"].as_f64().unwrap())
-                .unwrap()
-        })
+        .map(|v| BrepVertex::try_new(point(&v["point"]), v["tolerance"].as_f64().unwrap()).unwrap())
         .collect();
     let edges = b["edges"]
         .as_array()
@@ -24,7 +21,7 @@ pub(super) fn expected(record: &Value, tolerance: Tolerance) -> Brep {
         .map(|(e, vertices)| {
             BrepEdge::try_new(
                 serde_json::from_value(vertices.clone()).unwrap(),
-                native::curve(&e["curve"]["definition"]),
+                curve(&e["curve"]["definition"]),
                 e["tolerance"].as_f64().unwrap(),
             )
             .unwrap()
@@ -104,7 +101,7 @@ pub(super) fn expected(record: &Value, tolerance: Tolerance) -> Brep {
                 })
                 .collect();
             BrepFace::try_new(
-                native::surface(&definition["definition"]),
+                surface(&definition["definition"]),
                 topology["reversed"].as_bool().unwrap(),
                 loops,
             )

@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_periodic_uv",
+      "case": "offset_lf_periodic_uv"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_sphere_poles",
+      "case": "offset_lf_sphere_poles"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_postselect",
+      "case": "offset_lf_postselect"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_postselect_cancel",
+      "case": "offset_lf_postselect_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_zero_solid",
+      "case": "offset_lf_zero_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_zero_both_solid",
+      "case": "offset_lf_zero_both_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_zero_solid_delete",
+      "case": "offset_lf_zero_solid_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_units",
+      "case": "offset_lf_units"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_lf_toggle",
+      "case": "offset_lf_toggle"
+    }
+  ]
+}

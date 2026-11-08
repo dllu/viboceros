@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_trimmed",
+      "case": "offset_l_trimmed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_trimmed_reversed",
+      "case": "offset_l_trimmed_reversed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_trimmed_solid",
+      "case": "offset_l_trimmed_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_solid_delete",
+      "case": "offset_l_solid_delete"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_both_solid",
+      "case": "offset_l_both_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_flip",
+      "case": "offset_l_flip"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_zero",
+      "case": "offset_l_zero"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_cancel",
+      "case": "offset_l_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_periodic_u",
+      "case": "offset_l_periodic_u"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_periodic_uv",
+      "case": "offset_l_periodic_uv"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_closed_rational",
+      "case": "offset_l_closed_rational"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_sphere_poles",
+      "case": "offset_l_sphere_poles"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_crease",
+      "case": "offset_l_crease"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_l_degree_five",
+      "case": "offset_l_degree_five"
+    }
+  ]
+}

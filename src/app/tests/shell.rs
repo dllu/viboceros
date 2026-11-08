@@ -1,3 +1,4 @@
+use super::brep_comparison;
 use super::plane_surface_native_support as native;
 use super::*;
 #[path = "shell/mouse.rs"]

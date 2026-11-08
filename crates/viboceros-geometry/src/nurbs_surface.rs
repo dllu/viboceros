@@ -12,6 +12,7 @@ mod evaluate;
 mod grip_deletion;
 mod grips;
 mod limit_frames;
+mod loose_offset;
 mod meshing;
 mod offset_extension;
 mod parameter_frame;

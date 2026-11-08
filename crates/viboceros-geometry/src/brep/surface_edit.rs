@@ -1,6 +1,7 @@
 //! Rebuild model-space boundaries after an underlying control-net edit.
 use super::*;
 use crate::PointMorph;
+mod isocurve;
 mod topology;
 const MAX_TRIM_IMAGE_CONTROLS: usize = 4096;
 const MAX_EDIT_CERTIFICATE_WORK: usize = 16_000_000;
@@ -79,12 +80,16 @@ impl Brep {
                 };
             }
             let uv = trim_image::LiftedTrim::new(trim, &surface)?.curve;
-            let mut spatial = crate::morph::fit_curve_with_control_limit(
-                &SurfaceImage(&surface),
-                &uv,
-                fitting,
-                MAX_TRIM_IMAGE_CONTROLS,
-            )?;
+            let mut spatial = if let Some(exact) = isocurve::image(trim, &surface)? {
+                exact
+            } else {
+                crate::morph::fit_curve_with_control_limit(
+                    &SurfaceImage(&surface),
+                    &uv,
+                    fitting,
+                    MAX_TRIM_IMAGE_CONTROLS,
+                )?
+            };
             if certificate
                 .bound_with_work_limit(
                     &trim.curve,

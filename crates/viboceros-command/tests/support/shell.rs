@@ -1,15 +1,12 @@
 //! Authored Shell sources and finite native document/history comparisons.
+use super::brep_comparison::{captured, geometry};
 use super::native;
 use serde_json::{Value, json};
 use viboceros_command::{CommandContext, CommandRegistry, shell::ShellOptions};
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{Brep, Point3, Tolerance};
-#[path = "shell/captured.rs"]
-mod captured;
 #[path = "shell/check.rs"]
 mod comparison;
-#[path = "shell/geometry.rs"]
-mod geometry;
 pub use comparison::{State, check};
 
 pub fn rows() -> Vec<(String, Value)> {
