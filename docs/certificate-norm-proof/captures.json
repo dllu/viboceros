@@ -1,0 +1,44 @@
+[
+  {
+    "family": "offset_srf_trims",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_trims"
+    ],
+    "exit_status": 1,
+    "archive": "observations/failures/offset_srf_trims-b0d8ac5627c792f665b392e8a5dba607c8557c823c3eb77c76b0e03b00fb1578.json.gz",
+    "log": "capture-1.log.gz",
+    "observation_sha256": "b0d8ac5627c792f665b392e8a5dba607c8557c823c3eb77c76b0e03b00fb1578"
+  },
+  {
+    "family": "offset_srf_trims",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_trims"
+    ],
+    "exit_status": 0,
+    "archive": "observations/offset_srf_trims.json.gz",
+    "log": "capture-0.log.gz",
+    "observation_sha256": "22b93ea4a5ce3fce1be9b0c693e02314ebf695da1c9a202efd3d3ed827a294b3"
+  },
+  {
+    "family": "offset_srf_trims_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_trims_final"
+    ],
+    "exit_status": 0,
+    "archive": "observations/offset_srf_trims_final.json.gz",
+    "log": "final-capture.log.gz",
+    "observation_sha256": "d0906f1d7dc81fadf52732541ee1454cafa6be0c13c696a7ada6ef8c5ba78c29"
+  }
+]

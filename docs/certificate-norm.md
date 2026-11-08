@@ -15,6 +15,9 @@ fitting is outside the measured interval. These debug-build measurements cover
 the retained cases and machine; they do not establish general or Rhino
 performance parity.
 
+The two retained edits took about 27 seconds each versus 40 seconds with the
+frozen baseline, reducing measured time by about 32% with identical B-reps.
+
 [Qualification](certificate-norm-validation.json) ·
 [Reproduce checks](../tools/rhino_oracle/check_certificate_norm.py) ·
 [Benchmark driver](../tools/benchmarks/certificate_norm/run.py)
