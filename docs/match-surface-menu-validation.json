@@ -1,0 +1,463 @@
+{
+  "scope": "MatchSrf owns valid enum choices before global command dispatch.",
+  "baseline_revision": "7b2ba591e24cae27ff3c2f995fe0e81ab0d2f782",
+  "implementation_revision": "2906839bf77b0399385473e668d2e67cee01ce9a",
+  "qualified_menu_replays_per_build": 1,
+  "prior_command_regression_replays_per_build": 21,
+  "discovery_tolerance_rows": 8,
+  "behavior": "Bare Curvature and _Curvature remain in the Mode or PreserveOtherEnd getter. Commands entered outside a matching enum choice still cancel MatchSrf and start normally.",
+  "comparison": "Replay the complete native Mode/Tangency, PreserveOtherEnd/Curvature and IsocurveDirection/Keep sequence; compare geometry, metadata, UUIDs, object order, selection, Undo/Redo and 3DM. Also retain all previous command replays in both builds.",
+  "maximum_geometry_error": 9.133282034201746e-16,
+  "full_native_parity": false,
+  "limits": [
+    "Eight tolerance getter captures are retained as discovery evidence; custom tolerance fitting is not qualified by this record.",
+    "The older incomplete menu trace remains retained and excluded from qualification."
+  ],
+  "stages": {
+    "menu-portable": [
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_tol_complete_menus",
+        "maximum_geometry_error": 4.577566798522237e-16,
+        "result": "Success"
+      }
+    ],
+    "regressions-portable": [
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_after_cancel",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_first_pick",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_no_picks",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_options",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_closest_refine",
+        "maximum_geometry_error": 7.019966171215001e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_default",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_curvature",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_nothing",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_position",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_tangency",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_keep",
+        "maximum_geometry_error": 7.557105357354621e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_matchtarget",
+        "maximum_geometry_error": 7.557105357354621e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_perpendicular",
+        "maximum_geometry_error": 7.557105357354621e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_low_preserve_nothing",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_low_preserve_tangency",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_mode_position",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_mode_tangency",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_opposite_pick_ends",
+        "maximum_geometry_error": 4.761265790728163e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_preselected",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_preserve_curvature",
+        "maximum_geometry_error": 4.3856639972462754e-16,
+        "result": "Success"
+      }
+    ],
+    "menu-native": [
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_tol_complete_menus",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      }
+    ],
+    "regressions-native": [
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_after_cancel",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_first_pick",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_no_picks",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": false,
+        "id": "match_cmd_cancel_options",
+        "maximum_geometry_error": 2.276126435504336e-16,
+        "result": "Cancel"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_closest_refine",
+        "maximum_geometry_error": 8.01269205450519e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_default",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_curvature",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_nothing",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_position",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_high_preserve_tangency",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_keep",
+        "maximum_geometry_error": 9.133282034201746e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_matchtarget",
+        "maximum_geometry_error": 9.133282034201746e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_iso_perpendicular",
+        "maximum_geometry_error": 9.133282034201746e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_low_preserve_nothing",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_low_preserve_tangency",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_mode_position",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_mode_tangency",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_opposite_pick_ends",
+        "maximum_geometry_error": 7.396523224888128e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_preselected",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      },
+      {
+        "archives": 1,
+        "changed": true,
+        "id": "match_cmd_preserve_curvature",
+        "maximum_geometry_error": 7.39793180423832e-16,
+        "result": "Success"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "ui-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "ui-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/commands/match-srf.md": "ac2353104a375423e9ce19bb84a7fd83e3aef98df67fc703a036ed1bb8850c8a",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/capture.json": "3ecfb121d86d3cf17f615f9ce08b6c77df230da9893cae68d048b264a1e5548c",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/capture.log.gz": "b469b0674c1139d34bb8245d2552a08587f353611653504bedf4a2179d4cc740",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/checks.json": "596fcdeccd46b9026a48a22f2dd190184faa5d66c26ba656bbe678f64afb19ba",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/clippy-native.log.gz": "eeb28ac1f6ad7e7f92aa72af21da3530ddde80d26dc5a66d87cfa88d95da060c",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/clippy-portable.log.gz": "eaeec166719c9c525280ba1f4bb48d4016430d8ea4e3c6bd27673c8b74c25150",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/python-subd.log.gz": "a097be14a13fca0d01cb920eee4f8b30c0de614381f5fce767c321b5aa2a8afd",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/python.log.gz": "c58006ec2ea419761f244a2999fe6616726ac90b2910bc0154893cd85a89f26e",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/subd-command-native.log.gz": "98d35a3fbecb2b49ab478eada4d0c1d41ef9080dced79041ea1261bfb847abef",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/subd-ui-native.log.gz": "91e87c6d4dff785f5ecbbaab7d97220e3a7862fd3cb443670994c3ef3b81bf68",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/ui-native.log.gz": "7a2d9b0f57bceb4acd83fc06ccac7b50ddacb63b361c5894a7b78f4952133d72",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/match-surface-menu-proof/ui-portable.log.gz": "a80990923295b57d4418d7c5961490e2bae587da51a87b7b368f6218086c7fd9",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/subd-box-qualification.json": "67b219b705f58acd532a473ef00919b18664482fa5625ec57f6c8c30cc217638",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:docs/subd-plane-qualification.json": "4ba38d40117cc59a8b202a562eb07f611fe47daa0b7a88d0c3725adbfa5eedb7",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:src/app/match_surface.rs": "e75f249edb85e9533e176109bd8cf639b450a2bbf43492dd3fd94b3ed635b639",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:src/app/tests/match_surface_menus.rs": "ae92e616b36410293bfcd653d146260c977f554e2b704ac89ecaa98a492dae89",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:src/app/tests/mod.rs": "89fb673c4d34248b2fd211363f00bff32ccb4ff9159ed61b11a4cf35f356a25f",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/check_match_surface_menus.py": "339e259a49536807a203158e0c0f559fbba3ba756fa17167c862ef93e927a163",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/conic_getter_input.py": "f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/fixtures/match_surface_command_tolerance_getters.json": "080c2777f9bde66236df4ec616235241bd8f4ea7a524b5674883c63616531fe1",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/generate_match_surface_command_tolerance_getters.py": "7bd2a77c697324e930fc84298f54a8979acb9ecc70daf60ff65aa73ad510f85a",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/match_surface_command.py": "6fcddc57b2c600f3c0c171af4206f4f6e35b7af46a8c8449724368dd58e34f8c",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/match_surface_menu_evidence.py": "45a61c2d145764b25b63c0c9019e9f103bf4b3fb6e57c9fd24203ca963fff965",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/observations/match_surface_command_tolerance_getters.json.gz": "d350edfcca02e67e63fd838cb7b479c19a0d778a78e9bb77f5f2cb171459e384",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/observations/source_snapshots/179a510cbc9629ba0b337388b306d92a669d3bcc83070e0b3fe1ca8eb336adf8.gz": "4e39676be7e785cd2709f5995b55f442252f4d65c73a51f46b79211eb52567cf",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/observations/source_snapshots/1bac44d86f1bd59386c552d699a68d776ee104a63f8d2ad4a862b4fecc5422d4.gz": "7f83b7a4b940cdb24f35fc9b9508894336d75eda9f4235a1dfd9306ddf9a08a0",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/observations/source_snapshots/7bd2a77c697324e930fc84298f54a8979acb9ecc70daf60ff65aa73ad510f85a.gz": "51ff1c392055bd3c15c8315bdf5e69639d1766ee3625a5609f92ef769e1fb36d",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/observations/source_snapshots/f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108.gz": "77c80c5679c6ee28ddf79b28d03040a8d388dc1886dddbe47501fe662ac376ab",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/report_match_surface_menus.py": "ac279c99a1f6c3affb54aab5be3f0b0c45cd82f3bb5b70bc6c0acf3e2a1f4ffa",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/test_match_surface_menu_record.py": "3fa0fc9ca47da6d4ba0ed061101485c4105c893154dd6f3283cf60442e759783",
+    "2906839bf77b0399385473e668d2e67cee01ce9a:tools/rhino_oracle/test_match_surface_menus.py": "0a457ce3ebcfcff7d1f8ba853b0e0339b1ccac955d574ad2c626b76dfcb320c4"
+  },
+  "evidence_sha256": {
+    "docs/match-surface-command-proof/capture-options.log.gz": "ddbcbf3f9079e9bc5b106235e60f384a5190b8910c865daa15d1eea1418df770",
+    "docs/match-surface-command-proof/capture-pilot.log.gz": "aa8a215f76ec3b0a5a9368b11af05b4a858a56cfaa5e753a36724ad7bc6ebdf4",
+    "docs/match-surface-command-proof/capture-qualified.log.gz": "0cead062ac2f4c4fb81288f683cb3c0bab52b076072a688c3035c2bd995ab756",
+    "docs/match-surface-command-proof/captures.json": "d0b820c55512d6846575365e790e5ff1668dc2b153df6e15dbeb9232b7bdb0de",
+    "docs/match-surface-menu-proof/capture.json": "3ecfb121d86d3cf17f615f9ce08b6c77df230da9893cae68d048b264a1e5548c",
+    "docs/match-surface-menu-proof/capture.log.gz": "b469b0674c1139d34bb8245d2552a08587f353611653504bedf4a2179d4cc740",
+    "docs/match-surface-menu-proof/checks.json": "596fcdeccd46b9026a48a22f2dd190184faa5d66c26ba656bbe678f64afb19ba",
+    "docs/match-surface-menu-proof/clippy-native.log.gz": "eeb28ac1f6ad7e7f92aa72af21da3530ddde80d26dc5a66d87cfa88d95da060c",
+    "docs/match-surface-menu-proof/clippy-portable.log.gz": "eaeec166719c9c525280ba1f4bb48d4016430d8ea4e3c6bd27673c8b74c25150",
+    "docs/match-surface-menu-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/match-surface-menu-proof/python-subd.log.gz": "a097be14a13fca0d01cb920eee4f8b30c0de614381f5fce767c321b5aa2a8afd",
+    "docs/match-surface-menu-proof/python.log.gz": "c58006ec2ea419761f244a2999fe6616726ac90b2910bc0154893cd85a89f26e",
+    "docs/match-surface-menu-proof/subd-command-native.log.gz": "98d35a3fbecb2b49ab478eada4d0c1d41ef9080dced79041ea1261bfb847abef",
+    "docs/match-surface-menu-proof/subd-ui-native.log.gz": "91e87c6d4dff785f5ecbbaab7d97220e3a7862fd3cb443670994c3ef3b81bf68",
+    "docs/match-surface-menu-proof/ui-native.log.gz": "7a2d9b0f57bceb4acd83fc06ccac7b50ddacb63b361c5894a7b78f4952133d72",
+    "docs/match-surface-menu-proof/ui-portable.log.gz": "a80990923295b57d4418d7c5961490e2bae587da51a87b7b368f6218086c7fd9",
+    "tools/rhino_oracle/fixtures/match_surface_command_options.json": "23fa5092b3434b9bd726ad579c4ea5743dafa3878aaee9b013d04b7548920f0f",
+    "tools/rhino_oracle/fixtures/match_surface_command_pilot.json": "11eae2eed9eda0991662d95d02cd3a5052d150c3363534bfd18b014d1f1e110c",
+    "tools/rhino_oracle/fixtures/match_surface_command_qualified.json": "2a0a83bf09fdeadb82a1d9e222f3bca156a5419340f260bfc550e5861f45a1cd",
+    "tools/rhino_oracle/fixtures/match_surface_command_tolerance_getters.json": "080c2777f9bde66236df4ec616235241bd8f4ea7a524b5674883c63616531fe1",
+    "tools/rhino_oracle/observations/match_surface_command_options.json.gz": "d1f96686ff75be8f9e39f3ca29df347e43ee9bd0b6d620e5ee121410e73172b3",
+    "tools/rhino_oracle/observations/match_surface_command_pilot.json.gz": "cc48ec116c389b051b60596edf44df5f433cd741c6959c0be27804e6103cf26c",
+    "tools/rhino_oracle/observations/match_surface_command_qualified.json.gz": "d1490050cd34687f95674efcbaf2270b03a2f2b9e87a40c8719396d570ca8892",
+    "tools/rhino_oracle/observations/match_surface_command_tolerance_getters.json.gz": "d350edfcca02e67e63fd838cb7b479c19a0d778a78e9bb77f5f2cb171459e384",
+    "tools/rhino_oracle/observations/source_snapshots/04a8978175807bebc6238e8f669742c310dc519295602d7135bc65d77c5a6900.gz": "c9ceb2880cace5e571795c97f692a351128c537f2fc940ea128787188e047f82",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/179a510cbc9629ba0b337388b306d92a669d3bcc83070e0b3fe1ca8eb336adf8.gz": "4e39676be7e785cd2709f5995b55f442252f4d65c73a51f46b79211eb52567cf",
+    "tools/rhino_oracle/observations/source_snapshots/18282f2449e2920efac5ebae42a79890294fa1f4fe991c1af25f091786e852f4.gz": "aac73593932f158d3c81de0faa4ea29969bab5ebe1164676e57095fe9a4393a7",
+    "tools/rhino_oracle/observations/source_snapshots/1bac44d86f1bd59386c552d699a68d776ee104a63f8d2ad4a862b4fecc5422d4.gz": "7f83b7a4b940cdb24f35fc9b9508894336d75eda9f4235a1dfd9306ddf9a08a0",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/3c2702ef693c7c36a982038d9bc50bd01e4fca0cfd0e53c2944967aaeec2044c.gz": "113b23a5219fe0c54b2e6ff85940a8bdd624e815fbe7a3da67bdbeb8b859b60f",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/484c2d951185b407e294da8e63c05dbca1f6480597bbdf8dc8f3105ae35c3f92.gz": "a23637008613ccfb54fe4fbcb06ccd6e28f4025f4c147c560b589949eb830127",
+    "tools/rhino_oracle/observations/source_snapshots/655bd54d448d259d73b22008bc1fc317701ac9eea87f12e8efd50b2a01a56f7a.gz": "15a202a58528bf2dc087b9014ed0ece5505b2564da2dd62e54ba8a127c233967",
+    "tools/rhino_oracle/observations/source_snapshots/6af8ffc64f17850c8adb0c41c227cc99909a435f7fe0d4e2c09f7a8ae7975a9c.gz": "942359dc21a472e97b90bc073ed510664ebdb8518fc76e627720a56d7bc7ba9a",
+    "tools/rhino_oracle/observations/source_snapshots/6f96f16fc803f15d670b558a4ed540c8384d5fc415f0c1e8c7be0610ced1c23d.gz": "4f9276251512d5e922edbee7aaebfaee7ee1ef1aafbd91b6552e059b7724e1f6",
+    "tools/rhino_oracle/observations/source_snapshots/6fba4cbe766d6a48e4deb1e8dd7f078e2675d5bb75cb19ae290eb306870d598f.gz": "ef6948a51baad057d420126f378293f891a9a9851a2ba8df6538daf805147e92",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/7bd2a77c697324e930fc84298f54a8979acb9ecc70daf60ff65aa73ad510f85a.gz": "51ff1c392055bd3c15c8315bdf5e69639d1766ee3625a5609f92ef769e1fb36d",
+    "tools/rhino_oracle/observations/source_snapshots/83ffa3c4a156f2fabdc9213cc886c44ff92d56066e964737bfbc2a331e3a51dc.gz": "99ecf7ea2fa120a9b0715b21ad0360e2fa8093aec114969736aaad7d7d09891a",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a91aea6de6fd3eeb96a4b182b882116a020e5498a0501dc0e54ff4f7faee7a6c.gz": "e43dcbda5f3a1a4bceb35676fdbb9f30062c4c0bf76752332395424be997dfcb",
+    "tools/rhino_oracle/observations/source_snapshots/ad9e550ab2080e432eba111aeeaabd98df88156af93c471cc4d4565e731c785a.gz": "44ca3d8a2e09e17b6135535a805c58e28d08808fb5bf8db6ff14578b936f908f",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/bd55a97e9835880e88a2669dd3cc4a313fef7ee62156511b8c9f581305c50d72.gz": "0de3f062698cc102841503864f1c91edccd936d932d3dd0644c516847e5247f0",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c7e373779649d62d9db69af341c1b7b3af4a21bd895391b83a23690f33919ac8.gz": "7572be308933ce6bedc8f97f7736388a844f6391981dcb644763c1aed84a0ae5",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/e6bd3fc56d46944b6987de1ae0a921dcc67f7fed59a88e17341d015e6db83059.gz": "5b35a936b656471738af48af7fcb8326afaeb8d152c9b4d202de0b5931abc76e",
+    "tools/rhino_oracle/observations/source_snapshots/f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108.gz": "77c80c5679c6ee28ddf79b28d03040a8d388dc1886dddbe47501fe662ac376ab",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
