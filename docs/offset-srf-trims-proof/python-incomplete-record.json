@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "tools.rhino_oracle.test_offset_srf_tolerance",
+    "tools.rhino_oracle.test_offset_srf_loose",
+    "tools.rhino_oracle.test_offset_surface_getter",
+    "tools.rhino_oracle.test_shell_native",
+    "tools.rhino_oracle.test_capture_family",
+    "tools.rhino_oracle.test_structural_sdk",
+    "tools.rhino_oracle.test_client",
+    "tools.rhino_oracle.test_offset_srf_trims"
+  ],
+  "exit_status": 1,
+  "log": "python-incomplete-record.log.gz",
+  "reason": "The Python receipt was removed before rerunning the self-reproduction test; the checker now supports --rerun while preserving prior successful evidence."
+}

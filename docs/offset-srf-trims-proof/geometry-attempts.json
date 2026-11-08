@@ -1,0 +1,33 @@
+{
+  "note": "The first command wrapper reported termination after the Rust test body passed. The full geometry command was rerun and returned zero.",
+  "attempts": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib"
+      ],
+      "log": "geometry-interrupted.log.gz",
+      "exit_status": 143,
+      "passed": 2867,
+      "failed": 0,
+      "ignored": 10
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib"
+      ],
+      "log": "geometry.log.gz",
+      "exit_status": 0,
+      "passed": 2867,
+      "failed": 0,
+      "ignored": 10
+    }
+  ]
+}
