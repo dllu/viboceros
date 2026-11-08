@@ -5,6 +5,9 @@ pub(crate) struct Contacts {
     pub parameters: [Real; 2],
     pub points: [Point3; 2],
     pub insertion: Option<Curve3>,
+    pub reset_arc_domains: [bool; 2],
+    /// Setback travel can pass the pick; keep the direction chosen at the corner.
+    pub retain_end: Option<[bool; 2]>,
 }
 pub(crate) fn prepare(
     curves: [&Curve3; 2],
@@ -36,13 +39,15 @@ pub(crate) fn prepare(
             }
             let contact = contacts.parameters[i];
             let domain = curves[i].as_ref().domain();
-            let keep_end = seed[i] > contact;
+            let keep_end = contacts
+                .retain_end
+                .map_or(seed[i] > contact, |ends| ends[i]);
             let interval = if keep_end {
                 contact..=*domain.end()
             } else {
                 *domain.start()..=contact
             };
-            let retained = if let Curve3::Line(line) = curves[i] {
+            let mut retained = if let Curve3::Line(line) = curves[i] {
                 // A line support can reach the contact outside its old domain;
                 // retain the far endpoint and the original parameter chart.
                 let (a, b) = if keep_end {
@@ -57,6 +62,11 @@ pub(crate) fn prepare(
             } else {
                 crate::curve_segments::trimmed(curves[i], interval)?
             };
+            if contacts.reset_arc_domains[i]
+                && let Curve3::Arc(arc) = &mut retained
+            {
+                *arc = arc.try_reparameterized(0. ..=arc.length()?)?;
+            }
             if join {
                 let retained = if keep_end == (i == 0) {
                     retained.reversed(tolerance)?

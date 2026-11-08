@@ -80,3 +80,15 @@ CASES.update(CLOSED_PILOT);CASES.update(CLOSED_HOLDOUTS)
 CLOSED_FINAL=_closed.final(case,configured,pick)
 CLOSED_BRANCHES=_closed.branches(case,configured,pick)
 CASES.update(CLOSED_FINAL);CASES.update(CLOSED_BRANCHES)
+
+if __package__:
+    from . import chamfer_extension_cases as _extension
+else:
+    import chamfer_extension_cases as _extension
+EXTENSION_PILOT=_extension.pilot(case,configured,pick)
+EXTENSION_HOLDOUTS=_extension.holdouts(case,configured,pick)
+CASES.update(EXTENSION_PILOT);CASES.update(EXTENSION_HOLDOUTS)
+EXTENSION_STYLING=_extension.styling(case,configured,pick)
+CASES.update(EXTENSION_STYLING)
+EXTENSION_VERIFICATION=_extension.verification(case,configured,pick)
+CASES.update(EXTENSION_VERIFICATION)

@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "extension_spatial_both_line",
+      "case": "extension_spatial_both_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_spatial_arc_other_line",
+      "case": "extension_spatial_arc_other_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_xy_line_other_smooth",
+      "case": "extension_xy_line_other_smooth"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_aligned_plane_line",
+      "case": "extension_aligned_plane_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_translated_xy_line",
+      "case": "extension_translated_xy_line"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_tilted_x_line",
+      "case": "extension_tilted_x_line"
+    }
+  ]
+}

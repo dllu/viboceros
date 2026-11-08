@@ -34,6 +34,12 @@ pub fn unsupported(id: &str) -> bool {
         "chamfer_oversized",
         "closed_two_circles_joined_zero",
         "closed_consumed_line",
+        "extension_tangent_arc_cross_source",
+        "extension_spatial",
+        "extension_xy_line_other_smooth",
+        "extension_aligned_plane_line",
+        "extension_translated_xy_line",
+        "extension_tilted_x_line",
     ]
     .contains(&id)
 }

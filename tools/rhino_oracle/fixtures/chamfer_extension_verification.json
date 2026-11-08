@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_arc_cross_source",
+      "case": "extension_control_arc_cross_source"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_tangent_arc_cross_source",
+      "case": "extension_control_tangent_arc_cross_source"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_nurbs_line_cross_source",
+      "case": "extension_control_nurbs_line_cross_source"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_tangent_arc_backward",
+      "case": "extension_control_tangent_arc_backward"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_nurbs_line_backward",
+      "case": "extension_control_nurbs_line_backward"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_arc_spatial",
+      "case": "extension_control_arc_spatial"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_nurbs_line_spatial",
+      "case": "extension_control_nurbs_line_spatial"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_control_nurbs_smooth_spatial",
+      "case": "extension_control_nurbs_smooth_spatial"
+    }
+  ]
+}

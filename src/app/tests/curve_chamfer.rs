@@ -27,6 +27,12 @@ pub(super) fn replay(families: &[&str], marker: &str) -> usize {
                 "{id}"
             );
             app.document = inputs::setup(v);
+            if getters::unsupported(id) && !app.document.can_redo() {
+                app.commands
+                    .execute(&mut app.document, "Point 90,91,92")
+                    .unwrap();
+                app.document.undo().unwrap();
+            }
             let state = inputs::State::capture(&app.document);
             let before = app
                 .document

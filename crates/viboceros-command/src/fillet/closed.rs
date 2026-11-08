@@ -27,6 +27,8 @@ pub(super) fn prepare(
             parameters: solution.parameters,
             points: solution.points,
             insertion: Some(Curve3::Arc(solution.arc)),
+            reset_arc_domains: [false; 2],
+            retain_end: None,
         },
         options.trim,
         options.join,

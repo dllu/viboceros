@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "chamfer_command",
+      "id": "extension_arc_parts",
+      "case": "extension_arc_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_arc_joined",
+      "case": "extension_arc_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_arc_bevel",
+      "case": "extension_arc_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_tangent_arc_parts",
+      "case": "extension_tangent_arc_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_tangent_arc_joined",
+      "case": "extension_tangent_arc_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_tangent_arc_bevel",
+      "case": "extension_tangent_arc_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_line_parts",
+      "case": "extension_nurbs_line_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_line_joined",
+      "case": "extension_nurbs_line_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_line_bevel",
+      "case": "extension_nurbs_line_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_smooth_parts",
+      "case": "extension_nurbs_smooth_parts"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_smooth_joined",
+      "case": "extension_nurbs_smooth_joined"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_nurbs_smooth_bevel",
+      "case": "extension_nurbs_smooth_bevel"
+    },
+    {
+      "op": "chamfer_command",
+      "id": "extension_cancel_second",
+      "case": "extension_cancel_second"
+    }
+  ]
+}

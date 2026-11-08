@@ -47,7 +47,7 @@ python3 -m tools.rhino_oracle.check_chamfer_closed
 All captures use private Xvfb displays; application tests create no windows.
 This finite corpus does not qualify arbitrary folded or oscillatory branches,
 all overlap choices, continuous distance bounds, pixel equality or comparative
-performance. Nonmeeting open arc/NURBS extensions against closed sources still
-need broader qualification. Shared Chamfer/Fillet regressions, both workspace
+performance. Nonmeeting open arc/NURBS extensions have a
+[separate qualification](chamfer-extension.md). Shared Chamfer/Fillet regressions, both workspace
 Clippy configurations, formatting and Python/SubD qualification checks accompany
 this suite.

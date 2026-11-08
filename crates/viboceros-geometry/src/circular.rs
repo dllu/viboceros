@@ -710,7 +710,7 @@ impl CircularArc3 {
     /// Extends one end along the existing supporting circle to an angular
     /// position on the unused part of that circle. `angle` is measured from
     /// the original start in its positive orientation.
-    pub(crate) fn try_extended_to_circle_angle(
+    pub fn try_extended_to_circle_angle(
         self,
         angle: Real,
         at_end: bool,

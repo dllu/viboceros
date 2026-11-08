@@ -1,0 +1,386 @@
+[
+  {
+    "name": "extension-command-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "chamfer_extension",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 55.40156317100627
+  },
+  {
+    "name": "extension-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::chamfer_extension",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 89.94357681198744
+  },
+  {
+    "name": "command-regressions-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "chamfer_getter",
+      "--test",
+      "chamfer_self",
+      "--test",
+      "chamfer_closed",
+      "--test",
+      "fillet_getter",
+      "--test",
+      "fillet_closed",
+      "--test",
+      "fillet_self",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 29.598398647998692
+  },
+  {
+    "name": "chamfer-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::curve_chamfer",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.7096119270136114
+  },
+  {
+    "name": "self-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::chamfer_self",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.2034297889913432
+  },
+  {
+    "name": "closed-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::chamfer_closed",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 10.382104851974873
+  },
+  {
+    "name": "fillet-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "fillet",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.6333550319832284
+  },
+  {
+    "name": "library-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--lib",
+      "fillet::tests",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 29.923559888004092
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 49.96942220200435
+  },
+  {
+    "name": "extension-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "chamfer_extension",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 50.71471631497843
+  },
+  {
+    "name": "extension-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::chamfer_extension",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 74.61940821900498
+  },
+  {
+    "name": "command-regressions-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "chamfer_getter",
+      "--test",
+      "chamfer_self",
+      "--test",
+      "chamfer_closed",
+      "--test",
+      "fillet_getter",
+      "--test",
+      "fillet_closed",
+      "--test",
+      "fillet_self",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 13.453380405000644
+  },
+  {
+    "name": "chamfer-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::curve_chamfer",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.7117540629988071
+  },
+  {
+    "name": "self-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::chamfer_self",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 1.2106810600089375
+  },
+  {
+    "name": "closed-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::chamfer_closed",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.9584784820035566
+  },
+  {
+    "name": "fillet-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "fillet",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 6.095717020012671
+  },
+  {
+    "name": "library-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--lib",
+      "fillet::tests",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 33.83964797097724
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 39.14402580598835
+  },
+  {
+    "name": "circular-geometry",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "circular::tests",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.155639004020486
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.67616712799645
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_chamfer_getter",
+      "tools.rhino_oracle.test_chamfer_self",
+      "tools.rhino_oracle.test_chamfer_closed",
+      "tools.rhino_oracle.test_chamfer_extension"
+    ],
+    "status": 0,
+    "seconds": 2.148588361014845
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.51625912002055
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.490536531986436
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.6305823389848229
+  }
+]

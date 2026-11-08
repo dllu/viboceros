@@ -56,7 +56,11 @@ With distinct closed sources, each closed parent stays whole. Trim changes
 only an open source. Join reuses the first source ID when it is open; otherwise
 it creates an ungrouped result with that source's attributes. Intersections,
 overlap boundaries and the picks choose each setback direction. Straight open
-sources can extend to a closed parent. See [closed-source qualification](../chamfer-closed.md).
+sources can extend to a closed parent. Open arcs and NURBS also support
+[nonmeeting continuation](../chamfer-extension.md). Nonmeeting arcs against a
+closed source require `ExtendOtherCurvesBy=Line` when `ExtendArcsBy=Line`;
+the mixed Smooth setting is rejected without edits or Redo loss.
+See [closed-source qualification](../chamfer-closed.md).
 
 Distances consuming a complete source are rejected atomically. One captured oversized native success produces
 nonmeeting retained/bevel endpoints; it is documented as a compatibility gap.
