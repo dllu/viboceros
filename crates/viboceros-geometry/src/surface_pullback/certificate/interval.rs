@@ -47,6 +47,32 @@ struct Work {
 #[derive(Default)]
 pub(super) struct Coefficients(BTreeMap<(usize, usize), Vec<I>>);
 
+/// Bound an exact homogeneous coefficient without squaring large fractions.
+/// Conversion and every operation enclose the exact value. A tight boundary,
+/// zero/subnormal limit or unavailable finite interval retains exact fallback.
+pub(super) fn rational_norm(p: &H, limit: Real) -> Outcome {
+    if !limit.is_normal() || limit < 0. {
+        return Outcome::Inconclusive;
+    }
+    let result = (|| {
+        let point = [
+            I::exact(&p[0])?,
+            I::exact(&p[1])?,
+            I::exact(&p[2])?,
+            I::exact(&p[3])?.abs()?,
+        ];
+        let square = norm_squared(&point, limit)?;
+        Some(if square.lo > 1. {
+            Outcome::Outside
+        } else if square.hi <= 1. {
+            Outcome::Within(upper(square.hi, limit))
+        } else {
+            Outcome::Inconclusive
+        })
+    })();
+    result.unwrap_or(Outcome::Inconclusive)
+}
+
 /// Screen an exact curve difference using outward finite intervals. All work
 /// is charged to the caller; uncertain and extreme values retain exact fallback.
 pub(super) fn curves(

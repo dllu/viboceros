@@ -40,8 +40,10 @@ When a UV span's projected control hull stays in one tensor patch, Bernstein
 products form its exact homogeneous surface image. Subtracting the spatial curve
 through a common positive denominator gives a rational difference curve. Its
 projected control hull bounds every point. Exact dyadic subdivision refines
-inconclusive hulls. A candidate floating-point norm becomes a bound only after
-its square is checked against the exact rational squared norm.
+inconclusive hulls. Verified outward intervals screen coefficient norms; the
+reported square-root upper bound receives an exact check. Tight or extreme
+cases retain the exact rational squared-norm calculation. See the
+[arithmetic optimization and qualification](certificate-norm.md).
 
 At a tensor knot crossing, the query restricts every intersected tensor patch
 to the UV hull's bounding rectangle. Surface and spatial control boxes provide

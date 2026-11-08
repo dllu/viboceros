@@ -1,6 +1,8 @@
 //! Exact Bernstein products and outward rational Euclidean bounds.
 use super::*;
 use num_bigint::BigInt;
+#[cfg(test)]
+mod tests;
 
 pub(super) fn binomial(n: usize, k: usize) -> BigInt {
     (0..k.min(n - k)).fold(BigInt::one(), |c, i| c * (n - i) / (i + 1))
@@ -65,6 +67,11 @@ pub(super) fn difference(a: &[H], b: &[H], budget: &mut Budget) -> Result<Vec<H>
     Ok(output)
 }
 pub(super) fn norm_bound(p: &H, limit: Real) -> Option<Real> {
+    match interval::rational_norm(p, limit) {
+        interval::Outcome::Within(upper) => return Some(upper),
+        interval::Outcome::Outside => return None,
+        interval::Outcome::Inconclusive => {}
+    }
     let square: Rational = p[..3].iter().map(|x| x * x).sum::<Rational>() / (&p[3] * &p[3]);
     let r = rational(limit);
     if square > &r * &r {
