@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_negative",
+      "case": "offset_te_negative"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_reversed",
+      "case": "offset_te_reversed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_both",
+      "case": "offset_te_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_fine",
+      "case": "offset_te_fine"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_delete_postselect",
+      "case": "offset_te_delete_postselect"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_batch",
+      "case": "offset_te_batch"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_narrow",
+      "case": "offset_te_narrow"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_te_cancel",
+      "case": "offset_te_cancel"
+    }
+  ]
+}
