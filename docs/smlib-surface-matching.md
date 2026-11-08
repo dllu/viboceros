@@ -2,8 +2,8 @@
 
 The portable `try_match_nurbs_surfaces` and native
 `viboceros_smlib::match_surface_supports` APIs implement one-sided matching of
-open, untrimmed, positive-weight NURBS supports. The `MatchSrf` command and its
-edge-picking workflow remain pending.
+open, untrimmed, positive-weight NURBS supports. The [MatchSrf command](commands/match-srf.md) adds original boundary
+picks, readonly previews, remembered options and atomic acceptance.
 
 Choose a natural boundary on each support, continuity (position, tangency or
 curvature), opposite-end preservation and isocurve alignment. The source's

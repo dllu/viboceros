@@ -439,6 +439,7 @@ pub struct ViewportInput<'a> {
     pub parametric_pick: bool,
     pub parametric_highlights: &'a [ParametricPick],
     pub edge_pick: bool,
+    pub edge_contact_pick: bool,
     /// Session-owned mesh boundaries, including faces not yet in the document.
     pub mesh_boundary_edges: Option<&'a [(usize, [Point3; 2])]>,
     /// Allow ordinary curve selection alongside edge hits in the source getter.
@@ -575,6 +576,7 @@ impl Default for ViewportInput<'_> {
             parametric_pick: false,
             parametric_highlights: &[],
             edge_pick: false,
+            edge_contact_pick: false,
             mesh_boundary_edges: None,
             curve_or_edge_pick: false,
             chain_pick: false,
@@ -630,6 +632,8 @@ pub struct ViewportOutput {
     pub zoom_target_result: Option<Result<bool, &'static str>>,
     pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
+    /// Original edge locations at the click pixel, retained through ambiguity.
+    pub edge_contacts: Vec<(EdgePick, Point3)>,
     pub mesh_boundary_edge_click: Option<Vec<usize>>,
     pub edge_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
@@ -3129,6 +3133,37 @@ impl Viewport {
         }
         let blend_curve_selection =
             self.blend_curve_selection(ui, &response, rect, input.blend_curve);
+        let edge_click = (input.edge_pick
+            && input.mesh_boundary_edges.is_none()
+            && component_mode.is_none()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && response.clicked_by(PointerButton::Primary))
+        .then(|| {
+            response
+                .interact_pointer_pos()
+                .map(|p| self.pick_edges(p, rect, document))
+                .unwrap_or_default()
+        })
+        .filter(|picks: &Vec<EdgePick>| !input.curve_or_edge_pick || !picks.is_empty());
+        let edge_contacts = edge_click
+            .as_ref()
+            .filter(|_| input.edge_contact_pick)
+            .into_iter()
+            .flatten()
+            .filter_map(|pick| {
+                let geometry = document.object(pick.object)?.geometry();
+                Some((
+                    *pick,
+                    self.curve_pick_point(
+                        geometry,
+                        Some(pick.edge),
+                        response.interact_pointer_pos()?,
+                        document.tolerance(),
+                    )?,
+                ))
+            })
+            .collect();
         ViewportOutput {
             insert_point: response
                 .clicked_by(PointerButton::Primary)
@@ -3195,19 +3230,8 @@ impl Viewport {
                         .map(|p| self.pick_mesh_boundary_edges(p, rect, edges))
                         .unwrap_or_default()
                 }),
-            edge_click: (input.edge_pick
-                && input.mesh_boundary_edges.is_none()
-                && component_mode.is_none()
-                && !input.zoom_window
-                && input.zoom_target.is_none()
-                && response.clicked_by(PointerButton::Primary))
-            .then(|| {
-                response
-                    .interact_pointer_pos()
-                    .map(|p| self.pick_edges(p, rect, document))
-                    .unwrap_or_default()
-            })
-            .filter(|picks: &Vec<EdgePick>| !input.curve_or_edge_pick || !picks.is_empty()),
+            edge_click,
+            edge_contacts,
             face_click,
             face_hit_point,
             parametric_click,

@@ -225,6 +225,7 @@ mod interactive_start;
 mod interactive_state;
 mod interface;
 mod loft;
+mod match_surface;
 mod prompt_cancel;
 mod selection_input;
 mod sidebar;

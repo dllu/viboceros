@@ -7,6 +7,8 @@ outputs below describe its default `Extrusion` mode.
 
 [MergeSrf](merge-srf.md) joins two untrimmed NURBS surfaces with automatic
 boundary orientation, smoothing options and undo/redo.
+[MatchSrf](match-srf.md) adjusts a picked surface boundary with a cancellable
+preview and position, tangency or curvature matching.
 
 ## Planar surfaces
 

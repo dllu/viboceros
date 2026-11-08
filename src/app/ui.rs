@@ -44,6 +44,7 @@ impl eframe::App for VibocerosApp {
         self.validate_tangent_sources();
         self.validate_circle_around_curve();
         self.validate_blend_surface();
+        self.validate_match_surface();
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
@@ -769,6 +770,11 @@ impl eframe::App for VibocerosApp {
             self.blend_surface_prompt
                 .as_ref()
                 .and_then(|p| p.scene())
+                .or_else(|| {
+                    self.edge_prompt
+                        .as_ref()
+                        .and_then(edge_commands::EdgePrompt::scene)
+                })
                 .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.curve_fillet_session.as_ref().and_then(|p| p.scene()))
@@ -1389,6 +1395,10 @@ impl eframe::App for VibocerosApp {
                             raw_mesh_face_highlights: Some(&raw_mesh_face_highlights),
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
+                            edge_contact_pick: matches!(
+                                self.edge_prompt,
+                                Some(edge_commands::EdgePrompt::Match(_))
+                            ),
                             mesh_boundary_edges,
                             curve_or_edge_pick,
                             chain_pick: self.chain_prompt.is_some() && model_input_active,

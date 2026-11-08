@@ -3,9 +3,9 @@ use super::*;
 use crate::app::object_selection::ObjectPromptPhase;
 #[path = "../../../crates/viboceros-command/tests/support/merge_surfaces.rs"]
 #[allow(dead_code)]
-mod captured;
+pub(super) mod captured;
 #[path = "../../../crates/viboceros-command/tests/support/merge_surface_command.rs"]
-mod workflow;
+pub(super) mod workflow;
 
 #[test]
 fn merge_surfaces_selection_getters_cancellation_and_history_match_native() {

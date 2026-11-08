@@ -171,6 +171,7 @@ mod loft_splitting_native;
 mod loft_splitting_support;
 mod maelstrom;
 mod mark_foci;
+mod match_surface;
 mod merge_edge;
 mod merge_surfaces;
 mod mesh_edit_input;

@@ -24,7 +24,7 @@ These pages record integration details and qualification limits. Start with
 - [Circular fillet rail correspondence](native-circular-fillet-rails.md)
 - [Native surface joining](smlib-joining.md)
 - [NURBS support merging and MergeSrf](smlib-surface-merging.md)
-- [Surface-edge matching and MatchSrf foundation](smlib-surface-matching.md)
+- [Surface-edge matching and MatchSrf](smlib-surface-matching.md)
 - [UV transposes](native-uv-transpose.md)
 - [closed-component orientation](native-closed-join.md)
 - [Native pole transfer and exact NURBS copies](native-pole-transfer.md)

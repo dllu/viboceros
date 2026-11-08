@@ -28,6 +28,9 @@ pub fn source(d: &Document, index: usize) -> ObjectId {
 }
 
 pub fn setup(v: &Value) -> Document {
+    setup_named(v, "merge", "Merge")
+}
+pub fn setup_named(v: &Value, prefix: &str, label: &str) -> Document {
     let t = &v["model_tolerance"];
     let mut d = Document::new(
         Tolerance::try_new(
@@ -60,7 +63,7 @@ pub fn setup(v: &Value) -> Document {
             d.add_geometry_with_attributes(
                 captured::input(g, d.tolerance()),
                 ObjectAttributes::on_layer(layer)
-                    .with_name(format!("merge-source-{i}"))
+                    .with_name(format!("{prefix}-source-{i}"))
                     .with_object_color(ColorRgb::new(40 + 80 * i as u8, 60, 90)),
             )
             .unwrap()
@@ -76,7 +79,7 @@ pub fn setup(v: &Value) -> Document {
     d.add_group(Some("Plane source group".into()), common)
         .unwrap();
     for (i, id) in ids.iter().enumerate() {
-        d.add_group(Some(format!("Merge input group {i}")), [*id])
+        d.add_group(Some(format!("{label} input group {i}")), [*id])
             .unwrap();
     }
     d.set_current_layer(output).unwrap();
@@ -145,12 +148,16 @@ pub fn options(v: &Value, base: Options, d: &Document) -> Options {
     options
 }
 
+#[allow(dead_code)] // Also included by the UI replay, which needs only verification.
 pub fn outcome(v: &Value) -> &str {
+    outcome_command(v, "MergeSrf")
+}
+pub fn outcome_command<'a>(v: &'a Value, command: &str) -> &'a str {
     v["events"]
         .as_array()
         .unwrap()
         .iter()
-        .find(|e| e["name"] == "MergeSrf")
+        .find(|e| e["name"] == command)
         .unwrap()["result"]
         .as_str()
         .unwrap()
@@ -273,6 +280,9 @@ impl State {
         }
     }
     pub fn verify(&self, d: &mut Document, v: &Value) -> Value {
+        self.verify_command(d, v, "MergeSrf")
+    }
+    pub fn verify_command(&self, d: &mut Document, v: &Value, command: &str) -> Value {
         let mut error = check(d, &v["after"], false);
         self.identities(d, &v["after"]);
         if v["last_selection"].is_array() {
@@ -285,7 +295,7 @@ impl State {
         let changed = v["history_changed"].as_bool().unwrap();
         assert_eq!(d.can_undo(), changed);
         if changed {
-            assert_eq!(d.undo_label(), Some("MergeSrf"));
+            assert_eq!(d.undo_label(), Some(command));
             d.undo().unwrap();
             error = error.max(check(d, &v["undo"], false));
             self.identities(d, &v["undo"]);
@@ -312,6 +322,6 @@ impl State {
             .unwrap();
         error = error.max(check(&archive, &v["after"], true));
         self.identities(&archive, &v["after"]);
-        json!({"maximum_geometry_error":error,"archives":1,"changed":changed,"result":outcome(v)})
+        json!({"maximum_geometry_error":error,"archives":1,"changed":changed,"result":outcome_command(v,command)})
     }
 }

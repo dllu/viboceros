@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_high_preserve_nothing",
+      "case": "match_cmd_high_preserve_nothing"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_high_preserve_position",
+      "case": "match_cmd_high_preserve_position"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_high_preserve_tangency",
+      "case": "match_cmd_high_preserve_tangency"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_high_preserve_curvature",
+      "case": "match_cmd_high_preserve_curvature"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_low_preserve_nothing",
+      "case": "match_cmd_low_preserve_nothing"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_low_preserve_tangency",
+      "case": "match_cmd_low_preserve_tangency"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_iso_keep",
+      "case": "match_cmd_iso_keep"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_iso_matchtarget",
+      "case": "match_cmd_iso_matchtarget"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_iso_perpendicular",
+      "case": "match_cmd_iso_perpendicular"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_tolerances_set",
+      "case": "match_cmd_tolerances_set"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_cancel_first_pick",
+      "case": "match_cmd_cancel_first_pick"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_cancel_no_picks",
+      "case": "match_cmd_cancel_no_picks"
+    }
+  ]
+}

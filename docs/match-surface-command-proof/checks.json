@@ -1,0 +1,239 @@
+[
+  {
+    "name": "api-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "match_surface_command",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 40.375730802014004
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::match_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 48.450649320031516
+  },
+  {
+    "name": "edge-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::merge",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 6.708192090969533
+  },
+  {
+    "name": "split-ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::split_edge",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.18625769403297454
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 23.08181925205281
+  },
+  {
+    "name": "api-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "match_surface_command",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 53.43516602204181
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::match_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 69.97713098704116
+  },
+  {
+    "name": "edge-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::merge",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 6.724309790006373
+  },
+  {
+    "name": "split-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::split_edge",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 0.2052929219789803
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 40.93103598296875
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 7.929603571014013
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 49.22558098199079
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.278250182047486
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.6140932529815473
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_match_surface_command",
+      "tools.rhino_oracle.test_surface_match",
+      "tools.rhino_oracle.test_surface_match_record",
+      "tools.rhino_oracle.test_merge_surfaces",
+      "tools.rhino_oracle.test_merge_surface_command",
+      "tools.rhino_oracle.test_merge_surface_command_record",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_capture_family",
+      "tools.rhino_oracle.test_structural_sdk"
+    ],
+    "status": 0,
+    "seconds": 4.698949118028395
+  }
+]

@@ -7,12 +7,14 @@ use viboceros_command::{MergeEdgeChoice, MergeEdgeSelection, SplitEdgeSelection}
 pub(super) enum EdgeCommand {
     Merge,
     Split,
+    Match,
 }
 impl EdgeCommand {
     fn name(self) -> &'static str {
         match self {
             Self::Merge => "MergeEdge",
             Self::Split => "SplitEdge",
+            Self::Match => "MatchSrf",
         }
     }
 }
@@ -27,6 +29,7 @@ pub(super) struct EdgeCandidates {
 
 #[derive(Clone, Debug)]
 pub(super) enum EdgePrompt {
+    Match(Box<match_surface::Prompt>),
     Pick(EdgeCommand),
     Ambiguous(EdgeCommand, EdgeCandidates),
     Choice(Box<MergeEdgeSelection>),
@@ -39,13 +42,24 @@ impl EdgePrompt {
             Self::Pick(kind) | Self::Ambiguous(kind, _) => *kind,
             Self::Choice(_) => EdgeCommand::Merge,
             Self::SplitPoints(_) => EdgeCommand::Split,
+            Self::Match(_) => EdgeCommand::Match,
         }
     }
     pub(super) fn name(&self) -> &'static str {
         self.kind().name()
     }
     pub(super) fn picking_edge(&self) -> bool {
-        !matches!(self, Self::SplitPoints(_))
+        match self {
+            Self::Match(p) => p.selecting(),
+            _ => !matches!(self, Self::SplitPoints(_)),
+        }
+    }
+    pub(super) fn scene(&self) -> Option<&Document> {
+        if let Self::Match(p) = self {
+            p.scene()
+        } else {
+            None
+        }
     }
     pub(super) fn split_selection(&self) -> Option<&SplitEdgeSelection> {
         if let Self::SplitPoints(selection) = self {
@@ -56,6 +70,7 @@ impl EdgePrompt {
     }
     pub(super) fn hint(&self) -> &'static str {
         match self {
+            Self::Match(p) => p.hint(),
             Self::Pick(_) => "Pick a surface edge; Enter or Esc cancels",
             Self::Ambiguous(..) => "Choose an edge by number, or pick again; Esc cancels",
             Self::Choice(_) => "Choose a neighboring edge or All; Enter or Esc cancels",
@@ -66,6 +81,7 @@ impl EdgePrompt {
     }
     pub(super) fn highlights(&self) -> Vec<EdgePick> {
         match self {
+            Self::Match(p) => p.highlights(),
             Self::Pick(_) => Vec::new(),
             Self::Ambiguous(_, candidates) => candidates
                 .hover
@@ -84,6 +100,9 @@ impl EdgePrompt {
 
 impl VibocerosApp {
     pub(super) fn try_start_edge_command(&mut self, input: &str) -> bool {
+        if self.start_match_surface(input) {
+            return true;
+        }
         let mut words = input.split_whitespace();
         let kind = match words
             .next()
@@ -109,6 +128,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_edge_command(&mut self, input: &str) -> bool {
+        if matches!(self.edge_prompt, Some(EdgePrompt::Match(_))) {
+            return self.continue_match_surface(input);
+        }
         let Some(prompt) = &self.edge_prompt else {
             return false;
         };
@@ -130,6 +152,7 @@ impl VibocerosApp {
             return false;
         }
         match prompt {
+            EdgePrompt::Match(_) => unreachable!(),
             EdgePrompt::Ambiguous(kind, candidates) => {
                 if let Some(pick) = input
                     .parse::<usize>()
@@ -380,6 +403,7 @@ impl VibocerosApp {
             EdgePrompt::Ambiguous(_, candidates) => (1..=candidates.picks.len())
                 .map(|i| i.to_string())
                 .collect(),
+            EdgePrompt::Match(p) => p.choices(),
             EdgePrompt::Pick(_) | EdgePrompt::SplitPoints(_) => Vec::new(),
         };
         let mut chosen = None;

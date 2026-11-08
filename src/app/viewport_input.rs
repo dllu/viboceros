@@ -362,6 +362,8 @@ impl VibocerosApp {
                     preselection: false,
                     modifiers: egui::Modifiers::NONE,
                 });
+            } else if matches!(self.edge_prompt, Some(edge_commands::EdgePrompt::Match(_))) {
+                self.accept_match_contacts(output.edge_contacts);
             } else if self.blend_surface_prompt.is_some() {
                 self.accept_blend_edges(picks);
             } else if self.hole_prompt.is_some() {

@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_default",
+      "case": "match_cmd_default"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_position",
+      "case": "match_cmd_position"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_cmd_cancel",
+      "case": "match_cmd_cancel"
+    }
+  ]
+}
