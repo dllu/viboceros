@@ -1,0 +1,817 @@
+{
+  "scope": "Nonmeeting Chamfer end selection and native closed-source seam direction on circles, rectangles and ellipses, with independently captured public extension API controls.",
+  "baseline_revision": "831266da775dd95d9b4bf8589fae0ad14fc8224d",
+  "implementation_revision": "ed1962874e920902c8a42e5a814a1839230020c8",
+  "full_native_parity": false,
+  "observations": 46,
+  "successful": 43,
+  "cancelled": 1,
+  "failed": 2,
+  "changed": 43,
+  "images": 0,
+  "physical_picks": 91,
+  "point_tangent_stations": 6138,
+  "successful_command_replays_per_build": 43,
+  "qualified_ui_replays_per_build": 46,
+  "archive_round_trips_per_build": 90,
+  "api_rejections_per_build": 2,
+  "windowless_source_picks_per_build": 2,
+  "retained_failed_captures": 0,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 4.4868300635948666e-13,
+  "construction": "Open curved sources consider both continuation ends and choose the least added length. Boundary-box distance orders candidates and prunes an end that cannot improve the known continuation, including numerical length margins. Intersection candidates rank by unwrapped parameter distance on the closed sources. Closed-source directions compare the native pick and corner parameters across the seam. Fixed-accuracy tight probe boxes can reject disjoint curve boundaries before an enlarged extrapolation inflates the general pair solver tolerance; unresolved bounding falls back to that solver. Existing shared admission preserves primitive/parameter charts and source identity.",
+  "input_evidence": "Authored geometry, public getter preferences and pre-command physical mouse rays supply inputs. Native coefficients, knots and original public point/tangent stations are expectations. API controls are distinct from command geometry comparisons.",
+  "execution": "Four complete command captures and one public extension API capture ran on private Xvfb displays with isolated runtime directories. Both egui/application builds ran without windows. No native observations were excluded from this command qualification.",
+  "sdk_controls": {
+    "observations": 27,
+    "successful_extensions": 15,
+    "null_extensions": 12,
+    "unchanged_inputs": 27,
+    "maximum_transform_difference": 1.3100631690576847e-14,
+    "engine_version": "8.32.26160.13001"
+  },
+  "limits": [
+    "The prior mixed Arc=Line and Other=Smooth branch remains unsupported. Public extension API controls are consistent under rigid transforms and isolate the discrepancy to command-level branch selection; these controls do not qualify that mixed command branch.",
+    "Finite coverage does not establish all continuation rankings, tied lengths, arbitrary folded or oscillatory branches, all overlaps, continuous distance bounds, pixel equality or comparative Rhino performance."
+  ],
+  "cases": [
+    {
+      "id": "chamfer_branch_holdouts/branch_arc_backward_far",
+      "portable_command_maximum_geometry_error": 6.466036496704424e-15,
+      "portable_ui_maximum_geometry_error": 6.466036496704424e-15,
+      "native_command_maximum_geometry_error": 6.6018607235733855e-15,
+      "native_ui_maximum_geometry_error": 6.6018607235733855e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_arc_end_only",
+      "portable_command_maximum_geometry_error": 4.3141363945270676e-13,
+      "portable_ui_maximum_geometry_error": 4.3141363945270676e-13,
+      "native_command_maximum_geometry_error": 4.3141363945270676e-13,
+      "native_ui_maximum_geometry_error": 4.3141363945270676e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_arc_rectangle",
+      "portable_command_maximum_geometry_error": 3.6859404417555197e-13,
+      "portable_ui_maximum_geometry_error": 3.6859404417555197e-13,
+      "native_command_maximum_geometry_error": 3.6859404417555197e-13,
+      "native_ui_maximum_geometry_error": 3.6859404417555197e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_both_ends_miss",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_cancel_far_pick",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Cancel",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_line_backward_far",
+      "portable_command_maximum_geometry_error": 1.5402422960858486e-13,
+      "portable_ui_maximum_geometry_error": 1.5402422960858486e-13,
+      "native_command_maximum_geometry_error": 1.5402422960858486e-13,
+      "native_ui_maximum_geometry_error": 1.5402422960858486e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_line_ellipse",
+      "portable_command_maximum_geometry_error": 2.430823614742562e-13,
+      "portable_ui_maximum_geometry_error": 2.430823614742562e-13,
+      "native_command_maximum_geometry_error": 2.4125286826919066e-13,
+      "native_ui_maximum_geometry_error": 2.4125286826919066e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_line_rectangle",
+      "portable_command_maximum_geometry_error": 3.7371725224504374e-13,
+      "portable_ui_maximum_geometry_error": 3.7371725224504374e-13,
+      "native_command_maximum_geometry_error": 3.7371725224504374e-13,
+      "native_ui_maximum_geometry_error": 3.7371725224504374e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_smooth_backward_far",
+      "portable_command_maximum_geometry_error": 4.3459523954196826e-14,
+      "portable_ui_maximum_geometry_error": 4.3459523954196826e-14,
+      "native_command_maximum_geometry_error": 4.3459523954196826e-14,
+      "native_ui_maximum_geometry_error": 4.3459523954196826e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_smooth_ellipse",
+      "portable_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "native_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_nurbs_smooth_rectangle",
+      "portable_command_maximum_geometry_error": 2.614669507748676e-14,
+      "portable_ui_maximum_geometry_error": 2.614669507748676e-14,
+      "native_command_maximum_geometry_error": 2.6137206123099618e-14,
+      "native_ui_maximum_geometry_error": 2.6137206123099618e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_tangent_arc_backward_far",
+      "portable_command_maximum_geometry_error": 1.3853341369442222e-13,
+      "portable_ui_maximum_geometry_error": 1.3853341369442222e-13,
+      "native_command_maximum_geometry_error": 1.3853341369442222e-13,
+      "native_ui_maximum_geometry_error": 1.3853341369442222e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_tangent_arc_end_only",
+      "portable_command_maximum_geometry_error": 8.942088364601633e-14,
+      "portable_ui_maximum_geometry_error": 8.942088364601633e-14,
+      "native_command_maximum_geometry_error": 8.942088364601633e-14,
+      "native_ui_maximum_geometry_error": 8.942088364601633e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_holdouts/branch_tangent_arc_rectangle",
+      "portable_command_maximum_geometry_error": 3.430144489121486e-13,
+      "portable_ui_maximum_geometry_error": 3.430144489121486e-13,
+      "native_command_maximum_geometry_error": 3.430144489121486e-13,
+      "native_ui_maximum_geometry_error": 3.430144489121486e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_arc_far_pick",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_arc_far_reverse",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3891579640384935e-15,
+      "native_ui_maximum_geometry_error": 5.3891579640384935e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_arc_left_boundary_pick",
+      "portable_command_maximum_geometry_error": 7.140067880219723e-15,
+      "portable_ui_maximum_geometry_error": 7.140067880219723e-15,
+      "native_command_maximum_geometry_error": 8.913670267177615e-15,
+      "native_ui_maximum_geometry_error": 8.913670267177615e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_nurbs_line_far_parts",
+      "portable_command_maximum_geometry_error": 3.156334965799146e-14,
+      "portable_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "native_command_maximum_geometry_error": 3.156334965799146e-14,
+      "native_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_nurbs_line_far_pick",
+      "portable_command_maximum_geometry_error": 4.89466093734409e-14,
+      "portable_ui_maximum_geometry_error": 4.89466093734409e-14,
+      "native_command_maximum_geometry_error": 4.89466093734409e-14,
+      "native_ui_maximum_geometry_error": 4.89466093734409e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_nurbs_line_far_reverse",
+      "portable_command_maximum_geometry_error": 2.712133056839078e-14,
+      "portable_ui_maximum_geometry_error": 2.712133056839078e-14,
+      "native_command_maximum_geometry_error": 2.712133056839078e-14,
+      "native_ui_maximum_geometry_error": 2.712133056839078e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_nurbs_smooth_far_pick",
+      "portable_command_maximum_geometry_error": 3.636721891222372e-14,
+      "portable_ui_maximum_geometry_error": 3.636721891222372e-14,
+      "native_command_maximum_geometry_error": 3.634365562420869e-14,
+      "native_ui_maximum_geometry_error": 3.634365562420869e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_nurbs_smooth_far_reverse",
+      "portable_command_maximum_geometry_error": 3.504156535862919e-14,
+      "portable_ui_maximum_geometry_error": 3.504156535862919e-14,
+      "native_command_maximum_geometry_error": 3.504156535862919e-14,
+      "native_ui_maximum_geometry_error": 3.504156535862919e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_tangent_arc_far_parts",
+      "portable_command_maximum_geometry_error": 7.845915559090114e-14,
+      "portable_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "native_command_maximum_geometry_error": 7.845915559090114e-14,
+      "native_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_tangent_arc_far_pick",
+      "portable_command_maximum_geometry_error": 7.845915559090114e-14,
+      "portable_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "native_command_maximum_geometry_error": 7.845915559090114e-14,
+      "native_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_tangent_arc_far_reverse",
+      "portable_command_maximum_geometry_error": 6.313005673774796e-14,
+      "portable_ui_maximum_geometry_error": 6.313005673774796e-14,
+      "native_command_maximum_geometry_error": 6.313005673774796e-14,
+      "native_ui_maximum_geometry_error": 6.313005673774796e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_pilot/branch_tangent_arc_left_boundary_pick",
+      "portable_command_maximum_geometry_error": 1.2230086010721467e-13,
+      "portable_ui_maximum_geometry_error": 1.2230086010721467e-13,
+      "native_command_maximum_geometry_error": 1.2230086010721467e-13,
+      "native_ui_maximum_geometry_error": 1.2230086010721467e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_backward_above",
+      "portable_command_maximum_geometry_error": 5.391730422838172e-14,
+      "portable_ui_maximum_geometry_error": 5.391730422838172e-14,
+      "native_command_maximum_geometry_error": 5.391730422838172e-14,
+      "native_ui_maximum_geometry_error": 5.391730422838172e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_backward_below",
+      "portable_command_maximum_geometry_error": 4.647712368063157e-14,
+      "portable_ui_maximum_geometry_error": 4.647712368063157e-14,
+      "native_command_maximum_geometry_error": 4.647712368063157e-14,
+      "native_ui_maximum_geometry_error": 4.647712368063157e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_circle_above",
+      "portable_command_maximum_geometry_error": 4.6271799514765175e-14,
+      "portable_ui_maximum_geometry_error": 4.6271799514765175e-14,
+      "native_command_maximum_geometry_error": 4.6271799514765175e-14,
+      "native_ui_maximum_geometry_error": 4.6271799514765175e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_circle_below",
+      "portable_command_maximum_geometry_error": 5.088204931667996e-14,
+      "portable_ui_maximum_geometry_error": 5.088204931667996e-14,
+      "native_command_maximum_geometry_error": 5.088204931667996e-14,
+      "native_ui_maximum_geometry_error": 5.088204931667996e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_ellipse_above",
+      "portable_command_maximum_geometry_error": 4.08412708694881e-14,
+      "portable_ui_maximum_geometry_error": 4.08412708694881e-14,
+      "native_command_maximum_geometry_error": 4.105123760349237e-14,
+      "native_ui_maximum_geometry_error": 4.105123760349237e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_ellipse_below",
+      "portable_command_maximum_geometry_error": 4.1719723221860595e-14,
+      "portable_ui_maximum_geometry_error": 4.1719723221860595e-14,
+      "native_command_maximum_geometry_error": 4.3014372892568725e-14,
+      "native_ui_maximum_geometry_error": 4.3014372892568725e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_nurbs_above",
+      "portable_command_maximum_geometry_error": 4.810495283867251e-14,
+      "portable_ui_maximum_geometry_error": 4.810495283867251e-14,
+      "native_command_maximum_geometry_error": 4.77010071270661e-14,
+      "native_ui_maximum_geometry_error": 4.77010071270661e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_seams/branch_seam_nurbs_below",
+      "portable_command_maximum_geometry_error": 5.1345654409468114e-14,
+      "portable_ui_maximum_geometry_error": 5.1345654409468114e-14,
+      "native_command_maximum_geometry_error": 5.1345654409468114e-14,
+      "native_ui_maximum_geometry_error": 5.1345654409468114e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_circle_above_reverse_picks",
+      "portable_command_maximum_geometry_error": 2.6645352591003757e-14,
+      "portable_ui_maximum_geometry_error": 2.6645352591003757e-14,
+      "native_command_maximum_geometry_error": 2.6645352591003757e-14,
+      "native_ui_maximum_geometry_error": 2.6645352591003757e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_circle_below_reverse_picks",
+      "portable_command_maximum_geometry_error": 4.0971780066853086e-14,
+      "portable_ui_maximum_geometry_error": 4.0971780066853086e-14,
+      "native_command_maximum_geometry_error": 4.0971780066853086e-14,
+      "native_ui_maximum_geometry_error": 4.0971780066853086e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_crossing_above",
+      "portable_command_maximum_geometry_error": 1.3548324095897715e-13,
+      "portable_ui_maximum_geometry_error": 1.3548324095897715e-13,
+      "native_command_maximum_geometry_error": 1.3548324095897715e-13,
+      "native_ui_maximum_geometry_error": 1.3548324095897715e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_crossing_below",
+      "portable_command_maximum_geometry_error": 1.3563427071396776e-13,
+      "portable_ui_maximum_geometry_error": 1.3563427071396776e-13,
+      "native_command_maximum_geometry_error": 1.3563427071396776e-13,
+      "native_ui_maximum_geometry_error": 1.3563427071396776e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_ellipse_above_reverse_picks",
+      "portable_command_maximum_geometry_error": 2.664743417786612e-14,
+      "portable_ui_maximum_geometry_error": 2.664743417786612e-14,
+      "native_command_maximum_geometry_error": 2.664743417786612e-14,
+      "native_ui_maximum_geometry_error": 2.664743417786612e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_ellipse_below_reverse_picks",
+      "portable_command_maximum_geometry_error": 2.6645583886463338e-14,
+      "portable_ui_maximum_geometry_error": 2.6645583886463338e-14,
+      "native_command_maximum_geometry_error": 2.6645583886463338e-14,
+      "native_ui_maximum_geometry_error": 2.6645583886463338e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_line_backward_above",
+      "portable_command_maximum_geometry_error": 4.3586682907761976e-14,
+      "portable_ui_maximum_geometry_error": 4.3586682907761976e-14,
+      "native_command_maximum_geometry_error": 4.687038287776941e-14,
+      "native_ui_maximum_geometry_error": 4.687038287776941e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_line_backward_below",
+      "portable_command_maximum_geometry_error": 4.815885913570901e-14,
+      "portable_ui_maximum_geometry_error": 4.815885913570901e-14,
+      "native_command_maximum_geometry_error": 4.815885913570901e-14,
+      "native_ui_maximum_geometry_error": 4.815885913570901e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_nurbs_above_reverse_picks",
+      "portable_command_maximum_geometry_error": 3.012087445944986e-14,
+      "portable_ui_maximum_geometry_error": 3.012087445944986e-14,
+      "native_command_maximum_geometry_error": 2.923836150872012e-14,
+      "native_ui_maximum_geometry_error": 2.923836150872012e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_nurbs_below_reverse_picks",
+      "portable_command_maximum_geometry_error": 2.6646277760795913e-14,
+      "portable_ui_maximum_geometry_error": 2.6646277760795913e-14,
+      "native_command_maximum_geometry_error": 2.6646277760795913e-14,
+      "native_ui_maximum_geometry_error": 2.6646277760795913e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_shifted_above",
+      "portable_command_maximum_geometry_error": 4.4868300635948666e-13,
+      "portable_ui_maximum_geometry_error": 4.4868300635948666e-13,
+      "native_command_maximum_geometry_error": 4.4868300635948666e-13,
+      "native_ui_maximum_geometry_error": 4.4868300635948666e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_branch_verification/branch_seam_shifted_below",
+      "portable_command_maximum_geometry_error": 4.3793953690007563e-13,
+      "portable_ui_maximum_geometry_error": 4.3793953690007563e-13,
+      "native_command_maximum_geometry_error": 4.3982415551285143e-13,
+      "native_ui_maximum_geometry_error": 4.3982415551285143e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    }
+  ],
+  "captures": [
+    {
+      "family": "chamfer_branch_pilot",
+      "observations": 12,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e961678d8db5cdb47747fa26e8a38b06f862d1ec183cb2c92d7d0f6c875eb0f5"
+    },
+    {
+      "family": "chamfer_branch_holdouts",
+      "observations": 14,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "b3579ac2296ce9d382f4e927af40ea6e57ec684d1ca59165ea9c9941c376a55f"
+    },
+    {
+      "family": "chamfer_branch_seams",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c09e6188a70a2b20a1199fde57c7eb9a3638b3ba0ae91d2635fcca795ba549ae"
+    },
+    {
+      "family": "chamfer_branch_verification",
+      "observations": 12,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "7e0c5690516d2297aefaeff23d5b04a28ed79c3bec077fd6472447d780547dce"
+    }
+  ],
+  "checks": [
+    {
+      "name": "branch-command-portable",
+      "status": 0
+    },
+    {
+      "name": "branch-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "extension-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "extend-library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "branch-command-native",
+      "status": 0
+    },
+    {
+      "name": "branch-ui-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "extension-ui-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "extend-library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "extension-geometry",
+      "status": 0
+    },
+    {
+      "name": "extension-producers-native",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/src/chamfer/closed.rs": "164095a3fcf40b681a863343170ee264481c59b07d4a56657c1b265c2c7691fb",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/src/chamfer/closed/extension.rs": "d652ec3489b7a2d8649b2dcf33a5dd2f61af86de2a5fc4858cc14057067d1d81",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/tests/chamfer_branch.rs": "1ddab89040cbea2323c5b6a00b086a8bfad7b02774617a19376f36dfb33e7be3",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/tests/chamfer_closed.rs": "1d57139ab34f61bfe2cafa164d869824e72d502302f4b40d7a35a464d3b2b4fc",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/tests/chamfer_extension.rs": "1edc8cd560dc58d9d47b6e0e7fdfbe0f429e90edfdb9ef33a1300e0f58d76d23",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-command/tests/support/chamfer_replay.rs": "e2e959ea2ea319cacb00d5fc6c5878b313e83db86cfcd87f3654aa39a98f075c",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-geometry/src/nurbs/boundary_extension.rs": "2b0cea5a924191da16ad701c17b87d6b24e2188e849efa1fcdf17408a6bca4b2",
+    "ed1962874e920902c8a42e5a814a1839230020c8:crates/viboceros-geometry/src/nurbs/tests/extension_boundaries.rs": "9de15b5329c6f5e186797bbfc055452d4e5ee87a22cf2faaf9a31716da38dc94",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/branch-command-native.log.gz": "a445d3697e23a7187d44419d3f9aefaa8babd67e1d8827aad3e04ead210fa1f0",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/branch-command-portable.log.gz": "9f7f22f52d3b0e54e8a09cef21b793e6c8a5d1d49368f23f920ee5fda29d67dd",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/branch-ui-native.log.gz": "76e75725ce3e0274cb768791b7971109cf14612118684f96cb55df6a38daf4f5",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/branch-ui-portable.log.gz": "4a4141d42042e42a36f77dedae767a539192ba517e49e3ab7b66880b53f553a3",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/capture-holdouts.log.gz": "fd7387c21a132dcf67645f59184f20aa399cf251e9936509a228822e18177ec6",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/capture-pilot.log.gz": "54e1635a4e9b8864b3371b8b08e0d5a9ccee8fffd5a827c0430d95524ecbec42",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/capture-sdk.log.gz": "2869d74f02b941cdaa7c1b5c4afe699aac484fdbfd4e310eaa6c9212b669083e",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/capture-seams.log.gz": "58355580be8b2b6becf1391ecfe1c8200d979d37f424b0dd911b4c827efb8880",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/capture-verification.log.gz": "e20274ab1d68a68e6d267f8595535d4a156b3d5fe48b71657baf32084ba31813",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/captures.json": "9ae9939e56bc0b297fb518e9f9c7c37de70bd87f9c8cdd217e99495f4695c497",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/chamfer-ui-native.log.gz": "81307fccd90f28ef7c1e5edfe0bd3a729793dcf05d971b3df6a3153f54df5bb0",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/chamfer-ui-portable.log.gz": "1448239d6cb21de62bc42b76cd1ca6a6bd3f75ba9274de85ed5d5c6bc9335cca",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/checks.json": "6f5ee327772c1e89b5c49f5646f257c603a5d2d2c46d35f951ab56b0d2f6c4ac",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/clippy-native.log.gz": "d4ae91bc31b9198a1269bedda74a4999f8c77dc45a4855d467f11a0de15c3666",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/clippy-portable.log.gz": "e10d63aab9278e5356ca16ec9e2c4ce390f4d1b1a7c086c71b7a30517611361a",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/closed-ui-native.log.gz": "d6d0848c17345aaf9429dff0e674f1074d0498f0a68b0b98fb4b894bbe5da0ef",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/closed-ui-portable.log.gz": "e0d2e8b93b2f0f06332e25cb2b3b93bef8391457711c00465d8bca14f07552fc",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/command-regressions-native.log.gz": "92ff2b17713667482a67ecc5997de0d61a89c02451710c80bdec5c7c46df2b5d",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/command-regressions-portable.log.gz": "370005d8d35c7b375ed45cd86a5e93e9d0c58fdd8538f2c0c2f71e18d2567f35",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extend-library-native.log.gz": "0f838afa10ecebd95cab3db403a0adebfdc2e561d855b4c272a30166f54995d7",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extend-library-portable.log.gz": "e3366e0f6a4977722ae02ee2acf968b294fe5602288cb309259dc56319739911",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extension-geometry.log.gz": "592b9ff1b56581c18310c304fa0d95cda35f05ed78be54b90faf88574e4beee9",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extension-producers-native.log.gz": "4298477e0cf0c32875231e10d7695fdcaa83d40d1236fd52952d4b01603ea2ba",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extension-ui-native.log.gz": "364f5127c397f13abe2fe3c122dcab3a35ba2d2dcaa3b1258d98f54e1264d8dc",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/extension-ui-portable.log.gz": "999e0432c090bd6b5bcda428de1eb77f8f98c53d81e1fca1183d5432000e7003",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/fillet-ui-native.log.gz": "c4e0a87d4024261701769d873002f98de3335d53c07803e0a39f819c65b15175",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/fillet-ui-portable.log.gz": "7651c005940565d9fce91a38402d974c4d54f30498e789ce64bf4733b58a60af",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/library-native.log.gz": "3efd4b6aa51d9a288255239fe084c1b3c2bae1a38b4687f1aca4c365e39bde59",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/library-portable.log.gz": "d7b23dbc242a461c2c7f1fdc3b9eb4e44a3892945ac1881048c262a3e58716fc",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/python-subd.log.gz": "bd0f79a10bca0801c429428cc32a4184b3d73db7772efe7545c4d63a39dcc103",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/python.log.gz": "f221311a47bacf2be3498ad0b8969f9068a69cb6dc5a8c24ed25bf0f669d13f6",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/sdk-capture.json": "5e262d2de9fe2549b157a7a7486d1ab2097322ec998f8e37592b7e9ba337f4f6",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/self-ui-native.log.gz": "fb700e1fa8dcf63c8bb57b7fe6f6c1a402e13d7f6b3a29670720cae4250f357c",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/self-ui-portable.log.gz": "8d45da0ddf73750a9b9e82a52c4a74ad56b2636edcb7f944b04a694b0128e489",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/subd-command-native.log.gz": "21161a6d0761035b3e95360a6883715887ffb28a2d12d2b7b19a270b4c544087",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch-proof/subd-ui-native.log.gz": "4247792a5cc3dfa08b8d90170fd3af373595b24778f7d8af18e4ce31eb12aedc",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-branch.md": "d695424761a3b75a87ef61c937f47583977e3124b8ff1c7efcc3fcb86509b692",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/chamfer-extension.md": "57a0de3da6fbf687767cf6e2184466f12cd8e8636f4f26634d723ed1609ea34a",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/commands/chamfer.md": "75cca08e2c8ddb1a2fce78b525f269da07a0a375f7d106526998be5362dcdec0",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/subd-box-qualification.json": "a23b2d7203f971718aae65faad911fa9e176b6601888d348495817efefbbbd88",
+    "ed1962874e920902c8a42e5a814a1839230020c8:docs/subd-plane-qualification.json": "07e8b7371e6fafe75a3fa398c9cd8d26f33d6a337de1fcc3bde525f1d20404f7",
+    "ed1962874e920902c8a42e5a814a1839230020c8:src/app/tests/chamfer_branch.rs": "7e2294097a8f5063960352f355c8e5e3b11e96e32d26496b008d12d796b52bda",
+    "ed1962874e920902c8a42e5a814a1839230020c8:src/app/tests/mod.rs": "f8c9bff5099350691071c445f234c21743e759207a1c97af751113650f256e67",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/chamfer_branch_cases.py": "b611ff90ad6b870b1791562371e41955130973bfc666fc7854f1de76cddab243",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/chamfer_branch_evidence.py": "89533c1fe650316ffe5904e0f488aef8d8fd04c024b955bc0fa69bd6dfbac940",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/chamfer_command.py": "7747fcb770875a8e8154da258782c8342f3f8427291be414f2fd7c9a7ffe32fe",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/chamfer_extension_sdk.py": "f19bfc76da6e00a110a87c9812588fd216b1dc6de3d03e1b744c64c02ebd565f",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/check_chamfer_branch.py": "5091d5529fb6e70b8c9df13c6482f1137e5d222222294abb211c57551dc86432",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/fixtures/chamfer_branch_holdouts.json": "c6ba8c9b501efc6be43f838e1c4a16268c9e89972ae3b307158e0addce696f4f",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/fixtures/chamfer_branch_pilot.json": "c8b21af7ec9f7cc3562ed6d6152b8495d34d6b2bd988821dec37fad94f4f8fa0",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/fixtures/chamfer_branch_seams.json": "7330099be4885105f74593036e680cf0b58e021d4d05566513b1f584b87a6d7d",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/fixtures/chamfer_branch_verification.json": "c4a5c9938c54237ba365d9bf5bd7b211b097366d44bb7c3a68fe875afb2ea39e",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/fixtures/chamfer_extension_sdk.json": "30e6de2df48f80e78e8a05a4160b8e0383a2b7377342482cd6770ecda2e0c08b",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/generate_chamfer_branch_holdouts.py": "5e3f97f6dea6ea3d446c09563f7384c9adf5d40768ae5edb29b2df65755f7e0b",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/generate_chamfer_branch_pilot.py": "78119b83570e8f419722934f71d8021d187f4c04c673e34d242265e53f4dc461",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/generate_chamfer_branch_seams.py": "0347fbad7c338005d3b44cfbb87d31fa03812ee8867f845d4f8999cd3a7d1df2",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/generate_chamfer_branch_verification.py": "3abb5e8594ca390145460229a68333bd0b1b84c0f7e7f9433dcb3ff9560344da",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/generate_chamfer_extension_sdk.py": "7506d8daeea496017a613d11d322b44fc575c1f30591260996f8f995ccfbe07f",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/chamfer_branch_holdouts.json.gz": "c4a2fa6e55b77d6df437da5e0fb5dbdef50ebdfc7a2f79f7c7862bb86dd935d9",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/chamfer_branch_pilot.json.gz": "c75eec35c2132c6620389ade1cb9d9892aec5dd0d109918fbeba6563d5a85474",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/chamfer_branch_seams.json.gz": "6c1b36f393d852fe969fe516ccec2acda4c94882b75d839115a28ef5dd94d3cf",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/chamfer_branch_verification.json.gz": "79ae1df69995fd0c95dce1cbf27fb1af25a86d4ca7b98b72a32130ce24576308",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/chamfer_extension_sdk.json.gz": "954aecdf1daba131172ee9bf4d9873df0931a2e38b38274c4fde98b741163ac4",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/0347fbad7c338005d3b44cfbb87d31fa03812ee8867f845d4f8999cd3a7d1df2.gz": "58d1aab02f6c30e3bd070d85062272c4f72a4a81ab636d312756e138b1fc9a5b",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/1be9922cc99ef01c26d5ded5cb9e0c4504eda4965c8dc0e2e2f0465acaccb501.gz": "a2e4ecafc537e755fdf76fa44181c7ba2350e2e62b9700accf2a6ee57e556df7",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/3abb5e8594ca390145460229a68333bd0b1b84c0f7e7f9433dcb3ff9560344da.gz": "c50f1822c3dde6838195e3f0ada7ca8b10bf0cb47689142c3ef6a01cedbf06a3",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/3efec4db6e309ea7ea88e3d74be9266290b61113c7b75ec77e7729db8eab2b35.gz": "878bea1423cc8e4cd9cc33317b79d5f657956b9dbbbe4db75fe4cb0ea3a715df",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/5e3f97f6dea6ea3d446c09563f7384c9adf5d40768ae5edb29b2df65755f7e0b.gz": "68b9ead3c8a94dd37be9b116ddace35bf8dfae22713be7e9a06dec9879c8dc08",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/6a0ea0c47877c5c15e423e1c664b08dafe4c1ca87f5bea5cbf4fb187d0aa4bdb.gz": "5c8ec676bf7432c132e9f3d1e39d158428da9a6f2952517008ca36304f514361",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/7506d8daeea496017a613d11d322b44fc575c1f30591260996f8f995ccfbe07f.gz": "a3a8b41a50f8d3e385704e66bcc4953a1e5d6bc81e3fd24d644c92cd647198e4",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/7747fcb770875a8e8154da258782c8342f3f8427291be414f2fd7c9a7ffe32fe.gz": "b6371b069d9085b1eb30b6bca87eab60f6bb1ab67db02bfbc88979353a5c4d43",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/78119b83570e8f419722934f71d8021d187f4c04c673e34d242265e53f4dc461.gz": "a77a3d79b7cabe651cab42821828be7aa22aafefe68c1a56b9ae1ffffbdbc2b1",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/7abab6f56c1f396d6b389fbfbac5a202fd37f8b5038564cdb83e5c1d087739eb.gz": "34ea8a0f7e9db6c50a744e1baddb2ebd5429f9a27225fde6e8d561b38ba6d44f",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/9e0aaf16c9c2b59846996596c44c1cc4f860b1d0d6c603b0aff002e7f44c9d42.gz": "1f8190aaed92bf7d9c796dcdd7f2edc32c87dfa164eda754c40ded57dd2eec9e",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/b611ff90ad6b870b1791562371e41955130973bfc666fc7854f1de76cddab243.gz": "d17e78418bd8443bbf4abf890d2b16dc3ce8e29d155cc4231495d19be22a4bf5",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/c3dc09e7ac045af428ab5443e23f5bdcaef0c50ecbe7ddb035291a0660163516.gz": "c3ad75a7db5f241f815e2ab11d011a506948589f055167d1e8dccc320625e706",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/cbdc975035027635cd51eb8c0e9965efac3b81b897293c4656ae84a7d12e943a.gz": "3f0fb566015df4bf0ca1485d860bde540adac3eee22958cd8f2c45659018bc8b",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/e5617402a8718084ccd07de2637b2982bcbcf3e42ac4fd554c6db4f34a555ef2.gz": "d34459ca1c9c8321afa0a2cb9be472181428565fb4218e05b927397a76dc3296",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/f19bfc76da6e00a110a87c9812588fd216b1dc6de3d03e1b744c64c02ebd565f.gz": "984474780da5f3e1625fdb90f8a52dbe3246362ad0cae74e1c3bf5845cdaae11",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/observations/source_snapshots/fdc980cd108e67e4e43115070462c5849d1c8ad56b9f7a3abf735dfaa53abac1.gz": "f981d238d69dfa2ba0742315f55ce54a7c67b5938daf830fe0f7184cb80357fe",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/report_chamfer_branch.py": "8e9a87201e2b8f3d39234431eda166d7eb50d6c9da44c0227955ff44684ab70b",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/rhino_worker.py": "c3dc09e7ac045af428ab5443e23f5bdcaef0c50ecbe7ddb035291a0660163516",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/structural_sdk.py": "6a0ea0c47877c5c15e423e1c664b08dafe4c1ca87f5bea5cbf4fb187d0aa4bdb",
+    "ed1962874e920902c8a42e5a814a1839230020c8:tools/rhino_oracle/test_chamfer_branch.py": "302997fa5c0e06359e42c0b5c9fad57c9eb21b030c410302f76b39f762db7752"
+  },
+  "evidence_sha256": {
+    "docs/chamfer-branch-proof/branch-command-native.log.gz": "a445d3697e23a7187d44419d3f9aefaa8babd67e1d8827aad3e04ead210fa1f0",
+    "docs/chamfer-branch-proof/branch-command-portable.log.gz": "9f7f22f52d3b0e54e8a09cef21b793e6c8a5d1d49368f23f920ee5fda29d67dd",
+    "docs/chamfer-branch-proof/branch-ui-native.log.gz": "76e75725ce3e0274cb768791b7971109cf14612118684f96cb55df6a38daf4f5",
+    "docs/chamfer-branch-proof/branch-ui-portable.log.gz": "4a4141d42042e42a36f77dedae767a539192ba517e49e3ab7b66880b53f553a3",
+    "docs/chamfer-branch-proof/capture-holdouts.log.gz": "fd7387c21a132dcf67645f59184f20aa399cf251e9936509a228822e18177ec6",
+    "docs/chamfer-branch-proof/capture-pilot.log.gz": "54e1635a4e9b8864b3371b8b08e0d5a9ccee8fffd5a827c0430d95524ecbec42",
+    "docs/chamfer-branch-proof/capture-sdk.log.gz": "2869d74f02b941cdaa7c1b5c4afe699aac484fdbfd4e310eaa6c9212b669083e",
+    "docs/chamfer-branch-proof/capture-seams.log.gz": "58355580be8b2b6becf1391ecfe1c8200d979d37f424b0dd911b4c827efb8880",
+    "docs/chamfer-branch-proof/capture-verification.log.gz": "e20274ab1d68a68e6d267f8595535d4a156b3d5fe48b71657baf32084ba31813",
+    "docs/chamfer-branch-proof/captures.json": "9ae9939e56bc0b297fb518e9f9c7c37de70bd87f9c8cdd217e99495f4695c497",
+    "docs/chamfer-branch-proof/chamfer-ui-native.log.gz": "81307fccd90f28ef7c1e5edfe0bd3a729793dcf05d971b3df6a3153f54df5bb0",
+    "docs/chamfer-branch-proof/chamfer-ui-portable.log.gz": "1448239d6cb21de62bc42b76cd1ca6a6bd3f75ba9274de85ed5d5c6bc9335cca",
+    "docs/chamfer-branch-proof/checks.json": "46b0d4e90337f83d973d91b3f596209f134ae9f82c0e41771c3b156204a2c4aa",
+    "docs/chamfer-branch-proof/clippy-native.log.gz": "d4ae91bc31b9198a1269bedda74a4999f8c77dc45a4855d467f11a0de15c3666",
+    "docs/chamfer-branch-proof/clippy-portable.log.gz": "e10d63aab9278e5356ca16ec9e2c4ce390f4d1b1a7c086c71b7a30517611361a",
+    "docs/chamfer-branch-proof/closed-ui-native.log.gz": "d6d0848c17345aaf9429dff0e674f1074d0498f0a68b0b98fb4b894bbe5da0ef",
+    "docs/chamfer-branch-proof/closed-ui-portable.log.gz": "e0d2e8b93b2f0f06332e25cb2b3b93bef8391457711c00465d8bca14f07552fc",
+    "docs/chamfer-branch-proof/command-regressions-native.log.gz": "92ff2b17713667482a67ecc5997de0d61a89c02451710c80bdec5c7c46df2b5d",
+    "docs/chamfer-branch-proof/command-regressions-portable.log.gz": "370005d8d35c7b375ed45cd86a5e93e9d0c58fdd8538f2c0c2f71e18d2567f35",
+    "docs/chamfer-branch-proof/extend-library-native.log.gz": "0f838afa10ecebd95cab3db403a0adebfdc2e561d855b4c272a30166f54995d7",
+    "docs/chamfer-branch-proof/extend-library-portable.log.gz": "e3366e0f6a4977722ae02ee2acf968b294fe5602288cb309259dc56319739911",
+    "docs/chamfer-branch-proof/extension-geometry.log.gz": "592b9ff1b56581c18310c304fa0d95cda35f05ed78be54b90faf88574e4beee9",
+    "docs/chamfer-branch-proof/extension-producers-native.log.gz": "4298477e0cf0c32875231e10d7695fdcaa83d40d1236fd52952d4b01603ea2ba",
+    "docs/chamfer-branch-proof/extension-ui-native.log.gz": "364f5127c397f13abe2fe3c122dcab3a35ba2d2dcaa3b1258d98f54e1264d8dc",
+    "docs/chamfer-branch-proof/extension-ui-portable.log.gz": "999e0432c090bd6b5bcda428de1eb77f8f98c53d81e1fca1183d5432000e7003",
+    "docs/chamfer-branch-proof/fillet-ui-native.log.gz": "c4e0a87d4024261701769d873002f98de3335d53c07803e0a39f819c65b15175",
+    "docs/chamfer-branch-proof/fillet-ui-portable.log.gz": "7651c005940565d9fce91a38402d974c4d54f30498e789ce64bf4733b58a60af",
+    "docs/chamfer-branch-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/chamfer-branch-proof/library-native.log.gz": "3efd4b6aa51d9a288255239fe084c1b3c2bae1a38b4687f1aca4c365e39bde59",
+    "docs/chamfer-branch-proof/library-portable.log.gz": "d7b23dbc242a461c2c7f1fdc3b9eb4e44a3892945ac1881048c262a3e58716fc",
+    "docs/chamfer-branch-proof/python-subd.log.gz": "bd0f79a10bca0801c429428cc32a4184b3d73db7772efe7545c4d63a39dcc103",
+    "docs/chamfer-branch-proof/python.log.gz": "66fbf943f4e6399e4bc9b256ee7a21f246bf98b4854f83960eb5ca9ceb7f964c",
+    "docs/chamfer-branch-proof/sdk-capture.json": "5e262d2de9fe2549b157a7a7486d1ab2097322ec998f8e37592b7e9ba337f4f6",
+    "docs/chamfer-branch-proof/self-ui-native.log.gz": "fb700e1fa8dcf63c8bb57b7fe6f6c1a402e13d7f6b3a29670720cae4250f357c",
+    "docs/chamfer-branch-proof/self-ui-portable.log.gz": "8d45da0ddf73750a9b9e82a52c4a74ad56b2636edcb7f944b04a694b0128e489",
+    "docs/chamfer-branch-proof/subd-command-native.log.gz": "21161a6d0761035b3e95360a6883715887ffb28a2d12d2b7b19a270b4c544087",
+    "docs/chamfer-branch-proof/subd-ui-native.log.gz": "4247792a5cc3dfa08b8d90170fd3af373595b24778f7d8af18e4ce31eb12aedc",
+    "tools/rhino_oracle/fixtures/chamfer_branch_holdouts.json": "c6ba8c9b501efc6be43f838e1c4a16268c9e89972ae3b307158e0addce696f4f",
+    "tools/rhino_oracle/fixtures/chamfer_branch_pilot.json": "c8b21af7ec9f7cc3562ed6d6152b8495d34d6b2bd988821dec37fad94f4f8fa0",
+    "tools/rhino_oracle/fixtures/chamfer_branch_seams.json": "7330099be4885105f74593036e680cf0b58e021d4d05566513b1f584b87a6d7d",
+    "tools/rhino_oracle/fixtures/chamfer_branch_verification.json": "c4a5c9938c54237ba365d9bf5bd7b211b097366d44bb7c3a68fe875afb2ea39e",
+    "tools/rhino_oracle/fixtures/chamfer_extension_sdk.json": "30e6de2df48f80e78e8a05a4160b8e0383a2b7377342482cd6770ecda2e0c08b",
+    "tools/rhino_oracle/observations/chamfer_branch_holdouts.json.gz": "c4a2fa6e55b77d6df437da5e0fb5dbdef50ebdfc7a2f79f7c7862bb86dd935d9",
+    "tools/rhino_oracle/observations/chamfer_branch_pilot.json.gz": "c75eec35c2132c6620389ade1cb9d9892aec5dd0d109918fbeba6563d5a85474",
+    "tools/rhino_oracle/observations/chamfer_branch_seams.json.gz": "6c1b36f393d852fe969fe516ccec2acda4c94882b75d839115a28ef5dd94d3cf",
+    "tools/rhino_oracle/observations/chamfer_branch_verification.json.gz": "79ae1df69995fd0c95dce1cbf27fb1af25a86d4ca7b98b72a32130ce24576308",
+    "tools/rhino_oracle/observations/chamfer_extension_sdk.json.gz": "954aecdf1daba131172ee9bf4d9873df0931a2e38b38274c4fde98b741163ac4",
+    "tools/rhino_oracle/observations/source_snapshots/0347fbad7c338005d3b44cfbb87d31fa03812ee8867f845d4f8999cd3a7d1df2.gz": "58d1aab02f6c30e3bd070d85062272c4f72a4a81ab636d312756e138b1fc9a5b",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/126ba00ed6297e09345fc3f7bccf18e838491e965048dfa795d9aae7afb99cfe.gz": "333fe4e89b4126e497ee68e9c1cb520465ae801f6514ee1ce55dd4897d2373b6",
+    "tools/rhino_oracle/observations/source_snapshots/1be9922cc99ef01c26d5ded5cb9e0c4504eda4965c8dc0e2e2f0465acaccb501.gz": "a2e4ecafc537e755fdf76fa44181c7ba2350e2e62b9700accf2a6ee57e556df7",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47.gz": "3cdecf39faca0ab73df3b23f6924453e9cc5a84dc96924caac59aaddb6b7c328",
+    "tools/rhino_oracle/observations/source_snapshots/26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875.gz": "e3501b122400374742edd8d1a49470736ac3ccc2157c187a9ea64283f2913a61",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/3abb5e8594ca390145460229a68333bd0b1b84c0f7e7f9433dcb3ff9560344da.gz": "c50f1822c3dde6838195e3f0ada7ca8b10bf0cb47689142c3ef6a01cedbf06a3",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3efec4db6e309ea7ea88e3d74be9266290b61113c7b75ec77e7729db8eab2b35.gz": "878bea1423cc8e4cd9cc33317b79d5f657956b9dbbbe4db75fe4cb0ea3a715df",
+    "tools/rhino_oracle/observations/source_snapshots/5e3f97f6dea6ea3d446c09563f7384c9adf5d40768ae5edb29b2df65755f7e0b.gz": "68b9ead3c8a94dd37be9b116ddace35bf8dfae22713be7e9a06dec9879c8dc08",
+    "tools/rhino_oracle/observations/source_snapshots/6a0ea0c47877c5c15e423e1c664b08dafe4c1ca87f5bea5cbf4fb187d0aa4bdb.gz": "5c8ec676bf7432c132e9f3d1e39d158428da9a6f2952517008ca36304f514361",
+    "tools/rhino_oracle/observations/source_snapshots/6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102.gz": "0f050df2ee10e01f7e3c94a23f395b84f752a7cf71690ef66197b0d503c65971",
+    "tools/rhino_oracle/observations/source_snapshots/7506d8daeea496017a613d11d322b44fc575c1f30591260996f8f995ccfbe07f.gz": "a3a8b41a50f8d3e385704e66bcc4953a1e5d6bc81e3fd24d644c92cd647198e4",
+    "tools/rhino_oracle/observations/source_snapshots/7747fcb770875a8e8154da258782c8342f3f8427291be414f2fd7c9a7ffe32fe.gz": "b6371b069d9085b1eb30b6bca87eab60f6bb1ab67db02bfbc88979353a5c4d43",
+    "tools/rhino_oracle/observations/source_snapshots/78119b83570e8f419722934f71d8021d187f4c04c673e34d242265e53f4dc461.gz": "a77a3d79b7cabe651cab42821828be7aa22aafefe68c1a56b9ae1ffffbdbc2b1",
+    "tools/rhino_oracle/observations/source_snapshots/7abab6f56c1f396d6b389fbfbac5a202fd37f8b5038564cdb83e5c1d087739eb.gz": "34ea8a0f7e9db6c50a744e1baddb2ebd5429f9a27225fde6e8d561b38ba6d44f",
+    "tools/rhino_oracle/observations/source_snapshots/805a62fdad615e8ac4ea08403ad93c45854e7061d229d1944fa3e0bc3196812d.gz": "4febbf50fd064f34329690795bff05e7133361e2f3ab6599452ef3ea095e20d6",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/9e0aaf16c9c2b59846996596c44c1cc4f860b1d0d6c603b0aff002e7f44c9d42.gz": "1f8190aaed92bf7d9c796dcdd7f2edc32c87dfa164eda754c40ded57dd2eec9e",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b611ff90ad6b870b1791562371e41955130973bfc666fc7854f1de76cddab243.gz": "d17e78418bd8443bbf4abf890d2b16dc3ce8e29d155cc4231495d19be22a4bf5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c3dc09e7ac045af428ab5443e23f5bdcaef0c50ecbe7ddb035291a0660163516.gz": "c3ad75a7db5f241f815e2ab11d011a506948589f055167d1e8dccc320625e706",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbdc975035027635cd51eb8c0e9965efac3b81b897293c4656ae84a7d12e943a.gz": "3f0fb566015df4bf0ca1485d860bde540adac3eee22958cd8f2c45659018bc8b",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/d74843fb8cae5207ba879d362a15850254c238adb90ef2c97fab68e80a881285.gz": "d0843489f431d8c0e93b3226f5a5e25c6dbbbcf67430e8186713f70154ba6a25",
+    "tools/rhino_oracle/observations/source_snapshots/dc4447fc503784bf1d38edf62ea1ae9736df6dcda90f8500cc2f9c76e2342cb2.gz": "fad7a54b0bda044c9eaa789b9d93f18f10f1c7ec4e3f5fcefe66abf8c8b9b577",
+    "tools/rhino_oracle/observations/source_snapshots/e5617402a8718084ccd07de2637b2982bcbcf3e42ac4fd554c6db4f34a555ef2.gz": "d34459ca1c9c8321afa0a2cb9be472181428565fb4218e05b927397a76dc3296",
+    "tools/rhino_oracle/observations/source_snapshots/f19bfc76da6e00a110a87c9812588fd216b1dc6de3d03e1b744c64c02ebd565f.gz": "984474780da5f3e1625fdb90f8a52dbe3246362ad0cae74e1c3bf5845cdaae11",
+    "tools/rhino_oracle/observations/source_snapshots/fdc980cd108e67e4e43115070462c5849d1c8ad56b9f7a3abf735dfaa53abac1.gz": "f981d238d69dfa2ba0742315f55ce54a7c67b5938daf830fe0f7184cb80357fe",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
