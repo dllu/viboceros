@@ -105,6 +105,13 @@ if __package__:
 else:
     from offset_surface_loose_trim_cases import LOOSE_TRIMS
 CASES.update(LOOSE_TRIMS)
+if __package__:
+    from .offset_surface_tolerance_cases import TOLERANCE_PILOT,TOLERANCE_HOLDOUTS,TOLERANCE_FINAL
+else:
+    from offset_surface_tolerance_cases import TOLERANCE_PILOT,TOLERANCE_HOLDOUTS,TOLERANCE_FINAL
+CASES.update(TOLERANCE_PILOT)
+CASES.update(TOLERANCE_HOLDOUTS)
+CASES.update(TOLERANCE_FINAL)
 
 def validate(op):
     if not isinstance(op,dict) or set(op) != {'op','id','case'} or op.get('op') != 'offset_surface_command' or op.get('id') != op.get('case') or op.get('case') not in CASES:

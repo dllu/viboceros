@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_getter_keep",
+      "case": "offset_th_getter_keep"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_default_option",
+      "case": "offset_th_default_option"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_explicit_document",
+      "case": "offset_th_explicit_document"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_explicit_new_document",
+      "case": "offset_th_explicit_new_document"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_inline",
+      "case": "offset_th_inline"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_loose_toggle",
+      "case": "offset_th_loose_toggle"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_units",
+      "case": "offset_th_units"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_bezier_fine",
+      "case": "offset_th_bezier_fine"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_bezier_coarse",
+      "case": "offset_th_bezier_coarse"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_rational",
+      "case": "offset_th_rational"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_trimmed",
+      "case": "offset_th_trimmed"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_bezier_solid",
+      "case": "offset_th_bezier_solid"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_bezier_both",
+      "case": "offset_th_bezier_both"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_getter_escape",
+      "case": "offset_th_getter_escape"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_th_after_escape",
+      "case": "offset_th_after_escape"
+    }
+  ]
+}

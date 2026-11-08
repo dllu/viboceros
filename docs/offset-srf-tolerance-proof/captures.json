@@ -1,0 +1,44 @@
+[
+  {
+    "family": "offset_srf_tolerance_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_tolerance_pilot"
+    ],
+    "exit_status": 0,
+    "log": "pilot-capture.log.gz",
+    "request_sha256": "585d84005511a28fcc59d3fc2232f37dcfe5a11482b7fc8d98364eb1b010ac44",
+    "observation_sha256": "f0ccde24f3576431b8d30da3443f973c0ee66a290ff13cd56a286c7a0f793020"
+  },
+  {
+    "family": "offset_srf_tolerance_holdouts",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_tolerance_holdouts"
+    ],
+    "exit_status": 0,
+    "log": "holdouts-capture.log.gz",
+    "request_sha256": "041bd25a265152ebfabe138ef7cc1417aba140b052246335727ff57b50f58e8e",
+    "observation_sha256": "199e3bf6bad18f78d0bafc8b195493275ee75ee82d7bf6b473503b59ec9b8d06"
+  },
+  {
+    "family": "offset_srf_tolerance_final",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "python3",
+      "-m",
+      "tools.rhino_oracle.generate_offset_srf_tolerance_final"
+    ],
+    "exit_status": 0,
+    "log": "final-capture.log.gz",
+    "request_sha256": "62b4c4f51ca3090f235254de59f0588397b149ab9735261566435ba8e09cbe12",
+    "observation_sha256": "e2f637045a88e047b7279bdcd536b38fae09957a58ddcdeba0be93bed73910c6"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_remember_set",
+      "case": "offset_tf_remember_set"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_remember_document",
+      "case": "offset_tf_remember_document"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_default_document",
+      "case": "offset_tf_default_document"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_default_follow",
+      "case": "offset_tf_default_follow"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_postselect",
+      "case": "offset_tf_postselect"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_postselect_cancel",
+      "case": "offset_tf_postselect_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tf_bezier_finer",
+      "case": "offset_tf_bezier_finer"
+    }
+  ]
+}

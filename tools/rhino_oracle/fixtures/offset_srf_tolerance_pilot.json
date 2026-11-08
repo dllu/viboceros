@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_menu",
+      "case": "offset_tp_menu"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_negative",
+      "case": "offset_tp_negative"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_default",
+      "case": "offset_tp_default"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_document",
+      "case": "offset_tp_document"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_cancel",
+      "case": "offset_tp_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_remember",
+      "case": "offset_tp_remember"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_getter_cancel",
+      "case": "offset_tp_getter_cancel"
+    },
+    {
+      "op": "offset_surface_command",
+      "id": "offset_tp_getter_keep",
+      "case": "offset_tp_getter_keep"
+    }
+  ]
+}
