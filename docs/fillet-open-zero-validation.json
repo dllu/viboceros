@@ -1,0 +1,850 @@
+{
+  "scope": "Zero-radius Fillet for two distinct open curves, bounded line overlaps, picked remainders and actual Undo/Redo.",
+  "baseline_revision": "07942f2acdb36de525d9eee2a35d0642b38a40aa",
+  "implementation_revision": "b4cd607a35564e1b1a8a4cd40615098036ad71ef",
+  "full_native_parity": false,
+  "observations": 49,
+  "successful": 45,
+  "cancelled": 1,
+  "failed": 3,
+  "changed": 42,
+  "invalid_outputs": 0,
+  "images": 0,
+  "physical_picks": 98,
+  "point_tangent_stations": 6204,
+  "geometry_changed": 39,
+  "unchanged_geometry_records": 3,
+  "retained_failed_captures": 1,
+  "successful_command_replays_per_build": 45,
+  "qualified_ui_replays_per_build": 49,
+  "api_rejections_per_build": 3,
+  "archive_round_trips_per_build": 95,
+  "native_bounded_line_producer_cases": 64,
+  "windowless_source_picks_per_build": 2,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.7714366222852335e-12,
+  "construction": "Distinct pairs share zero-radius contact selection and admission. Trim=No is an immediate no-op; Trim=Yes retains the picked side of each open source. Curved continuations use the public extension style. Line-mode supports are padded by 100 times the pair bounding-box diagonal per end; Smooth line supports by 50 source spans. Summed physical pick travel ranks overlap contacts. Smooth collinear contacts retain separate support endpoints, averaged on Join while preserving their parameter charts. Equal source replacements explicitly record one history step. Preview and commit reuse one prepared plan. The native intersection bridge permits endpoint roundoff within 64 floating-point epsilons of its parameter scale, while independently checking source-space residuals and overlap interiors.",
+  "execution": "Five successful private-Xvfb captures publish all 49 observations, all with valid geometry. The failed overlap capture and unusable private selection-menu intervention publish no observations; its complete eleven-case request is repeated with separated long-line picks. Portable and native application tests run without windows.",
+  "input_evidence": "Authored source definitions and pre-command physical sight points are inputs. Native coefficients, domains, 33 point/tangent stations, attributes and history events are expectations only.",
+  "history_evidence": "Public Command.UndoRedo begin/end pairs distinguish 42 records from seven no-ops, cancellations or failures. Three records have unchanged ordered scene values. Two older getter fixtures retain their original raw archives and receive derived history expectations from a matching modern event-observed workflow.",
+  "legacy_history_corrections": [
+    {
+      "id": "fillet_getter_holdouts/zero_joined",
+      "old_inferred_record": false,
+      "verified_record": true,
+      "witness": "fillet_open_zero_pilot/open_zero_meeting_parts",
+      "maximum_scene_difference": 0.0
+    },
+    {
+      "id": "fillet_getter_final/zero_parts",
+      "old_inferred_record": false,
+      "verified_record": true,
+      "witness": "fillet_open_zero_pilot/open_zero_meeting_parts",
+      "maximum_scene_difference": 0.0
+    }
+  ],
+  "limits": [
+    "Finite line, arc and NURBS cases qualify these observations only. Arbitrary overlaps, tied pick costs, other parameterizations, folded or singular continuations, arbitrary nonplanar curves, tiny positive radii, continuous distance bounds, pixel equality and comparative performance remain unqualified.",
+    "Same-parent and positive-radius paths retain separate adapters and are covered here by regressions. Historical closed-source qualification remains separate. The private selection-menu screenshot records capture failure only."
+  ],
+  "cases": [
+    {
+      "id": "fillet_open_zero_bounds/open_zero_far_beyond",
+      "native_result": "Failure",
+      "native_valid": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_far_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.7714366222852335e-12,
+      "portable_ui_maximum_geometry_error": 1.7714366222852335e-12,
+      "native_command_maximum_geometry_error": 1.7714366222852335e-12,
+      "native_ui_maximum_geometry_error": 1.7714366222852335e-12
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_far_smooth",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 9.139955806298777e-13,
+      "portable_ui_maximum_geometry_error": 9.139955806298777e-13,
+      "native_command_maximum_geometry_error": 9.139955806298777e-13,
+      "native_ui_maximum_geometry_error": 9.139955806298777e-13
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_smooth_collinear_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_smooth_collinear_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_smooth_collinear_reversed",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_bounds/open_zero_smooth_collinear_unequal",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_arc_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.8030021919912542e-13,
+      "portable_ui_maximum_geometry_error": 1.8030021919912542e-13,
+      "native_command_maximum_geometry_error": 1.8007831148971244e-13,
+      "native_ui_maximum_geometry_error": 1.8007831148971244e-13
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_arc_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.1316354352825292e-14,
+      "portable_ui_maximum_geometry_error": 2.1316354352825292e-14,
+      "native_command_maximum_geometry_error": 2.1316354352825292e-14,
+      "native_ui_maximum_geometry_error": 2.1316354352825292e-14
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_collinear",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_crossing_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.4650951625709315e-15,
+      "portable_ui_maximum_geometry_error": 2.4650951625709315e-15,
+      "native_command_maximum_geometry_error": 2.4650951625709315e-15,
+      "native_ui_maximum_geometry_error": 2.4650951625709315e-15
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_crossing_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 8.881784197001252e-16,
+      "portable_ui_maximum_geometry_error": 8.881784197001252e-16,
+      "native_command_maximum_geometry_error": 8.881784197001252e-16,
+      "native_ui_maximum_geometry_error": 8.881784197001252e-16
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_crossing_reverse",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.4650951625709315e-15,
+      "portable_ui_maximum_geometry_error": 2.4650951625709315e-15,
+      "native_command_maximum_geometry_error": 2.4650951625709315e-15,
+      "native_ui_maximum_geometry_error": 2.4650951625709315e-15
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_meeting_arc",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 3.1401849173675503e-16,
+      "portable_ui_maximum_geometry_error": 3.1401849173675503e-16,
+      "native_command_maximum_geometry_error": 3.1401849173675503e-16,
+      "native_ui_maximum_geometry_error": 3.1401849173675503e-16
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_meeting_nurbs",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "portable_ui_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_command_maximum_geometry_error": 1.1102230246251565e-16,
+      "native_ui_maximum_geometry_error": 1.1102230246251565e-16
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_noncoplanar",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_nurbs_line",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.7342238036525468e-15,
+      "portable_ui_maximum_geometry_error": 1.7342238036525468e-15,
+      "native_command_maximum_geometry_error": 1.7342238036525468e-15,
+      "native_ui_maximum_geometry_error": 1.7342238036525468e-15
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_nurbs_smooth",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.3092638912203256e-14,
+      "portable_ui_maximum_geometry_error": 2.3092638912203256e-14,
+      "native_command_maximum_geometry_error": 2.3092638912203256e-14,
+      "native_ui_maximum_geometry_error": 2.3092638912203256e-14
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_reverse_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_reverse_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_skew_parts",
+      "native_result": "Failure",
+      "native_valid": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_skew_untrimmed",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_holdouts/open_zero_spatial",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.9860273225978185e-15,
+      "portable_ui_maximum_geometry_error": 1.9860273225978185e-15,
+      "native_command_maximum_geometry_error": 1.9860273225978185e-15,
+      "native_ui_maximum_geometry_error": 1.9860273225978185e-15
+    },
+    {
+      "id": "fillet_open_zero_orientations/open_zero_smooth_orientation_dominant",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 3.1776437161565096e-14,
+      "portable_ui_maximum_geometry_error": 3.1776437161565096e-14,
+      "native_command_maximum_geometry_error": 3.1776437161565096e-14,
+      "native_ui_maximum_geometry_error": 3.1776437161565096e-14
+    },
+    {
+      "id": "fillet_open_zero_orientations/open_zero_smooth_orientation_negative",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_orientations/open_zero_smooth_orientation_tilted",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 3.1776437161565096e-14,
+      "portable_ui_maximum_geometry_error": 3.1776437161565096e-14,
+      "native_command_maximum_geometry_error": 3.1776437161565096e-14,
+      "native_ui_maximum_geometry_error": 3.1776437161565096e-14
+    },
+    {
+      "id": "fillet_open_zero_orientations/open_zero_smooth_orientation_translated",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_orientations/open_zero_smooth_orientation_vertical",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.1368683772161603e-13,
+      "portable_ui_maximum_geometry_error": 1.1368683772161603e-13,
+      "native_command_maximum_geometry_error": 1.1368683772161603e-13,
+      "native_ui_maximum_geometry_error": 1.1368683772161603e-13
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_long",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_reverse_both",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.2737367544323206e-13,
+      "portable_ui_maximum_geometry_error": 2.2737367544323206e-13,
+      "native_command_maximum_geometry_error": 2.2737367544323206e-13,
+      "native_ui_maximum_geometry_error": 2.2737367544323206e-13
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_reverse_first",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.2737367544323206e-13,
+      "portable_ui_maximum_geometry_error": 2.2737367544323206e-13,
+      "native_command_maximum_geometry_error": 2.2737367544323206e-13,
+      "native_ui_maximum_geometry_error": 2.2737367544323206e-13
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_reverse_picks",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_reverse_second",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_separated",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_short",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_spatial",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 2.3437142008433856e-13,
+      "portable_ui_maximum_geometry_error": 2.3437142008433856e-13,
+      "native_command_maximum_geometry_error": 2.3437142008433856e-13,
+      "native_ui_maximum_geometry_error": 2.3437142008433856e-13
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_collinear_unequal",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.7053025658242404e-13,
+      "portable_ui_maximum_geometry_error": 1.7053025658242404e-13,
+      "native_command_maximum_geometry_error": 1.7053025658242404e-13,
+      "native_ui_maximum_geometry_error": 1.7053025658242404e-13
+    },
+    {
+      "id": "fillet_open_zero_overlap_final/stable_open_zero_overlap",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_dynamic_accept",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_dynamic_cancel",
+      "native_result": "Cancel",
+      "native_valid": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_extension_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.5631940186722204e-13,
+      "portable_ui_maximum_geometry_error": 1.5631940186722204e-13,
+      "native_command_maximum_geometry_error": 1.5631940186722204e-13,
+      "native_ui_maximum_geometry_error": 1.5631940186722204e-13
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_from_positive",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_meeting_joined",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_meeting_parts",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_meeting_untrimmed",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_parallel_parts",
+      "native_result": "Failure",
+      "native_valid": true,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_parallel_untrimmed",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 0.0,
+      "portable_ui_maximum_geometry_error": 0.0,
+      "native_command_maximum_geometry_error": 0.0,
+      "native_ui_maximum_geometry_error": 0.0
+    },
+    {
+      "id": "fillet_open_zero_pilot/open_zero_to_positive",
+      "native_result": "Success",
+      "native_valid": true,
+      "portable_command_maximum_geometry_error": 1.1443916996305594e-15,
+      "portable_ui_maximum_geometry_error": 1.1443916996305594e-15,
+      "native_command_maximum_geometry_error": 1.1443916996305594e-15,
+      "native_ui_maximum_geometry_error": 1.1443916996305594e-15
+    }
+  ],
+  "captures": [
+    {
+      "family": "fillet_open_zero_pilot",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "46eae21d69b807fe271acb0b1ce8ea9c2f68f0f168da730c0a5b1b243b8864b9"
+    },
+    {
+      "family": "fillet_open_zero_holdouts",
+      "observations": 16,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "54394a96aa79c86f1bd849e7138abc22d8ca775ac5a66b9b4467722b4a77aed3"
+    },
+    {
+      "family": "fillet_open_zero_overlap_final",
+      "observations": 11,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "29b62ac5187144969a2c3f1547c3218c106bd69ecd33798b131683e4fc65e306"
+    },
+    {
+      "family": "fillet_open_zero_bounds",
+      "observations": 7,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "4d35a55d0b8bc1f1a454dd41fbdbf53300fde1577d5db5e838ed69c1b43ff7c5"
+    },
+    {
+      "family": "fillet_open_zero_orientations",
+      "observations": 5,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "723a2807cf7dac04f750f51b2ca348c3e6413acdb9e4b60a1702e26df20da307"
+    }
+  ],
+  "checks": [
+    {
+      "name": "open-zero-command-portable",
+      "status": 0
+    },
+    {
+      "name": "open-zero-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "zero-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "open-zero-command-native",
+      "status": 0
+    },
+    {
+      "name": "open-zero-ui-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "zero-ui-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-native",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-geometry",
+      "status": 0
+    },
+    {
+      "name": "native-producers",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet.rs": "4e5a20d01a94c10c90e064b2e88fffe80b9ffc7a8fa108eecaae10da0a13bac6",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/closed.rs": "a62a78c57faabaa3122830111696fe8e95a4a8ddf81398d4c64d200b83ae3b80",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/open.rs": "b6a5349fe2d8fad7e24a4b7589f581d0cf419e8cb4afc9b4350ccca174571522",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/prepare.rs": "d2973c27dd9dd5b1288e26640b0c84155b2a13386184fba69b0e2a0946bcbe07",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/tests.rs": "19083ce22a6ae36e855a32accfe80a28934824993d5f53aa0e46a1eaf995715c",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/zero.rs": "c46f6730ce89d22eb8f27be454846633d576faae61e06f6e31bacdcf07996d79",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/zero/admission.rs": "ca12833db84584adad0dbb1ae837895e896ad1fb01f911f88075cc7f4af52e82",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/src/fillet/zero/lines.rs": "ca501ceeb730d288086826054db2e3f86cf3e75082d3c962fb2452bc1ec796d9",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/tests/fillet_getter.rs": "e5f875367a9d56d08b7926cbec7dd6885b56d5e56800e0603ffdc99a33e7fc45",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/tests/fillet_open_zero.rs": "fa46bad886858350f8df6f948ced212828e5a7b856b094afac2cb8ea70c47bbc",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/tests/support/fillet_getter.rs": "479f18fd093531fc1b731d8215035be72dac0b6cedea0b8ae1e8c4dac6c5bc3f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/tests/support/fillet_getter/history.rs": "23f426411f372a6aed5587f08f001cbc5a7a1cc2a5abed4121a3c23e265394b3",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-command/tests/support/fillet_getter/state.rs": "14614fa19637613eae6e54685889adc2ba15285de2eb325752f3cf7be045cb95",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-smlib/native/bridge.cpp": "7d808d27a6aa712dc598217db1c7f561f4c513376e3e33794aab0dd121b99d8f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-smlib/tests/curve_intersections.rs": "9e9f31200b5a581ef6cefa4d1c125f5acf83be44846701ebb6ae8435d7a27f3a",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:crates/viboceros-smlib/tests/curve_intersections/bounded_lines.rs": "10c4e5046a2d2239845d286ef1b0ea85d0a95f5b952a20dbafcc7f6fd9f92922",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/commands/fillet.md": "d220c1e020f9e71a4421664dc41a50e289b9472ff00ad008a5bea03e4d1bae99",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/capture-bounds.log.gz": "8d0783e447ac6a742dfa16710be4608c8059993efdf199a53cddfa4081a3746a",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/capture-holdouts.log.gz": "5fa3810254c38ff38ac48aff28ee3fd91421d137815dacbb92da7e7bc4d5bb64",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/capture-orientations.log.gz": "0d2141ddede4f928bd28dd1445292b07dca70032f353ec4ed0aaae118b1aa2e2",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/capture-overlap_final.log.gz": "20c929c34cdb276fc86a69879642d615885396c53901b936338d707c49b7b16e",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/capture-pilot.log.gz": "d3dc1e8b1383ca8f507eea09bcf126ff530f5ba2acb79f2a6dc1b4c710c993dc",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/captures.json": "62202ae7b5a8e09def72aa747f4411945540bd4ff418f860a59c7a0be4c07f6c",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/chamfer-ui-native.log.gz": "e083935b78981acca2ae445aa38e88b29a0d0968682a7f0ef6bb6c49d52a3bbd",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/chamfer-ui-portable.log.gz": "b6695c3021b56e8658c25336b814a684b0d3bd9ae010ff8b35bae306dd7e08b6",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/checks.json": "5c8c5ea7fae6654cbcedcb3c95999b201112aadec7536915a4ec61501029c571",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/clippy-native.log.gz": "c9107aad81213edef74de988ae48ab9870cd39d1ebc8f594cc0a2bfc5f2beacb",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/clippy-portable.log.gz": "26cc8f5edc55c91d2b5504811cbd14929156dc0a6db7dc9931992ea61ca55daf",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/closed-ui-native.log.gz": "0bbf0ad7362b8635abdc9a915eb0fe2a6541bb810945f1b95085b69b08a6bc75",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/closed-ui-portable.log.gz": "4568990cea515324e0d8b08c0c93ecb59491af1229a022616dff3d867ad62f17",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/command-regressions-native.log.gz": "286517805c41ad1a0787fbdb739bf565218edd904da3163575f5b54ee0410756",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/command-regressions-portable.log.gz": "a0842f0293faac2cd1c5e38498a8eada8be44a3009196aaa245bab0dc13bf96d",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/continuation-ui-native.log.gz": "ac0c6ffb8d0c83c40ee32c2d14565084c93f1a12f09b8b153d24f0bb133d2e38",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/continuation-ui-portable.log.gz": "a793b585e507cf3c514aba66cc23b6fd92880b13e03a77168b1a817b7cb2056c",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/failed-overlaps.json": "558dca79149d5c814cac00f1535027d0db9647eb3a13739fdb9ed95a5c346a20",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/failed-overlaps.log.gz": "0dc65edda2c07eaab827b1dcc341999c2c5d3fe307c5fb35c397f1b10b3eff43",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/fillet-ui-native.log.gz": "062db58c3a05d8f1cbea8230fc62ef7b5492395611adbb22ee36f5d56d07e414",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/fillet-ui-portable.log.gz": "1b4831a752b51e82e2560d403d9a585c0944bff6a2329346b81368ef8cbc8b04",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/library-native.log.gz": "cb640fb60e8c2a70a49c82292dd663bee3a0168599ad8c945b0193ea0480bc6a",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/library-portable.log.gz": "706023e085763484e87d33868addd53a4a2963bf74105f28be2005048ca473b3",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/native-producers.log.gz": "1058752fa4ff0b5053db9376e1b72e69b1ee6de3af58cf3edddd3736c1e0367b",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/open-zero-command-native.log.gz": "2a7605b496a0308d9c8b5db94957276d4b645fa4780f6fbc88965281aa747a4e",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/open-zero-command-portable.log.gz": "02e42ff1f874b27eab87e05207e8fc769b651ed823931a92e27e357b31774f09",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/open-zero-ui-native.log.gz": "987594b34c8e2176cd031dae3f6f94dbe4553d73d14cdd4c4992c3272490a37f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/open-zero-ui-portable.log.gz": "d1bfc3c42775d47dd2902f0c6e9bb8564b66f36d310fffd9426163911d43548a",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/owned-window-inspection.json": "f3c48bc3206b37bfb0979d26daefb336074cd73be21af00905948769a913847d",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/python-subd.log.gz": "80de21d2895c0e0982db3cf84c358ee726874a6a32428dc3fd8e76b445040954",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/python.log.gz": "a6407f9085cc458457c7bb1fe32cff7a13b1ce8a138cf35fcbed33cbe60807dc",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/selection-menu.png": "c6db4237df95ef99cad9d85bd63e9fb4dc71b41cf6cb0ea576f328f513607324",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/selection-receipt.json": "2d7e79ed9f39d169d168765ef3cc53401b4567d13ae0eedd68662076aeaca423",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/self-ui-native.log.gz": "d59d61abe2c5e1910ac5ed7383de3e25f1ec1b8271e3f8ef3d83f13bd3004166",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/self-ui-portable.log.gz": "dadcd4674ad67cceb8ad0f903306b6e9e3c498ddb16bfbd66847fefe625ce4e1",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/subd-command-native.log.gz": "d7dbbdde20651b048411c2733787e661260bb8d10e7f1f213f2dbb0f12bd6fc1",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/subd-ui-native.log.gz": "711f16589b2e6671f0cea41ddb799d969e40445eef5e0b8fbf3f7c21777039ae",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/tangent-geometry.log.gz": "9109408f92d90c287d4942d97be1afdb893b022e1fdefa470f27a0cf124b9f66",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/zero-ui-native.log.gz": "508431f507ff1b12db4833de5cb7ecfda0d4eb001c0c57f5f940832782f5618f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero-proof/zero-ui-portable.log.gz": "39669d34699ee1a40f41c9cb559867d6f633c1d2925363526e9291a508ef206e",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-open-zero.md": "72a56754aa309766ad14a0c3fc9e14c26d747457644a5958469316172a7fe807",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/fillet-zero.md": "e8dff4529d7aa1d8208df43581f1aaa096d5c28969d7c8390d4485d6ff03f8cc",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/subd-box-qualification.json": "73f2db7cc194c0525e889e8230f58f658dcad3ee59876cf8a1236344993806d4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:docs/subd-plane-qualification.json": "7299e8b08938ad4c1a3b04f2a35de8aa7dab04ae0dcf7fb7b071e05a7e4b4326",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:src/app/tests/curve_fillet.rs": "684def9390c33a6756ed29357d55667509b9e07537c35b3e15519f8c6c3357f5",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:src/app/tests/fillet_open_zero.rs": "32a9982e54414a270b5417abb067d4798dd7e6dd8c0713edfebd263caed21e76",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:src/app/tests/mod.rs": "bcf1b3357150c47614e20acbfe378da1502946dae924ef9f82eac6bb7af37e2f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/check_fillet_open_zero.py": "c97a05feb86941c73e37b6820f9c8f6d490402152dbb041e6f532d82d80d5817",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fillet_command.py": "3fa623a781821bc1b5ab8409e25927f7d75c2cf2d9289324554f13430139637f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fillet_open_zero_cases.py": "7ebdfdd7ca93c4984e8ea50e50a6bcb69de9b59b31b22f52888f7b8d669e2001",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fillet_open_zero_evidence.py": "a52bb41a401a40ec724c0dbef61f832370377bff4128f0925c219ae473e708b9",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fillet_zero_history.py": "7b32993ab90aebd983ec1fa5a29d2cb8165fc94678065f7060c881c53d58cf43",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_bounds.json": "1cfdb3184873c1cadebda2ecdde834e71720418f6425ad4e468caa3a134308e4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_holdouts.json": "49598b9f288dd2d314249a0a5b7b6167dfa2542c85ad37076ddb9aa1503d4eef",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_orientations.json": "2bd402c3bcf73e4905e58f4035354ab30ca57f84d8fd4b3365b9d24281c7e41c",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_overlap_final.json": "af6459f2b1cd9483e83cb3fcf9a5d9807387b94cfd156508fc7178ea04ef3b2a",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_overlaps.json": "f83755d696919906c204bd0747c14e116a1940401634deb74d486308754fe4f2",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/fixtures/fillet_open_zero_pilot.json": "4a8348272f0a516fa2590101b14635da52ae3382af790b0b43bf863e0e2457a6",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_bounds.py": "bc547fe74ae6886cf511be799cd528f5d8cc4a5c2eade9926a52a40a6bae592b",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_holdouts.py": "bb1d987957d438c0b0aac098ed459ee6c2f5afcab9b0fb4bb57d364abe371044",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_orientations.py": "d85ea7e3ef95bf0f8ea590bfa252a8c61e2847c8a64851aa17d64e8b7be2cc59",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_overlap_final.py": "f9cb50cc31c20dc9fc3596ac8a60b850844aff613c7d410093d6ff194e2eee43",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_overlaps.py": "febf81b814010a5e7f436f9c5f7028e9934e7bdc6a00a6ef7b6dc7bf9a142554",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/generate_fillet_open_zero_pilot.py": "1464bde0b9635314f3a72729d369746c75cd18e5519fbd613ccdf4074bc08ff4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/fillet_open_zero_bounds.json.gz": "e3ea6b9b15c2c9cb3e03fa2636fd6e6059a3c287023b1f9f62346bc1b498dbb5",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/fillet_open_zero_holdouts.json.gz": "e29b9f7b4a7815038d4e2230753f0e6656fbf09b3d0614ff7fedd2df9bc5ad24",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/fillet_open_zero_orientations.json.gz": "ff69d83754f8c54b3dee1ca0e38e8901c9f3d02db2038bcad1e78664ab289c92",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/fillet_open_zero_overlap_final.json.gz": "01eb6769f20fec1fc247f48b33c6c4fe43e04383809b6169c578ba26c0435743",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/fillet_open_zero_pilot.json.gz": "99d69c37c67c4fd4ca66328d947e9b7e24d620cbb14a3f7aaa8691222e505e36",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/059636b947614e48d7338a42aa081c125444a0e9d68e077008a7f4e6cc08d3d9.gz": "d0dcb1c41c8558544c9a5bc4aaee3381fdea9f404905ae2950e4418ca1f543f5",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/14605f5b314c04c44c294215d919b9c13d8c38b61ed5d3ad464ba05b879ce2b4.gz": "45973ba2e26916c8f16eaaaea3b1cbd70529e60c14ae4183a0f9f53f19d3bfd5",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/1464bde0b9635314f3a72729d369746c75cd18e5519fbd613ccdf4074bc08ff4.gz": "1d290e8013370c6bad3cf0b068165c226eaeb35224c8e61116d4bd5f34594003",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/3fa623a781821bc1b5ab8409e25927f7d75c2cf2d9289324554f13430139637f.gz": "f6586633ac4b49bb9d6cf76d20d69eab377ad0cadcf3f4c51dfdecdde231a7f4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/7ebdfdd7ca93c4984e8ea50e50a6bcb69de9b59b31b22f52888f7b8d669e2001.gz": "34ded4556dfe291ba37f40fea1adcb39679e19fca015f23482f2d8a61b95628e",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/84542ae68f40afcf352e130f66437ef5d00c5d3a17943c301aa04be86900bcaf.gz": "98ba3fa8ceb2c6dfa9c4942c58da87d1c19b1b1775ecc2bf7616ef2e9747bf27",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/a6bd15611449208db60477698633fd6cebca926f679b38c86dce25a965263ad2.gz": "0fda306e679ded0071e1c4ac9ee7aa8adcdb5336f841ca8eedfa28b1ba6d8f91",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/bb1d987957d438c0b0aac098ed459ee6c2f5afcab9b0fb4bb57d364abe371044.gz": "fce80843740920099b6a3453941fba0a69cb3582aee4c8b0e113f4dbeb14c50e",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/bc547fe74ae6886cf511be799cd528f5d8cc4a5c2eade9926a52a40a6bae592b.gz": "59e81493c7d1c00f37a98c81c7a40fa0362f3d089ab26c0c570be029c4fc15ff",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/c4fcbd89406dae10154daf67eb6b4a60879b5ad010ba2ad97ce2639df4476c94.gz": "6003d300c790d070a123cb5b23826f7f0d9ed87997afd7c91e17066996474766",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/c7654e84ae169d8475da3400452fdcbe7f4b915b79e104031ed961ac453f45cb.gz": "6996947600050a02a767432c587d9de9ea7258bbb84857a1ae7064eeef20ef6f",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/cb7bbd77aa3e081b601d4afc4f69216197cbc893473948ed9dcae0fb5d0ec223.gz": "e3dee586aaf7bfb0066621a747740bf6bd45c7dde50e62eed5800926da764641",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/cc53f6b6f6ef99d2108e00763c37178bfba858e14d784d18334650e6e3d779c8.gz": "9a563dc14354b642faed0d9ad644a922578c50a7e5cc214e2a873cf2b7357b49",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/d85ea7e3ef95bf0f8ea590bfa252a8c61e2847c8a64851aa17d64e8b7be2cc59.gz": "afbef8151501a80cb32fcde92e0f15eabe75e323cd0568ed16376b6e622e5f41",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/e3e8824e33b6384a0204bab797128ed6db3878cc81352410043a13411755a5ba.gz": "77f5efb4d1d2b6b8e2131e21f12e7fc3c8509015b91d0110b66a5f7bb94240e7",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/f39a3b402940ee8843bf18d28a25598c223cc960beda438f2d0769d08ab1f366.gz": "18c6edddf103da37dd87f05181da3e6c9c348294d16612dbbaed9747d76abbf4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/f9cb50cc31c20dc9fc3596ac8a60b850844aff613c7d410093d6ff194e2eee43.gz": "8d89c03e1b6882483243741355db6165b34726eb4eda1949489f2f1520942a05",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/observations/source_snapshots/febf81b814010a5e7f436f9c5f7028e9934e7bdc6a00a6ef7b6dc7bf9a142554.gz": "b9ea20e920a4d92e8d29fa7fb1c4f45c89726f789de621765f0d2a27a28de255",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/report_fillet_open_zero.py": "7f9394e29423f7d167c34cf87491c495a4f33b11bb35dcb796d3c745e97c90e4",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/structural_sdk.py": "cb7bbd77aa3e081b601d4afc4f69216197cbc893473948ed9dcae0fb5d0ec223",
+    "b4cd607a35564e1b1a8a4cd40615098036ad71ef:tools/rhino_oracle/test_fillet_open_zero.py": "4b0eee5f0fdffcb8b1e54481bac0efe2fd8fa80d8bc83a0cea6121baef94205d"
+  },
+  "evidence_sha256": {
+    "docs/fillet-open-zero-proof/capture-bounds.log.gz": "8d0783e447ac6a742dfa16710be4608c8059993efdf199a53cddfa4081a3746a",
+    "docs/fillet-open-zero-proof/capture-holdouts.log.gz": "5fa3810254c38ff38ac48aff28ee3fd91421d137815dacbb92da7e7bc4d5bb64",
+    "docs/fillet-open-zero-proof/capture-orientations.log.gz": "0d2141ddede4f928bd28dd1445292b07dca70032f353ec4ed0aaae118b1aa2e2",
+    "docs/fillet-open-zero-proof/capture-overlap_final.log.gz": "20c929c34cdb276fc86a69879642d615885396c53901b936338d707c49b7b16e",
+    "docs/fillet-open-zero-proof/capture-pilot.log.gz": "d3dc1e8b1383ca8f507eea09bcf126ff530f5ba2acb79f2a6dc1b4c710c993dc",
+    "docs/fillet-open-zero-proof/captures.json": "62202ae7b5a8e09def72aa747f4411945540bd4ff418f860a59c7a0be4c07f6c",
+    "docs/fillet-open-zero-proof/chamfer-ui-native.log.gz": "e083935b78981acca2ae445aa38e88b29a0d0968682a7f0ef6bb6c49d52a3bbd",
+    "docs/fillet-open-zero-proof/chamfer-ui-portable.log.gz": "b6695c3021b56e8658c25336b814a684b0d3bd9ae010ff8b35bae306dd7e08b6",
+    "docs/fillet-open-zero-proof/checks.json": "2ead5291bdd21241f2b501d749541bd3f48ab94138fb40fe990ed1b033691066",
+    "docs/fillet-open-zero-proof/clippy-native.log.gz": "c9107aad81213edef74de988ae48ab9870cd39d1ebc8f594cc0a2bfc5f2beacb",
+    "docs/fillet-open-zero-proof/clippy-portable.log.gz": "26cc8f5edc55c91d2b5504811cbd14929156dc0a6db7dc9931992ea61ca55daf",
+    "docs/fillet-open-zero-proof/closed-ui-native.log.gz": "0bbf0ad7362b8635abdc9a915eb0fe2a6541bb810945f1b95085b69b08a6bc75",
+    "docs/fillet-open-zero-proof/closed-ui-portable.log.gz": "4568990cea515324e0d8b08c0c93ecb59491af1229a022616dff3d867ad62f17",
+    "docs/fillet-open-zero-proof/command-regressions-native.log.gz": "286517805c41ad1a0787fbdb739bf565218edd904da3163575f5b54ee0410756",
+    "docs/fillet-open-zero-proof/command-regressions-portable.log.gz": "a0842f0293faac2cd1c5e38498a8eada8be44a3009196aaa245bab0dc13bf96d",
+    "docs/fillet-open-zero-proof/continuation-ui-native.log.gz": "ac0c6ffb8d0c83c40ee32c2d14565084c93f1a12f09b8b153d24f0bb133d2e38",
+    "docs/fillet-open-zero-proof/continuation-ui-portable.log.gz": "a793b585e507cf3c514aba66cc23b6fd92880b13e03a77168b1a817b7cb2056c",
+    "docs/fillet-open-zero-proof/failed-overlaps.json": "558dca79149d5c814cac00f1535027d0db9647eb3a13739fdb9ed95a5c346a20",
+    "docs/fillet-open-zero-proof/failed-overlaps.log.gz": "0dc65edda2c07eaab827b1dcc341999c2c5d3fe307c5fb35c397f1b10b3eff43",
+    "docs/fillet-open-zero-proof/fillet-ui-native.log.gz": "062db58c3a05d8f1cbea8230fc62ef7b5492395611adbb22ee36f5d56d07e414",
+    "docs/fillet-open-zero-proof/fillet-ui-portable.log.gz": "1b4831a752b51e82e2560d403d9a585c0944bff6a2329346b81368ef8cbc8b04",
+    "docs/fillet-open-zero-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-open-zero-proof/library-native.log.gz": "cb640fb60e8c2a70a49c82292dd663bee3a0168599ad8c945b0193ea0480bc6a",
+    "docs/fillet-open-zero-proof/library-portable.log.gz": "706023e085763484e87d33868addd53a4a2963bf74105f28be2005048ca473b3",
+    "docs/fillet-open-zero-proof/native-producers.log.gz": "1058752fa4ff0b5053db9376e1b72e69b1ee6de3af58cf3edddd3736c1e0367b",
+    "docs/fillet-open-zero-proof/open-zero-command-native.log.gz": "2a7605b496a0308d9c8b5db94957276d4b645fa4780f6fbc88965281aa747a4e",
+    "docs/fillet-open-zero-proof/open-zero-command-portable.log.gz": "02e42ff1f874b27eab87e05207e8fc769b651ed823931a92e27e357b31774f09",
+    "docs/fillet-open-zero-proof/open-zero-ui-native.log.gz": "987594b34c8e2176cd031dae3f6f94dbe4553d73d14cdd4c4992c3272490a37f",
+    "docs/fillet-open-zero-proof/open-zero-ui-portable.log.gz": "d1bfc3c42775d47dd2902f0c6e9bb8564b66f36d310fffd9426163911d43548a",
+    "docs/fillet-open-zero-proof/owned-window-inspection.json": "f3c48bc3206b37bfb0979d26daefb336074cd73be21af00905948769a913847d",
+    "docs/fillet-open-zero-proof/python-subd.log.gz": "80de21d2895c0e0982db3cf84c358ee726874a6a32428dc3fd8e76b445040954",
+    "docs/fillet-open-zero-proof/python.log.gz": "c8c17254bc1d7a28897c3ba8667217181b00e31631e9393670465aa4030001e1",
+    "docs/fillet-open-zero-proof/selection-menu.png": "c6db4237df95ef99cad9d85bd63e9fb4dc71b41cf6cb0ea576f328f513607324",
+    "docs/fillet-open-zero-proof/selection-receipt.json": "2d7e79ed9f39d169d168765ef3cc53401b4567d13ae0eedd68662076aeaca423",
+    "docs/fillet-open-zero-proof/self-ui-native.log.gz": "d59d61abe2c5e1910ac5ed7383de3e25f1ec1b8271e3f8ef3d83f13bd3004166",
+    "docs/fillet-open-zero-proof/self-ui-portable.log.gz": "dadcd4674ad67cceb8ad0f903306b6e9e3c498ddb16bfbd66847fefe625ce4e1",
+    "docs/fillet-open-zero-proof/subd-command-native.log.gz": "d7dbbdde20651b048411c2733787e661260bb8d10e7f1f213f2dbb0f12bd6fc1",
+    "docs/fillet-open-zero-proof/subd-ui-native.log.gz": "711f16589b2e6671f0cea41ddb799d969e40445eef5e0b8fbf3f7c21777039ae",
+    "docs/fillet-open-zero-proof/tangent-geometry.log.gz": "9109408f92d90c287d4942d97be1afdb893b022e1fdefa470f27a0cf124b9f66",
+    "docs/fillet-open-zero-proof/zero-ui-native.log.gz": "508431f507ff1b12db4833de5cb7ecfda0d4eb001c0c57f5f940832782f5618f",
+    "docs/fillet-open-zero-proof/zero-ui-portable.log.gz": "39669d34699ee1a40f41c9cb559867d6f633c1d2925363526e9291a508ef206e",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_bounds.json": "1cfdb3184873c1cadebda2ecdde834e71720418f6425ad4e468caa3a134308e4",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_holdouts.json": "49598b9f288dd2d314249a0a5b7b6167dfa2542c85ad37076ddb9aa1503d4eef",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_orientations.json": "2bd402c3bcf73e4905e58f4035354ab30ca57f84d8fd4b3365b9d24281c7e41c",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_overlap_final.json": "af6459f2b1cd9483e83cb3fcf9a5d9807387b94cfd156508fc7178ea04ef3b2a",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_overlaps.json": "f83755d696919906c204bd0747c14e116a1940401634deb74d486308754fe4f2",
+    "tools/rhino_oracle/fixtures/fillet_open_zero_pilot.json": "4a8348272f0a516fa2590101b14635da52ae3382af790b0b43bf863e0e2457a6",
+    "tools/rhino_oracle/observations/fillet_getter_final.json.gz": "75ca8b1b90d5f3db51705b7fbc0451c684f6f8d081be2e0344aba02e420be2fe",
+    "tools/rhino_oracle/observations/fillet_getter_holdouts.json.gz": "b2c4e999dcc0d66e234b7624aaccd5b5eb4dbd441ab34c22e77f13a940d35a60",
+    "tools/rhino_oracle/observations/fillet_open_zero_bounds.json.gz": "e3ea6b9b15c2c9cb3e03fa2636fd6e6059a3c287023b1f9f62346bc1b498dbb5",
+    "tools/rhino_oracle/observations/fillet_open_zero_holdouts.json.gz": "e29b9f7b4a7815038d4e2230753f0e6656fbf09b3d0614ff7fedd2df9bc5ad24",
+    "tools/rhino_oracle/observations/fillet_open_zero_orientations.json.gz": "ff69d83754f8c54b3dee1ca0e38e8901c9f3d02db2038bcad1e78664ab289c92",
+    "tools/rhino_oracle/observations/fillet_open_zero_overlap_final.json.gz": "01eb6769f20fec1fc247f48b33c6c4fe43e04383809b6169c578ba26c0435743",
+    "tools/rhino_oracle/observations/fillet_open_zero_pilot.json.gz": "99d69c37c67c4fd4ca66328d947e9b7e24d620cbb14a3f7aaa8691222e505e36",
+    "tools/rhino_oracle/observations/source_snapshots/059636b947614e48d7338a42aa081c125444a0e9d68e077008a7f4e6cc08d3d9.gz": "d0dcb1c41c8558544c9a5bc4aaee3381fdea9f404905ae2950e4418ca1f543f5",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/14605f5b314c04c44c294215d919b9c13d8c38b61ed5d3ad464ba05b879ce2b4.gz": "45973ba2e26916c8f16eaaaea3b1cbd70529e60c14ae4183a0f9f53f19d3bfd5",
+    "tools/rhino_oracle/observations/source_snapshots/1464bde0b9635314f3a72729d369746c75cd18e5519fbd613ccdf4074bc08ff4.gz": "1d290e8013370c6bad3cf0b068165c226eaeb35224c8e61116d4bd5f34594003",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/26b551a60674819c4ac33dfef70a23a4753f2fe33509528130d7989d5e25706a.gz": "5487a0e54e4fba2c34c30974a542584b8607830155bd68c03398c112db4fe4c6",
+    "tools/rhino_oracle/observations/source_snapshots/26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875.gz": "e3501b122400374742edd8d1a49470736ac3ccc2157c187a9ea64283f2913a61",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/381b8a6526c497dbf9768a8bafc3bba89e32383e497caf649d2a51169e12412f.gz": "4523e56c411db04769b181b8d371eb950050e8b46dc40b43676cf2cb62dab86c",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3fa623a781821bc1b5ab8409e25927f7d75c2cf2d9289324554f13430139637f.gz": "f6586633ac4b49bb9d6cf76d20d69eab377ad0cadcf3f4c51dfdecdde231a7f4",
+    "tools/rhino_oracle/observations/source_snapshots/591ef2bd85aaf0eba632a5787ac741c48dcf5fbcfbbf4cf7cba8246ab8d9f158.gz": "d7961c149b90800346253f1d3c2bd85275a5e6f157970e786e6db5c79dfa6444",
+    "tools/rhino_oracle/observations/source_snapshots/63d7c4a3a49b0f26938811821ffcd65d49d8204e8557c8257dbb5923b3d81fb9.gz": "ab7aa676392930d72c3954751a10cb81dcf9151eb3111a4be27a4f5375017935",
+    "tools/rhino_oracle/observations/source_snapshots/6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2.gz": "1bc44db7771d8b09dcfea5995c42c3df5cd755d1c5bb2ac42eb8015bbd959239",
+    "tools/rhino_oracle/observations/source_snapshots/78a48e81632a028550b17451be62423b21f4744f89d029e76c9b49dd21d5a0da.gz": "feeb2535f264a3bd71854d71997e4a41a67683160150018f071e96cde445f89e",
+    "tools/rhino_oracle/observations/source_snapshots/7d468026231c50bb6163c1589eb74582ef8e18946b9d97dad6eee91026be3f97.gz": "1afaf21ed96a9116feaea9f077bc3ea21fa456c212cc4536e7c1039d1544c3af",
+    "tools/rhino_oracle/observations/source_snapshots/7ebdfdd7ca93c4984e8ea50e50a6bcb69de9b59b31b22f52888f7b8d669e2001.gz": "34ded4556dfe291ba37f40fea1adcb39679e19fca015f23482f2d8a61b95628e",
+    "tools/rhino_oracle/observations/source_snapshots/84542ae68f40afcf352e130f66437ef5d00c5d3a17943c301aa04be86900bcaf.gz": "98ba3fa8ceb2c6dfa9c4942c58da87d1c19b1b1775ecc2bf7616ef2e9747bf27",
+    "tools/rhino_oracle/observations/source_snapshots/85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5.gz": "03fa9dce7bbd5d65c86881df36b5ac531679522446184c730570ab2223a0d201",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8bf26b433831233eb96fe0d737921aa6a7a28f6a55d26fb477f369a3ef4ee579.gz": "560a2d48d6bb2c66e203c11a0a44b50ee799b8a26cf2c0d467ca7e3024d1d8b5",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6.gz": "f684792001d118d95c75aa43e2a1a2d4437a23e7b760a04a09e877ef755175d8",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/9d76662341d28c3283e9e02979ecc31f378f969738b17fcbef92127d2d478146.gz": "159d1b3a48e89f6afbbf68d0005282e723d15cb3f48052b6ef6a19a800ec0049",
+    "tools/rhino_oracle/observations/source_snapshots/a07e49f8ee3123166330bf8500a40eedfa937a46b8f04b9f2a8078507db606f0.gz": "37ce01661f67f3e5faf9815150b32b407c3789bf2c2ebc9311d6445f9fc21c47",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/a6bd15611449208db60477698633fd6cebca926f679b38c86dce25a965263ad2.gz": "0fda306e679ded0071e1c4ac9ee7aa8adcdb5336f841ca8eedfa28b1ba6d8f91",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bb1d987957d438c0b0aac098ed459ee6c2f5afcab9b0fb4bb57d364abe371044.gz": "fce80843740920099b6a3453941fba0a69cb3582aee4c8b0e113f4dbeb14c50e",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/bc547fe74ae6886cf511be799cd528f5d8cc4a5c2eade9926a52a40a6bae592b.gz": "59e81493c7d1c00f37a98c81c7a40fa0362f3d089ab26c0c570be029c4fc15ff",
+    "tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "tools/rhino_oracle/observations/source_snapshots/c4fcbd89406dae10154daf67eb6b4a60879b5ad010ba2ad97ce2639df4476c94.gz": "6003d300c790d070a123cb5b23826f7f0d9ed87997afd7c91e17066996474766",
+    "tools/rhino_oracle/observations/source_snapshots/c7654e84ae169d8475da3400452fdcbe7f4b915b79e104031ed961ac453f45cb.gz": "6996947600050a02a767432c587d9de9ea7258bbb84857a1ae7064eeef20ef6f",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cb7bbd77aa3e081b601d4afc4f69216197cbc893473948ed9dcae0fb5d0ec223.gz": "e3dee586aaf7bfb0066621a747740bf6bd45c7dde50e62eed5800926da764641",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/cc53f6b6f6ef99d2108e00763c37178bfba858e14d784d18334650e6e3d779c8.gz": "9a563dc14354b642faed0d9ad644a922578c50a7e5cc214e2a873cf2b7357b49",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/d85ea7e3ef95bf0f8ea590bfa252a8c61e2847c8a64851aa17d64e8b7be2cc59.gz": "afbef8151501a80cb32fcde92e0f15eabe75e323cd0568ed16376b6e622e5f41",
+    "tools/rhino_oracle/observations/source_snapshots/dce5831914d2f5ca373ea38eac77995bb0760c7299a6f72f0b0fb4073dfb4418.gz": "b6d45f7212072e4663aa8c8227b2085f2c6358a143f3f36a0ccea291b33d081f",
+    "tools/rhino_oracle/observations/source_snapshots/e3e8824e33b6384a0204bab797128ed6db3878cc81352410043a13411755a5ba.gz": "77f5efb4d1d2b6b8e2131e21f12e7fc3c8509015b91d0110b66a5f7bb94240e7",
+    "tools/rhino_oracle/observations/source_snapshots/ece673e7a565bcc7198270c2130e69a699fd783ee8e7c4a54a31505d7529166f.gz": "01079eb09f8530526e52a5e32d364027453e3d8e19ea902a371a773ab3d41bd8",
+    "tools/rhino_oracle/observations/source_snapshots/ece8439a494c530f4d9fa014eec72732beaca3c1cea255a538d0c43ea0e31d85.gz": "e2e7daf1ce6bbd83b220b65c3f8586bd2826447b1a27fb06027664a2313ffe6e",
+    "tools/rhino_oracle/observations/source_snapshots/f39a3b402940ee8843bf18d28a25598c223cc960beda438f2d0769d08ab1f366.gz": "18c6edddf103da37dd87f05181da3e6c9c348294d16612dbbaed9747d76abbf4",
+    "tools/rhino_oracle/observations/source_snapshots/f9cb50cc31c20dc9fc3596ac8a60b850844aff613c7d410093d6ff194e2eee43.gz": "8d89c03e1b6882483243741355db6165b34726eb4eda1949489f2f1520942a05",
+    "tools/rhino_oracle/observations/source_snapshots/febf81b814010a5e7f436f9c5f7028e9934e7bdc6a00a6ef7b6dc7bf9a142554.gz": "b9ea20e920a4d92e8d29fa7fb1c4f45c89726f789de621765f0d2a27a28de255",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
