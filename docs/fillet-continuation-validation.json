@@ -1,0 +1,780 @@
+{
+  "scope": "Closed-source Fillet with circular, endpoint-tangent and smooth continuation of a distinct nonmeeting open curved partner.",
+  "baseline_revision": "950461e96d7acafec4bc988bee0024b5c1021fea",
+  "implementation_revision": "ad797fd6840c2658b36301e595654e0f57019a56",
+  "full_native_parity": false,
+  "observations": 44,
+  "successful": 35,
+  "cancelled": 1,
+  "failed": 8,
+  "changed": 31,
+  "images": 0,
+  "physical_picks": 88,
+  "point_tangent_stations": 6171,
+  "successful_command_replays_per_build": 35,
+  "qualified_ui_replays_per_build": 44,
+  "archive_round_trips_per_build": 80,
+  "api_rejections_per_build": 8,
+  "windowless_source_picks_per_build": 2,
+  "retained_failed_captures": 1,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 8.369643198471269e-13,
+  "construction": "Circular support preserves the source speed and resets extended retained arc domains to length. Endpoint tangent segments retain native derivative speed. Smooth endpoint charts expand geometrically; multiple tangent solves rank contacts by summed unwrapped arc lengths from the original picks. Length bounds and conservative polynomial tail certificates stop expansion. The selected minor arc must align with the retained open piece when trimming; admission does not fall back to a farther contact. Existing prepared plans provide atomic admission and cached preview.",
+  "input_evidence": "Authored definitions, public options and pre-command physical mouse sight points supply inputs. Native output coefficients, knots, domains and public point/tangent stations are expectations only. Public GetFilletPoints/CreateFillet controls are audited separately from command parity.",
+  "execution": "Four complete command captures and one public SDK capture ran on private Xvfb displays with isolated runtime directories. Both egui/application builds ran without windows. All 44 native command observations are included. One failed SDK observer attempt published no observations; its log and source closure are retained. One successful capture emitted a retained SyntaxWarning from recipe spacing, corrected subsequently.",
+  "sdk_controls": {
+    "observations": 8,
+    "original_contacts": 0,
+    "extended_contacts": 8,
+    "unchanged_inputs": 8,
+    "aligned_contacts": 3,
+    "opposed_contacts": 5,
+    "maximum_analytic_difference": 1.5543122344752192e-15,
+    "retained_failed_attempts": 1,
+    "engine_version": "8.32.26160.13001"
+  },
+  "limits": [
+    "Finite coverage does not prove enumeration of all tangent roots, tied costs, arbitrary folded or oscillatory continuations, signed rational poles, stationary tangents, nonplanar contacts, continuous distance bounds, pixel equality or comparative Rhino performance. Smooth search uses finite multistart samples and at most 40 domain expansions; only outward polynomial tails receive a monotonic exclusion certificate.",
+    "Closed-source zero radius, corner contacts, and arbitrary endpoint continuation style combinations remain unqualified. Existing distinct-open-source and same-parent Fillet paths are separate."
+  ],
+  "cases": [
+    {
+      "id": "fillet_continuation_branches/continuation_opposed_0_6_arc_only",
+      "portable_command_maximum_geometry_error": 5.564421850464315e-15,
+      "portable_ui_maximum_geometry_error": 5.564421850464315e-15,
+      "native_command_maximum_geometry_error": 5.760335218184685e-15,
+      "native_ui_maximum_geometry_error": 5.760335218184685e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_branches/continuation_opposed_0_6_parts",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_branches/continuation_opposed_0_7_arc_only",
+      "portable_command_maximum_geometry_error": 1.6165091241761062e-14,
+      "portable_ui_maximum_geometry_error": 1.6165091241761062e-14,
+      "native_command_maximum_geometry_error": 1.6165091241761062e-14,
+      "native_ui_maximum_geometry_error": 1.6165091241761062e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_branches/continuation_opposed_0_7_parts",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_branches/continuation_opposed_backward",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_branches/continuation_smooth_right_pick",
+      "portable_command_maximum_geometry_error": 8.160735859652662e-14,
+      "portable_ui_maximum_geometry_error": 8.160735859652662e-14,
+      "native_command_maximum_geometry_error": 7.977800312945369e-14,
+      "native_ui_maximum_geometry_error": 7.977800312945369e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_arc_backward",
+      "portable_command_maximum_geometry_error": 7.937731447943318e-15,
+      "portable_ui_maximum_geometry_error": 7.937731447943318e-15,
+      "native_command_maximum_geometry_error": 7.937731447943318e-15,
+      "native_ui_maximum_geometry_error": 7.937731447943318e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_arc_larger_radius",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_arc_reverse_picks",
+      "portable_command_maximum_geometry_error": 1.789739994591828e-14,
+      "portable_ui_maximum_geometry_error": 1.789739994591828e-14,
+      "native_command_maximum_geometry_error": 1.789739994591828e-14,
+      "native_ui_maximum_geometry_error": 1.789739994591828e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_disjoint_arc_joined",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_disjoint_arc_parts",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_disjoint_smooth",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_disjoint_tangent_arc",
+      "portable_command_maximum_geometry_error": 2.4424916634687944e-13,
+      "portable_ui_maximum_geometry_error": 2.4424916634687944e-13,
+      "native_command_maximum_geometry_error": 2.4424916634687944e-13,
+      "native_ui_maximum_geometry_error": 2.4424916634687944e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_disjoint_too_small",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_nurbs_line_reverse_picks",
+      "portable_command_maximum_geometry_error": 3.0407784496610633e-13,
+      "portable_ui_maximum_geometry_error": 3.0407784496610633e-13,
+      "native_command_maximum_geometry_error": 3.0407784496610633e-13,
+      "native_ui_maximum_geometry_error": 3.0407784496610633e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_nurbs_smooth_backward",
+      "portable_command_maximum_geometry_error": 3.810443281123403e-14,
+      "portable_ui_maximum_geometry_error": 3.810443281123403e-14,
+      "native_command_maximum_geometry_error": 3.9889001564726846e-14,
+      "native_ui_maximum_geometry_error": 3.9889001564726846e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_nurbs_smooth_reverse_picks",
+      "portable_command_maximum_geometry_error": 3.475210882865149e-14,
+      "portable_ui_maximum_geometry_error": 3.475210882865149e-14,
+      "native_command_maximum_geometry_error": 3.475210882865149e-14,
+      "native_ui_maximum_geometry_error": 3.475210882865149e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_smooth_miss",
+      "portable_command_maximum_geometry_error": 2.673771110915334e-15,
+      "portable_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "native_command_maximum_geometry_error": 2.673771110915334e-15,
+      "native_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_spatial",
+      "portable_command_maximum_geometry_error": 9.50350909079134e-14,
+      "portable_ui_maximum_geometry_error": 9.50350909079134e-14,
+      "native_command_maximum_geometry_error": 9.50350909079134e-14,
+      "native_ui_maximum_geometry_error": 9.50350909079134e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_tangent_arc_larger_radius",
+      "portable_command_maximum_geometry_error": 2.9531932455029164e-14,
+      "portable_ui_maximum_geometry_error": 2.9531932455029164e-14,
+      "native_command_maximum_geometry_error": 2.9531932455029164e-14,
+      "native_ui_maximum_geometry_error": 2.9531932455029164e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_holdouts/continuation_tangent_arc_reverse_picks",
+      "portable_command_maximum_geometry_error": 3.313905102442832e-13,
+      "portable_ui_maximum_geometry_error": 3.313905102442832e-13,
+      "native_command_maximum_geometry_error": 3.313905102442832e-13,
+      "native_ui_maximum_geometry_error": 3.313905102442832e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_arc_arc_only",
+      "portable_command_maximum_geometry_error": 1.5932625159430593e-14,
+      "portable_ui_maximum_geometry_error": 1.5932625159430593e-14,
+      "native_command_maximum_geometry_error": 1.5932625159430593e-14,
+      "native_ui_maximum_geometry_error": 1.5932625159430593e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_arc_joined",
+      "portable_command_maximum_geometry_error": 1.5804210961500194e-14,
+      "portable_ui_maximum_geometry_error": 1.5804210961500194e-14,
+      "native_command_maximum_geometry_error": 1.5804210961500194e-14,
+      "native_ui_maximum_geometry_error": 1.5804210961500194e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_arc_parts",
+      "portable_command_maximum_geometry_error": 1.5932625159430593e-14,
+      "portable_ui_maximum_geometry_error": 1.5932625159430593e-14,
+      "native_command_maximum_geometry_error": 1.5932625159430593e-14,
+      "native_ui_maximum_geometry_error": 1.5932625159430593e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_dynamic_accept",
+      "portable_command_maximum_geometry_error": 1.9095836023552692e-14,
+      "portable_ui_maximum_geometry_error": 1.9095836023552692e-14,
+      "native_command_maximum_geometry_error": 1.9095836023552692e-14,
+      "native_ui_maximum_geometry_error": 1.9095836023552692e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_dynamic_cancel",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "native_result": "Cancel",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_line_arc_only",
+      "portable_command_maximum_geometry_error": 2.565725409908737e-13,
+      "portable_ui_maximum_geometry_error": 2.565725409908737e-13,
+      "native_command_maximum_geometry_error": 2.565725409908737e-13,
+      "native_ui_maximum_geometry_error": 2.565725409908737e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_line_joined",
+      "portable_command_maximum_geometry_error": 3.206331014782576e-13,
+      "portable_ui_maximum_geometry_error": 3.206331014782576e-13,
+      "native_command_maximum_geometry_error": 3.206331014782576e-13,
+      "native_ui_maximum_geometry_error": 3.206331014782576e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_line_parts",
+      "portable_command_maximum_geometry_error": 2.594591208548991e-13,
+      "portable_ui_maximum_geometry_error": 2.594591208548991e-13,
+      "native_command_maximum_geometry_error": 2.594591208548991e-13,
+      "native_ui_maximum_geometry_error": 2.594591208548991e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_smooth_arc_only",
+      "portable_command_maximum_geometry_error": 3.36897812515595e-14,
+      "portable_ui_maximum_geometry_error": 3.36897812515595e-14,
+      "native_command_maximum_geometry_error": 3.2930092671101675e-14,
+      "native_ui_maximum_geometry_error": 3.2930092671101675e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_smooth_joined",
+      "portable_command_maximum_geometry_error": 3.36897812515595e-14,
+      "portable_ui_maximum_geometry_error": 3.36897812515595e-14,
+      "native_command_maximum_geometry_error": 3.2930092671101675e-14,
+      "native_ui_maximum_geometry_error": 3.2930092671101675e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_nurbs_smooth_parts",
+      "portable_command_maximum_geometry_error": 3.36897812515595e-14,
+      "portable_ui_maximum_geometry_error": 3.36897812515595e-14,
+      "native_command_maximum_geometry_error": 3.2930092671101675e-14,
+      "native_ui_maximum_geometry_error": 3.2930092671101675e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_tangent_arc_arc_only",
+      "portable_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "portable_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_tangent_arc_joined",
+      "portable_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "portable_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_pilot/continuation_tangent_arc_parts",
+      "portable_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "portable_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_command_maximum_geometry_error": 1.0080825063596421e-13,
+      "native_ui_maximum_geometry_error": 1.0080825063596421e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_bridge_0_5",
+      "portable_command_maximum_geometry_error": 2.8435583831733384e-15,
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_command_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_bridge_0_6",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_bridge_0_7",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_bridge_0_8",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_bridge_1_0",
+      "portable_command_maximum_geometry_error": 8.369643198471269e-13,
+      "portable_ui_maximum_geometry_error": 8.369643198471269e-13,
+      "native_command_maximum_geometry_error": 8.369643198471269e-13,
+      "native_ui_maximum_geometry_error": 8.369643198471269e-13,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_long_miss",
+      "portable_command_maximum_geometry_error": 2.673771110915334e-15,
+      "portable_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "native_command_maximum_geometry_error": 2.673771110915334e-15,
+      "native_ui_maximum_geometry_error": 2.673771110915334e-15,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_span_0_25",
+      "portable_command_maximum_geometry_error": 3.176654427458308e-14,
+      "portable_ui_maximum_geometry_error": 3.176654427458308e-14,
+      "native_command_maximum_geometry_error": 3.1315375022548755e-14,
+      "native_ui_maximum_geometry_error": 3.1315375022548755e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_span_0_5",
+      "portable_command_maximum_geometry_error": 3.219589345571969e-14,
+      "portable_ui_maximum_geometry_error": 3.219589345571969e-14,
+      "native_command_maximum_geometry_error": 3.219589345571969e-14,
+      "native_ui_maximum_geometry_error": 3.219589345571969e-14,
+      "qualified": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "fillet_continuation_verification/continuation_smooth_span_2_0",
+      "portable_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "native_ui_maximum_geometry_error": 2.8435583831733384e-15,
+      "qualified": true,
+      "native_result": "Failure",
+      "native_valid": true
+    }
+  ],
+  "captures": [
+    {
+      "family": "fillet_continuation_pilot",
+      "observations": 14,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "e59e848b116d8e31af3cd1e8d06a97a41faa0a5b13cd3cec39aff6c955cc65f5"
+    },
+    {
+      "family": "fillet_continuation_holdouts",
+      "observations": 15,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "466b7110dbba498b6becbdc2187b4812f2f4f193a0d23dd40f6f09c6ebf4568d"
+    },
+    {
+      "family": "fillet_continuation_verification",
+      "observations": 9,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "5f21a3bf558d8c3df28af23e71f67731d2600036ee5fcf243352f8c63e2319df"
+    },
+    {
+      "family": "fillet_continuation_branches",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "d54c11f8434f0d52202e57d0581173eae4ad9be6db52990490d3be0201be0301"
+    }
+  ],
+  "checks": [
+    {
+      "name": "continuation-command-portable",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "continuation-command-native",
+      "status": 0
+    },
+    {
+      "name": "continuation-ui-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "tangent-geometry",
+      "status": 0
+    },
+    {
+      "name": "native-producers",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed.rs": "a62a78c57faabaa3122830111696fe8e95a4a8ddf81398d4c64d200b83ae3b80",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation.rs": "ba122645748672962f43c702c169918dfedec5b1ce98dce1c7966fd7deddd7e0",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation/circular.rs": "cca9492fc9a587a9899cb97371c7fbbbbe4d4b9dc5f5fb227c65ec860f8ab178",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation/linear.rs": "495e5d6b7170225dd461be3b6d3b1702e3050a683e715ebe31fbd48c4e627546",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation/search.rs": "6cac34f77626c2793dfe2d8399204a5fec41c3d7a91fb829fff5f31de61d9403",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation/smooth.rs": "98d0cbb51c620c3d275f04099e94b0731b7bed0e12ec5f71e439106c3ac2dce8",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/closed/continuation/tail.rs": "2a5de0aaeecca28e928b3c0df4ccd4802029842b6f2d9a4c69952b7130e40d99",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/src/fillet/contacts.rs": "33c9b5a9be7a07d99215c7398cc3d37b6f14ade8fe7e4f7c24867baf307cf45f",
+    "ad797fd6840c2658b36301e595654e0f57019a56:crates/viboceros-command/tests/fillet_continuation.rs": "e2a6875305033d41a0069a15cc2aeec592efd1ea529497d57e6ef4a467d0c00a",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/commands/fillet.md": "cbd74acaa98497d2f5cd57012bd76854adf54e274544beb374e858640c110c19",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/development/checks.md": "0308610f27fabf622f1d17bd2684a1f49108ed0bd26c1f247784da26dbbc71a1",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-closed.md": "98a42f69111dc526c2c9c6b70510cfe961a7543f9ed7eb70411712cdf25ee384",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/branches-capture.log.gz": "28eaf76bf44a98195854416e5445d8062ff2a187b7c0e4d9ce347582fc90dd48",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/captures.json": "047ad8930b16089b2a5dbc91f55d228ee0337f15862e4987662789d0fd0ce8c8",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/chamfer-ui-native.log.gz": "0bad4d766b2c6468d37f23eb04f0160a0d94ddf2a02bdbb513ed475815f112f2",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/chamfer-ui-portable.log.gz": "f18dd2b69b81a8f6f07fea1e803a963858f134ba237bb714bebb200adabce05e",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/checks.json": "79019b54d259b1bbd0789db10b610e7b6429e49d4557621dd4c8d66129fc97f2",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/clippy-native.log.gz": "3bc769901c5c93010a04e76c95466244265fb8a45b1b9f7d1eab82ec3c6102e6",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/clippy-portable.log.gz": "9ac67e02bac650919f02ebe4a1695c8a4b149331d5347ea07fc037f948a54a11",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/closed-ui-native.log.gz": "7cdb6cc669d5d2803afb8d8117f4f7ae756dd3d08438154afe08084360eaefdb",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/closed-ui-portable.log.gz": "49d8fcd93b24e335debf8fcf27d37f533ee96a58144df3cff6dd06e4cd9e6acf",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/command-regressions-native.log.gz": "747f9aded9dfb9429a2e078916e61d418f5c2537c2a95acf3bf1cb8a10532a5b",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/command-regressions-portable.log.gz": "f12dac3b81e6362de5e834897496bb36ec35750b07e9dd052742208aefb21f87",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/continuation-command-native.log.gz": "3c4ebe7b882d96f34a0fc45e5a06a0a80c8816c5518f4b6016e146997183b4be",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/continuation-command-portable.log.gz": "a1a412b2a5afa16d49174cc579e23a4f1d0dbcbb905f84459b70ff103e8d064c",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/continuation-ui-native.log.gz": "dbf1c7f7450e1b0707708313c6cb98d11a4522bd8e45b1f41ddee2cfe3e35a40",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/continuation-ui-portable.log.gz": "bf4ad76e1134b12b8c3c2cb81d35c4542fa19c58960989ac5da0dd12767b22fd",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/failed-sdk.json": "548cea328e094b4848e461e45b89d5f2dfa9b7ab5007b763980ec2b316eca4e7",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/failed-sdk.log.gz": "7da3a88347580edf34ae0c5d1ced878512fa31e81c61a5d1f059e0ed67269585",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/fillet-ui-native.log.gz": "05cbb731419c7f0b9100c731bb2101bea9097e3da1e2a3f58bb492618db61f2f",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/fillet-ui-portable.log.gz": "350dea32bb12ce88d5e96743f3952bad76c69e803c73b129601a04c78a864d06",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/holdouts-capture.log.gz": "b0d581926d290162648ab537dd06c09ab16ac39e8f906c9af464ab9f5c4354c4",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/library-native.log.gz": "e29e39f06ab98b87462e4932cd30cf6fbf44b1c09590252bc7e72895fe9b4601",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/library-portable.log.gz": "3a6068e747f0d5502e9a23014fc5c5e767d16cba27172fb68d20d1ebed01d320",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/native-producers.log.gz": "376d0e3be4bcabe7380aa4b2f50408b4ab3888d739c4f6f47ec8f785aae34589",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/pilot-capture.log.gz": "89a40db95a2cdaecba84536d260fcbc40efb11758f81cf6b454383a2cf14a6a5",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/python-subd.log.gz": "08d7aa76b94b8a9e8b833794eef3856cd0ac8726ba001f3dd914a53bec09ed33",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/python.log.gz": "bc9ef0ceca5d969f7af670af0feeb64fd6e8add87bf2a20fcf15dd81268d9ed2",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/sdk-capture.json": "e3731402cb52dcfc2ae16991c3f60a900a2375097c5a4ab28e23fadfa8c92631",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/sdk-capture.log.gz": "ea94171e6637453b6bc06bfb51323df7a9c1db59ae9704a9be3a244960c5a8e1",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/self-ui-native.log.gz": "90e9cb05c2c7ba8ebd11ba90cad79c96b8a7e2cae82962176bfb9c219b8a3c4f",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/self-ui-portable.log.gz": "7534844f76b57115e434717b90c4334901e83f6f1da17fecd328252ed96efd5d",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/subd-command-native.log.gz": "a4dd9d06cf24d4a71b61744629b681aa6aec912e7b47011bb1215084819ccbcf",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/subd-ui-native.log.gz": "6a319dcbbe8a568a733772073076404d78263c948c28f1c95315e28153ddec0b",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/tangent-geometry.log.gz": "6d6a53045e5046d5614ebe64afc12f96cc80187d2ca33377fa5b67efc1265ca4",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation-proof/verification-capture.log.gz": "1c4d6ec558fefd22c54b09c27e4111f049f18430e02c2878c9ec458a1a63140e",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/fillet-continuation.md": "3d7fe044c78e7cfb21be80b6ccf2e302fa1ccf62a7c60c25569be25c0cf78270",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/subd-box-qualification.json": "bf34d00362a4e702d9d1b797b56358de3e5781e1783bc2f18237a95f675dc838",
+    "ad797fd6840c2658b36301e595654e0f57019a56:docs/subd-plane-qualification.json": "7af89e178cd95320811d0e3fdf10a08e00c5e7fb40bd45c7bd29aed7abbcc500",
+    "ad797fd6840c2658b36301e595654e0f57019a56:src/app/tests/curve_fillet.rs": "dfc463b02e7a118617d5636509b6f6a40551b4acbaf5594f5940ff51af170ce1",
+    "ad797fd6840c2658b36301e595654e0f57019a56:src/app/tests/fillet_continuation.rs": "c6c6f526399e82220e5c6088c8cf9938bfbb513c838f68785df1b4a79f4c490c",
+    "ad797fd6840c2658b36301e595654e0f57019a56:src/app/tests/mod.rs": "7cf9188c5ba2fb5ddaa82b543efd470da9c76a95e23d4dbafa73af0f2ae1bf9c",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/check_fillet_continuation.py": "5759da7b7c70c1b5a1923610c085bfd7c7d970ccf0614e5f5391231a5678b628",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fillet_command.py": "73e5abea6bcba0403aab896233d1618f8e4b6a898635353f4f024667f79e4f96",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fillet_continuation_cases.py": "97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fillet_continuation_evidence.py": "a9274d8737f4b6adc0039684d1855f63c8b4cb72a0e4855b8a3cf9b36186610d",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fillet_continuation_sdk.py": "5ec93ac5af62ae973c1b7de0f143e918751695eb38d5aa90511120388a1d597e",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fillet_continuation_sdk_evidence.py": "63c6e6f6612c271a8398819a2171a3aaa71ced4a3b70767a580d02a5d26fb8da",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fixtures/fillet_continuation_branches.json": "34519afbe4ce24151976a309569da6695e48bef501687c93b6b752c3b43a5d3c",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fixtures/fillet_continuation_holdouts.json": "be6239b46d4419481d14cb2a8f9448ee4dd09153dbbf1aea658e370eb41ac0d9",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fixtures/fillet_continuation_pilot.json": "ee9ceff56fb0ac1443574fab35f64b4f45acfb3878b4ed88ebf4b35876583d4c",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fixtures/fillet_continuation_sdk.json": "86266f7d42276a024491fcf2dd298ec35b4d9e316f00128fb28e98b0af19afa8",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/fixtures/fillet_continuation_verification.json": "b2c92130d151156fa3eadf88776560e917f567c724860a04b047458ebfab08f8",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/generate_fillet_continuation_branches.py": "e60ef1a266ceace5c66e5f866668f53efed01b8b33cb0e75d94847c42f0ac8f4",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/generate_fillet_continuation_holdouts.py": "04069529b4d1bbdaa16ae62d771e0e25aa5366400da7d51f926282398a519cd2",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/generate_fillet_continuation_pilot.py": "c2a7eda84ea629d12dce6f241097cfc619c4bda4378a33994ba564465e836ac6",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/generate_fillet_continuation_sdk.py": "4c2523b0773ccad4daca5fb93e8f4f0e3e669940be9141fa4d1ac1c194f7d702",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/generate_fillet_continuation_verification.py": "e881f65a6b576882a18e794e3a8303cc7068a8a7e92ad1afe903f799be7a1b3e",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/fillet_continuation_branches.json.gz": "bb38b7a5b6631f1d0c1f61cecb5e671a3d2a49d381736b6969b4ea80a3efe6f9",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/fillet_continuation_holdouts.json.gz": "6e4eefccdc0a445a04e0db598e402cd5b7dbd946d9b78ef9aaae80ace84326ac",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/fillet_continuation_pilot.json.gz": "50b0ab42535edd1b980234b5f5816239228e8e12515de41c69e0b1d024ff85b2",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/fillet_continuation_sdk.json.gz": "d6708dc784770ac474c116f45bb3a7b0ce43ac6f5f3dab0741c8785c69665244",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/fillet_continuation_verification.json.gz": "32fa71baf736f9da1386c63042bfaac484e8c11cef7b676b5aaf15acea51ceae",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/04069529b4d1bbdaa16ae62d771e0e25aa5366400da7d51f926282398a519cd2.gz": "7a471940e95e73bafd2db2f4d3ed0dc14ae500395fa189675e0325c55493ee7a",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/042edd2c6333246d924f464d07a81d7034ec9a7b66fbf8f019d785030a9a818d.gz": "313219821a172be018c0c18bb8f8358637d7a1e189197a7c3a3c5864d53f6494",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/18a58b1168f208ee73000759a0b4677b43db7b75632d130c429883cf093347b3.gz": "ff3954399f25cf3ab4a113e08686060db5e8014c84d24aaa723b77afbe28dcf4",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/2c97805454ae7a5ef64fc5a89407194bd67394242dd1adeb22272eb2cf21caae.gz": "d944de56fc822e14b36a50aa59b15d1def77c6d8f8ef28c62b3eb33d256c9735",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/2faab9e0ce814d7c6b27d34efd28565b25d4c044586c0ee2b94f922922001dca.gz": "cdf0163dd91c87ad6c5498c3dcedf36a679cd0fd67f1033dd6f388e66b9463d9",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/32fa71baf736f9da1386c63042bfaac484e8c11cef7b676b5aaf15acea51ceae.gz": "61c99ddd8abb53cd306fb658b68e921a42d0876af9b68955a320e7c27933c4f3",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/3ef20e4c1b018542957db2065ba8492a4eac0c9fd633e9f1781d2984ae6abea4.gz": "6d79f12c53da3c573fa7f37334099cf35f37eb7d5822f9257cd0e66f2c6ca474",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/4c2523b0773ccad4daca5fb93e8f4f0e3e669940be9141fa4d1ac1c194f7d702.gz": "f60ec701a9389ef8b4212adc5b87f6060fdcc38b091f3e2a94ec7f463b208ed5",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/50b0ab42535edd1b980234b5f5816239228e8e12515de41c69e0b1d024ff85b2.gz": "508b246dea6ce572451eb809bddc5ca5a0aad535544d969014a83dbf14f93da7",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/5ec93ac5af62ae973c1b7de0f143e918751695eb38d5aa90511120388a1d597e.gz": "8813809bf0bb1a66cfe943042f32308c0e12fecedc7199faf6c28e35f7c72d27",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/6d47c7583e37b3b36bb05caafbf7dd95c28833f6c2077d69cf69ac985c30836b.gz": "136187ded2080af752adcb548af68d04de5336282f01b3ab4b7de35ffe105aec",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/6e4eefccdc0a445a04e0db598e402cd5b7dbd946d9b78ef9aaae80ace84326ac.gz": "58fa2b15aac31afa3b422ed2788e00ef9d4b67e0c72d28c47b2f1fef17b4c58b",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/73e5abea6bcba0403aab896233d1618f8e4b6a898635353f4f024667f79e4f96.gz": "e212c02774fe9c94602d65653507732e08fe868800cbc78d5cf40ecf722f2c3f",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5.gz": "03fa9dce7bbd5d65c86881df36b5ac531679522446184c730570ab2223a0d201",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6.gz": "f684792001d118d95c75aa43e2a1a2d4437a23e7b760a04a09e877ef755175d8",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/c2a7eda84ea629d12dce6f241097cfc619c4bda4378a33994ba564465e836ac6.gz": "3c53f950138c8fe248fcc3e5f1f17491704345166fbcfc5ea5da76c9a3fc7345",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/d139e6ccfb2696d8910fb3b7acfff035f8abcc80ab6df98dee8b7b9bb8179a03.gz": "72b60a15ff35eaaff62b7facd6bdef42eef3f8caba95e185b901f7787c33b32a",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/e60ef1a266ceace5c66e5f866668f53efed01b8b33cb0e75d94847c42f0ac8f4.gz": "56aa5f05f690734f36bcc65303a2037a6a46867b3a363bf18fc6dd5006f6a3d0",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/e771061ba7dcc68a76a40493c0365e07961f1f215f56e44e9ed2220c22430877.gz": "2c2507d77e8642d7e4af041f0f8a58ec4ecb00d383b2339f68139a01d84a086d",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/e881f65a6b576882a18e794e3a8303cc7068a8a7e92ad1afe903f799be7a1b3e.gz": "10ec40bd4e02c4c918518db1c7546f0180c998808e26d1fbf0fa898b346e8064",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/observations/source_snapshots/f195a6bc4a596aed81d1758528c9a581fcc9aca9cf8e3ae98057e1bc39550fbd.gz": "c48b4f878a6e6872b5cba5560b6a1e5ecdeb454d3fd2b52f71d46a37016208ad",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/report_fillet_continuation.py": "6bd5be344394ef741f20fc4e51f52b44ad04a83db98c9d861bbcc605c09de2a9",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/rhino_worker.py": "85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/structural_sdk.py": "2c97805454ae7a5ef64fc5a89407194bd67394242dd1adeb22272eb2cf21caae",
+    "ad797fd6840c2658b36301e595654e0f57019a56:tools/rhino_oracle/test_fillet_continuation.py": "dc05310e121088f00b1ac545fe14278ca40c04e62e8fc55936cfd40beadf5fd5"
+  },
+  "evidence_sha256": {
+    "docs/fillet-continuation-proof/branches-capture.log.gz": "28eaf76bf44a98195854416e5445d8062ff2a187b7c0e4d9ce347582fc90dd48",
+    "docs/fillet-continuation-proof/captures.json": "047ad8930b16089b2a5dbc91f55d228ee0337f15862e4987662789d0fd0ce8c8",
+    "docs/fillet-continuation-proof/chamfer-ui-native.log.gz": "0bad4d766b2c6468d37f23eb04f0160a0d94ddf2a02bdbb513ed475815f112f2",
+    "docs/fillet-continuation-proof/chamfer-ui-portable.log.gz": "f18dd2b69b81a8f6f07fea1e803a963858f134ba237bb714bebb200adabce05e",
+    "docs/fillet-continuation-proof/checks.json": "0cd4179a063ce2b473074c84f21ea433381adb7ac156c86f4df157b4bd9ff3ce",
+    "docs/fillet-continuation-proof/clippy-native.log.gz": "3bc769901c5c93010a04e76c95466244265fb8a45b1b9f7d1eab82ec3c6102e6",
+    "docs/fillet-continuation-proof/clippy-portable.log.gz": "9ac67e02bac650919f02ebe4a1695c8a4b149331d5347ea07fc037f948a54a11",
+    "docs/fillet-continuation-proof/closed-ui-native.log.gz": "7cdb6cc669d5d2803afb8d8117f4f7ae756dd3d08438154afe08084360eaefdb",
+    "docs/fillet-continuation-proof/closed-ui-portable.log.gz": "49d8fcd93b24e335debf8fcf27d37f533ee96a58144df3cff6dd06e4cd9e6acf",
+    "docs/fillet-continuation-proof/command-regressions-native.log.gz": "747f9aded9dfb9429a2e078916e61d418f5c2537c2a95acf3bf1cb8a10532a5b",
+    "docs/fillet-continuation-proof/command-regressions-portable.log.gz": "f12dac3b81e6362de5e834897496bb36ec35750b07e9dd052742208aefb21f87",
+    "docs/fillet-continuation-proof/continuation-command-native.log.gz": "3c4ebe7b882d96f34a0fc45e5a06a0a80c8816c5518f4b6016e146997183b4be",
+    "docs/fillet-continuation-proof/continuation-command-portable.log.gz": "a1a412b2a5afa16d49174cc579e23a4f1d0dbcbb905f84459b70ff103e8d064c",
+    "docs/fillet-continuation-proof/continuation-ui-native.log.gz": "dbf1c7f7450e1b0707708313c6cb98d11a4522bd8e45b1f41ddee2cfe3e35a40",
+    "docs/fillet-continuation-proof/continuation-ui-portable.log.gz": "bf4ad76e1134b12b8c3c2cb81d35c4542fa19c58960989ac5da0dd12767b22fd",
+    "docs/fillet-continuation-proof/failed-sdk.json": "548cea328e094b4848e461e45b89d5f2dfa9b7ab5007b763980ec2b316eca4e7",
+    "docs/fillet-continuation-proof/failed-sdk.log.gz": "7da3a88347580edf34ae0c5d1ced878512fa31e81c61a5d1f059e0ed67269585",
+    "docs/fillet-continuation-proof/fillet-ui-native.log.gz": "05cbb731419c7f0b9100c731bb2101bea9097e3da1e2a3f58bb492618db61f2f",
+    "docs/fillet-continuation-proof/fillet-ui-portable.log.gz": "350dea32bb12ce88d5e96743f3952bad76c69e803c73b129601a04c78a864d06",
+    "docs/fillet-continuation-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-continuation-proof/holdouts-capture.log.gz": "b0d581926d290162648ab537dd06c09ab16ac39e8f906c9af464ab9f5c4354c4",
+    "docs/fillet-continuation-proof/library-native.log.gz": "e29e39f06ab98b87462e4932cd30cf6fbf44b1c09590252bc7e72895fe9b4601",
+    "docs/fillet-continuation-proof/library-portable.log.gz": "3a6068e747f0d5502e9a23014fc5c5e767d16cba27172fb68d20d1ebed01d320",
+    "docs/fillet-continuation-proof/native-producers.log.gz": "376d0e3be4bcabe7380aa4b2f50408b4ab3888d739c4f6f47ec8f785aae34589",
+    "docs/fillet-continuation-proof/pilot-capture.log.gz": "89a40db95a2cdaecba84536d260fcbc40efb11758f81cf6b454383a2cf14a6a5",
+    "docs/fillet-continuation-proof/python-subd.log.gz": "08d7aa76b94b8a9e8b833794eef3856cd0ac8726ba001f3dd914a53bec09ed33",
+    "docs/fillet-continuation-proof/python.log.gz": "bdb5221fd0a33740295972745b2c449159a5674558f32bcc28c3668070dcf969",
+    "docs/fillet-continuation-proof/sdk-capture.json": "e3731402cb52dcfc2ae16991c3f60a900a2375097c5a4ab28e23fadfa8c92631",
+    "docs/fillet-continuation-proof/sdk-capture.log.gz": "ea94171e6637453b6bc06bfb51323df7a9c1db59ae9704a9be3a244960c5a8e1",
+    "docs/fillet-continuation-proof/self-ui-native.log.gz": "90e9cb05c2c7ba8ebd11ba90cad79c96b8a7e2cae82962176bfb9c219b8a3c4f",
+    "docs/fillet-continuation-proof/self-ui-portable.log.gz": "7534844f76b57115e434717b90c4334901e83f6f1da17fecd328252ed96efd5d",
+    "docs/fillet-continuation-proof/subd-command-native.log.gz": "a4dd9d06cf24d4a71b61744629b681aa6aec912e7b47011bb1215084819ccbcf",
+    "docs/fillet-continuation-proof/subd-ui-native.log.gz": "6a319dcbbe8a568a733772073076404d78263c948c28f1c95315e28153ddec0b",
+    "docs/fillet-continuation-proof/tangent-geometry.log.gz": "6d6a53045e5046d5614ebe64afc12f96cc80187d2ca33377fa5b67efc1265ca4",
+    "docs/fillet-continuation-proof/verification-capture.log.gz": "1c4d6ec558fefd22c54b09c27e4111f049f18430e02c2878c9ec458a1a63140e",
+    "tools/rhino_oracle/fixtures/fillet_continuation_branches.json": "34519afbe4ce24151976a309569da6695e48bef501687c93b6b752c3b43a5d3c",
+    "tools/rhino_oracle/fixtures/fillet_continuation_holdouts.json": "be6239b46d4419481d14cb2a8f9448ee4dd09153dbbf1aea658e370eb41ac0d9",
+    "tools/rhino_oracle/fixtures/fillet_continuation_pilot.json": "ee9ceff56fb0ac1443574fab35f64b4f45acfb3878b4ed88ebf4b35876583d4c",
+    "tools/rhino_oracle/fixtures/fillet_continuation_sdk.json": "86266f7d42276a024491fcf2dd298ec35b4d9e316f00128fb28e98b0af19afa8",
+    "tools/rhino_oracle/fixtures/fillet_continuation_verification.json": "b2c92130d151156fa3eadf88776560e917f567c724860a04b047458ebfab08f8",
+    "tools/rhino_oracle/observations/fillet_continuation_branches.json.gz": "bb38b7a5b6631f1d0c1f61cecb5e671a3d2a49d381736b6969b4ea80a3efe6f9",
+    "tools/rhino_oracle/observations/fillet_continuation_holdouts.json.gz": "6e4eefccdc0a445a04e0db598e402cd5b7dbd946d9b78ef9aaae80ace84326ac",
+    "tools/rhino_oracle/observations/fillet_continuation_pilot.json.gz": "50b0ab42535edd1b980234b5f5816239228e8e12515de41c69e0b1d024ff85b2",
+    "tools/rhino_oracle/observations/fillet_continuation_sdk.json.gz": "d6708dc784770ac474c116f45bb3a7b0ce43ac6f5f3dab0741c8785c69665244",
+    "tools/rhino_oracle/observations/fillet_continuation_verification.json.gz": "32fa71baf736f9da1386c63042bfaac484e8c11cef7b676b5aaf15acea51ceae",
+    "tools/rhino_oracle/observations/source_snapshots/04069529b4d1bbdaa16ae62d771e0e25aa5366400da7d51f926282398a519cd2.gz": "7a471940e95e73bafd2db2f4d3ed0dc14ae500395fa189675e0325c55493ee7a",
+    "tools/rhino_oracle/observations/source_snapshots/042edd2c6333246d924f464d07a81d7034ec9a7b66fbf8f019d785030a9a818d.gz": "313219821a172be018c0c18bb8f8358637d7a1e189197a7c3a3c5864d53f6494",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/126ba00ed6297e09345fc3f7bccf18e838491e965048dfa795d9aae7afb99cfe.gz": "333fe4e89b4126e497ee68e9c1cb520465ae801f6514ee1ce55dd4897d2373b6",
+    "tools/rhino_oracle/observations/source_snapshots/18a58b1168f208ee73000759a0b4677b43db7b75632d130c429883cf093347b3.gz": "ff3954399f25cf3ab4a113e08686060db5e8014c84d24aaa723b77afbe28dcf4",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875.gz": "e3501b122400374742edd8d1a49470736ac3ccc2157c187a9ea64283f2913a61",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2c97805454ae7a5ef64fc5a89407194bd67394242dd1adeb22272eb2cf21caae.gz": "d944de56fc822e14b36a50aa59b15d1def77c6d8f8ef28c62b3eb33d256c9735",
+    "tools/rhino_oracle/observations/source_snapshots/2faab9e0ce814d7c6b27d34efd28565b25d4c044586c0ee2b94f922922001dca.gz": "cdf0163dd91c87ad6c5498c3dcedf36a679cd0fd67f1033dd6f388e66b9463d9",
+    "tools/rhino_oracle/observations/source_snapshots/32fa71baf736f9da1386c63042bfaac484e8c11cef7b676b5aaf15acea51ceae.gz": "61c99ddd8abb53cd306fb658b68e921a42d0876af9b68955a320e7c27933c4f3",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3ef20e4c1b018542957db2065ba8492a4eac0c9fd633e9f1781d2984ae6abea4.gz": "6d79f12c53da3c573fa7f37334099cf35f37eb7d5822f9257cd0e66f2c6ca474",
+    "tools/rhino_oracle/observations/source_snapshots/4c2523b0773ccad4daca5fb93e8f4f0e3e669940be9141fa4d1ac1c194f7d702.gz": "f60ec701a9389ef8b4212adc5b87f6060fdcc38b091f3e2a94ec7f463b208ed5",
+    "tools/rhino_oracle/observations/source_snapshots/50b0ab42535edd1b980234b5f5816239228e8e12515de41c69e0b1d024ff85b2.gz": "508b246dea6ce572451eb809bddc5ca5a0aad535544d969014a83dbf14f93da7",
+    "tools/rhino_oracle/observations/source_snapshots/5ec93ac5af62ae973c1b7de0f143e918751695eb38d5aa90511120388a1d597e.gz": "8813809bf0bb1a66cfe943042f32308c0e12fecedc7199faf6c28e35f7c72d27",
+    "tools/rhino_oracle/observations/source_snapshots/6786638eaddbcf85f3938e13fbbea69602987080fea8cd5ba61afab06ec212b2.gz": "1bc44db7771d8b09dcfea5995c42c3df5cd755d1c5bb2ac42eb8015bbd959239",
+    "tools/rhino_oracle/observations/source_snapshots/6d47c7583e37b3b36bb05caafbf7dd95c28833f6c2077d69cf69ac985c30836b.gz": "136187ded2080af752adcb548af68d04de5336282f01b3ab4b7de35ffe105aec",
+    "tools/rhino_oracle/observations/source_snapshots/6e4eefccdc0a445a04e0db598e402cd5b7dbd946d9b78ef9aaae80ace84326ac.gz": "58fa2b15aac31afa3b422ed2788e00ef9d4b67e0c72d28c47b2f1fef17b4c58b",
+    "tools/rhino_oracle/observations/source_snapshots/73e5abea6bcba0403aab896233d1618f8e4b6a898635353f4f024667f79e4f96.gz": "e212c02774fe9c94602d65653507732e08fe868800cbc78d5cf40ecf722f2c3f",
+    "tools/rhino_oracle/observations/source_snapshots/85c817a4898d19921e5a754491b19382730c647f078720f232ac99e89df32aa5.gz": "03fa9dce7bbd5d65c86881df36b5ac531679522446184c730570ab2223a0d201",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/97c7481bda971a1de23f66c0962dbe48a76ab61103a6b2a252c1006aa00b19e6.gz": "f684792001d118d95c75aa43e2a1a2d4437a23e7b760a04a09e877ef755175d8",
+    "tools/rhino_oracle/observations/source_snapshots/987d2295118ff7f0b85f0aabb051af4543deca588778bc43a11b8de012578e56.gz": "b6f4e956cc8b81f675b0ed8e5112092a3fb842ff15721c92d8a107a243204988",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c18acd7d1bbe9fb7bf7589050ea792487e6ea049f992ea8ccd5e626fd13250ae.gz": "ab88dbdf639988aff3dacabd635a272cfa86db4b81cb9517fde0b6c9d9554681",
+    "tools/rhino_oracle/observations/source_snapshots/c2a7eda84ea629d12dce6f241097cfc619c4bda4378a33994ba564465e836ac6.gz": "3c53f950138c8fe248fcc3e5f1f17491704345166fbcfc5ea5da76c9a3fc7345",
+    "tools/rhino_oracle/observations/source_snapshots/c3dc09e7ac045af428ab5443e23f5bdcaef0c50ecbe7ddb035291a0660163516.gz": "c3ad75a7db5f241f815e2ab11d011a506948589f055167d1e8dccc320625e706",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/cbe920bad4d83389dc94000cd535c85098fa5d0754b403ea2265d5e515aeb0de.gz": "33dcd6fbb711b4a7ae775a52d08252b9b4d4d730be6959704224440249fa1249",
+    "tools/rhino_oracle/observations/source_snapshots/d139e6ccfb2696d8910fb3b7acfff035f8abcc80ab6df98dee8b7b9bb8179a03.gz": "72b60a15ff35eaaff62b7facd6bdef42eef3f8caba95e185b901f7787c33b32a",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/e60ef1a266ceace5c66e5f866668f53efed01b8b33cb0e75d94847c42f0ac8f4.gz": "56aa5f05f690734f36bcc65303a2037a6a46867b3a363bf18fc6dd5006f6a3d0",
+    "tools/rhino_oracle/observations/source_snapshots/e771061ba7dcc68a76a40493c0365e07961f1f215f56e44e9ed2220c22430877.gz": "2c2507d77e8642d7e4af041f0f8a58ec4ecb00d383b2339f68139a01d84a086d",
+    "tools/rhino_oracle/observations/source_snapshots/e881f65a6b576882a18e794e3a8303cc7068a8a7e92ad1afe903f799be7a1b3e.gz": "10ec40bd4e02c4c918518db1c7546f0180c998808e26d1fbf0fa898b346e8064",
+    "tools/rhino_oracle/observations/source_snapshots/f195a6bc4a596aed81d1758528c9a581fcc9aca9cf8e3ae98057e1bc39550fbd.gz": "c48b4f878a6e6872b5cba5560b6a1e5ecdeb454d3fd2b52f71d46a37016208ad",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
