@@ -1,0 +1,683 @@
+{
+  "scope": "Nonmeeting open arc/NURBS continuation against a distinct closed circle, preserving native primitive and parameter charts, source metadata, IDs, history and 3DM archives.",
+  "baseline_revision": "2dbffbf8e5283315f7b2654cafadd702c76e7914",
+  "implementation_revision": "9b8ab9d27b961cd28a19681024fd74b1e97c55c3",
+  "full_native_parity": false,
+  "observations": 37,
+  "successful": 35,
+  "cancelled": 1,
+  "failed": 1,
+  "changed": 35,
+  "images": 0,
+  "physical_picks": 73,
+  "point_tangent_stations": 5148,
+  "successful_command_replays_per_build": 29,
+  "qualified_ui_replays_per_build": 31,
+  "archive_round_trips_per_build": 61,
+  "api_rejections_per_build": 7,
+  "windowless_source_picks_per_build": 2,
+  "retained_failed_captures": 0,
+  "guarded_unqualified_native_successes_per_build": 6,
+  "qualified_point_tangent_stations": 4356,
+  "model_epsilon": 1e-06,
+  "maximum_geometry_difference": 1.5402422960858486e-13,
+  "construction": "The existing portable/usd-brep boundary-extension producer extends the picked open end before intersection ranking and Euclidean setbacks. Circular continuations retain the arc primitive; tangent lines retain the native endpoint derivative speed. Smooth NURBS retain the extrapolated polynomial chart. Circular setbacks outside the original source reset to a length domain; cuts inside preserve the original chart. Shared contact admission keeps closed parents whole.",
+  "input_evidence": "Authored sources, public getter settings and pre-command physical mouse rays supply inputs. Native coefficients, knots and 33 public point/tangent stations per curve are expectations. Every native workflow is retained, including failures, cancellation and six explicitly unqualified successes.",
+  "execution": "Four successful immutable captures ran on private Xvfb displays with isolated runtime directories. Application and egui viewport tests created no windows. Verification explicitly sets both extension styles; earlier families retain public remembered preferences.",
+  "limits": [
+    "Nonmeeting arc continuation against a closed source with Arc=Line and Other=Smooth is rejected without edits or Redo loss. Six valid native successes show different continuation paths under rigid transforms; the entire mixed-style branch remains unqualified, and its native outputs are preserved.",
+    "Finite coverage uses a closed circular boundary. Arbitrary closed boundaries, folded or oscillatory branches, all intersection choices, continuous distance bounds, pixel equality and comparative performance remain unqualified."
+  ],
+  "cases": [
+    {
+      "id": "chamfer_extension_holdouts/extension_arc_backward",
+      "portable_command_maximum_geometry_error": 6.466036496704424e-15,
+      "portable_ui_maximum_geometry_error": 6.466036496704424e-15,
+      "native_command_maximum_geometry_error": 6.6018607235733855e-15,
+      "native_ui_maximum_geometry_error": 6.6018607235733855e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_arc_reverse_picks",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3891579640384935e-15,
+      "native_ui_maximum_geometry_error": 5.3891579640384935e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_no_boundary_hit",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Failure",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_nurbs_backward",
+      "portable_command_maximum_geometry_error": 4.3459523954196826e-14,
+      "portable_ui_maximum_geometry_error": 4.3459523954196826e-14,
+      "native_command_maximum_geometry_error": 4.3459523954196826e-14,
+      "native_ui_maximum_geometry_error": 4.3459523954196826e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_nurbs_line_cross_source",
+      "portable_command_maximum_geometry_error": 9.066492071153676e-14,
+      "portable_ui_maximum_geometry_error": 9.066492071153676e-14,
+      "native_command_maximum_geometry_error": 8.89254683943904e-14,
+      "native_ui_maximum_geometry_error": 8.89254683943904e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_nurbs_line_reverse_picks",
+      "portable_command_maximum_geometry_error": 2.712133056839078e-14,
+      "portable_ui_maximum_geometry_error": 2.712133056839078e-14,
+      "native_command_maximum_geometry_error": 2.712133056839078e-14,
+      "native_ui_maximum_geometry_error": 2.712133056839078e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_nurbs_smooth_reverse_picks",
+      "portable_command_maximum_geometry_error": 3.504156535862919e-14,
+      "portable_ui_maximum_geometry_error": 3.504156535862919e-14,
+      "native_command_maximum_geometry_error": 3.504156535862919e-14,
+      "native_ui_maximum_geometry_error": 3.504156535862919e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_spatial",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_tangent_arc_cross_source",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_holdouts/extension_tangent_arc_reverse_picks",
+      "portable_command_maximum_geometry_error": 6.313005673774796e-14,
+      "portable_ui_maximum_geometry_error": 6.313005673774796e-14,
+      "native_command_maximum_geometry_error": 6.313005673774796e-14,
+      "native_ui_maximum_geometry_error": 6.313005673774796e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_arc_bevel",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_arc_joined",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_arc_parts",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_cancel_second",
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Cancel",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_line_bevel",
+      "portable_command_maximum_geometry_error": 3.156334965799146e-14,
+      "portable_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "native_command_maximum_geometry_error": 3.156334965799146e-14,
+      "native_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_line_joined",
+      "portable_command_maximum_geometry_error": 4.89466093734409e-14,
+      "portable_ui_maximum_geometry_error": 4.89466093734409e-14,
+      "native_command_maximum_geometry_error": 4.89466093734409e-14,
+      "native_ui_maximum_geometry_error": 4.89466093734409e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_line_parts",
+      "portable_command_maximum_geometry_error": 3.156334965799146e-14,
+      "portable_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "native_command_maximum_geometry_error": 3.156334965799146e-14,
+      "native_ui_maximum_geometry_error": 3.156334965799146e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_smooth_bevel",
+      "portable_command_maximum_geometry_error": 3.475547814546182e-14,
+      "portable_ui_maximum_geometry_error": 3.475547814546182e-14,
+      "native_command_maximum_geometry_error": 3.475547814546182e-14,
+      "native_ui_maximum_geometry_error": 3.475547814546182e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_smooth_joined",
+      "portable_command_maximum_geometry_error": 3.636721891222372e-14,
+      "portable_ui_maximum_geometry_error": 3.636721891222372e-14,
+      "native_command_maximum_geometry_error": 3.634365562420869e-14,
+      "native_ui_maximum_geometry_error": 3.634365562420869e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_nurbs_smooth_parts",
+      "portable_command_maximum_geometry_error": 3.475547814546182e-14,
+      "portable_ui_maximum_geometry_error": 3.475547814546182e-14,
+      "native_command_maximum_geometry_error": 3.475547814546182e-14,
+      "native_ui_maximum_geometry_error": 3.475547814546182e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_tangent_arc_bevel",
+      "portable_command_maximum_geometry_error": 7.845915559090114e-14,
+      "portable_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "native_command_maximum_geometry_error": 7.845915559090114e-14,
+      "native_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_tangent_arc_joined",
+      "portable_command_maximum_geometry_error": 7.845915559090114e-14,
+      "portable_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "native_command_maximum_geometry_error": 7.845915559090114e-14,
+      "native_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_pilot/extension_tangent_arc_parts",
+      "portable_command_maximum_geometry_error": 7.845915559090114e-14,
+      "portable_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "native_command_maximum_geometry_error": 7.845915559090114e-14,
+      "native_ui_maximum_geometry_error": 7.845915559090114e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_aligned_plane_line",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_spatial_arc_other_line",
+      "portable_command_maximum_geometry_error": 5.687116766346677e-15,
+      "portable_ui_maximum_geometry_error": 5.687116766346677e-15,
+      "native_command_maximum_geometry_error": 5.687116766346677e-15,
+      "native_ui_maximum_geometry_error": 5.687116766346677e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_spatial_both_line",
+      "portable_command_maximum_geometry_error": 7.282752053985611e-14,
+      "portable_ui_maximum_geometry_error": 7.282752053985611e-14,
+      "native_command_maximum_geometry_error": 7.282752053985611e-14,
+      "native_ui_maximum_geometry_error": 7.282752053985611e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_tilted_x_line",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_translated_xy_line",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_styling/extension_xy_line_other_smooth",
+      "qualified": false,
+      "unqualified_style": true,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_arc_cross_source",
+      "portable_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "portable_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_command_maximum_geometry_error": 5.3593771978611406e-15,
+      "native_ui_maximum_geometry_error": 5.3593771978611406e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_arc_spatial",
+      "portable_command_maximum_geometry_error": 5.687116766346677e-15,
+      "portable_ui_maximum_geometry_error": 5.687116766346677e-15,
+      "native_command_maximum_geometry_error": 5.687116766346677e-15,
+      "native_ui_maximum_geometry_error": 5.687116766346677e-15,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_nurbs_line_backward",
+      "portable_command_maximum_geometry_error": 1.5402422960858486e-13,
+      "portable_ui_maximum_geometry_error": 1.5402422960858486e-13,
+      "native_command_maximum_geometry_error": 1.5402422960858486e-13,
+      "native_ui_maximum_geometry_error": 1.5402422960858486e-13,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_nurbs_line_cross_source",
+      "portable_command_maximum_geometry_error": 9.066492071153676e-14,
+      "portable_ui_maximum_geometry_error": 9.066492071153676e-14,
+      "native_command_maximum_geometry_error": 8.89254683943904e-14,
+      "native_ui_maximum_geometry_error": 8.89254683943904e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_nurbs_line_spatial",
+      "portable_command_maximum_geometry_error": 6.083211739198107e-14,
+      "portable_ui_maximum_geometry_error": 6.083211739198107e-14,
+      "native_command_maximum_geometry_error": 6.083211739198107e-14,
+      "native_ui_maximum_geometry_error": 6.083211739198107e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_nurbs_smooth_spatial",
+      "portable_command_maximum_geometry_error": 5.685209181654436e-14,
+      "portable_ui_maximum_geometry_error": 5.685209181654436e-14,
+      "native_command_maximum_geometry_error": 5.223855938275658e-14,
+      "native_ui_maximum_geometry_error": 5.223855938275658e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_tangent_arc_backward",
+      "portable_command_maximum_geometry_error": 1.3853341369442222e-13,
+      "portable_ui_maximum_geometry_error": 1.3853341369442222e-13,
+      "native_command_maximum_geometry_error": 1.3853341369442222e-13,
+      "native_ui_maximum_geometry_error": 1.3853341369442222e-13,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    },
+    {
+      "id": "chamfer_extension_verification/extension_control_tangent_arc_cross_source",
+      "portable_command_maximum_geometry_error": 6.406746838365966e-14,
+      "portable_ui_maximum_geometry_error": 6.406746838365966e-14,
+      "native_command_maximum_geometry_error": 6.406746838365966e-14,
+      "native_ui_maximum_geometry_error": 6.406746838365966e-14,
+      "qualified": true,
+      "unqualified_style": false,
+      "native_result": "Success",
+      "native_valid": true
+    }
+  ],
+  "captures": [
+    {
+      "family": "chamfer_extension_pilot",
+      "observations": 13,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "ef3fc7e07982a8eba883dd734744e0bc327ca8eac191d7364680d08a276de741"
+    },
+    {
+      "family": "chamfer_extension_holdouts",
+      "observations": 10,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "c4cf2d0e9208e96dbe0a0c76d3e3d5b88129aba3b41bb035eebb9dbe411e422f"
+    },
+    {
+      "family": "chamfer_extension_styling",
+      "observations": 6,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "4e5ce9d44c6340ee4b484757868ef758ca5c28666e4626fda7e15da29c6ef51c"
+    },
+    {
+      "family": "chamfer_extension_verification",
+      "observations": 8,
+      "engine_version": "8.32.26160.13001",
+      "raw_sha256": "6f4fff94082c3b5a8279c733e141cbd8f623ea3545938d157bad53b00f76bf09"
+    }
+  ],
+  "checks": [
+    {
+      "name": "extension-command-portable",
+      "status": 0
+    },
+    {
+      "name": "extension-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-portable",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "self-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-portable",
+      "status": 0
+    },
+    {
+      "name": "library-portable",
+      "status": 0
+    },
+    {
+      "name": "clippy-portable",
+      "status": 0
+    },
+    {
+      "name": "extension-command-native",
+      "status": 0
+    },
+    {
+      "name": "extension-ui-native",
+      "status": 0
+    },
+    {
+      "name": "command-regressions-native",
+      "status": 0
+    },
+    {
+      "name": "chamfer-ui-native",
+      "status": 0
+    },
+    {
+      "name": "self-ui-native",
+      "status": 0
+    },
+    {
+      "name": "closed-ui-native",
+      "status": 0
+    },
+    {
+      "name": "fillet-ui-native",
+      "status": 0
+    },
+    {
+      "name": "library-native",
+      "status": 0
+    },
+    {
+      "name": "clippy-native",
+      "status": 0
+    },
+    {
+      "name": "circular-geometry",
+      "status": 0
+    },
+    {
+      "name": "fmt",
+      "status": 0
+    },
+    {
+      "name": "python",
+      "status": 0
+    },
+    {
+      "name": "subd-command-native",
+      "status": 0
+    },
+    {
+      "name": "subd-ui-native",
+      "status": 0
+    },
+    {
+      "name": "python-subd",
+      "status": 0
+    }
+  ],
+  "implementation_git_sha256": {
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/src/chamfer/closed.rs": "68bc30613f0c7507c2d0ae565e1a53f10efa7060b5360933c3c3ba384c2099ff",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/src/chamfer/closed/extension.rs": "df5bca5bb5c46fa27514d93d6273bcffb45f3dadc37e97ba69b7e8813236ba72",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/src/curve_pair_edit/closed.rs": "3939f47e096ba1a3710734ddab1100e1fdc61932a8c2e8799f04ece9315da9b7",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/src/fillet/closed.rs": "00cef88ab68254a5e72bd257ae2a17dd402c1311f9e32551eef73f61d6766b67",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/tests/chamfer_extension.rs": "7243f27a4dc7d8ad30be2f37e7ae7aa6d2618af70900602a10cb6569a11e7b34",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-command/tests/support/chamfer_getter.rs": "5a8596b0d72df316b6db1bf76e46311efa6707dfe0e528b1b1ce7f71ca54c91f",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:crates/viboceros-geometry/src/circular.rs": "e1613c606698e561cca992e1f8a37af90ba6a5cc6cfb4ff5701197d3997074b4",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-closed.md": "8139e79e013d77d71af59e997e378c6ed16bd4c03211f9a225e6b1c25aa7cbff",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/capture-holdouts.log.gz": "2433ddbf61f06da8594e11438307803f2443392d55e987a344254a75f9c63b5e",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/capture-pilot.log.gz": "29737553f4919a720d307d4d5dbeb3d2de373e3cc667df2d2e755b3efbcd3cbc",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/capture-styling.log.gz": "d168587b8d966bbfa52f77808110ca2d6272a10ebd3cae085e4353ad2898997e",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/capture-verification.log.gz": "86f36c193a0c155388b7a9763062dc22b9f386f3006d1ae74ca7df8921664618",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/captures.json": "c59b4b0187b4debaf50a8a0d1699a7e23da70f25ebbe5a58fb729014a28c4716",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/chamfer-ui-native.log.gz": "2a3a311159a217bafde5f8915bf71f489c9153db04b0c553d01c811f0a0d4d3c",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/chamfer-ui-portable.log.gz": "7ad692816d3b55ea3a659387626c35d922c9c5bbe8ff49f125a6fd6531dc6943",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/checks.json": "76510124394ec5cb0e232e35dff3b922d742c4efee0f5d0365d59532b49600d9",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/circular-geometry.log.gz": "ff0cec0b45260ed46d39d226574b2fce6b3c34f0ea7ec06d41dd68a226868f52",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/clippy-native.log.gz": "4bbb3dc8f25f984ef1d6bf32f8696af1eaff2780844e1870269d7dc9dc736f11",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/clippy-portable.log.gz": "937a886dca6c0f19accdde7ea40ded61045b0effd7b4d0e41fecd0ad7007b3b3",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/closed-ui-native.log.gz": "f3c6fb809ea52a24723a27ebc0061b48c0a4724ccfff0e65a64e0c955ab4d79c",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/closed-ui-portable.log.gz": "532cc74680a4253a2b9aedb300150d7dceac2ab302b2fcebd77404d0f3c45ee9",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/command-regressions-native.log.gz": "0b0d5fb6e2a4a28c974c5c679409fa9f7fca18b547ead33db174d1d78a776431",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/command-regressions-portable.log.gz": "85564ece855b65d715ef3889e9a380b56d08fb433315faf5ed80b0982e759ca8",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/extension-command-native.log.gz": "95262e7d46626d18fc9caa19fd946d07befa1d0568df9f89b0c301ae7a0d9814",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/extension-command-portable.log.gz": "56869c837f0b24d99c0b55c0978d092787a4ffd0403d9ca28c6898e7beda9307",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/extension-ui-native.log.gz": "409c076d2458a5407aa94ccc84d91b01a3de8aeb499cbf4fd2f9b5bd440deb57",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/extension-ui-portable.log.gz": "74ff9ab9743b3163396042c1829bafe95d216ea86a213f40277e0e600d33d5f0",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/fillet-ui-native.log.gz": "f74ab9c46691da6aad295b03780cbe97f4d64f1796b179800c0a1bbe9dba19bb",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/fillet-ui-portable.log.gz": "6011f3d8fd94d674e2fcf38e6f6013570baa020c38db4e10db9d5979431a6897",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/library-native.log.gz": "67d1f6975dfa2697f158796f0259b3b188441558d6599fa8505cd7662317749d",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/library-portable.log.gz": "dc0489e6debb99d550eea3818c243bf5232633d4eb0229b61f8fff03727bd458",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/python-subd.log.gz": "a097be14a13fca0d01cb920eee4f8b30c0de614381f5fce767c321b5aa2a8afd",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/python.log.gz": "6e9594dd830ff84c11e9bfd3ef6fdb8ecda6b37c2308711561d51d9a352a6dd7",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/self-ui-native.log.gz": "49d7e48a2215f4c3fafc4d349efc4948095311f1aaeb925d8febf1a0e1665bb1",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/self-ui-portable.log.gz": "c07a999f3cde22d766d9053e0a9500f60cc015d39134d7254af6f00ee226c2d4",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/subd-command-native.log.gz": "6d767c47d4c63037849c4ed5962ecc5793f3efde92e9b7e6a4f9c5a7ce186dda",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension-proof/subd-ui-native.log.gz": "ef69ba62720d64eb591d44ea625f407d859920264efb1a04805aec66d3cd1b6f",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/chamfer-extension.md": "ebc21b944c0ae64942d04b4fabb14b97497eaf7125e7b3694168a8091ca93451",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/commands/chamfer.md": "6a27f7bf3202f844d8807a86f4d7f81b71052ffcef15deed593ba03de1d97cff",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/subd-box-qualification.json": "20a9919634b4c483f5ccdb82d175c6b24513ad1fd6e6dbb1b30347ba176a6e8f",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:docs/subd-plane-qualification.json": "3043d0f7ec0d20beb4b94e7412ec0a4e80fd44edc994c4900397ee4bb1eeef93",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:src/app/tests/chamfer_extension.rs": "c2698c8c979a87f5ca815464f878c4d1af0b3bbfaa97386d9a4c3dc008310584",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:src/app/tests/curve_chamfer.rs": "2ce38145b20b330283bb0cedfc0a5a7a4a33432fbe150a93ede5a2f4605f4e38",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:src/app/tests/mod.rs": "54110e4761bbabafdc0fa60d90b9d08f2a9d9ab9416d711f71774b94c4534ebd",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/chamfer_command.py": "e02ecfa05fb3a8a48f23b2a7404f204a4d421cd375f270f6d81118a86ce1be81",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/chamfer_extension_cases.py": "805a62fdad615e8ac4ea08403ad93c45854e7061d229d1944fa3e0bc3196812d",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/chamfer_extension_evidence.py": "d87dcb1e97cac86c0543a26789ff3e4005567cdb7a90b55b904ca17c91477aa2",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/check_chamfer_extension.py": "ba4213cc6a1148de0f936acc1a803cac999fa1f3c3f470d22ec9ccc3a6073688",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/fixtures/chamfer_extension_holdouts.json": "7d3554742e7e1a8ad3bc786daf169297d09fd9a46f6c146a1b7684c9c8260246",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/fixtures/chamfer_extension_pilot.json": "4632cba39523629a8c660a908afc3e4e505181afab3c45fcb3e9b2f8272e319c",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/fixtures/chamfer_extension_styling.json": "bfd69ff20352f70c2052288fb695abc16166d2ba92cec40b0b40cdc5a361d56c",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/fixtures/chamfer_extension_verification.json": "377f5ec3470c78cf2c572c4026c15d12beca5bbfbc34996dd0d7cc8933b65e7a",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/generate_chamfer_extension_holdouts.py": "2dfeb7ffe3d6c760f3b84486cf84461cebe866554f659703400a0e19687456f4",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/generate_chamfer_extension_pilot.py": "0704ace2c379728018280a3dcdb03a370f60fb46e29ccd23365eb8f9a677560d",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/generate_chamfer_extension_styling.py": "1a0dfa056ed043db06e618a28a53ee51a3f7b01748d8335d01224b74034ab056",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/generate_chamfer_extension_verification.py": "01c3691918c901b13189788b9cdc869d36b0f2377396e789bc0a7fabe9f1b5a7",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/chamfer_extension_holdouts.json.gz": "d1ebe6e67759220b78268d569ac9d80c7f57a6002a9e7f0f79a0d8db5a0cad73",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/chamfer_extension_pilot.json.gz": "55e03c92dafef71baf4b22d2642b4d074f128eb7d11097f4d553f95127d0086d",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/chamfer_extension_styling.json.gz": "ebb52b385005fff96eaf680c42e6822eb4330d42ad94d3e9ca1fbe5d4399a645",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/chamfer_extension_verification.json.gz": "cbe894bb2f7387ac8b66bcc5213c276d77b756d46b3fb314620badc35060be0d",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/01c3691918c901b13189788b9cdc869d36b0f2377396e789bc0a7fabe9f1b5a7.gz": "c846d6efef0256a776634f38f9cd4c3c615638f8233efeb87b4c0fe22b17e765",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/0704ace2c379728018280a3dcdb03a370f60fb46e29ccd23365eb8f9a677560d.gz": "83f23eb4c24ab70c1136df6893741b20b8b83afb4bc2148d7f19fb5d5a083583",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/16af4381113530115ac092942b2212adca0707528b0a6a11f1778055e84f26f1.gz": "53dc602f6474e32627261fd925b014462af304b99243d84f61bcf2981fc21798",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/1a0dfa056ed043db06e618a28a53ee51a3f7b01748d8335d01224b74034ab056.gz": "cfa3123fcf862192ca150b835c1a40c70de2b980f37e8d719d4cf1e51adebbaf",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/2dfeb7ffe3d6c760f3b84486cf84461cebe866554f659703400a0e19687456f4.gz": "357928aa9e3892f620f89427b1c8ca1ee98d19e005b35dfa289dde2b0da33537",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/805a62fdad615e8ac4ea08403ad93c45854e7061d229d1944fa3e0bc3196812d.gz": "4febbf50fd064f34329690795bff05e7133361e2f3ab6599452ef3ea095e20d6",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/8eae3d6d68e579743046214d674706bd5fbdde182195e12bc31d70a535dca76b.gz": "054e1f73631f83584a9d9fbde9bff04f6af3f8aeceece6abc7d65aede7f278be",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/9905148c144b1891ec5fda30056f3e78878d247d58d47f7df8e3bae015267701.gz": "575039eadadb1e5a164467584098b3818ca1b0b0cc3f55f86ebf69eaf898db75",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/b67b9e9aa33e9d1d82c7f246d9270a7a1d58f064f7ba3eb2298073585f6b2f23.gz": "c784fa38910178b6c9d275aa59e0f5bc94cd6fec8144c0e439b8e8121c4a9f3f",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/c91c95b9b5e19e07b9ee04bc9b6f9e9ede0e20aae6441b6212deb3e99d0bea0a.gz": "9313036c84a87e47f01dbe7006d412175488899b77f4c4c226d4f514c64c24ca",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/observations/source_snapshots/e02ecfa05fb3a8a48f23b2a7404f204a4d421cd375f270f6d81118a86ce1be81.gz": "4ddccee2dab05fe54ca1edf2718512268d3863852312aae0e4978e1c86e62497",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/report_chamfer_extension.py": "55cd7318b9cd597e48942f3610334538c864da06855b2f540811a0f56666dd0e",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/structural_sdk.py": "8eae3d6d68e579743046214d674706bd5fbdde182195e12bc31d70a535dca76b",
+    "9b8ab9d27b961cd28a19681024fd74b1e97c55c3:tools/rhino_oracle/test_chamfer_extension.py": "8b4bfbf801eb7e66fa4753067933e62424187a17f819209e4bda6e0023615842"
+  },
+  "evidence_sha256": {
+    "docs/chamfer-extension-proof/capture-holdouts.log.gz": "2433ddbf61f06da8594e11438307803f2443392d55e987a344254a75f9c63b5e",
+    "docs/chamfer-extension-proof/capture-pilot.log.gz": "29737553f4919a720d307d4d5dbeb3d2de373e3cc667df2d2e755b3efbcd3cbc",
+    "docs/chamfer-extension-proof/capture-styling.log.gz": "d168587b8d966bbfa52f77808110ca2d6272a10ebd3cae085e4353ad2898997e",
+    "docs/chamfer-extension-proof/capture-verification.log.gz": "86f36c193a0c155388b7a9763062dc22b9f386f3006d1ae74ca7df8921664618",
+    "docs/chamfer-extension-proof/captures.json": "c59b4b0187b4debaf50a8a0d1699a7e23da70f25ebbe5a58fb729014a28c4716",
+    "docs/chamfer-extension-proof/chamfer-ui-native.log.gz": "2a3a311159a217bafde5f8915bf71f489c9153db04b0c553d01c811f0a0d4d3c",
+    "docs/chamfer-extension-proof/chamfer-ui-portable.log.gz": "7ad692816d3b55ea3a659387626c35d922c9c5bbe8ff49f125a6fd6531dc6943",
+    "docs/chamfer-extension-proof/checks.json": "2b14d39fee42cb29a25f2afa0bdb74d4db3c7f967bc25c7520d9f1d59aa7ccfe",
+    "docs/chamfer-extension-proof/circular-geometry.log.gz": "ff0cec0b45260ed46d39d226574b2fce6b3c34f0ea7ec06d41dd68a226868f52",
+    "docs/chamfer-extension-proof/clippy-native.log.gz": "4bbb3dc8f25f984ef1d6bf32f8696af1eaff2780844e1870269d7dc9dc736f11",
+    "docs/chamfer-extension-proof/clippy-portable.log.gz": "937a886dca6c0f19accdde7ea40ded61045b0effd7b4d0e41fecd0ad7007b3b3",
+    "docs/chamfer-extension-proof/closed-ui-native.log.gz": "f3c6fb809ea52a24723a27ebc0061b48c0a4724ccfff0e65a64e0c955ab4d79c",
+    "docs/chamfer-extension-proof/closed-ui-portable.log.gz": "532cc74680a4253a2b9aedb300150d7dceac2ab302b2fcebd77404d0f3c45ee9",
+    "docs/chamfer-extension-proof/command-regressions-native.log.gz": "0b0d5fb6e2a4a28c974c5c679409fa9f7fca18b547ead33db174d1d78a776431",
+    "docs/chamfer-extension-proof/command-regressions-portable.log.gz": "85564ece855b65d715ef3889e9a380b56d08fb433315faf5ed80b0982e759ca8",
+    "docs/chamfer-extension-proof/extension-command-native.log.gz": "95262e7d46626d18fc9caa19fd946d07befa1d0568df9f89b0c301ae7a0d9814",
+    "docs/chamfer-extension-proof/extension-command-portable.log.gz": "56869c837f0b24d99c0b55c0978d092787a4ffd0403d9ca28c6898e7beda9307",
+    "docs/chamfer-extension-proof/extension-ui-native.log.gz": "409c076d2458a5407aa94ccc84d91b01a3de8aeb499cbf4fd2f9b5bd440deb57",
+    "docs/chamfer-extension-proof/extension-ui-portable.log.gz": "74ff9ab9743b3163396042c1829bafe95d216ea86a213f40277e0e600d33d5f0",
+    "docs/chamfer-extension-proof/fillet-ui-native.log.gz": "f74ab9c46691da6aad295b03780cbe97f4d64f1796b179800c0a1bbe9dba19bb",
+    "docs/chamfer-extension-proof/fillet-ui-portable.log.gz": "6011f3d8fd94d674e2fcf38e6f6013570baa020c38db4e10db9d5979431a6897",
+    "docs/chamfer-extension-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/chamfer-extension-proof/library-native.log.gz": "67d1f6975dfa2697f158796f0259b3b188441558d6599fa8505cd7662317749d",
+    "docs/chamfer-extension-proof/library-portable.log.gz": "dc0489e6debb99d550eea3818c243bf5232633d4eb0229b61f8fff03727bd458",
+    "docs/chamfer-extension-proof/python-subd.log.gz": "a097be14a13fca0d01cb920eee4f8b30c0de614381f5fce767c321b5aa2a8afd",
+    "docs/chamfer-extension-proof/python.log.gz": "69f4fe6b2249e80cf5b914c9be1ca8f8c0996a521559e7913d2378a64cd2a2e1",
+    "docs/chamfer-extension-proof/self-ui-native.log.gz": "49d7e48a2215f4c3fafc4d349efc4948095311f1aaeb925d8febf1a0e1665bb1",
+    "docs/chamfer-extension-proof/self-ui-portable.log.gz": "c07a999f3cde22d766d9053e0a9500f60cc015d39134d7254af6f00ee226c2d4",
+    "docs/chamfer-extension-proof/subd-command-native.log.gz": "6d767c47d4c63037849c4ed5962ecc5793f3efde92e9b7e6a4f9c5a7ce186dda",
+    "docs/chamfer-extension-proof/subd-ui-native.log.gz": "ef69ba62720d64eb591d44ea625f407d859920264efb1a04805aec66d3cd1b6f",
+    "tools/rhino_oracle/fixtures/chamfer_extension_holdouts.json": "7d3554742e7e1a8ad3bc786daf169297d09fd9a46f6c146a1b7684c9c8260246",
+    "tools/rhino_oracle/fixtures/chamfer_extension_pilot.json": "4632cba39523629a8c660a908afc3e4e505181afab3c45fcb3e9b2f8272e319c",
+    "tools/rhino_oracle/fixtures/chamfer_extension_styling.json": "bfd69ff20352f70c2052288fb695abc16166d2ba92cec40b0b40cdc5a361d56c",
+    "tools/rhino_oracle/fixtures/chamfer_extension_verification.json": "377f5ec3470c78cf2c572c4026c15d12beca5bbfbc34996dd0d7cc8933b65e7a",
+    "tools/rhino_oracle/observations/chamfer_extension_holdouts.json.gz": "d1ebe6e67759220b78268d569ac9d80c7f57a6002a9e7f0f79a0d8db5a0cad73",
+    "tools/rhino_oracle/observations/chamfer_extension_pilot.json.gz": "55e03c92dafef71baf4b22d2642b4d074f128eb7d11097f4d553f95127d0086d",
+    "tools/rhino_oracle/observations/chamfer_extension_styling.json.gz": "ebb52b385005fff96eaf680c42e6822eb4330d42ad94d3e9ca1fbe5d4399a645",
+    "tools/rhino_oracle/observations/chamfer_extension_verification.json.gz": "cbe894bb2f7387ac8b66bcc5213c276d77b756d46b3fb314620badc35060be0d",
+    "tools/rhino_oracle/observations/source_snapshots/01c3691918c901b13189788b9cdc869d36b0f2377396e789bc0a7fabe9f1b5a7.gz": "c846d6efef0256a776634f38f9cd4c3c615638f8233efeb87b4c0fe22b17e765",
+    "tools/rhino_oracle/observations/source_snapshots/0704ace2c379728018280a3dcdb03a370f60fb46e29ccd23365eb8f9a677560d.gz": "83f23eb4c24ab70c1136df6893741b20b8b83afb4bc2148d7f19fb5d5a083583",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/126ba00ed6297e09345fc3f7bccf18e838491e965048dfa795d9aae7afb99cfe.gz": "333fe4e89b4126e497ee68e9c1cb520465ae801f6514ee1ce55dd4897d2373b6",
+    "tools/rhino_oracle/observations/source_snapshots/16af4381113530115ac092942b2212adca0707528b0a6a11f1778055e84f26f1.gz": "53dc602f6474e32627261fd925b014462af304b99243d84f61bcf2981fc21798",
+    "tools/rhino_oracle/observations/source_snapshots/192143934e0f4a35f7d86a9a35c7050866cc8db7dfd89d92959907066f243413.gz": "f321f4f01fedb4f1f8d3e2149bba914409edc3e4b90341f512e47783c90ad5d5",
+    "tools/rhino_oracle/observations/source_snapshots/1a0dfa056ed043db06e618a28a53ee51a3f7b01748d8335d01224b74034ab056.gz": "cfa3123fcf862192ca150b835c1a40c70de2b980f37e8d719d4cf1e51adebbaf",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/246069ac0026fad70b7a0d40d74ba25fd6ce2cbf02ef5dd59dd82f5df10cbd47.gz": "3cdecf39faca0ab73df3b23f6924453e9cc5a84dc96924caac59aaddb6b7c328",
+    "tools/rhino_oracle/observations/source_snapshots/26fd4f042b3384ea188da9864b3f32011fe555d410dfb5cf695385b85078e875.gz": "e3501b122400374742edd8d1a49470736ac3ccc2157c187a9ea64283f2913a61",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/2dfeb7ffe3d6c760f3b84486cf84461cebe866554f659703400a0e19687456f4.gz": "357928aa9e3892f620f89427b1c8ca1ee98d19e005b35dfa289dde2b0da33537",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/6f39c050b8a3e7cda7b770026defc1db8bb9cc6238a334c61fba546576bb6102.gz": "0f050df2ee10e01f7e3c94a23f395b84f752a7cf71690ef66197b0d503c65971",
+    "tools/rhino_oracle/observations/source_snapshots/805a62fdad615e8ac4ea08403ad93c45854e7061d229d1944fa3e0bc3196812d.gz": "4febbf50fd064f34329690795bff05e7133361e2f3ab6599452ef3ea095e20d6",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/8eae3d6d68e579743046214d674706bd5fbdde182195e12bc31d70a535dca76b.gz": "054e1f73631f83584a9d9fbde9bff04f6af3f8aeceece6abc7d65aede7f278be",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/9905148c144b1891ec5fda30056f3e78878d247d58d47f7df8e3bae015267701.gz": "575039eadadb1e5a164467584098b3818ca1b0b0cc3f55f86ebf69eaf898db75",
+    "tools/rhino_oracle/observations/source_snapshots/a49cac2f569f9c39c404436bef9b5a6e12eb068073c9a56ede0bfd0869d2f8cd.gz": "a1399b3cf0ec5ee26ed120ae0773a98914e1d9b348d8c9882704c749b5178224",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/b67b9e9aa33e9d1d82c7f246d9270a7a1d58f064f7ba3eb2298073585f6b2f23.gz": "c784fa38910178b6c9d275aa59e0f5bc94cd6fec8144c0e439b8e8121c4a9f3f",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c91c95b9b5e19e07b9ee04bc9b6f9e9ede0e20aae6441b6212deb3e99d0bea0a.gz": "9313036c84a87e47f01dbe7006d412175488899b77f4c4c226d4f514c64c24ca",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d4b01e66be04e6dee5a43686ed6482cdf48f97e5de682c5d4928638f5ce88126.gz": "09597ca8895848eecd2ba7e697092ca4df26473201059f3423b3b48b52535bab",
+    "tools/rhino_oracle/observations/source_snapshots/d74843fb8cae5207ba879d362a15850254c238adb90ef2c97fab68e80a881285.gz": "d0843489f431d8c0e93b3226f5a5e25c6dbbbcf67430e8186713f70154ba6a25",
+    "tools/rhino_oracle/observations/source_snapshots/dc4447fc503784bf1d38edf62ea1ae9736df6dcda90f8500cc2f9c76e2342cb2.gz": "fad7a54b0bda044c9eaa789b9d93f18f10f1c7ec4e3f5fcefe66abf8c8b9b577",
+    "tools/rhino_oracle/observations/source_snapshots/e02ecfa05fb3a8a48f23b2a7404f204a4d421cd375f270f6d81118a86ce1be81.gz": "4ddccee2dab05fe54ca1edf2718512268d3863852312aae0e4978e1c86e62497",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
