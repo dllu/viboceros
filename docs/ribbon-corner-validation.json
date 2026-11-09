@@ -1,0 +1,431 @@
+{
+  "baseline_revision": "ff093a03c7eeabad4b9f34cb8bc7fd2f181ba1bb",
+  "new_headless_rhino_launches": 4,
+  "new_native_workflows": 77,
+  "full_ribbon_command": false,
+  "ribbon_registered": false,
+  "smooth_polyline_corner_implemented": true,
+  "declared_vertex_identities_only": true,
+  "loop_winding_compared": false,
+  "output_domains_compared": false,
+  "between_station_distance_certified": false,
+  "backends": {
+    "portable": {
+      "complete_image_matches": 110,
+      "incidence_matches": 110,
+      "archive_support_round_trips": 110,
+      "family_counts": {
+        "ribbon_polyline": 52,
+        "ribbon_corner_correspondence": 29,
+        "ribbon_smooth_angles": 11,
+        "ribbon_sharp_holdouts": 12,
+        "ribbon_sharp_seams": 6
+      },
+      "face_reversal_matches": 63,
+      "face_reversal_difference_ids": [
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-none"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "right-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "acute-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "obtuse-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "zigzag-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "closed-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "left-left-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "acute-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "obtuse-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "right-left-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "four-zigzag-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "chart-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "native-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "polycurve-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_smooth_angles",
+          "id": "smooth-scale-0.15"
+        },
+        {
+          "family": "ribbon_smooth_angles",
+          "id": "smooth-scale-0.9"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "concave-loop-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "concave-seam-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "five-segments-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "double-turn-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "tilted-chain-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "uneven-chart-both"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-1"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-4"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-5"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-0"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-3"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-4"
+        }
+      ],
+      "maximum_image_bound": 3.5527136788005025e-15,
+      "maximum_incidence_geometry_bound": 3.556614664921601e-15,
+      "maximum_archive_support_bound": 8.881784197001256e-16,
+      "native_offset_workflows_observational_only": 19
+    },
+    "native": {
+      "complete_image_matches": 110,
+      "incidence_matches": 110,
+      "archive_support_round_trips": 110,
+      "family_counts": {
+        "ribbon_polyline": 52,
+        "ribbon_corner_correspondence": 29,
+        "ribbon_smooth_angles": 11,
+        "ribbon_sharp_holdouts": 12,
+        "ribbon_sharp_seams": 6
+      },
+      "face_reversal_matches": 63,
+      "face_reversal_difference_ids": [
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "right-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "acute-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "obtuse-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "zigzag-both-none"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-sharp"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-round"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-chamfer"
+        },
+        {
+          "family": "ribbon_polyline",
+          "id": "closed-both-none"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "right-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "acute-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "obtuse-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "zigzag-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "closed-both-smooth"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "left-left-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "acute-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "obtuse-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "right-left-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "four-zigzag-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "chart-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "native-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_corner_correspondence",
+          "id": "polycurve-mixed-both-ribbon"
+        },
+        {
+          "family": "ribbon_smooth_angles",
+          "id": "smooth-scale-0.15"
+        },
+        {
+          "family": "ribbon_smooth_angles",
+          "id": "smooth-scale-0.9"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "concave-loop-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "concave-seam-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "five-segments-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "double-turn-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "tilted-chain-both"
+        },
+        {
+          "family": "ribbon_sharp_holdouts",
+          "id": "uneven-chart-both"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-1"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-4"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "elbow-seam-5"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-0"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-3"
+        },
+        {
+          "family": "ribbon_sharp_seams",
+          "id": "arrow-seam-4"
+        }
+      ],
+      "maximum_image_bound": 3.5527136788005025e-15,
+      "maximum_incidence_geometry_bound": 3.556614664921601e-15,
+      "maximum_archive_support_bound": 8.881784197001256e-16,
+      "native_offset_workflows_observational_only": 19
+    }
+  },
+  "existing_loose_ribbon_regressions": true,
+  "existing_curve_offset_regressions": true,
+  "receipts": "ribbon-corner-proof/receipts.json"
+}

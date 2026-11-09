@@ -1,0 +1,253 @@
+{
+  "baseline_revision": "ff093a03c7eeabad4b9f34cb8bc7fd2f181ba1bb",
+  "source_overrides": {
+    "crates/viboceros-geometry/src/brep.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep.rs.gz",
+      "sha256": "257f66d7a34804da8f1bbe28e4bcc09c39a564ad34b82d14794104115c746004"
+    },
+    "crates/viboceros-geometry/src/brep/join_edges/automatic/mod.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/join_edges/automatic/mod.rs.gz",
+      "sha256": "62f008873b04c3819e3b35174619b51ea55a3d677181fbb8cb80eaa2675aed59"
+    },
+    "crates/viboceros-geometry/src/brep/vertex_identity.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/vertex_identity.rs.gz",
+      "sha256": "e0f291202db56f47b489f1213490d4420e097266b73f8451bc28c4a0fa790f02"
+    },
+    "crates/viboceros-geometry/src/brep/vertex_identity/tests.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/vertex_identity/tests.rs.gz",
+      "sha256": "457d7303dc6c1d30f6a5c7f4c95faea36eec4fbc111ac590454918675de1c3af"
+    },
+    "crates/viboceros-geometry/src/curve_offset.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/curve_offset.rs.gz",
+      "sha256": "29833c122cb2a786b219a828feac2ffec1c2aa95700e4b5144ff779756dcf972"
+    },
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/lib.rs.gz",
+      "sha256": "9cd99c48065cabac6131b0b028471a7304a9e6c306624d53836431cfd0a590f9"
+    },
+    "crates/viboceros-geometry/src/ribbon.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz",
+      "sha256": "719154e1df7e22362a49087017d6d4999067ecc9deda5f1e82a5627c3532fb33"
+    },
+    "crates/viboceros-geometry/src/ribbon/corner.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/corner.rs.gz",
+      "sha256": "ddabef49117a4539c6f973f0897ba36986559ec76595defe4578c9316ad5dc28"
+    },
+    "crates/viboceros-geometry/src/ribbon/polyline.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline.rs.gz",
+      "sha256": "80324e225b470e56dc8de2a5e73bdb7d2972be60fe7c7dc16940248ae6ab34ee"
+    },
+    "crates/viboceros-geometry/src/ribbon/polyline/assembly.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/assembly.rs.gz",
+      "sha256": "572864bdd96273ab7a4e856e9be9fb392f0e712746c9c569cfe1437ed1e7e539"
+    },
+    "crates/viboceros-geometry/src/ribbon/polyline/correspondence.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/correspondence.rs.gz",
+      "sha256": "7b6b89398f59f81664cf7f6f927be194c6eb3092f5f9b75c03c2c4fb33a75525"
+    },
+    "crates/viboceros-geometry/src/ribbon/polyline/tests.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/tests.rs.gz",
+      "sha256": "93d3c17eae3ec8f9e27358b1160f54408a4dfeab1c0e00c67d7fae647a1e1d49"
+    },
+    "crates/viboceros-oracle/src/ribbon_polyline.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/src/ribbon_polyline.rs.gz",
+      "sha256": "60ee023e7d92d247c260cecac9f7a28ddf85a5fe2343e4a67f2e2e8f7cddf886"
+    },
+    "crates/viboceros-oracle/tests/ribbon_polyline_native.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/tests/ribbon_polyline_native.rs.gz",
+      "sha256": "54a84d6c5ce52ffea8e7a0ee182044a9a7cdaff68bc9a2146a0f7564b5769071"
+    },
+    "crates/viboceros-oracle/tests/ribbon_polyline_native/replay.rs": {
+      "snapshot": "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/tests/ribbon_polyline_native/replay.rs.gz",
+      "sha256": "a4e508776dc62e812e260e3feace86ef9622cf7356db07572f268fdefa9a1ae9"
+    },
+    "tools/rhino_oracle/generate_ribbon_corner_correspondence.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_corner_correspondence.py.gz",
+      "sha256": "4e976d6184a83b6b1d633f15c3af23d9739525569a490abbd1b47bbd4976597e"
+    },
+    "tools/rhino_oracle/generate_ribbon_sharp_holdouts.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_sharp_holdouts.py.gz",
+      "sha256": "856f0ff8955ccc023c0b069678ca2b21f064aaac1301beb8e1348ffdcfa2359a"
+    },
+    "tools/rhino_oracle/generate_ribbon_sharp_seams.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_sharp_seams.py.gz",
+      "sha256": "533e3c2acbe7d0d519db424e2c75af52d6ef30c9ff964ca24df965551f762301"
+    },
+    "tools/rhino_oracle/generate_ribbon_smooth_angles.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_smooth_angles.py.gz",
+      "sha256": "0a82651e6d87fd5eafc4e033fa7a8f4c8cbf112217943a9c5cbf67701d85e62d"
+    },
+    "tools/rhino_oracle/report_ribbon_corners.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/report_ribbon_corners.py.gz",
+      "sha256": "d99af0e454d05af9ebf7e8162d3e51d848fa8f71458ecb8376739cab31cebc4c"
+    },
+    "tools/rhino_oracle/test_ribbon_corner_record.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/test_ribbon_corner_record.py.gz",
+      "sha256": "9d963b54bcadfa460b095653c40ac2f22835f3604400ce7107c8b5fcafa4ad18"
+    },
+    "tools/rhino_oracle/test_ribbon_probe.py": {
+      "snapshot": "docs/ribbon-corner-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz",
+      "sha256": "e8c384b9f8cbc0939d22c5075308dd8547cdc4ff42438256d13e5b6a72f93a28"
+    }
+  },
+  "files": {
+    "docs/ribbon-corner-proof/portable.log.gz": "52283ea5b181580ca449d2c7bd78c4d3e471d43816164dbf780a331d416e54ea",
+    "docs/ribbon-corner-proof/native.log.gz": "06a0391629a77ed52482bef22ac1601b45cf7f750b077c385fe0276a297a919a",
+    "docs/ribbon-corner-proof/kernel.log.gz": "e3e8bbc60086b36560268d3376f6349ef5ffdc2058852a2f1e10ee8617f7d343",
+    "docs/ribbon-corner-proof/identities.log.gz": "4c9cde481c723b4145a0e80934b198e495a76a252248c6d95b83954b2f45a2b2",
+    "docs/ribbon-corner-proof/offsets.log.gz": "dc85eb9951906d93c8dc32172db9712257a28ebb35f0a9628eb24231c61537ba",
+    "docs/ribbon-corner-proof/join.log.gz": "f9d8a8eb53fb1f83c00dec85bbd95ca3b83b659430ae55b94bb5fddf135d0032",
+    "docs/ribbon-corner-proof/app.log.gz": "cf1026c2673a40790c1077a3ab68c2669e51d7a23c4bdad5d04b32b0f35db778",
+    "docs/ribbon-corner-proof/app_native.log.gz": "86933158378499a044afcb42b17d576e88108fa74fa763a8ac822435a36d94b5",
+    "docs/ribbon-corner-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/ribbon-corner-proof/probe.log.gz": "ef09dc7d5bed677ad36a9a86d3ebab61987fc157a40b4e4688565103ee59faf7",
+    "docs/ribbon-corner-proof/capture_ribbon_corner_correspondence.log.gz": "1c6b0deb3b97d56411b7652f5a1be90e35fbdcfe67ac5cf545fab9421e7d12f1",
+    "docs/ribbon-corner-proof/capture_ribbon_smooth_angles.log.gz": "602df8bac2be3d30a2dab46936918d008a727a6f3deab0daffaeb217938a2185",
+    "docs/ribbon-corner-proof/capture_ribbon_sharp_holdouts.log.gz": "2a50c3e8112f09f5ce3277d84c08439f93eb51b67e342d4c84cbee047d09e3c6",
+    "docs/ribbon-corner-proof/capture_ribbon_sharp_seams.log.gz": "e6c2a5ff09971e32b2c0419eea1b1c2bca3a656064ded19cb1a65e7480cb2234",
+    "docs/ribbon-corner-proof/pilot.log.gz": "e81ef0e1d64ad84c0e950e69d8d137fd412b3b813e31d04475077307977db509",
+    "docs/ribbon-corner-proof/neighbors.log.gz": "0e0167b75cf3d45c79e5aae40c3bf09843d6d205cdc970a8b30503beead18d37",
+    "docs/ribbon-corner-proof/seam-debug.log.gz": "313725b4fb1765894d25f1a0523459a1e11c4ee525bc242fb7fd223df3c387f0",
+    "docs/ribbon-corner-proof/identities-pilot.log.gz": "9f6047ad98c481e4f58ebf4a4794dd8d0e5a34cc2bdc475b6eea44839cc857d5",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep.rs.gz": "e202eaf87f82e6843ad952132ba4ad0e3ccd13226b6d4ddf36f2f2a889abdae8",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/join_edges/automatic/mod.rs.gz": "186e8204e9a9569157aca8b61bca86cfe51c20a18d568ebb91e162cc5a1012d0",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/vertex_identity.rs.gz": "30080bc8a5cf831f54fe6b69602e08b42581101781a2d27be7540aa77d5327c2",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/brep/vertex_identity/tests.rs.gz": "ae6a502ec17a793b3f175bce7fe317e08eddaf1d4a219abb41d5e0dafdf9c248",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/curve_offset.rs.gz": "f5ce486f022d8756f28b4267e68c56848ab14c767a5a8e559a85b20d05028348",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/lib.rs.gz": "ea5ca1103b630b599e033a4b7e8d17a6e0a019e53fdd882369f238d1bdfcb593",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz": "110b389cf97633cc609c50ea477e08281a7a18d02c8886a6eeb06c2c37de08c0",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/corner.rs.gz": "b6f51482dc1a4196723f945326d5f4717bee9c942a6fe5194d726a4409106a4d",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline.rs.gz": "04c6bcf82d0fe276b47d7315737d6ba9ebc24d6010d336c3b6ad74ee545aecaf",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/assembly.rs.gz": "6015b03bd98a75aea4c8023eb6549d74941acac39cf7b68f94f3c23e30d6f2bd",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/correspondence.rs.gz": "a79c247f7916862c922e5b6f28d15a7279a4e3b45f08d28d518004831479368b",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-geometry/src/ribbon/polyline/tests.rs.gz": "e5f041f07e1cea822ec5c72cf8df9e8a09c687638fee581540bd875aeb06edf2",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/src/ribbon_polyline.rs.gz": "e5186397195c3b6624b452e19ecd6789bcbdb07d5cd65e6421682b54ca7a73a2",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/tests/ribbon_polyline_native.rs.gz": "fcb0c4c2057800a110f9ac292c192d3e72f8bab028bd0eeec188a31552a5c793",
+    "docs/ribbon-corner-proof/sources/crates/viboceros-oracle/tests/ribbon_polyline_native/replay.rs.gz": "d3bbe6da5b95b1e972a25bf442f1dbe0d37c06bcf8f389ea4f232c12168a1b32",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_corner_correspondence.py.gz": "9c2b42fec140dcb544294e12c0f9fcdd5bd2bc115bde5162b5b7ec707ea8f017",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_sharp_holdouts.py.gz": "b0b326764a6adaf180b827fa29e289dbfc4bc592d3bd66e66c9f4d7a9f1903c1",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_sharp_seams.py.gz": "fb4f8e8a9de90790ab43c90de94f678aad456019208dde71228baead05102751",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/generate_ribbon_smooth_angles.py.gz": "5e91cea376fa97d5fb80bc4cec4499a9ab1573f5cda6eff4734677e9d7cc31e7",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/report_ribbon_corners.py.gz": "87057a204d2eb03860151c61d16820fcdefc37c2f1a3ef870d4a8fd3be020e90",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/test_ribbon_corner_record.py.gz": "ca387af85baa7a83f7c027b0816aae2505dfcb008a92899ddf3f0bc9259df8ae",
+    "docs/ribbon-corner-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz": "aba73b69b2e9c4ec8cc8e8bed2e770c3a3be928f552ee0c03aeaddf80b8ae90d",
+    "tools/rhino_oracle/fixtures/ribbon_polyline.json": "785d881ef1c9fea41f461f51107f5d3f8f35a1d2d8725e3a7332800a62aced21",
+    "tools/rhino_oracle/observations/ribbon_polyline.json.gz": "f544d9c32869612c7ae22225cd4ef29f2a64769b78577242f8c491346fe248f3",
+    "tools/rhino_oracle/observations/source_snapshots/5871836ed572667f8a706495281012eb4bff75c4336ed1c00336178f56eae1bc.gz": "7159b361513f3ad98aa88c1c487b8a00990b488ddcaa78680ae9594ad97a1c66",
+    "tools/rhino_oracle/observations/source_snapshots/52eb6e8d4e778ff7b4d7d76dd1ea0e976a30eb43baf366b5df76fb863c2d4011.gz": "a5d3a6cf252eb2fd3884dfdd9703547351e1686f960154f536e5610c46b5fd7b",
+    "tools/rhino_oracle/observations/source_snapshots/2920b78da38f9882e11b66f51eb8b14435a3716868376deb687281bb14c1ab41.gz": "16347a76f53ff82b7b20eeab435c407c4a93d9dd92ebeefb62e98f2371538c33",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/f992da2a5418c3cba8665fbf2c23cbd1bce184757d9f017db2ede7d393e18266.gz": "d65edb34478b7fe78ff917df5b99134261a9aff010f7a5ebcddb44cdecaea535",
+    "tools/rhino_oracle/observations/source_snapshots/7e51ee954894545351566287914bb0c06d8cce2a39e43b8d35f35f0340867a46.gz": "5b20d560bc2a97d38eb28488d22bae2c055fc4a29c0e3905630765a216e16141",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/fixtures/ribbon_corner_correspondence.json": "6a23303c173ca9d195137dee544f0cf6c3adbf32ab38f1836dcc1cebd244eef7",
+    "tools/rhino_oracle/observations/ribbon_corner_correspondence.json.gz": "975a91b69b1167448d383dbbddc7ecdc152880b36fa6ba193650ed7f4f0b0fb1",
+    "tools/rhino_oracle/observations/source_snapshots/4e976d6184a83b6b1d633f15c3af23d9739525569a490abbd1b47bbd4976597e.gz": "9c2b42fec140dcb544294e12c0f9fcdd5bd2bc115bde5162b5b7ec707ea8f017",
+    "tools/rhino_oracle/fixtures/ribbon_smooth_angles.json": "1c1bca66860b923314eb1256f1fc9b8cb0d9f883cc256dac77236130de7d0010",
+    "tools/rhino_oracle/observations/ribbon_smooth_angles.json.gz": "ca4f6d0ff4c90d88a8cad9fab7ebac1061823ac6788bdbb7b029e8104fcec58c",
+    "tools/rhino_oracle/observations/source_snapshots/0a82651e6d87fd5eafc4e033fa7a8f4c8cbf112217943a9c5cbf67701d85e62d.gz": "5e91cea376fa97d5fb80bc4cec4499a9ab1573f5cda6eff4734677e9d7cc31e7",
+    "tools/rhino_oracle/fixtures/ribbon_sharp_holdouts.json": "74c1c22fb6abce0c9dcde78d49e1a25f2d661c377f5dbac5bc94ecb0f684456c",
+    "tools/rhino_oracle/observations/ribbon_sharp_holdouts.json.gz": "676ce4f224b9d94a20201ded30188fb870b3a7b1252064d369f7828ed69e8113",
+    "tools/rhino_oracle/observations/source_snapshots/856f0ff8955ccc023c0b069678ca2b21f064aaac1301beb8e1348ffdcfa2359a.gz": "b0b326764a6adaf180b827fa29e289dbfc4bc592d3bd66e66c9f4d7a9f1903c1",
+    "tools/rhino_oracle/fixtures/ribbon_sharp_seams.json": "8e405bef6a70b9d82b44b8978d74aefbcc14111ce73f5c03b95ee347b1b57a58",
+    "tools/rhino_oracle/observations/ribbon_sharp_seams.json.gz": "f2beec8d1b828dbebc3d4f7b0a6b38b4519136d9dcd788b2521ba5d0cf7d6575",
+    "tools/rhino_oracle/observations/source_snapshots/533e3c2acbe7d0d519db424e2c75af52d6ef30c9ff964ca24df965551f762301.gz": "fb4f8e8a9de90790ab43c90de94f678aad456019208dde71228baead05102751",
+    "tools/rhino_oracle/fixtures/ribbon_ruled.json": "9d623a5e0d0b147b250ef675addc829e8c82727bb15b9874dd5a84a64f5af8e5",
+    "tools/rhino_oracle/observations/ribbon_ruled.json.gz": "8144b15e3060e4c9f95d8623fb4b064028a3c7268aea9c24acbb50bb0bc212fa",
+    "tools/rhino_oracle/observations/source_snapshots/8d02a862af618a55df5c338c1810dcffbfbc14855458aef849c36ecebe73307a.gz": "d2c751297fe3938eaeda3561cb8b9d6d8915ff37367fcc773a14a0e68072dc78",
+    "tools/rhino_oracle/observations/source_snapshots/d7b3a9b58f22706a28f0e15b796e86a52ee35ab2976dd3160c85cf9c1c19c92d.gz": "c7f77669beb2199611de2794eb47d76722591aef01488112845dbac05936303a",
+    "tools/rhino_oracle/observations/source_snapshots/0177dd05fd41388b358725acdfea749d00458c12ee4b29274527ac9e8070d475.gz": "8e0ae1ab38589ae6e1553cc269838e053cae50417818f5a0457a328b520a341b"
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test ribbon_polyline_native --test ribbon_ruled_native -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test ribbon_polyline_native --test ribbon_ruled_native -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/native.log.gz"
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib ribbon::polyline -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/kernel.log.gz"
+    },
+    "identities": {
+      "command": "cargo test -p viboceros-geometry --lib brep::vertex_identity -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/identities.log.gz"
+    },
+    "offsets": {
+      "command": "cargo test -p viboceros-geometry --lib curve_offset:: -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/offsets.log.gz"
+    },
+    "join": {
+      "command": "cargo test -p viboceros-geometry --lib brep::join_edges::automatic -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/join.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/app.log.gz"
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/app_native.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/format.log.gz"
+    },
+    "probe": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_ribbon_probe",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/probe.log.gz"
+    },
+    "capture_ribbon_corner_correspondence": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_corner_correspondence",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/capture_ribbon_corner_correspondence.log.gz"
+    },
+    "capture_ribbon_smooth_angles": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_smooth_angles",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/capture_ribbon_smooth_angles.log.gz"
+    },
+    "capture_ribbon_sharp_holdouts": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_sharp_holdouts",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/capture_ribbon_sharp_holdouts.log.gz"
+    },
+    "capture_ribbon_sharp_seams": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_sharp_seams",
+      "exit_code": 0,
+      "log": "docs/ribbon-corner-proof/capture_ribbon_sharp_seams.log.gz"
+    }
+  },
+  "unqualified_runs": [
+    {
+      "log": "docs/ribbon-corner-proof/pilot.log.gz",
+      "exit_code": 101
+    },
+    {
+      "log": "docs/ribbon-corner-proof/neighbors.log.gz",
+      "exit_code": 101
+    },
+    {
+      "log": "docs/ribbon-corner-proof/seam-debug.log.gz",
+      "exit_code": 101
+    },
+    {
+      "log": "docs/ribbon-corner-proof/identities-pilot.log.gz",
+      "exit_code": 101
+    }
+  ]
+}

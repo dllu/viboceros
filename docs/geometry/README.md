@@ -30,6 +30,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Polynomial loose curve offsets and Ribbon preparation](curve-loose-offsets.md)
 - [Ordered ruled surfaces and loose ribbon shells](ruled-ribbons.md)
 - [Ordinary polyline ribbon corners](polyline-ribbons.md)
+- [Sharp ribbon correspondence, Smooth fans and vertex identities](ribbon-corners.md)
 - [Bounded NURBS surface knot reduction](surface-knot-reduction.md)
 - [Complete NURBS surface correspondence bounds](surface-correspondence.md)
 - [Curved image bounds with supplied UV mappings](surface-mapped-images.md)

@@ -1,0 +1,893 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "ribbon_command",
+      "id": "concave-loop",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          6.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "concave-loop-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          6.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "concave-seam",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          6.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "concave-seam-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          6.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "five-segments",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          5.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "five-segments-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          5.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "double-turn",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "double-turn-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-chain",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-chain-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "uneven-chart",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              16.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -9.0,
+          -9.0,
+          -3.0,
+          2.0,
+          10.0,
+          10.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "uneven-chart-both",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              16.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -9.0,
+          -9.0,
+          -3.0,
+          2.0,
+          10.0,
+          10.0
+        ]
+      },
+      "distance": 0.25,
+      "side": [
+        2.0,
+        -3.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    }
+  ]
+}

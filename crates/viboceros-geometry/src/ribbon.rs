@@ -1,9 +1,11 @@
-//! Loose offset ribbons with complete source curves and shared seam topology.
+//! Offset ribbons with ordered ruled tensors and shared corner identities.
+mod corner;
 mod polyline;
 use crate::{
     Brep, CurveContinuity, CurveEditPointSolver, GeometryError, NurbsCurve, NurbsSurface, Real,
     Tolerance, UnitVector3, join_breps,
 };
+pub use corner::RibbonCornerStyle;
 pub use polyline::{try_polyline_ribbon, try_polyline_ribbon_with_ruled};
 
 /// Build a loose polynomial offset ribbon. U follows source-to-offset rulings;

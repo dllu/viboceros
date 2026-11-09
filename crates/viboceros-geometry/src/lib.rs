@@ -223,7 +223,7 @@ mod ribbon;
 mod ruled_surface;
 mod section_basis;
 pub use ribbon::{
-    try_loose_ribbon, try_loose_ribbon_with_ruled, try_polyline_ribbon,
+    RibbonCornerStyle, try_loose_ribbon, try_loose_ribbon_with_ruled, try_polyline_ribbon,
     try_polyline_ribbon_with_ruled,
 };
 mod section_rebuild;

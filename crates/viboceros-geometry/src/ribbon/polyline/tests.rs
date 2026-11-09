@@ -1,5 +1,5 @@
 use super::*;
-use crate::Vector3;
+use crate::{CurveOffsetCornerStyle, Vector3};
 fn source(points: &[[Real; 3]]) -> Polyline3 {
     Polyline3::try_new(
         points
@@ -21,9 +21,10 @@ fn outside_fans_and_inside_triangles_sew_both_sides_without_changing_source() {
     let source = source(&[[0., 0., 0.], [5., 0., 0.], [5., 4., 0.]]);
     let before = source.clone();
     for (corner, faces, edges, vertices) in [
-        (CurveOffsetCornerStyle::Sharp, 4, 12, 9),
-        (CurveOffsetCornerStyle::Round, 7, 18, 12),
-        (CurveOffsetCornerStyle::Chamfer, 7, 18, 12),
+        (RibbonCornerStyle::Sharp, 4, 12, 9),
+        (RibbonCornerStyle::Round, 7, 18, 12),
+        (RibbonCornerStyle::Smooth, 7, 18, 12),
+        (RibbonCornerStyle::Chamfer, 7, 18, 12),
     ] {
         let parts =
             try_polyline_ribbon(&source, -0.5, true, normal(), Tolerance::DEFAULT, corner).unwrap();
@@ -37,7 +38,7 @@ fn outside_fans_and_inside_triangles_sew_both_sides_without_changing_source() {
     assert_eq!(source, before);
 }
 #[test]
-fn none_keeps_convex_gaps_as_separate_edge_connected_components() {
+fn none_keeps_convex_gaps_and_shares_the_original_source_vertex() {
     let source = source(&[[0., 0., 0.], [5., 0., 0.], [5., 4., 0.]]);
     let parts = try_polyline_ribbon(
         &source,
@@ -48,12 +49,16 @@ fn none_keeps_convex_gaps_as_separate_edge_connected_components() {
         CurveOffsetCornerStyle::None,
     )
     .unwrap();
-    assert_eq!(parts.len(), 2);
-    assert!(
-        parts
-            .iter()
-            .all(|b| b.faces().len() == 1 && b.edges().len() == 4)
+    assert_eq!(parts.len(), 1);
+    assert_eq!(
+        (
+            parts[0].faces().len(),
+            parts[0].edges().len(),
+            parts[0].vertices().len()
+        ),
+        (2, 8, 7)
     );
+    assert_eq!(parts[0].edge_connected_face_components().len(), 2);
 }
 #[test]
 fn invalid_distance_nonplanarity_and_overlapping_inside_corners_fail_atomically() {
@@ -106,4 +111,33 @@ fn patch_budget_is_checked_before_invoking_the_backend() {
             maximum: MAX_PATCHES
         })
     ));
+}
+
+#[test]
+fn nonadjacent_source_vertices_keep_distinct_identities_at_a_self_contact() {
+    let s = source(&[
+        [0., 0., 0.],
+        [5., 0., 0.],
+        [5., 5., 0.],
+        [0., 0., 0.],
+        [-5., 0., 0.],
+        [-5., -5., 0.],
+    ]);
+    let b = try_polyline_ribbon(
+        &s,
+        -0.2,
+        false,
+        normal(),
+        Tolerance::DEFAULT,
+        RibbonCornerStyle::None,
+    )
+    .unwrap()
+    .remove(0);
+    assert_eq!(
+        b.vertices()
+            .iter()
+            .filter(|v| v.point() == s.vertices()[0])
+            .count(),
+        2
+    );
 }

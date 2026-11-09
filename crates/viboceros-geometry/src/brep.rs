@@ -39,6 +39,7 @@ mod command_linear;
 mod components;
 mod curved_boundaries;
 mod edge_representation;
+mod vertex_identity;
 mod wire_cage;
 pub use wire_cage::BrepWireCage;
 mod curve_network;

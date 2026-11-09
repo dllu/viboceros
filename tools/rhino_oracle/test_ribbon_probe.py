@@ -6,11 +6,15 @@ from .generate_ribbon import request as ribbons
 from .generate_curve_loose_offset import request as offsets
 from .generate_curve_loose_offset_types import request as types
 from .generate_ribbon_polyline import request as polylines
+from .generate_ribbon_corner_correspondence import request as correspondence
+from .generate_ribbon_smooth_angles import request as angles
+from .generate_ribbon_sharp_holdouts import request as sharp
+from .generate_ribbon_sharp_seams import request as seams
 
 
 class RibbonProbeTests(unittest.TestCase):
     def test_all_authored_operations_validate(self):
-        for factory in [ribbons,offsets,types,polylines]:
+        for factory in [ribbons,offsets,types,polylines,correspondence,angles,sharp,seams]:
             for op in factory()['operations']:validate(op)
 
     def test_nonfinite_boolean_and_zero_distances_are_rejected(self):

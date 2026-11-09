@@ -33,10 +33,11 @@ pub(super) fn run(
     };
     let normal = Vector3::try_from(f.normal)?.normalized_nonzero()?;
     let corner = match f.corner.as_str() {
-        "Sharp" => viboceros_geometry::CurveOffsetCornerStyle::Sharp,
-        "Round" => viboceros_geometry::CurveOffsetCornerStyle::Round,
-        "Chamfer" => viboceros_geometry::CurveOffsetCornerStyle::Chamfer,
-        "None" => viboceros_geometry::CurveOffsetCornerStyle::None,
+        "Sharp" => viboceros_geometry::RibbonCornerStyle::Sharp,
+        "Round" => viboceros_geometry::RibbonCornerStyle::Round,
+        "Smooth" => viboceros_geometry::RibbonCornerStyle::Smooth,
+        "Chamfer" => viboceros_geometry::RibbonCornerStyle::Chamfer,
+        "None" => viboceros_geometry::RibbonCornerStyle::None,
         _ => {
             return Err(ProbeError::FixtureInvariant(
                 "unsupported polyline ribbon corner",

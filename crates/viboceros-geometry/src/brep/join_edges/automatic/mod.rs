@@ -39,6 +39,7 @@ pub struct BrepJoinReport {
 /// necessary cuts update every incident UV trim before assembly. Other curved
 /// partial overlaps and incompatible curved representations remain unmatched.
 ///
+/// Faces retain input source order, then input face order within each component.
 /// Surfaces and UV geometry are never refitted. Nearby boundary vertices are
 /// aligned to incident-edge-weighted means, even when no mate is accepted.
 /// Incident clamped edges use certified chord-based control adjustment;

@@ -1,0 +1,2872 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "ribbon_command",
+      "id": "right-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "acute-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "obtuse-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "zigzag-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "closed-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "right-both-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "acute-both-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "obtuse-both-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "zigzag-both-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "closed-both-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        4.0,
+        1.8,
+        2.4
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "reversed-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "native-smooth",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polyline"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "left-left-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "left-left-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "left-left-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "left-left-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              7.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "acute-mixed-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "acute-mixed-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "acute-mixed-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "acute-mixed-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              13.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "obtuse-mixed-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "obtuse-mixed-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "obtuse-mixed-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "obtuse-mixed-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "right-left-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "right-left-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "right-left-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "right-left-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "four-zigzag-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "four-zigzag-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "four-zigzag-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "four-zigzag-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              8.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "chart-mixed-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -4.0,
+          -4.0,
+          1.0,
+          3.0,
+          8.0,
+          8.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "chart-mixed-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -4.0,
+          -4.0,
+          1.0,
+          3.0,
+          8.0,
+          8.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "chart-mixed-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -4.0,
+          -4.0,
+          1.0,
+          3.0,
+          8.0,
+          8.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "chart-mixed-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -4.0,
+          -4.0,
+          1.0,
+          3.0,
+          8.0,
+          8.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "nurbs"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "native-mixed-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polyline"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "native-mixed-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polyline"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "native-mixed-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polyline"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "native-mixed-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polyline"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "polycurve-mixed-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polycurve"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "polycurve-mixed-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polycurve"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "polycurve-mixed-both-ribbon",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polycurve"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "polycurve-mixed-both-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.35,
+      "side": [
+        2.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "native_kind": "polycurve"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "right-smooth-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        7.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "acute-smooth-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "loose_offset_command",
+      "id": "obtuse-smooth-offset",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        4.0,
+        -2.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Smooth",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    }
+  ]
+}

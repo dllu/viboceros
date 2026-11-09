@@ -1172,6 +1172,7 @@ pub(crate) struct OffsetPolylineLayout {
     pub normal: UnitVector3,
     pub corners: Vec<(Point3, Point3)>,
     pub inside_corners: Vec<bool>,
+    pub outside_corners: Vec<bool>,
 }
 
 pub(crate) fn polyline_offset_layout(
@@ -1195,6 +1196,7 @@ pub(crate) fn polyline_offset_layout(
         .collect::<Result<Vec<_>, _>>()?;
     let mut corners = Vec::with_capacity(vertices.len());
     let mut inside_corners = Vec::with_capacity(vertices.len());
+    let mut outside_corners = Vec::with_capacity(vertices.len());
     let unique_count = if closed {
         segment_count
     } else {
@@ -1202,6 +1204,7 @@ pub(crate) fn polyline_offset_layout(
     };
     for index in 0..unique_count {
         let mut inside = false;
+        let mut outside = false;
         let corner = if !closed && index == 0 {
             let point = vertices[0].translated(lefts[0].scaled(distance)?)?;
             (point, point)
@@ -1218,6 +1221,7 @@ pub(crate) fn polyline_offset_layout(
                 .cross(directions[index])?
                 .dot(normal.as_vector())?;
             inside = turn * distance > tolerance.angular() * distance.abs();
+            outside = turn * distance < -tolerance.angular() * distance.abs();
             if corner_style != CurveOffsetCornerStyle::Sharp
                 && turn * distance < -tolerance.angular() * distance.abs()
             {
@@ -1252,6 +1256,7 @@ pub(crate) fn polyline_offset_layout(
         }
         corners.push(corner);
         inside_corners.push(inside);
+        outside_corners.push(outside);
     }
     for index in 0..segment_count {
         let start = corners[index].1;
@@ -1269,6 +1274,7 @@ pub(crate) fn polyline_offset_layout(
         normal,
         corners,
         inside_corners,
+        outside_corners,
     })
 }
 
