@@ -1,12 +1,12 @@
-"""Pinned finite one-sided surface-matching foundation; command still pending."""
+"""Pinned geometry foundation; later command work has separate records."""
 import argparse,gzip,json,math,re,subprocess
 from .surface_match_evidence import ROOT,PROOF,collect,sha
 from .check_surface_match import commands
 BASELINE='aff9941576446af2e7b51e18c2c55ddd90c46f0b'
 
 
-def comparisons(proof=PROOF):
-    rows,supplemental,audits,averages,captures,paths=collect(proof)
+def comparisons(proof=PROOF,*,captures_proof=None):
+    rows,supplemental,audits,averages,captures,paths=collect(proof if captures_proof is None else captures_proof)
     qualified=dict(rows,**audits);expected=dict(qualified,**supplemental);stages={};normal_audits={}
     for mode in ['portable','native']:
         log=proof/('surface-'+mode+'.log.gz');paths.add(log)

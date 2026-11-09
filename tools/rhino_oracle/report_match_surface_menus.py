@@ -5,8 +5,8 @@ from .check_match_surface_menus import commands
 BASELINE='7b2ba591e24cae27ff3c2f995fe0e81ab0d2f782'
 
 
-def comparisons(proof=PROOF):
-    value,paths=collect(proof)
+def comparisons(proof=PROOF,*,captures_proof=None):
+    value,paths=collect(proof if captures_proof is None else captures_proof)
     from .match_surface_command_evidence import collect as legacy
     rows,_,_,legacy_paths=legacy();paths.update(legacy_paths);stages={}
     for mode in ['portable','native']:

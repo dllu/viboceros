@@ -113,12 +113,12 @@ fn failing_midpoints(
                 if det <= 0. {
                     return Err(error("singular curvature refinement frame"));
                 }
-                let a = (g * u.dot(&first) - f * v.dot(&first)) / det;
-                let b = (e * v.dot(&first) - f * u.dot(&first)) / det;
+                let du = (g * u.dot(&first) - f * v.dot(&first)) / det;
+                let dv = (e * v.dot(&first) - f * u.dot(&first)) / det;
                 let desired = m.dot(
-                    &(vector(reference.derivative_uu) * a * a
-                        + vector(reference.derivative_uv) * (2. * a * b)
-                        + vector(reference.derivative_vv) * b * b),
+                    &(vector(reference.derivative_uu) * du * du
+                        + vector(reference.derivative_uv) * (2. * du * dv)
+                        + vector(reference.derivative_vv) * dv * dv),
                 );
                 let actual = n.dot(&vector(sample.derivative_uu));
                 if (actual - desired).abs()

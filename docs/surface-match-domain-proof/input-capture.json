@@ -1,0 +1,15 @@
+{
+  "family": "match_surface_tolerances_sdk",
+  "command": [
+    "tools/rhino_oracle/run_headless.sh",
+    "exec",
+    "bash",
+    "-c",
+    "python3 -m tools.rhino_oracle.generate_match_surface_tolerances_sdk > /tmp/match-tolerance-sdk.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-tolerance-sdk.status; exit \"$capture_result\""
+  ],
+  "exit_status": 0,
+  "log": "capture-sdk.log.gz",
+  "archive": "observations/match_surface_tolerances_sdk.json.gz",
+  "request_sha256": "05327b6d13df4c754703dbeb01931195a39777f467f4caf0a606a125775d574a",
+  "observation_sha256": "9dde0209ba9631d8ff533c6998be1723010e67d72ae01268898ccf10ff0b4968"
+}

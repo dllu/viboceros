@@ -30,6 +30,12 @@ requested angles of `1e-5`, `1e-6` and `1e-7` radians contain a maximum sampled
 normal mismatch of about `2.39e-5` radians. A successful return does not certify
 that all requested continuity tolerances were achieved.
 
+Curvature refinement keeps knot parameters in the source's transverse domain;
+jet-coordinate coefficients cannot replace span endpoints. The
+[domain regression](surface-match-domain-validation.json) checks negative, unit
+and positive charts, geometry invariance and 3DM round trips. This repairs an
+out-of-domain insertion failure without qualifying custom tolerance fitting.
+
 [Finite validation](surface-match-validation.json) covers authored polynomial
 and rational inputs, different degrees, nonunit domains, all natural sides,
 isocurve modes, closest contacts, refinement, topology and 3DM round trips.

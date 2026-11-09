@@ -113,7 +113,7 @@ class SurfaceMatchTests(unittest.TestCase):
                     with self.assertRaises(ValueError):sdk.run(dict(op='match_surface_sdk',id=key,case=key),host,1,request([])['tolerance'])
             curve.Dispose.assert_called_once()
             for obj in sources+breps+[output]:obj.Dispose.assert_called_once()
-            checks[0].Dispose.assert_has_calls([] if stage=='native' else [mock.call()])
+            self.assertEqual(checks[0].Dispose.call_count,int(stage!='native'))
             self.assertEqual(checks[1].Dispose.call_count,int(stage=='success'))
 
 if __name__=='__main__':unittest.main()

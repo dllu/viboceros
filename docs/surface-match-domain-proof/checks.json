@@ -1,0 +1,228 @@
+[
+  {
+    "name": "domain-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "surface_match_refinement",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 9.132775271020364
+  },
+  {
+    "name": "ui-portable",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "app::tests::match_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 134.67631258198526
+  },
+  {
+    "name": "domain-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "surface_match_refinement",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 10.15979292296106
+  },
+  {
+    "name": "ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "app::tests::match_surface",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 112.60031737096142
+  },
+  {
+    "name": "surface-portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 39.78457629401237
+  },
+  {
+    "name": "clippy-portable",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 82.4555316559854
+  },
+  {
+    "name": "surface-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "match_surfaces",
+      "--test",
+      "merge_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 40.98629876796622
+  },
+  {
+    "name": "clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--features",
+      "native-smlib",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": 0,
+    "seconds": 62.33685009001056
+  },
+  {
+    "name": "kernel-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-smlib",
+      "--features",
+      "native",
+      "--test",
+      "surface_merge",
+      "--test",
+      "sheets",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 6.740402854979038
+  },
+  {
+    "name": "fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "status": 0,
+    "seconds": 8.976924272021279
+  },
+  {
+    "name": "subd-command-native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "subd_box_native",
+      "--test",
+      "subd_plane_native",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 56.40784729795996
+  },
+  {
+    "name": "subd-ui-native",
+    "command": [
+      "cargo",
+      "test",
+      "--bin",
+      "viboceros",
+      "--features",
+      "native-smlib",
+      "subd_primitives",
+      "--",
+      "--nocapture"
+    ],
+    "status": 0,
+    "seconds": 35.27788700500969
+  },
+  {
+    "name": "python-subd",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_subd_box",
+      "tools.rhino_oracle.test_subd_plane"
+    ],
+    "status": 0,
+    "seconds": 0.9388207820011303
+  },
+  {
+    "name": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_surface_match",
+      "tools.rhino_oracle.test_merge_surfaces",
+      "tools.rhino_oracle.test_merge_surface_command",
+      "tools.rhino_oracle.test_merge_surface_command_record",
+      "tools.rhino_oracle.test_client",
+      "tools.rhino_oracle.test_capture_family",
+      "tools.rhino_oracle.test_structural_sdk",
+      "tools.rhino_oracle.test_surface_match_tolerances",
+      "tools.rhino_oracle.test_surface_match_record",
+      "tools.rhino_oracle.test_match_surface_menu_record",
+      "tools.rhino_oracle.test_match_surface_command_record"
+    ],
+    "status": 0,
+    "seconds": 7.495128689974081
+  }
+]
