@@ -6,6 +6,10 @@ mod analytic_sphere;
 mod analytic_torus;
 mod basis;
 mod closest_point;
+mod deviation_samples;
+pub use deviation_samples::{
+    SurfaceDeviationSampleSummary, SurfaceDeviationSamples, SurfacePointPairWitness,
+};
 mod control_polygon;
 mod discontinuities;
 mod evaluate;

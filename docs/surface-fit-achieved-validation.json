@@ -1,0 +1,32 @@
+{
+  "full_rhino_fit_parity": false,
+  "fit_srf_registered": false,
+  "existing_fitter_admission_changed": false,
+  "sampled_witnesses_are_complete_bounds": false,
+  "observations": 15,
+  "backends": {
+    "portable": {
+      "captured_bases": 14,
+      "native_null": 1,
+      "cpp_managed_identical": 15,
+      "identical_output_report_pairs": 2,
+      "source_parameter_unproved": 8,
+      "maximum_authored_input_bound": 1.2685639466970849e-16,
+      "maximum_native_basis_bound": 3.630361386340311e-15,
+      "maximum_archive_bound": 0.0
+    },
+    "native": {
+      "captured_bases": 14,
+      "native_null": 1,
+      "cpp_managed_identical": 15,
+      "identical_output_report_pairs": 2,
+      "source_parameter_unproved": 8,
+      "maximum_authored_input_bound": 1.2685639466970849e-16,
+      "maximum_native_basis_bound": 3.755525285327822e-15,
+      "maximum_archive_bound": 0.0
+    }
+  },
+  "offline_metric_rows": 54,
+  "baseline_revision": "cfb2bba862fa42e0f2773997eaa15b2adef79f0b",
+  "receipts": "surface-fit-achieved-proof/receipts.json"
+}

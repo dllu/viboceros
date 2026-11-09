@@ -13290,6 +13290,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "surface_knot_reduction":
         import surface_knot_reduction_probe
         return surface_knot_reduction_probe.run(operation, globals(), iterations, tolerance)
+    if kind == "surface_fit_achieved":
+        import surface_fit_achieved_probe
+        return surface_fit_achieved_probe.run(operation, globals(), iterations, tolerance)
     if kind == "surface_fit":
         import surface_fit_probe
         return surface_fit_probe.run(operation, globals(), iterations, tolerance)

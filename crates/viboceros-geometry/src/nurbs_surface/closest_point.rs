@@ -11,12 +11,15 @@ mod tests;
 impl NurbsSurface {
     /// Local continuation for a caller that already owns a source chart.
     /// This proposes a stationary point, not a global closest-point certificate.
-    pub(crate) fn closest_parameters_from_seed(
+    /// Seeds are clamped to the active domains. Use `closest_parameters` for
+    /// the bounded multi-start search when no reliable chart seed is available.
+    pub fn closest_parameters_from_seed(
         &self,
         target: Point3,
         seed: [Real; 2],
         tolerance: Tolerance,
     ) -> Result<(Real, Real), GeometryError> {
+        require_finite(seed, "surface closest-point seed")?;
         let u = self.domain_u();
         let v = self.domain_v();
         SurfaceQuery::new(self).refine_closest_parameters(

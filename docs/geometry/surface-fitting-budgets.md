@@ -48,3 +48,7 @@ implement Rhino's complete stopping/null policy. Native adaptive basis selection
 and the physical `FitSrf` command remain unfinished. The
 [validation record](../surface-fit-capacity-validation.json) preserves both
 successful captures and all nulls, together with portable/native replay logs.
+
+The [public achieved-tolerance investigation](../surface-fit-achieved.md)
+additionally rules out a simple sampled-distance cutoff as a complete native
+knot-selection rule. Budget eligibility alone never authorizes a fit.
