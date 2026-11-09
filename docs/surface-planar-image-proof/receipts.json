@@ -1,0 +1,175 @@
+{
+  "baseline_revision": "9ef0c15c32ccc1fd4161ea6c57309d730606fa83",
+  "third_party_revisions": {
+    "opennurbs": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "usd_brep": "c9c5979f04cea8c38213004d4f04df0dcfb40d05"
+  },
+  "source_overrides": {
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/317ad98fdc06fb2ca68d651019b42941b9fe196d74dce1c29b59d33f6fb32ed9.gz",
+      "sha256": "317ad98fdc06fb2ca68d651019b42941b9fe196d74dce1c29b59d33f6fb32ed9"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/7e87d0f687d0fecc0d231216d23e5236fc755157dbbd769cf45ad5183ff5a86f.gz",
+      "sha256": "7e87d0f687d0fecc0d231216d23e5236fc755157dbbd769cf45ad5183ff5a86f"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/planar_image.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/ad2d9c2af24df067b4d89af9d4486126abd8856b5123f2d7f85b65df10071d89.gz",
+      "sha256": "ad2d9c2af24df067b4d89af9d4486126abd8856b5123f2d7f85b65df10071d89"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/planar_image/half_space.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/703a6a92c271ea6460de0f07f3db51916ade9449a8718806968f46477c26448c.gz",
+      "sha256": "703a6a92c271ea6460de0f07f3db51916ade9449a8718806968f46477c26448c"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/planar_image/tests.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/eaa07cd07aaad9315111f4cf402ee64564a475b0a12d92570a29cb0d68ffec0b.gz",
+      "sha256": "eaa07cd07aaad9315111f4cf402ee64564a475b0a12d92570a29cb0d68ffec0b"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/5e55abc6fdd050dfdefedc682af71385bf1d0b7e1599220071cae16c32ef5cfa.gz",
+      "sha256": "5e55abc6fdd050dfdefedc682af71385bf1d0b7e1599220071cae16c32ef5cfa"
+    },
+    "crates/viboceros-oracle/src/surface_planar_image.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/2730cc2b04333ffeec4fa94cc4d9f86839e33020d51e556ab9bbc7c890a60b83.gz",
+      "sha256": "2730cc2b04333ffeec4fa94cc4d9f86839e33020d51e556ab9bbc7c890a60b83"
+    },
+    "crates/viboceros-oracle/tests/surface_planar_image_native.rs": {
+      "snapshot": "docs/surface-planar-image-proof/sources/f94d590fce5b91a090a5d926f149629f6d895ab874bcf3e2ba5386acade03f33.gz",
+      "sha256": "f94d590fce5b91a090a5d926f149629f6d895ab874bcf3e2ba5386acade03f33"
+    },
+    "tools/rhino_oracle/rhino_worker.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/8a69812bc8b7bb6e172b66c14611867febae35d3d4d529cb33b5366666613810.gz",
+      "sha256": "8a69812bc8b7bb6e172b66c14611867febae35d3d4d529cb33b5366666613810"
+    },
+    "tools/rhino_oracle/structural_sdk.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/177a058f24af25085fa86d2bc75461b5ef4d4e71a7be45d8d34e032eabcae792.gz",
+      "sha256": "177a058f24af25085fa86d2bc75461b5ef4d4e71a7be45d8d34e032eabcae792"
+    },
+    "tools/rhino_oracle/surface_fit_command_probe.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/42de570051dbdac44af6ddebe15d3f658e33f66506af716557170349c3e2206d.gz",
+      "sha256": "42de570051dbdac44af6ddebe15d3f658e33f66506af716557170349c3e2206d"
+    },
+    "tools/rhino_oracle/generate_surface_fit_commands.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/e0d9c740793afd147ca25aaa7c5b21be71502ee75e097ee3e6168d3fc91eab83.gz",
+      "sha256": "e0d9c740793afd147ca25aaa7c5b21be71502ee75e097ee3e6168d3fc91eab83"
+    },
+    "tools/rhino_oracle/generate_surface_fit_command_faces.py": {
+      "snapshot": "docs/surface-planar-image-proof/sources/9a62a96dcfd4dc9f336e2ae878cb59de8f778f3c6e561da8626d80cb06612a5c.gz",
+      "sha256": "9a62a96dcfd4dc9f336e2ae878cb59de8f778f3c6e561da8626d80cb06612a5c"
+    },
+    "tools/rhino_oracle/test_surface_fit_commands.py": {
+      "snapshot": "docs/surface-planar-image-proof/sources/7059097a3163e368bc64fd1358e362c08385061a793e6b7729e653827ea2fbc7.gz",
+      "sha256": "7059097a3163e368bc64fd1358e362c08385061a793e6b7729e653827ea2fbc7"
+    },
+    "tools/rhino_oracle/report_surface_planar_image.py": {
+      "snapshot": "docs/surface-planar-image-proof/sources/8b0c9b5603c7628e5311d87bc4b9c9df36c71f55ea9701c7de12419c3f171e36.gz",
+      "sha256": "8b0c9b5603c7628e5311d87bc4b9c9df36c71f55ea9701c7de12419c3f171e36"
+    },
+    "tools/rhino_oracle/test_surface_planar_image_record.py": {
+      "snapshot": "docs/surface-planar-image-proof/sources/5346e2d84bb72536bceac3b99cffdd0f12a3d3aef27c8cb4d63874bcf116fd71.gz",
+      "sha256": "5346e2d84bb72536bceac3b99cffdd0f12a3d3aef27c8cb4d63874bcf116fd71"
+    },
+    "tools/rhino_oracle/run_headless.sh": {
+      "snapshot": "docs/surface-planar-image-proof/sources/2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5.gz",
+      "sha256": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_planar_image_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_planar_image_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/native.log.gz"
+    },
+    "certificates": {
+      "command": "cargo test -p viboceros-geometry --lib surface_pullback::certificate -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/certificates.log.gz"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fit_commands",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/python.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/app.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/surface-planar-image-proof/format.log.gz"
+    }
+  },
+  "native_launches": [
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_commands",
+      "exit_code": 1,
+      "family": "surface_fit_commands",
+      "log": "docs/surface-planar-image-proof/capture-1.log.gz",
+      "capsule": "tools/rhino_oracle/observations/failures/surface_fit_commands-fd20e6be66d54ba44c27152b6ac5ab929004a31b7e4e0e76dbd088d07b213183.json.gz"
+    },
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_commands",
+      "exit_code": 1,
+      "family": "surface_fit_commands",
+      "log": "docs/surface-planar-image-proof/capture-2.log.gz",
+      "capsule": "tools/rhino_oracle/observations/failures/surface_fit_commands-42744ff7981ed94e3147bf296c08cc381099dee8cfc5528b0cd03ddc643ea2b5.json.gz"
+    },
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_commands",
+      "exit_code": 0,
+      "family": "surface_fit_commands",
+      "log": "docs/surface-planar-image-proof/capture-3.log.gz"
+    },
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_command_faces",
+      "exit_code": 0,
+      "family": "surface_fit_command_faces",
+      "log": "docs/surface-planar-image-proof/capture-4.log.gz"
+    }
+  ],
+  "rejected_runs": [
+    {
+      "log": "docs/surface-planar-image-proof/unqualified-portable.log.gz",
+      "exit_code": 101,
+      "reason": "Initial protocol test demanded the sharp 0.125 bound at a looser 0.2 limit; the valid outward result was 0.1250000000000001. Corrected the assertion and separately checked the sharp 0.125 gate. Retained as unqualified diagnostics, without a full frozen-source replay claim."
+    },
+    {
+      "log": "docs/surface-planar-image-proof/unqualified-native.log.gz",
+      "exit_code": 101,
+      "reason": "Initial protocol test demanded the sharp 0.125 bound at a looser 0.2 limit; the valid outward result was 0.1250000000000001. Corrected the assertion and separately checked the sharp 0.125 gate. Retained as unqualified diagnostics, without a full frozen-source replay claim."
+    }
+  ],
+  "files": {
+    "docs/surface-planar-image-proof/app.log.gz": "a1c71a797787c2ad742b22bd3f9fff5d6a6cb1b51b2bf1231105f2ca10669b91",
+    "docs/surface-planar-image-proof/capture-1.log.gz": "fc60e3bd084462a0cacc0d315eba0717f59bf81b89eb4f7063cf8f5e701bdc59",
+    "docs/surface-planar-image-proof/capture-2.log.gz": "8d1c8a01abaf8d38805e2a16096c8a4f22db484ad1a400678de1afcfd70dca86",
+    "docs/surface-planar-image-proof/capture-3.log.gz": "2c8c338a048f37fff8dc280477d336e4b1cbbafdad41e4bdba72300b3874c465",
+    "docs/surface-planar-image-proof/capture-4.log.gz": "e8111dbf54b35705b7b891e8a73c3d6ca979709472dfac6ca0287edce8ebe146",
+    "docs/surface-planar-image-proof/certificates.log.gz": "f8ac2a7c49cf4e1763544ac5d38673a8c28fe17277917f291d2932f57765e30c",
+    "docs/surface-planar-image-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-planar-image-proof/native.log.gz": "3e75d54fdbffe39144107b644e33bb5366ecbb59970cc6c3c733560df11cf4ec",
+    "docs/surface-planar-image-proof/portable.log.gz": "ed2780697b6875a7315bbd0fc1ab495260f6beec14c859fbbceeaf4e7ad178fd",
+    "docs/surface-planar-image-proof/python.log.gz": "0fb60b4207c47968303f3edf5dcfed7707e9338d8680cc3a995bce5e32b4c101",
+    "docs/surface-planar-image-proof/unqualified-native.log.gz": "b73583dc004d0d96eb3a990183a4997fe44cbff54f1773c55c8ae949e250f10a",
+    "docs/surface-planar-image-proof/unqualified-portable.log.gz": "abfc7ebcb0370296399058aaa10b26dbfca345e91863ea3e4a6465ae5f32689d",
+    "tools/rhino_oracle/fixtures/surface_fit.json": "04a3876acf2276699aad810e835a048da61c0fe51f233b738c5dbe4cedf75ed5",
+    "tools/rhino_oracle/fixtures/surface_fit_adaptive.json": "88eb77c7889a14faf80249ba4f52703d9dc3e952f2709812427784e68b43740d",
+    "tools/rhino_oracle/fixtures/surface_fit_command_faces.json": "7cfe34c8f217b5a8fae61203fa3ea4f6ec2c1e995282258fa12e9fb9dc9acbce",
+    "tools/rhino_oracle/fixtures/surface_fit_commands.json": "8e35a765941ab429d09d8acfb911083ffd8adf8f04e89c1615b345cbe4180404",
+    "tools/rhino_oracle/fixtures/surface_fit_strips.json": "b164c6e40450eb93754409c23b6bd367e7d6976eefa538ad33313d2fa9fb04d7",
+    "tools/rhino_oracle/observations/failures/surface_fit_commands-42744ff7981ed94e3147bf296c08cc381099dee8cfc5528b0cd03ddc643ea2b5.json.gz": "dcb32e93954573fe37328557c2891771e3c5678ac77bf2a61b05dc081a9b9d72",
+    "tools/rhino_oracle/observations/failures/surface_fit_commands-fd20e6be66d54ba44c27152b6ac5ab929004a31b7e4e0e76dbd088d07b213183.json.gz": "8b11aad72b7deeb32a95feb306ccc5775a322c852c7ff56416c9068c3b707d62",
+    "tools/rhino_oracle/observations/surface_fit.json.gz": "7040836715c70c6b33581058af3222cd6a3b12e2e7e38e75beafdeb38121749f",
+    "tools/rhino_oracle/observations/surface_fit_adaptive.json.gz": "6c5edee3d6c3ea0eff2148ee659d7ebfa58212aa03ffc985d6f48ec4896f15a1",
+    "tools/rhino_oracle/observations/surface_fit_command_faces.json.gz": "666cb754f5bf8278b31b31a987e4669499b52bfc745ad6500372d77691347216",
+    "tools/rhino_oracle/observations/surface_fit_commands.json.gz": "a69cc387cd0daecaf5d1b7105f531350918fcedfd7845b85d9e14251623b6650",
+    "tools/rhino_oracle/observations/surface_fit_strips.json.gz": "3f256ba7c4af103721f5ee7e70bccd6d82c36e1ea93a941ab339a53e01dc1ed5"
+  }
+}

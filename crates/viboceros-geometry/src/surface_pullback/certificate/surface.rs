@@ -17,6 +17,27 @@ pub(super) struct Surface {
     isocurve: Option<linear::Isocurve>,
 }
 impl Surface {
+    /// Same validated basis and weights with exact auxiliary Cartesian controls.
+    /// Used for image enclosures; it never rounds or modifies the stored source.
+    pub(super) fn with_cartesian_controls(
+        source: &NurbsSurface,
+        points: &[[Rational; 3]],
+        budget: &mut Budget,
+    ) -> Result<Option<Self>, GeometryError> {
+        if points.len() != source.control_points().len() {
+            return Ok(None);
+        }
+        let Some(mut result) = Self::new(source, budget)? else {
+            return Ok(None);
+        };
+        for (h, p) in result.controls.iter_mut().zip(points) {
+            for k in 0..3 {
+                h[k] = &p[k] * &h[3];
+                budget.check(&h[k])?;
+            }
+        }
+        Ok(Some(result))
+    }
     pub fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Option<Self>, GeometryError> {
         Self::with_discontinuities(surface, budget, false)
     }

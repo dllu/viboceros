@@ -42,6 +42,9 @@ including a 3DM round-trip. This qualifies tensor controls in those bases.
 Rhino's adaptive knot selection and the `FitSrf` command remain unfinished. In
 particular, a native fit may change planar parameterization; an unproved
 normalized parameter bound does not establish geometric disagreement.
+The [planar image certificate](surface-planar-images.md) and
+[physical command captures](../surface-fit-command-investigation.md) address
+these distinct questions without changing fitting admission.
 The [validation record](../surface-fit-basis-validation.json) keeps native null
 results and declined source-correspondence bounds separate from basis matches.
 

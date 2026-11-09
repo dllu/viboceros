@@ -61,3 +61,5 @@ when their captured bases are supplied separately. These are different claims.
 
 Rhino's adaptive knot selection, physical `FitSrf` options and retrimming remain
 unfinished. The `FitSrf` command is still unregistered.
+The [physical command investigation](../surface-fit-command-investigation.md)
+records selection eligibility and nine SDK-equal untrimmed refits separately.

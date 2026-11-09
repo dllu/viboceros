@@ -1,0 +1,32 @@
+//! Local complete geometric image bound through exact planar auxiliary tensors.
+use super::*;
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct Fixture {
+    pub first: NurbsSurfaceDefinition,
+    pub second: NurbsSurfaceDefinition,
+    #[serde(default)]
+    pub absolute_tolerance: Option<f64>,
+}
+
+pub(super) fn run(
+    fixture: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let first = nurbs_surface_from_definition(&fixture.first)?;
+    let second = nurbs_surface_from_definition(&fixture.second)?;
+    let limit = fixture.absolute_tolerance.unwrap_or(tolerance.absolute());
+    let build = || first.planar_surface_image_deviation_bound(&second, limit);
+    let mut bound = build()?;
+    let started = Instant::now();
+    for _ in 0..iterations {
+        bound = black_box(build()?);
+    }
+    let elapsed =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((
+        json!({"maximum_deviation_bound":bound,"certified":bound.is_some()}),
+        elapsed,
+    ))
+}

@@ -1,0 +1,42 @@
+{
+  "full_rhino_fit_parity": false,
+  "fit_srf_registered": false,
+  "automatic_fit_admission_changed": false,
+  "normalized_uv_contract_changed": false,
+  "backends": {
+    "portable": {
+      "images": {
+        "source_native_pairs": 90,
+        "certified_planar_images": 30,
+        "parameter_unproved": 22,
+        "image_unproved": 60,
+        "maximum_image_bound": 2.4424906541753464e-15
+      },
+      "commands": {
+        "accepted": 9,
+        "selection_rejected": 3,
+        "fit_declined": 3,
+        "sdk_equal_refits": 9,
+        "undo_redo_workflows": 15
+      }
+    },
+    "native": {
+      "images": {
+        "source_native_pairs": 90,
+        "certified_planar_images": 30,
+        "parameter_unproved": 22,
+        "image_unproved": 60,
+        "maximum_image_bound": 2.4424906541753464e-15
+      },
+      "commands": {
+        "accepted": 9,
+        "selection_rejected": 3,
+        "fit_declined": 3,
+        "sdk_equal_refits": 9,
+        "undo_redo_workflows": 15
+      }
+    }
+  },
+  "baseline_revision": "9ef0c15c32ccc1fd4161ea6c57309d730606fa83",
+  "receipts": "surface-planar-image-proof/receipts.json"
+}

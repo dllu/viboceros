@@ -1,5 +1,6 @@
 //! Exact normalized tensor correspondence, including every one-sided knot limit.
 use super::*;
+mod planar_image;
 mod tensor;
 #[cfg(test)]
 mod tests;
