@@ -16,6 +16,7 @@ mod polyline;
 mod pushup;
 mod surface;
 mod surface_minimum;
+mod surface_pair;
 #[cfg(test)]
 mod tests;
 

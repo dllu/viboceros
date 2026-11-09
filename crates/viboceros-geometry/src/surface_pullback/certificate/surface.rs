@@ -18,6 +18,13 @@ pub(super) struct Surface {
 }
 impl Surface {
     pub fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Option<Self>, GeometryError> {
+        Self::with_discontinuities(surface, budget, false)
+    }
+    pub(super) fn with_discontinuities(
+        surface: &NurbsSurface,
+        budget: &mut Budget,
+        allow_discontinuous: bool,
+    ) -> Result<Option<Self>, GeometryError> {
         budget.charge(
             surface.control_points().len() + surface.knots_u().len() + surface.knots_v().len(),
         )?;
@@ -31,7 +38,7 @@ impl Surface {
             knots[axis].chunk_by(|a, b| a == b).any(|group| {
                 group[0] > knots[axis][degree[axis]]
                     && group[0] < knots[axis][counts[axis]]
-                    && group.len() > degree[axis]
+                    && group.len() > degree[axis] + usize::from(allow_discontinuous)
             })
         }) {
             return Ok(None);
@@ -75,6 +82,38 @@ impl Surface {
             interval_coefficients: interval::Coefficients::default(),
             isocurve: None,
         }))
+    }
+    pub(super) fn normalized_cuts(&self, axis: usize) -> Vec<Rational> {
+        let start = &self.knots[axis][self.degree[axis]];
+        let length = &self.knots[axis][self.counts[axis]] - start;
+        let mut cuts = vec![Rational::zero()];
+        cuts.extend(
+            self.spans[axis]
+                .iter()
+                .map(|&span| (&self.knots[axis][span + 1] - start) / &length),
+        );
+        cuts
+    }
+    pub(super) fn normalized_patch(
+        &mut self,
+        rectangle: &[[Rational; 2]; 2],
+        budget: &mut Budget,
+    ) -> Result<Vec<H>, GeometryError> {
+        let bounds: [[Rational; 2]; 2] = std::array::from_fn(|axis| {
+            let start = &self.knots[axis][self.degree[axis]];
+            let length = &self.knots[axis][self.counts[axis]] - start;
+            rectangle[axis].each_ref().map(|t| start + t * &length)
+        });
+        let span = self
+            .containing_patch(&bounds, budget)?
+            .ok_or(GeometryError::SurfaceCurveCertificateWorkLimit)?;
+        let intervals: [[Rational; 2]; 2] = std::array::from_fn(|axis| {
+            let start = &self.knots[axis][span[axis]];
+            let length = &self.knots[axis][span[axis] + 1] - start;
+            bounds[axis].each_ref().map(|t| (t - start) / &length)
+        });
+        let net = self.patch(span, budget)?;
+        restrict(&net, self.degree, &intervals, budget)
     }
     pub(super) fn distance_patches(
         &mut self,

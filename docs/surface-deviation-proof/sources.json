@@ -1,0 +1,11 @@
+{
+  "baseline_revision": "25c906ad04626437d1fcfdbc0d347f951a4a54f7",
+  "overrides": {
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "fff02c767dae7e0bfc0590ba7fdbf78def5327c3523ac044439d49e42ca5c5b2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "df97369882849ce0e52cc61d94ebfe0b2b4dbd1741c9e74559fde29210c3e92d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs": "3262361bfc1db5c1a6ee3e7d10d3a3ba5e7cf100b6e3f68399f7d8b9fdff2972",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tensor.rs": "76483897d7f7d38a1dcd9df1c0eb7a7043775f3cfc7df10656e126e402bc0c03",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tests.rs": "f6b5824ae61ce243c33ba42e59a079fe0470cf5ad263f9134cbd27a971375bef",
+    "crates/viboceros-command/tests/average_surfaces.rs": "bba470898a6225531344dabe01ae377bcf5bdf2e3ead81b4d0617ecb5346be53"
+  }
+}

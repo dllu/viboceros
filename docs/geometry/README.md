@@ -22,6 +22,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [curve closure and shared seam grips](../curve-closure.md)
 - [Bounded curve approximation and mesh Pull preparation](../curve-approximation.md)
 - [Bounded NURBS knot reduction](knot-reduction.md)
+- [Complete NURBS surface correspondence bounds](surface-correspondence.md)
 - [Preserving rational NURBS storage inside polycurves and B-rep edges](../nested-rational-3dm.md)
 - [Analytic normals and tessellation provenance](../tessellation-normals.md)
 - [Modelling issue fixes and regression results](../modelling-issues.md)

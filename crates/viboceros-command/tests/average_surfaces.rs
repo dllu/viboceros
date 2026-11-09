@@ -84,7 +84,15 @@ fn compare_case(id: &str, value: &serde_json::Value, prefix: &str) {
     .unwrap();
     assert_eq!((first, second), original);
     let mut maximum = 0_f64;
+    let mut complete_bound = 0_f64;
     for (surface, key) in result.iter().zip(["output", "target"]) {
+        let target = captured::surface(&value[key]["surfaces"][0]);
+        complete_bound = complete_bound.max(
+            surface
+                .parameter_surface_deviation_bound(&target, captured::EPSILON)
+                .unwrap()
+                .expect("complete native surface correspondence"),
+        );
         let brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(
             surface.clone(),
             surface.domain_u(),
@@ -94,8 +102,20 @@ fn compare_case(id: &str, value: &serde_json::Value, prefix: &str) {
         )
         .unwrap();
         maximum = maximum.max(captured::compare(&brep, &value[key]));
-        maximum = maximum.max(captured::compare(&captured::archive(&brep), &value[key]));
+        let restored = captured::archive(&brep);
+        maximum = maximum.max(captured::compare(&restored, &value[key]));
+        complete_bound = complete_bound.max(
+            restored.faces()[0]
+                .surface()
+                .parameter_surface_deviation_bound(&target, captured::EPSILON)
+                .unwrap()
+                .expect("complete native surface correspondence after 3DM"),
+        );
     }
+    println!(
+        "SURFACE_PAIR_CERTIFICATE {}",
+        serde_json::json!({"id":id,"maximum_surface_bound":complete_bound,"surfaces":2,"archives":2})
+    );
     println!(
         "{prefix} {}",
         serde_json::json!({"id":id,"maximum_geometry_error":maximum,"outputs":2,"archives":2})

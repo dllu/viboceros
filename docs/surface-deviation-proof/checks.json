@@ -1,0 +1,49 @@
+[
+  {
+    "label": "certificates",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "surface_pullback::certificate",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "certificates.log.gz"
+  },
+  {
+    "label": "portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "average_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "portable.log.gz"
+  },
+  {
+    "label": "native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "average_surfaces",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "native.log.gz"
+  }
+]
