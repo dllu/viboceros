@@ -1,0 +1,129 @@
+{
+  "baseline_revision": "a87a6de76dfa0565bc041ed82d0820f7a7423972",
+  "third_party_revisions": {
+    "opennurbs": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "usd_brep": "c9c5979f04cea8c38213004d4f04df0dcfb40d05"
+  },
+  "source_overrides": {
+    "crates/viboceros-geometry/src/lib.rs": {
+      "sha256": "335a379b30e4c76d71ae82d4efe86de6cf31a6feeefab4d04ec1444adfdd2749",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-geometry/src/lib.rs.gz"
+    },
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "sha256": "26268b8f534d2280497a3d7c1159002223315b983715de6290bf0c395cc42465",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz"
+    },
+    "crates/viboceros-geometry/src/surface_fit/tests.rs": {
+      "sha256": "ef7bb0cefb4de6fde89f83d41a643960197077cbc014a76f9333b1cc65e9d914",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-geometry/src/surface_fit/tests.rs.gz"
+    },
+    "crates/viboceros-smlib/src/lib.rs": {
+      "sha256": "8de2b05964e0624a70d69891705e381ce754fdb226583a9ad66fc92f07d43402",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-smlib/src/lib.rs.gz"
+    },
+    "crates/viboceros-smlib/src/native.rs": {
+      "sha256": "75a068099bf5ac0404c99c1dac8061714cba1769fd8b3b3872e5bc3bb673556e",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-smlib/src/native.rs.gz"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": {
+      "sha256": "7b62f121fef88823cf2e6124e626137120f928cd66bbdae60e23ec4b8c862f99",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-smlib/src/native/knot_refinement.rs.gz"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs": {
+      "sha256": "81061c15e196b303a448cc026414ee0ba8a80bfa60af8006f0e7a9bef42383c3",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs.gz"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_basis_native.rs": {
+      "sha256": "a238a901886fdb268564a062322cf9d312fb14032ce6921b0044d13af1ec03f9",
+      "snapshot": "docs/surface-fit-basis-proof/sources/crates/viboceros-oracle/tests/surface_fit_basis_native.rs.gz"
+    },
+    "tools/rhino_oracle/structural_sdk.py": {
+      "sha256": "f0290d08c35624d4f35b2a199d92d925d323aeb858ffdd700c43511c5d65e04c",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/structural_sdk.py.gz"
+    },
+    "tools/rhino_oracle/rhino_worker.py": {
+      "sha256": "10e88e56a3869ab6d0453579df1dffe76beb749cd5e653a0b3667806ac68caec",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/rhino_worker.py.gz"
+    },
+    "tools/rhino_oracle/surface_fit_probe.py": {
+      "sha256": "2833f65551a279189261a5f8f038431736de4a1170b612541690257d241275e9",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/surface_fit_probe.py.gz"
+    },
+    "tools/rhino_oracle/generate_surface_fit.py": {
+      "sha256": "51493f1f6948cd1a09452a89396d49e731fc148e9e2b5cb74a446684209d4834",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/generate_surface_fit.py.gz"
+    },
+    "tools/rhino_oracle/test_surface_fit.py": {
+      "sha256": "8777a6ae4fbcdebc1356d9ebf3c04d688eedca4303f88bb10772e1ea17716534",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/test_surface_fit.py.gz"
+    },
+    "tools/rhino_oracle/report_surface_fit_basis.py": {
+      "sha256": "9efeb7754505326ac7f038062005b71f1504c278ed94b3cac2c402d8edbd602b",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/report_surface_fit_basis.py.gz"
+    },
+    "tools/rhino_oracle/test_surface_fit_record.py": {
+      "sha256": "d9ad5d84210a46eeb30e061bf0580d717da77c8db63249048d12c2af762ab7c0",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/test_surface_fit_record.py.gz"
+    },
+    "tools/rhino_oracle/run_headless.sh": {
+      "sha256": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5",
+      "snapshot": "docs/surface-fit-basis-proof/sources/tools/rhino_oracle/run_headless.sh.gz"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_basis_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_basis_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/native.log.gz"
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit::tests -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/kernel.log.gz"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fit",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/python.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/app.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/format.log.gz"
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit",
+      "exit_code": 0,
+      "log": "docs/surface-fit-basis-proof/capture.log.gz"
+    }
+  },
+  "rejected_runs": [
+    {
+      "log": "docs/surface-fit-basis-proof/native-unqualified-layout-failure.log.gz",
+      "exit_code": 101,
+      "reason": "Initial native candidate producer passed three-channel XYZ columns directly to the four-channel interpolation bridge. Replaced by a local layout adapter. This failed run is not a qualified source replay."
+    }
+  ],
+  "files": {
+    "docs/surface-fit-basis-proof/portable.log.gz": "6d69db95fa3c96934e0fc9f2ccbbc0b3c9f5c111c2c618aaef56e9db6ae8e745",
+    "docs/surface-fit-basis-proof/native.log.gz": "03d5fdd5d0fe7db3de884b2f4f42221d06a87ab0cc945d494cec8967b07cbaaf",
+    "docs/surface-fit-basis-proof/kernel.log.gz": "ebd1067d05dee40f070654ef49fe1da287fb44f91ed86ac5e52bc6318f33c23f",
+    "docs/surface-fit-basis-proof/python.log.gz": "76a18c87b5f7fa947c357d263ee69e1a1b7b761bccdd26fdf77cca314fe71db6",
+    "docs/surface-fit-basis-proof/app.log.gz": "b8760f01f95f9074f5213dd9cbd274ca0acbf95d94bbb9b29e2721d05ee69fac",
+    "docs/surface-fit-basis-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-fit-basis-proof/capture.log.gz": "75c029a8333d96536752fcbac7f7c95dea12dfe25774efe1ac0dfcb72bc941cc",
+    "tools/rhino_oracle/fixtures/surface_fit.json": "04a3876acf2276699aad810e835a048da61c0fe51f233b738c5dbe4cedf75ed5",
+    "tools/rhino_oracle/observations/surface_fit.json.gz": "7040836715c70c6b33581058af3222cd6a3b12e2e7e38e75beafdeb38121749f",
+    "docs/surface-fit-basis-proof/native-unqualified-layout-failure.log.gz": "81f7d1b74e2591b20c4c512be2245ed36090c35f1f8b9d7ff457a90e4299975d"
+  }
+}

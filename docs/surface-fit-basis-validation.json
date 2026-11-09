@@ -1,0 +1,26 @@
+{
+  "full_rhino_fit_parity": false,
+  "adaptive_basis_qualified": false,
+  "captured_bases_supplied_by_test": true,
+  "observations": 36,
+  "backends": {
+    "portable": {
+      "captured_bases": 23,
+      "native_null": 13,
+      "source_parameter_bounds": 11,
+      "source_parameter_declines": 12,
+      "maximum_native_bound": 1.3433698597964399e-14,
+      "maximum_archive_bound": 0.0
+    },
+    "native": {
+      "captured_bases": 23,
+      "native_null": 13,
+      "source_parameter_bounds": 11,
+      "source_parameter_declines": 12,
+      "maximum_native_bound": 1.1665038085954987e-14,
+      "maximum_archive_bound": 0.0
+    }
+  },
+  "baseline_revision": "a87a6de76dfa0565bc041ed82d0820f7a7423972",
+  "receipts": "surface-fit-basis-proof/receipts.json"
+}

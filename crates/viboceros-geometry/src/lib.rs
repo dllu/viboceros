@@ -136,7 +136,13 @@ pub use surface_interpolation::{
     SurfaceInterpolatedCurve, try_interpolate_curve_on_plane, try_interpolate_curve_on_surface,
 };
 pub use surface_short_path::{SurfaceShortPath, try_short_path_on_surface};
+mod surface_fit;
 mod surface_rebuild;
+pub use surface_fit::{
+    BoundedSurfaceFit, MAX_SURFACE_FIT_AXIS, try_fit_surface_in_basis,
+    try_fit_surface_in_basis_with_solver, try_interpolate_surface_in_basis,
+    try_interpolate_surface_in_basis_with_solver,
+};
 pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};
 pub use surface_rebuild::{
     NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,

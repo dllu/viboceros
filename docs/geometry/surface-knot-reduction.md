@@ -2,6 +2,8 @@
 
 [Geometry guides](README.md) · [Curve reduction](knot-reduction.md) · [Surface bounds](surface-correspondence.md)
 
+[Polynomial fitting](surface-fitting.md) supports degree changes in explicit U/V bases.
+
 `NurbsSurface::try_reduce_knots_in_range(direction, minimum, maximum, limit)`
 reduces eligible knot groups in U, V, or both directions. Groups are selected
 by exclusive multiplicity bounds and reduced to simple knots; degree-one
