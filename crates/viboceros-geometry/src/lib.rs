@@ -224,7 +224,7 @@ mod ruled_surface;
 mod section_basis;
 pub use ribbon::{
     RibbonCornerStyle, try_loose_ribbon, try_loose_ribbon_with_ruled, try_polyline_ribbon,
-    try_polyline_ribbon_with_ruled,
+    try_polyline_ribbon_with_ruled, try_smooth_ribbon, try_smooth_ribbon_with_ruled,
 };
 mod section_rebuild;
 pub use section_rebuild::try_rebuild_nurbs_sections_with;

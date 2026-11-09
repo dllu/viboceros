@@ -151,8 +151,10 @@ pub(super) fn tighten_joined_edges(
     joined: &mut Brep,
     pairs: &[(usize, usize, bool)],
     mut minimum: Vec<Real>,
+    distance: Real,
     tolerance: Tolerance,
     budget: &mut Budget,
+    witnesses: &[&NurbsCurve],
 ) -> Result<(), GeometryError> {
     let mut retained = vec![false; minimum.len()];
     let mut removed = vec![false; minimum.len()];
@@ -182,7 +184,13 @@ pub(super) fn tighten_joined_edges(
         let bound = if let Some(image) =
             image::BoundaryImage::new(&joined.faces[usage.face].surface, usage.trim, budget)?
         {
-            image.bound(&joined.edges[e].curve, usage.trim.reversed_3d, true, budget)?
+            image.bound_with_witnesses(
+                &joined.edges[e].curve,
+                usage.trim.reversed_3d,
+                distance,
+                witnesses,
+                budget,
+            )?
         } else {
             None
         };

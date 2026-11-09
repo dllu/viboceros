@@ -2,6 +2,7 @@
 use super::*;
 
 mod automatic;
+pub(crate) use automatic::join_breps_with_curve_witnesses;
 pub use automatic::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
 pub(super) mod certificate;
 mod merge;
@@ -81,6 +82,17 @@ impl Brep {
         tolerance: Tolerance,
         budget: &mut Budget,
     ) -> Result<Self, GeometryError> {
+        self.join_edge_pairs_with_witnesses(pairs, join_distance, tolerance, budget, &[])
+    }
+
+    fn join_edge_pairs_with_witnesses(
+        &self,
+        pairs: &[(usize, usize, bool)],
+        join_distance: Real,
+        tolerance: Tolerance,
+        budget: &mut Budget,
+        witnesses: &[&NurbsCurve],
+    ) -> Result<Self, GeometryError> {
         require_nonnegative_finite(join_distance, "B-rep join distance")?;
         if pairs.len() > MAX_JOIN_PAIRS {
             return Err(invalid("too many B-rep edge join pairs"));
@@ -115,11 +127,12 @@ impl Brep {
         let bounds = pairs
             .iter()
             .map(|&(a, b, reversed)| {
-                certificate::whole_curve_bound(
+                certificate::whole_curve_bound_with_witnesses(
                     &self.edges[a].curve,
                     &self.edges[b].curve,
                     reversed,
                     join_distance,
+                    witnesses,
                     |n| budget.charge(n),
                 )?
                 .ok_or_else(|| invalid("edge curves lack a whole-curve join certificate"))

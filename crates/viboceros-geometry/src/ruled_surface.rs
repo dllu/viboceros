@@ -1,5 +1,6 @@
 //! Ordered projective ruled tensors, independent of Loft region/weight policy.
 use crate::{GeometryError, NurbsCurve, NurbsSurface, Real, section_basis};
+mod image;
 
 const MAX_CONTROLS: usize = 4096;
 

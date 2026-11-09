@@ -226,9 +226,66 @@ fn offset_nurbs_with_closure(
     operations: Option<CurveOffsetOperations>,
 ) -> Result<NurbsCurve, GeometryError> {
     fit_offset_nurbs(
-        curve, distance, fallback, tolerance, closed, operations, false,
+        curve, distance, fallback, tolerance, closed, operations, false, 0.25,
     )
 }
+/// Ribbon's shared Hermite clock uses half the model tolerance for its
+/// interior fit checks. Ordinary Offset retains its existing quarter budget.
+pub(crate) fn fit_ribbon_offset(
+    curve: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    fit_offset_nurbs(
+        curve,
+        distance,
+        normal,
+        tolerance,
+        curve.is_closed()?,
+        None,
+        false,
+        0.5,
+    )
+}
+
+pub(crate) fn accepts_ribbon_seed(
+    source: &NurbsCurve,
+    candidate: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    for (a, b) in source.spans() {
+        for i in 0..=CHECKS_PER_SPAN + 1 {
+            let fraction = i as Real / (CHECKS_PER_SPAN + 1) as Real;
+            let t = if i == 0 {
+                a
+            } else if i == CHECKS_PER_SPAN + 1 {
+                b
+            } else {
+                a.mul_add(1. - fraction, b * fraction)
+            };
+            let side = if i == CHECKS_PER_SPAN + 1 {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            };
+            let expected = offset_sample(source, distance, normal, t, side)?.point;
+            let Ok(actual) = candidate.evaluate_on_side(t, side) else {
+                return Ok(false);
+            };
+            let Ok(error) = actual.distance_to(expected) else {
+                return Ok(false);
+            };
+            if error > tolerance.absolute() * 0.5 {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+#[allow(clippy::too_many_arguments)]
 fn fit_offset_nurbs(
     curve: &NurbsCurve,
     distance: Real,
@@ -237,6 +294,7 @@ fn fit_offset_nurbs(
     closed: bool,
     operations: Option<CurveOffsetOperations>,
     allow_reversals: bool,
+    fit_fraction: Real,
 ) -> Result<NurbsCurve, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     let sample =
@@ -282,7 +340,7 @@ fn fit_offset_nurbs(
     }
     let mut pending = boundaries.into_iter().rev().collect::<Vec<_>>();
     let mut accepted = Vec::new();
-    let target = tolerance.absolute() * 0.25;
+    let target = tolerance.absolute() * fit_fraction;
     while let Some((start, end)) = pending.pop() {
         let controls = cubic_controls(start, end)?;
         let mut largest = 0.0_f64;

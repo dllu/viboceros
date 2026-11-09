@@ -294,7 +294,7 @@ mod knot_reduction;
 mod non_manifold_selection;
 pub mod planar_regions;
 mod planar_surface;
-mod ribbon_loose;
+mod ribbon_geometry;
 mod ribbon_polyline;
 mod surface_deviation_samples;
 mod surface_fit_bounded;
@@ -1133,6 +1133,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: surface_planar_image::Fixture,
     },
+    SurfaceRuledImageBound {
+        id: String,
+        #[serde(flatten)]
+        fixture: surface_planar_image::Fixture,
+    },
     SurfaceMappedDeviationBound {
         id: String,
         #[serde(flatten)]
@@ -1172,7 +1177,12 @@ pub enum Operation {
     LooseRibbonGeometry {
         id: String,
         #[serde(flatten)]
-        fixture: ribbon_loose::Fixture,
+        fixture: ribbon_geometry::Fixture,
+    },
+    SmoothRibbonGeometry {
+        id: String,
+        #[serde(flatten)]
+        fixture: ribbon_geometry::Fixture,
     },
     PolylineRibbonGeometry {
         id: String,
@@ -3140,6 +3150,7 @@ impl Operation {
             | Self::SurfaceFitRefinementBudget { id, .. }
             | Self::SurfaceDeviationSamples { id, .. }
             | Self::SurfacePlanarImageBound { id, .. }
+            | Self::SurfaceRuledImageBound { id, .. }
             | Self::SurfaceMappedDeviationBound { id, .. }
             | Self::CurveCubicApproximation { id, .. }
             | Self::CurveDeviationBound { id, .. }
@@ -3148,6 +3159,7 @@ impl Operation {
             | Self::CurveOffsetGeometry { id, .. }
             | Self::CurveLooseOffsetGeometry { id, .. }
             | Self::LooseRibbonGeometry { id, .. }
+            | Self::SmoothRibbonGeometry { id, .. }
             | Self::PolylineRibbonGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
             | Self::CurveFilletPairGeometry { id, .. }
@@ -4034,6 +4046,9 @@ fn execute(
         Operation::SurfacePlanarImageBound { fixture, .. } => {
             surface_planar_image::run(fixture, iterations, tolerance)?
         }
+        Operation::SurfaceRuledImageBound { fixture, .. } => {
+            surface_planar_image::run_ruled(fixture, iterations, tolerance)?
+        }
         Operation::SurfaceMappedDeviationBound { fixture, .. } => {
             surface_mapped_bound::run(fixture, iterations, tolerance)?
         }
@@ -4058,7 +4073,10 @@ fn execute(
             curve_loose_offset::run(fixture, iterations, tolerance)?
         }
         Operation::LooseRibbonGeometry { fixture, .. } => {
-            ribbon_loose::run(fixture, iterations, tolerance)?
+            ribbon_geometry::run(true, fixture, iterations, tolerance)?
+        }
+        Operation::SmoothRibbonGeometry { fixture, .. } => {
+            ribbon_geometry::run(false, fixture, iterations, tolerance)?
         }
         Operation::PolylineRibbonGeometry { fixture, .. } => {
             ribbon_polyline::run(fixture, iterations, tolerance)?

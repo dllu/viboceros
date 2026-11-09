@@ -11,7 +11,8 @@ use ellipse::{
     ellipse_offset_side, ellipse_region_contains, ellipse_through_distance, offset_ellipse,
 };
 pub(crate) use nurbs::{
-    fit_normal_locus, offset_closed_region, offset_plane as nurbs_offset_plane, trim_normal_locus,
+    accepts_ribbon_seed, fit_normal_locus, fit_ribbon_offset, offset_closed_region,
+    offset_plane as nurbs_offset_plane, trim_normal_locus,
 };
 use nurbs::{
     linear_nurbs_proxy, nurbs_offset_side, nurbs_region_contains, nurbs_region_inward_sign,

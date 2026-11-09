@@ -10,11 +10,14 @@ from .generate_ribbon_corner_correspondence import request as correspondence
 from .generate_ribbon_smooth_angles import request as angles
 from .generate_ribbon_sharp_holdouts import request as sharp
 from .generate_ribbon_sharp_seams import request as seams
+from .generate_ribbon_smooth import request as smooth
+from .generate_ribbon_analytic import request as analytic
+from .generate_ribbon_near_analytic import request as near
 
 
 class RibbonProbeTests(unittest.TestCase):
     def test_all_authored_operations_validate(self):
-        for factory in [ribbons,offsets,types,polylines,correspondence,angles,sharp,seams]:
+        for factory in [ribbons,offsets,types,polylines,correspondence,angles,sharp,seams,smooth,analytic,near]:
             for op in factory()['operations']:validate(op)
 
     def test_nonfinite_boolean_and_zero_distances_are_rejected(self):

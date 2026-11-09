@@ -1,4 +1,4 @@
-//! Readonly Python construction of loose ribbon shells; no command-state claim.
+//! Readonly loose and ordinary smooth ribbon geometry; no command-state claim.
 use super::*;
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
@@ -13,6 +13,7 @@ fn normal() -> [f64; 3] {
     [0., 0., 1.]
 }
 pub(super) fn run(
+    loose: bool,
     f: &Fixture,
     iterations: u32,
     tolerance: Tolerance,
@@ -22,6 +23,17 @@ pub(super) fn run(
     let (brep, elapsed) = measure_probe(iterations, || -> Result<Brep, ProbeError> {
         #[cfg(feature = "native-smlib")]
         {
+            if !loose {
+                return Ok(viboceros_geometry::try_smooth_ribbon_with_ruled(
+                    &source,
+                    f.distance,
+                    f.both_sides,
+                    normal,
+                    tolerance,
+                    &mut viboceros_smlib::ruled_surface,
+                )
+                .map_err(CommandError::from)?);
+            }
             Ok(viboceros_geometry::try_loose_ribbon_with_ruled(
                 &source,
                 f.distance,
@@ -35,6 +47,15 @@ pub(super) fn run(
         }
         #[cfg(not(feature = "native-smlib"))]
         {
+            if !loose {
+                return Ok(viboceros_geometry::try_smooth_ribbon(
+                    &source,
+                    f.distance,
+                    f.both_sides,
+                    normal,
+                    tolerance,
+                )?);
+            }
             Ok(viboceros_geometry::try_loose_ribbon(
                 &source,
                 f.distance,

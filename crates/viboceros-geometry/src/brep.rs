@@ -55,6 +55,7 @@ pub use inset::{
 };
 mod isocurves;
 mod join_edges;
+pub(crate) use join_edges::join_breps_with_curve_witnesses;
 pub use join_edges::{
     BrepEdgeMergeScope, BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report,
 };

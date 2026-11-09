@@ -1,4 +1,4 @@
-//! Local complete geometric image bound through exact planar auxiliary tensors.
+//! Local complete planar and ruled image bounds for supplied tensor surfaces.
 use super::*;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -14,10 +14,39 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    run_bound(
+        fixture,
+        iterations,
+        tolerance,
+        NurbsSurface::planar_surface_image_deviation_bound,
+    )
+}
+
+pub(super) fn run_ruled(
+    fixture: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let (mut value, elapsed) = run_bound(
+        fixture,
+        iterations,
+        tolerance,
+        NurbsSurface::ruled_surface_image_deviation_bound,
+    )?;
+    value["u_correspondence_certified"] = json!(false);
+    Ok((value, elapsed))
+}
+
+fn run_bound(
+    fixture: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+    method: fn(&NurbsSurface, &NurbsSurface, f64) -> Result<Option<f64>, GeometryError>,
+) -> Result<(Value, u64), ProbeError> {
     let first = nurbs_surface_from_definition(&fixture.first)?;
     let second = nurbs_surface_from_definition(&fixture.second)?;
     let limit = fixture.absolute_tolerance.unwrap_or(tolerance.absolute());
-    let build = || first.planar_surface_image_deviation_bound(&second, limit);
+    let build = || method(&first, &second, limit);
     let mut bound = build()?;
     let started = Instant::now();
     for _ in 0..iterations {

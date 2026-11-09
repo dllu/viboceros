@@ -33,7 +33,7 @@ pub(crate) fn offset_closed_region(
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    let raw = fit_offset_nurbs(&source, distance, normal, fit, true, None, true)?;
+    let raw = fit_offset_nurbs(&source, distance, normal, fit, true, None, true, 0.25)?;
     let pieces = trim_normal_locus(
         &source, &raw, distance, normal, tolerance, operations, false,
     )?;

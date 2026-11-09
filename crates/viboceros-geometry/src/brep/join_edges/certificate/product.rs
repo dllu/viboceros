@@ -117,7 +117,7 @@ fn mapped_bound(
     Ok(Some(answer))
 }
 
-fn endpoint(curve: &NurbsCurve, end: bool) -> Option<Point3> {
+pub(super) fn endpoint(curve: &NurbsCurve, end: bool) -> Option<Point3> {
     let p = curve.degree();
     let knots = curve.knots();
     let controls = curve.control_points();

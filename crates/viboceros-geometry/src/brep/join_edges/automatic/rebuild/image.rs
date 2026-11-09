@@ -31,4 +31,35 @@ impl BoundaryImage {
     ) -> Result<Option<Real>, GeometryError> {
         self.0.endpoint_bound(point, end, &mut |n| budget.charge(n))
     }
+
+    pub fn bound_with_witnesses(
+        &self,
+        edge: &NurbsCurve,
+        reversed_3d: bool,
+        limit: Real,
+        witnesses: &[&NurbsCurve],
+        budget: &mut Budget,
+    ) -> Result<Option<Real>, GeometryError> {
+        for witness in witnesses {
+            for reversed in [false, true] {
+                let Some(a) =
+                    certificate::whole_curve_bound(edge, witness, reversed, limit * 0.5, |n| {
+                        budget.charge(n)
+                    })?
+                else {
+                    continue;
+                };
+                // A sufficient complete bound avoids searching alternate
+                // projective maps for a smaller roundoff-level residual.
+                let Some(b) = self.bound(witness, reversed_3d ^ reversed, false, budget)? else {
+                    continue;
+                };
+                let sum = certificate::add_bound(a, b)?;
+                if sum <= limit {
+                    return Ok(Some(sum));
+                }
+            }
+        }
+        self.bound(edge, reversed_3d, true, budget)
+    }
 }

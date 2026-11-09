@@ -104,6 +104,18 @@ pub fn coverage(
     native: &Value,
     targets: &[NurbsSurface],
 ) -> Option<f64> {
+    coverage_with(actual, parents, native, targets, &|a, b, limit| {
+        a.parameter_surface_deviation_bound(b, limit).ok().flatten()
+    })
+}
+
+pub fn coverage_with(
+    actual: &Brep,
+    parents: &[NurbsSurface],
+    native: &Value,
+    targets: &[NurbsSurface],
+    compare: &impl Fn(&NurbsSurface, &NurbsSurface, f64) -> Option<f64>,
+) -> Option<f64> {
     let mut a = vec![Vec::new(); parents.len()];
     let mut n = vec![Vec::new(); parents.len()];
     let mut regions = Vec::new();
@@ -118,10 +130,7 @@ pub fn coverage(
             if !contains(rect(p), r) {
                 return None;
             }
-            trim(p, r)?
-                .parameter_surface_deviation_bound(f.surface(), EPS / 4.)
-                .ok()?
-                .map(|b| (i, b))
+            compare(&trim(p, r)?, f.surface(), EPS / 4.).map(|b| (i, b))
         })?;
         a[i].push(r);
         regions.push((i, r, f.surface()));
@@ -134,17 +143,11 @@ pub fn coverage(
         let matched = parents
             .iter()
             .enumerate()
-            .find_map(|(i, p)| {
-                p.parameter_surface_deviation_bound(target, EPS / 4.)
-                    .ok()?
-                    .map(|b| (i, rect(p), b))
-            })
+            .find_map(|(i, p)| compare(p, target, EPS / 4.).map(|b| (i, rect(p), b)))
             .or_else(|| {
-                regions.iter().find_map(|&(i, r, s)| {
-                    s.parameter_surface_deviation_bound(target, EPS / 4.)
-                        .ok()?
-                        .map(|b| (i, r, b))
-                })
+                regions
+                    .iter()
+                    .find_map(|&(i, r, s)| compare(s, target, EPS / 4.).map(|b| (i, r, b)))
             })?;
         n[matched.0].push(matched.1);
         native_bound = native_bound.max(matched.2);
@@ -161,6 +164,17 @@ pub fn coverage(
 }
 
 pub fn incidence(actual: &Brep, g: &Value, face_map: &[usize]) -> Option<f64> {
+    incidence_with(actual, g, face_map, &|a, b, limit| {
+        a.parameter_curve_deviation_bound(b, limit).ok().flatten()
+    })
+}
+
+pub fn incidence_with(
+    actual: &Brep,
+    g: &Value,
+    face_map: &[usize],
+    compare: &impl Fn(&NurbsCurve, &NurbsCurve, f64) -> Option<f64>,
+) -> Option<f64> {
     let vertices = g["vertices"].as_array().unwrap();
     let edges = g["edges"].as_array().unwrap();
     let topology = &g["topology"];
@@ -210,7 +224,7 @@ pub fn incidence(actual: &Brep, g: &Value, face_map: &[usize]) -> Option<f64> {
                     } else {
                         c.clone()
                     };
-                    if let Some(b) = e.curve().parameter_curve_deviation_bound(&c, EPS).ok()? {
+                    if let Some(b) = compare(e.curve(), &c, EPS) {
                         return Some((i, b));
                     }
                 }

@@ -83,6 +83,26 @@ pub fn join_breps_with_report(
     join_distance: Real,
     tolerance: Tolerance,
 ) -> Result<BrepJoinReport, GeometryError> {
+    join_with_witnesses(sources, join_distance, tolerance, &[])
+}
+
+/// Internal proof hints only: both actual curves must independently pass a
+/// whole-curve certificate against a witness. Stored geometry is unchanged.
+pub(crate) fn join_breps_with_curve_witnesses(
+    sources: &[&Brep],
+    join_distance: Real,
+    tolerance: Tolerance,
+    witnesses: &[&NurbsCurve],
+) -> Result<Vec<BrepJoinComponent>, GeometryError> {
+    Ok(join_with_witnesses(sources, join_distance, tolerance, witnesses)?.components)
+}
+
+fn join_with_witnesses(
+    sources: &[&Brep],
+    join_distance: Real,
+    tolerance: Tolerance,
+    witnesses: &[&NurbsCurve],
+) -> Result<BrepJoinReport, GeometryError> {
     require_nonnegative_finite(join_distance, "B-rep join distance")?;
     if sources.len() > MAX_SOURCES {
         return Err(invalid("too many B-rep join sources"));
@@ -113,7 +133,7 @@ pub fn join_breps_with_report(
         }
         let a_curve = &combined.edges[a].curve;
         let b_curve = &combined.edges[b].curve;
-        if full_match(a_curve, b_curve, join_distance, &mut budget)?.is_some() {
+        if full_match(a_curve, b_curve, join_distance, &mut budget, witnesses)?.is_some() {
             continue;
         }
         if let Some(intervals) = overlap::intervals(a_curve, b_curve, join_distance, &mut budget)? {
@@ -165,7 +185,8 @@ pub fn join_breps_with_report(
         }
         let ac = &combined.edges[a].curve;
         let bc = &combined.edges[b].curve;
-        if let Some((reversed, bound)) = full_match(ac, bc, join_distance, &mut budget)? {
+        if let Some((reversed, bound)) = full_match(ac, bc, join_distance, &mut budget, witnesses)?
+        {
             matches.push((bound, a, b, reversed));
         }
     }
@@ -190,14 +211,21 @@ pub fn join_breps_with_report(
     )? {
         combined = rebuilt;
     }
-    let mut joined =
-        combined.join_edge_pairs_with_budget(&pairs, join_distance, tolerance, &mut budget)?;
+    let mut joined = combined.join_edge_pairs_with_witnesses(
+        &pairs,
+        join_distance,
+        tolerance,
+        &mut budget,
+        witnesses,
+    )?;
     rebuild::tighten_joined_edges(
         &mut joined,
         &pairs,
         edge_uncertainty,
+        join_distance,
         tolerance,
         &mut budget,
+        witnesses,
     )?;
     let mut components = components::collect(joined, &combined, &pairs, &face_sources, tolerance)?;
     for component in &mut components {
@@ -231,12 +259,18 @@ fn full_match(
     b: &NurbsCurve,
     distance: Real,
     budget: &mut Budget,
+    witnesses: &[&NurbsCurve],
 ) -> Result<Option<(bool, Real)>, GeometryError> {
     let mut best = None;
     for reversed in [false, true] {
-        if let Some(bound) =
-            certificate::whole_curve_bound(a, b, reversed, distance, |n| budget.charge(n))?
-            && best.is_none_or(|(_, previous)| bound < previous)
+        if let Some(bound) = certificate::whole_curve_bound_with_witnesses(
+            a,
+            b,
+            reversed,
+            distance,
+            witnesses,
+            |n| budget.charge(n),
+        )? && best.is_none_or(|(_, previous)| bound < previous)
         {
             best = Some((reversed, bound));
         }

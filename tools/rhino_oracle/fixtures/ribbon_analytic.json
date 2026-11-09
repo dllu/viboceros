@@ -1,0 +1,539 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "ribbon_command",
+      "id": "arc-projective",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.4142135623730951
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 4.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "arc-projective-gauge",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 2.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 2.8284271247461903
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 8.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "arc-elevated",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0000000000000004,
+              1.7573593128807152,
+              0.0
+            ],
+            "weight": 0.804737854124365
+          },
+          {
+            "point": [
+              1.757359312880715,
+              2.9999999999999996,
+              0.0
+            ],
+            "weight": 0.804737854124365
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "line-cubic-clock",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "line-rational-clock",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 2.0
+          },
+          {
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.3
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 3.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "arc-120-translated",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              5.194542040189171,
+              1.407260092608193,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0250452527588214,
+              6.940369213130575,
+              3.0
+            ],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [
+              -1.6820194138097615,
+              0.5629245139570951,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "ellipse",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -4.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.25,
+          0.25,
+          0.5,
+          0.5,
+          0.75,
+          0.75,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "closed-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current"
+    }
+  ]
+}

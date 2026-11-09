@@ -5,11 +5,13 @@ pub(super) use crate::point::point_bound;
 use std::cmp::Ordering;
 mod product;
 mod refine;
+mod witness;
 pub(in crate::brep) use product::isocurve::SurfaceCurve;
 pub(in crate::brep) use product::restriction::restricted_curve_bound;
 #[cfg(test)]
 pub(super) use product::restriction::{curve_endpoint_bound, restricted_endpoint_bound};
 pub(super) use refine::refined_curve_bound;
+pub(super) use witness::whole_curve_bound_with_witnesses;
 
 /// Fast basis/locus certificates first; otherwise align exact knot spans and
 /// bound the rational difference without rounded knot insertion or sampling.
