@@ -38,3 +38,17 @@ distance getters and object-history policies with explicit remaining limits.
 [Frozen validation](../ribbon-smooth-validation.json) replays 60 native cases on
 both backends with strict `1e-9` complete-image and incidence gates. Reproduce
 the evidence audit with `python3 -m tools.rhino_oracle.report_ribbon_smooth`.
+
+`try_fixed_plane_ribbon` handles regular spatial fixed-normal ribbons. It uses
+normalized projected-tangent end jets, a seven-station fitting target based on
+the spatial unit tangent, and at most four bisections per original knot span.
+These are independent policies inferred from public Rhino outputs. The cap can
+leave a substantial residual against an ideal constant-distance offset; neither
+model tolerance nor fit tolerance is a between-station distance certificate.
+Linear projections preserve the original rational basis through translation.
+Nearly parallel/perpendicular control planes are conservatively unsupported;
+these support limits are not claims about Rhino's angular constants. Coarse
+rational/multispan fits also remain unsupported after independent holdouts exposed
+additional native seed and face-partition behavior. The
+`_with_fit_tolerance` form keeps sewing at model tolerance. The
+[fixed-plane record](../ribbon-cplane-validation.json) covers this separate policy.

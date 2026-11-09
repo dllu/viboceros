@@ -8,7 +8,11 @@ use crate::{
     Tolerance, UnitVector3,
 };
 pub use corner::RibbonCornerStyle;
-pub use in_plane::{try_loose_ribbon_in_plane, try_loose_ribbon_in_plane_with_ruled};
+pub use in_plane::{
+    try_fixed_plane_ribbon, try_fixed_plane_ribbon_with_fit_tolerance,
+    try_fixed_plane_ribbon_with_ruled, try_loose_ribbon_in_plane,
+    try_loose_ribbon_in_plane_with_ruled,
+};
 pub use polyline::{try_polyline_ribbon, try_polyline_ribbon_with_ruled};
 pub use smooth::{
     try_smooth_ribbon, try_smooth_ribbon_with_fit_tolerance, try_smooth_ribbon_with_ruled,

@@ -13,8 +13,11 @@ pub(super) fn build(
     let linear = source.is_linear_at_zero_tolerance()?;
     let planar = curve.is_planar(model)?;
     let fixed = options.in_cplane || !planar;
-    if fixed && !options.loose && !linear {
-        return Err(CommandError::RibbonCPlaneUnavailable);
+    let origin = source.control_points()[0].point();
+    let mut parallel = planar;
+    for p in source.control_points() {
+        let v = origin.vector_to(p.point())?;
+        parallel &= v.dot(normal.as_vector())?.abs() <= 64. * f64::EPSILON * v.length()?.max(1.);
     }
     let fit_tolerance = if options.loose || options.tolerance == 0. {
         model
@@ -113,6 +116,20 @@ pub(super) fn build(
         #[cfg(not(feature = "native-smlib"))]
         let b = b?;
         return Ok(vec![b]);
+    }
+    if fixed && !parallel {
+        return Ok(vec![
+            viboceros_geometry::try_fixed_plane_ribbon_with_fit_tolerance(
+                &source,
+                d,
+                options.both_sides,
+                context.construction_plane.z_axis(),
+                model,
+                fit_tolerance,
+                &mut ruled,
+            )
+            .map_err(CommandError::from)?,
+        ]);
     }
     if let Some(polyline) = polyline {
         return viboceros_geometry::try_polyline_ribbon_with_ruled(

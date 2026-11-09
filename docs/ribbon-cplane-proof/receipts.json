@@ -1,0 +1,359 @@
+{
+  "baseline_revision": "b540aa46e2fb5a817f5e361f34637a3515eb1a08",
+  "source_overrides": {
+    "crates/viboceros-command/src/ribbon/geometry.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-command/src/ribbon/geometry.rs.gz",
+      "sha256": "2babc7a3e0df2b5517c825fc92dd72d633f771bec1e3532e0353e4bf91f11488"
+    },
+    "crates/viboceros-command/tests/ribbon_native.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/ribbon_native.rs.gz",
+      "sha256": "0bc1b4fbca49f98eddf02556f724010e244aac32b77b5c864d73e5a9962982ca"
+    },
+    "crates/viboceros-command/tests/support/interpolation_plane.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/interpolation_plane.rs.gz",
+      "sha256": "2e4159a8cddfc75a254bae55084ac3227e067925169ec0bf349f148da0cda461"
+    },
+    "crates/viboceros-command/tests/support/merge_surfaces.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/merge_surfaces.rs.gz",
+      "sha256": "4eec7d65039948fc90e14cb8adf42bc6fecaaca561f0ef6103990a9721a0a0a3"
+    },
+    "crates/viboceros-command/tests/support/ribbon_images.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/ribbon_images.rs.gz",
+      "sha256": "378b9e7f299f8632b8e501783a72c895e6ab06606330940ddb7c26e6d16e7532"
+    },
+    "crates/viboceros-geometry/src/curve_offset/nurbs.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/curve_offset/nurbs.rs.gz",
+      "sha256": "105b225b7889b4b0c832a629de30a98925ba4f77c1f14a3764ada46b2e598d13"
+    },
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/lib.rs.gz",
+      "sha256": "831b466f11ce78f292099aa969262bccfb082471bca49ecb4becd270a252827f"
+    },
+    "crates/viboceros-geometry/src/point_projection/fit.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/point_projection/fit.rs.gz",
+      "sha256": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91"
+    },
+    "crates/viboceros-geometry/src/ribbon.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz",
+      "sha256": "01a690269f696a22e4ea0899870dd59fceb6afd8ae2375e200933c80b5bd0827"
+    },
+    "crates/viboceros-geometry/src/ribbon/in_plane.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane.rs.gz",
+      "sha256": "74b46589cd3189788ce32bc5a07fb3ebc17dfcfd38b2b3ab4e304ffc8ca6e8ca"
+    },
+    "crates/viboceros-geometry/src/ribbon/in_plane/fixed.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane/fixed.rs.gz",
+      "sha256": "031decbce0bfb575d18cee381876f4171937a3d5d9ad482bfa4e0cb31b2ab7f5"
+    },
+    "crates/viboceros-geometry/src/ribbon/in_plane/fixed/tests.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane/fixed/tests.rs.gz",
+      "sha256": "11d4421e4e1e373a8f47d32717dcd59ef2a90492327851da69614d2ef19d369a"
+    },
+    "crates/viboceros-oracle/tests/support/ribbon.rs": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/crates/viboceros-oracle/tests/support/ribbon.rs.gz",
+      "sha256": "ab8db7c8c075d01a1af7559d5c9bcf590a714c195c8742807d5b53e6ca0ca8cf"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane.py.gz",
+      "sha256": "ba901671619b600b2ad45607ade396099c870cde37a3abc149583f88676cbf17"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane_boundaries.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_boundaries.py.gz",
+      "sha256": "90e048818f52ca2bb0778ba27b01f84b774a0f7bfbe1517382ba90f54cce618d"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane_holdouts.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_holdouts.py.gz",
+      "sha256": "b82099cf3d6a95ee7dbcacb9f63e2b6e7ad86ee883f24928a3c604c5d27b8d49"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane_policy.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_policy.py.gz",
+      "sha256": "33af3f520672e5e860e63286acf7ff57d59e5867f6eab4592adc0851aecfbcf0"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane_switches.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_switches.py.gz",
+      "sha256": "682474343e7e6cec67fb202aba622d4c023908e62bc4471976bcf8c1b645a2a6"
+    },
+    "tools/rhino_oracle/generate_ribbon_cplane_thresholds.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_thresholds.py.gz",
+      "sha256": "93915c17af130ee4f9f5cad69d42d347803a54ac4b1da0306360d874ec68dddd"
+    },
+    "tools/rhino_oracle/report_curve_loose_offset.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz",
+      "sha256": "3281b1727ad4a15dc03b0e13166d03c0e8f5a5873fad109db8e625d342774153"
+    },
+    "tools/rhino_oracle/report_ribbon_command.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_ribbon_command.py.gz",
+      "sha256": "0860d710b87b3aab80d9f0709f8559896dbf5627f015d8b9a0a64fce9cd0aa6d"
+    },
+    "tools/rhino_oracle/report_ribbon_cplane.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_ribbon_cplane.py.gz",
+      "sha256": "0013d974ef877433680348eed99e1b8d4bb1ee0497e3f03927f108a9db281608"
+    },
+    "tools/rhino_oracle/report_surface_fit_basis.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_surface_fit_basis.py.gz",
+      "sha256": "9efeb7754505326ac7f038062005b71f1504c278ed94b3cac2c402d8edbd602b"
+    },
+    "tools/rhino_oracle/ribbon_probe.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/ribbon_probe.py.gz",
+      "sha256": "1b0d04b27518d0581c602280f9ddc2b890b7be704f7995c9062e730a1bc8fb98"
+    },
+    "tools/rhino_oracle/run_headless.sh": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/run_headless.sh.gz",
+      "sha256": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+    },
+    "tools/rhino_oracle/test_ribbon_cplane_record.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/test_ribbon_cplane_record.py.gz",
+      "sha256": "ff8329bbacf5398e5771edca6ab5d00692d87b6470fd718d88bef2897f532566"
+    },
+    "tools/rhino_oracle/test_ribbon_probe.py": {
+      "snapshot": "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz",
+      "sha256": "425ba4dde46d99d8c0db26d7e84cb377b0c5f474de826721dfb529ff0840c86a"
+    }
+  },
+  "checks": {
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib ribbon::in_plane::fixed -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/kernel.log.gz"
+    },
+    "command": {
+      "command": "cargo test -p viboceros-command --lib ribbon::tests -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/command.log.gz"
+    },
+    "ui": {
+      "command": "cargo test -p viboceros app::tests::ribbon -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/ui.log.gz"
+    },
+    "ui_native": {
+      "command": "cargo test -p viboceros --features native-smlib app::tests::ribbon -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/ui_native.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/app.log.gz"
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/app_native.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/format.log.gz"
+    },
+    "probe": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_ribbon_probe",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/probe.log.gz"
+    },
+    "portable": {
+      "command": "cargo test -p viboceros-command --test ribbon_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-command --features native-smlib --test ribbon_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/ribbon-cplane-proof/logs/native.log.gz"
+    }
+  },
+  "captures": [
+    {
+      "family": "ribbon_cplane",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane.log.gz"
+    },
+    {
+      "family": "ribbon_cplane_boundaries",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane_boundaries",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_boundaries.log.gz"
+    },
+    {
+      "family": "ribbon_cplane_policy",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane_policy",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_policy.log.gz"
+    },
+    {
+      "family": "ribbon_cplane_switches",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane_switches",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_switches.log.gz"
+    },
+    {
+      "family": "ribbon_cplane_thresholds",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane_thresholds",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_thresholds.log.gz"
+    },
+    {
+      "family": "ribbon_cplane_holdouts",
+      "exit_code": 0,
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_cplane_holdouts",
+      "log": "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_holdouts.log.gz"
+    }
+  ],
+  "unqualified_runs": [
+    {
+      "qualified": false,
+      "exit_code": 130,
+      "reason": "Interrupted prototype uniform refinement before mode qualification.",
+      "command": "cargo test -p viboceros-command --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-portable-pilot.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 101,
+      "reason": "Test-only undefined variable in unsupported-case receipt.",
+      "command": "cargo test -p viboceros-command --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-portable-check1.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 101,
+      "reason": "Near-flat source uses native planar projection; added explicit unsupported support gap.",
+      "command": "cargo test -p viboceros-command --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-portable-check2.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 130,
+      "reason": "Interrupted after narrowing coarse rational/multispan support.",
+      "command": "cargo test -p viboceros-command --features native-smlib --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-native-check1.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 130,
+      "reason": "Interrupted after tightening parallel-plane support classification.",
+      "command": "cargo test -p viboceros-command --features native-smlib --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-native-check2.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 130,
+      "reason": "Wrapped Geometry error mismatched test assertion; interrupted after known local test failures.",
+      "command": "cargo test -p viboceros-command --features native-smlib --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-native-wrapper-failure.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 1,
+      "reason": "Invalid Rust float literal in draft; corrected before final checks.",
+      "command": "cargo fmt --all",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-format2.log.gz"
+    },
+    {
+      "qualified": false,
+      "exit_code": 0,
+      "reason": "Production implementation passed; rerun after test-only error-wrapper predicate changed.",
+      "command": "cargo test -p viboceros-command --test ribbon_native -- --nocapture",
+      "log": "docs/ribbon-cplane-proof/logs/unqualified-portable-final.log.gz"
+    }
+  ],
+  "files": {
+    "docs/ribbon-cplane-proof/logs/app.log.gz": "e436aec9b1c7acf4f68f587a9838a930b6962fff4adf9c94b9c6925f506afc9e",
+    "docs/ribbon-cplane-proof/logs/app_native.log.gz": "2d7ba987d696dfb08e767522c9f69b1a0a764cf2c12881ddecb7f2b59484f2bb",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane.log.gz": "0454c2f128fc670ac8fd1e9e35eb361d8280b11ee53bc2c30b417df5b3342936",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_boundaries.log.gz": "1f4a317ce2e5c864cc58458e73f8248e11bded70c3359f593c35601d4d037b97",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_holdouts.log.gz": "091f035835c046b65c9dfe5c3d37f79a9973507c9f853182b25869ba025d24ee",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_policy.log.gz": "c4637bfdc343b1f0a7f4120cc2acc5725612b05576da17059ced1b614c0cd134",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_switches.log.gz": "8ccc19afef94036f17e1bcce5795a88827223acc2dcd18402147fa787ea6cc41",
+    "docs/ribbon-cplane-proof/logs/capture-ribbon_cplane_thresholds.log.gz": "5b506963f9581e4e6fbb934fdbb8f8d758d55258c91ce26d906c37e8552829c6",
+    "docs/ribbon-cplane-proof/logs/command.log.gz": "4b72467cb40e5a4f1e6957b12fb9dc9af0a4a7fac387419a5a4f3ccc4934ae45",
+    "docs/ribbon-cplane-proof/logs/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/ribbon-cplane-proof/logs/kernel.log.gz": "033d2df02d5e664cab9a5d424c8d8eedcdf80ded838d6f2458380d2db87d665b",
+    "docs/ribbon-cplane-proof/logs/native.log.gz": "92035d65e0421acae3e51d73775a26c153f7242251ed418526640129b34b0113",
+    "docs/ribbon-cplane-proof/logs/portable.log.gz": "61c7fd39ddb2732cc4db8c1448d3fa1c044ece69aa672c800b7bef78955f91d0",
+    "docs/ribbon-cplane-proof/logs/probe.log.gz": "0064bd3ae96a0c81312204445483f918c68ce001299ebc9350b0ca949f52a428",
+    "docs/ribbon-cplane-proof/logs/ui.log.gz": "3075e1b5090a5d76acd6666744c73633043802d97901aaf1488212cd0c840918",
+    "docs/ribbon-cplane-proof/logs/ui_native.log.gz": "2aeb9dc452bbe9638675a437c3790effdd3632fec4149687d2e172114b743023",
+    "docs/ribbon-cplane-proof/logs/unqualified-format2.log.gz": "c4483d4efed94d57483b864dddf1a7a541b947956c5b1ec4516e698144ed7b70",
+    "docs/ribbon-cplane-proof/logs/unqualified-native-check1.log.gz": "fdc4192cbaa26d2becd92a3adfffe8b3bcf32557c8635428e1139144e2227b03",
+    "docs/ribbon-cplane-proof/logs/unqualified-native-check2.log.gz": "3d572d2853c72eea256543452578e85bd70ab67074636f0f03707ab10df482e6",
+    "docs/ribbon-cplane-proof/logs/unqualified-native-wrapper-failure.log.gz": "bf2e40a9f70748b9b9fb01119d5e6653ade326f2aee740716d8136ad22fd000b",
+    "docs/ribbon-cplane-proof/logs/unqualified-portable-check1.log.gz": "144ba15e052505a0911e700e0721468f52231dcfd384bbda2e209303c51436db",
+    "docs/ribbon-cplane-proof/logs/unqualified-portable-check2.log.gz": "920966d80bb8448feb612681f5f534f6fad855fd41ca3373faefecd6e748056b",
+    "docs/ribbon-cplane-proof/logs/unqualified-portable-final.log.gz": "4f9f2594b0a1b24db1ec536c8db9797adb63d2a26eeacb63da84a758dd98663e",
+    "docs/ribbon-cplane-proof/logs/unqualified-portable-pilot.log.gz": "6b54e6441a17b65c9ecf90c6e97b316ab9e49ad505ec39c7f94a46fadb533cd6",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-command/src/ribbon/geometry.rs.gz": "ba3ba7f8241a2f835b20a5e64bf93c3908eb87def2bb3b1f59b5cbe44ecae547",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/ribbon_native.rs.gz": "2744f3713572321d498cad0ec9048a5ee73af2c2cc821d97c55677e7879409d5",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/interpolation_plane.rs.gz": "d5c4cdb7b1ca01b27e99b8a7fb81e720a3e51fc145b6e0c437d068bfdfb36b88",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/merge_surfaces.rs.gz": "b5970f3cc145d721ff10342d21b312d4791d67cb365d6e8ad8558082fb46e80b",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-command/tests/support/ribbon_images.rs.gz": "ab8130b6d155ce3b68b8e9c22b65fb2671e949cd45d61d11866e2aea07b91f3d",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/curve_offset/nurbs.rs.gz": "75f30ce20452f522c3496821c83d0bbc97a59f43f112eebba6c6af300effa0ad",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/lib.rs.gz": "f297791f77cdd81b39824c5bf320a4a6117bb98bd1b075a168edd26e600236de",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/point_projection/fit.rs.gz": "bb5a5cd085bd4fdc5513bcfa5b3c9041d9142e59de0362aa96efdb70f21d48fb",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz": "676317501088aa9130e106b3e7a62c8503eed0918cc95f6f5659e52f96a80b90",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane.rs.gz": "a38848805c9fa5f4ab06d68786afa920c5b055c90fab473a2b64eb55e3c3ba8a",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane/fixed.rs.gz": "44dcdb58f1523ed13f1bdfde0bab124da674547fba5140b5004341d58b65475a",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-geometry/src/ribbon/in_plane/fixed/tests.rs.gz": "5df1fe7e2df5f3ef27eed16aaa6b196104930dd6400e23740541df9c81269db1",
+    "docs/ribbon-cplane-proof/sources/crates/viboceros-oracle/tests/support/ribbon.rs.gz": "e520ede9c89b85608f52d712d3e217ebe69497d2604bf058fb0d3599359b997f",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane.py.gz": "b78b1d115bbf0476bd6937bc31cc7387a0252b33d55feb2fce30b5d95887682e",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_boundaries.py.gz": "d5c439616e770bc8e9ee6390451153cf4a242a2e5b93d255db56c8ebdf4399f6",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_holdouts.py.gz": "b326c9ed16ab6def3d6de53bfba513c8b9dac25ad036938162d9bb1895efea1d",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_policy.py.gz": "fb40fbf657014b31e33ae967480f226ca8b05f2e7108195b4c53c628455f5b16",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_switches.py.gz": "8f1c984384ff87c3c8491ccbbfda54f834ad58ae4701de5a9939e7a47805be96",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/generate_ribbon_cplane_thresholds.py.gz": "9fd51bfbaaaa32cf8c1d5212dd4601c6628cf98be8056f32d2d8f8f9979df8ea",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz": "27b8f574779b3742fa8ae5191fde3e78992b9986b89f6794b506ea1f8acaf6fe",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_ribbon_command.py.gz": "6d5a0eb0b73056c2b9590a3892589ef851356d847bbfe0f70921b678e5b1a529",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_ribbon_cplane.py.gz": "c0f910e5f9829d033d2b0479efc853fdbae5cb6be5f9066153155a7c701ab49a",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/report_surface_fit_basis.py.gz": "08dd23d29e80bea1d13945f74ab5b2b772f62a4a43513b8975a7672e20339eec",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/ribbon_probe.py.gz": "72e7dd87057f52e0cf78e27b5957667b2c1a1636a3e7988dad53132de96c21a4",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/run_headless.sh.gz": "4e2fda0703d07b34a2544ea03e1e4bcdef435b82e29ba4ee972355fb9a9dfaa8",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/test_ribbon_cplane_record.py.gz": "79148082b741db8e1a95911564a93fd63820a2bcc15e1f8a12103dce2b4524a0",
+    "docs/ribbon-cplane-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz": "a0e78f17bd7d8895cff9fd18dc91a8f9f8f1273537b28c1131e0277aeea5919a",
+    "tools/rhino_oracle/fixtures/ribbon_cplane.json": "68e5b8dbe4fff31c30c87191d6fa5f716a23e05e4425ee1d85fd34496c8a0c88",
+    "tools/rhino_oracle/fixtures/ribbon_cplane_boundaries.json": "561216c26e9a00835f0fbc568211126aec9e6e82dc8a901842cd0a387c9af6ef",
+    "tools/rhino_oracle/fixtures/ribbon_cplane_holdouts.json": "e89ad97b6129f9f12f96a20a88006383fd34394f583f1b0d674eef6a31460d51",
+    "tools/rhino_oracle/fixtures/ribbon_cplane_policy.json": "959a78dd7804f1c3d7d6c591d399953d2909ebe898004b3605eb6ef05ffa491c",
+    "tools/rhino_oracle/fixtures/ribbon_cplane_switches.json": "6e2ecd32242d8d6061ddd306cd66cd1c85625d00b83fe5a39960e86c074ca07d",
+    "tools/rhino_oracle/fixtures/ribbon_cplane_thresholds.json": "de902034ccf0903f58eb8d798ed7a3ae394adba50d894b501a6e440471e1ccb5",
+    "tools/rhino_oracle/fixtures/ribbon_options.json": "a578641896508019f225751fe5ce9c3e661746b4fb8bbd652a862cd137b75b0d",
+    "tools/rhino_oracle/fixtures/ribbon_workflows.json": "d6bd18b7149669bee21b084bd6972d43daec79d213a2f72df4ea9941165632c4",
+    "tools/rhino_oracle/observations/ribbon_cplane.json.gz": "3c06647c554206a5fa4729de7f4bc0d04232daac08c3f20f5e00ab48c1dbd460",
+    "tools/rhino_oracle/observations/ribbon_cplane_boundaries.json.gz": "c96b18982ba8cbcb15ad6607167d39ef6f7be044f8ae91af69fea63a7838055f",
+    "tools/rhino_oracle/observations/ribbon_cplane_holdouts.json.gz": "e1469e9820778ed1d87ddb341fc805adaecfb138ca8b2ba332f9d82dc8968b3b",
+    "tools/rhino_oracle/observations/ribbon_cplane_policy.json.gz": "91789b44c5c34b721fb11980f9137cad6656a4dfab1fd9fe4b01ba677e3b7db9",
+    "tools/rhino_oracle/observations/ribbon_cplane_switches.json.gz": "842e107aa536df12fa524ba93cef88d6122ec917390bead014d6333e853b3226",
+    "tools/rhino_oracle/observations/ribbon_cplane_thresholds.json.gz": "95258e9eb644c16331143ca3358d8bfb28e261e0de04523ff9f8b889a19cb0ca",
+    "tools/rhino_oracle/observations/ribbon_options.json.gz": "1ceeaceb48aa2516eab35c493b997a40e6e203c6814af7a538d7e166b048e111",
+    "tools/rhino_oracle/observations/ribbon_workflows.json.gz": "1458615483e040b068a53ed4305f568488f54a823ed1383e6754ea1aaef71519",
+    "tools/rhino_oracle/observations/source_snapshots/33af3f520672e5e860e63286acf7ff57d59e5867f6eab4592adc0851aecfbcf0.gz": "fb40fbf657014b31e33ae967480f226ca8b05f2e7108195b4c53c628455f5b16",
+    "tools/rhino_oracle/observations/source_snapshots/3719e845bc1b2a96ef8b40d9b19b9f05a799052b5b5bd81cf901ea4522e9de33.gz": "e0025495c7df60cfeb0002378a5e2aca1d483198c3b735c08ae89564162c8b16",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/3bf749135f0d2d405a1f31695d7fa1259ac09ca03c75aa959bb09bf3c3c212ab.gz": "e91315bf7854acb9834d5e941292db095ce6366312fafaa4d15f2a9205745b7d",
+    "tools/rhino_oracle/observations/source_snapshots/46043cd48fbb2a711c5be5c228715b0360920b40e959ae2943e6d0b69cfbc846.gz": "3db9fd3b98a78b745217ed786cc464f8bc50f611ec6fbac527a076d3eaeef508",
+    "tools/rhino_oracle/observations/source_snapshots/51a00cc6f506167a2100d0b695253485f4959e775afdfa0d7ef3cc290265da37.gz": "a62051166a847fa3753c33aa9436424e1ff40797e8760b6d97207969c5a6a217",
+    "tools/rhino_oracle/observations/source_snapshots/52eb6e8d4e778ff7b4d7d76dd1ea0e976a30eb43baf366b5df76fb863c2d4011.gz": "a5d3a6cf252eb2fd3884dfdd9703547351e1686f960154f536e5610c46b5fd7b",
+    "tools/rhino_oracle/observations/source_snapshots/6158aade98eaee1d401750fa590ce7299fb10ad924d6893f9e0f1682931d2ad4.gz": "400bc21e33e38c2169639951f397ea2b4e1e4b3fead69ba5670998ac8d30c30d",
+    "tools/rhino_oracle/observations/source_snapshots/682474343e7e6cec67fb202aba622d4c023908e62bc4471976bcf8c1b645a2a6.gz": "8f1c984384ff87c3c8491ccbbfda54f834ad58ae4701de5a9939e7a47805be96",
+    "tools/rhino_oracle/observations/source_snapshots/7432d5b633af3fc12be253455edbb355a894aeb66309ed9fdb6cd23781f8302b.gz": "162c73dcd2c837eec2745269da4bd221944c44f3a8da6845b8ca2f169ce699c9",
+    "tools/rhino_oracle/observations/source_snapshots/7e51ee954894545351566287914bb0c06d8cce2a39e43b8d35f35f0340867a46.gz": "5b20d560bc2a97d38eb28488d22bae2c055fc4a29c0e3905630765a216e16141",
+    "tools/rhino_oracle/observations/source_snapshots/881c917cc5d5202af2c34003283aaebc04709b2c4bb3919f96514719cfb5c9f9.gz": "71a3facd9e543c09b3d932a7c76404eba496deb5029dc172ca76ad954fc2a603",
+    "tools/rhino_oracle/observations/source_snapshots/90e048818f52ca2bb0778ba27b01f84b774a0f7bfbe1517382ba90f54cce618d.gz": "d5c439616e770bc8e9ee6390451153cf4a242a2e5b93d255db56c8ebdf4399f6",
+    "tools/rhino_oracle/observations/source_snapshots/93915c17af130ee4f9f5cad69d42d347803a54ac4b1da0306360d874ec68dddd.gz": "9fd51bfbaaaa32cf8c1d5212dd4601c6628cf98be8056f32d2d8f8f9979df8ea",
+    "tools/rhino_oracle/observations/source_snapshots/9f2f5e699957bb3724b835217b8e1716b515269f8a7f3e0d53f5dbb121c7fb5a.gz": "78d6f82f424c3246d2f2086fddfbbb25289775c25c924a8bda7a293c358a6ab5",
+    "tools/rhino_oracle/observations/source_snapshots/b82099cf3d6a95ee7dbcacb9f63e2b6e7ad86ee883f24928a3c604c5d27b8d49.gz": "b326c9ed16ab6def3d6de53bfba513c8b9dac25ad036938162d9bb1895efea1d",
+    "tools/rhino_oracle/observations/source_snapshots/ba901671619b600b2ad45607ade396099c870cde37a3abc149583f88676cbf17.gz": "b78b1d115bbf0476bd6937bc31cc7387a0252b33d55feb2fce30b5d95887682e",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d651af361abec1176956d8a8acce286afab31e819527957047d7e1d8634e2a40.gz": "697650ac18dee72f5327522bf1c52e40bc7d192388335a3826d7518bd4e78e04",
+    "tools/rhino_oracle/observations/source_snapshots/f992da2a5418c3cba8665fbf2c23cbd1bce184757d9f017db2ede7d393e18266.gz": "d65edb34478b7fe78ff917df5b99134261a9aff010f7a5ebcddb44cdecaea535"
+  },
+  "notes": [
+    "All six native capture processes closed with exit 0 before their observations were compressed.",
+    "The first threshold wrapper invocation was rejected with exit 2 before Rhino launched because exec was omitted; its raw local log was overwritten by the corrected invocation. This is a reconstructed note, not a retained native failure.",
+    "Kernel/UI/check tests are headless. Native means usd-brep/SMLib backend in local replays; native captures use licensed Rhino in private Xvfb.",
+    "Exact ruled images and complete edge/vertex incidence use strict 1e-9 gates. New families do not claim matching U coordinates.",
+    "The original nine untracked files were checksum verified and AGENTS.md was left unchanged."
+  ]
+}

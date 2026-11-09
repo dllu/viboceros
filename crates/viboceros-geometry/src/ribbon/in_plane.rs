@@ -1,5 +1,10 @@
 //! Fixed-normal loose loci retain the source's spatial heights.
 use super::*;
+mod fixed;
+pub use fixed::{
+    try_fixed_plane_ribbon, try_fixed_plane_ribbon_with_fit_tolerance,
+    try_fixed_plane_ribbon_with_ruled,
+};
 
 pub fn try_loose_ribbon_in_plane(
     source: &NurbsCurve,

@@ -1,0 +1,951 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "ribbon_command",
+      "id": "parallel-tilt-0.001",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              0.002
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -0.001
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              0.001
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-tilt-1e-05",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2e-05
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1e-05
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1e-05
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-tilt-1e-07",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2e-07
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1e-07
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1e-07
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-tilt-1e-09",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2e-09
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1e-09
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1e-09
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-tilt-1e-11",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2e-11
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1e-11
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1e-11
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-height",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-tolerance-1e-08",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-08
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-tolerance-0.0001",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 0.0001
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-tolerance-0.01",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 0.01
+    },
+    {
+      "op": "ribbon_command",
+      "id": "linear-projection-0.0001",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0001,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "linear-projection-1e-06",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1e-06,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "linear-projection-1e-08",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1e-08,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "rotated-coplanar",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.6,
+              4.8
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              5.4,
+              7.2
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              6.0,
+              8.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        7.0,
+        3.0,
+        4.0
+      ],
+      "both_sides": true,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06,
+      "cplane": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          0.0,
+          0.6,
+          0.8
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-polyline-sharp",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    },
+    {
+      "op": "ribbon_command",
+      "id": "parallel-polyline-round",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          2.0
+        ]
+      },
+      "distance": 0.15,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Round",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Current",
+      "fit_tolerance": 1e-06
+    }
+  ]
+}

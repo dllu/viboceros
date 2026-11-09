@@ -1,0 +1,490 @@
+{
+  "baseline_revision": "b540aa46e2fb5a817f5e361f34637a3515eb1a08",
+  "full_command_parity": false,
+  "new_headless_rhino_launches": 6,
+  "new_native_workflows": 106,
+  "between_station_distance_certified": false,
+  "loop_winding_compared": false,
+  "fixed_plane_u_correspondence_compared": false,
+  "native_performance_parity": false,
+  "custom_tolerance_scope": "qualified single-span polynomial cases only",
+  "backends": {
+    "portable": {
+      "complete_image_and_incidence_matches": 85,
+      "attributes_selection_history_matches": 85,
+      "maximum_image_bound": 6.868221720591027e-13,
+      "maximum_incidence_bound": 6.868221720591026e-13,
+      "native_success_local_unsupported": [
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-05",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-07",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-09",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-11",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "linear-projection-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "parallel-angle-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "parallel-angle-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "perpendicular-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "height-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.006",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.007",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.008",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.0087",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.0088",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.009",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "scale-0.1",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "scale-10.0",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "distance-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "distance-0.5",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.006",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.0062",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.007",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "spatial-near-plane-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "spatial-near-plane-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0062",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0063",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.00632",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.00633",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0064",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.0015",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.002",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.003",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.004",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-0.1-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-0.1-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-10.0-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-10.0-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-1e-05",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "rational-tilted-fit-0.02",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "rational-tilted-fit-0.1",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "nonuniform-tilted-fit-0.02",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "nonuniform-tilted-fit-0.1",
+          "reason": "coarse_nonpolynomial_fit"
+        }
+      ]
+    },
+    "native": {
+      "complete_image_and_incidence_matches": 85,
+      "attributes_selection_history_matches": 85,
+      "maximum_image_bound": 6.06252505686075e-13,
+      "maximum_incidence_bound": 6.062525056860749e-13,
+      "native_success_local_unsupported": [
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-05",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-07",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-09",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "parallel-tilt-1e-11",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_boundaries",
+          "id": "linear-projection-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "parallel-angle-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "parallel-angle-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "perpendicular-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_policy",
+          "id": "height-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.006",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.007",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.008",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.0087",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.0088",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "angle-0.009",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "scale-0.1",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "scale-10.0",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "distance-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "distance-0.5",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.006",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.0062",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "perpendicular-0.007",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "spatial-near-plane-0.0001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_switches",
+          "id": "spatial-near-plane-0.01",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0062",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0063",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.00632",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.00633",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "parallel-0.0064",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.0015",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.002",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.003",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-0.004",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-0.1-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-0.1-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-10.0-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "perpendicular-scale-10.0-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-1e-05",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-0.001",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_thresholds",
+          "id": "spatial-0.005",
+          "reason": "unqualified_plane_switch"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "rational-tilted-fit-0.02",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "rational-tilted-fit-0.1",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "nonuniform-tilted-fit-0.02",
+          "reason": "coarse_nonpolynomial_fit"
+        },
+        {
+          "family": "ribbon_cplane_holdouts",
+          "id": "nonuniform-tilted-fit-0.1",
+          "reason": "coarse_nonpolynomial_fit"
+        }
+      ]
+    }
+  },
+  "receipts": "ribbon-cplane-proof/receipts.json"
+}
