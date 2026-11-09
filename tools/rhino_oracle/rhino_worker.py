@@ -13290,6 +13290,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "surface_knot_reduction":
         import surface_knot_reduction_probe
         return surface_knot_reduction_probe.run(operation, globals(), iterations, tolerance)
+    if kind in ("ribbon_command", "loose_offset_command"):
+        import ribbon_probe
+        return ribbon_probe.run(operation, globals(), iterations, tolerance)
     if kind == "surface_fit_achieved":
         import surface_fit_achieved_probe
         return surface_fit_achieved_probe.run(operation, globals(), iterations, tolerance)
@@ -18166,6 +18169,10 @@ def _main(at_idle=False):
                 op.get("undo_redo", False) for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        if not at_idle and any(op.get('op') in ('ribbon_command','loose_offset_command') for op in request.get('operations',[])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino,lambda:_main(True))
             return
         if not at_idle and any(op.get('op')=='orient_on_curve' and 'edge'in op for op in request.get('operations',[])):
             import merge_edges_probe

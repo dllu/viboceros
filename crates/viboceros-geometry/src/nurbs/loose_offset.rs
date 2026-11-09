@@ -1,6 +1,9 @@
 //! Planar offsets interpolating original Greville edit points.
 use super::*;
-use crate::{CurveEditPointSolver, UnitVector3};
+use crate::{CurveEditPointSolver, ParameterSide, UnitVector3};
+
+#[cfg(test)]
+mod tests;
 
 impl NurbsCurve {
     /// Offsets original Greville edit points, retaining degree and rational
@@ -14,6 +17,31 @@ impl NurbsCurve {
         normal: UnitVector3,
         tolerance: Tolerance,
         solver: Option<CurveEditPointSolver>,
+    ) -> Result<Self, GeometryError> {
+        self.loose_planar_offset(distance, normal, tolerance, solver, false)
+    }
+
+    /// Offset original Greville positions into a polynomial curve in the same
+    /// basis. This is the public Offset/Ribbon Loose policy, distinct from
+    /// Inset's weight-preserving edit. It does not certify constant distance
+    /// between stations. Periodic input uses the shared cyclic edit-point solve.
+    pub fn try_loose_polynomial_offset(
+        &self,
+        distance: Real,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+        solver: Option<CurveEditPointSolver>,
+    ) -> Result<Self, GeometryError> {
+        self.loose_planar_offset(distance, normal, tolerance, solver, true)
+    }
+
+    fn loose_planar_offset(
+        &self,
+        distance: Real,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+        solver: Option<CurveEditPointSolver>,
+        polynomial: bool,
     ) -> Result<Self, GeometryError> {
         if !distance.is_finite() || distance == 0. {
             return Err(GeometryError::InvalidCurveOffsetDistance);
@@ -29,8 +57,18 @@ impl NurbsCurve {
             .edit_points()?
             .iter()
             .map(|station| {
-                let tangent = source.tangent_at_on_side(station.parameter, station.side)?;
-                station.point.translated(
+                let side = if polynomial {
+                    ParameterSide::Right
+                } else {
+                    station.side
+                };
+                let point = if polynomial {
+                    source.evaluate_on_side(station.parameter, side)?
+                } else {
+                    station.point
+                };
+                let tangent = source.tangent_at_on_side(station.parameter, side)?;
+                point.translated(
                     normal
                         .as_vector()
                         .cross(tangent.as_vector())?
@@ -40,10 +78,19 @@ impl NurbsCurve {
                 )
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        let result = if let Some(mut solver) = solver {
-            source.try_with_edit_points_with_solver(&points, tolerance, &mut solver)?
+        let basis = if polynomial {
+            Self::try_new(
+                source.degree(),
+                source.control_points().iter().map(|p| p.point()).collect(),
+                source.knots().to_vec(),
+            )?
         } else {
-            source.try_with_edit_points(&points, tolerance)?
+            source
+        };
+        let result = if let Some(mut solver) = solver {
+            basis.try_with_edit_points_with_solver(&points, tolerance, &mut solver)?
+        } else {
+            basis.try_with_edit_points(&points, tolerance)?
         };
         result.clamped_to_active_domain()
     }

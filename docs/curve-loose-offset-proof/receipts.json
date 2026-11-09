@@ -1,0 +1,271 @@
+{
+  "baseline_revision": "1836ee1b459f3b1e970d72b0e2f1763b14097cf0",
+  "source_overrides": {
+    "crates/viboceros-geometry/src/nurbs/loose_offset.rs": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/crates/viboceros-geometry/src/nurbs/loose_offset.rs.gz",
+      "sha256": "be7d2f73a5793a360e3116a1566f977810aaf0a0bbccd9605cce62271cec63ef"
+    },
+    "crates/viboceros-geometry/src/nurbs/loose_offset/tests.rs": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/crates/viboceros-geometry/src/nurbs/loose_offset/tests.rs.gz",
+      "sha256": "34403d0037a3f92205dba825e2c934304ae43b665c5d0b1d1948037727c43de5"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/src/lib.rs.gz",
+      "sha256": "4e0617a725c9a9a77401ac0bafb30115820c8271a6efd45a226a5dafcadb88db"
+    },
+    "crates/viboceros-oracle/src/curve_loose_offset.rs": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/src/curve_loose_offset.rs.gz",
+      "sha256": "3f37dad91325ede6f68f6f7904501ebce213966342f17f0e74a0ecfa16eea07d"
+    },
+    "crates/viboceros-oracle/tests/curve_loose_offset_native.rs": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/tests/curve_loose_offset_native.rs.gz",
+      "sha256": "b9f5729e3ed5b8314e22aab6f7a410d3545fad3760712a5f2d8da79ac9fc4943"
+    },
+    "tools/rhino_oracle/ribbon_probe.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/ribbon_probe.py.gz",
+      "sha256": "2920b78da38f9882e11b66f51eb8b14435a3716868376deb687281bb14c1ab41"
+    },
+    "tools/rhino_oracle/generate_ribbon.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_ribbon.py.gz",
+      "sha256": "52eb6e8d4e778ff7b4d7d76dd1ea0e976a30eb43baf366b5df76fb863c2d4011"
+    },
+    "tools/rhino_oracle/generate_ribbon_options.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_ribbon_options.py.gz",
+      "sha256": "881c917cc5d5202af2c34003283aaebc04709b2c4bb3919f96514719cfb5c9f9"
+    },
+    "tools/rhino_oracle/generate_curve_loose_offset.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_curve_loose_offset.py.gz",
+      "sha256": "d7b3a9b58f22706a28f0e15b796e86a52ee35ab2976dd3160c85cf9c1c19c92d"
+    },
+    "tools/rhino_oracle/generate_curve_loose_offset_types.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_curve_loose_offset_types.py.gz",
+      "sha256": "0177dd05fd41388b358725acdfea749d00458c12ee4b29274527ac9e8070d475"
+    },
+    "tools/rhino_oracle/rhino_worker.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/rhino_worker.py.gz",
+      "sha256": "7e51ee954894545351566287914bb0c06d8cce2a39e43b8d35f35f0340867a46"
+    },
+    "tools/rhino_oracle/structural_sdk.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/structural_sdk.py.gz",
+      "sha256": "f992da2a5418c3cba8665fbf2c23cbd1bce184757d9f017db2ede7d393e18266"
+    },
+    "tools/rhino_oracle/test_ribbon_probe.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz",
+      "sha256": "130fbd6c60182482a22d709767f184427b3054af64d06003084d97e596c1b640"
+    },
+    "tools/rhino_oracle/report_curve_loose_offset.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz",
+      "sha256": "3281b1727ad4a15dc03b0e13166d03c0e8f5a5873fad109db8e625d342774153"
+    },
+    "tools/rhino_oracle/test_curve_loose_offset_record.py": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/test_curve_loose_offset_record.py.gz",
+      "sha256": "03d9af129175495a38f3c68730e7e83087a9f7bd922bb0822f17f578a622cffb"
+    },
+    "tools/rhino_oracle/run_headless.sh": {
+      "snapshot": "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/run_headless.sh.gz",
+      "sha256": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test curve_loose_offset_native -- --nocapture",
+      "log": "docs/curve-loose-offset-proof/portable.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test curve_loose_offset_native -- --nocapture",
+      "log": "docs/curve-loose-offset-proof/native.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib nurbs::loose_offset::tests -- --nocapture",
+      "log": "docs/curve-loose-offset-proof/kernel.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "inset_portable": {
+      "command": "cargo test -p viboceros-oracle --test inset_loose -- --nocapture",
+      "log": "docs/curve-loose-offset-proof/inset_portable.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "inset_native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test inset_loose -- --nocapture",
+      "log": "docs/curve-loose-offset-proof/inset_native.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_ribbon_probe",
+      "log": "docs/curve-loose-offset-proof/python.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "log": "docs/curve-loose-offset-proof/app.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "log": "docs/curve-loose-offset-proof/app_native.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "log": "docs/curve-loose-offset-proof/format.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "ribbon_capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon",
+      "log": "docs/curve-loose-offset-proof/ribbon_capture.log.gz",
+      "exit_code": 0,
+      "qualified": false
+    },
+    "ribbon_options_capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_options",
+      "log": "docs/curve-loose-offset-proof/ribbon_options_capture.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "offset_capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_loose_offset",
+      "log": "docs/curve-loose-offset-proof/offset_capture.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    },
+    "types_capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_loose_offset_types",
+      "log": "docs/curve-loose-offset-proof/types_capture.log.gz",
+      "exit_code": 0,
+      "qualified": true
+    }
+  },
+  "failed_captures": [
+    {
+      "capsule": "tools/rhino_oracle/observations/failures/ribbon-cfcaba5b836a0797a1651b0e722ab8885cf4f43ff3dd94eab862deb9e54641f0.json.gz",
+      "log": "docs/curve-loose-offset-proof/ribbon-capture.log.gz",
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon",
+      "exit_code": 1,
+      "qualified": false
+    },
+    {
+      "capsule": "tools/rhino_oracle/observations/failures/curve_loose_offset_types-c42ae09e5c300c0476d4cb18be3ae8fbeb710ec09a802fddbd93da37a16793ea.json.gz",
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-types-capture.log.gz",
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_loose_offset_types",
+      "exit_code": 1,
+      "qualified": false
+    },
+    {
+      "capsule": "tools/rhino_oracle/observations/failures/curve_loose_offset_types-44c234553d24e8fec3663ed61d12f7a40a8035a6394a6855f177327bde737e13.json.gz",
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-types-capture-fixed.log.gz",
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_curve_loose_offset_types",
+      "exit_code": 1,
+      "qualified": false
+    }
+  ],
+  "unqualified_builds": [
+    {
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-portable.log.gz",
+      "reason": "Test used a nonexistent UnitVector3::z_axis constructor; compilation only.",
+      "exit_code": 101,
+      "qualified": false,
+      "exact_full_producer_freeze": false
+    },
+    {
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-portable-fixed.log.gz",
+      "reason": "Assumed ordered BothSides pairing; full bound rejected the wrong circle side. Final comparison retains a distinct native target index and matches the output set.",
+      "exit_code": 101,
+      "qualified": false,
+      "exact_full_producer_freeze": false
+    },
+    {
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-portable-matched.log.gz",
+      "reason": "Earlier retained-weight sided stations used the left tangent at a corner. Separate polynomial policy now uses native right-sided tangent stations; no admission gate relaxed.",
+      "exit_code": 101,
+      "qualified": false,
+      "exact_full_producer_freeze": false
+    },
+    {
+      "log": "docs/curve-loose-offset-proof/curve-loose-offset-portable-sided.log.gz",
+      "reason": "ParameterSide import missing; compilation only.",
+      "exit_code": 101,
+      "qualified": false,
+      "exact_full_producer_freeze": false
+    }
+  ],
+  "format_repair": "An initial rustfmt invocation rejected test-only leading-dot float literals. Tool diagnostics were truncated and not saved as a full log. Corrected before every qualified run; terminal fmt check passes.",
+  "files": {
+    "docs/curve-loose-offset-proof/native.log.gz": "86eeca71a34870c944a8b577e6b222db749f653084830af7414e46b67e3769ac",
+    "docs/curve-loose-offset-proof/ribbon_options_capture.log.gz": "ae61889abdc9dc05e77927ec65aaaf5cea3054942741e2ca4f712a7636e8e28f",
+    "docs/curve-loose-offset-proof/curve-loose-offset-portable-fixed.log.gz": "65e333b5583351663eea4765e733eafd6d4ea4ba25a8d4e25c9588018675ee9f",
+    "docs/curve-loose-offset-proof/ribbon_capture.log.gz": "41a35eb88d4aaddec4836b14efcbae389b1f630f1846a349d5ff7ddcc0f35b31",
+    "docs/curve-loose-offset-proof/curve-loose-offset-types-capture-fixed.log.gz": "28f1ec72d95977acde00186ff8e27374850405b55b4a0ff4092baeb3778da117",
+    "docs/curve-loose-offset-proof/curve-loose-offset-portable-sided.log.gz": "1b82df5b81827eb18afb8f67a59817e606d62867460359334fe0376568dc35bc",
+    "docs/curve-loose-offset-proof/inset_portable.log.gz": "dce43742352909fe24b7fe124bdfe72e02654540825eb9c005bb24fe2b5c8686",
+    "docs/curve-loose-offset-proof/types_capture.log.gz": "6df6a51626f625dbc4fc5bc72d6847eff64b0219f40f479ddcf51349a98d7d95",
+    "docs/curve-loose-offset-proof/curve-loose-offset-portable-matched.log.gz": "335e0bfaaa35135cf7a64745949fd8cad7b5b6a847068ed46e6434659ff08887",
+    "docs/curve-loose-offset-proof/kernel.log.gz": "3bcb93d40e799186a6005fdc50f1026c1d0e855de70a605970da3cdc2eb5e999",
+    "docs/curve-loose-offset-proof/curve-loose-offset-types-capture.log.gz": "b143abfcdfc90d43669b3a19555b93c3317e96daede76e2a607814ae983a0249",
+    "docs/curve-loose-offset-proof/app.log.gz": "94f4ce872a336c918e1118f5789a4dec3aed2b45888c09d629ddbaa1540c0b85",
+    "docs/curve-loose-offset-proof/offset_capture.log.gz": "c3336382ecfbf61cc0df535e490b6f6b74874cc1fbcaf75d4f26f3ca5048aadd",
+    "docs/curve-loose-offset-proof/inset_native.log.gz": "7dd403ded9ecfbb739f8060016e441ad9680fc09918e15df11122770687b3ccc",
+    "docs/curve-loose-offset-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/curve-loose-offset-proof/python.log.gz": "a3268bebfb866390a9271ef3e438433e796ed1d7a458befd0cbe7aa3dab05f3e",
+    "docs/curve-loose-offset-proof/ribbon-capture.log.gz": "8ed45188cde6ac48687817917703b583a743e410f14c691b063e152ec55beeac",
+    "docs/curve-loose-offset-proof/portable.log.gz": "d04fc3ff8cfb7a32efd4c787b182671a4c83d1d8e301a78348e1c4421a30d4fa",
+    "docs/curve-loose-offset-proof/app_native.log.gz": "403b160bc1e5fe3b27e016cb53bbfe3e096cb1bb39cad0fe61a6b6a64940f0bb",
+    "docs/curve-loose-offset-proof/curve-loose-offset-portable.log.gz": "24459267965ac90c5dc4719898851b9cfe2d4064386a78549503508eb1f7ca46",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/rhino_worker.py.gz": "5b20d560bc2a97d38eb28488d22bae2c055fc4a29c0e3905630765a216e16141",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/ribbon_probe.py.gz": "16347a76f53ff82b7b20eeab435c407c4a93d9dd92ebeefb62e98f2371538c33",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_curve_loose_offset.py.gz": "c7f77669beb2199611de2794eb47d76722591aef01488112845dbac05936303a",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/structural_sdk.py.gz": "d65edb34478b7fe78ff917df5b99134261a9aff010f7a5ebcddb44cdecaea535",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/run_headless.sh.gz": "4e2fda0703d07b34a2544ea03e1e4bcdef435b82e29ba4ee972355fb9a9dfaa8",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/test_curve_loose_offset_record.py.gz": "49b8ed4ac18db1f7427a4431a1d87ac0ee94540bcee15801a135c37b70d87e00",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/test_ribbon_probe.py.gz": "86772ae100b7a4be2f9c5f1ce29ff33b4110e7353551333ce3d7510cfd4aadfe",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_ribbon_options.py.gz": "71a3facd9e543c09b3d932a7c76404eba496deb5029dc172ca76ad954fc2a603",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_curve_loose_offset_types.py.gz": "8e0ae1ab38589ae6e1553cc269838e053cae50417818f5a0457a328b520a341b",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz": "27b8f574779b3742fa8ae5191fde3e78992b9986b89f6794b506ea1f8acaf6fe",
+    "docs/curve-loose-offset-proof/sources/tools/rhino_oracle/generate_ribbon.py.gz": "a5d3a6cf252eb2fd3884dfdd9703547351e1686f960154f536e5610c46b5fd7b",
+    "docs/curve-loose-offset-proof/sources/crates/viboceros-geometry/src/nurbs/loose_offset.rs.gz": "881ffbaf636793650dbb30e0c7f40e32ccc23d5a306fb03469cd7703f2e45548",
+    "docs/curve-loose-offset-proof/sources/crates/viboceros-geometry/src/nurbs/loose_offset/tests.rs.gz": "69f61419a46337766f1ef08502ec38941c16ef2001d3067bbd37334b110831c0",
+    "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/tests/curve_loose_offset_native.rs.gz": "9e10516540a744c472e103e0332a428b993e0c989604bdf63460668e1ab7c259",
+    "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/src/lib.rs.gz": "8a04d66e44f0feaaca01e2275cca9d3dfe9389e22742bf886163dee44b1b2e85",
+    "docs/curve-loose-offset-proof/sources/crates/viboceros-oracle/src/curve_loose_offset.rs.gz": "9166e5a68d2bd6028deeb65b9f7a055a0d47da29261ee4095320d81e908512c2",
+    "tools/rhino_oracle/fixtures/ribbon.json": "a578641896508019f225751fe5ce9c3e661746b4fb8bbd652a862cd137b75b0d",
+    "tools/rhino_oracle/observations/ribbon.json.gz": "0b38b26e0fd7825220862c035fd26fa7fbde77df55016db06af9fc9659118211",
+    "tools/rhino_oracle/observations/source_snapshots/52eb6e8d4e778ff7b4d7d76dd1ea0e976a30eb43baf366b5df76fb863c2d4011.gz": "a5d3a6cf252eb2fd3884dfdd9703547351e1686f960154f536e5610c46b5fd7b",
+    "tools/rhino_oracle/observations/source_snapshots/a74ffd4a62e90fc3590fc4c183185971cea91b830b1bb095a524df8eb9770ab8.gz": "86a8d2a38807a70cb9eaa63490706ec7a4755d4f27dda94f39b7dee3c2641fc7",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/3bf749135f0d2d405a1f31695d7fa1259ac09ca03c75aa959bb09bf3c3c212ab.gz": "e91315bf7854acb9834d5e941292db095ce6366312fafaa4d15f2a9205745b7d",
+    "tools/rhino_oracle/observations/source_snapshots/46043cd48fbb2a711c5be5c228715b0360920b40e959ae2943e6d0b69cfbc846.gz": "3db9fd3b98a78b745217ed786cc464f8bc50f611ec6fbac527a076d3eaeef508",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/fixtures/ribbon_options.json": "a578641896508019f225751fe5ce9c3e661746b4fb8bbd652a862cd137b75b0d",
+    "tools/rhino_oracle/observations/ribbon_options.json.gz": "1ceeaceb48aa2516eab35c493b997a40e6e203c6814af7a538d7e166b048e111",
+    "tools/rhino_oracle/observations/source_snapshots/881c917cc5d5202af2c34003283aaebc04709b2c4bb3919f96514719cfb5c9f9.gz": "71a3facd9e543c09b3d932a7c76404eba496deb5029dc172ca76ad954fc2a603",
+    "tools/rhino_oracle/observations/source_snapshots/9f2f5e699957bb3724b835217b8e1716b515269f8a7f3e0d53f5dbb121c7fb5a.gz": "78d6f82f424c3246d2f2086fddfbbb25289775c25c924a8bda7a293c358a6ab5",
+    "tools/rhino_oracle/fixtures/curve_loose_offset.json": "9bd1377ab2998e1ea98866c422538e67a49cc6f7284bf6d3e561f0835fed4541",
+    "tools/rhino_oracle/observations/curve_loose_offset.json.gz": "18a53088d99202a0fe94ef4e8469b764edcae3f8f09263f6e03c20a730555b21",
+    "tools/rhino_oracle/observations/source_snapshots/d7b3a9b58f22706a28f0e15b796e86a52ee35ab2976dd3160c85cf9c1c19c92d.gz": "c7f77669beb2199611de2794eb47d76722591aef01488112845dbac05936303a",
+    "tools/rhino_oracle/observations/source_snapshots/df3a78394eadcd86c5f88fa28c10a2d18ee6979da1b42a1c257fb34675afcd17.gz": "ce3eb0d12083c1fdeeea35e422d20ad1aad7130f5de4ae103005393a0c615034",
+    "tools/rhino_oracle/observations/source_snapshots/f992da2a5418c3cba8665fbf2c23cbd1bce184757d9f017db2ede7d393e18266.gz": "d65edb34478b7fe78ff917df5b99134261a9aff010f7a5ebcddb44cdecaea535",
+    "tools/rhino_oracle/observations/source_snapshots/7e51ee954894545351566287914bb0c06d8cce2a39e43b8d35f35f0340867a46.gz": "5b20d560bc2a97d38eb28488d22bae2c055fc4a29c0e3905630765a216e16141",
+    "tools/rhino_oracle/fixtures/curve_loose_offset_types.json": "062dc840c0f245869d24290ac2b32754174509718ec3d7b642ffbc7fd67db41a",
+    "tools/rhino_oracle/observations/curve_loose_offset_types.json.gz": "6ca34608de6e85b2b4e7e883624dca9307e32097c3f09017db152bcb552eebe1",
+    "tools/rhino_oracle/observations/source_snapshots/0177dd05fd41388b358725acdfea749d00458c12ee4b29274527ac9e8070d475.gz": "8e0ae1ab38589ae6e1553cc269838e053cae50417818f5a0457a328b520a341b",
+    "tools/rhino_oracle/observations/source_snapshots/2920b78da38f9882e11b66f51eb8b14435a3716868376deb687281bb14c1ab41.gz": "16347a76f53ff82b7b20eeab435c407c4a93d9dd92ebeefb62e98f2371538c33",
+    "tools/rhino_oracle/observations/failures/ribbon-cfcaba5b836a0797a1651b0e722ab8885cf4f43ff3dd94eab862deb9e54641f0.json.gz": "58c6514e78037c0f5eeb10fc2bb795cb837fc4731bb4ca456b3e0e126be7c543",
+    "tools/rhino_oracle/observations/source_snapshots/812a4cabb4962398534248e107a891661eb6be716527ab75b1aa0750df605fc9.gz": "449828c65608448fba740e75fad3d0f939dd040bf90f6106feba8ae9af54c147",
+    "tools/rhino_oracle/observations/failures/curve_loose_offset_types-c42ae09e5c300c0476d4cb18be3ae8fbeb710ec09a802fddbd93da37a16793ea.json.gz": "99ea3c8f1d38c151d352a7cfcaed0d0f90576e2b5d122bea6479585c5064ef65",
+    "tools/rhino_oracle/observations/source_snapshots/d92b5f7fc97bf458279767aff1dedc7f83de639c77b1e9331446005c1c5434fe.gz": "e4dc460730e8db88c55455be2be7966a5cde740e6c741e43e6c1d410945491e6",
+    "tools/rhino_oracle/observations/failures/curve_loose_offset_types-44c234553d24e8fec3663ed61d12f7a40a8035a6394a6855f177327bde737e13.json.gz": "3eb9af9190c1b816555f19ae4595d7bf8efaf376d8f6c432257176697f7acb66",
+    "tools/rhino_oracle/observations/source_snapshots/9ae148f6b1f6823367ded6c13b45c5d62da93010729f78431594be0eb0531071.gz": "8575b74878a454b643672507b60a8fa6227fad4dcbbee4cc98deea793e0a5f26"
+  }
+}

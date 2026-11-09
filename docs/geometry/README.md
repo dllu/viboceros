@@ -27,6 +27,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [curve closure and shared seam grips](../curve-closure.md)
 - [Bounded curve approximation and mesh Pull preparation](../curve-approximation.md)
 - [Bounded NURBS knot reduction](knot-reduction.md)
+- [Polynomial loose curve offsets and Ribbon preparation](curve-loose-offsets.md)
 - [Bounded NURBS surface knot reduction](surface-knot-reduction.md)
 - [Complete NURBS surface correspondence bounds](surface-correspondence.md)
 - [Curved image bounds with supplied UV mappings](surface-mapped-images.md)

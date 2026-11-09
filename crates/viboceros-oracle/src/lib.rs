@@ -284,6 +284,7 @@ mod curve_approximation;
 mod curve_area;
 pub mod curve_boolean;
 mod curve_join_close;
+mod curve_loose_offset;
 mod curve_native;
 mod curve_offset;
 pub mod curve_two_views;
@@ -1160,6 +1161,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: curve_offset::Fixture,
+    },
+    CurveLooseOffsetGeometry {
+        id: String,
+        #[serde(flatten)]
+        fixture: curve_loose_offset::Fixture,
     },
     CurveFilletCornersGeometry {
         id: String,
@@ -3128,6 +3134,7 @@ impl Operation {
             | Self::CurveArea { id, .. }
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
+            | Self::CurveLooseOffsetGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
             | Self::CurveFilletPairGeometry { id, .. }
             | Self::CurveFilletPairParts { id, .. }
@@ -4032,6 +4039,9 @@ fn execute(
         } => ellipse_offset::run(curve, *side, *distance, *samples, iterations, tolerance)?,
         Operation::CurveOffsetGeometry { fixture, .. } => {
             curve_offset::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveLooseOffsetGeometry { fixture, .. } => {
+            curve_loose_offset::run(fixture, iterations, tolerance)?
         }
         Operation::CurveFilletCornersGeometry {
             vertices,

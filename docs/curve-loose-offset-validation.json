@@ -1,0 +1,30 @@
+{
+  "baseline_revision": "1836ee1b459f3b1e970d72b0e2f1763b14097cf0",
+  "ribbon_registered": false,
+  "offset_command_loose_option_registered": false,
+  "between_station_distance_certified": false,
+  "native_output_order_compared": false,
+  "native_output_domains_compared": false,
+  "ribbon_policy_captures": 13,
+  "unqualified_toggle_captures": 13,
+  "failed_captures_retained": 3,
+  "headless_launches": 7,
+  "visible_desktop_windows_opened": 0,
+  "backends": {
+    "portable": {
+      "workflows": 26,
+      "complete_offset_matches": 29,
+      "maximum_native_curve_bound": 2.8828578169096438e-15,
+      "native_ribbon_boundary_bound": 2.8639732959912204e-15
+    },
+    "native": {
+      "workflows": 26,
+      "complete_offset_matches": 29,
+      "maximum_native_curve_bound": 2.9976182286992996e-15,
+      "native_ribbon_boundary_bound": 2.8639732959912204e-15
+    }
+  },
+  "retained_weight_inset_regression": true,
+  "python_definition_roundtrip": true,
+  "receipts": "curve-loose-offset-proof/receipts.json"
+}
