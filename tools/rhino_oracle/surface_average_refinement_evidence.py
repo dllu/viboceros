@@ -38,7 +38,8 @@ def complete(v):
     r=v['prescribed_case']
     if (not finite(v) or v['success']is not True or v['source_unchanged']is not True or len(v['inputs'])!=2
             or any(v[k]is None for k in ['output','target'])):raise ValueError('incomplete investigation outputs')
-    expected=dict(enabled=r['refine'],distance=r.get('distance_tolerance',1e-6),angle=r.get('angle_tolerance',1e-6),curvature=r.get('curvature_tolerance',.05))
+    # Native EnableRefinement clamps the positional setting to ON_SQRT_EPSILON.
+    expected=dict(enabled=r['refine'],distance=max(r.get('distance_tolerance',1e-6),1.490116119385e-8),angle=r.get('angle_tolerance',1e-6),curvature=r.get('curvature_tolerance',.05))
     settings=v['configured_settings']
     if (settings!=expected or type(settings['enabled'])is not bool
             or any(type(settings[k])not in (int,float)for k in ['distance','angle','curvature'])):raise ValueError('refinement readback mismatch')

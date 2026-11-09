@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position_refine",
+      "case": "match_average_position_refine"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position_refine_group",
+      "case": "match_average_position_refine_group"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position_refine_opposite",
+      "case": "match_average_position_refine_opposite"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position_refine_cancel",
+      "case": "match_average_position_refine_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position_refine_recall",
+      "case": "match_average_position_refine_recall"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "baseline_revision": "ea854d45ab29fffffab0366e10ee337d1c0b01b1",
+  "sources": {
+    "crates/viboceros-geometry/src/surface_match/average.rs": "348632d70cda9fde23adfbd9b6d8d3ff1fc564226f17588adbefbfbb697d8fcf",
+    "crates/viboceros-geometry/src/surface_match/refine.rs": "b0a415a0862ba29bdff00e44a5ee109c5923cbc65e960358567984f38ab7ba9d",
+    "crates/viboceros-geometry/src/surface_match/average/refinement.rs": "ae083c4943a5020c40dd67e7f2031500793685909b8edeb9d5644c2938f7a665",
+    "crates/viboceros-command/tests/average_surfaces.rs": "20f77071c56def2dd166e8989d0a584b56f151f495de50048a0e7a70172af1e2",
+    "crates/viboceros-command/tests/support/surface_average.rs": "ffa53e11812e361504dcd601f24699c89e9da656b4ad77f7fbb3f4b4e3631444",
+    "crates/viboceros-command/tests/average_surface_position_refinement.rs": "f5de734a62b5bcdbef14ccdaaf997c0410246ad2d8142cce731fbd9074d442e0"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-command",
+    "--test",
+    "average_surface_position_refinement",
+    "position_refinement_matches",
+    "--",
+    "--nocapture"
+  ],
+  "exit_status": 101,
+  "log": "position.log.gz",
+  "backend": "portable",
+  "qualified": false,
+  "inputs": {
+    "tools/rhino_oracle/observations/match_surface_average_holdouts.json.gz": "85fa5688e54f440579d06e0b6ad55ce914f221147d8c14f757aaa56b23b2bacf",
+    "tools/rhino_oracle/observations/match_surface_average_refinement_pilot.json.gz": "486a00643caeca4a8e8d9de821cf763f5f2227b09a909de47e9c67dcf3a6c859",
+    "tools/rhino_oracle/observations/match_surface_average_position_refinement.json.gz": "1d6a2dcfb1ef3a944ab0dbe16fb91be72ed429fe13c9cf682e85e3449178fb38"
+  }
+}

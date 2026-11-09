@@ -165,6 +165,38 @@ for name,recipe in REFINEMENT_PARAMETERS.items():
     REFINEMENT_EDGE_PARAMETERS[name.replace('refine_parameters_','refine_edge_parameters_')]=value
 CASES.update(copy.deepcopy(REFINEMENT_EDGE_PARAMETERS))
 
+REFINEMENT_SIGNS={}
+for mode in ['Tangency','Curvature']:
+    for shift in [-.5,-.2,0.,.2,.5,1.]:
+        value=copy.deepcopy(FINAL['match_f_polynomial_'+mode.lower()])
+        value.update(average=True,refine=True,reverse_match=True,reverse_target=False,settings_audit=True)
+        for c in value['sources'][0]['control_points']:c['point'][2]+=shift
+        REFINEMENT_SIGNS['average_refine_signs_'+mode.lower()+'_'+str(shift)]=value
+CASES.update(copy.deepcopy(REFINEMENT_SIGNS))
+
+POSITION_REFINEMENT={}
+for name,recipe in HOLDOUTS.items():
+    if name.startswith('average_h_position_') and not recipe['refine']:
+        value=copy.deepcopy(recipe);value.update(refine=True,settings_audit=True)
+        POSITION_REFINEMENT[name.replace('average_h_position_','average_position_refine_')]=value
+for name in ['match_f_multi_position','match_f_transverse_basis']:
+    value=copy.deepcopy(FINAL[name]);value.update(continuity='Position',average=True,refine=True,
+        reverse_match=True,reverse_target=False,settings_audit=True)
+    POSITION_REFINEMENT[name.replace('match_f_','average_position_refine_')]=value
+for first,second in [(True,False),(False,True)]:
+    for distance in [1e-3,1e-5,1e-8]:
+        value=copy.deepcopy(FINAL['match_f_rational_position'])
+        value.update(average=True,refine=True,reverse_match=first,reverse_target=second,
+            distance_tolerance=distance,settings_audit=True)
+        for j,weight in enumerate([.8,1.6,1.1,1.4]):
+            for i in range(4):value['sources'][1]['control_points'][j*4+i]['weight']=weight
+        key='average_position_refine_weights_'+str(int(first))+str(int(second))+'_'+str(distance)
+        POSITION_REFINEMENT[key]=value
+value=case('Position',other_end='Curvature',sources=[surface(degree=1,rational=True),surface(True,rational=True)],
+    average=True,refine=True,reverse_match=True,reverse_target=False,settings_audit=True)
+POSITION_REFINEMENT['average_position_refine_short_preserved']=value
+CASES.update(copy.deepcopy(POSITION_REFINEMENT))
+
 
 def request(names=None):
     return dict(protocol_version=1,iterations=1,

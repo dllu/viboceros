@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_-0.5",
+      "case": "average_refine_signs_tangency_-0.5"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_-0.2",
+      "case": "average_refine_signs_tangency_-0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_0.0",
+      "case": "average_refine_signs_tangency_0.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_0.2",
+      "case": "average_refine_signs_tangency_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_0.5",
+      "case": "average_refine_signs_tangency_0.5"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_tangency_1.0",
+      "case": "average_refine_signs_tangency_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_-0.5",
+      "case": "average_refine_signs_curvature_-0.5"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_-0.2",
+      "case": "average_refine_signs_curvature_-0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_0.0",
+      "case": "average_refine_signs_curvature_0.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_0.2",
+      "case": "average_refine_signs_curvature_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_0.5",
+      "case": "average_refine_signs_curvature_0.5"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_signs_curvature_1.0",
+      "case": "average_refine_signs_curvature_1.0"
+    }
+  ]
+}

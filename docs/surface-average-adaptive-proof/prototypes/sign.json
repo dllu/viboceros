@@ -1,0 +1,28 @@
+{
+  "baseline_revision": "ea854d45ab29fffffab0366e10ee337d1c0b01b1",
+  "sources": {
+    "crates/viboceros-geometry/src/surface_match.rs": "3f69dfdefc69b3789fd0bc38b378b3b72b042dbf413a4a99edd5630b20b8fa6f",
+    "crates/viboceros-geometry/src/surface_match/average.rs": "918ae69e8a319d970644682b869f33af92d96deb5e0afbdb650549a1122a8787",
+    "crates/viboceros-geometry/src/surface_match/refine.rs": "0e042ae9858f61c640348b9cd5f4697a2a423687de98dd2c2e8232983412e202",
+    "crates/viboceros-command/tests/support/surface_match.rs": "48c2ea6de851a78004ede71e833a4a322f915d301a091d6645163861128dcecb",
+    "crates/viboceros-geometry/src/surface_match/average/refinement.rs": "f76dcc593242787a39cd7c4124f630dc920d51d9e1cad394e20f57322a8a81a7",
+    "crates/viboceros-command/tests/average_surface_refinement.rs": "fe9ff17784dc50f8b6862f583e9ec7881f0e55378b1623c3ab70d077dddf6ce9"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-command",
+    "--test",
+    "average_surface_refinement",
+    "--",
+    "--nocapture"
+  ],
+  "exit_status": 101,
+  "log": "sign.log.gz",
+  "backend": "portable",
+  "qualified": false,
+  "inputs": {
+    "tools/rhino_oracle/observations/match_surface_average_refinement_pilot.json.gz": "486a00643caeca4a8e8d9de821cf763f5f2227b09a909de47e9c67dcf3a6c859"
+  }
+}

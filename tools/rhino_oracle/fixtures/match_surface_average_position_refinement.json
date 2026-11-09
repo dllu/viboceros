@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_keep",
+      "case": "average_position_refine_keep"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_perpendicular",
+      "case": "average_position_refine_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_target_iso",
+      "case": "average_position_refine_target_iso"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_preserve_position",
+      "case": "average_position_refine_preserve_position"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_preserve_tangency",
+      "case": "average_position_refine_preserve_tangency"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_preserve_curvature",
+      "case": "average_position_refine_preserve_curvature"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_closest",
+      "case": "average_position_refine_closest"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_degrees_1_3",
+      "case": "average_position_refine_degrees_1_3"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_degrees_2_5",
+      "case": "average_position_refine_degrees_2_5"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_source_west",
+      "case": "average_position_refine_source_west"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_source_north",
+      "case": "average_position_refine_source_north"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_source_south",
+      "case": "average_position_refine_source_south"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_target_east",
+      "case": "average_position_refine_target_east"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_target_south",
+      "case": "average_position_refine_target_south"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_target_north",
+      "case": "average_position_refine_target_north"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_source_reverse_v",
+      "case": "average_position_refine_source_reverse_v"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_both_transpose",
+      "case": "average_position_refine_both_transpose"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_multi_position",
+      "case": "average_position_refine_multi_position"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_transverse_basis",
+      "case": "average_position_refine_transverse_basis"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_10_0.001",
+      "case": "average_position_refine_weights_10_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_10_1e-05",
+      "case": "average_position_refine_weights_10_1e-05"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_10_1e-08",
+      "case": "average_position_refine_weights_10_1e-08"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_01_0.001",
+      "case": "average_position_refine_weights_01_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_01_1e-05",
+      "case": "average_position_refine_weights_01_1e-05"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_weights_01_1e-08",
+      "case": "average_position_refine_weights_01_1e-08"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_position_refine_short_preserved",
+      "case": "average_position_refine_short_preserved"
+    }
+  ]
+}

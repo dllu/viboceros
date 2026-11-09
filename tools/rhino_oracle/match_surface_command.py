@@ -156,3 +156,19 @@ AVERAGE_WORKFLOWS={
     'match_average_curvature_pending':case(picks()+RESET+['AverageSurfaces=Yes','Enter']),
 }
 CASES.update(copy.deepcopy(AVERAGE_WORKFLOWS))
+
+
+def position_refinement(actions,**changes):
+    value=rational(actions,**changes)
+    for j,weight in enumerate([.8,1.6,1.1,1.4]):
+        for i in range(4):value['curves'][1]['control_points'][j*4+i]['weight']=weight
+    return value
+
+AVERAGE_POSITION_REFINEMENT={
+    'match_average_position_refine':position_refinement(picks()+RESET+['Mode=Position','AverageSurfaces=Yes','RefineMatch=Yes','Enter'],preselected=True),
+    'match_average_position_refine_group':position_refinement(picks()+RESET+['Mode=Position','AverageSurfaces=Yes','RefineMatch=Yes','Enter'],common_group=True),
+    'match_average_position_refine_opposite':position_refinement(picks(.25,.75)+RESET+['Mode','Position','AverageSurfaces','Yes','RefineMatch','Yes','Enter']),
+    'match_average_position_refine_cancel':position_refinement(picks()+RESET+['Mode=Position','AverageSurfaces=Yes','RefineMatch=Yes','Cancel']),
+    'match_average_position_refine_recall':position_refinement(picks()+['Enter']),
+}
+CASES.update(copy.deepcopy(AVERAGE_POSITION_REFINEMENT))

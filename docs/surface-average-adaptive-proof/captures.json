@@ -1,0 +1,50 @@
+[
+  {
+    "family": "match_surface_average_refinement_signs",
+    "kind": "sdk",
+    "archive": "observations/match_surface_average_refinement_signs.json.gz",
+    "log": "capture-refinement-signs.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_signs > /tmp/match-average-refinement-signs.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-signs.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "a8db3f7a088b47e1a23ce9676cd522f65d1db9996bcdac32b12a13f8c1632977",
+    "request_sha256": "72cf8215e978f5bd58aeddf1c46ccc8240197acf05476a5f658fd2ddc2eb5d14"
+  },
+  {
+    "family": "match_surface_average_position_refinement",
+    "kind": "sdk",
+    "archive": "observations/match_surface_average_position_refinement.json.gz",
+    "log": "capture-position-refinement.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_position_refinement > /tmp/match-average-position-refinement.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-position-refinement.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "c563f58803d5cb1d36c4a67900d390b993bdff277ead9f1b5a3c17582184f0a1",
+    "request_sha256": "c65f26df98026c859b0e2600b9803599014536ac5937ac89eaff29aea709f913"
+  },
+  {
+    "family": "match_surface_average_position_refine_command",
+    "kind": "command",
+    "archive": "observations/match_surface_average_position_refine_command.json.gz",
+    "log": "capture-position-refine-command.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_position_refine_command > /tmp/match-average-position-refine-command.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-position-refine-command.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "95facfe6a232c2dcc644db0328f078cb500a4dcf13e47cd9fc50b7008261b1bb",
+    "request_sha256": "6c32e2eaebc16b09dac61c2aad0e9467358f48b358244aee13d35e0b38b67d24"
+  }
+]

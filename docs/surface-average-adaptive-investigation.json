@@ -1,0 +1,1007 @@
+{
+  "scope": "Adaptive averaged refinement investigation; all refinement remains unsupported.",
+  "baseline_revision": "ea854d45ab29fffffab0366e10ee337d1c0b01b1",
+  "new_headless_launches": 3,
+  "new_native_sdk_cases": 38,
+  "new_native_command_cases": 5,
+  "cumulative_native_primary_observations": 145,
+  "frozen_prototypes": {
+    "sign": {
+      "backend": "portable",
+      "cases": 30,
+      "matched_cases": 27,
+      "rejected_cases": [
+        "average_refine_polynomial_curvature_00",
+        "average_refine_polynomial_curvature_01",
+        "average_refine_polynomial_tangency_00"
+      ],
+      "qualified": false,
+      "maximum_matched_geometry_error": 2.3699825949184324e-15
+    },
+    "position": {
+      "backend": "portable",
+      "cases": 37,
+      "matched_cases": 30,
+      "rejected_cases": [
+        "average_position_refine_closest",
+        "average_position_refine_source_north",
+        "average_position_refine_source_reverse_v",
+        "average_position_refine_source_west",
+        "average_position_refine_target_east",
+        "average_position_refine_target_south",
+        "average_position_refine_transverse_basis"
+      ],
+      "qualified": false,
+      "maximum_matched_geometry_error": 3.0123106456159865e-15,
+      "rejected_grid_samples": [
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.025527589481699312,
+          "id": "average_position_refine_closest",
+          "native_counts": [
+            4,
+            28
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.039182688863579916,
+          "id": "average_position_refine_closest",
+          "native_counts": [
+            4,
+            42
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.0019902692499764304,
+          "id": "average_position_refine_source_west",
+          "native_counts": [
+            4,
+            43
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.0019668352292528646,
+          "id": "average_position_refine_source_west",
+          "native_counts": [
+            4,
+            51
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            7,
+            4
+          ],
+          "error": 0.0019902692499764495,
+          "id": "average_position_refine_source_north",
+          "native_counts": [
+            43,
+            4
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.0019668352292528646,
+          "id": "average_position_refine_source_north",
+          "native_counts": [
+            4,
+            51
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.002040507026806667,
+          "id": "average_position_refine_target_east",
+          "native_counts": [
+            4,
+            51
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.0021361187446713786,
+          "id": "average_position_refine_target_east",
+          "native_counts": [
+            4,
+            43
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.002040507026806667,
+          "id": "average_position_refine_target_south",
+          "native_counts": [
+            4,
+            51
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            7,
+            4
+          ],
+          "error": 0.002136118744671284,
+          "id": "average_position_refine_target_south",
+          "native_counts": [
+            43,
+            4
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.003952713694949133,
+          "id": "average_position_refine_source_reverse_v",
+          "native_counts": [
+            4,
+            47
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.003922315327482118,
+          "id": "average_position_refine_source_reverse_v",
+          "native_counts": [
+            4,
+            51
+          ],
+          "side": "target"
+        },
+        {
+          "counts": [
+            4,
+            6
+          ],
+          "error": 0.6613539615818446,
+          "id": "average_position_refine_transverse_basis",
+          "native_counts": [
+            4,
+            10
+          ],
+          "side": "output"
+        },
+        {
+          "counts": [
+            4,
+            7
+          ],
+          "error": 0.2204513205272815,
+          "id": "average_position_refine_transverse_basis",
+          "native_counts": [
+            4,
+            12
+          ],
+          "side": "target"
+        }
+      ]
+    }
+  },
+  "averaged_refinement_qualified": false,
+  "continuous_continuity_qualified": false,
+  "performance_qualified": false,
+  "curvature_translation_sweep": [
+    {
+      "source_translation_z": -0.5,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        7,
+        7
+      ]
+    },
+    {
+      "source_translation_z": -0.2,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        4,
+        4
+      ]
+    },
+    {
+      "source_translation_z": 0.0,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        4,
+        4
+      ]
+    },
+    {
+      "source_translation_z": 0.2,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        4,
+        4
+      ]
+    },
+    {
+      "source_translation_z": 0.5,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        7,
+        7
+      ]
+    },
+    {
+      "source_translation_z": 1.0,
+      "tangency_counts_v": [
+        4,
+        4
+      ],
+      "curvature_counts_v": [
+        7,
+        7
+      ]
+    }
+  ],
+  "position_outputs": {
+    "average_position_refine_keep": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_perpendicular": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_target_iso": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_preserve_position": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_preserve_tangency": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_preserve_curvature": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_closest": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          28
+        ],
+        [
+          4,
+          42
+        ]
+      ]
+    },
+    "average_position_refine_degrees_1_3": {
+      "degrees": [
+        [
+          1,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_degrees_2_5": {
+      "degrees": [
+        [
+          2,
+          3
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          3,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_source_west": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          43
+        ],
+        [
+          4,
+          51
+        ]
+      ]
+    },
+    "average_position_refine_source_north": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          43,
+          4
+        ],
+        [
+          4,
+          51
+        ]
+      ]
+    },
+    "average_position_refine_source_south": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_target_east": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          51
+        ],
+        [
+          4,
+          43
+        ]
+      ]
+    },
+    "average_position_refine_target_south": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          51
+        ],
+        [
+          43,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_target_north": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_source_reverse_v": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          47
+        ],
+        [
+          4,
+          51
+        ]
+      ]
+    },
+    "average_position_refine_both_transpose": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_multi_position": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_transverse_basis": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          10
+        ],
+        [
+          4,
+          12
+        ]
+      ]
+    },
+    "average_position_refine_weights_10_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_weights_10_1e-05": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_weights_10_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_weights_01_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_position_refine_weights_01_1e-05": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_weights_01_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_position_refine_short_preserved": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    }
+  },
+  "distance_tolerance_readbacks": {
+    "average_position_refine_weights_10_0.001": {
+      "requested": 0.001,
+      "native": 0.001
+    },
+    "average_position_refine_weights_10_1e-05": {
+      "requested": 1e-05,
+      "native": 1e-05
+    },
+    "average_position_refine_weights_10_1e-08": {
+      "requested": 1e-08,
+      "native": 1.490116119385e-08
+    },
+    "average_position_refine_weights_01_0.001": {
+      "requested": 0.001,
+      "native": 0.001
+    },
+    "average_position_refine_weights_01_1e-05": {
+      "requested": 1e-05,
+      "native": 1e-05
+    },
+    "average_position_refine_weights_01_1e-08": {
+      "requested": 1e-08,
+      "native": 1.490116119385e-08
+    }
+  },
+  "native_commands": {
+    "match_average_position_refine": {
+      "accepted": true,
+      "qualified": false,
+      "undo_geometry_restored": true,
+      "redo_restored": true,
+      "physical_clicks": 2
+    },
+    "match_average_position_refine_group": {
+      "accepted": true,
+      "qualified": false,
+      "undo_geometry_restored": true,
+      "redo_restored": true,
+      "physical_clicks": 2
+    },
+    "match_average_position_refine_opposite": {
+      "accepted": true,
+      "qualified": false,
+      "undo_geometry_restored": true,
+      "redo_restored": true,
+      "physical_clicks": 2
+    },
+    "match_average_position_refine_cancel": {
+      "accepted": false,
+      "qualified": false,
+      "undo_geometry_restored": true,
+      "redo_restored": true,
+      "physical_clicks": 2
+    },
+    "match_average_position_refine_recall": {
+      "accepted": true,
+      "qualified": false,
+      "undo_geometry_restored": true,
+      "redo_restored": true,
+      "physical_clicks": 2
+    }
+  },
+  "findings": [
+    "A curvature sign policy improves the coupled pilot model from 25/30 to 27/30. Three polynomial cases still fail; the model remains rejected.",
+    "Source translations toggle Native curvature refinement while all six tangency pairs retain four transverse controls. This supports a sign-related stopping hypothesis, not a general proven rule.",
+    "The position prototype matches 30/37 cases. Closest-point matching, several natural-edge charts, reversed traversal and unequal transverse bases expose seven failures.",
+    "Native position refinement raises the degree-2 source transverse basis to degree 3, producing 10 and 12 controls. Some chart cases need 43 to 51 transverse controls.",
+    "Four physical command acceptances refine both supports to seven transverse controls. Cancel preserves the inputs, and a subsequent command recalls the refinement options.",
+    "A requested SDK distance tolerance of 1e-8 reads back as 1.490116119385e-8; the requested and configured settings are retained separately."
+  ],
+  "limits": [
+    "No new averaged refinement capability is enabled. The existing 1e-9 geometry gate is unchanged.",
+    "Frozen Rust replays use the portable backend only. No Native backend replay, continuous-continuity or performance qualification is claimed.",
+    "Grid errors for rejected position cases are diagnostics; a small sampled error does not replace the complete support, boundary, knot and archive comparison.",
+    "The first position trial stopped at its first failure. Its log is retained separately and is not counted as a full-scope replay.",
+    "The earlier catalog retains the original failed Native launch and four invalid composed calls."
+  ],
+  "evidence_sha256": {
+    "docs/surface-average-adaptive-proof/capture-position-refine-command.log.gz": "1cbe7b21741ad08e600b8319e2735a3b4e8368150defcb7df6b50d5e868fdb7f",
+    "docs/surface-average-adaptive-proof/capture-position-refinement.log.gz": "49badae7947bf729f8b51cde7b2995d5b0e5d3e4a2edbb5d6e1f769b2bc2492e",
+    "docs/surface-average-adaptive-proof/capture-refinement-signs.log.gz": "18a537a70285150514240c22b6f7ac94183504cd1248bfdd2ff6fa22f84acfae",
+    "docs/surface-average-adaptive-proof/captures.json": "f2e412bcde29c73a9cf27df3d9cad5121e9c6be5ab1730532daf872f582993c3",
+    "docs/surface-average-adaptive-proof/position-early-stop.log.gz": "aab6e08ed998807b02b0e8d7cb1e462013a6cf7c65bebcd63958b3bdc02f5d75",
+    "docs/surface-average-adaptive-proof/prototypes/position.json": "bad0bb7fabb43278ecb0577cfaabb9b08f456258030aec3c8b9dcdf9719695db",
+    "docs/surface-average-adaptive-proof/prototypes/position.log.gz": "061541e82bb0e7ade8f82862f369322b9f252104c2ef813bddee29d93df11341",
+    "docs/surface-average-adaptive-proof/prototypes/sign.json": "a0e678a8cd6377c64cce4883e99ee4c4cf610da48c531d9620e10791978a7850",
+    "docs/surface-average-adaptive-proof/prototypes/sign.log.gz": "aa6b9110ed6e3dac43bfa37805ce42638824545b03cfb50979470bc3b128d727",
+    "docs/surface-average-adaptive-proof/prototypes/sources/0e042ae9858f61c640348b9cd5f4697a2a423687de98dd2c2e8232983412e202.gz": "895384bccf37b4a22531d9b5fb2c81f4b50ac9814076abe62c38cb1af28083fb",
+    "docs/surface-average-adaptive-proof/prototypes/sources/20f77071c56def2dd166e8989d0a584b56f151f495de50048a0e7a70172af1e2.gz": "f0a4b99ec7b748f300af60e91db6fb1eac644d374e8f1b853c747b53ad21af99",
+    "docs/surface-average-adaptive-proof/prototypes/sources/348632d70cda9fde23adfbd9b6d8d3ff1fc564226f17588adbefbfbb697d8fcf.gz": "2c5c636d336b2b60bca426c285f88bcece600611694670e727d38131f297a710",
+    "docs/surface-average-adaptive-proof/prototypes/sources/3f69dfdefc69b3789fd0bc38b378b3b72b042dbf413a4a99edd5630b20b8fa6f.gz": "40a32dc045f0e38fa6af729c8182c5230a561b1c9b227740fca457df6091a740",
+    "docs/surface-average-adaptive-proof/prototypes/sources/48c2ea6de851a78004ede71e833a4a322f915d301a091d6645163861128dcecb.gz": "1543c274edc37e1d0e41045141e162b1c3ef6274f9838aadf03f381d2d1cb050",
+    "docs/surface-average-adaptive-proof/prototypes/sources/918ae69e8a319d970644682b869f33af92d96deb5e0afbdb650549a1122a8787.gz": "9990c95d2f8969cca380cfe7ceb8dc87b61e5c9580d708f654ed3cbf5255be41",
+    "docs/surface-average-adaptive-proof/prototypes/sources/ae083c4943a5020c40dd67e7f2031500793685909b8edeb9d5644c2938f7a665.gz": "7b27b5d4021489e455e03b0cb6d0fb6f9c55612a664e80761706599b3b48d304",
+    "docs/surface-average-adaptive-proof/prototypes/sources/b0a415a0862ba29bdff00e44a5ee109c5923cbc65e960358567984f38ab7ba9d.gz": "34386c14039394f70966397f7d1b8cb84e5d491ea734d43726d4e46e79c85cb9",
+    "docs/surface-average-adaptive-proof/prototypes/sources/f5de734a62b5bcdbef14ccdaaf997c0410246ad2d8142cce731fbd9074d442e0.gz": "fee372660b84ef717bf7a3d0b5ec0c854410135bb5882a189a6466955ebdeef5",
+    "docs/surface-average-adaptive-proof/prototypes/sources/f76dcc593242787a39cd7c4124f630dc920d51d9e1cad394e20f57322a8a81a7.gz": "ab693c2ceeb7ec8aadcc96ed8925610bde2c9a472c9c665428303d9a51cbf65b",
+    "docs/surface-average-adaptive-proof/prototypes/sources/fe9ff17784dc50f8b6862f583e9ec7881f0e55378b1623c3ab70d077dddf6ce9.gz": "e1ba3de09b0b481cfab7579c449566ef7ce61b5618ba2b0c2f5c582d127c53e7",
+    "docs/surface-average-adaptive-proof/prototypes/sources/ffa53e11812e361504dcd601f24699c89e9da656b4ad77f7fbb3f4b4e3631444.gz": "403d912feaec259ca2796c8ca9fe9f564995458972ee861295155c3a17d5a3c8",
+    "docs/surface-average-refinement-investigation.json": "36ee977015a370b50a29f80dbe26c4a68159760af3e5637d0624734a08d5ee18",
+    "tools/rhino_oracle/fixtures/match_surface_average_position_refine_command.json": "6c32e2eaebc16b09dac61c2aad0e9467358f48b358244aee13d35e0b38b67d24",
+    "tools/rhino_oracle/fixtures/match_surface_average_position_refinement.json": "c65f26df98026c859b0e2600b9803599014536ac5937ac89eaff29aea709f913",
+    "tools/rhino_oracle/fixtures/match_surface_average_refinement_signs.json": "72cf8215e978f5bd58aeddf1c46ccc8240197acf05476a5f658fd2ddc2eb5d14",
+    "tools/rhino_oracle/observations/match_surface_average_holdouts.json.gz": "85fa5688e54f440579d06e0b6ad55ce914f221147d8c14f757aaa56b23b2bacf",
+    "tools/rhino_oracle/observations/match_surface_average_position_refine_command.json.gz": "ecc0ed59c014985b2a149f7ffa5d7f4a6b25b6dea24cd997a4a4ec28ab1a1284",
+    "tools/rhino_oracle/observations/match_surface_average_position_refinement.json.gz": "1d6a2dcfb1ef3a944ab0dbe16fb91be72ed429fe13c9cf682e85e3449178fb38",
+    "tools/rhino_oracle/observations/match_surface_average_refinement_pilot.json.gz": "486a00643caeca4a8e8d9de821cf763f5f2227b09a909de47e9c67dcf3a6c859",
+    "tools/rhino_oracle/observations/match_surface_average_refinement_signs.json.gz": "58cb9b1802ab1a6acce0363008693855dfca11e0598fd6f9977ada3c25f5f5ff",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/18282f2449e2920efac5ebae42a79890294fa1f4fe991c1af25f091786e852f4.gz": "aac73593932f158d3c81de0faa4ea29969bab5ebe1164676e57095fe9a4393a7",
+    "tools/rhino_oracle/observations/source_snapshots/200f0cd3599ffdcf4ec21f7bea7fd347b684c64daa9d402603ee3bbe0bc40ef5.gz": "b00cdd365f639be25a055e92572af448cc270b213fc457a263709045563a847a",
+    "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/23a07ba4bac7e8cdc96319bbc562bae5f09fb4b67a41e9df51155f954c298417.gz": "8ea266dee0d8ee771379beded605da8b82c1df34c8a2daba99e8052a90bbe5ef",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/36696b538bd67ec73ee6bdf093e9b9a377352c5be60c5bf18b5da66fd84498aa.gz": "1a7c92d72f0a5cf6d127a8e7928c57c265f573dbb87b44a9806335ae71b7c736",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
+    "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/41388a098d657c1ae910242ee5acbaa46a3a645df9c93ad0ae8898185ff8aa2e.gz": "f3e0426185301a113070bad75af8aa6634575ac0c030da5ce785adf0a60ddd2e",
+    "tools/rhino_oracle/observations/source_snapshots/43e29a968f72ad44883ab9720d582c12d4c77511bbf962fdc8c4b5846286f444.gz": "a6d55a403a80ef525a8f15e9f3cf22db09e20f5b29381d41f23049e01c2c956a",
+    "tools/rhino_oracle/observations/source_snapshots/46855c752e597312ed8bb5fce30bd3a5108d1c030e6cdb7135a2c85b03e9c08f.gz": "12237f66c4b970aa12893ce81f4ab94f80bf876c3730fa6d99dfbe5bec14af1c",
+    "tools/rhino_oracle/observations/source_snapshots/51bb6924adb875ec45824bc251563636ed3ea045fce99f16b34dc2b0daf2e967.gz": "07c1e311f7c7013651728c39349b9f7543a5874219721ac2e6e376632bda1fa6",
+    "tools/rhino_oracle/observations/source_snapshots/58acfb1ae53f5d7e4b48e7ad241c94f20d097ef1e5b42f715a6266ce273dda7d.gz": "e35b06948d762c0ab38850cc9856aab651c84641dd71219f30ff916de29c2b24",
+    "tools/rhino_oracle/observations/source_snapshots/6f96f16fc803f15d670b558a4ed540c8384d5fc415f0c1e8c7be0610ced1c23d.gz": "4f9276251512d5e922edbee7aaebfaee7ee1ef1aafbd91b6552e059b7724e1f6",
+    "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/aa5b47a57a394383d09aebe3f347b974b156e2002d87838e4f3736c6fe9b87b7.gz": "b9eb8abce07f0d933d33d8210b9fb4a11d3f3bdb01f1fb1363007d5a68198506",
+    "tools/rhino_oracle/observations/source_snapshots/af4c0385438a7d7b3a28f8b123bc4542233d14001be4309c53decac11a2f4f91.gz": "45a7d4e859b1f9c38260004f167fab254ee439d7c02e1306daa318680facbb90",
+    "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564",
+    "tools/rhino_oracle/observations/source_snapshots/c2c4a91b00e926cb47fe0cc685369a3e78ff2bf14420d3fb4a99bbc64d763bcf.gz": "7749d9f69a4254dcc7b94c38ffde21d5082d9b7e4b1e0ca11422ca776466036a",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/d25c963e2a6592e0c470ad68cd4eb3b1d364203f0a8f52d6d0397325e27e1b11.gz": "17b02ed2b719e8500af738adf6451bc4c91d7f6782ca7a8f2e06f808c281b809",
+    "tools/rhino_oracle/observations/source_snapshots/e6bd3fc56d46944b6987de1ae0a921dcc67f7fed59a88e17341d015e6db83059.gz": "5b35a936b656471738af48af7fcb8326afaeb8d152c9b4d202de0b5931abc76e",
+    "tools/rhino_oracle/observations/source_snapshots/f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108.gz": "77c80c5679c6ee28ddf79b28d03040a8d388dc1886dddbe47501fe662ac376ab",
+    "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+  }
+}
