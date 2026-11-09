@@ -1,10 +1,10 @@
 {
   "scope": "Adaptive averaged refinement investigation; all refinement remains unsupported.",
   "baseline_revision": "ea854d45ab29fffffab0366e10ee337d1c0b01b1",
-  "new_headless_launches": 3,
-  "new_native_sdk_cases": 38,
+  "new_headless_launches": 6,
+  "new_native_sdk_cases": 92,
   "new_native_command_cases": 5,
-  "cumulative_native_primary_observations": 145,
+  "cumulative_native_primary_observations": 199,
   "frozen_prototypes": {
     "sign": {
       "backend": "portable",
@@ -864,6 +864,848 @@
       ]
     }
   },
+  "fitting_stage_outputs": {
+    "average_fit_stage_source_west_10.0": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_source_west_0.01": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ]
+    },
+    "average_fit_stage_source_west_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_fit_stage_source_west_0.0001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          19
+        ],
+        [
+          4,
+          19
+        ]
+      ]
+    },
+    "average_fit_stage_source_west_1e-06": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          43
+        ],
+        [
+          4,
+          51
+        ]
+      ]
+    },
+    "average_fit_stage_source_west_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          119
+        ],
+        [
+          4,
+          119
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_10.0": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_0.01": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_0.0001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_1e-06": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          47
+        ],
+        [
+          4,
+          51
+        ]
+      ]
+    },
+    "average_fit_stage_source_reverse_v_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          95
+        ],
+        [
+          4,
+          95
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_10.0": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_0.01": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_0.0001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_1e-06": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          10
+        ],
+        [
+          4,
+          12
+        ]
+      ]
+    },
+    "average_fit_stage_transverse_basis_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          19
+        ],
+        [
+          4,
+          28
+        ]
+      ]
+    },
+    "average_fit_stage_closest_10.0": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_closest_0.01": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          9
+        ],
+        [
+          4,
+          7
+        ]
+      ]
+    },
+    "average_fit_stage_closest_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          7
+        ],
+        [
+          4,
+          9
+        ]
+      ]
+    },
+    "average_fit_stage_closest_0.0001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          12
+        ],
+        [
+          4,
+          15
+        ]
+      ]
+    },
+    "average_fit_stage_closest_1e-06": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          28
+        ],
+        [
+          4,
+          42
+        ]
+      ]
+    },
+    "average_fit_stage_closest_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          39
+        ],
+        [
+          4,
+          47
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_10.0": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_0.01": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_0.001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          4
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_0.0001": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_1e-06": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          10
+        ],
+        [
+          4,
+          12
+        ]
+      ]
+    },
+    "average_fit_stage_elevated_basis_1e-08": {
+      "degrees": [
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "counts": [
+        [
+          4,
+          19
+        ],
+        [
+          4,
+          28
+        ]
+      ]
+    }
+  },
+  "one_sided_diagnostics": {
+    "average_fit_one_sided_source_west_0_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        5
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_west_0_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        27
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_west_1_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        18
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_west_1_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        31
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_reverse_v_0_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        18
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_reverse_v_0_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        27
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_reverse_v_1_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        18
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_source_reverse_v_1_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        31
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_transverse_basis_0_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        11
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_transverse_basis_0_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        23
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_transverse_basis_1_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        4
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_transverse_basis_1_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        21
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_elevated_basis_0_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        11
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_elevated_basis_0_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        23
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_elevated_basis_1_0": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        4
+      ],
+      "qualified": false
+    },
+    "average_fit_one_sided_elevated_basis_1_1": {
+      "degree": [
+        3,
+        3
+      ],
+      "count": [
+        4,
+        21
+      ],
+      "qualified": false
+    }
+  },
+  "public_prefit_queries": 96,
+  "null_public_prefit_results": 40,
   "distance_tolerance_readbacks": {
     "average_position_refine_weights_10_0.001": {
       "requested": 0.001,
@@ -933,7 +1775,10 @@
     "The position prototype matches 30/37 cases. Closest-point matching, several natural-edge charts, reversed traversal and unequal transverse bases expose seven failures.",
     "Native position refinement raises the degree-2 source transverse basis to degree 3, producing 10 and 12 controls. Some chart cases need 43 to 51 transverse controls.",
     "Four physical command acceptances refine both supports to seven transverse controls. Cancel preserves the inputs, and a subsequent command recalls the refinement options.",
-    "A requested SDK distance tolerance of 1e-8 reads back as 1.490116119385e-8; the requested and configured settings are retained separately."
+    "A requested SDK distance tolerance of 1e-8 reads back as 1.490116119385e-8; the requested and configured settings are retained separately.",
+    "A loose refinement tolerance still raises the degree-2 transverse basis to degree 3. Pre-elevated inputs give identical degree/count inventories across the recorded tolerance sweep.",
+    "Public MatchToCurve keeps degree 2 on the original unequal-basis source and selects different knot counts. It does not reproduce the missing averaged refinement stage.",
+    "One-sided MatchSrf on the elevated source returns 11 controls where averaged matching returns 10 and 12. These 16 diagnostic cases have no qualified Rust replay."
   ],
   "limits": [
     "No new averaged refinement capability is enabled. The existing 1e-9 geometry gate is unchanged.",
@@ -943,10 +1788,13 @@
     "The earlier catalog retains the original failed Native launch and four invalid composed calls."
   ],
   "evidence_sha256": {
+    "docs/surface-average-adaptive-proof/capture-fit-one-sided.log.gz": "7d7caf981d62ead4478486c4d77fa5d2a4a7eb2d1a3f5e272e4e13a6a79ec701",
+    "docs/surface-average-adaptive-proof/capture-fit-stages.log.gz": "fe973ace143476760758eee6dd9829600629670ac129623f11721b2d717be8ef",
     "docs/surface-average-adaptive-proof/capture-position-refine-command.log.gz": "1cbe7b21741ad08e600b8319e2735a3b4e8368150defcb7df6b50d5e868fdb7f",
     "docs/surface-average-adaptive-proof/capture-position-refinement.log.gz": "49badae7947bf729f8b51cde7b2995d5b0e5d3e4a2edbb5d6e1f769b2bc2492e",
+    "docs/surface-average-adaptive-proof/capture-prefit-stages.log.gz": "7d84f32bd43285806e3bdb06f3e214517314b46d8e9d12dd9adfcf37049c1d5e",
     "docs/surface-average-adaptive-proof/capture-refinement-signs.log.gz": "18a537a70285150514240c22b6f7ac94183504cd1248bfdd2ff6fa22f84acfae",
-    "docs/surface-average-adaptive-proof/captures.json": "f2e412bcde29c73a9cf27df3d9cad5121e9c6be5ab1730532daf872f582993c3",
+    "docs/surface-average-adaptive-proof/captures.json": "1603408641255b81aacaf9d4db12d0322cf7101fc168fe01db0b03da1955c31d",
     "docs/surface-average-adaptive-proof/position-early-stop.log.gz": "aab6e08ed998807b02b0e8d7cb1e462013a6cf7c65bebcd63958b3bdc02f5d75",
     "docs/surface-average-adaptive-proof/prototypes/position.json": "bad0bb7fabb43278ecb0577cfaabb9b08f456258030aec3c8b9dcdf9719695db",
     "docs/surface-average-adaptive-proof/prototypes/position.log.gz": "061541e82bb0e7ade8f82862f369322b9f252104c2ef813bddee29d93df11341",
@@ -965,24 +1813,33 @@
     "docs/surface-average-adaptive-proof/prototypes/sources/fe9ff17784dc50f8b6862f583e9ec7881f0e55378b1623c3ab70d077dddf6ce9.gz": "e1ba3de09b0b481cfab7579c449566ef7ce61b5618ba2b0c2f5c582d127c53e7",
     "docs/surface-average-adaptive-proof/prototypes/sources/ffa53e11812e361504dcd601f24699c89e9da656b4ad77f7fbb3f4b4e3631444.gz": "403d912feaec259ca2796c8ca9fe9f564995458972ee861295155c3a17d5a3c8",
     "docs/surface-average-refinement-investigation.json": "36ee977015a370b50a29f80dbe26c4a68159760af3e5637d0624734a08d5ee18",
+    "tools/rhino_oracle/fixtures/match_surface_average_fit_one_sided.json": "f67850ad3cacb3ce4f84ca2a2c0eeaf80ae72c03f662170c0f1b6824b93b2e63",
+    "tools/rhino_oracle/fixtures/match_surface_average_fit_stages.json": "d3036c96d195be888d21d2ceac3b8d4f282cb895a08caa512f54c38f3661f23d",
     "tools/rhino_oracle/fixtures/match_surface_average_position_refine_command.json": "6c32e2eaebc16b09dac61c2aad0e9467358f48b358244aee13d35e0b38b67d24",
     "tools/rhino_oracle/fixtures/match_surface_average_position_refinement.json": "c65f26df98026c859b0e2600b9803599014536ac5937ac89eaff29aea709f913",
+    "tools/rhino_oracle/fixtures/match_surface_average_prefit_stages.json": "5bc489d6bb310c42ddfdbc6024695077d4723e21d188543bdb2c6fb3a9c80de1",
     "tools/rhino_oracle/fixtures/match_surface_average_refinement_signs.json": "72cf8215e978f5bd58aeddf1c46ccc8240197acf05476a5f658fd2ddc2eb5d14",
+    "tools/rhino_oracle/observations/match_surface_average_fit_one_sided.json.gz": "23cb10362cb221bea7a3c9395efe0128934ae2504cc802fdf47b2e8c8e83f175",
+    "tools/rhino_oracle/observations/match_surface_average_fit_stages.json.gz": "2413c32cf663b6f525688236f70f30f9d86e293e59118668429344aef0306c95",
     "tools/rhino_oracle/observations/match_surface_average_holdouts.json.gz": "85fa5688e54f440579d06e0b6ad55ce914f221147d8c14f757aaa56b23b2bacf",
     "tools/rhino_oracle/observations/match_surface_average_position_refine_command.json.gz": "ecc0ed59c014985b2a149f7ffa5d7f4a6b25b6dea24cd997a4a4ec28ab1a1284",
     "tools/rhino_oracle/observations/match_surface_average_position_refinement.json.gz": "1d6a2dcfb1ef3a944ab0dbe16fb91be72ed429fe13c9cf682e85e3449178fb38",
+    "tools/rhino_oracle/observations/match_surface_average_prefit_stages.json.gz": "a85460a0a7bb1b255e9bdb91e2204a46bf45c53e4c163d946f86ca2d14ba74a3",
     "tools/rhino_oracle/observations/match_surface_average_refinement_pilot.json.gz": "486a00643caeca4a8e8d9de821cf763f5f2227b09a909de47e9c67dcf3a6c859",
     "tools/rhino_oracle/observations/match_surface_average_refinement_signs.json.gz": "58cb9b1802ab1a6acce0363008693855dfca11e0598fd6f9977ada3c25f5f5ff",
+    "tools/rhino_oracle/observations/source_snapshots/050c35782da37c7d60a721f5d33de3dafdc3cfc532ef168d073f05455e4c3910.gz": "c28da2296908a4726122fc5cedc02879da918d77b23feb6ba57bc61f4c150cf1",
     "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
     "tools/rhino_oracle/observations/source_snapshots/18282f2449e2920efac5ebae42a79890294fa1f4fe991c1af25f091786e852f4.gz": "aac73593932f158d3c81de0faa4ea29969bab5ebe1164676e57095fe9a4393a7",
     "tools/rhino_oracle/observations/source_snapshots/200f0cd3599ffdcf4ec21f7bea7fd347b684c64daa9d402603ee3bbe0bc40ef5.gz": "b00cdd365f639be25a055e92572af448cc270b213fc457a263709045563a847a",
     "tools/rhino_oracle/observations/source_snapshots/212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3.gz": "56958eba1b033d78b5341a1a5d84a8d78545d27e2da6be2223d75b378a1a5aed",
+    "tools/rhino_oracle/observations/source_snapshots/22c485d30d82a07c2e074d99ae6f48f8197727654652daa43bd1b0ae0686ebd4.gz": "45244f14d7ddf0cb75e1db21a010ff40a7eeaf6a21740084cac2e7cc054f971a",
     "tools/rhino_oracle/observations/source_snapshots/23a07ba4bac7e8cdc96319bbc562bae5f09fb4b67a41e9df51155f954c298417.gz": "8ea266dee0d8ee771379beded605da8b82c1df34c8a2daba99e8052a90bbe5ef",
     "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
     "tools/rhino_oracle/observations/source_snapshots/36696b538bd67ec73ee6bdf093e9b9a377352c5be60c5bf18b5da66fd84498aa.gz": "1a7c92d72f0a5cf6d127a8e7928c57c265f573dbb87b44a9806335ae71b7c736",
     "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
     "tools/rhino_oracle/observations/source_snapshots/3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7.gz": "f01260b549a15b669f324989cc5e0f41324cb47d21762347e6e71bbaacf07843",
     "tools/rhino_oracle/observations/source_snapshots/3c8bcc3689bb911d7520fc24854f230addef12366323cba2f156f851e3a11a7c.gz": "92612c4ae975bc1b7aabb675d90e20d8a4301dc4ff289a993cd78b5b5cc9a4eb",
+    "tools/rhino_oracle/observations/source_snapshots/3df7c811fb83125fe086a224ee24f0947037f170891096926741c8774d670c88.gz": "7dcf6fe4389a6631ca7a64c4bc4a65db116709570aa2aa95d7e0572c8bc8ef11",
     "tools/rhino_oracle/observations/source_snapshots/41388a098d657c1ae910242ee5acbaa46a3a645df9c93ad0ae8898185ff8aa2e.gz": "f3e0426185301a113070bad75af8aa6634575ac0c030da5ce785adf0a60ddd2e",
     "tools/rhino_oracle/observations/source_snapshots/43e29a968f72ad44883ab9720d582c12d4c77511bbf962fdc8c4b5846286f444.gz": "a6d55a403a80ef525a8f15e9f3cf22db09e20f5b29381d41f23049e01c2c956a",
     "tools/rhino_oracle/observations/source_snapshots/46855c752e597312ed8bb5fce30bd3a5108d1c030e6cdb7135a2c85b03e9c08f.gz": "12237f66c4b970aa12893ce81f4ab94f80bf876c3730fa6d99dfbe5bec14af1c",
@@ -990,8 +1847,10 @@
     "tools/rhino_oracle/observations/source_snapshots/58acfb1ae53f5d7e4b48e7ad241c94f20d097ef1e5b42f715a6266ce273dda7d.gz": "e35b06948d762c0ab38850cc9856aab651c84641dd71219f30ff916de29c2b24",
     "tools/rhino_oracle/observations/source_snapshots/6f96f16fc803f15d670b558a4ed540c8384d5fc415f0c1e8c7be0610ced1c23d.gz": "4f9276251512d5e922edbee7aaebfaee7ee1ef1aafbd91b6552e059b7724e1f6",
     "tools/rhino_oracle/observations/source_snapshots/781cb545ad278dc9079a9af2ce451beebb1b3bf8a2656c7519f30103df8f5f7c.gz": "647ba02b8cea721560064c539102a50b8d045032516a858b33e1b465c66542a9",
+    "tools/rhino_oracle/observations/source_snapshots/859e112b61c8075dc55b907b4ffb4cdf245597a2084ba9c9960d059bb6286e8e.gz": "0774b67f9e19287084b3f36b589741b4e11bda0e7a641f08f0daeee3e4068558",
     "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
     "tools/rhino_oracle/observations/source_snapshots/97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc.gz": "104222e69b4f958d63de0baad7c765ba64edf7770dd4cf5f08a5b22635c82367",
+    "tools/rhino_oracle/observations/source_snapshots/a60a1249d3942bf2eaa8153e0307eb9a505cd97b4391cba47f842e3a29090aad.gz": "11f844c6d526bea970194e94e955c0c20a1d077b8611cada1bcc5f7c147228fb",
     "tools/rhino_oracle/observations/source_snapshots/aa5b47a57a394383d09aebe3f347b974b156e2002d87838e4f3736c6fe9b87b7.gz": "b9eb8abce07f0d933d33d8210b9fb4a11d3f3bdb01f1fb1363007d5a68198506",
     "tools/rhino_oracle/observations/source_snapshots/af4c0385438a7d7b3a28f8b123bc4542233d14001be4309c53decac11a2f4f91.gz": "45a7d4e859b1f9c38260004f167fab254ee439d7c02e1306daa318680facbb90",
     "tools/rhino_oracle/observations/source_snapshots/b48306f585360ef6071824364baf405be3f2b41568cfa155c513a25c6b1a91f0.gz": "a5120a315839f615049a0dfa50de66aa65c7ff0921a7b9f1e2d15c10f71122a4",
@@ -1002,6 +1861,7 @@
     "tools/rhino_oracle/observations/source_snapshots/d25c963e2a6592e0c470ad68cd4eb3b1d364203f0a8f52d6d0397325e27e1b11.gz": "17b02ed2b719e8500af738adf6451bc4c91d7f6782ca7a8f2e06f808c281b809",
     "tools/rhino_oracle/observations/source_snapshots/e6bd3fc56d46944b6987de1ae0a921dcc67f7fed59a88e17341d015e6db83059.gz": "5b35a936b656471738af48af7fcb8326afaeb8d152c9b4d202de0b5931abc76e",
     "tools/rhino_oracle/observations/source_snapshots/f02be20e6c4611a713c8756b79ce7aca927fdb84d94254e4e806d346c0825108.gz": "77c80c5679c6ee28ddf79b28d03040a8d388dc1886dddbe47501fe662ac376ab",
+    "tools/rhino_oracle/observations/source_snapshots/f100a9180162f6acec9bc469fa4d636444e67c8e35bd40310115a321fe7fd028.gz": "9f2d973bd84cc6e64358e2329eadc447f250770959d0f31e447e40fa2c579e72",
     "tools/rhino_oracle/run_headless.sh": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
   }
 }

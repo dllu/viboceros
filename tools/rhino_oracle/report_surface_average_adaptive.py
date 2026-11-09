@@ -24,11 +24,19 @@ def build(proof=PROOF):
                 for key, value in rows.items() if key.startswith('average_position_refine_')}
     return dict(
         scope='Adaptive averaged refinement investigation; all refinement remains unsupported.',
-        baseline_revision=BASELINE, new_headless_launches=3, new_native_sdk_cases=len(rows),
+        baseline_revision=BASELINE, new_headless_launches=6, new_native_sdk_cases=len(rows),
         new_native_command_cases=len(commands), cumulative_native_primary_observations=prior['native_primary_observations'] + len(rows) + len(commands),
         frozen_prototypes=models, averaged_refinement_qualified=False,
         continuous_continuity_qualified=False, performance_qualified=False,
         curvature_translation_sweep=signs, position_outputs=position,
+        fitting_stage_outputs={key: dict(degrees=[value[side]['surfaces'][0]['degree'] for side in ['output', 'target']],
+                                         counts=[value[side]['surfaces'][0]['control_count'] for side in ['output', 'target']])
+                               for key, value in rows.items() if key.startswith('average_fit_stage_')},
+        one_sided_diagnostics={key: dict(degree=value['output']['surfaces'][0]['degree'],
+                                         count=value['output']['surfaces'][0]['control_count'], qualified=False)
+                               for key, value in rows.items() if key.startswith('average_fit_one_sided_')},
+        public_prefit_queries=sum(len(value.get('prefit_audit', [])) for value in rows.values()),
+        null_public_prefit_results=sum(q['output'] is None for value in rows.values() for q in value.get('prefit_audit', [])),
         distance_tolerance_readbacks={key: dict(requested=value['prescribed_case']['distance_tolerance'],
                                                native=value['configured_settings']['distance'])
                                      for key, value in rows.items() if key.startswith('average_position_refine_weights_')},
@@ -42,6 +50,9 @@ def build(proof=PROOF):
             'Native position refinement raises the degree-2 source transverse basis to degree 3, producing 10 and 12 controls. Some chart cases need 43 to 51 transverse controls.',
             'Four physical command acceptances refine both supports to seven transverse controls. Cancel preserves the inputs, and a subsequent command recalls the refinement options.',
             'A requested SDK distance tolerance of 1e-8 reads back as 1.490116119385e-8; the requested and configured settings are retained separately.',
+            'A loose refinement tolerance still raises the degree-2 transverse basis to degree 3. Pre-elevated inputs give identical degree/count inventories across the recorded tolerance sweep.',
+            'Public MatchToCurve keeps degree 2 on the original unequal-basis source and selects different knot counts. It does not reproduce the missing averaged refinement stage.',
+            'One-sided MatchSrf on the elevated source returns 11 controls where averaged matching returns 10 and 12. These 16 diagnostic cases have no qualified Rust replay.',
         ],
         limits=[
             'No new averaged refinement capability is enabled. The existing 1e-9 geometry gate is unchanged.',

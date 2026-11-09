@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_west_0_0",
+      "case": "average_fit_one_sided_source_west_0_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_west_0_1",
+      "case": "average_fit_one_sided_source_west_0_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_west_1_0",
+      "case": "average_fit_one_sided_source_west_1_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_west_1_1",
+      "case": "average_fit_one_sided_source_west_1_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_reverse_v_0_0",
+      "case": "average_fit_one_sided_source_reverse_v_0_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_reverse_v_0_1",
+      "case": "average_fit_one_sided_source_reverse_v_0_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_reverse_v_1_0",
+      "case": "average_fit_one_sided_source_reverse_v_1_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_source_reverse_v_1_1",
+      "case": "average_fit_one_sided_source_reverse_v_1_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_transverse_basis_0_0",
+      "case": "average_fit_one_sided_transverse_basis_0_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_transverse_basis_0_1",
+      "case": "average_fit_one_sided_transverse_basis_0_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_transverse_basis_1_0",
+      "case": "average_fit_one_sided_transverse_basis_1_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_transverse_basis_1_1",
+      "case": "average_fit_one_sided_transverse_basis_1_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_elevated_basis_0_0",
+      "case": "average_fit_one_sided_elevated_basis_0_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_elevated_basis_0_1",
+      "case": "average_fit_one_sided_elevated_basis_0_1"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_elevated_basis_1_0",
+      "case": "average_fit_one_sided_elevated_basis_1_0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_fit_one_sided_elevated_basis_1_1",
+      "case": "average_fit_one_sided_elevated_basis_1_1"
+    }
+  ]
+}

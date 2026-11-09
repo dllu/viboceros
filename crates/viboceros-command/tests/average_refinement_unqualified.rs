@@ -16,6 +16,7 @@ fn refinement_rejects_every_discovery_case_before_backend_work() {
         "match_surface_average_refinement_tolerances",
         "match_surface_average_refinement_signs",
         "match_surface_average_position_refinement",
+        "match_surface_average_fit_stages",
     ] {
         for row in captured::read(family)["results"].as_array().unwrap() {
             let recipe = &row["value"]["prescribed_case"];
@@ -66,7 +67,7 @@ fn refinement_rejects_every_discovery_case_before_backend_work() {
             count += 1;
         }
     }
-    assert_eq!(count, 122);
+    assert_eq!(count, 152);
 }
 
 fn assert_rejected(result: Result<[NurbsSurface; 2], GeometryError>, id: &serde_json::Value) {

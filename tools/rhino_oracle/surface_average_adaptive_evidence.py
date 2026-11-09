@@ -6,7 +6,7 @@ import re
 
 from . import match_surface_average_cases as sdk, match_surface_command as command
 from .merge_surfaces_evidence import ROOT, HERE, sha, frozen
-from .surface_average_refinement_evidence import complete, producers as sdk_producers, PROTOTYPE_SOURCES
+from .surface_average_refinement_evidence import complete, configured, producers as sdk_producers, PROTOTYPE_SOURCES
 from .fillet_getter_evidence import finite
 
 PROOF = ROOT / 'docs/surface-average-adaptive-proof'
@@ -15,6 +15,9 @@ FAMILIES = {
     'match_surface_average_refinement_signs': ('sdk', sdk.REFINEMENT_SIGNS, 'refinement-signs'),
     'match_surface_average_position_refinement': ('sdk', sdk.POSITION_REFINEMENT, 'position-refinement'),
     'match_surface_average_position_refine_command': ('command', command.AVERAGE_POSITION_REFINEMENT, 'position-refine-command'),
+    'match_surface_average_fit_stages': ('sdk', sdk.FIT_STAGES, 'fit-stages'),
+    'match_surface_average_prefit_stages': ('sdk', sdk.PREFIT_STAGES, 'prefit-stages'),
+    'match_surface_average_fit_one_sided': ('sdk', sdk.FIT_ONE_SIDED, 'fit-one-sided'),
 }
 POSITION_SOURCES = {
     'crates/viboceros-geometry/src/surface_match/average.rs',
@@ -103,12 +106,25 @@ def collect(proof=PROOF):
             key, value = row['id'], row['value']
             if key in destination or value['prescribed_case'] != recipes[key]:
                 raise ValueError('adaptive refinement authored recipe')
-            if kind == 'sdk':
+            if kind == 'sdk' and not recipes[key]['average']:
+                if (not finite(value) or value['success'] is not True or value['source_unchanged'] is not True
+                        or value['output'] is None or value['target'] is not None or len(value['inputs']) != 2):
+                    raise ValueError('incomplete one-sided diagnostic')
+                configured(value)
+            elif kind == 'sdk':
                 complete(value)
+                if 'match_to_curve_levels' in recipes[key]:
+                    queries = value['prefit_audit']
+                    expected = [(kind, reverse, limit, level) for kind, reverse, limit in [
+                        ('edge', False, 10.), ('edge', True, 10.), ('iso', False, 10.),
+                        ('iso', True, 10.), ('iso', False, 0.), ('iso', False, -1.)]
+                        for level in [0, 4]]
+                    if (not finite(queries) or [(q['kind'], q['reverse'], q['limit'], q['level']) for q in queries] != expected):
+                        raise ValueError('incomplete public prefit diagnostic')
             else:
                 command_complete(value, recipes[key])
             destination[key] = value
-    if (len(rows), len(commands)) != (38, 5):
+    if (len(rows), len(commands)) != (92, 5):
         raise ValueError('adaptive refinement scope')
     return rows, commands, paths
 

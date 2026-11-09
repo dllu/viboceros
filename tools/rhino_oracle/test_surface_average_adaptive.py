@@ -17,7 +17,7 @@ class AdaptiveAverageTests(unittest.TestCase):
         value = build()
         self.assertEqual(value, json.loads((ROOT / 'docs/surface-average-adaptive-investigation.json').read_bytes()))
         self.assertEqual((value['new_native_sdk_cases'], value['new_native_command_cases'],
-                          value['cumulative_native_primary_observations']), (38, 5, 145))
+                          value['cumulative_native_primary_observations']), (92, 5, 199))
         self.assertFalse(value['averaged_refinement_qualified'])
         self.assertEqual({k: v['matched_cases'] for k, v in value['frozen_prototypes'].items()}, {'sign': 27, 'position': 30})
         self.assertEqual(len(value['frozen_prototypes']['position']['rejected_cases']), 7)
@@ -34,7 +34,7 @@ class AdaptiveAverageTests(unittest.TestCase):
             original = json.loads(path.read_bytes())
             variants = [original[:-1], original + original[-1:]]
             for key, bad in [('command', ['desktop-launcher']), ('exit_status', False),
-                             ('observation_sha256', '0' * 64), ('kind', 'sdk')]:
+                             ('observation_sha256', '0' * 64), ('kind', 'command')]:
                 changed = copy.deepcopy(original)
                 changed[-1][key] = bad
                 variants.append(changed)
@@ -61,6 +61,20 @@ class AdaptiveAverageTests(unittest.TestCase):
                          dict(degrees=[[3, 3], [3, 3]], counts=[[4, 10], [4, 12]]))
         self.assertEqual(value['average_position_refine_source_west']['counts'], [[4, 43], [4, 51]])
         self.assertEqual(value['average_position_refine_closest']['counts'], [[4, 28], [4, 42]])
+
+    def test_prefit_and_one_sided_diagnostics_stay_distinct(self):
+        value = build()
+        self.assertEqual(value['public_prefit_queries'], 96)
+        self.assertGreater(value['null_public_prefit_results'], 0)
+        self.assertEqual(len(value['one_sided_diagnostics']), 16)
+        self.assertTrue(all(not row['qualified'] for row in value['one_sided_diagnostics'].values()))
+        stages = value['fitting_stage_outputs']
+        for distance in [10., .01, .001, .0001, 1e-6, 1e-8]:
+            suffix = '_' + str(distance)
+            self.assertEqual(stages['average_fit_stage_transverse_basis' + suffix],
+                             stages['average_fit_stage_elevated_basis' + suffix])
+        self.assertEqual(stages['average_fit_stage_transverse_basis_10.0'],
+                         dict(degrees=[[3, 3], [3, 3]], counts=[[4, 4], [4, 4]]))
 
     def test_command_cancellation_click_acknowledgements_and_history_are_checked(self):
         _, rows, _ = collect()

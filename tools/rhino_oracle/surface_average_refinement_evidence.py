@@ -38,6 +38,11 @@ def complete(v):
     r=v['prescribed_case']
     if (not finite(v) or v['success']is not True or v['source_unchanged']is not True or len(v['inputs'])!=2
             or any(v[k]is None for k in ['output','target'])):raise ValueError('incomplete investigation outputs')
+    configured(v)
+
+
+def configured(v):
+    r=v['prescribed_case']
     # Native EnableRefinement clamps the positional setting to ON_SQRT_EPSILON.
     expected=dict(enabled=r['refine'],distance=max(r.get('distance_tolerance',1e-6),1.490116119385e-8),angle=r.get('angle_tolerance',1e-6),curvature=r.get('curvature_tolerance',.05))
     settings=v['configured_settings']

@@ -197,6 +197,42 @@ value=case('Position',other_end='Curvature',sources=[surface(degree=1,rational=T
 POSITION_REFINEMENT['average_position_refine_short_preserved']=value
 CASES.update(copy.deepcopy(POSITION_REFINEMENT))
 
+FIT_STAGES={}
+for label in ['source_west','source_reverse_v','transverse_basis','closest','elevated_basis']:
+    value=copy.deepcopy(POSITION_REFINEMENT['average_position_refine_'+('transverse_basis'if label=='elevated_basis'else label)])
+    if label=='elevated_basis':
+        source=value['sources'][0];old=source['control_points'];controls=[]
+        for row in range(4):
+            for i in range(4):
+                terms=[(old[i],1.)]if row==0 else[(old[8+i],1.)]if row==3 else[(old[(row-1)*4+i],row/3.),(old[row*4+i],1.-row/3.)]
+                weight=sum(c['weight']*f for c,f in terms)
+                controls.append(dict(point=[sum(c['point'][axis]*c['weight']*f for c,f in terms)/weight for axis in range(3)],weight=weight))
+        source.update(degree_v=3,control_point_count_v=4,knots_v=[0.]*4+[1.]*4,control_points=controls)
+    for distance in [10.,.01,.001,.0001,1e-6,1e-8]:
+        recipe=copy.deepcopy(value);recipe['distance_tolerance']=distance
+        FIT_STAGES['average_fit_stage_'+label+'_'+str(distance)]=recipe
+CASES.update(copy.deepcopy(FIT_STAGES))
+
+PREFIT_STAGES={}
+for label in ['source_west','source_reverse_v','transverse_basis','elevated_basis']:
+    for swap in [False,True]:
+        value=copy.deepcopy(FIT_STAGES['average_fit_stage_'+label+'_1e-06'])
+        value.update(refine=False,match_to_curve_levels=[0,4],match_to_curve_variants=True)
+        if swap:
+            value['sources'].reverse();value['side'],value['target_side']=value['target_side'],value['side']
+            value['reverse_match'],value['reverse_target']=value['reverse_target'],value['reverse_match']
+        PREFIT_STAGES['average_prefit_stage_'+label+'_'+str(int(swap))]=value
+CASES.update(copy.deepcopy(PREFIT_STAGES))
+
+FIT_ONE_SIDED={}
+for key,recipe in PREFIT_STAGES.items():
+    for closest in [False,True]:
+        value=copy.deepcopy(recipe)
+        value.pop('match_to_curve_levels');value.pop('match_to_curve_variants')
+        value.update(average=False,refine=True,closest_points=closest)
+        FIT_ONE_SIDED[key.replace('average_prefit_stage_','average_fit_one_sided_')+'_'+str(int(closest))]=value
+CASES.update(copy.deepcopy(FIT_ONE_SIDED))
+
 
 def request(names=None):
     return dict(protocol_version=1,iterations=1,

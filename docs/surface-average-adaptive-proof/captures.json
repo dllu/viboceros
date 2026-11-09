@@ -46,5 +46,53 @@
     ],
     "observation_sha256": "95facfe6a232c2dcc644db0328f078cb500a4dcf13e47cd9fc50b7008261b1bb",
     "request_sha256": "6c32e2eaebc16b09dac61c2aad0e9467358f48b358244aee13d35e0b38b67d24"
+  },
+  {
+    "family": "match_surface_average_fit_stages",
+    "kind": "sdk",
+    "archive": "observations/match_surface_average_fit_stages.json.gz",
+    "log": "capture-fit-stages.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_fit_stages > /tmp/match-average-fit-stages.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-fit-stages.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "40ec9811ac98cdbab81d40478bb0779e7a778525132948574956698856b32207",
+    "request_sha256": "d3036c96d195be888d21d2ceac3b8d4f282cb895a08caa512f54c38f3661f23d"
+  },
+  {
+    "family": "match_surface_average_prefit_stages",
+    "kind": "sdk",
+    "archive": "observations/match_surface_average_prefit_stages.json.gz",
+    "log": "capture-prefit-stages.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_prefit_stages > /tmp/match-average-prefit-stages.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-prefit-stages.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "904e12df42bcd46fe23eb5b49f1f0ef6f82c291f39b929c5b007927702aa9f79",
+    "request_sha256": "5bc489d6bb310c42ddfdbc6024695077d4723e21d188543bdb2c6fb3a9c80de1"
+  },
+  {
+    "family": "match_surface_average_fit_one_sided",
+    "kind": "sdk",
+    "archive": "observations/match_surface_average_fit_one_sided.json.gz",
+    "log": "capture-fit-one-sided.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_fit_one_sided > /tmp/match-average-fit-one-sided.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-fit-one-sided.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "e9a328aee1095a25ec7f9693c398cb04601205a75324530659e5263d2508944e",
+    "request_sha256": "f67850ad3cacb3ce4f84ca2a2c0eeaf80ae72c03f662170c0f1b6824b93b2e63"
   }
 ]
