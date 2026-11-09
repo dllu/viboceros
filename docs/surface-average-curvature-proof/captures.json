@@ -1,0 +1,62 @@
+[
+  {
+    "family": "match_surface_average_curvature_contexts",
+    "archive": "observations/match_surface_average_curvature_contexts.json.gz",
+    "log": "capture-curvature-contexts.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_curvature_contexts > /tmp/match-average-curvature-contexts.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-curvature-contexts.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "88c7a5c69cd95d70a8a5f58126610015e2b732914aa62cadd108d3672987cbc2",
+    "request_sha256": "e2599efb94eb2cecd6f4ee37b66b22685dd7c7d7ab3073d71c66227217be38b9"
+  },
+  {
+    "family": "match_surface_average_curvature_rows",
+    "archive": "observations/match_surface_average_curvature_rows.json.gz",
+    "log": "capture-curvature-rows.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_curvature_rows > /tmp/match-average-curvature-rows.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-curvature-rows.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "78ddb0cb66241bc09831c71a00b2429a34405bb051f7e2025f7cdcdd25abe9ea",
+    "request_sha256": "614cbeb1be4c7047a1844ff483b57127e4b742d4031271432a8371d8b1d20ba5"
+  },
+  {
+    "family": "match_surface_average_curvature_holdouts",
+    "archive": "observations/match_surface_average_curvature_holdouts.json.gz",
+    "log": "capture-curvature-holdouts.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_curvature_holdouts > /tmp/match-average-curvature-holdouts.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-curvature-holdouts.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "0654c7f9d0dd5f4b1f72011e0d8155681620d5efa6e5fb976c84ba7fe73e2eb6",
+    "request_sha256": "cc61c3eb413864b34807c44dbd65fe867a0154cf9c77ac21c9eb3e409afd7df0"
+  },
+  {
+    "family": "match_surface_average_curvature_nonuniform",
+    "archive": "observations/match_surface_average_curvature_nonuniform.json.gz",
+    "log": "capture-curvature-nonuniform.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_curvature_nonuniform > /tmp/match-average-curvature-nonuniform.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-curvature-nonuniform.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "db32a3076e7bd831295ea1402abecb371b79aa3ccb90a4f2fe3240910f465950",
+    "request_sha256": "3b00753424ba707988f36ffbacf12bdd32ae8621ad48e929ae5634cfed5ab0cb"
+  }
+]

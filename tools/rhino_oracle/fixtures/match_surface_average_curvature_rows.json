@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_0_x",
+      "case": "average_curvature_rows_polynomial_0_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_0_y",
+      "case": "average_curvature_rows_polynomial_0_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_0_z",
+      "case": "average_curvature_rows_polynomial_0_z"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_1_x",
+      "case": "average_curvature_rows_polynomial_1_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_1_y",
+      "case": "average_curvature_rows_polynomial_1_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_polynomial_1_z",
+      "case": "average_curvature_rows_polynomial_1_z"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_0_x",
+      "case": "average_curvature_rows_rational_0_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_0_y",
+      "case": "average_curvature_rows_rational_0_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_0_z",
+      "case": "average_curvature_rows_rational_0_z"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_1_x",
+      "case": "average_curvature_rows_rational_1_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_1_y",
+      "case": "average_curvature_rows_rational_1_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_rows_rational_1_z",
+      "case": "average_curvature_rows_rational_1_z"
+    }
+  ]
+}

@@ -18,9 +18,6 @@ fn averaging_replaces_both_owned_surfaces_in_one_history_entry() {
         .unwrap()
     {
         let id = row["id"].as_str().unwrap();
-        if id == "match_average_curvature_pending" {
-            continue;
-        }
         println!("AVERAGE_SURFACE_COMMAND_CASE {id}");
         let v = &row["value"];
         let mut doc = workflow::setup_named(v, "match", "Match");
@@ -90,5 +87,5 @@ fn averaging_replaces_both_owned_surfaces_in_one_history_entry() {
         println!("AVERAGE_SURFACE_COMMAND {record}");
         count += 1;
     }
-    assert_eq!(count, 7);
+    assert_eq!(count, 8);
 }

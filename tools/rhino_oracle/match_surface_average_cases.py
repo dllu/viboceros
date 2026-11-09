@@ -49,6 +49,61 @@ for mode in ['Position','Tangency']:
         HOLDOUTS['average_h_'+mode.lower()+'_'+label]=value
 CASES.update(copy.deepcopy(HOLDOUTS))
 
+# Translating one complete input leaves its jets unchanged, isolating any
+# positional coupling in the curvature control row.
+CURVATURE_CONTEXTS={}
+for kind in ['polynomial','rational']:
+    for name,shift in [('base',[0.,0.,0.]),('shift_x',[.2,0.,0.]),('shift_y',[0.,.2,0.]),
+                       ('shift_z',[0.,0.,.2]),('shift_xyz',[.03,.11,-.07])]:
+        value=copy.deepcopy(FINAL['match_f_'+kind+'_curvature'])
+        value.update(average=True,reverse_match=True,reverse_target=False)
+        for c in value['sources'][0]['control_points']:c['point']=[p+d for p,d in zip(c['point'],shift)]
+        CURVATURE_CONTEXTS['average_curvature_context_'+kind+'_'+name]=value
+    value=copy.deepcopy(FINAL['match_f_'+kind+'_curvature'])
+    value.update(average=True,reverse_match=True,reverse_target=False)
+    for j in range(4):
+        value['sources'][0]['control_points'][j*4+3]['point']=value['sources'][1]['control_points'][j*4]['point'][:]
+    CURVATURE_CONTEXTS['average_curvature_context_'+kind+'_zero_gap']=value
+CASES.update(copy.deepcopy(CURVATURE_CONTEXTS))
+
+# Independent changes of the second row leave point and first derivatives fixed.
+CURVATURE_ROWS={}
+for kind in ['polynomial','rational']:
+    for half,column in [(0,1),(1,2)]:
+        for axis,label in enumerate('xyz'):
+            value=copy.deepcopy(FINAL['match_f_'+kind+'_curvature'])
+            value.update(average=True,reverse_match=True,reverse_target=False)
+            for j in range(4):value['sources'][half]['control_points'][j*4+column]['point'][axis]+=.2
+            CURVATURE_ROWS['average_curvature_rows_'+kind+'_'+str(half)+'_'+label]=value
+CASES.update(copy.deepcopy(CURVATURE_ROWS))
+
+CURVATURE_HOLDOUTS={}
+for name,recipe in HOLDOUTS.items():
+    if name.startswith('average_h_tangency_') and not recipe['refine']:
+        value=copy.deepcopy(recipe);value['continuity']='Curvature'
+        CURVATURE_HOLDOUTS[name.replace('average_h_tangency_','average_curvature_h_')]=value
+for name in ['match_f_multi_curvature','match_f_transverse_basis']:
+    value=copy.deepcopy(FINAL[name]);value.update(continuity='Curvature',average=True,reverse_match=True,reverse_target=False)
+    CURVATURE_HOLDOUTS[name.replace('match_f_','average_curvature_h_')]=value
+CASES.update(copy.deepcopy(CURVATURE_HOLDOUTS))
+
+CURVATURE_NONUNIFORM={}
+for rational in [False,True]:
+    for preserve in ['None','Tangency','Curvature']:
+        for knot in [.2,.7]:
+            value=copy.deepcopy(FINAL['match_f_multi_curvature'])
+            value.update(other_end=preserve,average=True,reverse_match=True,reverse_target=False)
+            value['sources'][0]['knots_u'][4]=knot
+            for j in range(4):
+                for i in range(5):
+                    c=value['sources'][0]['control_points'][j*5+i]
+                    c['point'][2]+=.1*(j/3.)**2
+                    if rational:c['weight']=1.+.1*((i+2*j)%3)
+            value['sources'][1]=surface(True,rational=rational)
+            key='average_curvature_nonuniform_'+('rational'if rational else'polynomial')+'_'+preserve.lower()+'_'+str(knot)
+            CURVATURE_NONUNIFORM[key]=value
+CASES.update(copy.deepcopy(CURVATURE_NONUNIFORM))
+
 
 def request(names=None):
     return dict(protocol_version=1,iterations=1,

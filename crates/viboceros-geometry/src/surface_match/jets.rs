@@ -61,3 +61,50 @@ pub(super) fn desired(
         direction * tangential_acceleration + normal * (normal_acceleration * normal_scale),
     ])
 }
+
+/// The averaged G2 strip uses the source U-curve's curvature after moving only
+/// its endpoint to the midpoint. Its other half is the target's normal
+/// curvature in the requested iso direction. Keep the mean of the unit
+/// directions unnormalized: this also determines the shortened G1 handle.
+pub(super) fn average_curvature(
+    original: SurfaceJet2,
+    reset: SurfaceJet2,
+    target: SurfaceJet2,
+    matched: [Vec3; 2],
+    weights: &[Real],
+    coefficients: [Real; 3],
+) -> Result<[Vec3; 2], GeometryError> {
+    let [d0, d1, dd] = coefficients;
+    let [w0, w1, w2] = [weights[0], weights[1], weights[2]];
+    let old = v(original.derivative_u);
+    let old_unit = unit(old)?;
+    let length = old.norm();
+    let target_direction = matched[0] / length;
+    let direction = (old_unit + target_direction) * 0.5;
+    let first = direction * length;
+    unit(first)?;
+    let gap = v(original.point.vector_to(target.point)?) * 0.5;
+    let wdu = d0 * (w0 - w1);
+    let wdd = dd * (d0 * w0 - (d0 + d1) * w1 + d1 * w2);
+    let moved_first = old + gap * (d0 * w1 / w0);
+    let moved_second =
+        v(original.derivative_uu) + gap * (dd * d0 - wdd / w0 - 2. * d0 * w1 * wdu / (w0 * w0));
+    let moved_unit = unit(moved_first)?;
+    let source_curvature =
+        (moved_second - moved_unit * moved_second.dot(&moved_unit)) / moved_first.norm_squared();
+    let old_tangent_acceleration = v(reset.derivative_uu).dot(&old_unit);
+    let target_curvature =
+        (matched[1] - target_direction * old_tangent_acceleration) / old.norm_squared();
+    // The adjacent/last cross-knot ratio scales both halves of the mean.
+    // `desired` has already applied that factor to the target half.
+    let curvature = (source_curvature * (d1 / d0) + target_curvature) * 0.5;
+    // Reconstructing the second row with the mean direction changes its
+    // tangential acceleration by the G1 handle's squared shortening factor.
+    // The rational U weight derivative contributes to the same coefficient.
+    let tangent_coefficient = 2. * (dd - wdu / w0) * d1 / d0;
+    let tangent_acceleration =
+        old_tangent_acceleration + tangent_coefficient * length * (direction.norm_squared() - 1.);
+    let second = (curvature - direction * curvature.dot(&direction)) * first.norm_squared()
+        + direction * tangent_acceleration;
+    Ok([first, second])
+}

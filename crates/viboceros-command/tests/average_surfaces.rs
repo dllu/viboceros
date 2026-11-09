@@ -24,48 +24,82 @@ fn independent_position_and_tangency_averages_match_both_public_sdk_outputs() {
                 continue;
             }
             println!("AVERAGE_SURFACE_CASE {id}");
-            let first = captured::surface(&recipe["sources"][0]);
-            let second = captured::surface(&recipe["sources"][1]);
-            let original = (first.clone(), second.clone());
-            let options = SurfaceAverageOptions {
-                matching: matching::options(recipe),
-                reverse_target: recipe["reverse_target"].as_bool().unwrap(),
-            };
-            #[cfg(feature = "native-smlib")]
-            let operation = viboceros_smlib::average_match_surface_supports;
-            #[cfg(not(feature = "native-smlib"))]
-            let operation = try_average_match_nurbs_surfaces;
-            let result = operation(
-                &first,
-                matching::side(recipe["side"].as_str().unwrap()),
-                &second,
-                matching::side(recipe["target_side"].as_str().unwrap()),
-                options,
-                captured::model_tolerance(),
-            )
-            .unwrap();
-            assert_eq!((first, second), original);
-            let mut maximum = 0_f64;
-            for (surface, key) in result.iter().zip(["output", "target"]) {
-                let brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(
-                    surface.clone(),
-                    surface.domain_u(),
-                    surface.domain_v(),
-                    false,
-                    captured::model_tolerance(),
-                )
-                .unwrap();
-                maximum = maximum.max(captured::compare(&brep, &value[key]));
-                maximum = maximum.max(captured::compare(&captured::archive(&brep), &value[key]));
-            }
-            println!(
-                "AVERAGE_SURFACE {}",
-                serde_json::json!({"id":id,"maximum_geometry_error":maximum,"outputs":2,"archives":2})
-            );
+            compare_case(id, value, "AVERAGE_SURFACE");
             count += 1;
         }
     }
     assert_eq!(count, 54);
+}
+
+#[test]
+fn curvature_averages_match_both_public_sdk_outputs() {
+    let mut count = 0;
+    for family in [
+        "match_surface_holdouts",
+        "match_surface_average_pilot",
+        "match_surface_average_curvature_contexts",
+        "match_surface_average_curvature_rows",
+        "match_surface_average_curvature_holdouts",
+        "match_surface_average_curvature_nonuniform",
+    ] {
+        for row in captured::read(family)["results"].as_array().unwrap() {
+            let value = &row["value"];
+            let recipe = &value["prescribed_case"];
+            if recipe["average"] != true
+                || recipe["continuity"] != "Curvature"
+                || recipe["refine"] == true
+            {
+                continue;
+            }
+            let id = row["id"].as_str().unwrap();
+            println!("AVERAGE_CURVATURE_CASE {id}");
+            compare_case(id, value, "AVERAGE_CURVATURE");
+            count += 1;
+        }
+    }
+    assert_eq!(count, 65);
+}
+
+fn compare_case(id: &str, value: &serde_json::Value, prefix: &str) {
+    let recipe = &value["prescribed_case"];
+    let first = captured::surface(&recipe["sources"][0]);
+    let second = captured::surface(&recipe["sources"][1]);
+    let original = (first.clone(), second.clone());
+    let options = SurfaceAverageOptions {
+        matching: matching::options(recipe),
+        reverse_target: recipe["reverse_target"].as_bool().unwrap(),
+    };
+    #[cfg(feature = "native-smlib")]
+    let operation = viboceros_smlib::average_match_surface_supports;
+    #[cfg(not(feature = "native-smlib"))]
+    let operation = try_average_match_nurbs_surfaces;
+    let result = operation(
+        &first,
+        matching::side(recipe["side"].as_str().unwrap()),
+        &second,
+        matching::side(recipe["target_side"].as_str().unwrap()),
+        options,
+        captured::model_tolerance(),
+    )
+    .unwrap();
+    assert_eq!((first, second), original);
+    let mut maximum = 0_f64;
+    for (surface, key) in result.iter().zip(["output", "target"]) {
+        let brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(
+            surface.clone(),
+            surface.domain_u(),
+            surface.domain_v(),
+            false,
+            captured::model_tolerance(),
+        )
+        .unwrap();
+        maximum = maximum.max(captured::compare(&brep, &value[key]));
+        maximum = maximum.max(captured::compare(&captured::archive(&brep), &value[key]));
+    }
+    println!(
+        "{prefix} {}",
+        serde_json::json!({"id":id,"maximum_geometry_error":maximum,"outputs":2,"archives":2})
+    );
 }
 
 #[test]

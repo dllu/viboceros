@@ -27,7 +27,7 @@ AverageSurfaces=Yes|No
 IsocurveDirection=Automatic|MatchTarget|Perpendicular|Keep
 ```
 
-`AverageSurfaces=Yes` supports position and tangency with refinement off. It
+`AverageSurfaces=Yes` supports position, tangency and curvature with refinement off. It
 previews and accepts both surfaces atomically; see [averaging](../surface-averaging.md).
 
 Defaults are curvature, opposite-end position preservation, automatic isocurve

@@ -10,6 +10,29 @@ pub(super) fn fit<E: From<GeometryError>>(
     _tolerance: Tolerance,
     solve: &mut super::Solve<'_, E>,
 ) -> Result<NurbsSurface, E> {
+    fit_with_average(source, target, reverse, options, _tolerance, solve, false)
+}
+
+pub(super) fn average<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    target: &NurbsSurface,
+    reverse: bool,
+    options: SurfaceMatchOptions,
+    tolerance: Tolerance,
+    solve: &mut super::Solve<'_, E>,
+) -> Result<NurbsSurface, E> {
+    fit_with_average(source, target, reverse, options, tolerance, solve, true)
+}
+
+fn fit_with_average<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    target: &NurbsSurface,
+    reverse: bool,
+    options: SurfaceMatchOptions,
+    _tolerance: Tolerance,
+    solve: &mut super::Solve<'_, E>,
+    average: bool,
+) -> Result<NurbsSurface, E> {
     let n = source.control_point_count_u();
     let m = source.control_point_count_v();
     let p = source.degree_u();
@@ -76,6 +99,7 @@ pub(super) fn fit<E: From<GeometryError>>(
                     .sum::<Real>()
             })
             .collect::<Vec<_>>();
+        let before_weight_reset = original;
         if let Some(curve) = &second_curve {
             let delta = original
                 .point
@@ -87,14 +111,33 @@ pub(super) fn fit<E: From<GeometryError>>(
         }
         // The SDK's nonuniform-cross-knot rule scales the normal term by
         // adjacent/last endpoint coefficients; its tangent term is unchanged.
-        let derivatives = jets::desired(
+        let mut derivatives = jets::desired(
             original,
             desired,
             options.iso,
             options.continuity,
             if p > 1 { d1 / d0 } else { 1. },
         )?;
-        let point = Vec3::from_row_slice(&origin.vector_to(desired.point)?.to_array());
+        let point = if average {
+            if rows > 2 {
+                derivatives = jets::average_curvature(
+                    before_weight_reset,
+                    original,
+                    desired,
+                    derivatives,
+                    &weights,
+                    [d0, d1, dd],
+                )?;
+            } else if rows > 1 {
+                derivatives[0] = (derivatives[0]
+                    + Vec3::from_row_slice(&original.derivative_u.to_array()))
+                    * 0.5;
+            }
+            original.point.midpoint(desired.point)?
+        } else {
+            desired.point
+        };
+        let point = Vec3::from_row_slice(&origin.vector_to(point)?.to_array());
         let h0 = point * weights[0];
         targets.extend([h0.x, h0.y, h0.z, weights[0]]);
         if rows > 1 {

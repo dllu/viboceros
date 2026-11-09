@@ -1,6 +1,5 @@
-//! Two independent midpoint edits retain each support's own rational basis.
+//! Two independent averaging edits retain each support's own control basis.
 use super::*;
-use crate::WeightedPoint3;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SurfaceAverageOptions {
@@ -9,10 +8,10 @@ pub struct SurfaceAverageOptions {
     pub reverse_target: bool,
 }
 
-/// Average open natural boundaries with position or tangency continuity.
-/// Each half moves its own source toward a one-sided match. The two traversal
+/// Average open natural boundaries with position, tangency or curvature continuity.
+/// Each half retains its source's control basis. The two traversal
 /// flags are independent, following the public SDK, and can yield different
-/// boundary curves. Averaged curvature and refinement are not supported yet.
+/// boundary curves. Averaged refinement is not supported yet.
 pub fn try_average_match_nurbs_surfaces(
     first: &NurbsSurface,
     first_side: SurfaceExtensionEdge,
@@ -46,8 +45,8 @@ pub fn try_average_match_nurbs_surfaces_with_operations<E: From<GeometryError>>(
     tolerance: Tolerance,
     operations: &mut SurfaceMatchOperations<'_, E>,
 ) -> Result<[NurbsSurface; 2], E> {
-    if options.matching.continuity == SurfaceBlendContinuity::Curvature || options.matching.refine {
-        return Err(error("averaging requires Position or Tangency with refinement off").into());
+    if options.matching.refine {
+        return Err(error("averaging requires refinement off").into());
     }
     let first_output = half(
         first,
@@ -82,36 +81,13 @@ fn half<E: From<GeometryError>>(
     operations: &mut SurfaceMatchOperations<'_, E>,
 ) -> Result<NurbsSurface, E> {
     let prepared = prepare::operands(source, side, target, target_side, options, operations)?;
-    let source = prepared.source;
-    let matched = fit::fit(
-        &source,
+    let mean = fit::average(
+        &prepared.source,
         &prepared.target,
         prepared.reverse,
         options,
         tolerance,
         operations.interpolate,
-    )?;
-    // G0/G1 matching retains the source's weight functions. Midpoints in the
-    // common control basis therefore halve the physical edit as well.
-    let controls = source
-        .control_points()
-        .iter()
-        .zip(matched.control_points())
-        .map(|(a, b)| {
-            WeightedPoint3::try_new(
-                a.point().midpoint(b.point())?,
-                a.weight().midpoint(b.weight()),
-            )
-        })
-        .collect::<Result<Vec<_>, GeometryError>>()?;
-    let mean = NurbsSurface::try_new_rational(
-        source.degree_u(),
-        source.degree_v(),
-        source.control_point_count_u(),
-        source.control_point_count_v(),
-        controls,
-        source.knots_u().to_vec(),
-        source.knots_v().to_vec(),
     )?;
     Ok(prepared.chart.restore(&mean)?)
 }

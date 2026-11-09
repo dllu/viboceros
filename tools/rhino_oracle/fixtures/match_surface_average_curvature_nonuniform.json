@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_none_0.2",
+      "case": "average_curvature_nonuniform_polynomial_none_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_none_0.7",
+      "case": "average_curvature_nonuniform_polynomial_none_0.7"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_tangency_0.2",
+      "case": "average_curvature_nonuniform_polynomial_tangency_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_tangency_0.7",
+      "case": "average_curvature_nonuniform_polynomial_tangency_0.7"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_curvature_0.2",
+      "case": "average_curvature_nonuniform_polynomial_curvature_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_polynomial_curvature_0.7",
+      "case": "average_curvature_nonuniform_polynomial_curvature_0.7"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_none_0.2",
+      "case": "average_curvature_nonuniform_rational_none_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_none_0.7",
+      "case": "average_curvature_nonuniform_rational_none_0.7"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_tangency_0.2",
+      "case": "average_curvature_nonuniform_rational_tangency_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_tangency_0.7",
+      "case": "average_curvature_nonuniform_rational_tangency_0.7"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_curvature_0.2",
+      "case": "average_curvature_nonuniform_rational_curvature_0.2"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_nonuniform_rational_curvature_0.7",
+      "case": "average_curvature_nonuniform_rational_curvature_0.7"
+    }
+  ]
+}

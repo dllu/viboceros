@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_base",
+      "case": "average_curvature_context_polynomial_base"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_shift_x",
+      "case": "average_curvature_context_polynomial_shift_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_shift_y",
+      "case": "average_curvature_context_polynomial_shift_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_shift_z",
+      "case": "average_curvature_context_polynomial_shift_z"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_shift_xyz",
+      "case": "average_curvature_context_polynomial_shift_xyz"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_polynomial_zero_gap",
+      "case": "average_curvature_context_polynomial_zero_gap"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_base",
+      "case": "average_curvature_context_rational_base"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_shift_x",
+      "case": "average_curvature_context_rational_shift_x"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_shift_y",
+      "case": "average_curvature_context_rational_shift_y"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_shift_z",
+      "case": "average_curvature_context_rational_shift_z"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_shift_xyz",
+      "case": "average_curvature_context_rational_shift_xyz"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_curvature_context_rational_zero_gap",
+      "case": "average_curvature_context_rational_zero_gap"
+    }
+  ]
+}

@@ -12,9 +12,6 @@ fn match_surface_average_viewport_preview_cancellation_and_both_histories_match_
         .unwrap()
     {
         let id = row["id"].as_str().unwrap();
-        if id == "match_average_curvature_pending" {
-            continue;
-        }
         println!("AVERAGE_SURFACE_UI_CASE {id}");
         let v = &row["value"];
         app.document = workflow::setup_named(v, "match", "Match");
@@ -81,5 +78,5 @@ fn match_surface_average_viewport_preview_cancellation_and_both_histories_match_
         println!("AVERAGE_SURFACE_UI {record}");
         count += 1;
     }
-    assert_eq!(count, 7);
+    assert_eq!(count, 8);
 }
