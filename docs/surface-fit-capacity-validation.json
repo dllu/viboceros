@@ -1,0 +1,39 @@
+{
+  "full_rhino_fit_parity": false,
+  "fit_srf_registered": false,
+  "existing_fitter_policy_changed": false,
+  "budget_is_accuracy_certificate": false,
+  "budget_is_null_predictor": false,
+  "supported_policy": "clamped continuous equal-degree source bases",
+  "observations": 57,
+  "backends": {
+    "portable": {
+      "observations": 57,
+      "captured_bases": 18,
+      "native_null": 39,
+      "equal_degree_outputs_admitted": 17,
+      "degree_change_output_unknown": 1,
+      "prior_equal_degree_outputs_admitted": 45,
+      "prior_degree_change_outputs_unknown": 45,
+      "maximum_source_equivalence_bound": 2.755524093023317e-16,
+      "maximum_authored_input_bound": 1.922962686383565e-16,
+      "maximum_native_basis_bound": 2.2232198742534235e-15,
+      "maximum_archive_bound": 0.0
+    },
+    "native": {
+      "observations": 57,
+      "captured_bases": 18,
+      "native_null": 39,
+      "equal_degree_outputs_admitted": 17,
+      "degree_change_output_unknown": 1,
+      "prior_equal_degree_outputs_admitted": 45,
+      "prior_degree_change_outputs_unknown": 45,
+      "maximum_source_equivalence_bound": 2.755524093023317e-16,
+      "maximum_authored_input_bound": 1.922962686383565e-16,
+      "maximum_native_basis_bound": 3.250603335826465e-15,
+      "maximum_archive_bound": 0.0
+    }
+  },
+  "baseline_revision": "a08c8d8cd387149a3725503d7c47493285767e53",
+  "receipts": "surface-fit-capacity-proof/receipts.json"
+}

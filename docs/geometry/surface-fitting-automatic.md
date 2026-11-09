@@ -4,6 +4,8 @@
 
 [Image fitting](surface-fitting-images.md) separately permits UV speed changes
 under a complete geometric bound. This API retains normalized UV accuracy.
+The opt-in [refinement budget](surface-fitting-budgets.md) is instrumentation
+for proposal complexity; it does not change this fitter's behavior.
 
 `try_fit_surface_with_bound(source, options, limit)` chooses a polynomial U/V
 basis and returns a `BoundedSurfaceFit` only after certifying the complete

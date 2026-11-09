@@ -294,6 +294,7 @@ mod non_manifold_selection;
 pub mod planar_regions;
 mod planar_surface;
 mod surface_fit_bounded;
+mod surface_fit_budget;
 mod surface_knot_reduction;
 mod surface_planar_image;
 mod volume_selection;
@@ -1104,6 +1105,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: surface_fit_bounded::Fixture,
+    },
+    SurfaceFitRefinementBudget {
+        id: String,
+        #[serde(flatten)]
+        fixture: surface_fit_budget::Fixture,
     },
     SurfacePlanarImageBound {
         id: String,
@@ -3093,6 +3099,7 @@ impl Operation {
             | Self::SurfaceKnotReduction { id, .. }
             | Self::SurfaceFitBounded { id, .. }
             | Self::SurfaceFitImageBounded { id, .. }
+            | Self::SurfaceFitRefinementBudget { id, .. }
             | Self::SurfacePlanarImageBound { id, .. }
             | Self::CurveCubicApproximation { id, .. }
             | Self::CurveDeviationBound { id, .. }
@@ -3971,6 +3978,9 @@ fn execute(
         }
         Operation::SurfaceFitImageBounded { fixture, .. } => {
             surface_fit_bounded::run_image(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceFitRefinementBudget { fixture, .. } => {
+            surface_fit_budget::run(fixture, iterations)?
         }
         Operation::SurfacePlanarImageBound { fixture, .. } => {
             surface_planar_image::run(fixture, iterations, tolerance)?

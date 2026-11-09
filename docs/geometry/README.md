@@ -8,6 +8,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Polynomial fitting in explicit surface bases](surface-fitting.md)
 - [Automatic surface fitting with complete displacement bounds](surface-fitting-automatic.md)
 - [Geometric surface image fitting with certified quad proposals](surface-fitting-images.md)
+- [Experimental surface fitting refinement budgets](surface-fitting-budgets.md)
 - [Surface curve networks and interior junctions](curve-networks.md)
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Experimental two-view reconstruction and native fidelity gaps](../curve-two-views.md)

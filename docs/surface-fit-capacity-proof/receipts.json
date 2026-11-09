@@ -1,0 +1,119 @@
+{
+  "baseline_revision": "a08c8d8cd387149a3725503d7c47493285767e53",
+  "third_party_revisions": {
+    "opennurbs": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "usd_brep": "c9c5979f04cea8c38213004d4f04df0dcfb40d05"
+  },
+  "source_overrides": {
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/eb32da039ae93f61f6041773f2feb9553bbfea20492d6f4cb3355e93bb157f2c.gz",
+      "sha256": "eb32da039ae93f61f6041773f2feb9553bbfea20492d6f4cb3355e93bb157f2c"
+    },
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/bca7d2eebbb1310366668340961c614b4d5a6d850ffcedd9f4f80f2ff8b56934.gz",
+      "sha256": "bca7d2eebbb1310366668340961c614b4d5a6d850ffcedd9f4f80f2ff8b56934"
+    },
+    "crates/viboceros-geometry/src/surface_fit/budget.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/7521798552096a31b32a8f3436150cd0cda06538788cdc04492a92ff0078e7b3.gz",
+      "sha256": "7521798552096a31b32a8f3436150cd0cda06538788cdc04492a92ff0078e7b3"
+    },
+    "crates/viboceros-geometry/src/surface_fit/budget/tests.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/f7d803fa72781f0c27022da3f6810df3e43d336732072afd2bb87c0cb0b855a5.gz",
+      "sha256": "f7d803fa72781f0c27022da3f6810df3e43d336732072afd2bb87c0cb0b855a5"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/78effaf9c08a43f3da9cfb33c91d523540c09c15b1cd970a35f083160335fdc5.gz",
+      "sha256": "78effaf9c08a43f3da9cfb33c91d523540c09c15b1cd970a35f083160335fdc5"
+    },
+    "crates/viboceros-oracle/src/surface_fit_budget.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/2368ed9cf6377320cdd407d2e181a4001b6a1856adf54b7aca0d0732eee3578a.gz",
+      "sha256": "2368ed9cf6377320cdd407d2e181a4001b6a1856adf54b7aca0d0732eee3578a"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_capacity_native.rs": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/6a1f9f471a30b06a4058ccb37694b44af14fc684b43a936baa4729b478440f8d.gz",
+      "sha256": "6a1f9f471a30b06a4058ccb37694b44af14fc684b43a936baa4729b478440f8d"
+    },
+    "tools/rhino_oracle/generate_surface_fit_capacity.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/4c5f89993fef5040471c6f8699d85bab71eaf3a2c5d0707282b6dfdb27689cfe.gz",
+      "sha256": "4c5f89993fef5040471c6f8699d85bab71eaf3a2c5d0707282b6dfdb27689cfe"
+    },
+    "tools/rhino_oracle/generate_surface_fit_capacity_holdouts.py": {
+      "snapshot": "tools/rhino_oracle/observations/source_snapshots/b7c5420569191d65f4a57253072f18a1d54519273fca5a82acfdcc348d677758.gz",
+      "sha256": "b7c5420569191d65f4a57253072f18a1d54519273fca5a82acfdcc348d677758"
+    },
+    "tools/rhino_oracle/test_surface_fit_capacity.py": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/173a1f7679342e522a60b621d67886eedafb94aa5ac9576bf9bade705d63959d.gz",
+      "sha256": "173a1f7679342e522a60b621d67886eedafb94aa5ac9576bf9bade705d63959d"
+    },
+    "tools/rhino_oracle/report_surface_fit_capacity.py": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/d194f59b97ef3f2f5faf684552fe80a69ccec52267e4d9526b7166595ae3d8dc.gz",
+      "sha256": "d194f59b97ef3f2f5faf684552fe80a69ccec52267e4d9526b7166595ae3d8dc"
+    },
+    "tools/rhino_oracle/test_surface_fit_capacity_record.py": {
+      "snapshot": "docs/surface-fit-capacity-proof/sources/c97fe1099145d71cdcb9c5f7694e3f6564d7ce6ea9e050c38142d1ffa497141f.gz",
+      "sha256": "c97fe1099145d71cdcb9c5f7694e3f6564d7ce6ea9e050c38142d1ffa497141f"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_capacity_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_capacity_native -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/native.log.gz"
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit:: -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/kernel.log.gz"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fit_capacity",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/python.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/app.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/format.log.gz"
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_capacity",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/capture.log.gz"
+    },
+    "capture_holdouts": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_capacity_holdouts",
+      "exit_code": 0,
+      "log": "docs/surface-fit-capacity-proof/capture_holdouts.log.gz"
+    }
+  },
+  "files": {
+    "docs/surface-fit-capacity-proof/app.log.gz": "b758925e4baaf76f55ba2b934236966196f143620a4132f017ed147488a5f4e3",
+    "docs/surface-fit-capacity-proof/capture.log.gz": "0c830c7764b1b9a67bcc59ce560183d442b723d84fc028be309be2cdc2515c2f",
+    "docs/surface-fit-capacity-proof/capture_holdouts.log.gz": "bf575d70c2c6c3c63970a499119badf9ec74fb5cefb42f16d63593b3517f9a0c",
+    "docs/surface-fit-capacity-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-fit-capacity-proof/kernel.log.gz": "1d689b5cb64a710861d1096d09cb7bd2e6819ede594ab9f8bbd06f2be8c243cb",
+    "docs/surface-fit-capacity-proof/native.log.gz": "14a71276000211acac485bdc7a11ed502aaf2dfa63810d62705594b6c2477be2",
+    "docs/surface-fit-capacity-proof/portable.log.gz": "6286de79e05f01fe68eb587e9d91245c2efbc6e6ac59ae405e8f2b3ce91e9de5",
+    "docs/surface-fit-capacity-proof/python.log.gz": "e22e6fe2a0dcf733cb5c4acdfe53039296653b9490178f562900467879a608c5",
+    "tools/rhino_oracle/fixtures/surface_fit.json": "04a3876acf2276699aad810e835a048da61c0fe51f233b738c5dbe4cedf75ed5",
+    "tools/rhino_oracle/fixtures/surface_fit_adaptive.json": "88eb77c7889a14faf80249ba4f52703d9dc3e952f2709812427784e68b43740d",
+    "tools/rhino_oracle/fixtures/surface_fit_capacity.json": "ea0b738eeb4f1e59cf8748a60b43cd8c0fb8bc20c0ef48d52851eeebe1c48118",
+    "tools/rhino_oracle/fixtures/surface_fit_capacity_holdouts.json": "3b6f051d9643d9d685e762bd0969e463afbac6ea57ba5cd0e7a535fee53ea099",
+    "tools/rhino_oracle/fixtures/surface_fit_strips.json": "b164c6e40450eb93754409c23b6bd367e7d6976eefa538ad33313d2fa9fb04d7",
+    "tools/rhino_oracle/observations/surface_fit.json.gz": "7040836715c70c6b33581058af3222cd6a3b12e2e7e38e75beafdeb38121749f",
+    "tools/rhino_oracle/observations/surface_fit_adaptive.json.gz": "6c5edee3d6c3ea0eff2148ee659d7ebfa58212aa03ffc985d6f48ec4896f15a1",
+    "tools/rhino_oracle/observations/surface_fit_capacity.json.gz": "47035987dc19ba74791213c58238fe3f9d0813625c62153e32fce1639d4b3d78",
+    "tools/rhino_oracle/observations/surface_fit_capacity_holdouts.json.gz": "947a42a396b5fae07caced18fc58b4983d61f3974c191ea00ea63b213535b77b",
+    "tools/rhino_oracle/observations/surface_fit_strips.json.gz": "3f256ba7c4af103721f5ee7e70bccd6d82c36e1ea93a941ab339a53e01dc1ed5"
+  }
+}
