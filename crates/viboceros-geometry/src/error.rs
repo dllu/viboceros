@@ -76,6 +76,10 @@ pub enum GeometryError {
         "curve correspondence requires 2..=4097 finite, strictly increasing normalized parameter pairs from [0, 0] to [1, 1]"
     )]
     InvalidCurveCorrespondence,
+    #[error(
+        "surface correspondence requires two maps of 2..=4097 finite, strictly increasing normalized parameter pairs from [0, 0] to [1, 1]"
+    )]
+    InvalidSurfaceCorrespondence,
     #[error("mesh projection is ambiguous: {context}")]
     AmbiguousMeshProjection { context: &'static str },
     #[error("mesh projection exceeds the limit of {maximum} triangles")]

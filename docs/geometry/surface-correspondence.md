@@ -9,6 +9,8 @@ change the parameter correspondence.
 
 [Planar image bounds](surface-planar-images.md) provide a separate geometric
 certificate through exact auxiliary quadrilaterals when UV speeds differ.
+[Supplied U/V mappings](surface-mapped-images.md) certify curved images with
+independent piecewise affine parameter speeds.
 
 The implementation partitions both stored knot grids exactly, restricts their
 homogeneous tensor patches with rational arithmetic, and forms the Bernstein

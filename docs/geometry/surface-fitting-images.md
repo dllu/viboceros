@@ -8,6 +8,9 @@ Hausdorff distance bound on its untrimmed image. UV domains remain unchanged;
 parameter correspondence can change. Zero is strict. The existing
 `try_fit_surface_with_bound` API continues to guarantee normalized UV accuracy.
 
+[Explicit-basis image fitting](surface-fitting-mapped.md) separately admits
+curved fits through supplied U/V correspondences.
+
 The image fitter first tries the ordinary one-patch parameter fit. If its
 complete parameter certificate passes, that result is retained. Otherwise it
 tries a bilinear corner patch represented at the requested U/V degrees, with

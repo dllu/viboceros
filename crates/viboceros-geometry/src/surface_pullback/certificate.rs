@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 
 mod affine;
 mod algebra;
+mod correspondence;
 mod cubic;
 mod curve;
 mod curve_minimum;
@@ -30,6 +31,16 @@ const MAX_WORK: usize = 2_000_000;
 const MAX_BITS: u64 = 8192;
 
 pub(crate) use linear::exact_linear_curve_vertices;
+
+pub(crate) fn validate_surface_correspondence(
+    maps: [&[[Real; 2]]; 2],
+) -> Result<(), GeometryError> {
+    if maps.into_iter().all(correspondence::valid) {
+        Ok(())
+    } else {
+        Err(GeometryError::InvalidSurfaceCorrespondence)
+    }
+}
 
 /// Exact active endpoints under the existing extraction/work/bit budgets.
 /// One-sided values retain the original source, including unclamped domains.

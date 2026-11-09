@@ -1,0 +1,237 @@
+{
+  "baseline_revision": "bd545e278d24d05a187a24ecf570763b53e442ec",
+  "new_rhino_launches": 0,
+  "source_overrides": {
+    "crates/viboceros-geometry/src/error.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/error.rs.gz",
+      "sha256": "b7f54e6de13d35ea0c4f0b8b6ddf505d271ce972d4a6a5d96296d47bd890023c"
+    },
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/lib.rs.gz",
+      "sha256": "5ec5010348c2002e997f0af16b72c57ff68210180f6b5ba3a9e58a0bf0427782"
+    },
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz",
+      "sha256": "9ada2d85ea0b9781dac1e351f8faef068f2452903fc7d22a202dde11a6e61038"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image.rs.gz",
+      "sha256": "2aed828828b33197784d1b32d5870893fd6dbbf7b81d8e8aed3711c3bee1f56f"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/basis.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis.rs.gz",
+      "sha256": "02e87c13cdce96358e91ea9e2dab749de078453f39598a2b6d691a28a73ba4da"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/basis/tests.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis/tests.rs.gz",
+      "sha256": "646155523ec0182e945d00de2a019d5abcc861b6b7309e7bf5ee9d8bf4006721"
+    },
+    "crates/viboceros-geometry/src/surface_pullback.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback.rs.gz",
+      "sha256": "c59cbb99896e0a7fa13c3b04469603c38ce8374d0fee62c2227e3777bafe25df"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate.rs.gz",
+      "sha256": "a26f6954d5d338f6c89332539175f4482f09985222ac252893d3f26ee30361a2"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/correspondence.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/correspondence.rs.gz",
+      "sha256": "e259fbb4748267a92789a5a4e6b8507fe5f08f1a491636d1fe86c569c39ab75c"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/correspondence.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/correspondence.rs.gz",
+      "sha256": "d154d464cc83456639acd131ce97d3439372053f246800e721991472bad44bd7"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs.gz",
+      "sha256": "737eeffcfb036f372afcecd72fe84d623d22e31e9e84d714d7ca1e8aafb013a8"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor.rs.gz",
+      "sha256": "807868a9381c76ecfa7971e45ff43b0ad18c4d9bbff17dd2bb9637e9cbf494ad"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor/tests.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor/tests.rs.gz",
+      "sha256": "9df8cbc090fd1291899beb32af0d11fd0fda2700004df2df76b9066907c78f7a"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs.gz",
+      "sha256": "338bb143a679d78140896454e97b5c4e0565b075fcbe398f2d758addf942a612"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs.gz",
+      "sha256": "f0cab4b4cdf6ed68721c1075afdcb839921480eb6386370df6be8b0c29f6cf06"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped.rs.gz",
+      "sha256": "5923eb1c0ca4db48cc7dd828b8dd9945319c4b48ef92ea70eed5b226d0d5970d"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped/tests.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped/tests.rs.gz",
+      "sha256": "08b8764fbd5db40a8fe9c913ad7f34c652ef60cf954614c10d0192a47e1121d1"
+    },
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tensor.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tensor.rs.gz",
+      "sha256": "da09a86f8e3ecc8e7892f733e8b6a76414fa1769e327548d37d45cef988f5d66"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/lib.rs.gz",
+      "sha256": "c7ef13c72bf3c54a94d4510eb2e3ac1a56eb414604e8000c7c367fc11dff5991"
+    },
+    "crates/viboceros-oracle/src/surface_fit_image_basis.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/surface_fit_image_basis.rs.gz",
+      "sha256": "b84aef89dc81621b1059014fc3f22b8bdfdf454f5db7973f8b8954a6ba327dc6"
+    },
+    "crates/viboceros-oracle/src/surface_mapped_bound.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz",
+      "sha256": "061a0e1ff307eb4c949e6f593f74a216361efc5b42ebf52c1cbb160c13aed6c9"
+    },
+    "crates/viboceros-oracle/tests/surface_mapped_bound.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-oracle/tests/surface_mapped_bound.rs.gz",
+      "sha256": "7fa74b5354fc10590e37ee256700dda94c8bb6fd944cc420acc13dc0fa373c5b"
+    },
+    "crates/viboceros-smlib/src/lib.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/lib.rs.gz",
+      "sha256": "b3ef4d62992b6d375ce4e1a36ff35e7b060ddb5312621addf32bbd2130146a06"
+    },
+    "crates/viboceros-smlib/src/native.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native.rs.gz",
+      "sha256": "6eca7362b120b3ab24a8fe0a2fba23e845182a990abfea993aa55bea6923d401"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement.rs.gz",
+      "sha256": "2a69aba489a437f8d17ca4edcc02cf962ad3e6cdfe73f92b926c1763a242c407"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs.gz",
+      "sha256": "b5fe81b9030b020023c39a1190ba8d6a5bf62b5925cbee78c9106cbeb9d51467"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation/surface_fit.rs": {
+      "snapshot": "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/interpolation/surface_fit.rs.gz",
+      "sha256": "b88d8409f60e05493a32f976c6b8f3ed8c06ebcd9fc3c5c2d640a68537393b4e"
+    },
+    "tools/rhino_oracle/report_surface_mapped.py": {
+      "snapshot": "docs/surface-mapped-proof/sources/tools/rhino_oracle/report_surface_mapped.py.gz",
+      "sha256": "a9bb177a3a56f9cee5138c188836452ddaaeec90cb08e2c2a79ea8cc5af40fba"
+    },
+    "tools/rhino_oracle/test_surface_mapped_record.py": {
+      "snapshot": "docs/surface-mapped-proof/sources/tools/rhino_oracle/test_surface_mapped_record.py.gz",
+      "sha256": "1c26ecbbc4009d584c018bc59b99e291b0492201b3fc0dab9f8832f3f12a7dd7"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_mapped_bound -- --nocapture",
+      "log": "docs/surface-mapped-proof/portable.log.gz",
+      "exit_code": 0
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_mapped_bound -- --nocapture",
+      "log": "docs/surface-mapped-proof/native.log.gz",
+      "exit_code": 0
+    },
+    "certificates": {
+      "command": "cargo test -p viboceros-geometry --lib certificate:: -- --nocapture",
+      "log": "docs/surface-mapped-proof/certificates.log.gz",
+      "exit_code": 0
+    },
+    "image_kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit::image:: -- --nocapture",
+      "log": "docs/surface-mapped-proof/image_kernel.log.gz",
+      "exit_code": 0
+    },
+    "g1": {
+      "command": "cargo test -p viboceros-geometry --lib curve_fit::g1:: -- --nocapture",
+      "log": "docs/surface-mapped-proof/g1.log.gz",
+      "exit_code": 0
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "log": "docs/surface-mapped-proof/app.log.gz",
+      "exit_code": 0
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "log": "docs/surface-mapped-proof/app_native.log.gz",
+      "exit_code": 0
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "log": "docs/surface-mapped-proof/format.log.gz",
+      "exit_code": 0
+    }
+  },
+  "unqualified_runs": [
+    {
+      "log": "docs/surface-mapped-proof/exploration.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Portable exploratory image replay, deliberately terminated after interval acceleration replaced it; partial results only."
+    },
+    {
+      "log": "docs/surface-mapped-proof/preinterval.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Portable exploratory exact-grid replay, deliberately terminated after interval acceleration replaced it; partial results only."
+    },
+    {
+      "log": "docs/surface-mapped-proof/interval-input.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Coefficient test input accidentally shared the exact solver denominator shortcut, giving different polynomial degrees; generator corrected, superseded by 149 passing certificate tests.",
+      "superseded_input": "docs/surface-mapped-proof/superseded-interval-test.rs.gz"
+    }
+  ],
+  "files": {
+    "docs/surface-mapped-proof/native.log.gz": "e2af2581fd073359825406493a8a522204c9d299850abf5824836d9c8051577b",
+    "docs/surface-mapped-proof/interval-input.log.gz": "e2aeeee00524e6d24e467d4491bb94f7178218d5389e426eae019f985b1a6292",
+    "docs/surface-mapped-proof/g1.log.gz": "a895504ef503e5cb6f1e77c4844c0e4c37a97c98f4f497d46e532779c5803144",
+    "docs/surface-mapped-proof/exploration.log.gz": "6969c7c00b15f9c7801266918b75f89dd255c1daae28f695765d0dca80c3cabb",
+    "docs/surface-mapped-proof/superseded-interval-test.rs.gz": "03e077562e3eb46e6599c145d95313de23273a6e82c5fb14802c0aa16906357e",
+    "docs/surface-mapped-proof/app.log.gz": "9e2a0cce80e3f7d2f03059b0d28fad825e7f3c8688a30b3003e27a8c6ac43edb",
+    "docs/surface-mapped-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-mapped-proof/preinterval.log.gz": "a00bee418b20976d3afa78f19d5a2bfaaeca276f11b9e4576f236d4d460acd22",
+    "docs/surface-mapped-proof/image_kernel.log.gz": "c596920c6ec12376f186233a1e484a0741c396c116781cf2ffad6f391c4056d6",
+    "docs/surface-mapped-proof/certificates.log.gz": "810bc09a382ad474ab66d3bddbada37f36c298c69b7f0d2ae55cfc01aceae70b",
+    "docs/surface-mapped-proof/portable.log.gz": "c9ed2770f2961a2fb749b5188f19e4c01549b45d45cee5f112efcf95f6c35517",
+    "docs/surface-mapped-proof/app_native.log.gz": "e1ee394a30ae4e667e925c5c4955359dc457bb3c1b4bb6ff976eccf1e7a70887",
+    "docs/surface-mapped-proof/sources/tools/rhino_oracle/report_surface_mapped.py.gz": "f0c2274b47e0e0db2fc5157c43ea860fa00e71808f1a8c2bf2277647eb14d540",
+    "docs/surface-mapped-proof/sources/tools/rhino_oracle/test_surface_mapped_record.py.gz": "59e0dcb3f1e772785f523e09c99f3c94ed98118b7938585719ba8ddfcf294fe8",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/lib.rs.gz": "18e6b9c513437cf14212aa9d89b07507b26c367db309ca663eea85fd1366ec9a",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz": "fe26adacf916c2cadf044fae9e45232c98f598ef22994935ff53f75c6efae6d8",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/error.rs.gz": "aaeebb072444028ceca2a829e9067b33f8ccb9d70b65d6fbf23b3d91beb7e2c8",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback.rs.gz": "49adcdae79f9b331f259cc5678e6324c875a95779aaaf4ba2b65f058b2ea52c2",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image.rs.gz": "1ef58beb0ad644263a2a4bd1bbebdbc47db7fdf3b9b8bbae085d789e377297a1",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate.rs.gz": "520f988f8117ba7d1ad865f7f14631e6099546521b35c1e859a637cbcd1d3768",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis.rs.gz": "549c7d0df965183d1c9d95f66f781a24adeb59ac57761e44daca5f47175e9845",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis/tests.rs.gz": "105232528e270eaef519b5204776d7299497283f8130203d82b489eb420f86d1",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs.gz": "86a53c1ce720a72cdb939cf55d64180cf1426f0cf299a5694b0571dd47b7a7d0",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/correspondence.rs.gz": "393ad127e4baa3b6ccc0696672da9dc71a85031e79217ac54f74c34f12ce1e30",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs.gz": "3cbc9d8a1709e2789a2c844b7f7a6860a9369babc02e2471ed352e54f95be43d",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs.gz": "ea3d0c4e0ced52f9071f6489d3c5777ed56c86f42224953626f4e55ca0cc28ca",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tensor.rs.gz": "7e4e7d1c9be5cf63d640160bb6f046dd1f3dab0d1aee8a4d13a41a2d2a2b90ae",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped.rs.gz": "ed5b7f58ad1d3eab5dbe4c0fef86f96ad4715f0bed4c3b22c2b1020b0f4ca6f1",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor.rs.gz": "44a4f8b5eaea73d6775dc97302cd43953b1fc038214b7e5656846d18291a8729",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/correspondence.rs.gz": "952a2e574f8ec3227d9e7ef6484b29800e1a5ccfc0783a8a7eaf835c69bbad9c",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/mapped/tests.rs.gz": "c29cc12a3b3a5e4b7a0ce6a633fa6a2ad85179929a73d586f43ec0379a44ece3",
+    "docs/surface-mapped-proof/sources/crates/viboceros-geometry/src/surface_pullback/certificate/interval/tensor/tests.rs.gz": "b6c42aed4073d4bab66dc26e8984c67c45b7ae1998cbe1dfa7d9154d59f9eab1",
+    "docs/surface-mapped-proof/sources/crates/viboceros-oracle/tests/surface_mapped_bound.rs.gz": "69f197829072c69cca99731cb2c28ae528d5f190b6c9a297d9076766a5d469f6",
+    "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/surface_fit_image_basis.rs.gz": "fdc5d36aa46ef2bcf50e49731b54dab83a9893a6ba5ead8c0bfee7b1f7bec04a",
+    "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/lib.rs.gz": "2626b2a03c309f0114ff9d6ad0e8ede88943f45e5c24a7448e2aeac24ec96120",
+    "docs/surface-mapped-proof/sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz": "98e0165f4c0fb8f072b54539fcf9722574960c8975373e5fe25e6b96d5b80f9d",
+    "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/lib.rs.gz": "b2a2d61e718dcbd6d6acfa3d806566b5ce49eb39356d4b08e82e7b8ffb34e4c4",
+    "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native.rs.gz": "ff42df7946c01c3d845caf6578db8467e44731148b8466e3cf9dc898b900399a",
+    "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement.rs.gz": "59e12685756e9557a82351505a001510d18ed5fb72fd14d517d3e67f1dec228b",
+    "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs.gz": "e23559e7b70648a9d9196cf7358bb49798417c9bd2c31449dea5ee00ff4ef3d7",
+    "docs/surface-mapped-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/interpolation/surface_fit.rs.gz": "8c1eb3e975e721afe1a5cf0b4b3aa6bcf95cbb674292466708e29be5051334c0",
+    "tools/rhino_oracle/fixtures/surface_fit_achieved.json": "a52c7ac53759441412fd80f8e726dd9fad848e9a28154d583b52c1f9f6ff1d1e",
+    "tools/rhino_oracle/observations/surface_fit_achieved.json.gz": "79de2f8cf7f7e1e260b2ca998fd7387dbed564f8887c0255aca19152af2f0301",
+    "docs/surface-mapped-proof/record-tests.log.gz": "17fea819700702b86b6fc531520eb339d5d2e01a424525959c0f7612ffd8fa67"
+  },
+  "note": "Only complete final logs qualify. The two stopped exploratory logs are partial observations, not full replays or performance benchmarks. No production source closure is claimed for those logs.",
+  "record_tests": {
+    "command": "python3 -m unittest tools.rhino_oracle.test_surface_mapped_record",
+    "log": "docs/surface-mapped-proof/record-tests.log.gz",
+    "exit_code": 0
+  }
+}

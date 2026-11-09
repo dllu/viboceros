@@ -7,6 +7,7 @@ mod certificate;
 pub use certificate::PreparedSurfaceCurveBounds;
 pub(crate) use certificate::{
     edit_point_bounds, exact_curve_endpoints, exact_linear_curve_vertices,
+    validate_surface_correspondence,
 };
 #[cfg(test)]
 pub(crate) mod certified_tests;

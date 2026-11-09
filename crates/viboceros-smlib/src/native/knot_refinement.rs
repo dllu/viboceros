@@ -9,12 +9,13 @@ mod trim;
 pub use interpolation::{
     average_match_curve_ends, curve_edit_point_interpolation, curve_tweens,
     fit_cubic_curve_at_stations, fit_cubic_curve_with_constraints, fit_curve,
-    fit_surface_image_with_bound, fit_surface_in_basis, fit_surface_with_bound,
-    interpolate_affine_greville, interpolate_curve, interpolate_curve_for_command,
-    interpolate_endpoints, interpolate_open_point_grid, interpolate_point_grid,
-    interpolate_surface_blend, interpolate_surface_in_basis, make_curve_periodic,
-    make_surface_periodic, match_curve_end, morph_interpolation, point_grid_brep, rebuild_curve,
-    rebuild_surface, surface_tweens, surface_tweens_refitted, surface_tweens_sampled,
+    fit_surface_image_in_basis, fit_surface_image_with_bound, fit_surface_in_basis,
+    fit_surface_with_bound, interpolate_affine_greville, interpolate_curve,
+    interpolate_curve_for_command, interpolate_endpoints, interpolate_open_point_grid,
+    interpolate_point_grid, interpolate_surface_blend, interpolate_surface_in_basis,
+    make_curve_periodic, make_surface_periodic, match_curve_end, morph_interpolation,
+    point_grid_brep, rebuild_curve, rebuild_surface, surface_tweens, surface_tweens_refitted,
+    surface_tweens_sampled,
 };
 use interpolation::{
     solve_cubic_system, solve_interpolation, solve_rebuild_interpolation, solve_with_fixed_rows,

@@ -1,8 +1,10 @@
 //! Continuous Bernstein bounds using finite intervals, followed by exact fallback.
 use super::*;
 mod crossing;
+mod tensor;
 use crate::interval::I;
 pub(super) use crossing::Boxes;
+pub(super) use tensor::surfaces;
 #[cfg(test)]
 mod tests;
 

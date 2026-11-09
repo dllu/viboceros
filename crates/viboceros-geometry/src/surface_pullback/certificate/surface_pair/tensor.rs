@@ -1,7 +1,7 @@
 //! Rational tensor products and exact half subdivision of their positive hulls.
 use super::*;
 
-pub(super) fn difference(
+pub(in crate::surface_pullback::certificate) fn difference(
     a: &[H],
     b: &[H],
     degrees: [[usize; 2]; 2],

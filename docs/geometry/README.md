@@ -29,6 +29,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Bounded NURBS knot reduction](knot-reduction.md)
 - [Bounded NURBS surface knot reduction](surface-knot-reduction.md)
 - [Complete NURBS surface correspondence bounds](surface-correspondence.md)
+- [Curved image bounds with supplied UV mappings](surface-mapped-images.md)
 - [UV-independent surface image bounds through planar quadrilaterals](surface-planar-images.md)
 - [Preserving rational NURBS storage inside polycurves and B-rep edges](../nested-rational-3dm.md)
 - [Analytic normals and tessellation provenance](../tessellation-normals.md)

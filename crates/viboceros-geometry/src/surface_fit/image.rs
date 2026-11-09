@@ -1,5 +1,7 @@
 //! Geometric image fitting with a certified corner-quad proposal.
 use super::*;
+mod basis;
+pub use basis::{try_fit_surface_image_in_basis, try_fit_surface_image_in_basis_with_solver};
 
 /// A polynomial fit with a complete symmetric Hausdorff bound on its image.
 /// This type makes no normalized-UV correspondence promise.

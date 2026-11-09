@@ -136,6 +136,32 @@ impl Surface {
         let net = self.patch(span, budget)?;
         restrict(&net, self.degree, &intervals, budget)
     }
+    pub(super) fn normalized_value(
+        &mut self,
+        parameters: &[Rational; 2],
+        budget: &mut Budget,
+    ) -> Result<H, GeometryError> {
+        let uv: Uv = std::array::from_fn(|axis| {
+            if axis == 2 {
+                Rational::one()
+            } else {
+                let start = &self.knots[axis][self.degree[axis]];
+                start + &parameters[axis] * (&self.knots[axis][self.counts[axis]] - start)
+            }
+        });
+        budget.charge(3)?;
+        for value in &uv {
+            budget.check(value)?;
+        }
+        let bounds = uv[..2]
+            .iter()
+            .map(|t| [t.clone(), t.clone()])
+            .collect::<Vec<_>>();
+        let span = self
+            .containing_patch(&bounds, budget)?
+            .ok_or(GeometryError::SurfaceCurveCertificateWorkLimit)?;
+        self.point_value(span, uv, budget)
+    }
     pub(super) fn distance_patches(
         &mut self,
         budget: &mut Budget,
