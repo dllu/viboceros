@@ -13,6 +13,10 @@ numerator and positive denominator of their difference. Convex hulls bound
 Euclidean distance; exact half subdivision tightens loose hulls. No sampled or
 rounded geometry replaces the original controls, knots or weights.
 
+Identical stored tensors with nonzero common-sign weights return an exact zero
+bound directly. This avoids unnecessary patch extraction on large unchanged
+surfaces and archive round-trips. Mixed-sign tensors retain the regular checks.
+
 Supports degrees through 16 and at most 4096 controls per source, independent
 common-sign weight gauges, unclamped domains and discontinuous knots. The
 shared surface-curve certificate limits bound work, rational bit size and

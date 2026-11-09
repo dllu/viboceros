@@ -36,6 +36,21 @@ pub fn fit_surface_in_basis(
     )
 }
 
+/// Automatically choose a polynomial basis under the complete original-surface
+/// displacement gate, using the shared refinement policy and native solving.
+pub fn fit_surface_with_bound(
+    source: &NurbsSurface,
+    options: viboceros_geometry::SurfaceFitOptions,
+    limit: f64,
+) -> Result<Option<viboceros_geometry::BoundedSurfaceFit>, Error> {
+    viboceros_geometry::try_fit_surface_with_bound_with_solver(
+        source,
+        options,
+        limit,
+        &mut solve_cartesian_surface_basis,
+    )
+}
+
 fn solve_cartesian_surface_basis(
     input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
 ) -> Result<Vec<f64>, Error> {

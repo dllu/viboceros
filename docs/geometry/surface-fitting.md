@@ -2,6 +2,8 @@
 
 [Geometry guides](README.md) · [Surface bounds](surface-correspondence.md)
 
+[Automatic bounded fitting](surface-fitting-automatic.md) chooses U/V knots under a complete source bound.
+
 `try_interpolate_surface_in_basis(source, degree, knots)` samples Cartesian
 positions at the target tensor's Greville stations and produces polynomial
 controls. It retains the original UV domains, supports unequal degrees and
@@ -37,7 +39,7 @@ The Rust comparison supplies each of the 23 successful outputs' **captured
 bases** to the independent fitter and checks the complete result at `1e-9`,
 including a 3DM round-trip. This qualifies tensor controls in those bases.
 
-Automatic knot selection and the `FitSrf` command remain unfinished. In
+Rhino's adaptive knot selection and the `FitSrf` command remain unfinished. In
 particular, a native fit may change planar parameterization; an unproved
 normalized parameter bound does not establish geometric disagreement.
 The [validation record](../surface-fit-basis-validation.json) keeps native null

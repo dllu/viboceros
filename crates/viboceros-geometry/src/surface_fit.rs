@@ -1,5 +1,9 @@
 //! Polynomial tensor fitting in an explicit, clamped U/V basis.
 use crate::{GeometryError, NurbsCurve, NurbsInterpolationSystem, NurbsSurface, Point3, Real};
+mod adaptive;
+pub use adaptive::{
+    SurfaceFitOptions, try_fit_surface_with_bound, try_fit_surface_with_bound_with_solver,
+};
 
 /// Largest axis in one fitting job; the complete tensor has at most 4096 controls.
 pub const MAX_SURFACE_FIT_AXIS: usize = 64;
@@ -76,6 +80,32 @@ pub fn try_interpolate_surface_in_basis_with_solver<E: From<GeometryError>>(
     knots: [&[Real]; 2],
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsSurface, E> {
+    interpolate_with_sampler(source, degree, knots, solve, &mut |u, v| {
+        source.evaluate(u, v)
+    })
+    .map_err(|error| match error {
+        SampledFitError::Sample(error) => error.into(),
+        SampledFitError::Backend(error) => error,
+    })
+}
+
+enum SampledFitError<E> {
+    Sample(GeometryError),
+    Backend(E),
+}
+impl<E> From<GeometryError> for SampledFitError<E> {
+    fn from(error: GeometryError) -> Self {
+        Self::Sample(error)
+    }
+}
+
+fn interpolate_with_sampler<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    degree: [usize; 2],
+    knots: [&[Real]; 2],
+    solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    sample: &mut impl FnMut(Real, Real) -> Result<Point3, GeometryError>,
+) -> Result<NurbsSurface, SampledFitError<E>> {
     validate_source(source)?;
     let u = stations(degree[0], knots[0], source.domain_u())?;
     let v = stations(degree[1], knots[1], source.domain_v())?;
@@ -83,7 +113,7 @@ pub fn try_interpolate_surface_in_basis_with_solver<E: From<GeometryError>>(
     let mut samples = Vec::with_capacity(nu * nv);
     for &y in &v {
         for &x in &u {
-            samples.push(source.evaluate(x, y)?.to_array());
+            samples.push(sample(x, y)?.to_array());
         }
     }
     let origin = samples[0];
@@ -100,14 +130,16 @@ pub fn try_interpolate_surface_in_basis_with_solver<E: From<GeometryError>>(
             }
         }
     }
-    let along_u = checked_solve(solve, degree[0], knots[0], &u, nv * 3, &targets)?;
+    let along_u = checked_solve(solve, degree[0], knots[0], &u, nv * 3, &targets)
+        .map_err(SampledFitError::Backend)?;
     targets.clear();
     for j in 0..nv {
         for i in 0..nu {
             targets.extend_from_slice(&along_u[(i * nv + j) * 3..(i * nv + j + 1) * 3]);
         }
     }
-    let along_v = checked_solve(solve, degree[1], knots[1], &v, nu * 3, &targets)?;
+    let along_v = checked_solve(solve, degree[1], knots[1], &v, nu * 3, &targets)
+        .map_err(SampledFitError::Backend)?;
     let controls = (0..nu * nv)
         .map(|i| {
             let corner = (i % nu == 0 || i % nu + 1 == nu) && (i / nu == 0 || i / nu + 1 == nv);

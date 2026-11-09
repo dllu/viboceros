@@ -1,6 +1,72 @@
 use super::*;
 use crate::WeightedPoint3;
 
+#[test]
+fn identical_large_tensors_have_zero_bound_without_exhausting_patch_work() {
+    let n = 64;
+    let p = 3;
+    let knots = [
+        vec![0.; p],
+        (0..=n - p).map(|i| i as Real / (n - p) as Real).collect(),
+        vec![1.; p],
+    ]
+    .concat();
+    for weight in [1., -2.] {
+        let source = NurbsSurface::try_new_rational(
+            p,
+            p,
+            n,
+            n,
+            (0..n)
+                .flat_map(|j| {
+                    (0..n).map(move |i| {
+                        WeightedPoint3::try_new(
+                            point(i as Real, j as Real, (i * j) as Real / 1000.),
+                            weight,
+                        )
+                        .unwrap()
+                    })
+                })
+                .collect(),
+            knots.clone(),
+            knots.clone(),
+        )
+        .unwrap();
+        assert_eq!(
+            source
+                .parameter_surface_deviation_bound(&source.clone(), 0.)
+                .unwrap(),
+            Some(0.)
+        );
+        assert!(matches!(
+            source.parameter_surface_deviation_bound(&source, -1.),
+            Err(GeometryError::InvalidTolerance)
+        ));
+    }
+    let mixed = NurbsSurface::try_new_rational(
+        1,
+        1,
+        2,
+        2,
+        (0..4)
+            .map(|i| {
+                WeightedPoint3::try_new(
+                    point((i % 2) as Real, (i / 2) as Real, 0.),
+                    if i % 2 == 0 { 1. } else { -1. },
+                )
+                .unwrap()
+            })
+            .collect(),
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    assert_eq!(
+        mixed.parameter_surface_deviation_bound(&mixed, 0.).unwrap(),
+        None
+    );
+}
+
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

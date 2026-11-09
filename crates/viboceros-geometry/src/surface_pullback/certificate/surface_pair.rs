@@ -37,6 +37,19 @@ impl NurbsSurface {
         }) {
             return Ok(None);
         }
+        // Equal stored tensors need no rational patch extraction. Positive or
+        // negative common-sign weights prove the denominator never vanishes.
+        // Keep mixed-sign identical tensors on the ordinary unsupported path.
+        if self == other {
+            let sign = self.control_points()[0].weight().signum();
+            if self
+                .control_points()
+                .iter()
+                .all(|p| p.weight() != 0. && p.weight().signum() == sign)
+            {
+                return Ok(Some(0.));
+            }
+        }
         match bound(self, other, limit, &mut Budget(MAX_WORK)) {
             Err(GeometryError::SurfaceCurveCertificateWorkLimit) => Ok(None),
             result => result,

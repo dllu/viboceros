@@ -293,6 +293,7 @@ mod knot_reduction;
 mod non_manifold_selection;
 pub mod planar_regions;
 mod planar_surface;
+mod surface_fit_bounded;
 mod surface_knot_reduction;
 mod volume_selection;
 pub use curve_approximation::{CubicApproximationFixture, CurveCorrespondenceFixture};
@@ -1092,6 +1093,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: surface_knot_reduction::Fixture,
+    },
+    SurfaceFitBounded {
+        id: String,
+        #[serde(flatten)]
+        fixture: surface_fit_bounded::Fixture,
     },
     CurveCubicApproximation {
         id: String,
@@ -3074,6 +3080,7 @@ impl Operation {
             | Self::CurveNative { id, .. }
             | Self::CurveKnotReduction { id, .. }
             | Self::SurfaceKnotReduction { id, .. }
+            | Self::SurfaceFitBounded { id, .. }
             | Self::CurveCubicApproximation { id, .. }
             | Self::CurveDeviationBound { id, .. }
             | Self::CurveArea { id, .. }
@@ -3945,6 +3952,9 @@ fn execute(
         }
         Operation::SurfaceKnotReduction { fixture, .. } => {
             surface_knot_reduction::run(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceFitBounded { fixture, .. } => {
+            surface_fit_bounded::run(fixture, iterations, tolerance)?
         }
         Operation::CurveCubicApproximation { fixture, .. } => {
             curve_approximation::run(fixture, iterations, tolerance)?

@@ -6,6 +6,7 @@ These pages describe geometry algorithms, numeric conventions and their
 validation. Command behavior belongs in the [command reference](../commands/README.md).
 
 - [Polynomial fitting in explicit surface bases](surface-fitting.md)
+- [Automatic surface fitting with complete displacement bounds](surface-fitting-automatic.md)
 - [Surface curve networks and interior junctions](curve-networks.md)
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Experimental two-view reconstruction and native fidelity gaps](../curve-two-views.md)

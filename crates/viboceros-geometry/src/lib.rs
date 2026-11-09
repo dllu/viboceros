@@ -139,8 +139,9 @@ pub use surface_short_path::{SurfaceShortPath, try_short_path_on_surface};
 mod surface_fit;
 mod surface_rebuild;
 pub use surface_fit::{
-    BoundedSurfaceFit, MAX_SURFACE_FIT_AXIS, try_fit_surface_in_basis,
-    try_fit_surface_in_basis_with_solver, try_interpolate_surface_in_basis,
+    BoundedSurfaceFit, MAX_SURFACE_FIT_AXIS, SurfaceFitOptions, try_fit_surface_in_basis,
+    try_fit_surface_in_basis_with_solver, try_fit_surface_with_bound,
+    try_fit_surface_with_bound_with_solver, try_interpolate_surface_in_basis,
     try_interpolate_surface_in_basis_with_solver,
 };
 pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};
