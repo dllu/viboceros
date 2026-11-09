@@ -1,0 +1,16 @@
+[
+  {
+    "family": "match_surface_average_pilot",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_pilot > /tmp/match-average-pilot.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-pilot.status; exit \"$capture_result\""
+    ],
+    "exit_status": 1,
+    "log": "capture-pilot-first-attempt.log.gz",
+    "archive": "observations/failures/match_surface_average_pilot-7c7a597e048d5dc9c2686aaeea3bb12d023bbbd080492e68a306cb072dc9cbbf.json.gz",
+    "error": "rhino probe failed: ValueError at operation average_polynomial_position_00: start: unsupported oracle operation: average_surface_sdk"
+  }
+]

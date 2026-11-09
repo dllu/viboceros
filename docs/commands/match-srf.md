@@ -8,7 +8,7 @@ support position, tangency and curvature matching.
 
 Enter `MatchSrf`, pick the source edge, then pick the target edge near the
 corresponding end. Picking opposite ends reverses correspondence. The preview
-is disposable: Enter accepts one undoable replacement; Esc cancels and retains
+is disposable: Enter accepts one undoable edit; Esc cancels and retains
 pending redo. Source name, layer, color, groups and UUID survive. The accepted
 source moves to the end of document order; Undo restores its original position.
 Whole-object preselection clears before picking.
@@ -23,11 +23,15 @@ Available options:
 Mode=Position|Tangency|Curvature
 MatchByClosestPoints=Yes|No
 RefineMatch=Yes|No
+AverageSurfaces=Yes|No
 IsocurveDirection=Automatic|MatchTarget|Perpendicular|Keep
 ```
 
+`AverageSurfaces=Yes` supports position and tangency with refinement off. It
+previews and accepts both surfaces atomically; see [averaging](../surface-averaging.md).
+
 Defaults are curvature, opposite-end position preservation, automatic isocurve
-direction, closest points off and refinement off. Valid option changes survive
+direction, closest points off, refinement off and averaging off. Valid option changes survive
 cancellation within the command registry. Separate registries start fresh.
 
 In the captured Rhino 8.32 command, `PreserveOtherEnd` accepts `Nothing`,
@@ -43,7 +47,7 @@ MatchSrf source-uuid 1 1,0.25,0.0975 target-uuid 3 1.12,0.25,0.2375 Mode=Tangenc
 
 The original pick locations determine correspondence and survive ambiguity
 choices. Source, topology, attributes, units or tolerance changes invalidate a
-pending preview. Averaging, curve/trimmed targets, closed boundaries, `OnSurface`,
+pending preview. Averaged curvature/refinement, curve/trimmed targets, closed boundaries, `OnSurface`,
 `MultipleMatches` and custom matching tolerances remain pending. Refinement
 uses document tolerances and can return outside the requested continuity bounds.
 See the [native tolerance investigation](../surface-match-tolerances.md).

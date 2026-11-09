@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "match_surface_command",
+      "id": "match_average_position",
+      "case": "match_average_position"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_tangency",
+      "case": "match_average_tangency"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_opposite_position",
+      "case": "match_average_opposite_position"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_option_menus",
+      "case": "match_average_option_menus"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_cancel",
+      "case": "match_average_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_after_cancel",
+      "case": "match_average_after_cancel"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_switch_single",
+      "case": "match_average_switch_single"
+    },
+    {
+      "op": "match_surface_command",
+      "id": "match_average_curvature_pending",
+      "case": "match_average_curvature_pending"
+    }
+  ]
+}

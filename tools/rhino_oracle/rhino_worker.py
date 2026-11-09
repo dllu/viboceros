@@ -6372,6 +6372,9 @@ def _execute(operation, iterations, tolerance):
     if operation.get('op') == 'match_surface_command':
         from match_surface_command_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if operation.get('op') == 'average_surface_sdk':
+        from match_surface_average_sdk import run
+        return run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'match_surface_sdk':
         from match_surface_sdk import run
         return run(operation, globals(), iterations, tolerance)

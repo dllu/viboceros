@@ -1,0 +1,50 @@
+[
+  {
+    "family": "match_surface_average_pilot",
+    "kind": "sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_pilot > /tmp/match-average-pilot.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-pilot.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-pilot.log.gz",
+    "archive": "observations/match_surface_average_pilot.json.gz",
+    "request_sha256": "15369b6fe13a7c2a87a00ced6b1cf6f3b7471c01df93071c0394f788b7df8c1d",
+    "observation_sha256": "c46cba22a4a60e02a74cff617f851c35cade28c391a5dbd7b52466e736011e7b"
+  },
+  {
+    "family": "match_surface_average_holdouts",
+    "kind": "sdk",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_holdouts > /tmp/match-average-holdouts.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-holdouts.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-holdouts.log.gz",
+    "archive": "observations/match_surface_average_holdouts.json.gz",
+    "request_sha256": "c290128784ff46ae94e43b745fa48041cb1556f81499f64011a5146f968aa3eb",
+    "observation_sha256": "db883be0ce026abf32049df22b3444bbd7190498281e7efde9e58b70c1c5e733"
+  },
+  {
+    "family": "match_surface_average_command",
+    "kind": "command",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_command > /tmp/match-average-command.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-command.status; exit \"$capture_result\""
+    ],
+    "exit_status": 0,
+    "log": "capture-command.log.gz",
+    "archive": "observations/match_surface_average_command.json.gz",
+    "request_sha256": "ce06a1da809e27c4a411d8f8500063f24f22b8d0779f304ad3e31ffb0bbfed2a",
+    "observation_sha256": "25682937225ca813ef44465b7ab281b6933546cfc7d58022f55fcad59ad5069d"
+  }
+]

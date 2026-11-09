@@ -2,7 +2,7 @@ use super::boolean_intersection::enter;
 use super::merge_surfaces::{captured, workflow};
 use super::*;
 
-fn frame(
+pub(super) fn frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,
@@ -42,7 +42,7 @@ fn frame(
         .drop_without_applying_deltas();
     (output, rect)
 }
-fn click(
+pub(super) fn click(
     app: &mut VibocerosApp,
     context: &egui::Context,
     rect: egui::Rect,

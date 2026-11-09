@@ -30,7 +30,7 @@ impl Prompt {
         } else if self.menu.is_some() {
             "Choose an option value; Esc cancels"
         } else {
-            "Set Mode, PreserveOtherEnd, MatchByClosestPoints, RefineMatch or IsocurveDirection; Enter accepts, Esc cancels"
+            "Set matching options or AverageSurfaces; Enter accepts, Esc cancels"
         }
     }
     pub(super) fn highlights(&self) -> Vec<EdgePick> {
@@ -62,6 +62,7 @@ impl Prompt {
                 "PreserveOtherEnd",
                 "MatchByClosestPoints",
                 "RefineMatch",
+                "AverageSurfaces",
                 "IsocurveDirection",
                 "Accept",
             ],
@@ -261,6 +262,7 @@ impl VibocerosApp {
                 "PreserveOtherEnd",
                 "MatchByClosestPoints",
                 "RefineMatch",
+                "AverageSurfaces",
                 "IsocurveDirection",
             ]
             .into_iter()

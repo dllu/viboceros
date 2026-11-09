@@ -1,10 +1,12 @@
 //! MatchSrf: captured complete boundary picks, readonly fitting and one acceptance.
 use super::*;
-use viboceros_document::{Object, ReplacementHistory};
+use viboceros_document::Object;
 use viboceros_geometry::{NurbsSurface, SurfaceExtensionEdge};
 mod options;
+mod prepared;
 pub use options::{Options, parse};
-pub const USAGE: &str = "MatchSrf object-id edge-index pick-x,y,z object-id edge-index pick-x,y,z [Mode=Position|Tangency|Curvature] [PreserveOtherEnd=Position] [MatchByClosestPoints=Yes|No] [RefineMatch=Yes|No] [IsocurveDirection=Automatic|Keep|MatchTarget|Perpendicular]";
+pub use prepared::{Prepared, prepare};
+pub const USAGE: &str = "MatchSrf object-id edge-index pick-x,y,z object-id edge-index pick-x,y,z [Mode=Position|Tangency|Curvature] [PreserveOtherEnd=Position] [MatchByClosestPoints=Yes|No] [RefineMatch=Yes|No] [AverageSurfaces=Yes|No] [IsocurveDirection=Automatic|Keep|MatchTarget|Perpendicular]";
 
 #[derive(Clone, Debug)]
 pub struct Edge {
@@ -129,74 +131,6 @@ impl Edge {
             < self
                 .point
                 .distance_to(s.evaluate(ends[0][0], ends[0][1])?)?)
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct Prepared {
-    edges: [Edge; 2],
-    result: Brep,
-}
-pub fn prepare(
-    doc: &Document,
-    edges: [Edge; 2],
-    options: Options,
-) -> Result<Prepared, CommandError> {
-    if edges[0].object() == edges[1].object() || edges.iter().any(|e| !e.current(doc)) {
-        return Err(CommandError::Usage(
-            "Pick current edges on two different surfaces",
-        ));
-    }
-    let mut policy = options.policy;
-    policy.reverse_match = edges[0].picked_high()?
-        ^ edges[1].picked_high()?
-        ^ matches!(
-            edges[1].side,
-            SurfaceExtensionEdge::West | SurfaceExtensionEdge::North
-        );
-    #[cfg(feature = "native-smlib")]
-    let operation = viboceros_smlib::match_surface_supports;
-    #[cfg(not(feature = "native-smlib"))]
-    let operation = viboceros_geometry::try_match_nurbs_surfaces;
-    let surface = operation(
-        edges[0].surface(),
-        edges[0].side,
-        edges[1].surface(),
-        edges[1].side,
-        policy,
-        doc.tolerance(),
-    )?;
-    let result = Brep::try_rectangular_surface_face_with_surface_edge_domains(
-        surface.clone(),
-        surface.domain_u(),
-        surface.domain_v(),
-        edges[0].reversed,
-        doc.tolerance(),
-    )?;
-    Ok(Prepared { edges, result })
-}
-impl Prepared {
-    pub fn geometry(&self) -> &Brep {
-        &self.result
-    }
-    pub fn current(&self, doc: &Document) -> bool {
-        self.edges.iter().all(|e| e.current(doc))
-    }
-    pub fn commit(&self, doc: &mut Document) -> Result<String, CommandError> {
-        run_command_transaction(doc, "MatchSrf", |d| self.apply(d))
-    }
-    fn apply(&self, doc: &mut Document) -> Result<String, CommandError> {
-        if !self.current(doc) {
-            return Err(CommandError::Usage("MatchSrf prepared inputs changed"));
-        }
-        doc.clear_selection();
-        let id = self.edges[0].object();
-        doc.replace_object_geometries_with_history(
-            [(id, Geometry::Brep(self.result.clone()))],
-            ReplacementHistory::EveryReplacement,
-        )?;
-        doc.move_objects_to_end_in_order([id])?;
-        Ok("Matched surface edge".into())
     }
 }
 

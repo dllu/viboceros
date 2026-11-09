@@ -6,6 +6,7 @@ use viboceros_geometry::{
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub policy: SurfaceMatchOptions,
+    pub average: bool,
 }
 impl Options {
     pub fn arguments(self) -> String {
@@ -17,10 +18,11 @@ impl Options {
             SurfaceMatchIso::Preserve => "Keep",
         };
         format!(
-            "Mode={:?} PreserveOtherEnd=Position MatchByClosestPoints={} RefineMatch={} IsocurveDirection={iso}",
+            "Mode={:?} PreserveOtherEnd=Position MatchByClosestPoints={} RefineMatch={} AverageSurfaces={} IsocurveDirection={iso}",
             self.policy.continuity,
             yes(self.policy.closest_points),
-            yes(self.policy.refine)
+            yes(self.policy.refine),
+            yes(self.average)
         )
     }
 }
@@ -32,6 +34,7 @@ impl Default for Options {
                 other_end: CurveMatchPreserveEnd::Position,
                 ..Default::default()
             },
+            average: false,
         }
     }
 }
@@ -74,11 +77,8 @@ pub fn parse(args: &[&str], mut options: Options) -> Result<Options, CommandErro
             "refinematch" => {
                 options.policy.refine = parse_yes_no(&value).ok_or(CommandError::Usage(USAGE))?
             }
-            "averagesurfaces" if parse_yes_no(&value) == Some(false) => {}
             "averagesurfaces" => {
-                return Err(CommandError::Usage(
-                    "MatchSrf AverageSurfaces=Yes is not implemented yet",
-                ));
+                options.average = parse_yes_no(&value).ok_or(CommandError::Usage(USAGE))?;
             }
             "isocurvedirection" => {
                 options.policy.iso = match value.as_str() {

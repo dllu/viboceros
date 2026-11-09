@@ -172,6 +172,7 @@ mod loft_splitting_support;
 mod maelstrom;
 mod mark_foci;
 mod match_surface;
+mod match_surface_average;
 mod match_surface_menus;
 mod merge_edge;
 mod merge_surfaces;

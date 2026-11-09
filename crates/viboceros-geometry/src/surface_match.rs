@@ -3,7 +3,12 @@ use crate::{
     CurveMatchPreserveEnd, GeometryError, NurbsInterpolationSystem, NurbsSurface, Real,
     SurfaceBlendContinuity, SurfaceExtensionEdge, Tolerance,
 };
+mod average;
 mod fit;
+pub use average::{
+    SurfaceAverageOptions, try_average_match_nurbs_surfaces,
+    try_average_match_nurbs_surfaces_with_operations,
+};
 mod jets;
 mod orientation;
 mod prepare;
@@ -92,51 +97,11 @@ pub fn try_match_nurbs_surfaces_with_operations<E: From<GeometryError>>(
     tolerance: Tolerance,
     operations: &mut SurfaceMatchOperations<'_, E>,
 ) -> Result<NurbsSurface, E> {
-    for surface in [source, target] {
-        if surface.control_points().len() > 1_000_000
-            || surface.control_points().iter().any(|c| c.weight() <= 0.)
-        {
-            return Err(error("requires bounded positive-weight supports").into());
-        }
-    }
-    let chart = Chart::new(side, true);
-    let mut source = chart.orient(&(operations.clamp)(source)?)?;
-    let target = Chart::new(target_side, false).orient(&(operations.clamp)(target)?)?;
-    if source
-        .control_point_count_v()
-        .checked_pow(3)
-        .is_none_or(|n| n > 64_000_000)
-    {
-        return Err(error("boundary interpolation work budget exceeded").into());
-    }
-    if source.is_closed_v()? || target.is_closed_v()? {
-        return Err(error("closed matching boundaries require seam correspondence").into());
-    }
-    let matched = options.continuity.order() + 1;
-    let preserved = match options.other_end {
-        CurveMatchPreserveEnd::None => 0,
-        CurveMatchPreserveEnd::Position => 1,
-        CurveMatchPreserveEnd::Tangency => 2,
-        CurveMatchPreserveEnd::Curvature => 3,
-    };
-    let desired = source.degree_u().max(matched - 1).max(
-        if source.control_point_count_u() < matched + preserved {
-            matched + preserved - 1
-        } else {
-            source.degree_u()
-        },
-    );
-    if desired != source.degree_u() {
-        source = prepare::raise(&source, desired, operations)?;
-    }
-    if source.control_point_count_u() < matched + preserved {
-        return Err(
-            error("insufficient independent controls for preserved opposite boundary").into(),
-        );
-    }
-    // Source sites always use its natural transverse order. The target edge
-    // supplies the boundary traversal; ReverseMatchDirection toggles it.
-    let reverse = !orientation::edge_forward(target_side) ^ options.reverse_match;
+    let prepared = prepare::operands(source, side, target, target_side, options, operations)?;
+    let source = prepared.source;
+    let target = prepared.target;
+    let reverse = prepared.reverse;
+    let chart = prepared.chart;
     let result = refine::run(&source, &target, reverse, options, tolerance, operations)?;
     Ok(chart.restore(&result)?)
 }

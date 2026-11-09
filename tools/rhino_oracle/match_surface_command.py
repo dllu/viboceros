@@ -144,3 +144,15 @@ TOLERANCE_FIRST_CUSTOM={
     'match_tol_first_custom_recall':rational(picks()+RESET+['RefineMatch=Yes','Tolerances','Enter','Enter'],absolute_tolerance=.0001),
 }
 CASES.update(copy.deepcopy(TOLERANCE_DEFAULTS));CASES.update(copy.deepcopy(TOLERANCE_FIRST_CUSTOM))
+
+AVERAGE_WORKFLOWS={
+    'match_average_position':case(picks()+RESET+['Mode=Position','AverageSurfaces=Yes','Enter'],preselected=True),
+    'match_average_tangency':case(picks()+RESET+['Mode=Tangency','AverageSurfaces=Yes','Enter'],common_group=True),
+    'match_average_opposite_position':case(picks(.25,.75)+RESET+['Mode=Position','AverageSurfaces=Yes','Enter']),
+    'match_average_option_menus':case(picks(.25,.75)+RESET+['Mode','Tangency','AverageSurfaces','Yes','IsocurveDirection','Keep','Enter']),
+    'match_average_cancel':case(picks()+RESET+['Mode=Position','AverageSurfaces=Yes','Cancel']),
+    'match_average_after_cancel':case(picks()+['Mode=Tangency','Enter']),
+    'match_average_switch_single':case(picks()+['Mode=Position','AverageSurfaces=No','Enter']),
+    'match_average_curvature_pending':case(picks()+RESET+['AverageSurfaces=Yes','Enter']),
+}
+CASES.update(copy.deepcopy(AVERAGE_WORKFLOWS))

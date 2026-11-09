@@ -123,7 +123,7 @@ fn stale_match_inputs_and_invalid_options_do_not_consume_pending_redo() {
     assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!((doc.can_undo(), doc.can_redo()), history);
     for invalid in [
-        "AverageSurfaces=Yes",
+        "AverageSurfaces=Maybe",
         "Mode=G3",
         "RefineMatch=Maybe",
         "Continuity=Position",

@@ -145,8 +145,9 @@ pub use surface_rebuild::{
 mod endpoint_interpolation;
 mod surface_match;
 pub use surface_match::{
-    SurfaceMatchIso, SurfaceMatchOperations, SurfaceMatchOptions, try_match_nurbs_surfaces,
-    try_match_nurbs_surfaces_with_operations,
+    SurfaceAverageOptions, SurfaceMatchIso, SurfaceMatchOperations, SurfaceMatchOptions,
+    try_average_match_nurbs_surfaces, try_average_match_nurbs_surfaces_with_operations,
+    try_match_nurbs_surfaces, try_match_nurbs_surfaces_with_operations,
 };
 mod surface_blend;
 pub use endpoint_interpolation::{EndpointInterpolation, try_interpolate_endpoints};

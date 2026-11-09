@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_position_00",
+      "case": "average_polynomial_position_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_position_01",
+      "case": "average_polynomial_position_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_position_10",
+      "case": "average_polynomial_position_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_position_11",
+      "case": "average_polynomial_position_11"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_tangency_00",
+      "case": "average_polynomial_tangency_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_tangency_01",
+      "case": "average_polynomial_tangency_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_tangency_10",
+      "case": "average_polynomial_tangency_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_tangency_11",
+      "case": "average_polynomial_tangency_11"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_curvature_00",
+      "case": "average_polynomial_curvature_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_curvature_01",
+      "case": "average_polynomial_curvature_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_curvature_10",
+      "case": "average_polynomial_curvature_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_polynomial_curvature_11",
+      "case": "average_polynomial_curvature_11"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_position_00",
+      "case": "average_rational_position_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_position_01",
+      "case": "average_rational_position_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_position_10",
+      "case": "average_rational_position_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_position_11",
+      "case": "average_rational_position_11"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_tangency_00",
+      "case": "average_rational_tangency_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_tangency_01",
+      "case": "average_rational_tangency_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_tangency_10",
+      "case": "average_rational_tangency_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_tangency_11",
+      "case": "average_rational_tangency_11"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_curvature_00",
+      "case": "average_rational_curvature_00"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_curvature_01",
+      "case": "average_rational_curvature_01"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_curvature_10",
+      "case": "average_rational_curvature_10"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_rational_curvature_11",
+      "case": "average_rational_curvature_11"
+    }
+  ]
+}

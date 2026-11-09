@@ -14,9 +14,14 @@ def validate(op):
 
 def run(op,host,iterations,tolerance):
     validate(op)
+    return run_recipe(CASES[op['case']],host,iterations,tolerance)
+
+
+def run_recipe(recipe,host,iterations,tolerance):
+    """Execute one authored recipe without sharing or mutating its inputs."""
     if iterations!=1:raise ValueError('one surface matching observation required')
     import brep_join_probe
-    G=host['Rhino'].Geometry;recipe=copy.deepcopy(CASES[op['case']])
+    G=host['Rhino'].Geometry;recipe=copy.deepcopy(recipe)
     sources=[];breps=[];matched=None;changed_target=None
     def record(b):return brep_join_probe.geometry_record(b,tolerance,host)
     def edge(b,side):
