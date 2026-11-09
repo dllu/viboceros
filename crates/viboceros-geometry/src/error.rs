@@ -211,6 +211,10 @@ pub enum GeometryError {
     },
     #[error("surface grid exceeds the face limit {maximum}")]
     SurfaceGridResourceLimit { maximum: usize },
+    #[error("ruled surface exceeds the boundary control limit {maximum}")]
+    RuledSurfaceResourceLimit { maximum: usize },
+    #[error("both ribbon sides could not be sewn into one shell")]
+    RibbonJoinFailed,
     #[error("curve parameter intervals must have positive finite length")]
     InvalidCurveParameterInterval,
     #[error("polyline parameters must be finite, strictly increasing, and match its vertices")]

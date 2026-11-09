@@ -1,0 +1,43 @@
+{
+  "baseline_revision": "919055b1a755d5c26b7de3c7a86f1b8f6a8957bd",
+  "full_ribbon_command": false,
+  "ribbon_registered": false,
+  "non_loose_corner_policy_implemented": false,
+  "between_station_distance_certified": false,
+  "loop_winding_compared": false,
+  "output_domains_compared": false,
+  "new_headless_rhino_launches": 1,
+  "backends": {
+    "portable": {
+      "complete_image_matches": 32,
+      "incidence_matches": 31,
+      "face_reversal_matches": 30,
+      "incidence_gap_ids": [
+        "ribbon-native-polycurve-both"
+      ],
+      "face_reversal_difference_ids": [
+        "ribbon-loose-circle-both"
+      ],
+      "maximum_image_bound": 4.572178254219409e-15,
+      "maximum_incidence_geometry_bound": 3.565874990556926e-15,
+      "maximum_archive_support_bound": 4.440892098500628e-16
+    },
+    "native": {
+      "complete_image_matches": 32,
+      "incidence_matches": 31,
+      "face_reversal_matches": 30,
+      "incidence_gap_ids": [
+        "ribbon-native-polycurve-both"
+      ],
+      "face_reversal_difference_ids": [
+        "ribbon-loose-circle-both"
+      ],
+      "maximum_image_bound": 4.627113355620765e-15,
+      "maximum_incidence_geometry_bound": 3.565874990556926e-15,
+      "maximum_archive_support_bound": 4.440892098500628e-16
+    }
+  },
+  "closed_boundary_vertex_regression": true,
+  "existing_loose_wall_regressions": true,
+  "receipts": "ribbon-ruled-proof/receipts.json"
+}

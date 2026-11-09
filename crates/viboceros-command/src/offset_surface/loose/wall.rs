@@ -92,55 +92,5 @@ pub(super) fn assemble(a: &Brep, b: &Brep, tolerance: Tolerance) -> Result<Brep,
 }
 
 fn ruled(a: &NurbsCurve, b: &NurbsCurve) -> Result<NurbsSurface, CommandError> {
-    let degree = a.degree().max(b.degree());
-    let mut curves = [a.clone(), b.clone()];
-    for c in &mut curves {
-        *c = c
-            .clamped_to_active_domain()?
-            .try_change_degree(degree, false)?
-            .try_reparameterized(0. ..=1.)?;
-    }
-    let mut knots = curves
-        .iter()
-        .flat_map(|c| {
-            c.knots()
-                .chunk_by(|a, b| a == b)
-                .filter(|g| g[0] > 0. && g[0] < 1.)
-                .map(|g| (g[0], g.len()))
-        })
-        .collect::<Vec<_>>();
-    knots.sort_by(|a, b| a.0.total_cmp(&b.0));
-    let mut union = Vec::<(Real, usize)>::new();
-    for (k, m) in knots {
-        if let Some(last) = union.last_mut()
-            && last.0 == k
-        {
-            last.1 = last.1.max(m);
-        } else {
-            union.push((k, m));
-        }
-    }
-    if degree + 1 + union.iter().map(|x| x.1).sum::<usize>() > 4096 {
-        return Err(invalid("ruled boundary control count exceeds 4096"));
-    }
-    for c in &mut curves {
-        for &(k, m) in &union {
-            *c = c.try_insert_knot(k, m)?;
-        }
-    }
-    if curves[0].knots() != curves[1].knots() {
-        return Err(invalid("ruled boundaries have incompatible knots"));
-    }
-    Ok(NurbsSurface::try_new_rational(
-        degree,
-        1,
-        curves[0].control_points().len(),
-        2,
-        curves
-            .iter()
-            .flat_map(|c| c.control_points().iter().copied())
-            .collect(),
-        curves[0].knots().to_vec(),
-        vec![0., 0., 1., 1.],
-    )?)
+    Ok(NurbsSurface::try_ruled_from_curves(a, b)?.try_swapped_uv()?)
 }

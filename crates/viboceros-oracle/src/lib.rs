@@ -294,6 +294,7 @@ mod knot_reduction;
 mod non_manifold_selection;
 pub mod planar_regions;
 mod planar_surface;
+mod ribbon_loose;
 mod surface_deviation_samples;
 mod surface_fit_bounded;
 mod surface_fit_budget;
@@ -1166,6 +1167,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: curve_loose_offset::Fixture,
+    },
+    LooseRibbonGeometry {
+        id: String,
+        #[serde(flatten)]
+        fixture: ribbon_loose::Fixture,
     },
     CurveFilletCornersGeometry {
         id: String,
@@ -3135,6 +3141,7 @@ impl Operation {
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
             | Self::CurveLooseOffsetGeometry { id, .. }
+            | Self::LooseRibbonGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
             | Self::CurveFilletPairGeometry { id, .. }
             | Self::CurveFilletPairParts { id, .. }
@@ -4042,6 +4049,9 @@ fn execute(
         }
         Operation::CurveLooseOffsetGeometry { fixture, .. } => {
             curve_loose_offset::run(fixture, iterations, tolerance)?
+        }
+        Operation::LooseRibbonGeometry { fixture, .. } => {
+            ribbon_loose::run(fixture, iterations, tolerance)?
         }
         Operation::CurveFilletCornersGeometry {
             vertices,

@@ -114,6 +114,12 @@ impl Brep {
                 sides.push(indices);
             }
         }
+        weld_boundary_corners(
+            surface,
+            &mut parent,
+            [vertex(0, 0), vertex(nu, 0), vertex(nu, nv), vertex(0, nv)],
+            tolerance,
+        )?;
         let mut vertices = Vec::new();
         let mut vertex_map = BTreeMap::new();
         let mut indices = Vec::with_capacity(parent.len());
@@ -210,6 +216,33 @@ fn parameters(domain: RangeInclusive<Real>, cuts: &[Real]) -> Result<Vec<Real>, 
     result.push(*domain.end());
     Ok(result)
 }
+/// A boundary curve can close even if its opposite boundary stays open.
+/// Match the natural-face corner policy; never weld unrelated diagonal tips.
+pub(super) fn weld_boundary_corners(
+    s: &NurbsSurface,
+    parent: &mut [usize],
+    corners: [usize; 4],
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let u = s.domain_u();
+    let v = s.domain_v();
+    let points = [
+        s.evaluate(*u.start(), *v.start())?,
+        s.evaluate(*u.end(), *v.start())?,
+        s.evaluate(*u.end(), *v.end())?,
+        s.evaluate(*u.start(), *v.end())?,
+    ];
+    for i in 0..4 {
+        let j = (i + 1) % 4;
+        if crate::curve_points_coincident(points[i], points[j])
+            && points[i].distance_to(points[j])? <= tolerance.absolute()
+        {
+            unite(parent, corners[i], corners[j]);
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn root(parent: &[usize], mut i: usize) -> usize {
     while parent[i] != i {
         i = parent[i];

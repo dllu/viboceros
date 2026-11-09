@@ -34,6 +34,20 @@ pub fn prepare_loft_sections(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, E
     )
 }
 
+/// Ordered projective ruled interpolation, with shared exact knot matching.
+pub fn ruled_surface(
+    a: &NurbsCurve,
+    b: &NurbsCurve,
+) -> Result<viboceros_geometry::NurbsSurface, Error> {
+    viboceros_geometry::NurbsSurface::try_ruled_from_curves_with_operations(
+        a,
+        b,
+        &mut clamp_curve,
+        &mut |c, p| change_curve_degree(c, p, false),
+        &mut insert_curve_knot,
+    )
+}
+
 /// Build the existing one-rail frame/blending model with native section
 /// clamping, elevation and knot matching under the shared common weight gauge.
 pub fn sweep_model(

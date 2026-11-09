@@ -46,7 +46,7 @@ pub use native::{
     rebuild_curve, rebuild_surface, rebuild_sweep_sections, reduce_curve_knots_in_range,
     reduce_surface_knots_in_range, remove_curve_knot, remove_curve_knot_at_value,
     remove_curve_multiple_knots, remove_periodic_surface_knot, remove_surface_knot,
-    remove_surface_multiple_knots, separate_curve_extensions_to_boundaries,
+    remove_surface_multiple_knots, ruled_surface, separate_curve_extensions_to_boundaries,
     separate_curve_natural_extensions, separate_curve_smooth_extensions, split_curve,
     split_curve_at_parameters, split_surface, subcurve, subcurve_at_arc_length,
     surface_brep_intersection_events, surface_face_intersection_events,

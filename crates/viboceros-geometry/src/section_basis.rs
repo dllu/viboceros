@@ -9,6 +9,8 @@ mod tests;
 pub enum WeightScale {
     PerSection,
     Common,
+    /// Keep each supplied projective gauge for ruled interpolation.
+    Preserve,
 }
 
 pub(crate) fn prepare(
@@ -63,6 +65,7 @@ pub fn prepare_with_operations<E: From<GeometryError>>(
             return Err(limit.into());
         }
         let scale = match weight_scale {
+            WeightScale::Preserve => 1.,
             WeightScale::Common => common_scale,
             WeightScale::PerSection => curve
                 .control_points()

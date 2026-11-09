@@ -1,0 +1,228 @@
+{
+  "baseline_revision": "919055b1a755d5c26b7de3c7a86f1b8f6a8957bd",
+  "source_overrides": {
+    "crates/viboceros-command/src/offset_surface/loose/wall.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-command/src/offset_surface/loose/wall.rs.gz",
+      "sha256": "6e35563f9814cc249a1d20b01d31bc81c257b6d765604c50542049dfc085fe9f"
+    },
+    "crates/viboceros-geometry/src/brep/surface_grid.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/brep/surface_grid.rs.gz",
+      "sha256": "1b7390ff37b25a498b288fc028f0ecf334df36649909d5c385eac262a7e1aa43"
+    },
+    "crates/viboceros-geometry/src/brep/surface_partition/topology.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/brep/surface_partition/topology.rs.gz",
+      "sha256": "23f64cc1fec4ffb272fdf0aa8fd0b148ad3f8ccb66a450c27b45d315b844fe66"
+    },
+    "crates/viboceros-geometry/src/error.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/error.rs.gz",
+      "sha256": "39529a4e432f93f8e09f9354ea026105f156ce7a064c39291679a3d013d25429"
+    },
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/lib.rs.gz",
+      "sha256": "1f3ece13f4bd5a454ff229ddcd3632bd111165a77493bd221ba3d614e439e590"
+    },
+    "crates/viboceros-geometry/src/ribbon.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz",
+      "sha256": "f0d2077534e840df267276d2996d14c524c535ce26e124c2aea230e609f444ec"
+    },
+    "crates/viboceros-geometry/src/ruled_surface.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ruled_surface.rs.gz",
+      "sha256": "992b27c78cbaff8235b6ee04bda2332209b843f1e3ed52e6ee2351065ce0cc31"
+    },
+    "crates/viboceros-geometry/src/ruled_surface/tests.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ruled_surface/tests.rs.gz",
+      "sha256": "ee476b21863a27283ce38838704b235eed78b586b6cb2dd4cfaad3d38c7f0a41"
+    },
+    "crates/viboceros-geometry/src/section_basis.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/section_basis.rs.gz",
+      "sha256": "d73128503efd5c8ab0858aac0088deb3a1e9a2d9206b04d2affabe96aac92397"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/src/lib.rs.gz",
+      "sha256": "37ed589ac8886ad79e03df9d51495e4e62d4255350f5911b60a9e3c2c7bfb849"
+    },
+    "crates/viboceros-oracle/src/ribbon_loose.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/src/ribbon_loose.rs.gz",
+      "sha256": "b4a54bf01cd8d968c0247ab6b2d637f8be3d2375b9c0c255ed7aced3f9db763d"
+    },
+    "crates/viboceros-oracle/tests/ribbon_ruled_native.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/tests/ribbon_ruled_native.rs.gz",
+      "sha256": "9effacc2d0a56de054f2769977aa9ce62cf9e7b2de1c42cffc03bd68b4de83e3"
+    },
+    "crates/viboceros-oracle/tests/ribbon_ruled_native/support.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/tests/ribbon_ruled_native/support.rs.gz",
+      "sha256": "687fb59797b53df18e0f425a4513f67c2fed31785742f8ae97ac92ddde2493c1"
+    },
+    "crates/viboceros-smlib/src/lib.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/lib.rs.gz",
+      "sha256": "bbdaea6f3bae0ca421efe1175de46fe15d55ba58ed079a37b29b586bc76a6ec2"
+    },
+    "crates/viboceros-smlib/src/native.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native.rs.gz",
+      "sha256": "38e383c8e7238a9c00ffd29ad49e6ac43c5f179e8824c5715d65cfe6b29c7c9e"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native/knot_refinement.rs.gz",
+      "sha256": "2250a74504cbdd731c487da0add76966a64bf3d2173c02276d2bf2a0b2a63180"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement/loft.rs": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/loft.rs.gz",
+      "sha256": "389cac618f3e3877811214a248ddcd4916f03dd9288db07cec013971633703db"
+    },
+    "tools/rhino_oracle/generate_ribbon_ruled.py": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/generate_ribbon_ruled.py.gz",
+      "sha256": "8d02a862af618a55df5c338c1810dcffbfbc14855458aef849c36ecebe73307a"
+    },
+    "tools/rhino_oracle/report_curve_loose_offset.py": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz",
+      "sha256": "3281b1727ad4a15dc03b0e13166d03c0e8f5a5873fad109db8e625d342774153"
+    },
+    "tools/rhino_oracle/report_ribbon_ruled.py": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/report_ribbon_ruled.py.gz",
+      "sha256": "fdd4e4bc707cba12e15a60381f825e23b83f34330a2e7a10db05eeae9052fc2b"
+    },
+    "tools/rhino_oracle/run_headless.sh": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/run_headless.sh.gz",
+      "sha256": "2c595655f5e0c2ccc44158905bfbcbfac94876317afa9912fb5753301a6323a5"
+    },
+    "tools/rhino_oracle/test_ribbon_ruled_record.py": {
+      "snapshot": "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/test_ribbon_ruled_record.py.gz",
+      "sha256": "cbe04f716052e529f1d425bcfd8024a0d73b1c40dc8b57bdbb59efdf67481e07"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test ribbon_ruled_native -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/portable.log.gz",
+      "exit_code": 0
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test ribbon_ruled_native -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/native.log.gz",
+      "exit_code": 0
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib ruled_surface:: -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/kernel.log.gz",
+      "exit_code": 0
+    },
+    "grid": {
+      "command": "cargo test -p viboceros-geometry --lib brep::surface_grid -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/grid.log.gz",
+      "exit_code": 0
+    },
+    "partition": {
+      "command": "cargo test -p viboceros-geometry --lib brep::surface_partition -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/partition.log.gz",
+      "exit_code": 0
+    },
+    "section_basis": {
+      "command": "cargo test -p viboceros-geometry --lib section_basis:: -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/section_basis.log.gz",
+      "exit_code": 0
+    },
+    "wall_portable": {
+      "command": "cargo test -p viboceros-command --test offset_surface_loose -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/wall_portable.log.gz",
+      "exit_code": 0
+    },
+    "wall_native": {
+      "command": "cargo test -p viboceros-command --features native-smlib --test offset_surface_loose -- --nocapture",
+      "log": "docs/ribbon-ruled-proof/wall_native.log.gz",
+      "exit_code": 0
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "log": "docs/ribbon-ruled-proof/app.log.gz",
+      "exit_code": 0
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "log": "docs/ribbon-ruled-proof/app_native.log.gz",
+      "exit_code": 0
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "log": "docs/ribbon-ruled-proof/format.log.gz",
+      "exit_code": 0
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_ribbon_ruled",
+      "log": "docs/ribbon-ruled-proof/capture.log.gz",
+      "exit_code": 0
+    }
+  },
+  "unqualified_builds": [
+    {
+      "log": "docs/ribbon-ruled-proof/ribbon-ruled-portable-coverage.log.gz",
+      "exit_code": 101,
+      "reason": "Test-only BrepLoop API spelling; fixed to loop_type()/BrepLoopType. No geometry execution.",
+      "exact_full_producer_freeze": false
+    },
+    {
+      "log": "docs/ribbon-ruled-proof/ribbon-ruled-portable-coverage-fixed.log.gz",
+      "exit_code": 101,
+      "reason": "Test-only BrepLoop API spelling; fixed to loop_type()/BrepLoopType. No geometry execution.",
+      "exact_full_producer_freeze": false
+    }
+  ],
+  "earlier_diagnostic": {
+    "log": "docs/ribbon-ruled-proof/earlier-diagnostic.log.gz",
+    "qualified": false,
+    "reason": "Initial diagnostic checked31native face tensors but lacked complete image coverage/incidence gates and exposed10versus9rectanglevertices; superseded by the qualified four-test replay.",
+    "exact_full_producer_freeze": false
+  },
+  "files": {
+    "docs/ribbon-ruled-proof/native.log.gz": "fe9518e2ed3971ae99c7a36b69443faea1b176b0c87e73668a599e88966dd26d",
+    "docs/ribbon-ruled-proof/ribbon-ruled-portable-coverage.log.gz": "9dfecf46f10e9c23ff430b2c454ad5a6979fffaa3085a6733d2bc6fc17d6b4d2",
+    "docs/ribbon-ruled-proof/capture.log.gz": "c3f11eb5ce0ec1bf56284500e2c5b7cdab2c8b538dee4f63686ac5e195198c4b",
+    "docs/ribbon-ruled-proof/grid.log.gz": "921621c5d2c7b33ff82330144f9a4d5b6e9fe82ff835d34d538421a282a37e6d",
+    "docs/ribbon-ruled-proof/probe-tests.log.gz": "a3268bebfb866390a9271ef3e438433e796ed1d7a458befd0cbe7aa3dab05f3e",
+    "docs/ribbon-ruled-proof/ribbon-ruled-portable-coverage-fixed.log.gz": "78b310e95d3cf4c308966523fb7d09c4c8fbc95cf569739fa0b0f03bfa266eeb",
+    "docs/ribbon-ruled-proof/kernel.log.gz": "b5d8556cb4a5a69e34e1e5508b8b1b125fb6a822ea47ceecf0809b4457d9783d",
+    "docs/ribbon-ruled-proof/wall_native.log.gz": "47ef129a9db682748243556d4bb4ab3504509ebfa56ba9c68e986980b427c401",
+    "docs/ribbon-ruled-proof/app.log.gz": "11b16dcf03af9e85733e57c72a6395e8683394d4a3013d15574d420263f24d2e",
+    "docs/ribbon-ruled-proof/partition.log.gz": "5b8afd75757d99b7f27a22ba709c9c73af5b0a81e86a2ab1a7d9f3a50c5a6704",
+    "docs/ribbon-ruled-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/ribbon-ruled-proof/earlier-diagnostic.log.gz": "c4ff683401a9cd730e7bc8d43ac4c2b8e8f748495115d33cc2c79cabfa4bf083",
+    "docs/ribbon-ruled-proof/portable.log.gz": "7d4782aca0891ee264008cf2d791e49528662b610c4c97654853ce08db7be5dc",
+    "docs/ribbon-ruled-proof/wall_portable.log.gz": "9da2ab60f19ce2bf902cf533d0db291923b07c5575b64f1e4a48b12959e61b65",
+    "docs/ribbon-ruled-proof/app_native.log.gz": "45b9cddfadac8ec798e14ca877653336c867e29f13a0b534b5d3d15846da14f4",
+    "docs/ribbon-ruled-proof/section_basis.log.gz": "4a7d4341ccedd188e091f5098a133272d50dc406d5925c77be6e9bd2527f7815",
+    "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/test_ribbon_ruled_record.py.gz": "33778e5af14be4dc6abca9043ebfb2802fe4c5eec23a3a854b844493185968f9",
+    "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/run_headless.sh.gz": "4e2fda0703d07b34a2544ea03e1e4bcdef435b82e29ba4ee972355fb9a9dfaa8",
+    "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/report_ribbon_ruled.py.gz": "1a8c1c525fbeccb8f88ecf4a4953f4f8399de5b885a3547b8cbb6e5c01367d03",
+    "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/generate_ribbon_ruled.py.gz": "d2c751297fe3938eaeda3561cb8b9d6d8915ff37367fcc773a14a0e68072dc78",
+    "docs/ribbon-ruled-proof/sources/tools/rhino_oracle/report_curve_loose_offset.py.gz": "27b8f574779b3742fa8ae5191fde3e78992b9986b89f6794b506ea1f8acaf6fe",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/lib.rs.gz": "4dbced2cf440180ef1e098dbf755cc1be9d4ad40277d3199a944a837e3067aa5",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ribbon.rs.gz": "d7382a7975b05a6721209bdd302c13adc175b18b6f644cd242117728af5ba4f5",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ruled_surface.rs.gz": "c51973bf00df6fff866db70aaf555ede2c82d88838804cf01b694d70bf85a7ec",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/section_basis.rs.gz": "dfcd3b5a089679bd967b9424f89fa53e790a2b9890cb2381e0af46ab52e3f36a",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/error.rs.gz": "1dc5c71c50d88c1d463502148be13b90194dc7694a7e83bdf778df2a69590c6b",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/ruled_surface/tests.rs.gz": "ecccfa2a8c4083449c2fe92d13073f4c16f10e615a7a50ae14439edcab9ae624",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/brep/surface_grid.rs.gz": "e1aaf93f7ac492f0fd486d539c5e3d76030c2514bdb5f0029d6a28cfa9dbad8e",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-geometry/src/brep/surface_partition/topology.rs.gz": "61393c3b749bd3a772c2706988470bd335c55be3d921e4c8b646c3218a621475",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/tests/ribbon_ruled_native.rs.gz": "d24b5fac5a92e1a9ce83528f74038bd148c7a7276ae10fd7cc0f621c24d59870",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/src/lib.rs.gz": "35e4aa4dbb1e131ba220970bcde60a61b1115b47e04a6df944621fcbb8ee4478",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/src/ribbon_loose.rs.gz": "a55ebefd98586dbd8c807373c798d7727cb2f82ad7055997f4c859f8dace80cd",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-oracle/tests/ribbon_ruled_native/support.rs.gz": "179f707d0789b4e82e4b2b1598650eba59a00663ee063a29200f03df01b73d39",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-command/src/offset_surface/loose/wall.rs.gz": "6b700c457a185cf99cdac3922df1c2036b51252ef96a3dc16360f97824d55922",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/lib.rs.gz": "1c3d98c37c80d5eecc06d3973e6e6a6c71f6bc1b4cc5035dcebcd516c9f13227",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native.rs.gz": "d99ee2568cfdc9ea4ca6e9574e87ff17ad80fe12b9f25799fd6f10dc3041dd0a",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native/knot_refinement.rs.gz": "303286bb54d7b1dd1155357b4ecbf4186194fba227323b603f127a36cabe0a4e",
+    "docs/ribbon-ruled-proof/sources/crates/viboceros-smlib/src/native/knot_refinement/loft.rs.gz": "47256123d11fe0b14a8b1233fb7bc3206944dfbe99e14f2d974b3156e3d61f96",
+    "tools/rhino_oracle/fixtures/ribbon_ruled.json": "9d623a5e0d0b147b250ef675addc829e8c82727bb15b9874dd5a84a64f5af8e5",
+    "tools/rhino_oracle/observations/ribbon_ruled.json.gz": "8144b15e3060e4c9f95d8623fb4b064028a3c7268aea9c24acbb50bb0bc212fa",
+    "tools/rhino_oracle/observations/source_snapshots/8d02a862af618a55df5c338c1810dcffbfbc14855458aef849c36ecebe73307a.gz": "d2c751297fe3938eaeda3561cb8b9d6d8915ff37367fcc773a14a0e68072dc78",
+    "tools/rhino_oracle/observations/source_snapshots/d7b3a9b58f22706a28f0e15b796e86a52ee35ab2976dd3160c85cf9c1c19c92d.gz": "c7f77669beb2199611de2794eb47d76722591aef01488112845dbac05936303a",
+    "tools/rhino_oracle/observations/source_snapshots/0177dd05fd41388b358725acdfea749d00458c12ee4b29274527ac9e8070d475.gz": "8e0ae1ab38589ae6e1553cc269838e053cae50417818f5a0457a328b520a341b",
+    "tools/rhino_oracle/observations/source_snapshots/52eb6e8d4e778ff7b4d7d76dd1ea0e976a30eb43baf366b5df76fb863c2d4011.gz": "a5d3a6cf252eb2fd3884dfdd9703547351e1686f960154f536e5610c46b5fd7b",
+    "tools/rhino_oracle/observations/source_snapshots/2920b78da38f9882e11b66f51eb8b14435a3716868376deb687281bb14c1ab41.gz": "16347a76f53ff82b7b20eeab435c407c4a93d9dd92ebeefb62e98f2371538c33",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/f992da2a5418c3cba8665fbf2c23cbd1bce184757d9f017db2ede7d393e18266.gz": "d65edb34478b7fe78ff917df5b99134261a9aff010f7a5ebcddb44cdecaea535",
+    "tools/rhino_oracle/observations/source_snapshots/7e51ee954894545351566287914bb0c06d8cce2a39e43b8d35f35f0340867a46.gz": "5b20d560bc2a97d38eb28488d22bae2c055fc4a29c0e3905630765a216e16141",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564"
+  }
+}

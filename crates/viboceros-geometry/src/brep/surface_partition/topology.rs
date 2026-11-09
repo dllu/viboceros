@@ -159,6 +159,11 @@ pub(super) fn build(
         }
         rings.push(trims);
     }
+    let last = coordinates.each_ref().map(|c| c.len() - 1);
+    let corners = [[0, 0], [last[0], 0], [last[0], last[1]], [0, last[1]]]
+        .map(|p| point_map[&[canonical(0, p[0]), canonical(1, p[1])]]);
+    charge(budget, surface.control_points().len().saturating_mul(4))?;
+    super::super::surface_grid::weld_boundary_corners(surface, &mut parent, corners, tolerance)?;
     let mut vertices = Vec::new();
     let mut roots = BTreeMap::new();
     let mut indices = Vec::new();
