@@ -5,8 +5,8 @@
 A Sharp outside join extends its neighboring offset segments. When an adjacent
 inside corner clips one of those segments, the source split follows the
 extended segment's original affine parameter. Other inside corners retain the
-direct miter correspondence. The closing seam does
-not create outside extensions. When both incident strips were extended at
+direct miter correspondence. A Sharp closing seam does not initiate adjacent
+inside-corner splits. When both incident strips were extended at
 other corners, their clipped seam intervals omit extra inside fan faces.
 
 This accounts for the previous zigzag discrepancy without selecting fixture

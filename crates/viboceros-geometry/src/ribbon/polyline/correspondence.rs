@@ -6,8 +6,8 @@ pub(super) fn sharp_clip_at(index: usize, inside: &[bool], outside: &[bool], clo
         return false;
     }
     let n = inside.len();
-    // A closing seam does not extend either adjacent strip. Other outside
-    // joins affect only their two neighboring inside corners.
+    // A closing seam does not initiate adjacent inside-corner splits. Other
+    // outside joins affect only their two neighboring inside corners.
     let outside_at = |i| outside[i] && !(closed && i == 0);
     outside_at((index + n - 1) % n) || outside_at((index + 1) % n)
 }
