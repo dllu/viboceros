@@ -89,7 +89,7 @@ pub fn try_interpolate_surface_in_basis_with_solver<E: From<GeometryError>>(
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsSurface, E> {
     interpolate_with_sampler(source, degree, knots, solve, &mut |u, v| {
-        source.evaluate(u, v)
+        grid_samples(source, u, v)
     })
     .map_err(|error| match error {
         SampledFitError::Sample(error) => error.into(),
@@ -112,18 +112,13 @@ fn interpolate_with_sampler<E: From<GeometryError>>(
     degree: [usize; 2],
     knots: [&[Real]; 2],
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
-    sample: &mut impl FnMut(Real, Real) -> Result<Point3, GeometryError>,
+    sample: &mut impl FnMut(&[Real], &[Real]) -> Result<Vec<[Real; 3]>, GeometryError>,
 ) -> Result<NurbsSurface, SampledFitError<E>> {
     validate_source(source)?;
     let u = stations(degree[0], knots[0], source.domain_u())?;
     let v = stations(degree[1], knots[1], source.domain_v())?;
     let (nu, nv) = (u.len(), v.len());
-    let mut samples = Vec::with_capacity(nu * nv);
-    for &y in &v {
-        for &x in &u {
-            samples.push(sample(x, y)?.to_array());
-        }
-    }
+    let samples = sample(&u, &v)?;
     let origin = samples[0];
     let constant: [bool; 3] = std::array::from_fn(|k| samples.iter().all(|p| p[k] == origin[k]));
     let mut targets = Vec::with_capacity(nu * nv * 3);
@@ -173,6 +168,29 @@ fn interpolate_with_sampler<E: From<GeometryError>>(
         knots[0].to_vec(),
         knots[1].to_vec(),
     )?)
+}
+
+/// Streamed contractions preserve scalar evaluation order and exact recovery,
+/// retaining one V span at a time instead of rebuilding controls at every cell.
+fn grid_samples(
+    source: &NurbsSurface,
+    u: &[Real],
+    v: &[Real],
+) -> Result<Vec<[Real; 3]>, GeometryError> {
+    let u = u
+        .iter()
+        .map(|&t| (t, crate::ParameterSide::Right))
+        .collect::<Vec<_>>();
+    let v = v
+        .iter()
+        .map(|&t| (t, crate::ParameterSide::Right))
+        .collect::<Vec<_>>();
+    let mut points = Vec::with_capacity(u.len() * v.len());
+    source.try_for_each_grid_point_on_sides(&u, &v, |_, _, p| {
+        points.push(p?.to_array());
+        Ok::<(), GeometryError>(())
+    })?;
+    Ok(points)
 }
 
 fn checked_solve<E: From<GeometryError>>(

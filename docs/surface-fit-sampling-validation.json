@@ -1,0 +1,73 @@
+{
+  "baseline_revision": "e29173e2d630fd3f551a64f3ef2b09ffb9a8e74c",
+  "full_native_fit_policy": false,
+  "fit_srf_registered": false,
+  "private_xvfb_capture": true,
+  "visible_desktop_windows_opened": 0,
+  "backends": {
+    "baseline": {
+      "surface_observations": 29,
+      "curve_observations": 6,
+      "certified_local_fits": 29,
+      "captured_basis_matches": 29,
+      "complete_native_covariance_matches": 29,
+      "maximum_authored_bound": 9.52228875707101e-14,
+      "maximum_native_basis_bound": 6.821210298590004e-13,
+      "maximum_archive_bound": 0.0,
+      "maximum_native_covariance_bound": 8.881784197001254e-16
+    },
+    "portable": {
+      "surface_observations": 29,
+      "curve_observations": 6,
+      "certified_local_fits": 29,
+      "captured_basis_matches": 29,
+      "complete_native_covariance_matches": 29,
+      "maximum_authored_bound": 9.52228875707101e-14,
+      "maximum_native_basis_bound": 6.821210298590004e-13,
+      "maximum_archive_bound": 0.0,
+      "maximum_native_covariance_bound": 8.881784197001254e-16
+    },
+    "native": {
+      "surface_observations": 29,
+      "curve_observations": 6,
+      "certified_local_fits": 29,
+      "captured_basis_matches": 29,
+      "complete_native_covariance_matches": 29,
+      "maximum_authored_bound": 9.52228875707101e-14,
+      "maximum_native_basis_bound": 4.547474084847011e-13,
+      "maximum_archive_bound": 0.0,
+      "maximum_native_covariance_bound": 8.881784197001254e-16
+    }
+  },
+  "portable_rows_unchanged": 29,
+  "fitting_tests": 56,
+  "evaluator_tests": {
+    "passed": 60,
+    "ignored_manual_benchmarks": 2
+  },
+  "benchmark_scope": "Unoptimized dev build; full explicit interpolation, one degree-8 rational tensor; five timed runs per size.",
+  "benchmark": [
+    {
+      "controls_per_axis": 16,
+      "fingerprint": "e23710e3a5a29d00",
+      "before_median_seconds": 0.035505608,
+      "after_median_seconds": 0.016347664,
+      "speedup": 2.1719071299728205
+    },
+    {
+      "controls_per_axis": 32,
+      "fingerprint": "5258a4019327d355",
+      "before_median_seconds": 0.174532466,
+      "after_median_seconds": 0.08816674,
+      "speedup": 1.9795726370284306
+    },
+    {
+      "controls_per_axis": 64,
+      "fingerprint": "9280ad4ac685b122",
+      "before_median_seconds": 0.959610519,
+      "after_median_seconds": 0.594240282,
+      "speedup": 1.6148526918611015
+    }
+  ],
+  "receipts": "surface-fit-sampling-proof/receipts.json"
+}

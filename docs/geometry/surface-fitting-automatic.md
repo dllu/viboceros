@@ -17,7 +17,8 @@ Fitting starts with one Bezier patch. Residual variation selects knot intervals
 for midpoint insertion, prioritizing larger errors when a control ceiling is
 near. Degree-plus-one differences help avoid refining a direction already
 represented by its polynomial basis. Source evaluations share a cache, capped
-at 262,144 points. Simple output knots retain C(degree-1) joins.
+at 262,144 points. Source and candidate sampling reuse query-owned span controls
+without changing evaluation order. Simple output knots retain C(degree-1) joins.
 
 Samples guide proposals. Acceptance requires the exact full tensor bound,
 including source interiors and one-sided knot limits. If the bound fails and

@@ -1,0 +1,258 @@
+{
+  "baseline_revision": "e29173e2d630fd3f551a64f3ef2b09ffb9a8e74c",
+  "source_overrides": {
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz",
+      "sha256": "1145e3c8e5e29717afe96eee54911fd86569987285adf810df25d99dfcd884fa"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz",
+      "sha256": "3c6ffcf938669c71dde3d360819fc97d0e72c32e459f9cf61a45cd6834e77b6d"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz",
+      "sha256": "2c608b3e283714b500d4f200f47e96edf20d80d0ccae406169a47617928101e3"
+    },
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz",
+      "sha256": "6f8acc93e2ef84043aad899a6861846870f496a36aaf2225d06eba49e4c99532"
+    },
+    "crates/viboceros-geometry/src/surface_fit/tests.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/tests.rs.gz",
+      "sha256": "63b99bb66d2e0e25177c645ba057bd5a308c440bb92a83a0d5f28ea85053c27d"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_covariance_native.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz",
+      "sha256": "6b7458f7df970978f172f47ef7109667cf4cb6ffa1fc9eea69e24a3bb1d32774"
+    },
+    "crates/viboceros-oracle/examples/surface_fit_sampling.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz",
+      "sha256": "c3addabb2a3100b4b733ea335af5a9911c56f1f77936565281c891b6bd5f6fbf"
+    },
+    "tools/rhino_oracle/generate_surface_fit_covariance.py": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/generate_surface_fit_covariance.py.gz",
+      "sha256": "abf4e0d4bb48033e4120f9da27cb22ac1a18e189b655fe29ac282755485a79fc"
+    },
+    "tools/rhino_oracle/report_surface_fit_sampling.py": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/report_surface_fit_sampling.py.gz",
+      "sha256": "d6f66bc89b3d9ad8fa5d103bf86faecd8289b0d2a6593b1b845cbfbbbd37bd1a"
+    },
+    "tools/rhino_oracle/test_surface_fit_sampling_record.py": {
+      "snapshot": "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/test_surface_fit_sampling_record.py.gz",
+      "sha256": "325f1b03ae0924718dbc5d1e4cc2417c8d58833ff133d1663c8a8abe51bfd9aa"
+    }
+  },
+  "baseline_sources": {
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit.rs.gz",
+      "sha256": "b7c7958b1abdb972b4c89fada7ee4fd5e66dd56bdd23b8e1b0d1a6975eded47c"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz",
+      "sha256": "d7bf1be4d7b336f2bc8ca557398359bccb2877e507ea9a45d61fdda788a4dd74"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz",
+      "sha256": "2af6051c4a36d335256c21d717529fd461e8079491be1cf88d09567e7ddf4fce"
+    },
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz",
+      "sha256": "e22b03b9d2b2e480e080261df3797829a3dcd2e2cd7999228b5ddcb2cd9bed7b"
+    },
+    "crates/viboceros-geometry/src/surface_fit/tests.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/tests.rs.gz",
+      "sha256": "ef7bb0cefb4de6fde89f83d41a643960197077cbc014a76f9333b1cc65e9d914"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_covariance_native.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz",
+      "sha256": "6ac53534b2fe6ea63e94e35ff05a6592346311578d7a27bbb0ba59d45a7b404b"
+    },
+    "crates/viboceros-oracle/examples/surface_fit_sampling.rs": {
+      "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz",
+      "sha256": "f17ea117c01b0cc04f4725fcac8144272888695b9bc864b98f6306b10d0ae230"
+    }
+  },
+  "checks": {
+    "baseline": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_covariance_native -- --nocapture",
+      "log": "docs/surface-fit-sampling-proof/baseline.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit.rs.gz",
+          "sha256": "b7c7958b1abdb972b4c89fada7ee4fd5e66dd56bdd23b8e1b0d1a6975eded47c"
+        },
+        "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz",
+          "sha256": "d7bf1be4d7b336f2bc8ca557398359bccb2877e507ea9a45d61fdda788a4dd74"
+        },
+        "crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz",
+          "sha256": "2af6051c4a36d335256c21d717529fd461e8079491be1cf88d09567e7ddf4fce"
+        },
+        "crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz",
+          "sha256": "e22b03b9d2b2e480e080261df3797829a3dcd2e2cd7999228b5ddcb2cd9bed7b"
+        },
+        "crates/viboceros-geometry/src/surface_fit/tests.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/tests.rs.gz",
+          "sha256": "ef7bb0cefb4de6fde89f83d41a643960197077cbc014a76f9333b1cc65e9d914"
+        },
+        "crates/viboceros-oracle/tests/surface_fit_covariance_native.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz",
+          "sha256": "6ac53534b2fe6ea63e94e35ff05a6592346311578d7a27bbb0ba59d45a7b404b"
+        },
+        "crates/viboceros-oracle/examples/surface_fit_sampling.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz",
+          "sha256": "f17ea117c01b0cc04f4725fcac8144272888695b9bc864b98f6306b10d0ae230"
+        }
+      }
+    },
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_covariance_native -- --nocapture",
+      "log": "docs/surface-fit-sampling-proof/portable.log.gz",
+      "exit_code": 0
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_covariance_native -- --nocapture",
+      "log": "docs/surface-fit-sampling-proof/native.log.gz",
+      "exit_code": 0
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit:: -- --nocapture",
+      "log": "docs/surface-fit-sampling-proof/kernel.log.gz",
+      "exit_code": 0
+    },
+    "evaluate": {
+      "command": "cargo test -p viboceros-geometry --lib nurbs_surface::evaluate:: -- --nocapture",
+      "log": "docs/surface-fit-sampling-proof/evaluate.log.gz",
+      "exit_code": 0
+    },
+    "sampling_before": {
+      "command": "cargo run -p viboceros-oracle --example surface_fit_sampling",
+      "log": "docs/surface-fit-sampling-proof/sampling_before.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit.rs.gz",
+          "sha256": "b7c7958b1abdb972b4c89fada7ee4fd5e66dd56bdd23b8e1b0d1a6975eded47c"
+        },
+        "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz",
+          "sha256": "d7bf1be4d7b336f2bc8ca557398359bccb2877e507ea9a45d61fdda788a4dd74"
+        },
+        "crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz",
+          "sha256": "2af6051c4a36d335256c21d717529fd461e8079491be1cf88d09567e7ddf4fce"
+        },
+        "crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz",
+          "sha256": "e22b03b9d2b2e480e080261df3797829a3dcd2e2cd7999228b5ddcb2cd9bed7b"
+        },
+        "crates/viboceros-geometry/src/surface_fit/tests.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/tests.rs.gz",
+          "sha256": "ef7bb0cefb4de6fde89f83d41a643960197077cbc014a76f9333b1cc65e9d914"
+        },
+        "crates/viboceros-oracle/tests/surface_fit_covariance_native.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz",
+          "sha256": "6ac53534b2fe6ea63e94e35ff05a6592346311578d7a27bbb0ba59d45a7b404b"
+        },
+        "crates/viboceros-oracle/examples/surface_fit_sampling.rs": {
+          "snapshot": "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz",
+          "sha256": "f17ea117c01b0cc04f4725fcac8144272888695b9bc864b98f6306b10d0ae230"
+        }
+      }
+    },
+    "sampling_after": {
+      "command": "cargo run -p viboceros-oracle --example surface_fit_sampling",
+      "log": "docs/surface-fit-sampling-proof/sampling_after.log.gz",
+      "exit_code": 0
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "log": "docs/surface-fit-sampling-proof/app.log.gz",
+      "exit_code": 0
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "log": "docs/surface-fit-sampling-proof/app_native.log.gz",
+      "exit_code": 0
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "log": "docs/surface-fit-sampling-proof/format.log.gz",
+      "exit_code": 0
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_fit_covariance",
+      "log": "docs/surface-fit-sampling-proof/capture.log.gz",
+      "exit_code": 0
+    },
+    "probe_tests": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fit tools.rhino_oracle.test_surface_fit_achieved",
+      "log": "docs/surface-fit-sampling-proof/probe_tests.log.gz",
+      "exit_code": 0
+    }
+  },
+  "unqualified_runs": [
+    {
+      "log": "docs/surface-fit-sampling-proof/grid-inference.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Grid visitor Result needed an explicit GeometryError annotation; no numerical execution. The first build overlapped the initial formatter. Diagnostics are retained; no exact full producer freeze was taken for these unqualified builds."
+    },
+    {
+      "log": "docs/surface-fit-sampling-proof/test-grid-inference.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Grid visitor Result needed an explicit GeometryError annotation; no numerical execution. The first build overlapped the initial formatter. Diagnostics are retained; no exact full producer freeze was taken for these unqualified builds."
+    }
+  ],
+  "files": {
+    "docs/surface-fit-sampling-proof/native.log.gz": "bf9575c18d2fa1ed19e57ad257936ef7e6b166ca1f262c914bbbddb57c410316",
+    "docs/surface-fit-sampling-proof/test-grid-inference.log.gz": "212324c9868488e19be4d517094e8a49a13a89b17b3a008953ff07705a27074b",
+    "docs/surface-fit-sampling-proof/capture.log.gz": "a4495fa3d3e5c0655900a6605b738ad744327e24c48b89cf684eda1926eced59",
+    "docs/surface-fit-sampling-proof/grid-inference.log.gz": "bf32c3c1abe13b9cc4a7fe6d0fcb399c2e718db3c5efee3f07feb8da7208c1c2",
+    "docs/surface-fit-sampling-proof/sampling_after.log.gz": "09235bfb7d0fc350884827a367541e6a0dbb0f303129c83a3fc65db66001f907",
+    "docs/surface-fit-sampling-proof/probe_tests.log.gz": "071946e34c7d93d956813867d86613c5ee60f6b44dac354e55b974b55284eddf",
+    "docs/surface-fit-sampling-proof/kernel.log.gz": "e3d790d08e6c84c870733a0999e91c5c661496ea775f4c8515ab4aa79cd631c7",
+    "docs/surface-fit-sampling-proof/baseline.log.gz": "de57f27b245f6877bfd8b82861b80866a1bd7e6afd1b795af4628a3203baf609",
+    "docs/surface-fit-sampling-proof/app.log.gz": "a5da54be1f70c9c40b0afcc335fd3d583011fb550b25c1ed27d7af672a9145cb",
+    "docs/surface-fit-sampling-proof/sampling_before.log.gz": "d8a6b2ba3fd934b2ce2191428759ca4aebd2429b1b1ce04dfab975fa25fad2d1",
+    "docs/surface-fit-sampling-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-fit-sampling-proof/portable.log.gz": "5a8ce6d05db66f57f3470200141498698c9b8e58f47fbef940d8ce71c755f8ca",
+    "docs/surface-fit-sampling-proof/formatted-grid-inference-source.rs.gz": "2e51df214b9e5934dc7be0d40df08f3b4727a98e461ffa7bc700554faab50075",
+    "docs/surface-fit-sampling-proof/evaluate.log.gz": "b65e0fac0b82591b902aa93a935d34095466cf0f75f44d4ea079da56f0cc6cd6",
+    "docs/surface-fit-sampling-proof/app_native.log.gz": "2d6a2df0ad526ca340d000b9067ce6d912bf842a360bff55229d6bcb494563de",
+    "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/test_surface_fit_sampling_record.py.gz": "bab8092c417f91409d726f0dadbe7659477463a779cde41dc5ad705a64199aab",
+    "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/report_surface_fit_sampling.py.gz": "35da72499d8f934012f1074addbd9a47a3d40f29cb36f1352a665e9da52740a1",
+    "docs/surface-fit-sampling-proof/sources/tools/rhino_oracle/generate_surface_fit_covariance.py.gz": "cbf40bfa88f75ec8d1030b7b073ce3aa54b4084832d05dfc900587d3de4df393",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz": "44530978b6810fda23883b9b14f8dd7a4dfa9b1a60c34ac412153f67ef4db937",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz": "a6b35de5aad26241178b8f1652bc88e2ad99a6dddb1595e7c8795f121cb3170b",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/tests.rs.gz": "2ee2e87ccb2bb900ca889d29a312c5379dbd063bab5d962334a31cb43cc084b2",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz": "43e8ccd9cc40cef3d41802819203b8e6953e7ff284ad3f38890b910ddf500a51",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz": "6f24224f05c46b15aa76ef33b7f3c05b8cb6a4941647677f72f3ed1d3806cdeb",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz": "1447e5c44349d11f03bf96ba9c3d0691d876d80e32cd3586aa6cbe8908a43add",
+    "docs/surface-fit-sampling-proof/sources/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz": "69e784ee89ffbeee2ccc85a55652d9f72d092529b99c881540cce4153a112a29",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit.rs.gz": "733ce6fa72e0da8baa23aded2ad626e7a3877650caf97d7ec8ae39a3815efb0e",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz": "41d5cebd957ccd71e405b0c930f1746f66791703e9ec60c453ed6f53f4d44bae",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/tests.rs.gz": "fa97bfa4eb898bf716e35bb5f91e2e6bfd4a1d9b756ebe2c59cbd53c65ee1487",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/nurbs_surface/evaluate/query.rs.gz": "98d59687ada1161f038a5b3fad3bd7fb2d07ccdd8b2fc726299644043e129713",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-geometry/src/surface_fit/adaptive/refine.rs.gz": "093dffa24bc3e283b367150a790159c3b4374708ecab171bac709c87fa80e390",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/examples/surface_fit_sampling.rs.gz": "ea10918db5f74f84076cd10dd0c30d629cec03442ec8101bc4aa848605465f61",
+    "docs/surface-fit-sampling-proof/baseline/crates/viboceros-oracle/tests/surface_fit_covariance_native.rs.gz": "c17fe0425e45382345a77b74aef706325f9db26138a9fb4d368e4f07b69dab2c",
+    "tools/rhino_oracle/fixtures/surface_fit_covariance.json": "35852c9b7094e5276634c59508f7d8d8ee65b77e3f098515545d066acc35d31a",
+    "tools/rhino_oracle/observations/surface_fit_covariance.json.gz": "1431cd6ce951415fc0637cd9abd0d42ab37114b294a6cc9ee2226c9fb2bf00a0",
+    "tools/rhino_oracle/observations/source_snapshots/abf4e0d4bb48033e4120f9da27cb22ac1a18e189b655fe29ac282755485a79fc.gz": "cbf40bfa88f75ec8d1030b7b073ce3aa54b4084832d05dfc900587d3de4df393",
+    "tools/rhino_oracle/observations/source_snapshots/156ad624893d89306a34906fff42e31d2f479385dc92998300f3a9159d57928f.gz": "f8f4a9fc02b6411ca830a71556b46095e4a0dc704a038554a2bae88a5f1f5ee1",
+    "tools/rhino_oracle/observations/source_snapshots/29a48369fa304917d32275dded58b34c25e93f50e92df318115790ee7fed0a45.gz": "2554c41649eb00f14c1ceabee2b188e72c600ff50c6cf6dadd8c5cfa5d9782d3",
+    "tools/rhino_oracle/observations/source_snapshots/a917717f3f96dec292895787bf595bc28276691995e5ed52e245d2e666b0fd73.gz": "38f47ca811151be8244efb4612589180f322cdc14a6c796d254e67801867fb32",
+    "tools/rhino_oracle/observations/source_snapshots/624c87c69d1047cf7da3d732386db85ff5e54d259a77ac34256700ca0029e453.gz": "60412e55495457ac6688aa02f0d033755b120f93cd4bc255ef05fb49d8e5b8fe",
+    "tools/rhino_oracle/observations/source_snapshots/144f617528b25970910996675041a44fd0f87a664b6486cf9e817e5e92f18a5e.gz": "38e1e91f6f8d46abfb55ba250ff8c8fe38edc99ef0040219430dc5b8bd38598a",
+    "tools/rhino_oracle/observations/source_snapshots/2833f65551a279189261a5f8f038431736de4a1170b612541690257d241275e9.gz": "b359c190c0ff4f875f68d26c48f12a1f6e06a9b3ba7942cf15f32d1b9457d75a",
+    "tools/rhino_oracle/observations/source_snapshots/2c5732cca57c184f177405bec4f5b73be20ef62270fbbe59750b995f16bffe26.gz": "199b2c34c46bd56c4c0442daa29048ed04d4b9a48f0f46bcc758762cb520244b",
+    "tools/rhino_oracle/observations/source_snapshots/60f01555fcb4efc3d9352463b09a3a9407f7f3c8bc68dbc2f19419488d8c97a2.gz": "9a2a59a7e357159f89ccd9c40cc5bfdcc0e5cabbea1c2855b0c92853bda302a1",
+    "tools/rhino_oracle/observations/source_snapshots/3912e6c38824c80341f2453fa704925c2d6b0799d4f6bcf92bfd591e94d97cd3.gz": "ad92891555b5ff43a26ac05146a9fd0d176820fd937e2c07ee0409ca912af0f0",
+    "tools/rhino_oracle/observations/source_snapshots/c0e55eb72a4ce559b2609d086dbbc9b0f72087da75ed8ae7f0e94467b6cf4c13.gz": "c7f9269072bdf4ee6d3f3dd6bdbaa63577973436fa22cfbb3e83e9b8fc911564"
+  }
+}

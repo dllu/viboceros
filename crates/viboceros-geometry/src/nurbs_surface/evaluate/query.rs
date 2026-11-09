@@ -15,6 +15,17 @@ pub(in crate::nurbs_surface) struct SurfaceQuery<'a> {
     active: Option<([usize; 2], Prepared<'a>)>,
 }
 
+impl NurbsSurface {
+    /// Private, query-owned span reuse for algorithms sampling many points.
+    /// Retains scalar validation, arithmetic order and exact recovery.
+    pub(crate) fn point_evaluator(
+        &self,
+    ) -> impl FnMut(Real, Real) -> Result<Point3, GeometryError> + '_ {
+        let mut query = SurfaceQuery::new(self);
+        move |u, v| query.evaluate(u, v)
+    }
+}
+
 impl<'a> SurfaceQuery<'a> {
     pub(in crate::nurbs_surface) fn new(surface: &'a NurbsSurface) -> Self {
         Self {

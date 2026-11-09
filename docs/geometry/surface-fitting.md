@@ -10,6 +10,10 @@ controls. It retains the original UV domains, supports unequal degrees and
 nonuniform knots, and can approximate rational sources. The input is immutable.
 Each axis uses one factorization for all XYZ columns. Local coordinates,
 constant-channel restoration and exact corners reduce avoidable roundoff.
+Streamed tensor sampling reuses contractions while retaining scalar arithmetic
+and exact recovery; automatic fitting also reuses query-owned span controls.
+The [sampling validation](../surface-fit-sampling.md) checks unchanged outputs
+and records a scoped timing comparison.
 
 `try_fit_surface_in_basis(source, degree, knots, limit)` additionally checks
 the complete original surface with the exact tensor correspondence bound.

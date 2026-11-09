@@ -82,6 +82,7 @@ pub(super) fn fit_with_fallback<E: From<GeometryError>>(
     let mut first = true;
     let mut cuts = domains.each_ref().map(|d| vec![*d.start(), *d.end()]);
     let mut cache = HashMap::<(u64, u64), Point3>::new();
+    let mut evaluate = source.point_evaluator();
     let mut sample = |u: Real, v: Real| -> Result<Point3, GeometryError> {
         let key = (u.to_bits(), v.to_bits());
         if let Some(&point) = cache.get(&key) {
@@ -90,7 +91,7 @@ pub(super) fn fit_with_fallback<E: From<GeometryError>>(
         if cache.len() >= MAX_SAMPLES {
             return Err(GeometryError::SurfaceApproximationLimit);
         }
-        let point = source.evaluate(u, v)?;
+        let point = evaluate(u, v)?;
         cache.insert(key, point);
         Ok(point)
     };
@@ -108,7 +109,15 @@ pub(super) fn fit_with_fallback<E: From<GeometryError>>(
             options.degree,
             [&knots[0], &knots[1]],
             solve,
-            &mut sample,
+            &mut |u, v| {
+                let mut points = Vec::with_capacity(u.len() * v.len());
+                for &y in v {
+                    for &x in u {
+                        points.push(sample(x, y)?.to_array());
+                    }
+                }
+                Ok(points)
+            },
         ) {
             Err(SampledFitError::Sample(GeometryError::SurfaceApproximationLimit)) => {
                 return Ok(None);

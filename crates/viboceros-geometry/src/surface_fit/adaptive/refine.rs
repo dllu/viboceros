@@ -10,11 +10,12 @@ pub(super) fn sampled_outside(
     limit: Real,
     sample: &mut impl FnMut(Real, Real) -> Result<Point3, GeometryError>,
 ) -> Result<bool, GeometryError> {
+    let mut evaluate = candidate.point_evaluator();
     for vs in cuts[1].windows(2) {
         for us in cuts[0].windows(2) {
             for v in stations(vs, 3)? {
                 for u in stations(us, 3)? {
-                    if candidate.evaluate(u, v)?.distance_to(sample(u, v)?)? > limit * 1.001 {
+                    if evaluate(u, v)?.distance_to(sample(u, v)?)? > limit * 1.001 {
                         return Ok(true);
                     }
                 }
@@ -31,6 +32,7 @@ pub(super) fn refine(
     limit: Real,
     sample: &mut impl FnMut(Real, Real) -> Result<Point3, GeometryError>,
 ) -> Result<bool, GeometryError> {
+    let mut evaluate = candidate.point_evaluator();
     let mut scores: [Vec<Real>; 2] = cuts.each_ref().map(|c| vec![0.; c.len() - 1]);
     let count = options.degree.map(|p| p + 2);
     for (j, vs) in cuts[1].windows(2).enumerate() {
@@ -41,10 +43,7 @@ pub(super) fn refine(
             let mut maximum = 0_f64;
             for &y in &v {
                 for &x in &u {
-                    let r = candidate
-                        .evaluate(x, y)?
-                        .vector_to(sample(x, y)?)?
-                        .to_array();
+                    let r = evaluate(x, y)?.vector_to(sample(x, y)?)?.to_array();
                     maximum = maximum.max(norm(r));
                     residuals.push(r);
                 }

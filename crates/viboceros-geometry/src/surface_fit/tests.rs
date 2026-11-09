@@ -42,6 +42,77 @@ fn knots(degree: usize, a: Real, b: Real) -> Vec<Real> {
 }
 
 #[test]
+fn streamed_interpolation_keeps_scalar_control_bits_including_exact_recovery() {
+    for origin in [0., 1e9] {
+        for rational in [false, true] {
+            let original = source(rational, origin);
+            for gauge in [1., -2., 1e-300] {
+                let shape = NurbsSurface::try_new_rational(
+                    original.degree_u(),
+                    original.degree_v(),
+                    original.control_point_count_u(),
+                    original.control_point_count_v(),
+                    original
+                        .control_points()
+                        .iter()
+                        .enumerate()
+                        .map(|(i, p)| {
+                            let weight = if gauge == 1e-300 && i % 2 == 1 {
+                                1e300
+                            } else {
+                                gauge * p.weight()
+                            };
+                            WeightedPoint3::try_new(p.point(), weight).unwrap()
+                        })
+                        .collect(),
+                    original.knots_u().to_vec(),
+                    original.knots_v().to_vec(),
+                )
+                .unwrap();
+                for degree in [[2, 3], [3, 3], [5, 4]] {
+                    let u = knots(degree[0], -4., 2.);
+                    let v = knots(degree[1], 3., 11.);
+                    let actual =
+                        try_interpolate_surface_in_basis(&shape, degree, [&u, &v]).unwrap();
+                    let scalar = interpolate_with_sampler(
+                        &shape,
+                        degree,
+                        [&u, &v],
+                        &mut crate::surface_rebuild::portable_solve,
+                        &mut |u, v| {
+                            let mut samples = Vec::new();
+                            for &y in v {
+                                for &x in u {
+                                    samples.push(shape.evaluate(x, y)?.to_array());
+                                }
+                            }
+                            Ok(samples)
+                        },
+                    )
+                    .unwrap_or_else(|_| panic!("scalar interpolation failed"));
+                    let bits = |s: &NurbsSurface| {
+                        s.control_points()
+                            .iter()
+                            .map(|p| {
+                                (
+                                    p.point().to_array().map(Real::to_bits),
+                                    p.weight().to_bits(),
+                                )
+                            })
+                            .collect::<Vec<_>>()
+                    };
+                    assert_eq!(
+                        bits(&actual),
+                        bits(&scalar),
+                        "{origin}, {rational}, {gauge}, {degree:?}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn degree_changes_reproduce_complete_polynomial_tensors_without_changing_the_source() {
     for origin in [0., 1e9] {
         let original = source(false, origin);
