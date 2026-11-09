@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_00_matchtarget",
+      "case": "average_refine_iso_polynomial_tangency_00_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_00_perpendicular",
+      "case": "average_refine_iso_polynomial_tangency_00_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_00_preserve",
+      "case": "average_refine_iso_polynomial_tangency_00_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_10_matchtarget",
+      "case": "average_refine_iso_polynomial_tangency_10_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_10_perpendicular",
+      "case": "average_refine_iso_polynomial_tangency_10_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_tangency_10_preserve",
+      "case": "average_refine_iso_polynomial_tangency_10_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_00_matchtarget",
+      "case": "average_refine_iso_polynomial_curvature_00_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_00_perpendicular",
+      "case": "average_refine_iso_polynomial_curvature_00_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_00_preserve",
+      "case": "average_refine_iso_polynomial_curvature_00_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_10_matchtarget",
+      "case": "average_refine_iso_polynomial_curvature_10_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_10_perpendicular",
+      "case": "average_refine_iso_polynomial_curvature_10_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_polynomial_curvature_10_preserve",
+      "case": "average_refine_iso_polynomial_curvature_10_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_00_matchtarget",
+      "case": "average_refine_iso_rational_tangency_00_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_00_perpendicular",
+      "case": "average_refine_iso_rational_tangency_00_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_00_preserve",
+      "case": "average_refine_iso_rational_tangency_00_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_10_matchtarget",
+      "case": "average_refine_iso_rational_tangency_10_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_10_perpendicular",
+      "case": "average_refine_iso_rational_tangency_10_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_tangency_10_preserve",
+      "case": "average_refine_iso_rational_tangency_10_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_00_matchtarget",
+      "case": "average_refine_iso_rational_curvature_00_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_00_perpendicular",
+      "case": "average_refine_iso_rational_curvature_00_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_00_preserve",
+      "case": "average_refine_iso_rational_curvature_00_preserve"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_10_matchtarget",
+      "case": "average_refine_iso_rational_curvature_10_matchtarget"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_10_perpendicular",
+      "case": "average_refine_iso_rational_curvature_10_perpendicular"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_iso_rational_curvature_10_preserve",
+      "case": "average_refine_iso_rational_curvature_10_preserve"
+    }
+  ]
+}

@@ -92,6 +92,55 @@ class SurfaceMatchTests(unittest.TestCase):
             for item in sources+breps:item.Dispose.assert_called_once()
             self.assertEqual(output.Dispose.call_count,int(stage!='native'))
 
+    def test_diagnostic_settings_are_read_back_and_insertions_keep_owned_cleanup(self):
+        recipe=copy.deepcopy(PILOT['match_position_none'])
+        recipe.update(refine=True,settings_audit=True,insert_transverse_midpoints=True,
+            distance_tolerance=10.,angle_tolerance=1.,curvature_tolerance=100.)
+        for fail in [False,True]:
+            host,sources,breps,output,create,_,setting,helper=self.host()
+            setting.RefineMatch=True;setting.RefinePositionalTolerance=3e-6
+            setting.RefineAngleToleranceRadians=2e-6;setting.RefineCurvatureTolerance=.03
+            class Knots(list):pass
+            for source in sources:
+                source.KnotsV=Knots([0.,0.,.25,1.,1.]);source.KnotsV.InsertKnot=mock.Mock(return_value=not fail)
+            with self.subTest(fail=fail),mock.patch.dict('sys.modules',{'brep_join_probe':helper}):
+                if fail:
+                    with self.assertRaisesRegex(ValueError,'transverse insertion'):sdk.run_recipe(recipe,host,1,request([])['tolerance'])
+                    create.assert_not_called();sources[0].Dispose.assert_called_once();sources[1].Dispose.assert_not_called()
+                    self.assertFalse(any(b.Dispose.called for b in breps+[output]))
+                else:
+                    value,_=sdk.run_recipe(recipe,host,1,request([])['tolerance'])
+                    self.assertEqual(value['configured_settings'],dict(enabled=True,distance=3e-6,angle=2e-6,curvature=.03))
+                    setting.EnableRefinement.assert_called_once_with(True,10.,1.,100.)
+                    for source in sources:
+                        self.assertEqual(source.KnotsV.InsertKnot.call_args_list,[mock.call(.125),mock.call(.625)])
+                    for obj in sources+breps+[output]:obj.Dispose.assert_called_once()
+
+    def test_boundary_inverse_diagnostics_dispose_curves_on_query_failure(self):
+        recipe=copy.deepcopy(PILOT['match_position_none']);recipe.update(boundary_parameter_audit=True,edge_parameter_audit=True)
+        point=NS(X=1.,Y=2.,Z=3.);curves=[]
+        for failed in [False,True]:
+            host,sources,breps,output,create,_,_,helper=self.host();curves=[]
+            for i,source in enumerate(sources):
+                source.Domain=mock.Mock(return_value=NS(Min=2.,Max=5.));source.Degree=mock.Mock(return_value=1)
+                source.KnotsV=[0.,1.];source.Points=NS(CountV=2);source.PointAt=mock.Mock(return_value=point)
+                curve=NS(ClosestPoint=mock.Mock(return_value=(True,.25)),PointAt=mock.Mock(return_value=point),Dispose=mock.Mock())
+                curves.append(curve);source.IsoCurve=mock.Mock(return_value=curve)
+                source.ClosestPoint=mock.Mock(return_value=(True,.5,.75))
+                source.Evaluate=mock.Mock(return_value=(not(failed and i==1),point,[point,point]))
+            with self.subTest(failed=failed),mock.patch.dict('sys.modules',{'brep_join_probe':helper}):
+                if failed:
+                    with self.assertRaisesRegex(ValueError,'surface evaluation'):sdk.run_recipe(recipe,host,1,request([])['tolerance'])
+                    create.assert_not_called();output.Dispose.assert_not_called()
+                else:
+                    value,_=sdk.run_recipe(recipe,host,1,request([])['tolerance'])
+                    self.assertEqual(len(value['boundary_parameter_audit']),4)
+                    for row in value['boundary_parameter_audit']:
+                        self.assertEqual(row['edge_uv'],[.5,.75]);self.assertEqual(row['curve_v'],.25)
+                        self.assertEqual(row['direct']['du'],[1.,2.,3.])
+                    output.Dispose.assert_called_once()
+            for obj in sources+breps+curves:obj.Dispose.assert_called_once()
+
 
     def test_prefit_hypothesis_disposes_curves_and_checks_owned_surfaces(self):
         key='match_prefit_full_gap_1e-06';recipe=dict(sdk.CASES[key],audit=False)

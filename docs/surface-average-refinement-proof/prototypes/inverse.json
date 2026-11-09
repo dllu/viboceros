@@ -1,0 +1,24 @@
+{
+  "baseline_revision": "1f7b68f500b952567df7f75ddd1f1ca329591f7f",
+  "sources": {
+    "crates/viboceros-geometry/src/surface_match.rs": "3f69dfdefc69b3789fd0bc38b378b3b72b042dbf413a4a99edd5630b20b8fa6f",
+    "crates/viboceros-geometry/src/surface_match/average.rs": "918ae69e8a319d970644682b869f33af92d96deb5e0afbdb650549a1122a8787",
+    "crates/viboceros-geometry/src/surface_match/refine.rs": "0e042ae9858f61c640348b9cd5f4697a2a423687de98dd2c2e8232983412e202",
+    "crates/viboceros-command/tests/support/surface_match.rs": "48c2ea6de851a78004ede71e833a4a322f915d301a091d6645163861128dcecb",
+    "crates/viboceros-geometry/src/surface_match/average/refinement.rs": "b10205d844359a96d714e1ab783939c6e822f2542fd2d0cae865040d80d74524",
+    "crates/viboceros-command/tests/average_surface_refinement.rs": "53e2272a6746cb31c3c242dc3587d5a9681a5f1cc6944764c101ecf7abf1c12a",
+    "crates/viboceros-geometry/src/surface_match/fit.rs": "aa61a2baec0264cb19193902cc5ef8b83c35773ad94a65ded0d095c7fa4db757"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "viboceros-command",
+    "--test",
+    "average_surface_refinement",
+    "--",
+    "--nocapture"
+  ],
+  "exit_status": 101,
+  "log": "inverse.log.gz"
+}

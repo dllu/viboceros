@@ -1,0 +1,16 @@
+[
+  {
+    "family": "match_surface_average_refinement_steps",
+    "archive": "observations/failures/match_surface_average_refinement_steps-5e54be5088bf672d0ec0ce67568ee1137993bd6f08f93b4b1136e7a9d8cb349c.json.gz",
+    "log": "capture-refinement-steps-first-attempt.log.gz",
+    "exit_status": 1,
+    "error": "rhino probe failed: ValueError at operation average_refine_steps_polynomial_tangency_01: start: invalid surface match result",
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_steps > /tmp/match-average-refinement-steps.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-steps.status; exit \"$capture_result\""
+    ]
+  }
+]

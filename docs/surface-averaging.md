@@ -33,3 +33,6 @@ attributes, cancellation, option recall, object order and Undo/Redo.
 
 The earlier [position/tangency record](surface-average-validation.json) remains
 available with its original observations and pending-mode inventory.
+
+[Refinement investigation](surface-average-refinement.md) records the remaining
+Native mismatches and rejected prototypes.

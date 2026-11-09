@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_parameters_polynomial_tangency",
+      "case": "average_refine_parameters_polynomial_tangency"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_parameters_polynomial_curvature",
+      "case": "average_refine_parameters_polynomial_curvature"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_parameters_rational_tangency",
+      "case": "average_refine_parameters_rational_tangency"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_parameters_rational_curvature",
+      "case": "average_refine_parameters_rational_curvature"
+    }
+  ]
+}

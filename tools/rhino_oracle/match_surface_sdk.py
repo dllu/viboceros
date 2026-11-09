@@ -32,9 +32,44 @@ def run_recipe(recipe,host,iterations,tolerance):
     try:
         for definition in recipe['sources']:
             s=host['_object_source'](definition,tolerance);sources.append(s)
+            if recipe.get('insert_transverse_midpoints'):
+                values=sorted(set(float(x)for x in s.KnotsV))
+                for a,b in zip(values,values[1:]):
+                    if not s.KnotsV.InsertKnot(a+(b-a)*.5):raise ValueError('diagnostic transverse insertion failed')
             b=s.DuplicateBrep() if isinstance(s,G.Brep) else s.ToBrep();breps.append(b)
             if b is None or not b.IsValid:raise ValueError('invalid authored matching source')
         before=[record(b) for b in breps]
+        parameter_queries=[]
+        if recipe.get('boundary_parameter_audit'):
+            for index,s in enumerate(sources):
+                side=recipe['side'if index==0 else'target_side']
+                if side not in ['East','West']:raise ValueError('boundary parameter audit requires East/West')
+                u=s.Domain(0).Max if side=='East'else s.Domain(0).Min
+                degree=s.Degree(1);knots=[float(x)for x in s.KnotsV]
+                curve=s.IsoCurve(1,u)
+                try:
+                    for j in range(s.Points.CountV):
+                        v=sum(knots[j:j+degree])/degree;p=s.PointAt(u,v)
+                        ok,cv=curve.ClosestPoint(p)
+                        if not ok:raise ValueError('diagnostic boundary inverse failed')
+                        ok,su,sv=s.ClosestPoint(p)
+                        if not ok:raise ValueError('diagnostic surface inverse failed')
+                        def evaluated(a,b):
+                            ok,point,derivatives=s.Evaluate(a,b,1)
+                            if not ok:raise ValueError('diagnostic surface evaluation failed')
+                            return dict(point=[float(point.X),float(point.Y),float(point.Z)],
+                                du=[float(derivatives[0].X),float(derivatives[0].Y),float(derivatives[0].Z)],
+                                dv=[float(derivatives[1].X),float(derivatives[1].Y),float(derivatives[1].Z)])
+                        query=dict(source=index,u=float(u),v=float(v),
+                            curve_v=float(cv),surface_uv=[float(su),float(sv)],
+                            direct=evaluated(u,v),curve=evaluated(u,cv),surface=evaluated(su,sv))
+                        if recipe.get('edge_parameter_audit'):
+                            edge_point=curve.PointAt(v);ok,eu,ev=s.ClosestPoint(edge_point)
+                            if not ok:raise ValueError('diagnostic edge surface inverse failed')
+                            query.update(edge_uv=[float(eu),float(ev)],edge=evaluated(eu,ev),
+                                edge_point=[float(edge_point.X),float(edge_point.Y),float(edge_point.Z)])
+                        parameter_queries.append(query)
+                finally:curve.Dispose()
         continuity={'None':getattr(G.Continuity,'None'),'Position':G.Continuity.C0_continuous,
             'Tangency':G.Continuity.G1_continuous,'Curvature':G.Continuity.G2_continuous}
         settings=G.MatchSrfSettings(continuity[recipe['continuity']],continuity[recipe['other_end']])
@@ -49,6 +84,11 @@ def run_recipe(recipe,host,iterations,tolerance):
         value=dict(prescribed_case=recipe,inputs=before,source_unchanged=True,success=bool(success),
             output=record(matched) if matched is not None else None,
             target=record(changed_target) if changed_target is not None else None)
+        if recipe.get('settings_audit'):
+            value['configured_settings']=dict(enabled=bool(settings.RefineMatch),
+                distance=float(settings.RefinePositionalTolerance),angle=float(settings.RefineAngleToleranceRadians),
+                curvature=float(settings.RefineCurvatureTolerance))
+        if recipe.get('boundary_parameter_audit'):value['boundary_parameter_audit']=parameter_queries
         if recipe.get('match_to_curve_levels'):
             value['prefit_audit']=[]
             variants=[('edge',False,0.)]

@@ -1,0 +1,92 @@
+[
+  {
+    "family": "match_surface_average_refinement_pilot",
+    "archive": "observations/match_surface_average_refinement_pilot.json.gz",
+    "log": "capture-refinement-pilot.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_pilot > /tmp/match-average-refinement-pilot.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-pilot.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "d0137aaa0aadd712626e55006d77deca3f3a0a6557948bb2c59b5b8d73fb59b0",
+    "request_sha256": "32ab1520666698b190a034c4d9c980dbe64f182574cc86b20f2577534fe5f1be"
+  },
+  {
+    "family": "match_surface_average_refinement_steps",
+    "archive": "observations/match_surface_average_refinement_steps.json.gz",
+    "log": "capture-refinement-steps-retry.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_steps > /tmp/match-average-refinement-steps-retry.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-steps-retry.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "bcf80db205eb75a520712fe5a0fd5687b89394157f73585d95b38171fd73195f",
+    "request_sha256": "c3b591c169559f3eb33dd7a56b86bf3d781322196f8cddf7cdd2bb3ace172774"
+  },
+  {
+    "family": "match_surface_average_refinement_iso",
+    "archive": "observations/match_surface_average_refinement_iso.json.gz",
+    "log": "capture-refinement-iso.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_iso > /tmp/match-average-refinement-iso.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-iso.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "1966f4b5f1bda0e6347a083ee2ff2f6dcf60c790bc1a3f49207a1a994f7a202f",
+    "request_sha256": "253af37560b07fc6521be428e89b7962550b8d397c79529bc25115aa94023b64"
+  },
+  {
+    "family": "match_surface_average_refinement_tolerances",
+    "archive": "observations/match_surface_average_refinement_tolerances.json.gz",
+    "log": "capture-refinement-tolerances.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_tolerances > /tmp/match-average-refinement-tolerances.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-tolerances.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "6fd7eee84bb86a384ece7cc7b8812d679124fedf4e79ba2f09930095ff4dc504",
+    "request_sha256": "48122bcf0922cdf4c82df6b1e5b8bc3d0a05272a352325fcd18d1eaeaafe1449"
+  },
+  {
+    "family": "match_surface_average_refinement_parameters",
+    "archive": "observations/match_surface_average_refinement_parameters.json.gz",
+    "log": "capture-refinement-parameters.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_parameters > /tmp/match-average-refinement-parameters.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-parameters.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "b62d213ab4e579b0ce174e3a93dcd698dd87ab2cb7c24b5d6d5629ab50490f9e",
+    "request_sha256": "5d1e6b60a096403701a436b306ce4141d8f43285fc53976539bfcf600b66123e"
+  },
+  {
+    "family": "match_surface_average_refinement_edge_parameters",
+    "archive": "observations/match_surface_average_refinement_edge_parameters.json.gz",
+    "log": "capture-refinement-edge-parameters.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_match_surface_average_refinement_edge_parameters > /tmp/match-average-refinement-edge-parameters.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/match-average-refinement-edge-parameters.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "9091d0bf018dda95d30850ad6ece99547aa3567dd45e2cdfaf0b75c8cae15e12",
+    "request_sha256": "eec8b2e33767a182df49967ccd992fe8460f425e9ce206c37885f331a998b588"
+  }
+]

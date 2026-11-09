@@ -51,4 +51,26 @@ class SurfaceAverageProbeTests(unittest.TestCase):
             for obj in [output,target]:self.assertEqual(obj.Dispose.call_count,int(stage!='native'))
         self.assertEqual(PILOT[key],original)
 
+    def test_composition_diagnostic_keeps_raw_flags_and_exposes_invalid_calls(self):
+        key='average_refine_steps_rational_tangency_00';recipe=copy.deepcopy(sdk.CASES[key])
+        surface=dict(degree=[3,3],control_count=[4,4],knots_u=[0.]*4+[1.]*4,
+            knots_v=[0.]*4+[1.]*4,control_points=[dict(point=[i,j,0.],weight=1.)for j in range(4)for i in range(4)])
+        result=lambda:dict(success=True,output=dict(surfaces=[copy.deepcopy(surface)]),target=dict(surfaces=[copy.deepcopy(surface)]))
+        for failure in [False,True]:
+            primary=result();responses=[(primary,7),(result(),0),(result(),0)]
+            if failure:responses[1]=ValueError('invalid surface match result')
+            with self.subTest(failure=failure),mock.patch.object(sdk,'run_recipe',side_effect=responses)as run:
+                value,elapsed=sdk.run(dict(op='average_surface_sdk',id=key,case=key),None,1,dict())
+                self.assertEqual(elapsed,7);self.assertEqual(run.call_count,2 if failure else 3)
+                for call in run.call_args_list[1:]:
+                    following=call.args[0]
+                    self.assertTrue(following['insert_transverse_midpoints']);self.assertFalse(following['refine'])
+                    self.assertTrue(following['reverse_match']);self.assertFalse(following['reverse_target'])
+                    self.assertNotIn('average_pass_audit',following);self.assertEqual(len(following['sources']),2)
+                audit=value['average_pass_audit']
+                self.assertEqual([x['round']for x in audit],[1]if failure else[1,2])
+                self.assertEqual(audit[0]['status'],'invalid'if failure else'returned')
+                if failure:self.assertEqual(audit[0]['error'],'invalid surface match result')
+        self.assertEqual(sdk.CASES[key],recipe)
+
 if __name__=='__main__':unittest.main()

@@ -104,6 +104,67 @@ for rational in [False,True]:
             CURVATURE_NONUNIFORM[key]=value
 CASES.update(copy.deepcopy(CURVATURE_NONUNIFORM))
 
+REFINEMENT_PILOT={}
+for kind in ['polynomial','rational']:
+    for mode in ['Position','Tangency','Curvature']:
+        for first,second in [(False,False),(False,True),(True,False),(True,True)]:
+            value=copy.deepcopy(FINAL['match_f_'+kind+'_'+mode.lower()])
+            value.update(average=True,refine=True,reverse_match=first,reverse_target=second,settings_audit=True)
+            key='average_refine_'+kind+'_'+mode.lower()+'_'+str(int(first))+str(int(second))
+            REFINEMENT_PILOT[key]=value
+        value=copy.deepcopy(FINAL['match_f_'+kind+'_'+mode.lower()])
+        value.update(average=True,refine=True,reverse_match=True,reverse_target=False,settings_audit=True,
+                     distance_tolerance=10.,angle_tolerance=1.,curvature_tolerance=100.)
+        REFINEMENT_PILOT['average_refine_'+kind+'_'+mode.lower()+'_relaxed']=value
+CASES.update(copy.deepcopy(REFINEMENT_PILOT))
+
+REFINEMENT_STEPS={}
+for kind in ['polynomial','rational']:
+    for mode in ['Tangency','Curvature']:
+        for first,second in [(False,False),(False,True),(True,True)]:
+            value=copy.deepcopy(FINAL['match_f_'+kind+'_'+mode.lower()])
+            value.update(average=True,reverse_match=first,reverse_target=second,settings_audit=True,average_pass_audit=True)
+            REFINEMENT_STEPS['average_refine_steps_'+kind+'_'+mode.lower()+'_'+str(int(first))+str(int(second))]=value
+CASES.update(copy.deepcopy(REFINEMENT_STEPS))
+
+REFINEMENT_ISO={}
+for kind in ['polynomial','rational']:
+    for mode in ['Tangency','Curvature']:
+        for first,second in [(False,False),(True,False)]:
+            for iso in ['MatchTarget','Perpendicular','Preserve']:
+                value=copy.deepcopy(FINAL['match_f_'+kind+'_'+mode.lower()])
+                value.update(average=True,refine=True,reverse_match=first,reverse_target=second,settings_audit=True,iso=iso)
+                REFINEMENT_ISO['average_refine_iso_'+kind+'_'+mode.lower()+'_'+str(int(first))+str(int(second))+'_'+iso.lower()]=value
+CASES.update(copy.deepcopy(REFINEMENT_ISO))
+
+REFINEMENT_TOLERANCES={}
+for mode in ['Tangency','Curvature']:
+    for first,second in [(False,False),(False,True),(True,False),(True,True)]:
+        for angle in [.001,1.,3.]:
+            value=copy.deepcopy(FINAL['match_f_polynomial_'+mode.lower()])
+            value.update(average=True,refine=True,reverse_match=first,reverse_target=second,settings_audit=True,angle_tolerance=angle)
+            REFINEMENT_TOLERANCES['average_refine_tolerance_'+mode.lower()+'_'+str(int(first))+str(int(second))+'_'+str(angle)]=value
+for flags in ['00','11']:
+    for curvature in [1e-5,100.]:
+        value=copy.deepcopy(REFINEMENT_PILOT['average_refine_polynomial_curvature_'+flags])
+        value['curvature_tolerance']=curvature
+        REFINEMENT_TOLERANCES['average_refine_tolerance_curvature_'+flags+'_percent_'+str(curvature)]=value
+CASES.update(copy.deepcopy(REFINEMENT_TOLERANCES))
+
+REFINEMENT_PARAMETERS={}
+for kind in ['polynomial','rational']:
+    for mode in ['Tangency','Curvature']:
+        value=copy.deepcopy(REFINEMENT_STEPS['average_refine_steps_'+kind+'_'+mode.lower()+'_00'])
+        value['boundary_parameter_audit']=True
+        REFINEMENT_PARAMETERS['average_refine_parameters_'+kind+'_'+mode.lower()]=value
+CASES.update(copy.deepcopy(REFINEMENT_PARAMETERS))
+
+REFINEMENT_EDGE_PARAMETERS={}
+for name,recipe in REFINEMENT_PARAMETERS.items():
+    value=copy.deepcopy(recipe);value['edge_parameter_audit']=True
+    REFINEMENT_EDGE_PARAMETERS[name.replace('refine_parameters_','refine_edge_parameters_')]=value
+CASES.update(copy.deepcopy(REFINEMENT_EDGE_PARAMETERS))
+
 
 def request(names=None):
     return dict(protocol_version=1,iterations=1,

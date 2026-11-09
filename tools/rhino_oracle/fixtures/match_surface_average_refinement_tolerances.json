@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_00_0.001",
+      "case": "average_refine_tolerance_tangency_00_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_00_1.0",
+      "case": "average_refine_tolerance_tangency_00_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_00_3.0",
+      "case": "average_refine_tolerance_tangency_00_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_01_0.001",
+      "case": "average_refine_tolerance_tangency_01_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_01_1.0",
+      "case": "average_refine_tolerance_tangency_01_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_01_3.0",
+      "case": "average_refine_tolerance_tangency_01_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_10_0.001",
+      "case": "average_refine_tolerance_tangency_10_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_10_1.0",
+      "case": "average_refine_tolerance_tangency_10_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_10_3.0",
+      "case": "average_refine_tolerance_tangency_10_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_11_0.001",
+      "case": "average_refine_tolerance_tangency_11_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_11_1.0",
+      "case": "average_refine_tolerance_tangency_11_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_tangency_11_3.0",
+      "case": "average_refine_tolerance_tangency_11_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_00_0.001",
+      "case": "average_refine_tolerance_curvature_00_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_00_1.0",
+      "case": "average_refine_tolerance_curvature_00_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_00_3.0",
+      "case": "average_refine_tolerance_curvature_00_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_01_0.001",
+      "case": "average_refine_tolerance_curvature_01_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_01_1.0",
+      "case": "average_refine_tolerance_curvature_01_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_01_3.0",
+      "case": "average_refine_tolerance_curvature_01_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_10_0.001",
+      "case": "average_refine_tolerance_curvature_10_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_10_1.0",
+      "case": "average_refine_tolerance_curvature_10_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_10_3.0",
+      "case": "average_refine_tolerance_curvature_10_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_11_0.001",
+      "case": "average_refine_tolerance_curvature_11_0.001"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_11_1.0",
+      "case": "average_refine_tolerance_curvature_11_1.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_11_3.0",
+      "case": "average_refine_tolerance_curvature_11_3.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_00_percent_1e-05",
+      "case": "average_refine_tolerance_curvature_00_percent_1e-05"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_00_percent_100.0",
+      "case": "average_refine_tolerance_curvature_00_percent_100.0"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_11_percent_1e-05",
+      "case": "average_refine_tolerance_curvature_11_percent_1e-05"
+    },
+    {
+      "op": "average_surface_sdk",
+      "id": "average_refine_tolerance_curvature_11_percent_100.0",
+      "case": "average_refine_tolerance_curvature_11_percent_100.0"
+    }
+  ]
+}
