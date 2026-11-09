@@ -1168,12 +1168,13 @@ fn offset_polyline(
     )?))
 }
 
-struct OffsetPolylineLayout {
-    normal: UnitVector3,
-    corners: Vec<(Point3, Point3)>,
+pub(crate) struct OffsetPolylineLayout {
+    pub normal: UnitVector3,
+    pub corners: Vec<(Point3, Point3)>,
+    pub inside_corners: Vec<bool>,
 }
 
-fn polyline_offset_layout(
+pub(crate) fn polyline_offset_layout(
     polyline: &Polyline3,
     distance: Real,
     fallback: UnitVector3,
@@ -1193,12 +1194,14 @@ fn polyline_offset_layout(
         .map(|direction| normal.as_vector().cross(*direction))
         .collect::<Result<Vec<_>, _>>()?;
     let mut corners = Vec::with_capacity(vertices.len());
+    let mut inside_corners = Vec::with_capacity(vertices.len());
     let unique_count = if closed {
         segment_count
     } else {
         vertices.len()
     };
     for index in 0..unique_count {
+        let mut inside = false;
         let corner = if !closed && index == 0 {
             let point = vertices[0].translated(lefts[0].scaled(distance)?)?;
             (point, point)
@@ -1214,6 +1217,7 @@ fn polyline_offset_layout(
             let turn = directions[previous]
                 .cross(directions[index])?
                 .dot(normal.as_vector())?;
+            inside = turn * distance > tolerance.angular() * distance.abs();
             if corner_style != CurveOffsetCornerStyle::Sharp
                 && turn * distance < -tolerance.angular() * distance.abs()
             {
@@ -1247,6 +1251,7 @@ fn polyline_offset_layout(
             });
         }
         corners.push(corner);
+        inside_corners.push(inside);
     }
     for index in 0..segment_count {
         let start = corners[index].1;
@@ -1260,7 +1265,11 @@ fn polyline_offset_layout(
             });
         }
     }
-    Ok(OffsetPolylineLayout { normal, corners })
+    Ok(OffsetPolylineLayout {
+        normal,
+        corners,
+        inside_corners,
+    })
 }
 
 fn offset_polyline_open_gaps(
@@ -1372,25 +1381,35 @@ fn round_offset_polyline(
             continue;
         }
         let center = source.vertices()[next];
-        let start_radial = center.vector_to(start)?.normalized_nonzero()?;
-        let end_radial = center.vector_to(end)?.normalized_nonzero()?;
-        let sine = start_radial
-            .as_vector()
-            .cross(end_radial.as_vector())?
-            .dot(normal.as_vector())?;
-        let cosine = start_radial.as_vector().dot(end_radial.as_vector())?;
-        let sweep = sine.abs().atan2(cosine);
-        let arc_normal = if sine < 0.0 {
-            normal.opposite()
-        } else {
-            normal
-        };
-        let circle = Circle3::try_from_center_point(center, start, arc_normal, tolerance)?;
-        segments.push(CurveSegment3::Arc(CircularArc3::try_from_circle_sweep(
-            circle, sweep,
+        segments.push(CurveSegment3::Arc(polyline_offset_corner_arc(
+            center, start, end, normal, tolerance,
         )?));
     }
     PolyCurve3::try_new(segments)?.try_reparameterized(source.domain())
+}
+
+pub(crate) fn polyline_offset_corner_arc(
+    center: Point3,
+    start: Point3,
+    end: Point3,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<CircularArc3, GeometryError> {
+    let start_radial = center.vector_to(start)?.normalized_nonzero()?;
+    let end_radial = center.vector_to(end)?.normalized_nonzero()?;
+    let sine = start_radial
+        .as_vector()
+        .cross(end_radial.as_vector())?
+        .dot(normal.as_vector())?;
+    let cosine = start_radial.as_vector().dot(end_radial.as_vector())?;
+    let sweep = sine.abs().atan2(cosine);
+    let arc_normal = if sine < 0.0 {
+        normal.opposite()
+    } else {
+        normal
+    };
+    let circle = Circle3::try_from_center_point(center, start, arc_normal, tolerance)?;
+    CircularArc3::try_from_circle_sweep(circle, sweep)
 }
 
 #[allow(clippy::too_many_arguments)]

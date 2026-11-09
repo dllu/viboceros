@@ -1,8 +1,10 @@
 //! Loose offset ribbons with complete source curves and shared seam topology.
+mod polyline;
 use crate::{
     Brep, CurveContinuity, CurveEditPointSolver, GeometryError, NurbsCurve, NurbsSurface, Real,
     Tolerance, UnitVector3, join_breps,
 };
+pub use polyline::{try_polyline_ribbon, try_polyline_ribbon_with_ruled};
 
 /// Build a loose polynomial offset ribbon. U follows source-to-offset rulings;
 /// V retains the source's chart. BothSides builds and sews two independent sides

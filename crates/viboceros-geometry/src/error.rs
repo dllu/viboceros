@@ -215,6 +215,8 @@ pub enum GeometryError {
     RuledSurfaceResourceLimit { maximum: usize },
     #[error("both ribbon sides could not be sewn into one shell")]
     RibbonJoinFailed,
+    #[error("ribbon construction exceeds the limit of {maximum} patches")]
+    RibbonResourceLimit { maximum: usize },
     #[error("curve parameter intervals must have positive finite length")]
     InvalidCurveParameterInterval,
     #[error("polyline parameters must be finite, strictly increasing, and match its vertices")]

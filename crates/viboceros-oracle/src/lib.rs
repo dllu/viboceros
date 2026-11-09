@@ -295,6 +295,7 @@ mod non_manifold_selection;
 pub mod planar_regions;
 mod planar_surface;
 mod ribbon_loose;
+mod ribbon_polyline;
 mod surface_deviation_samples;
 mod surface_fit_bounded;
 mod surface_fit_budget;
@@ -1172,6 +1173,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: ribbon_loose::Fixture,
+    },
+    PolylineRibbonGeometry {
+        id: String,
+        #[serde(flatten)]
+        fixture: ribbon_polyline::Fixture,
     },
     CurveFilletCornersGeometry {
         id: String,
@@ -3142,6 +3148,7 @@ impl Operation {
             | Self::CurveOffsetGeometry { id, .. }
             | Self::CurveLooseOffsetGeometry { id, .. }
             | Self::LooseRibbonGeometry { id, .. }
+            | Self::PolylineRibbonGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
             | Self::CurveFilletPairGeometry { id, .. }
             | Self::CurveFilletPairParts { id, .. }
@@ -4052,6 +4059,9 @@ fn execute(
         }
         Operation::LooseRibbonGeometry { fixture, .. } => {
             ribbon_loose::run(fixture, iterations, tolerance)?
+        }
+        Operation::PolylineRibbonGeometry { fixture, .. } => {
+            ribbon_polyline::run(fixture, iterations, tolerance)?
         }
         Operation::CurveFilletCornersGeometry {
             vertices,

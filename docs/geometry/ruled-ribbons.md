@@ -36,5 +36,6 @@ in 30 cases, with a both-sided circle difference and the unresolved face mapping
 Loop winding and object order are not qualified by the incidence comparison.
 
 These are kernel and instrumentation APIs. `Ribbon` remains unregistered.
-Non-loose corner construction, self-intersection trimming, command getters,
+[Ordinary polyline corner construction](polyline-ribbons.md) has a separate
+kernel API. Smooth offsets, self-intersection trimming, command getters,
 metadata/history and native performance parity remain unfinished.

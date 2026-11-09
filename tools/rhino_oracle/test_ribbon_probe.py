@@ -5,11 +5,12 @@ from .ribbon_probe import validate
 from .generate_ribbon import request as ribbons
 from .generate_curve_loose_offset import request as offsets
 from .generate_curve_loose_offset_types import request as types
+from .generate_ribbon_polyline import request as polylines
 
 
 class RibbonProbeTests(unittest.TestCase):
     def test_all_authored_operations_validate(self):
-        for factory in [ribbons,offsets,types]:
+        for factory in [ribbons,offsets,types,polylines]:
             for op in factory()['operations']:validate(op)
 
     def test_nonfinite_boolean_and_zero_distances_are_rejected(self):

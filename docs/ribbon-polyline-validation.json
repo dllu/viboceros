@@ -1,0 +1,101 @@
+{
+  "baseline_revision": "6bc122c7f68a3743605fc2c5d7c7a964793a53ce",
+  "new_headless_rhino_launches": 1,
+  "full_ribbon_command": false,
+  "ribbon_registered": false,
+  "smooth_corner_implemented": false,
+  "loop_winding_compared": false,
+  "output_domains_compared": false,
+  "between_station_distance_certified": false,
+  "backends": {
+    "portable": {
+      "complete_image_matches": 50,
+      "incidence_matches": 42,
+      "face_reversal_matches": 31,
+      "image_unproved_ids": [
+        "zigzag-sharp",
+        "zigzag-both-sharp"
+      ],
+      "point_incidence_gap_ids": [
+        "right-none",
+        "acute-none",
+        "obtuse-none",
+        "zigzag-none",
+        "closed-none",
+        "tilted-none",
+        "reversed-none",
+        "native-none"
+      ],
+      "face_reversal_difference_ids": [
+        "right-both-sharp",
+        "right-both-round",
+        "right-both-chamfer",
+        "right-both-none",
+        "acute-both-sharp",
+        "acute-both-round",
+        "acute-both-chamfer",
+        "acute-both-none",
+        "obtuse-both-sharp",
+        "obtuse-both-round",
+        "obtuse-both-chamfer",
+        "obtuse-both-none",
+        "zigzag-both-round",
+        "zigzag-both-chamfer",
+        "zigzag-both-none",
+        "closed-both-sharp",
+        "closed-both-round",
+        "closed-both-chamfer",
+        "closed-both-none"
+      ],
+      "maximum_image_bound": 2.28878339926112e-15,
+      "maximum_incidence_geometry_bound": 3.2220261801093857e-15,
+      "maximum_archive_support_bound": 8.881784197001256e-16
+    },
+    "native": {
+      "complete_image_matches": 50,
+      "incidence_matches": 42,
+      "face_reversal_matches": 31,
+      "image_unproved_ids": [
+        "zigzag-sharp",
+        "zigzag-both-sharp"
+      ],
+      "point_incidence_gap_ids": [
+        "right-none",
+        "acute-none",
+        "obtuse-none",
+        "zigzag-none",
+        "closed-none",
+        "tilted-none",
+        "reversed-none",
+        "native-none"
+      ],
+      "face_reversal_difference_ids": [
+        "right-both-sharp",
+        "right-both-round",
+        "right-both-chamfer",
+        "right-both-none",
+        "acute-both-sharp",
+        "acute-both-round",
+        "acute-both-chamfer",
+        "acute-both-none",
+        "obtuse-both-sharp",
+        "obtuse-both-round",
+        "obtuse-both-chamfer",
+        "obtuse-both-none",
+        "zigzag-both-round",
+        "zigzag-both-chamfer",
+        "zigzag-both-none",
+        "closed-both-sharp",
+        "closed-both-round",
+        "closed-both-chamfer",
+        "closed-both-none"
+      ],
+      "maximum_image_bound": 2.28878339926112e-15,
+      "maximum_incidence_geometry_bound": 3.2220261801093857e-15,
+      "maximum_archive_support_bound": 8.881784197001256e-16
+    }
+  },
+  "existing_loose_ribbon_regressions": true,
+  "existing_curve_offset_regressions": true,
+  "receipts": "ribbon-polyline-proof/receipts.json"
+}
