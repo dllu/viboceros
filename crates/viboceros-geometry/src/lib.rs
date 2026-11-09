@@ -140,7 +140,7 @@ mod surface_fit;
 mod surface_rebuild;
 pub use surface_fit::{
     BoundedSurfaceFit, BoundedSurfaceImageFit, MAX_SURFACE_FIT_AXIS, SurfaceFitOptions,
-    SurfaceFitRefinementBudget, try_fit_surface_image_in_basis,
+    SurfaceFitRefinementBudget, SurfaceImageFitCertificate, try_fit_surface_image_in_basis,
     try_fit_surface_image_in_basis_with_solver, try_fit_surface_image_with_bound,
     try_fit_surface_image_with_bound_with_solver, try_fit_surface_in_basis,
     try_fit_surface_in_basis_with_solver, try_fit_surface_with_bound,

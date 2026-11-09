@@ -43,15 +43,19 @@ fn run_with_metric(
         maximum_control_count: fixture.maximum_control_count,
     };
     let limit = fixture.absolute_tolerance.unwrap_or(tolerance.absolute());
-    let build = || -> Result<Option<(NurbsSurface, f64)>, ProbeError> {
+    let build = || -> Result<Option<(NurbsSurface, f64, Option<Value>)>, ProbeError> {
         #[cfg(feature = "native-smlib")]
         {
             if image {
-                viboceros_smlib::fit_surface_image_with_bound(&source, options, limit)
-                    .map(|r| r.map(|r| (r.surface, r.maximum_deviation_bound)))
+                viboceros_smlib::fit_surface_image_with_bound(&source, options, limit).map(|r| {
+                    r.map(|r| {
+                        let certificate = surface_fit_certificate::value(&r.certificate);
+                        (r.surface, r.maximum_deviation_bound, Some(certificate))
+                    })
+                })
             } else {
                 viboceros_smlib::fit_surface_with_bound(&source, options, limit)
-                    .map(|r| r.map(|r| (r.surface, r.maximum_deviation_bound)))
+                    .map(|r| r.map(|r| (r.surface, r.maximum_deviation_bound, None)))
             }
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
@@ -61,12 +65,15 @@ fn run_with_metric(
             if image {
                 Ok(
                     viboceros_geometry::try_fit_surface_image_with_bound(&source, options, limit)?
-                        .map(|r| (r.surface, r.maximum_deviation_bound)),
+                        .map(|r| {
+                            let certificate = surface_fit_certificate::value(&r.certificate);
+                            (r.surface, r.maximum_deviation_bound, Some(certificate))
+                        }),
                 )
             } else {
                 Ok(
                     viboceros_geometry::try_fit_surface_with_bound(&source, options, limit)?
-                        .map(|r| (r.surface, r.maximum_deviation_bound)),
+                        .map(|r| (r.surface, r.maximum_deviation_bound, None)),
                 )
             }
         }
@@ -78,10 +85,14 @@ fn run_with_metric(
     }
     let elapsed =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
-    Ok((
-        json!({"surface":result.as_ref().map(|r|nurbs_surface_definition_value(&r.0)),
+    let mut value = json!({"surface":result.as_ref().map(|r|nurbs_surface_definition_value(&r.0)),
         "maximum_deviation_bound":result.as_ref().map(|r|r.1),
-        "before":nurbs_surface_definition_value(&source),"after":nurbs_surface_definition_value(&source)}),
-        elapsed,
-    ))
+        "before":nurbs_surface_definition_value(&source),"after":nurbs_surface_definition_value(&source)});
+    if image {
+        value["certificate"] = result
+            .as_ref()
+            .and_then(|r| r.2.clone())
+            .unwrap_or(Value::Null);
+    }
+    Ok((value, elapsed))
 }

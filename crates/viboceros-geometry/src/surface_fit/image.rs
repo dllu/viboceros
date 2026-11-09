@@ -1,7 +1,10 @@
 //! Geometric image fitting with a certified corner-quad proposal.
 use super::*;
 mod basis;
+mod certificate;
+mod correspondence;
 pub use basis::{try_fit_surface_image_in_basis, try_fit_surface_image_in_basis_with_solver};
+pub use certificate::SurfaceImageFitCertificate;
 
 /// A polynomial fit with a complete symmetric Hausdorff bound on its image.
 /// This type makes no normalized-UV correspondence promise.
@@ -9,13 +12,17 @@ pub use basis::{try_fit_surface_image_in_basis, try_fit_surface_image_in_basis_w
 pub struct BoundedSurfaceImageFit {
     pub surface: NurbsSurface,
     pub maximum_deviation_bound: Real,
+    /// Retained complete correspondence, independently verifiable on the result.
+    pub certificate: SurfaceImageFitCertificate,
 }
 
 /// Fit a complete untrimmed surface image, permitting UV speed changes.
 /// First try the ordinary one-patch parameter fit. If it declines, propose a
 /// bilinear corner patch elevated to the requested degrees and admit it only
-/// through the exact planar image certificate. Otherwise continue the ordinary
-/// adaptive parameter fitter. Its bound also bounds the complete images.
+/// through the exact planar image certificate. Each remaining candidate may
+/// also receive an independent monotone U/V map proposed from mid-isocurves.
+/// Samples reject poor proposals; only a complete mapped certificate admits
+/// them. Otherwise continue ordinary parameter-guided basis refinement.
 ///
 /// Preserves source domains, not parameter correspondence. Uses SurfaceFitOptions
 /// and its degree/control limits; zero is strict. A declined image proposal is
@@ -41,19 +48,36 @@ pub fn try_fit_surface_image_with_bound_with_solver<E: From<GeometryError>>(
     limit: Real,
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<Option<BoundedSurfaceImageFit>, E> {
+    let mut certificate = SurfaceImageFitCertificate::NormalizedUv;
     Ok(
-        adaptive::fit_with_fallback(source, options, limit, solve, || {
-            let surface = corner_patch(source, options.degree)?;
-            Ok(source
-                .planar_surface_image_deviation_bound(&surface, limit)?
-                .map(|maximum_deviation_bound| BoundedSurfaceFit {
-                    surface,
+        adaptive::fit_with_fallback(source, options, limit, solve, |candidate, first| {
+            if first {
+                let surface = corner_patch(source, options.degree)?;
+                if let Some(maximum_deviation_bound) =
+                    source.planar_surface_image_deviation_bound(&surface, limit)?
+                {
+                    certificate = SurfaceImageFitCertificate::PlanarQuad;
+                    return Ok(Some(BoundedSurfaceFit {
+                        surface,
+                        maximum_deviation_bound,
+                    }));
+                }
+            }
+            if let Some((maximum_deviation_bound, maps)) =
+                correspondence::certify(source, candidate, limit)?
+            {
+                certificate = SurfaceImageFitCertificate::SeparableUv(maps);
+                return Ok(Some(BoundedSurfaceFit {
+                    surface: candidate.clone(),
                     maximum_deviation_bound,
-                }))
+                }));
+            }
+            Ok(None)
         })?
         .map(|fit| BoundedSurfaceImageFit {
             surface: fit.surface,
             maximum_deviation_bound: fit.maximum_deviation_bound,
+            certificate,
         }),
     )
 }

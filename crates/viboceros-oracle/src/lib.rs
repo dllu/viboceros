@@ -296,6 +296,7 @@ mod planar_surface;
 mod surface_deviation_samples;
 mod surface_fit_bounded;
 mod surface_fit_budget;
+mod surface_fit_certificate;
 mod surface_fit_image_basis;
 mod surface_knot_reduction;
 mod surface_mapped_bound;

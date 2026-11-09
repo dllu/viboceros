@@ -47,6 +47,7 @@ pub(super) fn run(
     Ok((
         json!({"surface":result.as_ref().map(|r|nurbs_surface_definition_value(&r.surface)),
         "maximum_deviation_bound":result.as_ref().map(|r|r.maximum_deviation_bound),
+        "certificate":result.as_ref().map(|r|surface_fit_certificate::value(&r.certificate)),
         "before":nurbs_surface_definition_value(&source),"after":nurbs_surface_definition_value(&source)}),
         elapsed,
     ))

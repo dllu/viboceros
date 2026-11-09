@@ -20,6 +20,8 @@ the surfaces have different images. Invalid inputs and solver failures return er
 admission with external solvers. `viboceros_smlib::fit_surface_image_in_basis`
 uses two batched usd-brep collocation solves through the Cartesian adapter.
 Both retain the same certificate and immutable-input contract.
+The result also retains its `SurfaceImageFitCertificate::SeparableUv` maps;
+`certificate.verify(source, candidate, limit)` rechecks complete image accuracy.
 
 The local JSON operation `surface_fit_image_in_basis` accepts `surface`,
 `degree_u`, `degree_v`, `knots_u`, `knots_v`, `correspondence`, and optional

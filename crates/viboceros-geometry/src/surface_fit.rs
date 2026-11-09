@@ -8,7 +8,7 @@ pub use adaptive::{
 };
 pub use budget::SurfaceFitRefinementBudget;
 pub use image::{
-    BoundedSurfaceImageFit, try_fit_surface_image_in_basis,
+    BoundedSurfaceImageFit, SurfaceImageFitCertificate, try_fit_surface_image_in_basis,
     try_fit_surface_image_in_basis_with_solver, try_fit_surface_image_with_bound,
     try_fit_surface_image_with_bound_with_solver,
 };

@@ -47,6 +47,7 @@ pub fn try_fit_surface_image_in_basis_with_solver<E: From<GeometryError>>(
         .map(|maximum_deviation_bound| BoundedSurfaceImageFit {
             surface,
             maximum_deviation_bound,
+            certificate: SurfaceImageFitCertificate::SeparableUv(correspondence.map(<[_]>::to_vec)),
         }))
 }
 

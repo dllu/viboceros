@@ -37,6 +37,7 @@ The local JSON operation `surface_mapped_deviation_bound` accepts `first`,
 `second`, `correspondence: [u_pairs,v_pairs]` and optional `absolute_tolerance`
 (default request tolerance). It returns `certified` and
 `maximum_deviation_bound`; a declined bound is null, while exact agreement is zero.
+Surface inputs accept the authored schema or the existing fitted/native readback.
 
 Kernel regressions cover changed clocks in both axes on a curved rational
 tensor, inverse maps, swapped axes, independent negative weight gauges,

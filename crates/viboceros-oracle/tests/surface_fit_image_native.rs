@@ -22,7 +22,7 @@ fn fit(
 }
 
 #[test]
-fn image_fitting_covers_all_planar_native_outputs_and_preserves_curved_declines() {
+fn automatic_image_fitting_certifies_complete_sources_and_keeps_native_differences_explicit() {
     let mut counts = std::collections::BTreeMap::<&str, usize>::new();
     let mut cases = 0;
     let mut planar = 0;
@@ -61,6 +61,8 @@ fn image_fitting_covers_all_planar_native_outputs_and_preserves_curved_declines(
             let mut parameter_bound = None;
             let mut planar_bound = None;
             let mut archive_bound = None;
+            let mut source_rechecked = None;
+            let mut certificate = None;
             if let Some(fit) = &actual {
                 let s = &fit.surface;
                 assert_eq!([s.degree_u(), s.degree_v()], options.degree);
@@ -68,6 +70,20 @@ fn image_fitting_covers_all_planar_native_outputs_and_preserves_curved_declines(
                 assert_eq!(s.domain_u(), source.domain_u());
                 assert_eq!(s.domain_v(), source.domain_v());
                 assert!((0. ..=limit).contains(&fit.maximum_deviation_bound));
+                source_rechecked = fit.certificate.verify(&source, s, limit).unwrap();
+                assert_eq!(
+                    source_rechecked,
+                    Some(fit.maximum_deviation_bound),
+                    "{}: full source certificate",
+                    op["id"]
+                );
+                certificate = Some(match &fit.certificate {
+                    SurfaceImageFitCertificate::NormalizedUv => json!({"type":"normalized_uv"}),
+                    SurfaceImageFitCertificate::PlanarQuad => json!({"type":"planar_quad"}),
+                    SurfaceImageFitCertificate::SeparableUv(maps) => {
+                        json!({"type":"separable_uv","correspondence":maps})
+                    }
+                });
                 let brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(
                     s.clone(),
                     s.domain_u(),
@@ -124,6 +140,7 @@ fn image_fitting_covers_all_planar_native_outputs_and_preserves_curved_declines(
                 "SURFACE_IMAGE_FIT {}",
                 json!({"id":op["id"],"status":status,"planar_fixture":flat,
                 "source_bound":actual.as_ref().map(|f|f.maximum_deviation_bound),"native_parameter_bound":parameter_bound,
+                "source_rechecked_bound":source_rechecked,"certificate":certificate,
                 "native_planar_bound":planar_bound,"archive_bound":archive_bound,"limit":limit,"maximum_controls":[16,16],
                 "controls":actual.as_ref().map(|f|[f.surface.control_point_count_u(),f.surface.control_point_count_v()])})
             );
@@ -167,6 +184,7 @@ fn json_image_metric_defaults_and_zero_are_distinct_from_parameter_fitting() {
     let value = call(&op).unwrap();
     assert!(!value["surface"].is_null());
     assert_eq!(value["maximum_deviation_bound"], 0.);
+    assert_eq!(value["certificate"]["type"], "planar_quad");
     assert_eq!(value["before"], value["after"]);
     let a = captured::surface(&value["before"]);
     let b = captured::surface(&value["surface"]);
@@ -200,4 +218,33 @@ fn json_image_metric_defaults_and_zero_are_distinct_from_parameter_fitting() {
         invalid[key] = value;
         assert!(call(&invalid).is_err());
     }
+}
+
+#[test]
+fn json_curved_fits_return_a_complete_replayable_correspondence() {
+    let query: Value = serde_json::from_slice(
+        &std::fs::read(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../tools/rhino_oracle/fixtures/surface_fit_strips.json"),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let mut op = json!({"op":"surface_fit_image_bounded","id":"curved","surface":query["operations"][0]["surface"],
+        "degree_u":3,"degree_v":1,"maximum_control_count":[4,2],"absolute_tolerance":0.01});
+    let value = call(&op).unwrap();
+    assert!(!value["surface"].is_null());
+    assert_eq!(value["before"], value["after"]);
+    assert_eq!(value["certificate"]["type"], "separable_uv");
+    let recheck = call(&json!({"op":"surface_mapped_deviation_bound","id":"recheck","first":value["before"],
+        "second":value["surface"],"correspondence":value["certificate"]["correspondence"],"absolute_tolerance":0.01})).unwrap();
+    assert_eq!(recheck["certified"], true);
+    assert_eq!(
+        recheck["maximum_deviation_bound"],
+        value["maximum_deviation_bound"]
+    );
+    op["op"] = json!("surface_fit_bounded");
+    let uv = call(&op).unwrap();
+    assert!(uv["surface"].is_null());
+    assert!(uv.get("certificate").is_none());
 }

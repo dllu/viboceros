@@ -51,17 +51,18 @@ pub fn try_fit_surface_with_bound_with_solver<E: From<GeometryError>>(
     limit: Real,
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<Option<BoundedSurfaceFit>, E> {
-    fit_with_fallback(source, options, limit, solve, || Ok(None))
+    fit_with_fallback(source, options, limit, solve, |_, _| Ok(None))
 }
 
-/// A separate image fitter can propose a certified quad after the first
-/// parameter fit declines. The ordinary fitter supplies no such proposal.
+/// A separate image fitter can certify an alternative after parameter admission
+/// declines. The callback receives the current candidate and first-pass flag.
+/// The ordinary UV fitter supplies no alternative admission.
 pub(super) fn fit_with_fallback<E: From<GeometryError>>(
     source: &NurbsSurface,
     options: SurfaceFitOptions,
     limit: Real,
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
-    fallback: impl FnOnce() -> Result<Option<BoundedSurfaceFit>, GeometryError>,
+    mut fallback: impl FnMut(&NurbsSurface, bool) -> Result<Option<BoundedSurfaceFit>, GeometryError>,
 ) -> Result<Option<BoundedSurfaceFit>, E> {
     validate_source(source)?;
     if !limit.is_finite() || limit < 0. {
@@ -78,7 +79,7 @@ pub(super) fn fit_with_fallback<E: From<GeometryError>>(
         .into());
     }
     let domains = [source.domain_u(), source.domain_v()];
-    let mut fallback = Some(fallback);
+    let mut first = true;
     let mut cuts = domains.each_ref().map(|d| vec![*d.start(), *d.end()]);
     let mut cache = HashMap::<(u64, u64), Point3>::new();
     let mut sample = |u: Real, v: Real| -> Result<Point3, GeometryError> {
@@ -130,9 +131,7 @@ pub(super) fn fit_with_fallback<E: From<GeometryError>>(
                 }));
             }
         }
-        if let Some(propose) = fallback.take()
-            && let Some(result) = propose()?
-        {
+        if let Some(result) = fallback(&candidate, std::mem::take(&mut first))? {
             return Ok(Some(result));
         }
         let added = match refine::refine(&candidate, &mut cuts, options, limit, &mut sample) {

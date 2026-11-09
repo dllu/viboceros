@@ -1,0 +1,276 @@
+{
+  "baseline_revision": "4b4072d5ea770b892fcce5fe84b28b6e80812963",
+  "new_rhino_launches": 0,
+  "source_overrides": {
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/lib.rs.gz",
+      "sha256": "80ad9fab401eda8ce9ea81ec556dbb76f3eab2a6c12a27f5f468ea8d493fc632"
+    },
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz",
+      "sha256": "b7c7958b1abdb972b4c89fada7ee4fd5e66dd56bdd23b8e1b0d1a6975eded47c"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz",
+      "sha256": "d7bf1be4d7b336f2bc8ca557398359bccb2877e507ea9a45d61fdda788a4dd74"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image.rs.gz",
+      "sha256": "2f06a55ed2b905d213f6a70abc933c512ffb2850fd7f6bd7728fc586f181e346"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/basis.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis.rs.gz",
+      "sha256": "97d46b74c31edb3b1bde6a2ab0cf5c5f2e78bc892209c6e1d13fffe06798b4f2"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/certificate.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/certificate.rs.gz",
+      "sha256": "0bcdf09a1c5197b37b65666b497686f771f63384c46101793b60fcb1ea2c2427"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/correspondence.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence.rs.gz",
+      "sha256": "b3db014f971eb3377d2ffaac42454e4feca88ae16058e071353a88d43ed09002"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+      "sha256": "af3db94fb60737ef01e0bb08a06347df1444f5be3e9a81e3ca86b397f16efe3b"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/correspondence/tests.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/tests.rs.gz",
+      "sha256": "4f5053f1359bc946f585c2df28bfb110410e839e21d2c14aac24f2a31138f002"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/tests.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/tests.rs.gz",
+      "sha256": "ae6d7e094d5fc747d0ecd68f532426c251f8d856ce04c13ae4d2b3e643b849c1"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/lib.rs.gz",
+      "sha256": "777db0195adf2a877337581344325c88265c75b6eef8dad28d912147daa5cc36"
+    },
+    "crates/viboceros-oracle/src/surface_fit_bounded.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_bounded.rs.gz",
+      "sha256": "b59f2d3e02821166b4cfc329a7865623620fbc9187ce8d8069cbbd387ccd0c46"
+    },
+    "crates/viboceros-oracle/src/surface_fit_certificate.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_certificate.rs.gz",
+      "sha256": "b857c69ef4bf403eecec48a4882bb5fe56cf4d8bbe187645e842d66a4f867c22"
+    },
+    "crates/viboceros-oracle/src/surface_fit_image_basis.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_image_basis.rs.gz",
+      "sha256": "97823de89b871950243d3e05561a458e5d6b8fc248016eae7ef478942200155c"
+    },
+    "crates/viboceros-oracle/src/surface_mapped_bound.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz",
+      "sha256": "d0c0421434246cf34e7646c0a431cf0379385918d9c776408fa5da8a4987f556"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_image_native.rs": {
+      "snapshot": "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/tests/surface_fit_image_native.rs.gz",
+      "sha256": "4dafeb9f2c4a7e451934ac74024943629622e2c5af2671cef5f3b3ed7dbb18b2"
+    },
+    "tools/rhino_oracle/report_surface_image_auto.py": {
+      "snapshot": "docs/surface-image-auto-proof/sources/tools/rhino_oracle/report_surface_image_auto.py.gz",
+      "sha256": "4cb7698cb85ef8ef6adb8e58b790383a08e379f9de38762b7a1901395c6756c3"
+    },
+    "tools/rhino_oracle/test_surface_image_auto_record.py": {
+      "snapshot": "docs/surface-image-auto-proof/sources/tools/rhino_oracle/test_surface_image_auto_record.py.gz",
+      "sha256": "9620e82c193592ac59b0786c0ab97d38a518899b82766574934d1bcc1086b681"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_image_native -- --nocapture",
+      "log": "docs/surface-image-auto-proof/portable.log.gz",
+      "exit_code": 0
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_image_native -- --nocapture",
+      "log": "docs/surface-image-auto-proof/native.log.gz",
+      "exit_code": 0
+    },
+    "uv_portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_adaptive_native automatic_fits_certify_inputs -- --nocapture",
+      "log": "docs/surface-image-auto-proof/uv_portable.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+          "sha256": "53ca02a6acb83396fe1856409479190fbfcb066fdf4c9abf40db8c2056e6af09"
+        },
+        "crates/viboceros-oracle/src/surface_mapped_bound.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz",
+          "sha256": "061a0e1ff307eb4c949e6f593f74a216361efc5b42ebf52c1cbb160c13aed6c9"
+        }
+      }
+    },
+    "uv_native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_adaptive_native automatic_fits_certify_inputs -- --nocapture",
+      "log": "docs/surface-image-auto-proof/uv_native.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+          "sha256": "53ca02a6acb83396fe1856409479190fbfcb066fdf4c9abf40db8c2056e6af09"
+        },
+        "crates/viboceros-oracle/src/surface_mapped_bound.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz",
+          "sha256": "061a0e1ff307eb4c949e6f593f74a216361efc5b42ebf52c1cbb160c13aed6c9"
+        }
+      }
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit:: -- --nocapture",
+      "log": "docs/surface-image-auto-proof/kernel.log.gz",
+      "exit_code": 0
+    },
+    "mapped_json": {
+      "command": "cargo test -p viboceros-oracle --test surface_mapped_bound json_requires -- --nocapture",
+      "log": "docs/surface-image-auto-proof/mapped_json.log.gz",
+      "exit_code": 0
+    },
+    "json_portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_image_native json_curved -- --nocapture",
+      "log": "docs/surface-image-auto-proof/json_portable.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+          "sha256": "53ca02a6acb83396fe1856409479190fbfcb066fdf4c9abf40db8c2056e6af09"
+        }
+      }
+    },
+    "json_native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_image_native json_curved -- --nocapture",
+      "log": "docs/surface-image-auto-proof/json_native.log.gz",
+      "exit_code": 0,
+      "source_overrides": {
+        "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+          "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+          "sha256": "53ca02a6acb83396fe1856409479190fbfcb066fdf4c9abf40db8c2056e6af09"
+        }
+      }
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "log": "docs/surface-image-auto-proof/app.log.gz",
+      "exit_code": 0
+    },
+    "app_native": {
+      "command": "cargo check -p viboceros --features native-smlib",
+      "log": "docs/surface-image-auto-proof/app_native.log.gz",
+      "exit_code": 0
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "log": "docs/surface-image-auto-proof/format.log.gz",
+      "exit_code": 0
+    }
+  },
+  "baselines": {
+    "portable": "docs/surface-image-fit-proof/portable.log.gz",
+    "native": "docs/surface-image-fit-proof/native.log.gz"
+  },
+  "uniform_preflight_baseline": {
+    "log": "docs/surface-image-auto-proof/uniform-preflight-baseline.log.gz",
+    "exit_code": 0,
+    "command": "cargo test -p viboceros-oracle --test surface_fit_image_native -- --nocapture",
+    "source_overrides": {
+      "crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs": {
+        "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz",
+        "sha256": "53ca02a6acb83396fe1856409479190fbfcb066fdf4c9abf40db8c2056e6af09"
+      },
+      "crates/viboceros-oracle/src/surface_mapped_bound.rs": {
+        "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz",
+        "sha256": "061a0e1ff307eb4c949e6f593f74a216361efc5b42ebf52c1cbb160c13aed6c9"
+      },
+      "crates/viboceros-oracle/tests/surface_fit_image_native.rs": {
+        "snapshot": "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/tests/surface_fit_image_native.rs.gz",
+        "sha256": "679d972142037b0e38c19f46751de808d22b36e79e0a356707651ec454765b39"
+      }
+    }
+  },
+  "unqualified_runs": [
+    {
+      "log": "docs/surface-image-auto-proof/missing-test-module.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Initial build before the test module file was created; E0583, no numerical execution."
+    },
+    {
+      "log": "docs/surface-image-auto-proof/obsolete-expectations.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "52 passing tests and two assertions requiring the prior restricted image policy; replaced with independent complete source certificates and strict tighter bounds."
+    },
+    {
+      "log": "docs/surface-image-auto-proof/readback-schema.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Returned legacy surface readback could not be reused as authored input; local mapped-bound input now accepts both validated schemas."
+    },
+    {
+      "log": "docs/surface-image-auto-proof/native-exploration.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Contained the same JSON schema failure and was deliberately stopped for the repair and knot-aware preflight. Partial full-image replay only."
+    },
+    {
+      "log": "docs/surface-image-auto-proof/vector-initializer.log.gz",
+      "exit_code": 101,
+      "qualified": false,
+      "reason": "Test-only Vec array initialization required array::from_fn; fixed, superseded by 55 passing tests."
+    }
+  ],
+  "files": {
+    "docs/surface-image-auto-proof/native.log.gz": "ae5c5399da1eac910212e280f0beb293907a9f5dc089b8099af83b37a92ba596",
+    "docs/surface-image-auto-proof/readback-schema.log.gz": "e19dd2cda4a8d1ed9366b04f74f194d34fd06673bdd39fdcaeb8c6c5147318c5",
+    "docs/surface-image-auto-proof/uniform-preflight-baseline.log.gz": "d4515ee395c228e123c7846817430009679ac09e3e62f2be3645b5ded5db74a7",
+    "docs/surface-image-auto-proof/obsolete-expectations.log.gz": "1ff93dffcf00fe460812d85c588bc7ba340b8cddae0646ae6b3d4cdd02a62654",
+    "docs/surface-image-auto-proof/kernel.log.gz": "0cb9b9ca4f437cf8e21ddb5cbed7a4ca3f9dd29b2a28b7bc3d5e57d4b3b03bdc",
+    "docs/surface-image-auto-proof/missing-test-module.log.gz": "336a74a8f6dcc18acab7d837f8c86a7def1be08c27eadb58bb92f0cf828698ac",
+    "docs/surface-image-auto-proof/json_portable.log.gz": "968fd98d300c583186c189aea97c085eb8b1abe7034347228e453a7c90459a7e",
+    "docs/surface-image-auto-proof/uv_native.log.gz": "80ef180d3e52513060981744f036a69eec5e283a2f1a81ce0dd6b04c39ea1e38",
+    "docs/surface-image-auto-proof/json_native.log.gz": "6fbb6d55c419277ec66cf456e98000f89a119a53f0c0dc4f177f1b11f4a12c55",
+    "docs/surface-image-auto-proof/app.log.gz": "ba003115b2e52f7ca736491ade8962845786858bf7646519d821b09aa04f5978",
+    "docs/surface-image-auto-proof/uv_portable.log.gz": "78672aff4a533ddec8c88021dbc13e653cad0d0361953debe269e7c19c21bdb8",
+    "docs/surface-image-auto-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-image-auto-proof/mapped_json.log.gz": "ccb3091217f1609c5c58a23146f93325380a45d399d09675f46522a6d11917c0",
+    "docs/surface-image-auto-proof/vector-initializer.log.gz": "6d8bcb2e09216865b15da787ef2b0a3900c1618f26f55da025d2bb65266dff85",
+    "docs/surface-image-auto-proof/native-exploration.log.gz": "604aeccd37637842dbeedc5b29c2069287edb2ea3358cb115dea0e94b2297c72",
+    "docs/surface-image-auto-proof/portable.log.gz": "b5901bbe9d26fdf77f305e53523427f51482d2900a6a85aa82ebe45d7aef13db",
+    "docs/surface-image-auto-proof/app_native.log.gz": "684c98418f1cc635c32e49ab7d63a413e5283c17b43d4d7a864a94968d45f4fd",
+    "docs/surface-image-auto-proof/sources/tools/rhino_oracle/test_surface_image_auto_record.py.gz": "09f900f00b7beb8a0d095a9de85e1b67a380b73a767076b24106a5cb28ab9ef2",
+    "docs/surface-image-auto-proof/sources/tools/rhino_oracle/report_surface_image_auto.py.gz": "87200ddd0db7bc5b2d560bbff3c17be2c8acd83e89d29bb4e70e59c9866a1bc2",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/lib.rs.gz": "bb91e871fa8685d11fb2fcbbb10db5ba89da0f4cd9db6026755987af785b5338",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit.rs.gz": "733ce6fa72e0da8baa23aded2ad626e7a3877650caf97d7ec8ae39a3815efb0e",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/adaptive.rs.gz": "41d5cebd957ccd71e405b0c930f1746f66791703e9ec60c453ed6f53f4d44bae",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image.rs.gz": "ba67b30241881f2641adac7c72387e64f0c0bea71ff0edad3c2ce2928e85e4c3",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/certificate.rs.gz": "9f553b6d3b9ae6cf4a6e503573d6bbf718b56e42a51535d568f5e538c799638e",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/basis.rs.gz": "fcf22e82ca2be67fa27916f7fd3395ea05e046c218a66b93cc0c9c4b21071ce2",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence.rs.gz": "39b27ae91bdcef863e382ba79fbb197280c2b54324cba6140078e353f0fea738",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/tests.rs.gz": "2d634c13141ffdf8f1b55af958c883f1204e2f61378800c07ae36bae3a7c8068",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz": "02a3ea812e767b8900e317e6f9d9c9a1cf302a06ce417e9246b82c74fa338cd9",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/tests.rs.gz": "93adc1e084cfcf55597d3e70d892b0aec87c6a86ce19f07bf97fa4d2b49cfc07",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/tests/surface_fit_image_native.rs.gz": "57cdceecf49b7d6828a8a4161481ff1140d9ba86cbfc48920b9b28d9db2fce5d",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_image_basis.rs.gz": "804fec560d19b7ba4e9bf2670acef4eef575e344f41765b48c026d0c37a0fb97",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/lib.rs.gz": "1f745bb893a8f80aaf7767f528d35fa5534c97ecc8794939582f5928b8ba3b5f",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_certificate.rs.gz": "92454969b05c7e16fa9b68066a3468ad4c62c80e2651ded15b88a14fdcc6c760",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_fit_bounded.rs.gz": "128e8bebc51e8a2efef4232a4c071665058a1847eb1183059698350b388210b1",
+    "docs/surface-image-auto-proof/sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz": "31c3de23dc30dddbb32caa1697b8dfe77fc2ca6e9d5ccf13d4dea5c30f942851",
+    "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-geometry/src/surface_fit/image/correspondence/preflight.rs.gz": "5621516703627f0e06ea6b6b595eefa2f2c0944fe83ea17a4b81456af469fed1",
+    "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/tests/surface_fit_image_native.rs.gz": "04544f55c3e09f3d87e24f1958bab078a4a5a436f7f4d6ef543ee75452db0379",
+    "docs/surface-image-auto-proof/earlier-sources/crates/viboceros-oracle/src/surface_mapped_bound.rs.gz": "98e0165f4c0fb8f072b54539fcf9722574960c8975373e5fe25e6b96d5b80f9d",
+    "docs/surface-image-fit-proof/portable.log.gz": "2d6fde8846181487b903a892249f9e67c74c37bfa262a60b3dd486ab233baf11",
+    "docs/surface-image-fit-proof/native.log.gz": "ac0b355abc659cd37f17e46c88e657d4c71f17262838fd254c67d89f9574a169",
+    "tools/rhino_oracle/fixtures/surface_fit.json": "04a3876acf2276699aad810e835a048da61c0fe51f233b738c5dbe4cedf75ed5",
+    "tools/rhino_oracle/observations/surface_fit.json.gz": "7040836715c70c6b33581058af3222cd6a3b12e2e7e38e75beafdeb38121749f",
+    "tools/rhino_oracle/fixtures/surface_fit_adaptive.json": "88eb77c7889a14faf80249ba4f52703d9dc3e952f2709812427784e68b43740d",
+    "tools/rhino_oracle/observations/surface_fit_adaptive.json.gz": "6c5edee3d6c3ea0eff2148ee659d7ebfa58212aa03ffc985d6f48ec4896f15a1",
+    "tools/rhino_oracle/fixtures/surface_fit_strips.json": "b164c6e40450eb93754409c23b6bd367e7d6976eefa538ad33313d2fa9fb04d7",
+    "tools/rhino_oracle/observations/surface_fit_strips.json.gz": "3f256ba7c4af103721f5ee7e70bccd6d82c36e1ea93a941ab339a53e01dc1ed5",
+    "docs/surface-image-auto-proof/record-tests.log.gz": "d22c6b0011d80fa99b4941f2ee874f6b7c9a02177b6ffe2f9b65109e40d23b35"
+  },
+  "record_tests": {
+    "command": "python3 -m unittest tools.rhino_oracle.test_surface_image_auto_record",
+    "log": "docs/surface-image-auto-proof/record-tests.log.gz",
+    "exit_code": 0
+  }
+}

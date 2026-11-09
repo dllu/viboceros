@@ -122,7 +122,7 @@ fn hidden_interior_features_and_real_overshoot_cannot_be_simplified_at_zero() {
 }
 
 #[test]
-fn a_bowed_boundary_gets_a_conservative_image_bound_and_a_sharp_gate() {
+fn a_bowed_boundary_can_use_a_tighter_mapped_bound_after_the_quad_declines() {
     let source = source(&[0., 0.05, 0.8, 1.], |i, j| {
         if i == 1 && j == 0 { 0.125 } else { 0. }
     });
@@ -136,10 +136,27 @@ fn a_bowed_boundary_gets_a_conservative_image_bound_and_a_sharp_gate() {
             .unwrap()
             .is_none()
     );
+    let limit = 0.125_f64.next_down();
     assert!(
-        try_fit_surface_image_with_bound(&source, options(), 0.125_f64.next_down())
+        source
+            .planar_surface_image_deviation_bound(&result.surface, limit)
             .unwrap()
             .is_none()
+    );
+    let tighter = try_fit_surface_image_with_bound(&source, options(), limit)
+        .unwrap()
+        .unwrap();
+    assert!(tighter.maximum_deviation_bound <= limit);
+    assert!(matches!(
+        tighter.certificate,
+        SurfaceImageFitCertificate::SeparableUv(_)
+    ));
+    assert!(
+        tighter
+            .certificate
+            .verify(&source, &tighter.surface, limit)
+            .unwrap()
+            .is_some()
     );
 }
 
@@ -199,7 +216,7 @@ fn validation_and_backend_failure_precede_any_analytic_proposal() {
 }
 
 #[test]
-fn a_declined_quad_uses_the_existing_adaptive_parameter_fitter() {
+fn a_declined_quad_can_stop_at_a_curved_candidate_before_the_parameter_fitter() {
     let source = source(&[0., 0.1, 0.8, 1.], |i, j| (i * j) as Real / 6.);
     let options = SurfaceFitOptions {
         degree: [3, 2],
@@ -211,10 +228,22 @@ fn a_declined_quad_uses_the_existing_adaptive_parameter_fitter() {
     let fit = try_fit_surface_image_with_bound(&source, options, 0.002)
         .unwrap()
         .unwrap();
-    assert_eq!(fit.surface, ordinary.surface);
+    assert!(fit.surface.control_points().len() < ordinary.surface.control_points().len());
+    assert!(matches!(
+        fit.certificate,
+        SurfaceImageFitCertificate::SeparableUv(_)
+    ));
     assert_eq!(
-        fit.maximum_deviation_bound,
-        ordinary.maximum_deviation_bound
+        fit.certificate
+            .verify(&source, &fit.surface, 0.002)
+            .unwrap(),
+        Some(fit.maximum_deviation_bound)
+    );
+    assert!(
+        source
+            .parameter_surface_deviation_bound(&ordinary.surface, 0.002)
+            .unwrap()
+            .is_some()
     );
 }
 
