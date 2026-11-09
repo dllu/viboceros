@@ -175,7 +175,7 @@ fn attempt<E: From<GeometryError>>(
     Ok(Some((candidate, bound)))
 }
 
-fn restore_constant_channels(
+pub(crate) fn restore_constant_channels(
     source: &NurbsCurve,
     candidate: &mut NurbsCurve,
 ) -> Result<(), GeometryError> {

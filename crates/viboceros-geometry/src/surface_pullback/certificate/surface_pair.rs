@@ -67,14 +67,13 @@ fn bound(
         [first.degree_u(), first.degree_v()],
         [second.degree_u(), second.degree_v()],
     ];
-    let degree = std::array::from_fn(|axis| degrees[0][axis] + degrees[1][axis]);
     let mut maximum = 0_f64;
     for u in cuts[0].windows(2) {
         for v in cuts[1].windows(2) {
             let rectangle = [[u[0].clone(), u[1].clone()], [v[0].clone(), v[1].clone()]];
             let a = a.normalized_patch(&rectangle, budget)?;
             let b = b.normalized_patch(&rectangle, budget)?;
-            let difference = tensor::difference(&a, &b, degrees, budget)?;
+            let (difference, degree) = tensor::difference(&a, &b, degrees, budget)?;
             let Some(value) = tensor::hull_bound(difference, degree, limit, budget)? else {
                 return Ok(None);
             };

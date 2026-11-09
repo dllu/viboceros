@@ -390,7 +390,7 @@ pub use nurbs::{
 };
 pub use nurbs_surface::{
     MAX_PLANE_CONTROL_POINTS, NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceJet3,
-    SurfaceKnotDirection, SurfaceSoftEdit,
+    SurfaceKnotDirection, SurfaceKnotReduction, SurfaceSoftEdit,
 };
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use parameter::ParameterSide;

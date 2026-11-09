@@ -1,0 +1,34 @@
+[
+  {
+    "label": "portable",
+    "exit_status": 0,
+    "log": "averaging-portable.log.gz",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--test",
+      "average_surfaces",
+      "--",
+      "--nocapture"
+    ]
+  },
+  {
+    "label": "native",
+    "exit_status": 0,
+    "log": "averaging-native.log.gz",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--test",
+      "average_surfaces",
+      "--",
+      "--nocapture"
+    ]
+  }
+]

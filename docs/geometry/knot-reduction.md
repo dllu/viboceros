@@ -2,6 +2,8 @@
 
 [Geometry guides](README.md) · [Cubic approximation](../cubic-approximation.md)
 
+[Surface knot reduction](surface-knot-reduction.md) applies complete tensor bounds to U/V edits.
+
 `NurbsCurve::try_reduce_knot_multiplicity_with_bound(knot, target, limit)`
 proposes a lower multiplicity at an exact interior knot. It returns a curve,
 removed count and continuous positional bound, or `None` when the proposal cannot

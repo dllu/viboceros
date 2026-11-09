@@ -13284,6 +13284,10 @@ def _execute(operation, iterations, tolerance):
         import knot_reduction_probe
         return knot_reduction_probe.run(operation, globals(), iterations, tolerance)
 
+    if kind == "surface_knot_reduction":
+        import surface_knot_reduction_probe
+        return surface_knot_reduction_probe.run(operation, globals(), iterations, tolerance)
+
     if kind == "curve_remove_knot_geometry":
         curve = _nurbs_curve_from_definition(operation["curve"])
         parameter = _finite(operation["parameter"], "curve knot parameter")

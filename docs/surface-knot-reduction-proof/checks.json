@@ -1,0 +1,75 @@
+[
+  {
+    "label": "kernel",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "knot_reduction",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "kernel.log.gz"
+  },
+  {
+    "label": "certificates",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-geometry",
+      "--lib",
+      "surface_pullback::certificate",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "certificates.log.gz"
+  },
+  {
+    "label": "python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.rhino_oracle.test_surface_knot_reduction"
+    ],
+    "exit_status": 0,
+    "log": "python.log.gz"
+  },
+  {
+    "label": "portable",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--test",
+      "surface_knot_reduction_native",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "portable.log.gz"
+  },
+  {
+    "label": "native",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--features",
+      "native-smlib",
+      "--test",
+      "surface_knot_reduction_native",
+      "--",
+      "--nocapture"
+    ],
+    "exit_status": 0,
+    "log": "native.log.gz"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "family": "surface_knot_reduction",
+    "archive": "observations/failures/surface_knot_reduction-c5218a444c79c063c3dc537f9bf5b46f81c229c947b80ed1ea5abe233bf911ae.json.gz",
+    "log": "failure-surface-knot-reduction.log.gz",
+    "exit_status": 1,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_surface_knot_reduction > /tmp/surface-knot-reduction.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/surface-knot-reduction.status; exit \"$capture_result\""
+    ],
+    "error": "rhino probe failed: AttributeError at operation surface-reduce-plane-u-0.0: start: 'module' object has no attribute 'isfinite'"
+  },
+  {
+    "family": "surface_knot_reduction",
+    "archive": "observations/failures/surface_knot_reduction-e64ef7d84ed7a8a8e87f561201d2d056e928f6a1a19a55a7c11226fe3bb839a7.json.gz",
+    "log": "failure-surface-knot-reduction-retry.log.gz",
+    "exit_status": 1,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_surface_knot_reduction > /tmp/surface-knot-reduction-retry.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/surface-knot-reduction-retry.status; exit \"$capture_result\""
+    ],
+    "error": "rhino probe failed: AttributeError at operation surface-reduce-plane-u-0.0: start: 'NurbsSurface' object has no attribute 'DuplicateSurface'"
+  }
+]

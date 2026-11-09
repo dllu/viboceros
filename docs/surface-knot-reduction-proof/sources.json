@@ -1,0 +1,26 @@
+{
+  "baseline_revision": "cdc1888b03528293650e39ab6e9b2d3953207788",
+  "overrides": {
+    "crates/viboceros-geometry/src/error.rs": "71a304e86cf0729812eacfea0b34092ecfca6ae9254c1170f00cae54a8d728d6",
+    "crates/viboceros-geometry/src/lib.rs": "2c1509f03f8d85cf55237bc6c03af1283683c2fe5ba8f86ab5c7846bba7e73b5",
+    "crates/viboceros-geometry/src/nurbs.rs": "41b4ce666c859d7e8d8b18183bc289ff192662ca078d3d1fbe53725e4c71cd30",
+    "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "a065e7c852bb0ae16d8d8edd895c83ef9ad4f29a8ae20ae080b8552f5edc6171",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "1b17ff436ee7d30eeab9f81bbe6638307cc6302de97fdb665591a91204531d1d",
+    "crates/viboceros-geometry/src/nurbs_surface/knot_reduction.rs": "0bd8df830c73ba3c09a76557a7d8392137f39ec99782b5f2d5908db0cd63514a",
+    "crates/viboceros-geometry/src/nurbs_surface/knot_reduction/backend_tests.rs": "b104b72aae4f0d795acff2df4d67ad4dfb920a75dc326b9a989c3d9f786a9ec8",
+    "crates/viboceros-geometry/src/nurbs_surface/knot_reduction/basis.rs": "34a634f021514ebb7c32280c7cea42ab0c7b6b32b0152005166d3d04401a4df6",
+    "crates/viboceros-geometry/src/nurbs_surface/knot_reduction/tests.rs": "8dfc7d4ee2d7f20cd6f385a40dc8a39cc6f1cb98671d4fc860a5ee8a63b35300",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair.rs": "4f71906091aceda46e6a6522f5b3aa302c642ff93973119f52841300fa01cf3c",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface_pair/tensor.rs": "d835cb283c363a028c5a639ceea5292f016c7025c30b9ae07f08dd554456c933",
+    "crates/viboceros-oracle/src/lib.rs": "66b595cff2686fb3a8bf607a61108249fe550f7dbd43f7d0bfc244a5e9c5c9f6",
+    "crates/viboceros-oracle/src/surface_knot_reduction.rs": "b073557e446f018e93470cbe1b433cf9650332cee630990f0c5075282bcfbb77",
+    "crates/viboceros-oracle/tests/surface_knot_reduction_native.rs": "69c5e535e248b5a7db8683774aa889e1aa1a00d0f370fd904d4ecbf73b18fc79",
+    "crates/viboceros-smlib/src/lib.rs": "66a4564261ac535ac09052f6947cddae0515c248d7618f580c1e5e9792e67fc4",
+    "crates/viboceros-smlib/src/native.rs": "fd983d5a04364d28039942d15934681c8b7a5b6befab39238301c194ad711535",
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": "c65e9131d41897824537e641ac29b7ea15756ea5bdbc12c50f9e4b0c49322b39"
+  },
+  "python_sources": {
+    "tools/rhino_oracle/surface_knot_reduction_probe.py": "28738357d55d3a82c9152cef4aa32d3f5561478f7f84717fee867df21765bf2e",
+    "tools/rhino_oracle/test_surface_knot_reduction.py": "b5f8c680ddf8490e36f438b50b3305f39ec0de31cd153fc111acb7180bee5a5f"
+  }
+}

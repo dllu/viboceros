@@ -223,6 +223,30 @@ pub fn reduce_curve_knots_in_range(
     })
 }
 
+/// Reduce tensor groups with shared selection and original-surface certification.
+pub fn reduce_surface_knots_in_range(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    minimum: usize,
+    maximum: usize,
+    limit: Option<f64>,
+) -> Result<viboceros_geometry::SurfaceKnotReduction, Error> {
+    source.try_reduce_knots_in_range_with_remover(
+        direction,
+        minimum,
+        maximum,
+        limit,
+        &mut |s, axis, k| {
+            let axis = match axis {
+                SurfaceKnotDirection::U => 0,
+                SurfaceKnotDirection::V => 1,
+                SurfaceKnotDirection::Both => unreachable!("reduction selects a single basis"),
+            };
+            brep::surface_from_native(fit_basis(NurbsInput::surface(s), axis, k)?)
+        },
+    )
+}
+
 /// Collapse multiple groups using the command's angular eligibility policy.
 pub fn remove_curve_multiple_knots(
     source: &NurbsCurve,

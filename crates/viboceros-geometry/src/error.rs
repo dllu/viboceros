@@ -68,6 +68,10 @@ pub enum GeometryError {
     UnsupportedCurveApproximation { context: &'static str },
     #[error("curve approximation exceeded its arithmetic, subdivision, or output budget")]
     CurveApproximationLimit,
+    #[error("surface approximation is unsupported: {context}")]
+    UnsupportedSurfaceApproximation { context: &'static str },
+    #[error("surface approximation exceeded its arithmetic, subdivision, or output budget")]
+    SurfaceApproximationLimit,
     #[error(
         "curve correspondence requires 2..=4097 finite, strictly increasing normalized parameter pairs from [0, 0] to [1, 1]"
     )]

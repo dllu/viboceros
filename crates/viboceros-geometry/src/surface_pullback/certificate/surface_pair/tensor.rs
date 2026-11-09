@@ -6,7 +6,26 @@ pub(super) fn difference(
     b: &[H],
     degrees: [[usize; 2]; 2],
     budget: &mut Budget,
-) -> Result<Vec<H>, GeometryError> {
+) -> Result<(Vec<H>, [usize; 2]), GeometryError> {
+    // An identical positive denominator needs only coefficient subtraction.
+    // This includes polynomial tensors and avoids a quadratic product for the
+    // common constant-weight reductions without changing the proof.
+    if degrees[0] == degrees[1] && a.iter().zip(b).all(|(a, b)| a[3] == b[3]) {
+        budget.charge(4 * a.len())?;
+        let net = a
+            .iter()
+            .zip(b)
+            .map(|(a, b)| {
+                let h: H =
+                    std::array::from_fn(|i| if i == 3 { a[3].clone() } else { &a[i] - &b[i] });
+                for r in &h {
+                    budget.check(r)?;
+                }
+                Ok(h)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        return Ok((net, degrees[0]));
+    }
     budget.charge(4 * a.len() * b.len())?;
     let [[pu, pv], [qu, qv]] = degrees;
     let degree = [pu + qu, pv + qv];
@@ -54,7 +73,7 @@ pub(super) fn difference(
             }
         }
     }
-    Ok(output)
+    Ok((output, degree))
 }
 
 pub(super) fn hull_bound(

@@ -24,6 +24,7 @@ mod grip_deletion;
 mod grips;
 mod integration_frame;
 mod knot_reduction;
+pub(crate) use knot_reduction::restore_constant_channels;
 pub use knot_reduction::{KnotReduction, MAX_KNOT_REDUCTION_GROUPS};
 mod linear_trim;
 mod loose_offset;

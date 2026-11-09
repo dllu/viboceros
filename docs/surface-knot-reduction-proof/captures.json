@@ -1,0 +1,32 @@
+[
+  {
+    "family": "surface_knot_reduction",
+    "archive": "observations/surface_knot_reduction.json.gz",
+    "log": "capture-surface_knot_reduction.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_surface_knot_reduction > /tmp/surface-knot-reduction-complete.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/surface-knot-reduction-complete.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "b44d346c1f6baa0237650ec01c3f8ed68b2e23c16ab882d08e55e50852b41021",
+    "request_sha256": "d34d8171cbead15f8307eaf2fc33183633963bc6b51ddc387d0f468323548935"
+  },
+  {
+    "family": "surface_knot_reduction_holdouts",
+    "archive": "observations/surface_knot_reduction_holdouts.json.gz",
+    "log": "capture-surface_knot_reduction_holdouts.log.gz",
+    "exit_status": 0,
+    "command": [
+      "tools/rhino_oracle/run_headless.sh",
+      "exec",
+      "bash",
+      "-c",
+      "python3 -m tools.rhino_oracle.generate_surface_knot_reduction_holdouts > /tmp/surface-knot-reduction-holdouts.log 2>&1; capture_result=$?; echo \"$capture_result\" > /tmp/surface-knot-reduction-holdouts.status; exit \"$capture_result\""
+    ],
+    "observation_sha256": "48bb3803b6878929eaa2514b4d73da29c4e56607f3386eaf8406c8a424c1c7c5",
+    "request_sha256": "1a1680382a624bb3447e9a6d41c4b00c1981094c87057cd8e08afd054c561a22"
+  }
+]
