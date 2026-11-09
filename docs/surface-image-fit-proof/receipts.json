@@ -1,0 +1,116 @@
+{
+  "baseline_revision": "e06888792777e2af8d5a2087d11e5d00c038072d",
+  "third_party_revisions": {
+    "opennurbs": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "usd_brep": "c9c5979f04cea8c38213004d4f04df0dcfb40d05"
+  },
+  "source_overrides": {
+    "crates/viboceros-geometry/src/lib.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/c47997f03f2a6548c39ebede668e66ba16a7f0f9836b9191034282b27e3950b8.gz",
+      "sha256": "c47997f03f2a6548c39ebede668e66ba16a7f0f9836b9191034282b27e3950b8"
+    },
+    "crates/viboceros-geometry/src/surface_fit.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/2c74f92498181f732f7707338e9ebbf1416d671675c2d6804e12154de865706d.gz",
+      "sha256": "2c74f92498181f732f7707338e9ebbf1416d671675c2d6804e12154de865706d"
+    },
+    "crates/viboceros-geometry/src/surface_fit/adaptive.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/498f6b9aa8dfd615930faba79633c002032b08f9b81b4ddc73f1531a80841afb.gz",
+      "sha256": "498f6b9aa8dfd615930faba79633c002032b08f9b81b4ddc73f1531a80841afb"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/75621ac110654da683af20846c523f2ac35cd6967caa09622ac19d5fe16d8c8c.gz",
+      "sha256": "75621ac110654da683af20846c523f2ac35cd6967caa09622ac19d5fe16d8c8c"
+    },
+    "crates/viboceros-geometry/src/surface_fit/image/tests.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/f1c28909d670c1f527f22cce57c87b33c79b552d4705924f7d27e930c50f7fcb.gz",
+      "sha256": "f1c28909d670c1f527f22cce57c87b33c79b552d4705924f7d27e930c50f7fcb"
+    },
+    "crates/viboceros-smlib/src/lib.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/2ecd964d0a94dca9840a064bc116bc82535fa07fb3913a73cccd5a21a1f9ea67.gz",
+      "sha256": "2ecd964d0a94dca9840a064bc116bc82535fa07fb3913a73cccd5a21a1f9ea67"
+    },
+    "crates/viboceros-smlib/src/native.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/90019685fcd381173751a56785dd8a08499465bd6679d8736a65d149a1fcbe14.gz",
+      "sha256": "90019685fcd381173751a56785dd8a08499465bd6679d8736a65d149a1fcbe14"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/e8c2e6c21eae4e825bf5cf8cbed4558c1eb18a4d7b644a1638422472ba5705a4.gz",
+      "sha256": "e8c2e6c21eae4e825bf5cf8cbed4558c1eb18a4d7b644a1638422472ba5705a4"
+    },
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/65a81e05b23bde5e052219376217ebefb06043b6811e28924122b616dff15f59.gz",
+      "sha256": "65a81e05b23bde5e052219376217ebefb06043b6811e28924122b616dff15f59"
+    },
+    "crates/viboceros-oracle/src/lib.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/710a54cc515cff7f90a11331313f9c818ca98aab0f49395aa7c65228f28703a9.gz",
+      "sha256": "710a54cc515cff7f90a11331313f9c818ca98aab0f49395aa7c65228f28703a9"
+    },
+    "crates/viboceros-oracle/src/surface_fit_bounded.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/50f65c4aff8d995eb9a56399e2a8692040f6be86ed808204d85bdec5d2e5a86e.gz",
+      "sha256": "50f65c4aff8d995eb9a56399e2a8692040f6be86ed808204d85bdec5d2e5a86e"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_adaptive_native.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/580f2f7ee49bb41da12c8403973a29114f88858acbea21c5336fdff1ecfd5146.gz",
+      "sha256": "580f2f7ee49bb41da12c8403973a29114f88858acbea21c5336fdff1ecfd5146"
+    },
+    "crates/viboceros-oracle/tests/surface_fit_image_native.rs": {
+      "snapshot": "docs/surface-image-fit-proof/sources/403d2e30b6f986813c930c186668e592750f00c3287822e3d385e034bf971974.gz",
+      "sha256": "403d2e30b6f986813c930c186668e592750f00c3287822e3d385e034bf971974"
+    },
+    "tools/rhino_oracle/report_surface_image_fit.py": {
+      "snapshot": "docs/surface-image-fit-proof/sources/902f390fa18862f67b5e6c867a8570b204a31366853aedd457382fe925f557e4.gz",
+      "sha256": "902f390fa18862f67b5e6c867a8570b204a31366853aedd457382fe925f557e4"
+    },
+    "tools/rhino_oracle/test_surface_image_fit_record.py": {
+      "snapshot": "docs/surface-image-fit-proof/sources/3b264a547e6379a6d95bbcb691ad92771e7a6b2a0cc3087fbe221dd62fb8cadd.gz",
+      "sha256": "3b264a547e6379a6d95bbcb691ad92771e7a6b2a0cc3087fbe221dd62fb8cadd"
+    }
+  },
+  "checks": {
+    "portable": {
+      "command": "cargo test -p viboceros-oracle --test surface_fit_adaptive_native --test surface_fit_image_native --test surface_fit_basis_native --test surface_fit_bounded_protocol -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/portable.log.gz"
+    },
+    "native": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --test surface_fit_adaptive_native --test surface_fit_image_native --test surface_fit_basis_native --test surface_fit_bounded_protocol -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/native.log.gz"
+    },
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib surface_fit:: -- --nocapture",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/kernel.log.gz"
+    },
+    "app": {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/app.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/format.log.gz"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fit tools.rhino_oracle.test_surface_fit_adaptive tools.rhino_oracle.test_surface_fit_record tools.rhino_oracle.test_surface_fit_adaptive_record tools.rhino_oracle.test_surface_planar_image_record",
+      "exit_code": 0,
+      "log": "docs/surface-image-fit-proof/python.log.gz"
+    }
+  },
+  "files": {
+    "docs/surface-image-fit-proof/app.log.gz": "a7047fa042537997d7b2fe2bcb91c5148a942216261382e614450cd5d3c8210e",
+    "docs/surface-image-fit-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/surface-image-fit-proof/kernel.log.gz": "c1d090f4e618a9cd48a7974639bbd29830a2bc7cf442571dfa0b0b2f629bdf6c",
+    "docs/surface-image-fit-proof/native.log.gz": "ac0b355abc659cd37f17e46c88e657d4c71f17262838fd254c67d89f9574a169",
+    "docs/surface-image-fit-proof/portable.log.gz": "2d6fde8846181487b903a892249f9e67c74c37bfa262a60b3dd486ab233baf11",
+    "docs/surface-image-fit-proof/python.log.gz": "dbd3d000861c68be99f16ef065d4a719f99ed3440d2fb62dc25b2fed76d6db57",
+    "tools/rhino_oracle/fixtures/surface_fit.json": "04a3876acf2276699aad810e835a048da61c0fe51f233b738c5dbe4cedf75ed5",
+    "tools/rhino_oracle/fixtures/surface_fit_adaptive.json": "88eb77c7889a14faf80249ba4f52703d9dc3e952f2709812427784e68b43740d",
+    "tools/rhino_oracle/fixtures/surface_fit_strips.json": "b164c6e40450eb93754409c23b6bd367e7d6976eefa538ad33313d2fa9fb04d7",
+    "tools/rhino_oracle/observations/surface_fit.json.gz": "7040836715c70c6b33581058af3222cd6a3b12e2e7e38e75beafdeb38121749f",
+    "tools/rhino_oracle/observations/surface_fit_adaptive.json.gz": "6c5edee3d6c3ea0eff2148ee659d7ebfa58212aa03ffc985d6f48ec4896f15a1",
+    "tools/rhino_oracle/observations/surface_fit_strips.json.gz": "3f256ba7c4af103721f5ee7e70bccd6d82c36e1ea93a941ab339a53e01dc1ed5"
+  },
+  "native_capture_mode": "Archived public SDK observations only; no new Rhino launches"
+}

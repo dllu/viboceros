@@ -1,8 +1,13 @@
 //! Polynomial tensor fitting in an explicit, clamped U/V basis.
 use crate::{GeometryError, NurbsCurve, NurbsInterpolationSystem, NurbsSurface, Point3, Real};
 mod adaptive;
+mod image;
 pub use adaptive::{
     SurfaceFitOptions, try_fit_surface_with_bound, try_fit_surface_with_bound_with_solver,
+};
+pub use image::{
+    BoundedSurfaceImageFit, try_fit_surface_image_with_bound,
+    try_fit_surface_image_with_bound_with_solver,
 };
 
 /// Largest axis in one fitting job; the complete tensor has at most 4096 controls.

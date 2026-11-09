@@ -13,6 +13,9 @@ can also receive conservative bounds. It does not certify UV correspondence,
 trimming, normals, topology or injectivity. The existing parameter bound and
 automatic fitting acceptance policy remain unchanged.
 
+The separate [image fitter](surface-fitting-images.md) uses this certificate
+to admit a single corner patch before further parameter refinement.
+
 ## Certificate
 
 1. Require clamped, continuous U/V bases and nonzero common-sign weights.

@@ -88,6 +88,7 @@ fn automatic_fits_certify_inputs_and_keep_native_policy_differences_explicit() {
             let target = (!row["value"]["surface"].is_null())
                 .then(|| captured::surface(&row["value"]["surface"]));
             let mut native_bound = None;
+            let mut native_planar_bound = None;
             let mut saved_bound = None;
             let mut source_bound = None;
             if let Some(actual) = &actual {
@@ -115,6 +116,9 @@ fn automatic_fits_certify_inputs_and_keep_native_policy_differences_explicit() {
                 saved_bound = Some(archive_bound(s));
                 if let Some(target) = &target {
                     native_bound = s.parameter_surface_deviation_bound(target, 1e-9).unwrap();
+                    native_planar_bound = s
+                        .planar_surface_image_deviation_bound(target, 1e-9)
+                        .unwrap();
                 }
             }
             let status = match (&actual, &target) {
@@ -128,7 +132,7 @@ fn automatic_fits_certify_inputs_and_keep_native_policy_differences_explicit() {
             cases += 1;
             println!(
                 "AUTOMATIC_SURFACE_FIT {}",
-                json!({"id":op["id"],"status":status,"source_bound":source_bound,"native_bound":native_bound,"archive_bound":saved_bound,"limit":limit,"maximum_controls":[16,16],"controls":actual.as_ref().map(|r|[r.surface.control_point_count_u(),r.surface.control_point_count_v()])})
+                json!({"id":op["id"],"status":status,"source_bound":source_bound,"native_bound":native_bound,"native_planar_bound":native_planar_bound,"archive_bound":saved_bound,"limit":limit,"maximum_controls":[16,16],"controls":actual.as_ref().map(|r|[r.surface.control_point_count_u(),r.surface.control_point_count_v()])})
             );
         }
     }

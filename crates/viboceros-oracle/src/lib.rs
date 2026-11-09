@@ -1100,6 +1100,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: surface_fit_bounded::Fixture,
     },
+    SurfaceFitImageBounded {
+        id: String,
+        #[serde(flatten)]
+        fixture: surface_fit_bounded::Fixture,
+    },
     SurfacePlanarImageBound {
         id: String,
         #[serde(flatten)]
@@ -3087,6 +3092,7 @@ impl Operation {
             | Self::CurveKnotReduction { id, .. }
             | Self::SurfaceKnotReduction { id, .. }
             | Self::SurfaceFitBounded { id, .. }
+            | Self::SurfaceFitImageBounded { id, .. }
             | Self::SurfacePlanarImageBound { id, .. }
             | Self::CurveCubicApproximation { id, .. }
             | Self::CurveDeviationBound { id, .. }
@@ -3962,6 +3968,9 @@ fn execute(
         }
         Operation::SurfaceFitBounded { fixture, .. } => {
             surface_fit_bounded::run(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceFitImageBounded { fixture, .. } => {
+            surface_fit_bounded::run_image(fixture, iterations, tolerance)?
         }
         Operation::SurfacePlanarImageBound { fixture, .. } => {
             surface_planar_image::run(fixture, iterations, tolerance)?

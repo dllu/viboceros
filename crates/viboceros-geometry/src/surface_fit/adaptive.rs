@@ -51,6 +51,18 @@ pub fn try_fit_surface_with_bound_with_solver<E: From<GeometryError>>(
     limit: Real,
     solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<Option<BoundedSurfaceFit>, E> {
+    fit_with_fallback(source, options, limit, solve, || Ok(None))
+}
+
+/// A separate image fitter can propose a certified quad after the first
+/// parameter fit declines. The ordinary fitter supplies no such proposal.
+pub(super) fn fit_with_fallback<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    options: SurfaceFitOptions,
+    limit: Real,
+    solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    fallback: impl FnOnce() -> Result<Option<BoundedSurfaceFit>, GeometryError>,
+) -> Result<Option<BoundedSurfaceFit>, E> {
     validate_source(source)?;
     if !limit.is_finite() || limit < 0. {
         return Err(GeometryError::InvalidTolerance.into());
@@ -66,6 +78,7 @@ pub fn try_fit_surface_with_bound_with_solver<E: From<GeometryError>>(
         .into());
     }
     let domains = [source.domain_u(), source.domain_v()];
+    let mut fallback = Some(fallback);
     let mut cuts = domains.each_ref().map(|d| vec![*d.start(), *d.end()]);
     let mut cache = HashMap::<(u64, u64), Point3>::new();
     let mut sample = |u: Real, v: Real| -> Result<Point3, GeometryError> {
@@ -116,6 +129,11 @@ pub fn try_fit_surface_with_bound_with_solver<E: From<GeometryError>>(
                     maximum_deviation_bound,
                 }));
             }
+        }
+        if let Some(propose) = fallback.take()
+            && let Some(result) = propose()?
+        {
+            return Ok(Some(result));
         }
         let added = match refine::refine(&candidate, &mut cuts, options, limit, &mut sample) {
             Err(GeometryError::SurfaceApproximationLimit) => return Ok(None),

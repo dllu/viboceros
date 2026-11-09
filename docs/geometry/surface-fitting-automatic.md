@@ -2,6 +2,9 @@
 
 [Explicit-basis fitting](surface-fitting.md) · [Surface bounds](surface-correspondence.md)
 
+[Image fitting](surface-fitting-images.md) separately permits UV speed changes
+under a complete geometric bound. This API retains normalized UV accuracy.
+
 `try_fit_surface_with_bound(source, options, limit)` chooses a polynomial U/V
 basis and returns a `BoundedSurfaceFit` only after certifying the complete
 original surface. `SurfaceFitOptions` specifies degrees and control ceilings;
@@ -63,3 +66,7 @@ Rhino's adaptive knot selection, physical `FitSrf` options and retrimming remain
 unfinished. The `FitSrf` command is still unregistered.
 The [physical command investigation](../surface-fit-command-investigation.md)
 records selection eligibility and nine SDK-equal untrimmed refits separately.
+
+A [later image comparison](../surface-image-fit-validation.json) certifies 48
+native image matches for these same 87 UV-bounded outputs, resolving 13 of the
+40 unproved parameter correspondences. The 35 UV matches remain a separate claim.
