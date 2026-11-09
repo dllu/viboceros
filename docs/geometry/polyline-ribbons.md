@@ -30,6 +30,7 @@ nonplanar inputs and collapsed offsets fail. A conservative 4096-patch guard
 bounds construction before backend calls. Point identities require both kernel
 coincidence and model tolerance; undeclared contacts remain independent.
 
-`Ribbon` remains unregistered. General smooth-curve offsets, self-intersection
-trimming, command getters, metadata/history and performance parity remain
-unfinished. Face reversal and loop winding parity remain unqualified.
+The [Ribbon command](../commands/ribbon.md) exposes these corners with selection,
+distance getters and object-history policies. [Smooth NURBS ribbons](smooth-ribbons.md)
+have their own constructor. Self-intersection trimming, full command parity,
+face reversal, loop winding and performance parity remain unqualified.

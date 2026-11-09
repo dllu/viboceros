@@ -1061,6 +1061,7 @@ impl VibocerosApp {
                     | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
+                    | "Ribbon"
                     | "OffsetSubD"
                     | "Rebuild"
                     | "ShowEdges"

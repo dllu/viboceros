@@ -4,6 +4,7 @@ use super::*;
 impl InteractiveCommand {
     pub(in crate::app) const fn name(self) -> &'static str {
         match self {
+            Self::Ribbon { .. } => "Ribbon",
             Self::DraftPullPoints { .. } | Self::DraftPullCurve => "DraftAngleAnalysis",
             Self::FaceCreate { .. } => "3DFace",
             Self::LoftPoint => "Loft",
@@ -186,6 +187,7 @@ impl InteractiveCommand {
             Self::DraftPullPoints { start } => start,
             Self::DraftPullCurve => None,
             Self::SurfaceArray { base }
+            | Self::Ribbon { anchor: base }
             | Self::CurveArray { base }
             | Self::Chamfer { anchor: base }
             | Self::Fillet { anchor: base }

@@ -1,0 +1,677 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-09,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "ribbon_command",
+      "id": "line-curve-plane",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "line-cplane",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              6.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-curve-plane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-cplane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "spatial-curve-plane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "spatial-cplane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": true,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-loose-curve-plane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": true,
+      "in_cplane": false,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "tilted-loose-cplane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              -1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": true,
+      "in_cplane": true,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "spatial-loose-curve-plane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": true,
+      "in_cplane": false,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "spatial-loose-cplane",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              2.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -1.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": true,
+      "in_cplane": true,
+      "output_layer": "Input"
+    },
+    {
+      "op": "ribbon_command",
+      "id": "postselected-current",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Current",
+      "postselected": true
+    },
+    {
+      "op": "ribbon_command",
+      "id": "postselected-input",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "distance": 0.5,
+      "side": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "both_sides": false,
+      "corner": "Sharp",
+      "loose": false,
+      "in_cplane": false,
+      "output_layer": "Input",
+      "postselected": true
+    }
+  ]
+}

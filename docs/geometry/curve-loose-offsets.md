@@ -37,9 +37,10 @@ outer boundary of a native loose Ribbon.
 The [Ribbon reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/ribbon.htm)
 describes offset and ruled-surface construction. Thirteen corrected headless
 captures retain its actual corner faces and both-sided topology for subsequent
-implementation. `Ribbon` remains unregistered, and `Offset` does not yet expose
-this new loose policy. Curve fitting between stations, broader corner/trim
-policies, command getters and native performance parity remain separate work.
+implementation. The [Ribbon command](../commands/ribbon.md) now exposes loose
+geometry with selection, distance and object policies. `Offset` does not yet
+expose this loose policy. Curve fitting between stations, broader corner/trim
+policies and native performance parity remain separate work.
 
 [Loose ribbon assembly](ruled-ribbons.md) now builds and sews these curves into
 B-rep shells, with complete native image bounds and explicit topology limits.

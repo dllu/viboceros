@@ -35,7 +35,7 @@ three native faces; the complete image agrees. Native face-reversal flags agree
 in 30 cases, with a both-sided circle difference and the unresolved face mapping.
 Loop winding and object order are not qualified by the incidence comparison.
 
-These are kernel and instrumentation APIs. `Ribbon` remains unregistered.
-[Ordinary polyline corner construction](polyline-ribbons.md) has a separate
-kernel API. Smooth offsets, self-intersection trimming, command getters,
-metadata/history and native performance parity remain unfinished.
+The [Ribbon command](../commands/ribbon.md) now adds curve picking, distance
+getters and object-history policies. [Polyline corners](polyline-ribbons.md) and
+[ordinary smooth offsets](smooth-ribbons.md) have separate constructors.
+Self-intersection trimming and native performance parity remain unfinished.

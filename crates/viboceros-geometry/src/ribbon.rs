@@ -1,5 +1,6 @@
 //! Offset ribbons with ordered ruled tensors and shared corner identities.
 mod corner;
+mod in_plane;
 mod polyline;
 mod smooth;
 use crate::{
@@ -7,8 +8,11 @@ use crate::{
     Tolerance, UnitVector3,
 };
 pub use corner::RibbonCornerStyle;
+pub use in_plane::{try_loose_ribbon_in_plane, try_loose_ribbon_in_plane_with_ruled};
 pub use polyline::{try_polyline_ribbon, try_polyline_ribbon_with_ruled};
-pub use smooth::{try_smooth_ribbon, try_smooth_ribbon_with_ruled};
+pub use smooth::{
+    try_smooth_ribbon, try_smooth_ribbon_with_fit_tolerance, try_smooth_ribbon_with_ruled,
+};
 
 /// Build a loose polynomial offset ribbon. U follows source-to-offset rulings;
 /// V retains the source's chart. BothSides builds and sews two independent sides

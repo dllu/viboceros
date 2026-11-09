@@ -39,12 +39,29 @@ pub fn try_smooth_ribbon_with_ruled<E: From<GeometryError>>(
     tolerance: Tolerance,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
 ) -> Result<Brep, E> {
+    try_smooth_ribbon_with_fit_tolerance(
+        source, distance, both_sides, normal, tolerance, tolerance, ruled,
+    )
+}
+
+/// Fit tolerance controls offset approximation only. Sewing and validation
+/// retain the separate model tolerance, even when the requested fit is coarse.
+#[allow(clippy::too_many_arguments)]
+pub fn try_smooth_ribbon_with_fit_tolerance<E: From<GeometryError>>(
+    source: &NurbsCurve,
+    distance: Real,
+    both_sides: bool,
+    normal: UnitVector3,
+    model_tolerance: Tolerance,
+    fit_tolerance: Tolerance,
+    ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
+) -> Result<Brep, E> {
     build_with_offset(
         source,
         distance,
         both_sides,
-        tolerance,
-        &mut |d| Ok(offset(source, d, normal, tolerance)?),
+        model_tolerance,
+        &mut |d| Ok(offset(source, d, normal, model_tolerance, fit_tolerance)?),
         ruled,
     )
 }
@@ -53,14 +70,15 @@ fn offset(
     source: &NurbsCurve,
     distance: Real,
     fallback: UnitVector3,
-    tolerance: Tolerance,
+    model_tolerance: Tolerance,
+    fit_tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
-    let normal = nurbs_offset_plane(source, fallback, tolerance)?;
-    source.tight_bounds(tolerance)?;
-    if let Some(candidate) = seed::try_offset(source, distance, normal, tolerance)? {
+    let normal = nurbs_offset_plane(source, fallback, model_tolerance)?;
+    source.tight_bounds(model_tolerance)?;
+    if let Some(candidate) = seed::try_offset(source, distance, normal, fit_tolerance)? {
         return Ok(candidate);
     }
-    fit_ribbon_offset(source, distance, normal, tolerance)
+    fit_ribbon_offset(source, distance, normal, fit_tolerance)
 }
 
 #[cfg(test)]

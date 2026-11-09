@@ -13,11 +13,12 @@ from .generate_ribbon_sharp_seams import request as seams
 from .generate_ribbon_smooth import request as smooth
 from .generate_ribbon_analytic import request as analytic
 from .generate_ribbon_near_analytic import request as near
+from .generate_ribbon_workflows import request as workflows
 
 
 class RibbonProbeTests(unittest.TestCase):
     def test_all_authored_operations_validate(self):
-        for factory in [ribbons,offsets,types,polylines,correspondence,angles,sharp,seams,smooth,analytic,near]:
+        for factory in [ribbons,offsets,types,polylines,correspondence,angles,sharp,seams,smooth,analytic,near,workflows]:
             for op in factory()['operations']:validate(op)
 
     def test_nonfinite_boolean_and_zero_distances_are_rejected(self):
@@ -27,7 +28,7 @@ class RibbonProbeTests(unittest.TestCase):
 
     def test_unknown_choices_and_arbitrary_macro_tokens_are_rejected(self):
         for key,value in [('corner','Sharp _Delete'),('output_layer','Input _Cancel'),
-                          ('native_kind','unknown'),('side',[0.,float('inf'),0.]),('loose','Yes')]:
+                          ('native_kind','unknown'),('side',[0.,float('inf'),0.]),('loose','Yes'),('postselected','Yes')]:
             op=copy.deepcopy(offsets()['operations'][0]);op[key]=value
             with self.assertRaises(ValueError):validate(op)
 

@@ -27,6 +27,9 @@ impl VibocerosApp {
             self.component_selection.clear();
         }
         self.offset_subd_session = None;
+        if self.ribbon_session.take().is_some_and(|s| s.postselected) {
+            self.document.clear_selection();
+        }
         if self
             .offset_surface_session
             .take()

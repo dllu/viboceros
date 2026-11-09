@@ -4,6 +4,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("select one available curve for Ribbon")]
+    RibbonSourceUnavailable,
+    #[error("ordinary Ribbon in the construction plane is not yet supported for this curve")]
+    RibbonCPlaneUnavailable,
     #[error("select available mesh or SubD edges for loop/ring selection")]
     EdgeLoopUnavailable,
     #[error("Edge selection source changed; select the edges again")]

@@ -282,6 +282,7 @@ mod refinement;
 mod remap_cplane;
 mod reparameterize;
 mod replace_block;
+mod ribbon;
 mod scale_by_plane;
 mod scale_nu;
 mod scale_positions;
@@ -491,6 +492,7 @@ pub struct VibocerosApp {
     short_path_session: Option<short_path::Session>,
     offset_subd_session: Option<offset_subd::Session>,
     offset_surface_session: Option<offset_surface::Session>,
+    ribbon_session: Option<ribbon::Session>,
     extrude_subd_session: Option<extrude_subd::Session>,
     inset_session: Option<inset::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
@@ -685,6 +687,7 @@ impl VibocerosApp {
             short_path_session: None,
             offset_subd_session: None,
             offset_surface_session: None,
+            ribbon_session: None,
             extrude_subd_session: None,
             inset_session: None,
             mesh_polyline_session: None,
@@ -873,6 +876,7 @@ impl VibocerosApp {
         }
         // Construction options can share names with snap modes, such as Vertex.
         if self.continue_inset(&input)
+            || self.continue_ribbon(&input)
             || self.continue_extrude_subd(&input)
             || self.continue_offset_subd(&input)
             || self.continue_offset_surface(&input)
@@ -1193,6 +1197,7 @@ impl VibocerosApp {
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
             || self.continue_offset_surface(input)
+            || self.continue_ribbon(input)
             || self.continue_surface_point_grid(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)

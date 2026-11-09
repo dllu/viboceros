@@ -4,6 +4,9 @@ use super::*;
 impl InteractiveCommand {
     pub(in crate::app) const fn prompt(self) -> &'static str {
         match self {
+            Self::Ribbon { .. } => {
+                "Ribbon: pick the side, or edit distance and options (Esc cancels)"
+            }
             Self::Inset => {
                 "Inset: select faces; enter a positive distance or face options; Enter accepts, Esc cancels"
             }

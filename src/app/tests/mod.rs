@@ -222,6 +222,7 @@ mod primitive_input;
 mod revolve_deformable;
 mod revolve_splitting;
 mod revolve_subd;
+mod ribbon;
 mod round_primitive_input;
 mod selection_sidebar;
 mod short_span_extrusions;
@@ -442,6 +443,7 @@ pub(super) fn test_app() -> VibocerosApp {
         short_path_session: None,
         offset_subd_session: None,
         offset_surface_session: None,
+        ribbon_session: None,
         extrude_subd_session: None,
         inset_session: None,
         mesh_polyline_session: None,

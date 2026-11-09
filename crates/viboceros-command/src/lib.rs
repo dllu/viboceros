@@ -495,6 +495,7 @@ pub mod merge_coplanar_face;
 mod merge_edge;
 mod merge_edges;
 mod offset_curve;
+pub mod ribbon;
 mod split_edge;
 use cap::CapCommand;
 pub use merge_edge::{MergeEdgeChoice, MergeEdgeSelection};
@@ -1036,6 +1037,7 @@ pub struct CommandRegistry {
     curve_deviation: std::sync::Arc<curve_deviation::Session>,
     curve_boolean_preferences: std::sync::Arc<remembered::Remembered<curve_boolean::Options>>,
     offset_surface_options: std::sync::Arc<remembered::Remembered<offset_surface::Options>>,
+    ribbon_options: std::sync::Arc<remembered::Remembered<ribbon::Options>>,
     merge_surface_options: std::sync::Arc<remembered::Remembered<merge_surfaces::Options>>,
     match_surface_options: std::sync::Arc<remembered::Remembered<match_surface::Options>>,
     shell_options: std::sync::Arc<remembered::Remembered<shell::ShellOptions>>,
@@ -1896,6 +1898,9 @@ impl CommandRegistry {
         registry
             .register(OffsetCommand)
             .expect("unique built-in command");
+        registry
+            .register(ribbon::RibbonCommand(registry.ribbon_options.clone()))
+            .expect("unique Ribbon command");
         registry
             .register(FilletCommand(registry.fillet_preferences.clone()))
             .expect("unique built-in command");
@@ -2832,6 +2837,9 @@ impl CommandRegistry {
     }
     pub fn offset_surface_options(&self) -> offset_surface::Options {
         self.offset_surface_options.get()
+    }
+    pub fn ribbon_options(&self) -> ribbon::Options {
+        self.ribbon_options.get()
     }
     pub fn match_surface_options(&self) -> match_surface::Options {
         self.match_surface_options.get()

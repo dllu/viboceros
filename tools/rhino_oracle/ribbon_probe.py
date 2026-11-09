@@ -7,7 +7,7 @@ def finite(x):
 
 def validate(op):
     required = {'op','id','curve','distance','side','both_sides','corner','loose','in_cplane','output_layer'}
-    if not isinstance(op,dict) or not required.issubset(op) or set(op)-required-{'native_kind'} or op['op'] not in ['ribbon_command','loose_offset_command']:
+    if not isinstance(op,dict) or not required.issubset(op) or set(op)-required-{'native_kind','postselected'} or op['op'] not in ['ribbon_command','loose_offset_command']:
         raise ValueError('invalid Ribbon operation')
     if not isinstance(op['curve'],dict) or not isinstance(op['id'],str):
         raise ValueError('invalid Ribbon curve or id')
@@ -15,6 +15,8 @@ def validate(op):
         raise ValueError('invalid native curve kind')
     if any(type(op[k]) is not bool for k in ['both_sides','loose','in_cplane']):
         raise ValueError('invalid Ribbon switch')
+    if type(op.get('postselected',False)) is not bool:
+        raise ValueError('invalid Ribbon selection mode')
     if op['corner'] not in ['Sharp','Round','Smooth','Chamfer','None'] or op['output_layer'] not in ['Current','Input']:
         raise ValueError('invalid Ribbon choice')
     if type(op['distance']) not in (int,float) or not finite(op['distance']) or op['distance'] <= 0.:
@@ -75,7 +77,8 @@ def run(op,host,iterations,tolerance):
         attributes.ObjectColor=S.Drawing.Color.FromArgb(12,34,56);attributes.ColorSource=R.DocObjects.ObjectColorSource.ColorFromObject
         try: source=doc.Objects.AddCurve(curve,attributes)
         finally:curve.Dispose();attributes.Dispose()
-        group=doc.Groups.Add('Ribbon group',[source]);doc.Objects.Select(source)
+        group=doc.Groups.Add('Ribbon group',[source])
+        if not op.get('postselected',False):doc.Objects.Select(source)
         doc.Layers.SetCurrentLayerIndex(layers[1],True);doc.ClearUndoRecords(True)
         before=snapshot()
         words=['_Distance','%.17g'%op['distance'],'_Loose=_'+('Yes' if op['loose'] else 'No')]
@@ -84,7 +87,8 @@ def run(op,host,iterations,tolerance):
         if op['both_sides']:words.append('_BothSides')
         words.append('w'+','.join('%.17g'%x for x in op['side']))
         command='Ribbon' if op['op']=='ribbon_command' else 'Offset'
-        macro='_'+command+' '+' '.join(words)
+        selection=('_SelID '+str(source)+' ') if op.get('postselected',False) else ''
+        macro='_'+command+' '+selection+' '.join(words)
         marker='Owned Ribbon '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         success,created,events=observe_command(R.Commands.Command,command,
             lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)

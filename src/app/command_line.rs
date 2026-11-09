@@ -342,6 +342,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if let Some(p) = &self.offset_surface_session {
                                 p.hint()
+                            } else if let Some(p) = &self.ribbon_session {
+                                p.hint()
                             } else if let Some(p) = &self.curve_fillet_session {
                                 p.hint()
                             } else if let Some(p) = &self.fillet_surface_prompt {

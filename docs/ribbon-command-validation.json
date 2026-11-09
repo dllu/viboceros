@@ -1,0 +1,59 @@
+{
+  "baseline_revision": "37d2b6e0896eaffcf19be3db09aba37e39fdc824",
+  "ribbon_registered": true,
+  "full_command_parity": false,
+  "new_headless_rhino_launches": 1,
+  "new_native_workflows": 12,
+  "between_station_distance_certified": false,
+  "loop_winding_compared": false,
+  "output_charts_compared": false,
+  "native_getter_transcripts_replayed": false,
+  "cursor_preview": false,
+  "through_point": false,
+  "custom_tolerance_native_qualified": false,
+  "trim_self_intersections": false,
+  "native_performance_parity": false,
+  "backends": {
+    "portable": {
+      "complete_image_and_incidence_matches": 22,
+      "attributes_selection_history_matches": 22,
+      "maximum_image_bound": 5.159053621513977e-15,
+      "maximum_incidence_bound": 5.372940357576981e-15,
+      "native_success_local_unsupported": [
+        {
+          "family": "ribbon_workflows",
+          "id": "tilted-cplane"
+        },
+        {
+          "family": "ribbon_workflows",
+          "id": "spatial-curve-plane"
+        },
+        {
+          "family": "ribbon_workflows",
+          "id": "spatial-cplane"
+        }
+      ]
+    },
+    "native": {
+      "complete_image_and_incidence_matches": 22,
+      "attributes_selection_history_matches": 22,
+      "maximum_image_bound": 5.159053621513977e-15,
+      "maximum_incidence_bound": 5.372940357576981e-15,
+      "native_success_local_unsupported": [
+        {
+          "family": "ribbon_workflows",
+          "id": "tilted-cplane"
+        },
+        {
+          "family": "ribbon_workflows",
+          "id": "spatial-curve-plane"
+        },
+        {
+          "family": "ribbon_workflows",
+          "id": "spatial-cplane"
+        }
+      ]
+    }
+  },
+  "receipts": "ribbon-command-proof/receipts.json"
+}

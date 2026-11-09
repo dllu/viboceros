@@ -18,7 +18,7 @@ impl NurbsCurve {
         tolerance: Tolerance,
         solver: Option<CurveEditPointSolver>,
     ) -> Result<Self, GeometryError> {
-        self.loose_planar_offset(distance, normal, tolerance, solver, false)
+        self.loose_planar_offset(distance, normal, tolerance, solver, false, false)
     }
 
     /// Offset original Greville positions into a polynomial curve in the same
@@ -32,9 +32,23 @@ impl NurbsCurve {
         tolerance: Tolerance,
         solver: Option<CurveEditPointSolver>,
     ) -> Result<Self, GeometryError> {
-        self.loose_planar_offset(distance, normal, tolerance, solver, true)
+        self.loose_planar_offset(distance, normal, tolerance, solver, true, false)
     }
 
+    /// Offset Greville positions perpendicular to a fixed plane normal while
+    /// retaining their original heights. The source need not be planar. This
+    /// is Ribbon's Loose/InCPlane locus; it retains the polynomial fit policy.
+    pub fn try_loose_polynomial_offset_in_plane(
+        &self,
+        distance: Real,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+        solver: Option<CurveEditPointSolver>,
+    ) -> Result<Self, GeometryError> {
+        self.loose_planar_offset(distance, normal, tolerance, solver, true, true)
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn loose_planar_offset(
         &self,
         distance: Real,
@@ -42,12 +56,17 @@ impl NurbsCurve {
         tolerance: Tolerance,
         solver: Option<CurveEditPointSolver>,
         polynomial: bool,
+        fixed_normal: bool,
     ) -> Result<Self, GeometryError> {
         if !distance.is_finite() || distance == 0. {
             return Err(GeometryError::InvalidCurveOffsetDistance);
         }
         self.tight_bounds(tolerance)?;
-        let normal = crate::curve_offset::nurbs_offset_plane(self, normal, tolerance)?;
+        let normal = if fixed_normal {
+            normal
+        } else {
+            crate::curve_offset::nurbs_offset_plane(self, normal, tolerance)?
+        };
         let source = if self.is_periodic() {
             self.clone()
         } else {

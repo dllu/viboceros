@@ -32,7 +32,8 @@ plus complete edge/vertex geometry and face-loop incidence checks. Boundary
 witnesses are themselves certified and never replace the actual stored curves.
 U correspondence, winding, object policy and native performance parity remain
 unqualified. Kinks, cusps and self-intersection trimming require further command
-work. `Ribbon` remains unregistered.
+work. The [registered Ribbon command](../commands/ribbon.md) adds selection,
+distance getters and object-history policies with explicit remaining limits.
 
 [Frozen validation](../ribbon-smooth-validation.json) replays 60 native cases on
 both backends with strict `1e-9` complete-image and incidence gates. Reproduce

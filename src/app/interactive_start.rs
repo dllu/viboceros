@@ -137,6 +137,7 @@ impl VibocerosApp {
             || self.start_extrude_subd(input)
             || self.start_offset_subd(input, false)
             || self.start_offset_surface(input, false)
+            || self.start_ribbon(input, picked_sources.is_some())
         {
             return true;
         }

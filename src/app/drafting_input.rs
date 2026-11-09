@@ -137,6 +137,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_surface_offset_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_ribbon_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_orient_edge_point(point) {
             return accepted;
         }
@@ -174,6 +177,7 @@ impl VibocerosApp {
             | InteractiveCommand::Chamfer { .. }
             | InteractiveCommand::Fillet { .. }
             | InteractiveCommand::OffsetSurface { .. } => return false,
+            InteractiveCommand::Ribbon { .. } => return false,
             InteractiveCommand::ProjectPlane { .. } => {
                 return self.accept_project_plane_point(point);
             }

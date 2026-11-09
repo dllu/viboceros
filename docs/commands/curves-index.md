@@ -2,6 +2,8 @@
 
 [All commands](README.md) · [Command input](../command-line.md)
 
+- [Ribbon surfaces, curve picking, distance and layer policies](ribbon.md)
+
 - [Divide by count, arc length and chord length; Split and output groups](divide.md)
 - [Ellipse construction, AroundCurve, deformable output and focus markers](ellipse.md)
 - [MarkFoci and conic axes](mark-foci.md)
@@ -127,6 +129,7 @@ Offset 1 1,2,0 Corner=Round
 Offset 1 1,2,0 Corner=None
 Offset ThroughPoint=2,2,0
 OffsetMultiple 1 6,0,0 OffsetCount=3
+Ribbon .5 0,5,0 Corner=Round OutputLayer=Input
 Divide 8
 Divide Length 2.5 MarkEnds
 ExtractPt OutputLayer=Input Output=Points
