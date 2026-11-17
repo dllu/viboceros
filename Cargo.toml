@@ -77,7 +77,7 @@ viboceros-oracle = { path = "crates/viboceros-oracle" }
 
 [features]
 default = []
-native-smlib = ["viboceros-command/native-smlib"]
+native-smlib = ["viboceros-command/native-smlib", "viboceros-oracle/native-smlib"]
 
 [profile.release]
 lto = "thin"
