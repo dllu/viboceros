@@ -1054,10 +1054,46 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
     std::vector<NL_CPOINT> targets(unknowns),solution(unknowns);
     std::vector<double> rhs((input.point_grid || input.nonuniform_periodic) && (full || periodic_band)?unknowns:0),answer(rhs.size());
     for(size_t column=0;column<input.columns;column+=4) {
+        double maxima[4]{};
         for(size_t i=0;i<unknowns;++i) {
             const double *p=input.targets+source_row(i)*input.columns+column;
             require(std::all_of(p,p+4,[](double x){return std::isfinite(x);}),"Nonfinite interpolation targets");
             targets[i]={p[0],p[1],p[2],p[3]};
+            for (size_t channel = 0; channel < 4; ++channel)
+                maxima[channel] = std::max(maxima[channel], std::abs(p[channel]));
+        }
+        // Leave exponent headroom for forward/back substitution even when
+        // a separate multiply and add would overflow before cancellation.
+        // Channel scales are independent and must preserve every RHS value.
+        double rhs_scale[4] = {1., 1., 1., 1.};
+        double rhs_restore[4] = {1., 1., 1., 1.};
+        bool scaled_rhs = false;
+        for (size_t channel = 0; channel < 4; ++channel) {
+            if (maxima[channel] < 0x1p513) continue;
+            const int shift = std::ilogb(maxima[channel]) - 512;
+            const double down = std::ldexp(1., -shift);
+            const double up = std::ldexp(1., shift);
+            bool exact = true;
+            for (size_t i = 0; i < unknowns; ++i) {
+                const double value = input.targets[i * input.columns + column + channel];
+                if ((value * down) * up != value) {
+                    exact = false;
+                    break;
+                }
+            }
+            if (exact) {
+                rhs_scale[channel] = down;
+                rhs_restore[channel] = up;
+                scaled_rhs = true;
+            }
+        }
+        if (scaled_rhs) {
+            for (auto &p : targets) {
+                p.x *= rhs_scale[0];
+                p.y *= rhs_scale[1];
+                p.z *= rhs_scale[2];
+                p.w *= rhs_scale[3];
+            }
         }
         // Homogeneous back solving avoids the real-vector RHS tolerance skip.
         for(size_t i=0;full && i<unknowns;++i) {
@@ -1088,7 +1124,7 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
             "Solve native interpolation homogeneous channels failed");
         for(size_t i=0;i<unknowns;++i) {
             const auto &p=solution[i];
-            const double result[]={p.x,p.y,p.z,p.w};
+            const double result[]={p.x*rhs_restore[0],p.y*rhs_restore[1],p.z*rhs_restore[2],p.w*rhs_restore[3]};
             const bool finite=std::all_of(result,result+4,[](double x){return std::isfinite(x);});
             if(periodic_band && !finite) throw InterpolationBandFailure{};
             require(finite,"Nonfinite interpolation solution");

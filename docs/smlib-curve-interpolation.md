@@ -20,9 +20,10 @@ handle constraints beside the endpoints. Matrix storage, factoring, back-solving
 and residual checks retain linear complexity in point count. Periodic systems
 use the existing full native basis/factorization with folded control columns.
 Both paths share the homogeneous back solve, exact span checks and normalized
-residual checks introduced for Loft. Sources are immutable and native handles
-stay outside document history; backend errors propagate through typed command
-conversion.
+residual checks introduced for Loft. The solve applies reversible power-of-two
+scaling to very large right-hand-side channels so intermediate arithmetic can
+stay finite. It restores each channel before checking the residual in the
+original coordinates. Backend errors propagate through typed command conversion.
 
 The portable model retains its tridiagonal/pivoted fallback and periodic faer
 solve. [Native TweenCurves sampling](smlib-curve-tween.md) now shares the banded
