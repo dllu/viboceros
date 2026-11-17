@@ -81,9 +81,7 @@ impl VibocerosApp {
             }
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
-                if self.command_file_job.is_some() {
-                    self.command_file_step_failed = true;
-                }
+                self.command_file.fail_dispatch();
                 false
             }
         }

@@ -36,9 +36,9 @@ fn adjoining_line_getters_replay_native_cancellation_undo_close_and_parameter_do
                         break;
                     }
                 }
-                assert!(app.command_file_job.is_none());
+                assert!(!app.command_file.is_active());
                 assert_eq!(
-                    app.last_command_file_result,
+                    app.command_file.last_result(),
                     Some(v["success"].as_bool().unwrap())
                 );
             } else {
@@ -171,7 +171,7 @@ fn lines_picks_transparent_planes_and_macro_history_keep_drafts_atomic() {
             break;
         }
     }
-    assert_eq!(app.last_command_file_result, Some(true));
+    assert_eq!(app.command_file.last_result(), Some(true));
     assert_eq!(app.document.objects().len(), 3);
     assert_eq!(app.document.undo_label(), Some("ReadCommandFile"));
     app.document.undo().unwrap();

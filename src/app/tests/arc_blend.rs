@@ -332,7 +332,7 @@ fn command_files_finish_the_blend_and_transparent_cplane_input_keeps_references(
         }
     }
     assert_eq!(
-        app.last_command_file_result,
+        app.command_file.last_result(),
         Some(true),
         "{:?}",
         app.command_log

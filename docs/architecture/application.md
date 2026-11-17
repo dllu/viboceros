@@ -15,6 +15,7 @@ previews stay in individual `src/app/` modules.
 | `curve_chamfer`, `curve_fillet` | Ordered curve picks, numeric/distance getters and prepared result admission |
 | `interactive_cancel` | Complete or discard interactive sessions and release their picks |
 | `prompt_cancel` | Route Escape through transient prompts and selections |
+| `command_file` | Replay typed and picked inputs with one document history batch |
 | `selection_input` | Selection clicks, ambiguity menus, fences and window regions |
 | `component_selection` | Transient component picks and source snapshot validation |
 | `viewport_input` | Route viewport output to selection, drafting and active tools |
@@ -25,6 +26,12 @@ These modules extend `VibocerosApp`; their shared methods are visible only insid
 the application module. Moving a handler does not change its document, selection,
 or history contract. Geometry algorithms and command admission remain in their
 workspace crates.
+
+One command-file job owns the history batch from the filename prompt through
+replay, including nested files. A filename error at the prompt leaves the job
+available for retry. A failing replayed input closes the batch and keeps its
+accepted edits in one Undo entry. The dispatch state guards re-entry while a
+replayed token uses the normal command-line handler.
 
 Application tests live in `src/app/tests/`. The root contains shared fixtures and
 frame helpers, while topic modules cover command input, primitives, editing,

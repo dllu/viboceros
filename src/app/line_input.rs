@@ -69,9 +69,7 @@ impl VibocerosApp {
                 }
                 return accepted;
             }
-            if self.command_file_job.is_some() {
-                self.command_file_step_failed = true;
-            }
+            self.command_file.fail_dispatch();
             self.cancel_interactive_command(false);
             return true;
         }
@@ -171,9 +169,7 @@ impl VibocerosApp {
             Ok(Some(definition)) => self.finish_line_definition(definition),
             Ok(None) if input.cancelled() => {
                 self.cancel_interactive_command(false);
-                if self.command_file_job.is_some() {
-                    self.command_file_step_failed = true;
-                }
+                self.command_file.fail_dispatch();
                 true
             }
             Ok(None) => {

@@ -26,9 +26,7 @@ impl VibocerosApp {
                 self.curve_line_error(e);
                 if pair {
                     self.cancel_interactive_command(false);
-                    if self.command_file_job.is_some() {
-                        self.command_file_step_failed = true;
-                    }
+                    self.command_file.fail_dispatch();
                 }
                 false
             }

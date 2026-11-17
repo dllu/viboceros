@@ -34,9 +34,9 @@ fn line_getters_match_native_construction_cancel_history_and_archives() {
                         break;
                     }
                 }
-                assert!(app.command_file_job.is_none());
+                assert!(!app.command_file.is_active());
                 assert_eq!(
-                    app.last_command_file_result,
+                    app.command_file.last_result(),
                     Some(v["success"].as_bool().unwrap()),
                     "{id} {:?}",
                     app.command_log

@@ -109,7 +109,7 @@ fn scalar_completion_updates_last_point_and_macros_use_the_projected_base() {
         }
     }
     assert_eq!(
-        app.last_command_file_result,
+        app.command_file.last_result(),
         Some(true),
         "{:?}",
         app.command_log

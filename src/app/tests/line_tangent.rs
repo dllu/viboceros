@@ -153,7 +153,7 @@ fn numeric_completion_sets_the_relative_origin_without_leaking_a_point_override(
         }
     }
     assert_eq!(
-        app.last_command_file_result,
+        app.command_file.last_result(),
         Some(true),
         "{:?}",
         app.command_log

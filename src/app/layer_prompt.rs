@@ -101,7 +101,7 @@ impl VibocerosApp {
                 }
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
-                    self.command_file_step_failed = self.executing_command_file;
+                    self.command_file.fail_dispatch();
                 }
             }
         } else {
@@ -119,7 +119,7 @@ impl VibocerosApp {
                 );
             } else {
                 self.push_log("Error: choose a supported layer option".into());
-                self.command_file_step_failed = self.executing_command_file;
+                self.command_file.fail_dispatch();
             }
         }
         self.layer_prompt_message();

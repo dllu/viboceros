@@ -70,9 +70,9 @@ fn command_files_replay_native_input_and_group_completed_edits_into_one_undo() {
                     drain(&mut app);
                 }
             }
-            assert!(app.command_file_job.is_none(), "{id} {:?}", app.command_log);
+            assert!(!app.command_file.is_active(), "{id} {:?}", app.command_log);
             assert_eq!(
-                app.last_command_file_result,
+                app.command_file.last_result(),
                 Some(v["success"].as_bool().unwrap()),
                 "{id} {:?}",
                 app.command_log
@@ -186,12 +186,12 @@ fn filename_prompt_and_recursive_file_failure_preserve_pending_redo() {
         .unwrap();
     app.document.undo().unwrap();
     enter(&mut app, "ReadCommandFile");
-    assert!(app.command_file_prompt);
+    assert!(app.command_file.waiting_for_filename());
     assert!(!app.document.can_undo());
     assert!(!app.document.can_redo());
     app.cancel_current_prompt_or_selection();
     assert!(app.document.can_redo());
-    assert_eq!(app.last_command_file_result, Some(false));
+    assert_eq!(app.command_file.last_result(), Some(false));
     let directory = tempfile::tempdir().unwrap();
     let file = directory.path().join("self macro.txt");
     std::fs::write(&file, format!("_-ReadCommandFile \"{}\"", file.display())).unwrap();
@@ -200,8 +200,8 @@ fn filename_prompt_and_recursive_file_failure_preserve_pending_redo() {
         &format!("_-ReadCommandFile \"{}\"", file.display()),
     );
     drain(&mut app);
-    assert!(app.command_file_job.is_none());
-    assert_eq!(app.last_command_file_result, Some(false));
+    assert!(!app.command_file.is_active());
+    assert_eq!(app.command_file.last_result(), Some(false));
     assert!(app.document.objects().next().is_none());
     assert!(app.document.can_redo());
     assert!(app.command_log.iter().any(|s| s.contains("nesting limit")));
@@ -216,13 +216,43 @@ fn paused_getter_rejects_invalid_input_and_escape_discards_the_macro_tail() {
     enter(&mut app, "ReadCommandFile");
     enter(&mut app, &format!("\"{}\"", file.display()));
     drain(&mut app);
-    assert!(app.command_file_job.is_some());
+    assert!(app.command_file.is_active());
     enter(&mut app, "wNaN,0,0");
-    assert!(app.command_file_job.is_some());
+    assert!(app.command_file.is_active());
     assert!(app.document.objects().next().is_none());
     app.cancel_current_prompt_or_selection();
-    assert!(app.command_file_job.is_none());
+    assert!(!app.command_file.is_active());
     assert!(app.active_command.is_none());
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn filename_retry_and_nested_replay_share_the_original_history_batch() {
+    let directory = tempfile::tempdir().unwrap();
+    let parent = directory.path().join("parent.txt");
+    let child = directory.path().join("child.txt");
+    std::fs::write(&child, "_Point w4,5,6").unwrap();
+    std::fs::write(
+        &parent,
+        format!("_Point w1,2,3 _ReadCommandFile \"{}\" _Point w7,8,9", child.display()),
+    )
+    .unwrap();
+
+    let mut app = test_app();
+    enter(&mut app, "ReadCommandFile");
+    let missing = directory.path().join("missing.txt");
+    enter(&mut app, &format!("\"{}\"", missing.display()));
+    assert!(app.command_file.waiting_for_filename());
+    assert_eq!(app.command_file.last_result(), None);
+
+    enter(&mut app, &format!("\"{}\"", parent.display()));
+    drain(&mut app);
+    assert!(!app.command_file.is_active());
+    assert_eq!(app.command_file.last_result(), Some(true));
+    assert_eq!(app.document.objects().count(), 3);
+    assert_eq!(app.document.undo_label(), Some("ReadCommandFile"));
+    app.document.undo().unwrap();
+    assert!(app.document.objects().next().is_none());
     assert!(!app.document.can_undo());
 }
 
@@ -244,7 +274,7 @@ fn starting_a_file_closes_modeling_and_transparent_view_prompts() {
         enter(&mut app, &format!("ReadCommandFile \"{}\"", file.display()));
         drain(&mut app);
         assert_eq!(
-            app.last_command_file_result,
+            app.command_file.last_result(),
             Some(true),
             "{prompt} {:?}",
             app.command_log

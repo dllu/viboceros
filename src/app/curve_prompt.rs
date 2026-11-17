@@ -34,7 +34,7 @@ impl VibocerosApp {
             return;
         };
         if command == InteractiveCommand::Lines && self.curve_points.len() < 2 {
-            self.command_file_step_failed = self.executing_command_file;
+            self.command_file.fail_dispatch();
             self.cancel_interactive_command(false);
             self.command_input.clear();
             return;

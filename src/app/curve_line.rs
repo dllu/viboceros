@@ -11,9 +11,7 @@ pub(super) struct Session {
 impl VibocerosApp {
     pub(in crate::app) fn curve_line_error(&mut self, error: impl std::fmt::Display) {
         self.push_log(format!("Error: {error}"));
-        if self.command_file_job.is_some() {
-            self.command_file_step_failed = true;
-        }
+        self.command_file.fail_dispatch();
     }
     pub(super) fn try_start_curve_line(&mut self, text: &str) -> bool {
         let words = text.split_whitespace().collect::<Vec<_>>();
@@ -129,9 +127,7 @@ impl VibocerosApp {
                 return true;
             }
             self.cancel_interactive_command(false);
-            if self.command_file_job.is_some() {
-                self.command_file_step_failed = true;
-            }
+            self.command_file.fail_dispatch();
             return true;
         }
         if self.try_curve_line_binding(text) {

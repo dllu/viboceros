@@ -106,7 +106,7 @@ pub(super) fn macros(mode: &str) {
         }
     }
     assert_eq!(
-        app.last_command_file_result,
+        app.command_file.last_result(),
         Some(true),
         "{:?}",
         app.command_log
@@ -151,7 +151,7 @@ pub(super) fn macros(mode: &str) {
             break;
         }
     }
-    assert_eq!(app.last_command_file_result, Some(false));
+    assert_eq!(app.command_file.last_result(), Some(false));
     assert_eq!(app.document.objects().len(), 1);
     assert_eq!(app.document.object(id).unwrap(), &parent);
 }

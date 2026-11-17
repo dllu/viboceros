@@ -374,11 +374,7 @@ pub struct VibocerosApp {
     commands: CommandRegistry,
     draft_pull_source: draft_angle_analysis::Source,
     command_input: String,
-    command_file_job: Option<command_file::Job>,
-    command_file_prompt: bool,
-    executing_command_file: bool,
-    command_file_step_failed: bool,
-    last_command_file_result: Option<bool>,
+    command_file: command_file::State,
     layer_prompt: Option<layer_prompt::Prompt>,
     command_log: VecDeque<String>,
     command_line: command_line::CommandLineState,
@@ -570,11 +566,7 @@ impl VibocerosApp {
             commands,
             draft_pull_source: Default::default(),
             command_input: String::new(),
-            command_file_job: None,
-            command_file_prompt: false,
-            executing_command_file: false,
-            command_file_step_failed: false,
-            last_command_file_result: None,
+            command_file: Default::default(),
             layer_prompt: None,
             command_log,
             viewports: Viewport::standard_views().into(),
@@ -734,8 +726,8 @@ impl VibocerosApp {
     }
 
     fn run_command(&mut self) {
-        if !self.executing_command_file
-            && self.command_file_job.is_some()
+        if !self.command_file.is_dispatching()
+            && self.command_file.is_active()
             && self
                 .command_input
                 .trim()
@@ -1326,7 +1318,7 @@ impl VibocerosApp {
                 true
             }
             Err(error) => {
-                self.command_file_step_failed = self.executing_command_file;
+                self.command_file.fail_dispatch();
                 self.push_log(format!("Error: {error}"));
                 false
             }

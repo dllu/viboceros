@@ -268,7 +268,7 @@ fn reference_replacement_and_macro_input_preserve_atomic_geometry() {
         }
     }
     assert_eq!(
-        app.last_command_file_result,
+        app.command_file.last_result(),
         Some(true),
         "{:?}",
         app.command_log
