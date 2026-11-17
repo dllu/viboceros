@@ -523,18 +523,16 @@ extern "C" int vb_solid_properties(const VbSolid *solid, double accuracy, double
 }
 
 extern "C" int vb_solid_volume(const VbSolid *solid, double accuracy, double *volume,
-                               char *error, size_t capacity) {
+                               int *integrated, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        require(solid && volume && std::isfinite(accuracy) && accuracy >= 1e-12 && accuracy <= 0.1,
-                "Invalid volume query");
+        require(solid && volume && integrated && std::isfinite(accuracy) &&
+                    accuracy >= 1e-12 && accuracy <= 0.1, "Invalid volume query");
+        *integrated = 0;
         double result = 0;
         SmTArray<SmFace *> faces;
         solid->value->GetFaces(faces);
         if (faces.GetSize() != 0) {
             require(solid->value->IsManifoldSolid(), "Volume requires a manifold solid");
-            // SM_API clamps accuracy to 1e-8, which is too coarse for branch
-            // conservation at the document tolerance. Use the public kernel
-            // integration entry directly, with the same local computation origin.
             SmExtent3d bounds;
             check(solid->value->CalculateBoundingBox(bounds), "volume origin");
             const auto size = bounds.GetSize();
@@ -552,14 +550,19 @@ extern "C" int vb_solid_volume(const VbSolid *solid, double accuracy, double *vo
                 const auto *material = first_void ? second : first;
                 double area = 0, delta = 0;
                 SmTArray<SmVector3d> moments;
-                check(faces[i]->ComputePreciseProperties(material->GetOrientation(), accuracy,
-                      bounds.GetMid(), estimated_area, 0.0, area, delta, moments, SM_PPF_VOLUME),
-                      "volume");
+                const auto status = faces[i]->ComputePreciseProperties(material->GetOrientation(),
+                    accuracy, bounds.GetMid(), estimated_area, 0.0, area, delta, moments,
+                    SM_PPF_VOLUME);
+                // Tight requests can exhaust the native quadrature retries.
+                // The caller may integrate the validated exact boundary instead.
+                if (status == SM_ERR) return;
+                check(status, "volume");
                 result += delta;
             }
         }
         require(std::isfinite(result), "Nonfinite volume");
         *volume = result;
+        *integrated = 1;
     });
 }
 

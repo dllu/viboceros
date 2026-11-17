@@ -100,8 +100,9 @@ int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, int opti
                      size_t capacity);
 int vb_solid_properties(const VbSolid *solid, double accuracy, double *volume, double bounds[6],
                         int *manifold, char *error, size_t capacity);
-int vb_solid_volume(const VbSolid *solid, double accuracy, double *volume, char *error,
-                    size_t capacity);
+// On a numerical integration failure, returns success with integrated set to zero.
+int vb_solid_volume(const VbSolid *solid, double accuracy, double *volume, int *integrated,
+                    char *error, size_t capacity);
 void vb_solid_free(VbSolid *solid);
 int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, size_t capacity);
 int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity);

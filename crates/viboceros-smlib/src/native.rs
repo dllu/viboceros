@@ -176,6 +176,7 @@ unsafe extern "C" {
         solid: *const NativeSolid,
         accuracy: f64,
         volume: *mut f64,
+        integrated: *mut c_int,
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
@@ -370,22 +371,36 @@ impl Solid {
         })
     }
 
-    /// Compute material volume in the kernel without exporting geometry or integrating moments.
+    /// Compute material volume without integrating moments.
     /// Empty Boolean results have zero volume. The requested relative accuracy
     /// must be between 1e-12 and 0.1; it controls numerical integration rather
     /// than providing a certified error bound.
     pub fn volume(&self, relative_accuracy: f64) -> Result<f64, Error> {
         let mut volume = 0.;
+        let mut integrated = 0;
         call(|error, capacity| unsafe {
             vb_solid_volume(
                 self.handle.as_ptr(),
                 relative_accuracy,
                 &mut volume,
+                &mut integrated,
                 error,
                 capacity,
             )
         })?;
-        Ok(volume)
+        if integrated != 0 {
+            return Ok(volume);
+        }
+
+        let brep = self.to_brep(Tolerance::NUMERICAL_VALIDATION)?;
+        let bounds = brep.bounds();
+        let diagonal = bounds.min().distance_to(bounds.max())?;
+        let tolerance = Tolerance::try_new(
+            (diagonal * relative_accuracy).max(f64::MIN_POSITIVE),
+            relative_accuracy,
+            Tolerance::DEFAULT.angular(),
+        )?;
+        Ok(brep.signed_volume(tolerance)?)
     }
 
     pub fn properties(&self, relative_accuracy: f64) -> Result<SolidProperties, Error> {

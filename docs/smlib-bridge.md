@@ -60,10 +60,12 @@ relative integration accuracy. `tessellate` produces a validated Viboceros
 `Solid::volume` queries the kernel's public precise-property integrator directly,
 accepts relative accuracy from 1e-12 to 0.1 and returns zero for empty Boolean
 results. It requests only volume from each material boundary face, using native
-region ownership to retain cavity contributions. `Solid::properties` accepts
-relative accuracy from 1e-8 to 0.1. Union/intersection ownership stages query
-volume at 1e-8, and split conservation uses 1e-11. Both avoid repeated B-rep
-export and Rust integration for intermediate solids.
+region ownership to retain cavity contributions. If native integration fails,
+the bridge exports the exact boundary and integrates it in Rust with the
+requested accuracy and a length tolerance scaled to the boundary's size.
+`Solid::properties` accepts relative accuracy from 1e-8 to 0.1.
+Union/intersection ownership stages query volume at 1e-8, and split
+conservation uses 1e-11.
 Imports, material-part transfer and dimensional tolerances are shared between
 the native Boolean adapters. Final editable outputs still pass Rust validation;
 split and difference retain their independent exported-volume checks. Integration
