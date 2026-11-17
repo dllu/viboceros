@@ -25,10 +25,8 @@ The native cause was `SmEdgeDefinition::IsInteriorPoint`: a minimum-distance
 projection succeeded even when the query point lay off the intersection curve,
 and its distance was ignored. `UpdateEdges` then trimmed that curve and its UV
 curves to the projected parameter while retaining the original vertices. The
-fix requires a finite projection distance within the existing native tolerance
-before authorizing a trim. It changes no geometry tolerance. The tracked patch
-under `third_party/patches` is compiled from a generated source copy, leaving
-the pinned submodule unchanged.
+fix checks the projection distance against the existing native tolerance
+before authorizing a trim. USD BRep 1.0.1 incorporates that fix.
 
 Both ordinary and boundary-crossing cutters now pass in both postprocessing
 modes. `Solid::validate_native_endpoints(Tolerance::NUMERICAL_VALIDATION)` checks

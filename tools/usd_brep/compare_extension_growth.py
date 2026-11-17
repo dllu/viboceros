@@ -40,12 +40,15 @@ def main():
     records = dict(before=before, after=capture(args.after), adapter=capture(args.adapter),
                    asan=capture(args.asan), asan_adapter=capture(args.asan_adapter))
     sources = ["third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp",
-               "third_party/patches/usd-brep-knot-removal-bound-error.patch",
                "tools/usd_brep/extension_growth_probe.cpp",
                "tools/usd_brep/extension_adapter_probe.cpp", "tools/usd_brep/CMakeLists.txt",
                "tools/usd_brep/compare_extension_growth.py",
                "crates/viboceros-smlib/native/knot_refinement.cpp"]
-    output = dict(upstream_commit="c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+    upstream = subprocess.check_output(
+        ["git", "-C", str(ROOT / "third_party/usd-brep"), "rev-parse", "HEAD"],
+        text=True,
+    ).strip()
+    output = dict(upstream_commit=upstream,
                   scope="Fixed polynomial end-span growth and real C ABI extrapolation; source grid uses "
                         "absolute error, distant grid uses relative error; no Rhino capture.",
                   source_point_epsilon=1e-9, relative_point_epsilon=1e-12,

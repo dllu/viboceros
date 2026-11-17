@@ -21,7 +21,8 @@ cargo run --release
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
 For native B-rep modeling and expanded NURBS/STEP support on Linux,
-install `patch` and oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
+install `patch` and oneTBB development libraries (`libtbb-dev` on Ubuntu) and
+enable usd-brep 1.0.1:
 
 ```sh
 GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep

@@ -1,10 +1,8 @@
 # USD BRep limitations and bugs
 
-This ledger tracks findings relevant to Viboceros's pinned usd-brep 1.0.0
-(`c9c5979f04cea8c38213004d4f04df0dcfb40d05`). It distinguishes upstream
-behavior from restrictions in our adapter. See [integration](usd-brep.md) for
-setup and [upstream known issues](../third_party/usd-brep/KNOWN_ISSUES.md) for
-issues reported by NVIDIA that have not all been reproduced here.
+This ledger records findings from integrating usd-brep. Viboceros currently pins
+1.0.1. Some captures were made with 1.0.0 and retain their original revisions.
+See the [integration guide](usd-brep.md) and [upstream known issues](../third_party/usd-brep/KNOWN_ISSUES.md).
 
 Findings are grouped by subsystem. Each entry retains its source, reproduction
 recipe, qualification limits and any generated repair.

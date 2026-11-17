@@ -12,10 +12,9 @@
   Join/JoinCopy workflows retain the source charts and geometry. The upstream
   ray query path itself remains unqualified. See [scope and control runs](../native-closed-join.md).
 
-- **Planarity includes topology-zone inflation.** Exact planar NURBS can fail
-  `SmSurface::IsPlanar` below their declared zone tolerance because its bounding
-  box expands by that zone. The [generated repair](../../third_party/patches/usd-brep-planarity-zone.patch)
-  measures the unexpanded control support and retains the requested tolerance.
+- **Fixed upstream in 1.0.1. Planarity included topology-zone inflation.**
+  `SmSurface::IsPlanar` uses an unpadded bounding box in 1.0.1. The local
+  patch checks the bounding-box query status before classifying the surface.
   The direct rotated-plane/warped-surface probe and
   [coplanar merge regressions](../coplanar-faces-qualification.json) cover this.
   A [second repair](../../third_party/patches/usd-brep-protected-topology.patch)
@@ -38,15 +37,11 @@
   [squeezed-vertex baseline](../shell-asan-squeezed-vertex-baseline.log) and
   [isolated-loop baseline](../shell-asan-isolated-loop-baseline.log).
 
-- **Intersection-curve trimming can accept an off-curve vertex projection.**
-  `SmEdgeDefinition::IsInteriorPoint` checked that nearest-point projection
-  succeeded but ignored its model-space distance. A boundary-crossing lamp
-  cutter returned native edge/vertex gaps up to `4.7084e-3` against stored zone
-  radii near `1e-9`, before copying or portable extraction. The merged
-  [lamp-well regression](../native-lamp-well.md) verifies a bounded
-  [source patch](../../third_party/patches/usd-brep-interior-point.patch) requiring
-  finite distance within the existing tolerance before authorizing a trim.
-  CMake applies it to a generated source copy; the pinned submodule is unchanged.
+- **Fixed upstream in 1.0.1. Trimming accepted off-curve vertex projections.**
+  `SmEdgeDefinition::IsInteriorPoint` now checks the projection distance
+  against the existing model-space tolerance before authorizing a trim. The
+  lamp-well regression covers the boundary-crossing cutter that exposed the
+  defect. See [the regression](../native-lamp-well.md).
   Both Boolean postprocessing modes pass original native endpoint-zone checks,
   strict portable validation and 3DM roundtrip. Legal additive native zone radii
   are translated into local portable bounds and checked against every original

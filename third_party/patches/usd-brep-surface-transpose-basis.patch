@@ -1,6 +1,6 @@
 --- a/SmBSplineSurface.cpp
 +++ b/SmBSplineSurface.cpp
-@@ -5181,48 +5181,23 @@
+@@ -5181,53 +5181,28 @@
  ***********************************************************************/
  SmStatus SmBSplineSurface::SwapUV()
  {
@@ -33,19 +33,10 @@
 -  sCPts.Transpose(lNumVCpts);
 -  sWeights.Transpose(lNumVCpts);
 -  
--  // Transpose Surface definition
--  SER(SetCanonical(lVDegree,lUDegree,sCPts,eBSForm,sVMult,sUMult,
--                   sVKnots,sUKnots,eKnotType,&sWeights));
--
--#ifdef SM_DEBUG_CODE
--  if(bDebugMe)
--    {
--      SM_ASSERT_VALID(this) ;
--      this->Dump() ;
--    }
--#endif // SM_DEBUG_CODE
--
--  // all done
+-  // Transpose Surface definition; on failure, restore the bit
+-  SmStatus eStatus = SetCanonical(lVDegree,lUDegree,sCPts,eBSForm,sVMult,sUMult,
+-                                  sVKnots,sUKnots,eKnotType,&sWeights);
+-  if (eStatus != SM_SUCCESS)
 +  // A parameter permutation preserves the complete homogeneous tensor basis.
 +  // Canonical reconstruction repairs nearby knots and can collapse a remote
 +  // active interval. Use the existing exact NLib transpose on a private copy.
@@ -62,7 +53,24 @@
 +  // SetFromGwNurb copies before the stack is released, preserves borrowing
 +  // ownership, notifies the hierarchy and rebuilds analytic STEP parameters.
 +  ToggleSwapUVBit();
-+  SER(SetFromGwNurb(0, &swapped));
++  SmStatus status = SetFromGwNurb(0, &swapped);
++  if (status != SM_SUCCESS)
+     {
+-      ToggleSwapUVBit() ;
+-      SER(eStatus);
++      ToggleSwapUVBit();
++      SER(status);
+     }
+-
+-#ifdef SM_DEBUG_CODE
+-  if(bDebugMe)
+-    {
+-      SM_ASSERT_VALID(this) ;
+-      this->Dump() ;
+-    }
+-#endif // SM_DEBUG_CODE
+-
+-  // all done
    return SM_SUCCESS;
  
  } // end SmBSplineSurface::SwapUV

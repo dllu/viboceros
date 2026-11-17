@@ -1,8 +1,8 @@
-# Preserve the knot-removal repair and select exact extraction endpoints.
-set(segment_source "${REMOVE_PATCHED}")
+# Preserve exact extraction endpoints on the pinned upstream source.
+set(segment_source "${USD_BREP_ROOT}/source/SMLib/src/NL_CrvTool.cpp")
 set(segment_patch "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-segment-limits.patch")
 set(segment_output "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/NL_CrvToolSegments.cpp")
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${segment_patch}")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${segment_source}" "${segment_patch}")
 execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${segment_output}" "${segment_source}" "${segment_patch}"
                 RESULT_VARIABLE segment_patch_status)
 if(NOT segment_patch_status EQUAL 0)

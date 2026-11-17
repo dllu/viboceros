@@ -1,11 +1,12 @@
 --- a/source/SMLib/src/SmSurface.cpp
 +++ b/source/SMLib/src/SmSurface.cpp
-@@ -22368,7 +22368,10 @@
+@@ -22368,8 +22368,10 @@
   const
  { // test for planarity on Surface PseudoBox
    SmPseudoBox sPseudoBox ;
--  CalculateBoundingBox(GetNaturalUVDomain(), NULL, &sPseudoBox, NULL) ;
-+  // Planarity concerns the surface, not its inflated topology tolerance zone.
+-  // Unpadded box: the zone-tolerance padding made flat surfaces fail small dTol3d.
+-  CalculateBoundingBox(GetNaturalUVDomain(), NULL, &sPseudoBox, NULL, NULL, NULL, FALSE) ;
++  // Reject a failed unpadded bounding-box query before using its output.
 +  if (CalculateBoundingBox(GetNaturalUVDomain(), NULL, &sPseudoBox, NULL,
 +                           NULL, NULL, FALSE) != SM_SUCCESS)
 +    { return FALSE; }

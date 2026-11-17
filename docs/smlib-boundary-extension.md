@@ -26,12 +26,10 @@ cannot turn a displaced point into a valid boundary hit.
 
 Long growth exposed a native status defect: `N_CrvRemoveKnot` substitutes a
 conservative basis bound of one after failed extremum searches but returns the
-handled error. The [bounded patch](../third_party/patches/usd-brep-knot-removal-bound-error.patch)
-clears that status in three existing fallback branches. It changes neither
-the removal tolerance nor the acceptance test. CMake applies the patch to a
-generated source copy and stops on patch failure; the pinned submodule remains
-unchanged. Large curves can retain endpoint knots when the existing numerical
-removal test rejects their removal.
+handled error. USD BRep 1.0.1 clears that status in all three
+fallbacks while retaining the same removal tolerance and acceptance test.
+Large curves can retain endpoint knots when the numerical removal test rejects
+their removal.
 The low-level last-error diagnostic can still record that handled search
 failure; the producer's returned status and geometry checks determine success.
 
@@ -96,9 +94,9 @@ python3 -m tools.numerics.compare_native_extensions /tmp/boundary-extensions.jso
 ```
 
 Build standalone probes in separate directories with
-`VIBOCEROS_EXTENSION_BREAK_PATCH=ON` and
-`VIBOCEROS_KNOT_REMOVAL_BOUND_PATCH=OFF`/`ON` for the baseline and corrected
-kernel. Build the sanitizer variant with
+`VIBOCEROS_EXTENSION_BREAK_PATCH=ON`. Reproduce the failing baseline from
+the 1.0.0 checkout at Viboceros revision `87bb7bd97`, where the standalone
+`VIBOCEROS_KNOT_REMOVAL_BOUND_PATCH` switch still exists. Build the sanitizer variant with
 `-DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer"`.
 
 ```sh

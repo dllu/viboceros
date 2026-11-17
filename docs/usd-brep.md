@@ -5,8 +5,8 @@
 [Limitations and bugs found during integration](usd-brep-limitations.md)
 
 NVIDIA's [USD BRep](https://github.com/NVIDIA-Omniverse/usd-brep) is pinned as
-`third_party/usd-brep` at release 1.0.0, commit
-`c9c5979f04cea8c38213004d4f04df0dcfb40d05`. The Apache-2.0 SMLib kernel offers
+`third_party/usd-brep` at [release 1.0.1](https://github.com/NVIDIA-Omniverse/usd-brep/releases/tag/v1.0.1), commit
+`3fd5b9548d19aa8c12c29bc9637a96d42a06f8a5`. The Apache-2.0 SMLib kernel offers
 NURBS solid modeling, curved booleans, fillets, offsets, healing and tessellation.
 The native `SM_API` is a C++ API with opaque topology pointers, C++ argument
 types and overloads; an [optional Rust C ABI bridge](smlib-bridge.md) now exposes
@@ -165,7 +165,7 @@ Python bindings and STEP/OCCT translation were not tested.
 
 ## Results
 
-Both CTest targets passed on October 9, 2026. The upstream example performs
+Both CTest targets passed with usd-brep 1.0.0 on October 9, 2026. The upstream example performs
 sixteen cylindrical through-hole differences in each of three bounding-box
 query configurations, checking analytic volume, manifold status and bounds.
 Our seven fixtures separately check finite volume, tight bounds, manifold solid
