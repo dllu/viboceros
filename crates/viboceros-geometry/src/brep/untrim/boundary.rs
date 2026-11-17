@@ -147,7 +147,8 @@ impl Brep {
             trim.edge = trim.edge.map(|e| edge_map[e]);
         }
         work.faces[0].loops[0] = natural.faces.remove(0).loops.remove(0);
-        compact_retained_faces(&work, work.faces.clone(), tolerance)
+        let faces = std::mem::take(&mut work.faces);
+        compact_retained_faces(&work, faces, tolerance)
     }
 
     fn restore_outer_run(
@@ -307,7 +308,8 @@ impl Brep {
         }
         work.faces[0].loops[0] = BrepLoop::try_new(BrepLoopType::Outer, trims)?;
         super::ordering::apply(self, marked, new_edges, &mut work);
-        compact_retained_faces(&work, work.faces.clone(), tolerance)
+        let faces = std::mem::take(&mut work.faces);
+        compact_retained_faces(&work, faces, tolerance)
     }
 }
 

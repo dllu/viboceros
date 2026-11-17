@@ -1,6 +1,38 @@
 //! Linear-time edge-incidence classification without repeated trim collection.
 
-use super::Brep;
+use super::{Brep, BrepFace, BrepLoop, BrepTrimType};
+
+pub(super) fn count_edge_uses(faces: &[BrepFace], edge_count: usize) -> Vec<usize> {
+    let mut counts = vec![0; edge_count];
+    for boundary in faces.iter().flat_map(|face| &face.loops) {
+        accumulate_edge_uses(boundary, &mut counts);
+    }
+    counts
+}
+
+// Callers reuse edge-indexed scratch counts across loops.
+pub(super) fn accumulate_edge_uses(boundary: &BrepLoop, counts: &mut [usize]) {
+    for edge in boundary.trims.iter().filter_map(|trim| trim.edge) {
+        counts[edge] += 1;
+    }
+}
+
+pub(super) fn clear_edge_uses(boundary: &BrepLoop, counts: &mut [usize]) {
+    for edge in boundary.trims.iter().filter_map(|trim| trim.edge) {
+        counts[edge] = 0;
+    }
+}
+
+pub(super) fn classify_edge_trim(total: usize, in_loop: usize) -> BrepTrimType {
+    debug_assert!(in_loop > 0 && in_loop <= total);
+    if total == 1 {
+        BrepTrimType::Boundary
+    } else if in_loop >= 2 {
+        BrepTrimType::Seam
+    } else {
+        BrepTrimType::Mated
+    }
+}
 
 impl Brep {
     /// Flags edges shared by distinct faces in one traversal. Same-face seams
@@ -28,17 +60,7 @@ impl Brep {
     /// Prefer this to repeated `edge_use_count` calls when inspecting all edges.
     /// Singular trims have no edge and do not contribute.
     pub fn edge_use_counts(&self) -> Vec<usize> {
-        let mut counts = vec![0; self.edges.len()];
-        for face in &self.faces {
-            for boundary in &face.loops {
-                for trim in &boundary.trims {
-                    if let Some(edge) = trim.edge {
-                        counts[edge] += 1;
-                    }
-                }
-            }
-        }
-        counts
+        count_edge_uses(&self.faces, self.edges.len())
     }
 
     /// Exact use count for one edge, ignoring singular trims with no edge.

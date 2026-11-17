@@ -1,6 +1,12 @@
 use super::*;
 
 impl Brep {
+    /// Combines independent shells while preserving their geometry and orientation.
+    /// See [Self::try_combine] for the topology contract.
+    pub fn try_disjoint_union(parts: Vec<Self>, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        Self::try_combine(parts, tolerance)
+    }
+
     /// Combines owned B-reps into one topology container without joining edges.
     ///
     /// Input order, surfaces, curves, UV trims and face sense are preserved.

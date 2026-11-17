@@ -1,5 +1,6 @@
 //! Exact boundary restoration and interior-hole removal.
 use super::*;
+use super::face_subset::FaceSubset;
 
 mod boundary;
 mod ordering;
@@ -236,142 +237,39 @@ impl Brep {
             return Ok(natural);
         }
 
-        let mut used_vertices = vec![false; self.vertices.len()];
-        let mut edge_uses = vec![0usize; self.edges.len()];
-        for boundary in &face.loops[1..] {
-            for trim in &boundary.trims {
-                for vertex in trim.vertices {
-                    used_vertices[vertex] = true;
-                }
-                if let Some(edge) = trim.edge {
-                    edge_uses[edge] += 1;
-                    for vertex in self.edges[edge].vertices {
-                        used_vertices[vertex] = true;
-                    }
-                }
-            }
-        }
-        let mut vertex_map = vec![usize::MAX; self.vertices.len()];
-        let mut vertices = Vec::new();
-        for (source, vertex) in self.vertices.iter().copied().enumerate() {
-            if used_vertices[source] {
-                vertex_map[source] = vertices.len();
-                vertices.push(vertex);
-            }
-        }
-        let mut edge_map = vec![usize::MAX; self.edges.len()];
-        let mut edges = Vec::new();
-        for (source, edge) in self.edges.iter().enumerate() {
-            if edge_uses[source] > 0 {
-                edge_map[source] = edges.len();
-                let mut edge = edge.clone();
-                edge.vertices = edge.vertices.map(|vertex| vertex_map[vertex]);
-                edges.push(edge);
-            }
-        }
-        let mut holes = Vec::with_capacity(face.loops.len() - 1);
-        for boundary in &face.loops[1..] {
-            let mut same_loop_uses = BTreeMap::new();
-            for trim in &boundary.trims {
-                if let Some(edge) = trim.edge {
-                    *same_loop_uses.entry(edge).or_insert(0usize) += 1;
-                }
-            }
-            let mut boundary = boundary.clone();
-            for trim in &mut boundary.trims {
-                trim.vertices = trim.vertices.map(|vertex| vertex_map[vertex]);
-                if let Some(edge) = trim.edge {
-                    trim.trim_type = if edge_uses[edge] == 1 {
-                        BrepTrimType::Boundary
-                    } else if same_loop_uses[&edge] >= 2 {
-                        BrepTrimType::Seam
-                    } else {
-                        BrepTrimType::Mated
-                    };
-                    trim.edge = Some(edge_map[edge]);
-                }
-            }
-            holes.push(boundary);
-        }
+        let mut outer = std::mem::replace(&mut natural.faces[0].loops, face.loops[1..].to_vec());
+        let FaceSubset {
+            mut vertices,
+            mut edges,
+            mut faces,
+        } = self.compact_face_topology(natural.faces);
         let vertex_offset = vertices.len();
         let edge_offset = edges.len();
         for edge in &mut natural.edges {
             edge.vertices = edge.vertices.map(|vertex| vertex + vertex_offset);
         }
-        for trim in &mut natural.faces[0].loops[0].trims {
+        for trim in &mut outer[0].trims {
             trim.vertices = trim.vertices.map(|vertex| vertex + vertex_offset);
             trim.edge = trim.edge.map(|edge| edge + edge_offset);
         }
         vertices.append(&mut natural.vertices);
         edges.append(&mut natural.edges);
-        natural.faces[0].loops.append(&mut holes);
-        Self::try_new(vertices, edges, natural.faces, tolerance)
+        outer.append(&mut faces[0].loops);
+        faces[0].loops = outer;
+        Self::try_new(vertices, edges, faces, tolerance)
     }
 }
 
 fn compact_retained_faces(
     source: &Brep,
-    mut faces: Vec<BrepFace>,
+    faces: Vec<BrepFace>,
     tolerance: Tolerance,
 ) -> Result<Brep, GeometryError> {
-    let mut used_vertices = vec![false; source.vertices.len()];
-    let mut edge_uses = vec![0usize; source.edges.len()];
-    for face in faces.iter() {
-        for boundary in &face.loops {
-            for trim in &boundary.trims {
-                for vertex in trim.vertices {
-                    used_vertices[vertex] = true;
-                }
-                if let Some(edge) = trim.edge {
-                    edge_uses[edge] += 1;
-                    for vertex in source.edges[edge].vertices {
-                        used_vertices[vertex] = true;
-                    }
-                }
-            }
-        }
-    }
-    let mut vertex_map = vec![usize::MAX; source.vertices.len()];
-    let mut vertices = Vec::new();
-    for (index, vertex) in source.vertices.iter().copied().enumerate() {
-        if used_vertices[index] {
-            vertex_map[index] = vertices.len();
-            vertices.push(vertex);
-        }
-    }
-    let mut edge_map = vec![usize::MAX; source.edges.len()];
-    let mut edges = Vec::new();
-    for (index, edge) in source.edges.iter().enumerate() {
-        if edge_uses[index] != 0 {
-            edge_map[index] = edges.len();
-            let mut edge = edge.clone();
-            edge.vertices = edge.vertices.map(|vertex| vertex_map[vertex]);
-            edges.push(edge);
-        }
-    }
-    for face in faces.iter_mut() {
-        for boundary in &mut face.loops {
-            let mut same_loop_uses = BTreeMap::new();
-            for trim in &boundary.trims {
-                if let Some(edge) = trim.edge {
-                    *same_loop_uses.entry(edge).or_insert(0usize) += 1;
-                }
-            }
-            for trim in &mut boundary.trims {
-                trim.vertices = trim.vertices.map(|vertex| vertex_map[vertex]);
-                if let Some(edge) = trim.edge {
-                    trim.trim_type = if edge_uses[edge] == 1 {
-                        BrepTrimType::Boundary
-                    } else if same_loop_uses[&edge] >= 2 {
-                        BrepTrimType::Seam
-                    } else {
-                        BrepTrimType::Mated
-                    };
-                    trim.edge = Some(edge_map[edge]);
-                }
-            }
-        }
-    }
+    let FaceSubset {
+        vertices,
+        edges,
+        faces,
+    } = source.compact_face_topology(faces);
     Brep::try_new(vertices, edges, faces, tolerance)
 }
 

@@ -1,3 +1,4 @@
+use super::incidence::{accumulate_edge_uses, classify_edge_trim, clear_edge_uses};
 use super::*;
 
 mod boundary;
@@ -44,35 +45,21 @@ impl Brep {
             }
         }
 
-        let uses = self.trim_uses();
-        let mut edge_uses = vec![Vec::new(); self.edges.len()];
-        for trim_use in &uses {
-            if let Some(edge) = trim_use.trim.edge {
-                edge_uses[edge].push(trim_use);
-            }
+        let edge_uses = self.edge_use_counts();
+        if edge_uses.contains(&0) {
+            return invalid("every B-rep edge must be used by a trim");
         }
-        for edge_uses in edge_uses {
-            if edge_uses.is_empty() {
-                return invalid("every B-rep edge must be used by a trim");
-            }
-            for trim_use in &edge_uses {
-                let same_loop_uses = edge_uses
-                    .iter()
-                    .filter(|other| {
-                        trim_use.face == other.face && trim_use.face_loop == other.face_loop
-                    })
-                    .count();
-                let expected = if edge_uses.len() == 1 {
-                    BrepTrimType::Boundary
-                } else if same_loop_uses >= 2 {
-                    BrepTrimType::Seam
-                } else {
-                    BrepTrimType::Mated
-                };
-                if trim_use.trim.trim_type != expected {
+        let mut loop_uses = vec![0; self.edges.len()];
+        for boundary in self.faces.iter().flat_map(|face| &face.loops) {
+            accumulate_edge_uses(boundary, &mut loop_uses);
+            for trim in &boundary.trims {
+                if let Some(edge) = trim.edge
+                    && trim.trim_type != classify_edge_trim(edge_uses[edge], loop_uses[edge])
+                {
                     return invalid("a trim type disagrees with its edge-use topology");
                 }
             }
+            clear_edge_uses(boundary, &mut loop_uses);
         }
         Ok(())
     }

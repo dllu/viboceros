@@ -34,6 +34,14 @@ Boolean classification. Exact constructions and certified portable paths remain
 available where the selected native backend does not supply the operation.
 Commands adapt these results without duplicating geometry algorithms.
 
+The portable B-rep is the validated representation shared by the document,
+file adapters, and native modeling bridge. Its mesh conversion owns the
+construction of polygon and planar n-gon faces. Face copies and trim removal
+share topology compaction, which keeps retained vertices and edges in source
+order. Validation and compaction classify a used edge from its total trim
+count and the count in the current loop. Disjoint combination preserves shell
+orientation and identities even when their vertices coincide.
+
 ## Numerical contracts
 
 Finite-value validation, scaled frames, compensated arithmetic and exact
