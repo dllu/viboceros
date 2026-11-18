@@ -38,6 +38,11 @@ impl VibocerosApp {
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
+                && (self.plane_prompt.is_some()
+                    || self
+                        .ellipse_session
+                        .as_ref()
+                        .is_none_or(|s| !s.waiting_for_topology()))
                 && !self.picking_line_normal()
                 && !self.picking_curve_line()
                 && ((self.arc_blend_session.is_none()

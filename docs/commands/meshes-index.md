@@ -53,6 +53,15 @@
 
 - [Mesh projection and qualification](project-mesh.md)
 
+`MeshEllipsoid` shares the `Ellipsoid` base and normal-axis getters, including
+`Corner`, `Diameter` with `Vertical`, `FromFoci`, and `AroundCurve`. At the
+center prompt, set `VerticalFaces` and `AroundFaces` and use `CapFaceStyle` to
+toggle between triangular and quadrilateral caps. Odd around counts use
+triangular caps. Accepted settings carry over to the next mesh ellipsoid.
+The viewport previews the actual mesh wires up to 4,096 faces and uses
+ellipsoid sections for denser meshes. `MarkFoci` adds points in the same Undo
+step as the mesh.
+
 ## Examples
 
 These are independent snippets. Prepare the required sources and selection first;

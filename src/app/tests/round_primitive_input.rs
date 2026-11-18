@@ -110,6 +110,7 @@ fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
         Some(InteractiveCommand::Ellipsoid {
             anchor: Some(center),
             reference: None,
+            mesh: false,
         })
     );
     assert_eq!(app.document.objects().len(), 0);

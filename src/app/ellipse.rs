@@ -1,4 +1,5 @@
 //! Ellipse construction uses the same edit-free getter for previews and commits.
+use super::ellipsoid::Output;
 use super::*;
 mod guides;
 use viboceros_command::{
@@ -9,7 +10,7 @@ use viboceros_command::{
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Owner {
     Ellipse,
-    Ellipsoid,
+    Ellipsoid(Output),
     SubDEllipsoid,
 }
 
@@ -17,7 +18,7 @@ impl Owner {
     fn name(self) -> &'static str {
         match self {
             Self::Ellipse => "Ellipse",
-            Self::Ellipsoid => "Ellipsoid",
+            Self::Ellipsoid(output) => output.name(),
             Self::SubDEllipsoid => "SubDEllipsoid",
         }
     }
@@ -31,15 +32,22 @@ pub(super) struct Session {
     postselected: bool,
 }
 impl Session {
-    pub(super) fn solid_ellipsoid(&self) -> bool {
-        self.owner == Owner::Ellipsoid
+    pub(super) fn ellipsoid_output(&self) -> Option<Output> {
+        match self.owner {
+            Owner::Ellipsoid(output) => Some(output),
+            _ => None,
+        }
+    }
+
+    pub(super) fn waiting_for_topology(&self) -> bool {
+        self.ellipsoid_output()
+            .is_some_and(Output::waiting_for_topology)
     }
 
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {
-        self.input
-            .requests_curve()
-            .then_some(self.curve.as_ref())
-            .flatten()
+        self.curve
+            .as_ref()
+            .filter(|_| self.input.requests_curve() && !self.waiting_for_topology())
             .map(CapturedCurve::curve)
     }
 }
@@ -48,8 +56,8 @@ impl VibocerosApp {
         self.start_owned_ellipse(input, Owner::SubDEllipsoid);
     }
 
-    pub(super) fn start_solid_ellipsoid_ellipse(&mut self, input: Input) {
-        self.start_owned_ellipse(input, Owner::Ellipsoid);
+    pub(super) fn start_ellipsoid_ellipse(&mut self, input: Input, output: Output) {
+        self.start_owned_ellipse(input, Owner::Ellipsoid(output));
     }
 
     fn start_owned_ellipse(&mut self, input: Input, owner: Owner) {
@@ -92,11 +100,12 @@ impl VibocerosApp {
         let owner = s.owner;
         if owner == Owner::SubDEllipsoid {
             self.sync_subd_ellipsoid_base(input);
-        } else if owner == Owner::Ellipsoid {
+        } else if owner == Owner::Ellipsoid(Output::Solid) {
             self.commands
                 .remember_ellipsoid_mark_foci(input.options().mark_foci);
         }
         let s = self.ellipse_session.as_ref().unwrap();
+        let ellipsoid_output = s.ellipsoid_output();
         let slot = if self.picking_ellipse_curve() {
             "select curve or surface edge"
         } else if s.input.requests_curve() && s.curve.is_some() {
@@ -128,24 +137,25 @@ impl VibocerosApp {
             Owner::SubDEllipsoid => InteractiveCommand::SubDEllipsoid {
                 anchor: input.anchor(),
             },
-            Owner::Ellipsoid => InteractiveCommand::Ellipsoid {
-                anchor: input.anchor(),
-                reference: input.reference(),
-            },
+            Owner::Ellipsoid(output) => output.command(input.anchor(), input.reference()),
             Owner::Ellipse => InteractiveCommand::Ellipse {
                 center: input.anchor(),
                 first_axis: input.reference(),
             },
         });
         self.drafting_plane = Some(input.mouse_plane());
-        let options = if owner == Owner::Ellipsoid
+        if let Some(prompt) = ellipsoid_output.and_then(Output::pending_prompt) {
+            self.push_log(format!("MeshEllipsoid: {prompt}"));
+            return;
+        }
+        let options = if ellipsoid_output.is_some()
             && input.mode() == Mode::Diameter
             && input.slot() == Slot::First
         {
             "; Vertical"
         } else if owner != Owner::Ellipse && input.slot() == Slot::First {
             "; Corner, Diameter, FromFoci, AroundCurve"
-        } else if owner == Owner::Ellipsoid
+        } else if ellipsoid_output.is_some()
             && input.mode() == Mode::Default
             && input.slot() == Slot::FirstAxis
         {
@@ -184,8 +194,13 @@ impl VibocerosApp {
         } else {
             String::new()
         };
+        let topology = if input.mode() == Mode::Default && input.slot() == Slot::First {
+            ellipsoid_output.map_or_else(String::new, Output::topology_menu)
+        } else {
+            String::new()
+        };
         self.push_log(format!(
-            "{} {}{vertical}: {slot}{options}{foci}{length}{output}; Esc cancels",
+            "{} {}{vertical}: {slot}{options}{foci}{length}{output}{topology}; Esc cancels",
             owner.name(),
             input.mode().name()
         ));
@@ -204,6 +219,26 @@ impl VibocerosApp {
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
             self.command_input.clear();
+            return true;
+        }
+        if let Some(mut output) = s.ellipsoid_output()
+            && let Some(result) = output.edit_topology(
+                text,
+                s.input.mode() == Mode::Default && s.input.slot() == Slot::First,
+            )
+        {
+            match result.and_then(|()| output.validate_topology()) {
+                Ok(()) => {
+                    s.owner = Owner::Ellipsoid(output);
+                    self.bind_ellipse_preselection();
+                    self.ellipse_prompt();
+                    self.command_input.clear();
+                }
+                Err(error) => {
+                    self.command_file.fail_dispatch();
+                    self.push_log(format!("Error: {error}"));
+                }
+            }
             return true;
         }
         if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
@@ -226,7 +261,7 @@ impl VibocerosApp {
             return true;
         }
         let prior_mode = s.input.mode();
-        let option = if s.solid_ellipsoid() {
+        let option = if s.ellipsoid_output().is_some() {
             viboceros_command::ellipsoid::base_option(&mut s.input, text)
         } else {
             s.input.option(text).map_err(Into::into)
@@ -311,7 +346,7 @@ impl VibocerosApp {
                     return false;
                 };
                 match value {
-                    Ok(value) => match s.input.number(if s.solid_ellipsoid() {
+                    Ok(value) => match s.input.number(if s.ellipsoid_output().is_some() {
                         value.abs()
                     } else {
                         value
@@ -340,6 +375,9 @@ impl VibocerosApp {
             return Some(false);
         }
         let s = self.ellipse_session.as_mut().unwrap();
+        if s.waiting_for_topology() {
+            return Some(false);
+        }
         if let Some(curve) = &s.curve
             && s.input.requests_curve()
         {
@@ -362,10 +400,11 @@ impl VibocerosApp {
         let prior_input = s.input;
         Some(match s.input.point(point) {
             Ok(Some(base)) => {
-                if s.solid_ellipsoid() {
+                if let Some(output) = s.ellipsoid_output() {
+                    let output = output.with_mark_foci(s.input.options().mark_foci);
                     if s.input.mode() == Mode::FromFoci {
                         let input = s.input;
-                        let accepted = self.accept_focal_ellipsoid(input, base.ellipse);
+                        let accepted = self.accept_focal_ellipsoid(input, base.ellipse, output);
                         if !accepted {
                             self.ellipse_session.as_mut().unwrap().input = prior_input;
                         }
@@ -385,7 +424,7 @@ impl VibocerosApp {
                         }
                     };
                     let s = self.ellipse_session.take().unwrap();
-                    self.start_ellipsoid_third_axis(axis, s.curve, s.postselected);
+                    self.start_ellipsoid_third_axis(axis, s.curve, s.postselected, output);
                     return Some(true);
                 }
                 if s.owner == Owner::SubDEllipsoid {

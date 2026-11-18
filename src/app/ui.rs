@@ -1052,7 +1052,7 @@ impl VibocerosApp {
         let ellipse_input = self
             .ellipse_session
             .as_ref()
-            .filter(|s| !s.solid_ellipsoid())
+            .filter(|s| s.ellipsoid_output().is_none())
             .map(|s| s.input)
             .filter(|_| model_input_active);
         let ellipsoid_preview = model_input_active

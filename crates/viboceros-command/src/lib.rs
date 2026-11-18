@@ -163,6 +163,7 @@ pub mod ellipsoid;
 pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
+pub mod mesh_ellipsoid;
 mod model_tolerance;
 pub mod named_view;
 pub mod parabola;
@@ -564,16 +565,16 @@ use viboceros_geometry::{
     GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
     MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
-    sort_and_cull_points, try_catenary,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshFaceExtraction, MeshSubdivisionSphereOptions, MeshTorusOptions,
+    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsCurve2, NurbsSurface, Plane,
+    Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
+    try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -1032,6 +1033,7 @@ pub struct CommandRegistry {
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
+    mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
     draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
@@ -1401,7 +1403,9 @@ impl CommandRegistry {
             .register(MeshSphereCommand)
             .expect("unique built-in command");
         registry
-            .register(MeshEllipsoidCommand)
+            .register(mesh_ellipsoid::MeshEllipsoidCommand(
+                registry.mesh_ellipsoid_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(MeshTorusCommand)
@@ -5697,7 +5701,6 @@ pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
 const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV|Quads|Triangles] [VerticalFaces=integer-at-least-2 AroundFaces=integer-at-least-3 | Subdivisions=non-negative-integer]";
 pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
-const MESH_ELLIPSOID_USAGE: &str = "MeshEllipsoid center radius-x radius-y radius-z | MeshEllipsoid center first-axis-point second-axis-point third-axis-radius-point [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
 const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
@@ -5928,15 +5931,6 @@ struct EllipsoidPositionals {
     frame: Frame3,
     radii: [Real; 3],
     option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshEllipsoidCommandOptions {
-    frame: Frame3,
-    radii: [Real; 3],
-    vertical_count: usize,
-    around_count: usize,
-    cap_style: MeshCapFaceStyle,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -6805,69 +6799,6 @@ fn parse_ellipsoid_positionals(
     })
 }
 
-fn parse_mesh_ellipsoid_options(
-    arguments: &[&str],
-    tolerance: Tolerance,
-) -> Result<MeshEllipsoidCommandOptions, CommandError> {
-    let positionals = parse_ellipsoid_positionals(arguments, tolerance)?;
-    let mut options = MeshEllipsoidCommandOptions {
-        frame: positionals.frame,
-        radii: positionals.radii,
-        vertical_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-        around_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-        cap_style: MeshCapFaceStyle::Triangles,
-    };
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    let mut cap_style_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            options.vertical_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 2)
-                .ok_or_else(|| {
-                    CommandError::InvalidMeshEllipsoidVerticalFaceCount(value.to_owned())
-                })?;
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            options.around_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| {
-                    CommandError::InvalidMeshEllipsoidAroundFaceCount(value.to_owned())
-                })?;
-            around_seen = true;
-        } else if option_name_eq(name, "CapFaceStyle") && !cap_style_seen {
-            options.cap_style = parse_mesh_cap_face_style(value)
-                .ok_or(CommandError::Usage(MESH_ELLIPSOID_USAGE))?;
-            cap_style_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
-        }
-    }
-
-    let face_count = if options.cap_style == MeshCapFaceStyle::Quadrilaterals
-        && options.around_count.is_multiple_of(2)
-    {
-        options
-            .vertical_count
-            .checked_sub(1)
-            .and_then(|bands| bands.checked_mul(options.around_count))
-    } else {
-        options.vertical_count.checked_mul(options.around_count)
-    };
-    if face_count.is_none_or(|count| count > MAX_MESH_ELLIPSOID_FACES) {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
-}
-
 fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
     let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
     let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
@@ -7552,34 +7483,6 @@ impl Command for MeshSphereCommand {
         };
         let id = document.add_geometry(Geometry::Mesh(mesh))?;
         Ok(format!("Added {style} mesh sphere {id} {details}"))
-    }
-}
-
-struct MeshEllipsoidCommand;
-
-impl Command for MeshEllipsoidCommand {
-    fn name(&self) -> &'static str {
-        "MeshEllipsoid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let tolerance = document.tolerance();
-        let options = parse_mesh_ellipsoid_options(arguments, tolerance)?;
-        let mesh = TriangleMesh::try_ellipsoid_grid(
-            options.frame,
-            options.radii,
-            MeshEllipsoidOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added mesh ellipsoid {id} ({} around × {} vertical faces)",
-            options.around_count, options.vertical_count
-        ))
     }
 }
 

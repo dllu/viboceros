@@ -1,6 +1,8 @@
-//! Solid ellipsoid base picks and the normal-axis prompt.
+//! Ellipsoid base picks and the normal-axis prompt.
 
 use super::*;
+mod output;
+pub(super) use output::Output;
 use viboceros_command::{
     curve_reference::CapturedCurve,
     ellipse_input::{Input, Options, Slot},
@@ -12,6 +14,7 @@ pub(super) struct Session {
     axis: ThirdAxis,
     guide: Option<CapturedCurve>,
     postselected: bool,
+    output: Output,
 }
 
 impl Session {
@@ -32,26 +35,43 @@ impl Session {
 impl VibocerosApp {
     pub(super) fn try_start_ellipsoid(&mut self, text: &str) -> bool {
         let mut words = text.split_whitespace();
-        if !words.next().is_some_and(|word| {
-            word.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("Ellipsoid")
-        }) {
+        let Some(word) = words.next().map(|word| word.trim_start_matches(['_', '-'])) else {
             return false;
-        }
+        };
+        let (mut output, mark_foci) = if word.eq_ignore_ascii_case("MeshEllipsoid") {
+            let preferences = self.commands.mesh_ellipsoid_preferences();
+            (
+                Output::Mesh {
+                    preferences,
+                    pending: None,
+                },
+                preferences.mark_foci,
+            )
+        } else if word.eq_ignore_ascii_case("Ellipsoid") {
+            (Output::Solid, self.commands.ellipsoid_mark_foci())
+        } else {
+            return false;
+        };
         let mut input = Input::new(
             Options {
-                mark_foci: self.commands.ellipsoid_mark_foci(),
+                mark_foci,
                 ..Default::default()
             },
             self.viewports[self.active_viewport].construction_plane(),
             self.document.tolerance(),
         );
-        if !words.all(|word| matches!(base_option(&mut input, word), Ok(true))) {
+        if !words.all(|word| {
+            output.edit_topology(word, true).map_or_else(
+                || matches!(base_option(&mut input, word), Ok(true)),
+                |result| result.is_ok(),
+            )
+        }) || output.validate_topology().is_err()
+        {
             return false;
         }
         self.cancel_interactive_command(false);
         self.push_log(format!("> {text}"));
-        self.start_solid_ellipsoid_ellipse(input);
+        self.start_ellipsoid_ellipse(input, output);
         true
     }
 
@@ -60,18 +80,23 @@ impl VibocerosApp {
         axis: ThirdAxis,
         guide: Option<CapturedCurve>,
         postselected: bool,
+        output: Output,
     ) {
         self.ellipsoid_session = Some(Session {
             axis,
             guide,
             postselected,
+            output,
         });
-        self.active_command = Some(InteractiveCommand::Ellipsoid {
-            anchor: Some(axis.base.center()),
-            reference: axis.base.quadrants().ok().map(|points| points[1]),
-        });
+        self.active_command = Some(output.command(
+            Some(axis.base.center()),
+            axis.base.quadrants().ok().map(|points| points[1]),
+        ));
         self.command_input.clear();
-        self.push_log("Ellipsoid: pick the end of the third axis or enter its size".into());
+        self.push_log(format!(
+            "{}: pick the end of the third axis or enter its size",
+            output.name()
+        ));
     }
 
     pub(super) fn release_ellipsoid_pick(&mut self) {
@@ -93,20 +118,27 @@ impl VibocerosApp {
             .as_ref()
             .is_some_and(|session| !session.current(&self.document))
         {
+            let name = self.ellipsoid_session.as_ref().unwrap().output.name();
             self.cancel_interactive_command(false);
-            self.push_log(
-                "Ellipsoid guide changed or became unavailable. Start the command again.".into(),
-            );
+            self.push_log(format!(
+                "{name} guide changed or became unavailable. Start the command again."
+            ));
             false
         } else {
             true
         }
     }
 
-    pub(super) fn accept_focal_ellipsoid(&mut self, input: Input, base: Ellipse3) -> bool {
+    pub(super) fn accept_focal_ellipsoid(
+        &mut self,
+        input: Input,
+        base: Ellipse3,
+        output: Output,
+    ) -> bool {
         self.finish_ellipsoid(
             Definition::focal(input, base, self.document.tolerance()),
             None,
+            output,
         )
     }
 
@@ -116,7 +148,11 @@ impl VibocerosApp {
             return Some(false);
         }
         let session = self.ellipsoid_session.as_ref().unwrap();
-        Some(self.finish_ellipsoid(session.axis.point(point), session.picked_guide()))
+        Some(self.finish_ellipsoid(
+            session.axis.point(point),
+            session.picked_guide(),
+            session.output,
+        ))
     }
 
     pub(super) fn continue_ellipsoid(&mut self, text: &str) -> bool {
@@ -125,7 +161,10 @@ impl VibocerosApp {
         }
         if text == "0"
             && self.ellipse_session.as_ref().is_some_and(|s| {
-                s.solid_ellipsoid() && s.input.slot() == Slot::First && !s.input.requests_curve()
+                s.ellipsoid_output().is_some()
+                    && !s.waiting_for_topology()
+                    && s.input.slot() == Slot::First
+                    && !s.input.requests_curve()
             })
         {
             let origin = self.viewports[self.active_viewport]
@@ -140,6 +179,12 @@ impl VibocerosApp {
         if !self.validate_ellipsoid_guide() {
             return true;
         }
+        let mut output = self.ellipsoid_session.as_ref().unwrap().output;
+        if let Some(Err(error)) = output.edit_topology(text, false) {
+            self.command_file.fail_dispatch();
+            self.push_log(format!("Error: {error}"));
+            return true;
+        }
         let Some(size) =
             viboceros_drafting::PointInput::parse_length_with_units(text, self.document.units())
         else {
@@ -148,7 +193,11 @@ impl VibocerosApp {
         match size {
             Ok(size) => {
                 let session = self.ellipsoid_session.as_ref().unwrap();
-                self.finish_ellipsoid(session.axis.number(size), session.picked_guide());
+                self.finish_ellipsoid(
+                    session.axis.number(size),
+                    session.picked_guide(),
+                    session.output,
+                );
             }
             Err(error) => {
                 self.command_file.fail_dispatch();
@@ -162,12 +211,25 @@ impl VibocerosApp {
         &mut self,
         definition: Result<Definition, GeometryError>,
         release: Option<ObjectId>,
+        output: Output,
     ) -> bool {
-        match definition
-            .map_err(Into::into)
-            .and_then(|d| commit(&mut self.document, d, release))
-        {
+        match definition.map_err(Into::into).and_then(|definition| {
+            if let Some(topology) = output.topology() {
+                viboceros_command::mesh_ellipsoid::commit(
+                    &mut self.document,
+                    definition,
+                    topology,
+                    release,
+                )
+            } else {
+                commit(&mut self.document, definition, release)
+            }
+        }) {
             Ok(message) => {
+                if let Output::Mesh { preferences, .. } = output {
+                    self.commands
+                        .remember_mesh_ellipsoid_preferences(preferences);
+                }
                 self.cancel_interactive_command(false);
                 self.command_input.clear();
                 self.push_log(message);
@@ -189,11 +251,14 @@ impl VibocerosApp {
         if let Some(session) = &self.ellipsoid_session {
             return session
                 .current(&self.document)
-                .then_some(EllipsoidPreview::Third(session.axis));
+                .then_some(EllipsoidPreview::Third(
+                    session.axis,
+                    session.output.topology(),
+                ));
         }
-        self.ellipse_session
-            .as_ref()
-            .filter(|session| session.solid_ellipsoid())
-            .map(|session| EllipsoidPreview::Base(session.input))
+        self.ellipse_session.as_ref().and_then(|session| {
+            let output = session.ellipsoid_output()?;
+            Some(EllipsoidPreview::Base(session.input, output.topology()))
+        })
     }
 }

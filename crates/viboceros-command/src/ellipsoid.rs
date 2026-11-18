@@ -11,7 +11,10 @@ use crate::{
 use std::sync::Arc;
 use viboceros_document::{Document, Geometry, ObjectId, SelectionMode};
 use viboceros_drafting::PointInput;
-use viboceros_geometry::{Ellipse3, Frame3, GeometryError, NurbsSurface, Point3, Real, Tolerance};
+use viboceros_geometry::{
+    Ellipse3, Frame3, GeometryError, MeshEllipsoidOptions, NurbsSurface, Point3, Real, Tolerance,
+    TriangleMesh,
+};
 
 const USAGE: &str = "Ellipsoid [Corner | Diameter [Vertical] | FromFoci | AroundCurve] base-input [third-axis-size-or-point]";
 
@@ -124,6 +127,14 @@ impl Definition {
         NurbsSurface::try_ellipsoid(frame, [second, third, first])
     }
 
+    pub fn mesh(
+        self,
+        topology: MeshEllipsoidOptions,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        TriangleMesh::try_ellipsoid_grid(self.frame, self.radii, topology, tolerance)
+    }
+
     pub fn sections(self) -> [Result<Ellipse3, GeometryError>; 3] {
         let [x, y, z] = self.frame.axes();
         let [a, b, c] = self.radii;
@@ -167,33 +178,33 @@ impl Command for EllipsoidCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        if let Ok(positional) = parse_ellipsoid_positionals(args, doc.tolerance())
-            && positional.option_start == args.len()
-        {
-            return add(
-                doc,
-                Definition {
-                    frame: positional.frame,
-                    radii: positional.radii,
-                    foci: None,
-                },
-                None,
-            );
-        }
         let (definition, release, mark_foci) =
-            from_arguments(doc, args, context.construction_plane, self.0.get())?;
+            parse_definition(doc, args, context.construction_plane, self.0.get())?;
         let message = add(doc, definition, release)?;
         self.0.set(mark_foci);
         Ok(message)
     }
 }
 
-fn from_arguments(
+pub(super) fn parse_definition(
     doc: &Document,
     mut args: &[&str],
     plane: Frame3,
     mark_foci: bool,
 ) -> Result<(Definition, Option<ObjectId>, bool), CommandError> {
+    if let Ok(positional) = parse_ellipsoid_positionals(args, doc.tolerance())
+        && positional.option_start == args.len()
+    {
+        return Ok((
+            Definition {
+                frame: positional.frame,
+                radii: positional.radii,
+                foci: None,
+            },
+            None,
+            mark_foci,
+        ));
+    }
     let mut input = EllipseInput::new(
         crate::ellipse_input::Options {
             mark_foci,
@@ -281,10 +292,22 @@ pub fn commit(
     definition: Definition,
     release: Option<ObjectId>,
 ) -> Result<String, CommandError> {
-    doc.begin_transaction("Ellipsoid")?;
-    let result = add(doc, definition, release).and_then(|message| {
+    let geometry = Geometry::NurbsSurface(definition.surface()?);
+    let id = commit_geometry(doc, "Ellipsoid", geometry, definition.foci, release)?;
+    Ok(message(id, definition))
+}
+
+pub(super) fn commit_geometry(
+    doc: &mut Document,
+    command: &'static str,
+    geometry: Geometry,
+    foci: Option<[Point3; 2]>,
+    release: Option<ObjectId>,
+) -> Result<ObjectId, CommandError> {
+    doc.begin_transaction(command)?;
+    let result = add_geometry(doc, geometry, foci, release).and_then(|id| {
         doc.commit_transaction()?;
-        Ok(message)
+        Ok(id)
     });
     if result.is_err() {
         doc.rollback_transaction()?;
@@ -297,19 +320,31 @@ fn add(
     definition: Definition,
     release: Option<ObjectId>,
 ) -> Result<String, CommandError> {
-    let surface = definition.surface()?;
+    let geometry = Geometry::NurbsSurface(definition.surface()?);
+    let id = add_geometry(doc, geometry, definition.foci, release)?;
+    Ok(message(id, definition))
+}
+
+pub(super) fn add_geometry(
+    doc: &mut Document,
+    geometry: Geometry,
+    foci: Option<[Point3; 2]>,
+    release: Option<ObjectId>,
+) -> Result<ObjectId, CommandError> {
     if let Some(id) = release {
         doc.release_command_selection_on_history_replay([id])?;
         doc.select_objects_direct([id], SelectionMode::Remove)?;
     }
-    let id = doc.add_geometry(Geometry::NurbsSurface(surface))?;
-    for point in definition.foci.into_iter().flatten() {
+    let id = doc.add_geometry(geometry)?;
+    for point in foci.into_iter().flatten() {
         doc.add_geometry(Geometry::Point(point))?;
     }
+    Ok(id)
+}
+
+fn message(id: ObjectId, definition: Definition) -> String {
     let [x, y, z] = definition.radii;
-    Ok(format!(
-        "Added NURBS ellipsoid {id} (radii {x:.6} × {y:.6} × {z:.6})"
-    ))
+    format!("Added NURBS ellipsoid {id} (radii {x:.6} × {y:.6} × {z:.6})")
 }
 
 #[cfg(test)]

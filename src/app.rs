@@ -4,10 +4,9 @@ use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-    DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
-    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
+    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
+    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+    DEFAULT_MESH_TORUS_FACE_COUNT, DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
     MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
     format_interp_curve_options, parse_curve_closure, parse_curve_degree,
     parse_interp_curve_options, update_interp_curve_options,
@@ -17,9 +16,8 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MeshCapFaceStyle, Point3, Tolerance,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -1385,22 +1383,6 @@ fn format_model_point(point: Point3) -> String {
 
 fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
     (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
-}
-
-fn ellipsoid_third_radius_exceeds_tolerance(
-    center: Point3,
-    first_axis: Point3,
-    second_axis: Point3,
-    third_axis: Point3,
-    tolerance: Tolerance,
-) -> bool {
-    Frame3::try_from_points(center, first_axis, second_axis, tolerance)
-        .and_then(|frame| {
-            center
-                .vector_to(third_axis)?
-                .dot(frame.z_axis().as_vector())
-        })
-        .is_ok_and(|radius| radius.abs() > tolerance.absolute())
 }
 
 fn point_is_near_axis(

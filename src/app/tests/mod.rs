@@ -179,6 +179,7 @@ mod match_surface_menus;
 mod merge_edge;
 mod merge_surfaces;
 mod mesh_edit_input;
+mod mesh_ellipsoid_getters;
 mod mesh_face_prompt;
 mod mesh_primitive_input;
 mod mirror_preview;

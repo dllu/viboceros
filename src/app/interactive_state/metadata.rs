@@ -74,7 +74,8 @@ impl InteractiveCommand {
             Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::SelVolumeObject { .. } => "SelVolumeObject",
             Self::Pipe { .. } => "Pipe",
-            Self::Ellipsoid { .. } => "Ellipsoid",
+            Self::Ellipsoid { mesh: false, .. } => "Ellipsoid",
+            Self::Ellipsoid { mesh: true, .. } => "MeshEllipsoid",
             Self::Arc { .. } => "Arc",
             Self::ArcStartPoint { .. } | Self::ArcStartDirection { .. } => "Arc",
             Self::ArcStartCenter { .. } | Self::ArcStartCenterLength { .. } => "Arc",
@@ -108,7 +109,6 @@ impl InteractiveCommand {
             Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
             Self::MeshSphere { .. } => "MeshSphere",
-            Self::MeshEllipsoid { .. } => "MeshEllipsoid",
             Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
             Self::SurfacePointGrid { control, .. } => {
@@ -300,10 +300,6 @@ impl InteractiveCommand {
             | Self::MeshTruncatedCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
             | Self::MeshSphere { center: None, .. }
-            | Self::MeshEllipsoid {
-                points: [None, _, _],
-                ..
-            }
             | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
@@ -466,11 +462,7 @@ impl InteractiveCommand {
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
-            | Self::Ellipsoid { anchor: center, .. }
-            | Self::MeshEllipsoid {
-                points: [center, _, _],
-                ..
-            } => center,
+            | Self::Ellipsoid { anchor: center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
             }
@@ -602,11 +594,6 @@ impl InteractiveCommand {
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
             Self::Ellipsoid { reference, .. } => reference,
-            Self::MeshEllipsoid { points, .. } => match points {
-                [_, _, Some(second_axis)] => Some(second_axis),
-                [_, Some(first_axis), None] => Some(first_axis),
-                _ => None,
-            },
             _ => None,
         }
     }

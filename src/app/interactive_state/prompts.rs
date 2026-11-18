@@ -310,7 +310,12 @@ impl InteractiveCommand {
             Self::Pipe {
                 source: Some(_), ..
             } => "Pipe: pick a radius point near the rail (Esc to cancel)",
-            Self::Ellipsoid { .. } => "Ellipsoid: pick a point or enter a size (Esc cancels)",
+            Self::Ellipsoid { mesh: false, .. } => {
+                "Ellipsoid: pick a point or enter a size (Esc cancels)"
+            }
+            Self::Ellipsoid { mesh: true, .. } => {
+                "MeshEllipsoid: pick a point or enter a size (Esc cancels)"
+            }
             Self::Arc { points } => match points {
                 [None, _] => "Arc StartPoint ThroughPoint: pick the start point (Esc to cancel)",
                 [Some(_), None] => {
@@ -565,18 +570,6 @@ impl InteractiveCommand {
             Self::MeshSphere {
                 center: Some(_), ..
             } => "MeshSphere: pick an equator radius in the viewport (Esc to cancel)",
-            Self::MeshEllipsoid { points, .. } => match points {
-                [None, _, _] => "MeshEllipsoid: pick the center in the viewport (Esc to cancel)",
-                [Some(_), None, _] => {
-                    "MeshEllipsoid: pick the end of the first axis in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), None] => {
-                    "MeshEllipsoid: pick the second-axis radius in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), Some(_)] => {
-                    "MeshEllipsoid: pick the third-axis radius in the viewport (Esc to cancel)"
-                }
-            },
             Self::MeshTorus { center: None, .. } => {
                 "MeshTorus: pick the center in the viewport (Esc to cancel)"
             }

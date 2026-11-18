@@ -19,11 +19,10 @@ fn interactive_mesh_ellipsoid_retains_topology_and_validates_each_axis() {
     app.accept_drafting_point(center);
     assert_eq!(
         app.active_command,
-        Some(InteractiveCommand::MeshEllipsoid {
-            points: [Some(center), None, None],
-            vertical_count: 4,
-            around_count: 6,
-            cap_style: MeshCapFaceStyle::Quadrilaterals,
+        Some(InteractiveCommand::Ellipsoid {
+            anchor: Some(center),
+            reference: None,
+            mesh: true,
         })
     );
     assert_eq!(app.document.objects().len(), 0);

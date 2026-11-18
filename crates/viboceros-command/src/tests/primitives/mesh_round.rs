@@ -166,12 +166,10 @@ fn mesh_sphere_rejects_incompatible_styles_and_invalid_input_atomically() {
 fn mesh_ellipsoid_matches_rhino_parameterization_caps_and_orientation() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed =
-        parse_mesh_ellipsoid_options(&["1,2,3", "4", "3", "2"], document.tolerance()).unwrap();
-    assert_eq!(parsed.radii, [4.0, 3.0, 2.0]);
-    assert_eq!(parsed.vertical_count, 10);
-    assert_eq!(parsed.around_count, 10);
-    assert_eq!(parsed.cap_style, MeshCapFaceStyle::Triangles);
+    let topology = registry.mesh_ellipsoid_preferences().topology;
+    assert_eq!(topology.vertical_count, 10);
+    assert_eq!(topology.around_count, 10);
+    assert_eq!(topology.cap_style, MeshCapFaceStyle::Triangles);
 
     let message = registry
         .execute(&mut document, "MeshEllipsoid 1,2,3 4 3 2")

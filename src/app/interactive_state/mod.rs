@@ -295,6 +295,7 @@ pub(super) enum InteractiveCommand {
     Ellipsoid {
         anchor: Option<Point3>,
         reference: Option<Point3>,
+        mesh: bool,
     },
     Arc {
         points: [Option<Point3>; 2],
@@ -448,12 +449,6 @@ pub(super) enum InteractiveCommand {
     MeshSphere {
         center: Option<Point3>,
         topology: InteractiveMeshSphereTopology,
-    },
-    MeshEllipsoid {
-        points: [Option<Point3>; 3],
-        vertical_count: usize,
-        around_count: usize,
-        cap_style: MeshCapFaceStyle,
     },
     MeshTorus {
         center: Option<Point3>,
