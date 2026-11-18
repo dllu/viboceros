@@ -1,10 +1,180 @@
 //! Pointwise curve-radius queries sharing differential evaluation and markers.
 use super::*;
-use crate::measurements::{measurement_display_option, measurement_display_scale};
+use crate::measurements::measurement_display_scale;
+use viboceros_document::HistoryGroup;
 use viboceros_geometry::LengthUnitSystem;
+mod units;
+use units::DisplayUnits;
+pub use units::radius_display_units;
 
 pub(crate) struct RadiusCommand {
     pub diameter: bool,
+}
+
+pub struct RadiusMeasurement {
+    evaluation: Evaluation,
+    magnitude: f64,
+}
+
+impl RadiusMeasurement {
+    pub fn evaluate(curve: CurveRef<'_>, parameter: f64) -> Result<Self, CommandError> {
+        let evaluation = Target::Curve(curve, parameter).evaluate()?;
+        let Evaluation::Curve { curvature, .. } = &evaluation else {
+            unreachable!()
+        };
+        Ok(Self {
+            magnitude: curvature.length()?,
+            evaluation,
+        })
+    }
+
+    pub fn nearest(
+        document: &Document,
+        point: Point3,
+        restrict_to_selection: bool,
+    ) -> Result<Self, CommandError> {
+        let tolerance = document.tolerance();
+        let mut best = None;
+        let candidates = document
+            .selected_objects()
+            .take(if restrict_to_selection { usize::MAX } else { 0 })
+            .chain(
+                document
+                    .selectable_objects()
+                    .take(if restrict_to_selection { 0 } else { usize::MAX }),
+            );
+        for object in candidates {
+            let Some(curve) = geometry_curve_ref(object.geometry()) else {
+                if restrict_to_selection {
+                    return Err(CommandError::Usage(
+                        "Select only curves for a radius measurement",
+                    ));
+                }
+                continue;
+            };
+            let parameter = curve.closest_parameter(point, tolerance)?;
+            let distance = point.distance_to(curve.evaluate(parameter)?)?;
+            if best.as_ref().is_none_or(|(d, _, _)| distance < *d) {
+                best = Some((distance, curve, parameter));
+            }
+        }
+        let (_, curve, parameter) = best.ok_or(CommandError::Usage(
+            "Radius/Diameter requires an eligible curve",
+        ))?;
+        Self::evaluate(curve, parameter)
+    }
+
+    pub fn model_value(&self, diameter: bool) -> Result<Option<f64>, CommandError> {
+        length(self.magnitude, diameter, 1.0)
+    }
+
+    pub fn display_value(
+        &self,
+        document: &Document,
+        diameter: bool,
+        units: Option<&str>,
+    ) -> Result<String, CommandError> {
+        let target = DisplayUnits::parse(units)?;
+        let scale = target.scale(document)?;
+        display_length(self.magnitude, diameter, scale, &target)
+    }
+
+    fn markers(&self, tolerance: Tolerance) -> Result<Vec<Geometry>, CommandError> {
+        Ok(self.evaluation.markers(tolerance)?)
+    }
+
+    pub fn finish(
+        &self,
+        document: &mut Document,
+        diameter: bool,
+        mark: bool,
+        units: Option<&str>,
+    ) -> Result<String, CommandError> {
+        let target = DisplayUnits::parse(units)?;
+        let scale = target.scale(document)?;
+        let name = if diameter { "Diameter" } else { "Radius" };
+        if mark {
+            crate::run_command_transaction(document, name, |doc| {
+                self.report_and_mark(doc, true, scale, &target)
+            })
+        } else {
+            self.report_and_mark(document, false, scale, &target)
+        }
+    }
+
+    pub fn finish_grouped(
+        &self,
+        document: &mut Document,
+        group: &mut HistoryGroup,
+        units: Option<&str>,
+    ) -> Result<String, CommandError> {
+        let target = DisplayUnits::parse(units)?;
+        let scale = target.scale(document)?;
+        document.begin_group_transaction(group)?;
+        match self.report_and_mark(document, true, scale, &target) {
+            Ok(report) => {
+                if let Err(error) = document.commit_group_transaction(group) {
+                    document.rollback_transaction()?;
+                    return Err(error.into());
+                }
+                Ok(report)
+            }
+            Err(error) => {
+                document.rollback_transaction()?;
+                Err(error)
+            }
+        }
+    }
+
+    fn report_and_mark(
+        &self,
+        document: &mut Document,
+        mark: bool,
+        scale: f64,
+        target: &DisplayUnits,
+    ) -> Result<String, CommandError> {
+        let report = curvature_report(self.magnitude, scale, target)?;
+        if mark {
+            for marker in self.markers(document.tolerance())? {
+                document.add_geometry(marker)?;
+            }
+        }
+        Ok(report)
+    }
+}
+
+fn length(magnitude: f64, diameter: bool, scale: f64) -> Result<Option<f64>, CommandError> {
+    if magnitude == 0.0 {
+        return Ok(None);
+    }
+    let factor = if diameter { 2.0 } else { 1.0 };
+    Ok(Some(viboceros_geometry::scaled_quotient(
+        factor, scale, magnitude,
+    )?))
+}
+
+fn display_length(
+    magnitude: f64,
+    diameter: bool,
+    scale: f64,
+    target: &DisplayUnits,
+) -> Result<String, CommandError> {
+    let Some(value) = length(magnitude, diameter, scale)? else {
+        return Ok("infinite".into());
+    };
+    Ok(target.format(value))
+}
+
+fn curvature_report(
+    magnitude: f64,
+    scale: f64,
+    target: &DisplayUnits,
+) -> Result<String, CommandError> {
+    Ok(format!(
+        "Radius = {}; Diameter = {}",
+        display_length(magnitude, false, scale, target)?,
+        display_length(magnitude, true, scale, target)?
+    ))
 }
 
 /// A single preselected circular curve can be measured without a pick.
@@ -38,27 +208,6 @@ fn radius_report(radius: f64) -> Result<String, CommandError> {
     Ok(format!("Radius = {radius}; Diameter = {diameter}"))
 }
 
-fn curvature_report(
-    magnitude: f64,
-    scale: f64,
-    target: Option<&LengthUnitSystem>,
-) -> Result<String, CommandError> {
-    let length = |factor: f64| -> Result<String, CommandError> {
-        if magnitude == 0. {
-            return Ok("infinite".into());
-        }
-        Ok(viboceros_geometry::scaled_quotient(factor, scale, magnitude)?.to_string())
-    };
-    let suffix = target
-        .filter(|_| magnitude != 0.)
-        .map_or_else(String::new, |units| format!(" {}", units.name()));
-    Ok(format!(
-        "Radius = {}{suffix}; Diameter = {}{suffix}",
-        length(1.)?,
-        length(2.)?
-    ))
-}
-
 impl Command for RadiusCommand {
     fn name(&self) -> &'static str {
         if self.diameter { "Diameter" } else { "Radius" }
@@ -88,12 +237,15 @@ impl Command for RadiusCommand {
             {
                 mark = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
                 cursor += 1;
+            } else if option_name_eq(arguments[cursor], mark_option) {
+                mark = !mark;
+                cursor += 1;
             } else if arguments[cursor]
                 .split_once('=')
                 .is_some_and(|(name, _)| option_name_eq(name, "Units"))
                 && !units_seen
             {
-                target = measurement_display_option(arguments[cursor], usage)?;
+                target = arguments[cursor].split_once('=').map(|(_, units)| units);
                 units_seen = true;
                 cursor += 1;
             } else if point.is_none() {
@@ -111,53 +263,10 @@ impl Command for RadiusCommand {
                 "Radius/Diameter Units is unavailable with preselected objects",
             ));
         }
-        let scale = measurement_display_scale(
-            document,
-            target.as_ref(),
-            "Radius/Diameter display conversion requires physical source units",
-        )?;
-        let tolerance = document.tolerance();
-        let mut best = None;
-        let candidates =
-            document
-                .selected_objects()
-                .chain(document.selectable_objects().take(if preselected {
-                    0
-                } else {
-                    usize::MAX
-                }));
-        for object in candidates {
-            let Some(curve) = geometry_curve_ref(object.geometry()) else {
-                if preselected {
-                    return Err(CommandError::Usage(usage));
-                }
-                continue;
-            };
-            let parameter = curve.closest_parameter(point, tolerance)?;
-            let distance = point.distance_to(curve.evaluate(parameter)?)?;
-            if best.as_ref().is_none_or(|(d, _)| distance < *d) {
-                best = Some((distance, Target::Curve(curve, parameter)));
-            }
-        }
-        let evaluation = best
-            .ok_or(CommandError::Usage(
-                "Radius/Diameter requires an eligible curve",
-            ))?
-            .1
-            .evaluate()?;
-        let Evaluation::Curve { curvature, .. } = &evaluation else {
-            unreachable!()
-        };
-        let magnitude = curvature.length()?;
-        let report = curvature_report(magnitude, scale, target.as_ref())?;
-        if mark {
-            // Construct all markers before changing the document. Registry
-            // transactions also make insertion failures atomic.
-            for marker in evaluation.markers(tolerance)? {
-                document.add_geometry(marker)?;
-            }
-        }
-        Ok(report)
+        let target = DisplayUnits::parse(target)?;
+        let scale = target.scale(document)?;
+        RadiusMeasurement::nearest(document, point, preselected)?
+            .report_and_mark(document, mark, scale, &target)
     }
 }
 
@@ -378,7 +487,12 @@ mod tests {
 
     #[test]
     fn radius_units_can_represent_a_diameter_whose_model_unit_value_overflows() {
-        let report = curvature_report(1e-308, 1e-3, Some(&LengthUnitSystem::Kilometers)).unwrap();
+        let report = curvature_report(
+            1e-308,
+            1e-3,
+            &DisplayUnits::Decimal(LengthUnitSystem::Kilometers),
+        )
+        .unwrap();
         let values = report
             .split([' ', ';'])
             .filter_map(|token| token.parse::<f64>().ok())

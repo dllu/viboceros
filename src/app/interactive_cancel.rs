@@ -30,6 +30,7 @@ impl VibocerosApp {
             self.component_selection.clear();
         }
         self.align_session = None;
+        self.radius_session = None;
         self.distribute_session = None;
         self.release_offset_mesh();
         self.offset_subd_session = None;
@@ -73,7 +74,7 @@ impl VibocerosApp {
         if self
             .subcurve_prompt
             .take()
-            .is_some_and(|p| !p.offset_temporary)
+            .is_some_and(|p| p.temporary.is_none())
         {
             self.document.clear_selection();
         }

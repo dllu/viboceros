@@ -496,6 +496,9 @@ pub struct VibocerosApp {
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
     align_session: Option<align::Session>,
+    radius_session: Option<radius::Session>,
+    radius_mark: [bool; 2],
+    radius_units: [Option<&'static str>; 2],
     distribute_session: Option<distribute::Session>,
     distribute_settings: viboceros_command::DistributionSettings,
     offset_mesh_session: Option<offset_mesh::Session>,
@@ -705,6 +708,9 @@ impl VibocerosApp {
             surface_offset_session: None,
             short_path_session: None,
             align_session: None,
+            radius_session: None,
+            radius_mark: [false; 2],
+            radius_units: [None; 2],
             distribute_session: None,
             distribute_settings: Default::default(),
             offset_mesh_session: None,
@@ -794,6 +800,9 @@ impl VibocerosApp {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
         if self.command_file_input(&input) || self.continue_layer_prompt(&input) {
+            return;
+        }
+        if self.continue_nested_radius(&input) || self.start_nested_radius(&input) {
             return;
         }
         if self.try_draft_pull_command(&input) {
@@ -1231,6 +1240,9 @@ impl VibocerosApp {
         };
         let input: &str = input.as_ref();
         self.selection_menu = None;
+        if self.continue_nested_radius(input) || self.start_nested_radius(input) {
+            return true;
+        }
         if self.try_continue_component_choice(input)
             || self.try_continue_soft_crease(input)
             || self.try_continue_crease(input)

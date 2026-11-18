@@ -3,6 +3,9 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(click) = output.radius_click {
+            return self.pick_radius_location(click);
+        }
         if self.picking_offset_surface_sources()
             && let Some((object, _)) = output.face_click
         {
@@ -401,7 +404,7 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_offset_subcurve_parameter(parameter)
+            if self.accept_temporary_subcurve_parameter(parameter)
                 || self.accept_surface_offset_parameter(parameter)
                 || self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)

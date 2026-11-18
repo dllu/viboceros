@@ -384,7 +384,7 @@ use selection_pipe::SelVolumePipeCommand;
 use selection_volume::{SelBoxCommand, SelVolumeSphereCommand};
 use user_text::{GetUserTextCommand, SelUserTextCommand, SetUserTextCommand};
 mod measurements;
-pub use curvature::preselected_circular_radius;
+pub use curvature::{RadiusMeasurement, preselected_circular_radius, radius_display_units};
 pub use measurements::distance_display_units;
 use measurements::{
     AngleCommand, AreaCommand, DistanceCommand, DomainCommand, EvaluatePointCommand, LengthCommand,

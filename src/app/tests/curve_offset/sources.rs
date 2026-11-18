@@ -279,7 +279,7 @@ fn viewport_picks_a_surface_edge_and_previews_its_temporary_portion() {
     assert!(
         app.subcurve_prompt
             .as_ref()
-            .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+            .and_then(subcurve_prompt::SubcurvePrompt::temporary_reference)
             .is_some(),
         "{:?}",
         app.command_log

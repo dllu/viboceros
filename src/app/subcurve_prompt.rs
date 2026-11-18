@@ -3,6 +3,12 @@ use super::*;
 use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_document::ObjectId;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Temporary {
+    Offset,
+    Radius,
+}
+
 #[derive(Clone, Debug)]
 pub(super) struct SubcurvePrompt {
     pub(super) source: Option<ObjectId>,
@@ -15,8 +21,8 @@ pub(super) struct SubcurvePrompt {
     pub(super) length: Option<f64>,
     pub(super) copy: bool,
     pub(super) delete: bool,
-    pub(super) offset_temporary: bool,
-    offset_reference: Option<CapturedCurve>,
+    pub(super) temporary: Option<Temporary>,
+    temporary_reference: Option<CapturedCurve>,
     pub(super) mode: viboceros_command::subcurve_input::SubcurveMode,
     pub(super) from_midpoint: bool,
     pub(super) hover_parameter: Option<f64>,
@@ -38,8 +44,8 @@ impl SubcurvePrompt {
             length: None,
             copy,
             delete,
-            offset_temporary: false,
-            offset_reference: None,
+            temporary: None,
+            temporary_reference: None,
             mode,
             from_midpoint,
             hover_parameter: None,
@@ -49,7 +55,7 @@ impl SubcurvePrompt {
     }
 
     pub(super) fn source_current(&self, document: &Document) -> bool {
-        if let Some(reference) = &self.offset_reference {
+        if let Some(reference) = &self.temporary_reference {
             return reference.current(document);
         }
         self.edge_source
@@ -65,12 +71,12 @@ impl SubcurvePrompt {
             })
     }
 
-    pub(super) fn offset_reference(&self) -> Option<&CapturedCurve> {
-        self.offset_reference.as_ref()
+    pub(super) fn temporary_reference(&self) -> Option<&CapturedCurve> {
+        self.temporary_reference.as_ref()
     }
 
     pub(super) fn hint(&self) -> &'static str {
-        if self.offset_temporary && self.source.is_none() {
+        if self.temporary.is_some() && self.source.is_none() {
             return "Select a curve or surface edge to temporarily shorten";
         }
         if self.delete {
@@ -121,14 +127,14 @@ impl VibocerosApp {
         p.source = None;
         p.edge = None;
         p.edge_source = None;
-        p.offset_reference = None;
+        p.temporary_reference = None;
         p.start = None;
         p.length = None;
         p.hover_parameter = None;
         p.locked_forward = None;
         p.preview = Default::default();
         self.active_command = None;
-        let message = if p.delete || p.offset_temporary {
+        let message = if p.delete || p.temporary.is_some() {
             "Source curve changed; select the source again"
         } else {
             "Surface edge changed; select the source again"
@@ -179,9 +185,9 @@ impl VibocerosApp {
         let p = self.subcurve_prompt.as_mut().unwrap();
         p.source = Some(pick.object);
         p.edge = Some(pick.edge);
-        if p.offset_temporary {
+        if p.temporary.is_some() {
             match CapturedCurve::capture(&self.document, pick.object, Some(pick.edge)) {
-                Ok(reference) => p.offset_reference = Some(reference),
+                Ok(reference) => p.temporary_reference = Some(reference),
                 Err(error) => {
                     p.source = None;
                     p.edge = None;
@@ -204,7 +210,7 @@ impl VibocerosApp {
             copy: p.copy,
             delete: p.delete,
         });
-        if !p.offset_temporary {
+        if p.temporary.is_none() {
             self.document.clear_selection();
             self.component_selection.clear();
         }
@@ -215,8 +221,23 @@ impl VibocerosApp {
         &mut self,
         reference: Option<(ObjectId, Option<usize>)>,
     ) {
+        self.begin_temporary_subcurve_prompt(reference, Temporary::Offset);
+    }
+
+    pub(super) fn begin_radius_subcurve_prompt(
+        &mut self,
+        reference: Option<(ObjectId, Option<usize>)>,
+    ) {
+        self.begin_temporary_subcurve_prompt(reference, Temporary::Radius);
+    }
+
+    fn begin_temporary_subcurve_prompt(
+        &mut self,
+        reference: Option<(ObjectId, Option<usize>)>,
+        parent: Temporary,
+    ) {
         self.subcurve_prompt = Some(SubcurvePrompt {
-            offset_temporary: true,
+            temporary: Some(parent),
             ..SubcurvePrompt::new(true, Default::default(), false, false)
         });
         self.point_filter = None;
@@ -292,9 +313,9 @@ impl VibocerosApp {
                     .is_some_and(|o| o.geometry().curve_ref().is_some())
         }) {
             prompt.source = Some(id);
-            if prompt.offset_temporary {
+            if prompt.temporary.is_some() {
                 match CapturedCurve::capture(&self.document, id, None) {
-                    Ok(reference) => prompt.offset_reference = Some(reference),
+                    Ok(reference) => prompt.temporary_reference = Some(reference),
                     Err(error) => {
                         prompt.source = None;
                         self.push_log(format!("Error: {error}"));
@@ -316,7 +337,7 @@ impl VibocerosApp {
                 copy: prompt.copy,
                 delete: prompt.delete,
             });
-            if !prompt.offset_temporary {
+            if prompt.temporary.is_none() {
                 let _ = self.document.select_command_results([id]);
             }
         }
@@ -333,14 +354,15 @@ impl VibocerosApp {
         let Some(prompt) = self.subcurve_prompt.clone() else {
             return false;
         };
-        let word = input.trim_start_matches(['_', '-']);
-        if prompt.offset_temporary {
+        let word = input.trim_start_matches(['_', '-', '\'']);
+        if let Some(parent) = prompt.temporary {
             if word.eq_ignore_ascii_case("Cancel") {
                 self.cancel_interactive_command(true);
                 return true;
             }
             if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
-                self.return_to_curve_offset_sources();
+                self.complete_temporary_subcurve(parent, None)
+                    .expect("empty temporary portion");
                 return true;
             }
             if prompt.source.is_none() {
@@ -369,7 +391,7 @@ impl VibocerosApp {
             return true;
         }
         if !prompt.delete
-            && !prompt.offset_temporary
+            && prompt.temporary.is_none()
             && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("FromMidpoint")
         {
@@ -391,7 +413,7 @@ impl VibocerosApp {
             return true;
         }
         if !prompt.delete
-            && !prompt.offset_temporary
+            && prompt.temporary.is_none()
             && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("Mode")
         {
@@ -406,7 +428,7 @@ impl VibocerosApp {
             return true;
         }
         if !prompt.delete
-            && !prompt.offset_temporary
+            && prompt.temporary.is_none()
             && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("Copy")
         {
@@ -457,8 +479,14 @@ impl VibocerosApp {
             )
         {
             match quantity {
-                Ok(0.) if prompt.offset_temporary => self.return_to_curve_offset_sources(),
-                Ok(0.) => self.cancel_interactive_command(true),
+                Ok(0.) => {
+                    if let Some(parent) = prompt.temporary {
+                        self.complete_temporary_subcurve(parent, None)
+                            .expect("empty temporary portion");
+                    } else {
+                        self.cancel_interactive_command(true);
+                    }
+                }
                 Ok(length) => {
                     let total = self
                         .document
@@ -498,7 +526,7 @@ impl VibocerosApp {
                                 ) {
                                     Ok(true) => {
                                         self.subcurve_prompt.as_mut().unwrap().locked_forward = None;
-                                        if !prompt.offset_temporary {
+                                        if prompt.temporary.is_none() {
                                             self.document.clear_selection();
                                         }
                                         self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
@@ -554,11 +582,29 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    pub(super) fn accept_offset_subcurve_parameter(&mut self, parameter: f64) -> bool {
+    fn complete_temporary_subcurve(
+        &mut self,
+        parent: Temporary,
+        portion: Option<(CapturedCurve, viboceros_geometry::Curve3)>,
+    ) -> Result<(), viboceros_command::CommandError> {
+        match parent {
+            Temporary::Radius => self.return_to_radius(portion)?,
+            Temporary::Offset => {
+                if let Some((reference, curve)) = portion {
+                    self.add_curve_offset_portion(&reference, curve);
+                } else {
+                    self.return_to_curve_offset_sources();
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn accept_temporary_subcurve_parameter(&mut self, parameter: f64) -> bool {
         let Some(reference) = self
             .subcurve_prompt
             .as_ref()
-            .and_then(SubcurvePrompt::offset_reference)
+            .and_then(SubcurvePrompt::temporary_reference)
         else {
             return false;
         };
@@ -615,7 +661,7 @@ impl VibocerosApp {
                 self.push_log(prompt.hint().into());
                 return Ok(());
             };
-            if prompt.offset_temporary {
+            if let Some(parent) = prompt.temporary {
                 use viboceros_command::{curve_reference, subcurve_input};
                 let tolerance = self.document.tolerance();
                 let piece = if let Some(length) = prompt.length {
@@ -643,15 +689,14 @@ impl VibocerosApp {
                     })
                     .transpose()?
                 };
-                if let Some(piece) = piece {
+                let portion = piece.map(|piece| {
                     let reference = prompt
-                        .offset_reference
-                        .as_ref()
-                        .expect("offset temporary input has a curve");
-                    self.add_curve_offset_portion(reference, piece);
-                } else {
-                    self.return_to_curve_offset_sources();
-                }
+                        .temporary_reference
+                        .clone()
+                        .expect("temporary input has a curve");
+                    (reference, piece)
+                });
+                self.complete_temporary_subcurve(parent, portion)?;
                 return Ok(());
             }
             let name = if prompt.delete {

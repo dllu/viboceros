@@ -18,6 +18,8 @@ impl VibocerosApp {
                 && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
                 && (self.align_session.is_none() || self.align_wants_point())
+                && (self.plane_prompt.is_some()
+                    || !matches!(self.active_command, Some(InteractiveCommand::Radius { .. })))
                 && self
                     .distribute_session
                     .as_ref()

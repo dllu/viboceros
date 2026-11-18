@@ -10,6 +10,11 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if self.measuring_nested_radius()
+            && let Some(accepted) = self.accept_standalone_subcurve_point(point)
+        {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_curve_chamfer_point(point) {
             return accepted;
         }

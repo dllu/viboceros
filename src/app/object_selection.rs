@@ -498,6 +498,11 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.plane_prompt.is_none()
+            && matches!(self.active_command, Some(InteractiveCommand::Radius { .. }))
+        {
+            return None;
+        }
         if self.chain_prompt.is_some() || self.edge_pattern_prompt.is_some() {
             return None;
         }
@@ -1233,7 +1238,7 @@ impl VibocerosApp {
         if self
             .subcurve_prompt
             .as_ref()
-            .is_some_and(|p| p.offset_temporary)
+            .is_some_and(|p| p.temporary.is_some())
             || self.curve_offset_distance_input()
         {
             return false;

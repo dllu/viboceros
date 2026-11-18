@@ -317,7 +317,17 @@ impl VibocerosApp {
                     self.document.selected_object_count()
                 ));
                 let (units_label, units_hint) = model_units_status(&self.document);
-                ui.weak(units_label).on_hover_text(units_hint);
+                if self.radius_session.is_some() {
+                    let status = self.radius_status();
+                    let label = status.unwrap_or(&units_label);
+                    ui.add_sized(
+                        [154., ui.spacing().interact_size.y],
+                        egui::Label::new(egui::RichText::new(label).weak()).truncate(),
+                    )
+                    .on_hover_text(status.unwrap_or(&units_hint));
+                } else {
+                    ui.weak(units_label).on_hover_text(units_hint);
+                }
                 if ui
                     .small_button("?")
                     .on_hover_text("Interface commands and shortcuts")

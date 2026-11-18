@@ -98,3 +98,226 @@ fn radius_prompt_accepts_and_revises_display_units() {
         assert_eq!(app.active_command, pending);
     }
 }
+
+fn radius_view() -> (VibocerosApp, egui::Context) {
+    use super::circle_preview::viewport_frame;
+    let mut app = test_app();
+    app.active_viewport = 0;
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    let center = point(0., 0., 5.);
+    let xy = viboceros_command::CommandContext::default().construction_plane;
+    let ellipse = viboceros_geometry::Ellipse3::try_new(
+        center,
+        4.,
+        2.,
+        xy.x_axis(),
+        xy.y_axis(),
+        app.document.tolerance(),
+    )
+    .unwrap();
+    app.document
+        .add_geometry(Geometry::Ellipse(ellipse))
+        .unwrap();
+    app.execute_command("Line w-5,2.3,0 w5,2.3,0");
+    app.document.clear_history().unwrap();
+    let ctx = egui::Context::default();
+    viewport_frame(&mut app, &ctx, Vec::new());
+    viewport_frame(&mut app, &ctx, Vec::new());
+    app.viewports[0]
+        .zoom_extents(&app.document, Default::default())
+        .unwrap();
+    viewport_frame(&mut app, &ctx, Vec::new());
+    (app, ctx)
+}
+
+fn radius_enter(app: &mut VibocerosApp, command: &str) {
+    app.command_input = command.into();
+    app.run_command();
+}
+
+fn move_measurement_pointer(
+    app: &mut VibocerosApp,
+    ctx: &egui::Context,
+    point: Point3,
+) -> egui::Pos2 {
+    use super::circle_preview::{screen_point, viewport_frame};
+    // Starting a command or adding a log row can resize the surrounding panels.
+    for _ in 0..6 {
+        let pixel = screen_point(app, point);
+        viewport_frame(app, ctx, vec![egui::Event::PointerMoved(pixel)]);
+        if screen_point(app, point) == pixel && app.radius_status().is_some() {
+            return pixel;
+        }
+    }
+    panic!(
+        "no measurement at {point:?}, rect {:?}, active {:?}, log {:?}",
+        app.viewports[0].screen_rect(),
+        app.active_command,
+        app.command_log
+    );
+}
+
+fn report_radius(line: &str) -> f64 {
+    line.strip_prefix("Radius = ")
+        .unwrap()
+        .split(|c: char| c == ';' || c.is_whitespace())
+        .next()
+        .unwrap()
+        .parse()
+        .unwrap()
+}
+
+#[test]
+fn radius_viewport_reports_the_hovered_curve_repeatedly_until_enter() {
+    use super::circle_preview::{viewport_click, viewport_frame};
+    let (mut app, ctx) = radius_view();
+    radius_enter(&mut app, "Radius");
+    for (position, expected) in [(point(0., 2., 5.), 8.), (point(4., 0., 5.), 1.)] {
+        let pixel = move_measurement_pointer(&mut app, &ctx, position);
+        let radius = report_radius(app.radius_status().unwrap());
+        assert!((radius - expected).abs() < 1e-7, "{radius}");
+        viewport_click(&mut app, &ctx, pixel);
+        assert!(!app.command_line_idle());
+        let report = app
+            .command_log
+            .iter()
+            .rev()
+            .find(|line| line.starts_with("Radius = ") && line.contains("; Diameter = "))
+            .unwrap_or_else(|| panic!("{:?}", app.command_log));
+        assert!((report_radius(report) - radius).abs() < 1e-7, "{report}");
+    }
+    viewport_frame(
+        &mut app,
+        &ctx,
+        vec![egui::Event::PointerMoved(egui::pos2(5., 5.))],
+    );
+    assert!(app.radius_status().is_none());
+    assert!(!app.document.can_undo());
+    radius_enter(&mut app, "");
+    assert!(app.command_line_idle());
+}
+
+#[test]
+fn select_curve_and_subcurve_stages_preserve_selection_and_group_marker_undo() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    let (mut app, ctx) = radius_view();
+    radius_enter(&mut app, "Diameter SelectCurve");
+    let on_ellipse = screen_point(&app, point(4., 0., 5.));
+    viewport_click(&mut app, &ctx, on_ellipse);
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert_eq!(app.document.objects().count(), 2);
+    radius_enter(&mut app, "SubCrv");
+    assert!(app.subcurve_prompt.is_some());
+    radius_enter(&mut app, "w4,0,5");
+    radius_enter(&mut app, "w0,2,5");
+    assert!(app.subcurve_prompt.is_none(), "{:?}", app.command_log);
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Radius { diameter: true, .. })
+    ));
+    assert_eq!(app.document.objects().count(), 2);
+    radius_enter(&mut app, "MarkDiameter");
+    for position in [point(4., 0., 5.), point(0., 2., 5.)] {
+        let pixel = screen_point(&app, position);
+        viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(pixel)]);
+        assert!(app.radius_status().unwrap().starts_with("Diameter = "));
+        viewport_click(&mut app, &ctx, pixel);
+        assert!(!app.command_line_idle());
+    }
+    radius_enter(&mut app, "");
+    assert_eq!(app.document.objects().count(), 6);
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert_eq!(app.document.undo_label(), Some("Diameter"));
+    app.document.undo().unwrap();
+    assert_eq!(app.document.objects().count(), 2);
+    assert!(!app.document.can_undo());
+    app.document.redo().unwrap();
+    assert_eq!(app.document.objects().count(), 6);
+    radius_enter(&mut app, "Diameter");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Radius { mark: true, .. })
+    ));
+    app.cancel_interactive_command(false);
+}
+
+#[test]
+fn nested_radius_returns_a_model_length_to_fillet_and_preserves_the_parent_on_escape() {
+    use super::circle_preview::viewport_click;
+    let (mut app, ctx) = radius_view();
+    radius_enter(&mut app, "Fillet Radius=0.5");
+    radius_enter(&mut app, "Radius");
+    let parent = app.active_command;
+    let old_radius = app.commands.fillet_preferences().radius;
+    radius_enter(&mut app, "'Radius");
+    assert!(app.measuring_nested_radius());
+    app.cancel_current_prompt_or_selection();
+    assert!(!app.measuring_nested_radius());
+    assert_eq!(app.active_command, parent);
+    assert_eq!(app.commands.fillet_preferences().radius, old_radius);
+
+    radius_enter(&mut app, "Radius");
+    let flat = move_measurement_pointer(&mut app, &ctx, point(-4.5, 2.3, 0.));
+    assert_eq!(app.radius_status(), Some("Radius = infinite"));
+    viewport_click(&mut app, &ctx, flat);
+    assert!(app.measuring_nested_radius(), "{:?}", app.command_log);
+    let ellipse = move_measurement_pointer(&mut app, &ctx, point(4., 0., 5.));
+    viewport_click(&mut app, &ctx, ellipse);
+    assert!(!app.measuring_nested_radius());
+    assert!(app.curve_fillet_session.is_some());
+    assert!((app.commands.fillet_preferences().radius - 1.).abs() < 1e-7);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn nested_radius_can_measure_an_unselected_curve_during_offset_surface() {
+    let (mut app, _) = radius_view();
+    radius_enter(&mut app, "Plane w0,0,0 w10,10,0");
+    let plane = app.document.objects().last().unwrap().id();
+    app.document
+        .select_objects_direct([plane], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    radius_enter(&mut app, "OffsetSrf");
+    radius_enter(&mut app, "Distance");
+    radius_enter(&mut app, "'Radius");
+    assert!(app.measuring_nested_radius(), "{:?}", app.command_log);
+    radius_enter(&mut app, "w0,2,5");
+    assert!(!app.measuring_nested_radius(), "{:?}", app.command_log);
+    assert!(app.offset_surface_session.is_some());
+    assert!((app.commands.offset_surface_options().distance - 8.).abs() < 1e-7);
+    assert!(app.document.is_selected(plane));
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn radius_unit_menu_accepts_and_remembers_native_imperial_formats() {
+    let (mut app, _) = radius_view();
+    app.execute_command("Units Millimeters Scale=No");
+    radius_enter(&mut app, "Radius");
+    radius_enter(&mut app, "Units");
+    radius_enter(&mut app, "Fractional_Inches");
+    radius_enter(&mut app, "w0,2,5");
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("Radius = 3/8 inches; Diameter = 5/8 inches")
+    );
+    radius_enter(&mut app, "Radius");
+    radius_enter(&mut app, "w0,2,5");
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("Radius = 3/8 inches; Diameter = 5/8 inches")
+    );
+    radius_enter(&mut app, "Radius Units=Feet_Inches");
+    radius_enter(&mut app, "w0,2,5");
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("Radius = 0-3/8\"; Diameter = 0-5/8\"")
+    );
+    assert_eq!(
+        app.document.units(),
+        &viboceros_geometry::LengthUnitSystem::Millimeters
+    );
+}

@@ -25,6 +25,9 @@ impl Session {
     pub(super) fn wants_point(&self) -> bool {
         self.pending == Some("Radius") || self.picks.len() == 2
     }
+    pub(super) fn takes_radius_measurement(&self) -> bool {
+        self.pending == Some("Radius") || (self.pending.is_none() && self.picks.len() == 2)
+    }
     pub(super) fn scene(&self) -> Option<&Document> {
         self.scene.as_ref()
     }
@@ -101,7 +104,7 @@ impl VibocerosApp {
         self.curve_fillet_prompt();
         true
     }
-    fn curve_fillet_prompt(&mut self) {
+    pub(super) fn curve_fillet_prompt(&mut self) {
         if let Some(s) = &self.curve_fillet_session {
             self.commands
                 .remember_fillet_preferences(s.options)

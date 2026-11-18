@@ -61,6 +61,7 @@ impl VibocerosApp {
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
+        self.validate_radius_source();
         self.validate_distribute();
         self.validate_offset_mesh();
         self.validate_offset_surface();
@@ -211,7 +212,7 @@ impl VibocerosApp {
         selection_preview_ids.extend(
             self.subcurve_prompt
                 .as_ref()
-                .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+                .and_then(subcurve_prompt::SubcurvePrompt::temporary_reference)
                 .filter(|reference| reference.source().1.is_none())
                 .map(|reference| reference.object_id()),
         );
@@ -548,7 +549,7 @@ impl VibocerosApp {
                 .and_then(orient_surface::Session::sphere_cursor_curve)
         });
         let edge_curve = edge_curve.or_else(|| {
-            let reference = self.subcurve_prompt.as_ref()?.offset_reference()?;
+            let reference = self.subcurve_prompt.as_ref()?.temporary_reference()?;
             (self.plane_prompt.is_none()
                 && self.point_filter.is_none()
                 && self.point_constraint.is_none())
@@ -628,7 +629,7 @@ impl VibocerosApp {
         if let Some(reference) = self
             .subcurve_prompt
             .as_ref()
-            .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+            .and_then(subcurve_prompt::SubcurvePrompt::temporary_reference)
         {
             if let Some(edge) = reference.source().1 {
                 component_highlights.push(crate::viewport::ComponentPick {
@@ -824,7 +825,7 @@ impl VibocerosApp {
                 || self.picking_circle_around_curve()
                 || (self.picking_pipe_rail() && !self.picking_pipe_chain())
                 || self.picking_splop_reference_curve());
-        let document = surface_rebuild::viewport_document(
+        let preview_document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
             self.blend_surface_prompt
@@ -848,6 +849,11 @@ impl VibocerosApp {
                 .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.crease_prompt.as_ref().and_then(|p| p.scene())),
         );
+        let document = if self.measuring_nested_radius() {
+            &self.document
+        } else {
+            preview_document
+        };
         let twist_preview = self
             .twist_session
             .as_ref()
@@ -1224,6 +1230,16 @@ impl VibocerosApp {
                     .map_or(&[], refinement::Prompt::guides)
             });
         let distribution_source_pick = self.selecting_distribution_sources();
+        let radius_input = self
+            .radius_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.object_prompt.is_none()
+                    && matches!(self.active_command, Some(InteractiveCommand::Radius { .. }))
+            })
+            .and_then(|session| session.viewport_input(self.document.selected_object_count() != 0));
         let alignment_curve_pick = self
             .align_session
             .as_ref()
@@ -1283,6 +1299,7 @@ impl VibocerosApp {
                                 .and_then(|s| s.preview()),
                             placement_preview,
                             alignment_curve_pick,
+                            radius_input,
                             alignment_plane_preview: self
                                 .align_session
                                 .as_ref()
@@ -1726,6 +1743,21 @@ impl VibocerosApp {
             alignment_hover.unwrap_or((None, None, self.active_viewport));
         if self.update_align_preview(align_point, align_curve, align_view) {
             ui.ctx().request_repaint();
+        }
+        if !ui.input(|input| {
+            input.pointer.primary_down()
+                || input.pointer.button_released(egui::PointerButton::Primary)
+        }) {
+            let radius_hover = viewport_outputs
+                .iter()
+                .enumerate()
+                .find_map(|(view, output)| {
+                    let (pixel, hit) = output.radius_hover?;
+                    Some((view, pixel, hit))
+                });
+            if self.update_radius_hover(radius_hover) {
+                ui.ctx().request_repaint();
+            }
         }
         let distribution_hover = viewport_outputs
             .iter()

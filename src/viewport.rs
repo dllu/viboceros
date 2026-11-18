@@ -32,6 +32,7 @@ pub(crate) use curve_offset::OffsetDraft;
 mod cutting;
 pub(crate) mod direction;
 mod placement;
+pub(crate) mod radius;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -384,6 +385,7 @@ pub struct ViewportInput<'a> {
     pub distribution_source_pick: bool,
     pub alignment_curve_pick: Option<&'a viboceros_command::align::AlignmentSources>,
     pub alignment_plane_preview: Option<viboceros_command::rectangle_input::RectangleDefinition>,
+    pub(crate) radius_input: Option<radius::RadiusInput<'a>>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -561,6 +563,7 @@ impl Default for ViewportInput<'_> {
             distribution_source_pick: false,
             alignment_curve_pick: None,
             alignment_plane_preview: None,
+            radius_input: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -685,6 +688,8 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub(crate) radius_hover: Option<(Pos2, radius::RadiusHit)>,
+    pub(crate) radius_click: Option<radius::RadiusClick>,
     pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
     pub arc_blend_hover: Option<Real>,
     pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
@@ -1651,6 +1656,7 @@ impl Viewport {
             .or(component_hover_mode
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
+            || input.radius_input.is_some()
             || input.direction.is_some()
             || input.parametric_pick
             || input.chain_pick
@@ -2430,6 +2436,15 @@ impl Viewport {
                 }
             }
         }
+        let (radius_hover, radius_click) = self.radius_getter(
+            input.radius_input,
+            &response,
+            &painter,
+            rect,
+            viewport_index,
+            document,
+            drafting,
+        );
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         if (input.chain_pick || input.length_pick)
@@ -3531,6 +3546,8 @@ impl Viewport {
                 && response
                     .interact_pointer_pos()
                     .is_some_and(|pointer| pointer.y <= rect.top() + 28.0),
+            radius_hover,
+            radius_click,
             zoom_window_result,
             zoom_window_cancelled: input.zoom_window
                 && response.clicked_by(PointerButton::Secondary),

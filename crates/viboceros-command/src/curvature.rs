@@ -2,7 +2,7 @@ use super::*;
 use viboceros_geometry::SurfaceCurvature;
 mod radius;
 pub(super) use radius::RadiusCommand;
-pub use radius::preselected_circular_radius;
+pub use radius::{RadiusMeasurement, preselected_circular_radius, radius_display_units};
 
 pub(super) struct CurvatureCommand;
 const USAGE: &str = "Curvature [MarkCurvature=Yes|No] point-on-selected-curve-or-surface";
