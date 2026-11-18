@@ -92,6 +92,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_paraboloid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_polyline_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_polygon_point(point) {
             return accepted;
         }
@@ -214,6 +217,7 @@ impl VibocerosApp {
             | InteractiveCommand::OffsetCurveOnSurface
             | InteractiveCommand::ShortPath { .. }
             | InteractiveCommand::FaceCreate { .. }
+            | InteractiveCommand::Polyline
             | InteractiveCommand::PolylineOnMesh { .. }
             | InteractiveCommand::InterpolateCurveOnSurface { .. }
             | InteractiveCommand::OrientOnCurve
@@ -998,26 +1002,6 @@ impl VibocerosApp {
                     self.finish_interactive_curve();
                     return self.active_command.is_none();
                 }
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Polyline => {
-                if let Some(previous) = self.curve_points.last()
-                    && !previous
-                        .distance_to(point)
-                        .is_ok_and(|length| length > self.document.tolerance().absolute())
-                {
-                    self.push_log(
-                        "Error: polyline segment length must be finite and greater than tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.curve_points.push(point);
-                self.push_log(format!(
-                    "Vertex {}: {}",
-                    self.curve_points.len(),
-                    format_model_point(point)
-                ));
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Curve { .. } => {

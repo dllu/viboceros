@@ -1440,6 +1440,14 @@ impl VibocerosApp {
                             circle_around_input,
                             solid_axial_input,
                             pipe_preview,
+                            polyline_input: self
+                                .polyline_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map(|session| crate::viewport::PolylinePreview {
+                                    input: &session.input,
+                                    direction_lock: session.direction_lock,
+                                }),
                             polygon_input,
                             pyramid_input,
                             solid_axial_fit,

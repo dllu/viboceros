@@ -83,6 +83,7 @@ impl VibocerosApp {
         if self.try_start_pipe(input)
             || self.start_solid_axial(input)
             || self.start_subd_axial(input)
+            || self.try_start_polyline(input)
             || self.try_start_polygon(input)
             || self.try_start_pyramid(input)
         {
@@ -1320,7 +1321,6 @@ impl VibocerosApp {
                     start: None,
                     clockwise: true,
                 },
-                "polyline" | "pline" => InteractiveCommand::Polyline,
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,

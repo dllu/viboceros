@@ -546,6 +546,7 @@ pub mod point_grid;
 mod point_matrix;
 mod points;
 mod polyline_command;
+pub mod polyline_input;
 mod visibility_selection;
 pub use point_matrix::{PointGridOptions, point_grid_vertical_frame};
 pub mod rail_revolve;
@@ -1050,6 +1051,7 @@ pub struct CommandRegistry {
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
     polygon_preferences: std::sync::Arc<remembered::Remembered<polygon::Preferences>>,
+    polyline_preferences: std::sync::Arc<remembered::Remembered<polyline_input::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
@@ -1287,7 +1289,9 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(polyline_command::PolylineCommand)
+            .register(polyline_command::PolylineCommand(
+                registry.polyline_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(conic::ConicCommand::default())

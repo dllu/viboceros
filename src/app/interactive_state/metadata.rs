@@ -569,11 +569,7 @@ impl InteractiveCommand {
     pub(in crate::app) const fn collects_curve_points(self) -> bool {
         matches!(
             self,
-            Self::Lines
-                | Self::Polyline
-                | Self::Curve { .. }
-                | Self::InterpCrv { .. }
-                | Self::SplitCurve
+            Self::Lines | Self::Curve { .. } | Self::InterpCrv { .. } | Self::SplitCurve
         )
     }
 }

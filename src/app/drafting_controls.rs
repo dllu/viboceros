@@ -149,6 +149,7 @@ impl VibocerosApp {
                 self.arc_length_session
                     .and_then(|s| s.first)
                     .or_else(|| self.maelstrom_circle_anchor())
+                    .or_else(|| self.polyline_session.as_ref()?.input.anchor())
                     .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
             },
             reference: if self.plane_prompt.is_some() {

@@ -74,15 +74,13 @@ fn interactive_polyline_collects_until_enter_and_cancel_discards_vertices() {
     let third = point(3.0, 2.0, 1.0);
     app.accept_drafting_point(first);
     app.accept_drafting_point(first);
-    assert_eq!(app.curve_points, vec![first]);
+    assert_eq!(draft_curve_points(&app), vec![first]);
     app.accept_drafting_point(second);
     app.accept_drafting_point(third);
     app.accept_drafting_point(first);
-    assert_eq!(app.curve_points.last(), Some(&first));
-
-    app.run_command();
+    assert_eq!(app.last_point, Some(first));
     assert_eq!(app.active_command, None);
-    assert!(app.curve_points.is_empty());
+    assert!(app.polyline_session.is_none());
     let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
         panic!("expected an interactive polyline")
     };
@@ -93,7 +91,7 @@ fn interactive_polyline_collects_until_enter_and_cancel_discards_vertices() {
     assert!(app.try_start_interactive_command("Polyline"));
     app.accept_drafting_point(point(5.0, 5.0, 0.0));
     app.cancel_interactive_command(false);
-    assert!(app.curve_points.is_empty());
+    assert!(app.polyline_session.is_none());
     assert_eq!(app.document.objects().len(), 1);
 }
 

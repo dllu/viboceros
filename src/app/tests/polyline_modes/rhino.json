@@ -1,0 +1,261 @@
+[
+  {"name": "line", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w6,3,2", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [6.0, 3.0, 2.0], "mid": [5.0, 1.5, 1.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 8.123105625617661]}
+   ]},
+  {"name": "arc-start", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Arc", "Helpers=No", "ThroughPoint", "w2,3,0", "w5,0,0", "Enter"],
+   "segments": [
+     {"end": [4.999999999999999, 5.551115123125783e-16, -0.0], "mid": [2.499999999999999, 3.0495097567963922, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 9.016044933778161]}
+   ]},
+  {"name": "arc-tangent", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]}
+   ]},
+  {"name": "arc-repeat", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "w4,6,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]},
+     {"end": [4.0, 6.0, 0.0], "mid": [6.121320343559643, 5.121320343559642, 0.0], "start": [7.0, 3.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]}
+   ]},
+  {"name": "arc-direction", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Direction", "w4,2,0", "w7,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [4.878679656440357, 2.1213203435596424, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]}
+   ]},
+  {"name": "arc-center", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w4,3,0", "w7,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]}
+   ]},
+  {"name": "arc-through", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "ThroughPoint", "w6,1,2", "w7,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 2.9999999999999996, 2.449293598294711e-16], "mid": [6.0, 1.0000000000000002, 2.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 6.664324407237549]}
+   ]},
+  {"name": "arc-line", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "Mode=Line", "w7,7,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]},
+     {"end": [7.0, 7.0, 0.0], "mid": [7.0, 5.0, 0.0], "start": [7.0, 3.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]}
+   ]},
+  {"name": "length-late-number", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w2,0,0", "3", "w5,4,0", "Enter"],
+   "segments": [
+     {"end": [2.0, 0.0, 0.0], "mid": [1.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 2.0]},
+     {"end": [3.8, 2.4000000000000004, 0.0], "mid": [2.9, 1.2000000000000002, 0.0], "start": [2.0, 0.0, 0.0], "kind": "Line", "domain": [2.0, 5.0]}
+   ]},
+  {"name": "undo", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w7,4,0", "Undo", "w4,5,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 5.0, 0.0], "mid": [4.0, 2.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 9.0]}
+   ]},
+  {"name": "close", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "Close"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 3.0, 0.0], "mid": [4.0, 1.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [2.0, 1.5, 0.0], "start": [4.0, 3.0, 0.0], "kind": "Line", "domain": [7.0, 12.0]}
+   ]},
+  {"name": "persistent", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "PersistentClose", "w4,0,0", "w4,3,0", "w0,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 3.0, 0.0], "mid": [4.0, 1.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]},
+     {"end": [0.0, 3.0, 0.0], "mid": [2.0, 3.0, 0.0], "start": [4.0, 3.0, 0.0], "kind": "Line", "domain": [7.0, 11.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [0.0, 1.5, 0.0], "start": [0.0, 3.0, 0.0], "kind": "Line", "domain": [11.0, 14.0]}
+   ]},
+  {"name": "mode-toggle", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "PersistentClose", "w4,0,0", "Mode", "w7,3,0", "Mode", "w7,7,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]},
+     {"end": [7.0, 7.0, 0.0], "mid": [7.0, 5.0, 0.0], "start": [7.0, 3.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [3.5, 3.5, 0.0], "start": [7.0, 7.0, 0.0], "kind": "Line", "domain": [0.0, 9.899494936611665]}
+   ]},
+  {"name": "detail-length-menu", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Length", "3", "w7,4,0", "w9,6,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 0.0, 0.0], "domain": [4.0, 7.0], "mid": [5.5, 0.0, 0.0], "kind": "Line"},
+     {"start": [7.0, 0.0, 0.0], "end": [9.0, 6.0, 0.0], "domain": [7.0, 13.32455532033676], "mid": [8.0, 3.0, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-length-negative", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "-3", "w7,4,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.6, 4.800000000000001, 0.0], "domain": [4.0, 10.0], "mid": [5.8, 2.4000000000000004, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-first-line-size", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "3", "w4,4,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [2.1213203435596424, 2.1213203435596424, 0.0], "domain": [0.0, 3.0], "mid": [1.0606601717798212, 1.0606601717798212, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-length-zero", "inputs": ["PersistentClose=No", "w1,2,3", "Mode=Line", "Helpers=No", "w4,0,0", "0", "Enter"],
+   "segments": [
+     {"start": [1.0, 2.0, 3.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.69041575982343], "mid": [2.5, 1.0, 1.5], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [0.0, 0.0, 0.0], "domain": [4.69041575982343, 8.69041575982343], "mid": [1.9999999999999996, 0.0, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-arc-close", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "Close"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 3.0, 0.0], "domain": [0.0, 4.71238898038469], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "kind": "Arc"},
+     {"start": [7.0, 3.0, 0.0], "end": [-4.440892098500626e-16, 1.3322676295501878e-15, 0.0], "domain": [0.0, 16.36998722266269], "mid": [1.2251914773148775, 6.807886552931954, 0.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-arc-persistent", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "PersistentClose=Yes", "w7,3,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 3.0, 0.0], "domain": [0.0, 4.71238898038469], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "kind": "Arc"},
+     {"start": [7.0, 3.0, 0.0], "end": [-4.440892098500626e-16, 1.3322676295501878e-15, 0.0], "domain": [0.0, 16.36998722266269], "mid": [1.2251914773148775, 6.807886552931954, 0.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-arc-point-close", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "w0,0,0"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 3.0, 0.0], "domain": [0.0, 4.71238898038469], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "kind": "Arc"},
+     {"start": [7.0, 3.0, 0.0], "end": [-4.440892098500626e-16, 1.3322676295501878e-15, 0.0], "domain": [0.0, 16.36998722266269], "mid": [1.2251914773148775, 6.807886552931954, 0.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-line-point-close", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "0"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [4.0, 3.0, 0.0], "domain": [4.0, 7.0], "mid": [4.0, 1.5, 0.0], "kind": "Line"},
+     {"start": [4.0, 3.0, 0.0], "end": [0.0, 0.0, 0.0], "domain": [7.0, 12.0], "mid": [2.0, 1.5, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-arc-undo", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "ThroughPoint", "w6,1,2", "Undo", "w7,3,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [7.000000000000001, 3.0, 0.0], "domain": [0.0, 7.82790786817828], "mid": [3.8078865529319543, 0.7815980431587722, 0.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-undo-start", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Arc", "Helpers=No", "Undo", "w8,0,0", "w7,3,0", "Enter"],
+   "segments": [
+     {"start": [8.0, 0.0, 0.0], "end": [7.0, 3.0000000000000004, 0.0], "domain": [0.0, 6.308489603971796], "mid": [9.581138830084189, 2.1937129433613967, 0.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-persistent-single", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "PersistentClose=Yes", "w4,0,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-center-off-radius", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w4,3,0", "w10,3,4", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [6.496150883013531, 3.0000000000000004, 1.6641005886756877], "domain": [0.0, 4.941384312780843], "mid": [6.121320343559643, 0.9443771875783809, 0.5238462112603577], "kind": "Arc"}
+   ]},
+  {"name": "detail-center-angle", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w4,3,0", "90", "w10,3,4", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 3.0, 0.0], "domain": [0.0, 4.71238898038469], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "kind": "Arc"},
+     {"start": [7.0, 3.0, 0.0], "end": [10.0, 3.0, 4.0], "domain": [0.0, 7.853981633974483], "mid": [8.5, 5.5, 2.0], "kind": "Arc"}
+   ]},
+  {"name": "detail-direction-collinear", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Direction", "w6,0,0", "w8,0,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [8.0, 0.0, 0.0], "domain": [4.0, 8.0], "mid": [6.0, 0.0, 0.0], "kind": "Line"}
+   ]},
+  {"name": "detail-just-collinear", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w8,0,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "mid": [2.0, 0.0, 0.0], "kind": "Line"},
+     {"start": [4.0, 0.0, 0.0], "end": [8.0, 0.0, 0.0], "domain": [4.0, 8.0], "mid": [6.0, 0.0, 0.0], "kind": "Line"}
+   ]},
+  {"name": "qualify-length-project", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Length", "w7,4,0", "w9,8,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [2.0, 0.0, 0.0]},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 0.0, 0.0], "domain": [4.0, 7.0], "kind": "Line", "mid": [5.5, 0.0, 0.0]},
+     {"start": [7.0, 0.0, 0.0], "end": [9.0, 8.0, 0.0], "domain": [7.0, 15.246211251235321], "kind": "Line", "mid": [8.0, 4.000000000000001, 0.0]}
+   ]},
+  {"name": "qualify-length-negative-project", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Length", "w1,4,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [2.0, 0.0, 0.0]},
+     {"start": [4.0, 0.0, 0.0], "end": [1.0, 0.0, 0.0], "domain": [4.0, 7.0], "kind": "Line", "mid": [2.5, 0.0, 0.0]}
+   ]},
+  {"name": "qualify-length-after-arc", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "w7,3,0", "Mode=Line", "Length", "w8,7,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [2.0, 0.0, 0.0]},
+     {"start": [4.0, 0.0, 0.0], "end": [7.0, 3.0, 0.0], "domain": [0.0, 4.71238898038469], "kind": "Arc", "mid": [6.121320343559642, 0.8786796564403572, 0.0]},
+     {"start": [7.0, 3.0, 0.0], "end": [7.0, 7.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [7.0, 5.0, 0.0]}
+   ]},
+  {"name": "qualify-center-oblique-angle", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w6,3,4", "90", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [2.0, 0.0, 0.0]},
+     {"start": [4.0, -4.440892098500626e-16, 0.0], "end": [9.0, 3.0, 4.0], "domain": [0.0, 7.853981633974483], "kind": "Arc", "mid": [7.535533905932738, 0.8786796564403572, 1.1715728752538097]}
+   ]},
+  {"name": "qualify-center-rotated", "inputs": ["PersistentClose=No", "w1,2,3", "Mode=Line", "Helpers=No", "w1,6,3", "Mode=Arc", "Center", "w1,6,6", "90", "Enter"], "plane": [[1, 2, 3], [0, 1, 0], [0, 0, 1]],
+   "segments": [
+     {"start": [1.0, 2.0, 3.0], "end": [1.0, 6.0, 3.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [1.0, 4.0, 3.0]},
+     {"start": [1.0, 6.0, 3.0], "end": [1.0, 9.0, 6.0], "domain": [0.0, 4.71238898038469], "kind": "Arc", "mid": [1.0, 8.121320343559642, 3.878679656440357]}
+   ]},
+  {"name": "qualify-arc-numerical", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "90", "w7,3,0", "Enter"],
+   "segments": [
+     {"start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0], "domain": [0.0, 4.0], "kind": "Line", "mid": [2.0, 0.0, 0.0]},
+     {"start": [4.0, 0.0, 0.0], "end": [7.1016048255800985, 0.05346005817713048, 0.0], "domain": [0.0, 3.1022190899557205], "kind": "Arc", "mid": [5.551032758509798, 0.0133660070450896, 0.0]}
+   ]},
+  {"name": "more-positive-radius", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "3", "w7,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 3.0, 0.0], "mid": [6.121320343559642, 0.8786796564403572, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 4.71238898038469]}
+   ]},
+  {"name": "more-center-oblique-point", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w6,3,4", "w9,3,4", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [9.0, 3.0, 4.0], "mid": [7.535533905932738, 0.8786796564403576, 1.1715728752538097], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 7.853981633974483]}
+   ]},
+  {"name": "more-center-oblique-first", "inputs": ["PersistentClose=No", "w4,0,0", "Mode=Arc", "Helpers=No", "Center", "w6,3,4", "w9,3,4", "Enter"],
+   "segments": [
+     {"end": [11.385164807134505, 3.0, 4.0], "mid": [9.019078533736, 0.3244328955213206, 0.43257719402842754], "start": [4.0, -4.440892098500626e-16, 0.0], "kind": "Arc", "domain": [0.0, 10.508086649147785]}
+   ]},
+  {"name": "more-center-semicircle", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w4,3,0", "w4,6,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 6.0, 0.0], "mid": [7.0, 3.0, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 9.42477796076938]}
+   ]},
+  {"name": "more-center-major", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Center", "w4,3,0", "w1,3,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [1.0, 3.0, 0.0], "mid": [6.121320343559643, 5.121320343559642, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Arc", "domain": [0.0, 14.137166941154069]}
+   ]},
+  {"name": "more-length-assignment", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Length=3", "w7,4,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 0.0, 0.0], "mid": [5.5, 0.0, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]}
+   ]},
+  {"name": "more-close-near", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "w0.0000000001,0,0"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 3.0, 0.0], "mid": [4.0, 1.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [2.0, 1.5, 0.0], "start": [4.0, 3.0, 0.0], "kind": "Line", "domain": [7.0, 12.0]}
+   ]},
+  {"name": "more-close-through", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "Mode=Arc", "ThroughPoint", "w2,4,0", "Close"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 3.0, 0.0], "mid": [4.0, 1.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 3.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [0.5, 3.5, 0.0], "start": [4.0, 3.0, 0.0], "kind": "Arc", "domain": [0.0, 7.853981633974483]}
+   ]},
+  {"name": "more-close-length", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "2", "Close"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [4.0, 3.0, 0.0], "mid": [4.0, 1.5, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]},
+     {"end": [0.0, 0.0, 0.0], "mid": [2.0, 1.5, 0.0], "start": [4.0, 3.0, 0.0], "kind": "Line", "domain": [7.0, 12.0]}
+   ]},
+  {"name": "more-radius-collinear", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "3", "w7,0,0", "Enter"],
+   "segments": [
+     {"end": [4.0, 0.0, 0.0], "mid": [2.0, 0.0, 0.0], "start": [0.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0]},
+     {"end": [7.0, 0.0, 0.0], "mid": [5.5, 0.0, 0.0], "start": [4.0, 0.0, 0.0], "kind": "Line", "domain": [4.0, 7.0]}
+   ]},
+  {"name": "last-direction-radius-90", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "Direction", "w4,2,0", "90", "w7,3,0", "Enter"],
+   "segments": [
+     {"mid": [2.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0], "start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0]},
+     {"mid": [4.013366007045089, 1.551032758509798, 0.0], "kind": "Arc", "domain": [0.0, 3.1022190899557205], "start": [4.0, 0.0, 0.0], "end": [4.05346005817713, 3.101604825580098, 0.0]}
+   ]},
+  {"name": "last-through-radius-90", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "Mode=Arc", "ThroughPoint", "w6,1,0", "90", "w7,3,0", "Enter"],
+   "segments": [
+     {"mid": [2.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0], "start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0]},
+     {"mid": [5.551032758509798, 0.0133660070450896, 0.0], "kind": "Arc", "domain": [0.0, 3.1022190899557205], "start": [4.0, 0.0, 0.0], "end": [7.1016048255800985, 0.05346005817713048, 0.0]}
+   ]},
+  {"name": "last-close-radius", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "Mode=Arc", "3", "Close"],
+   "segments": [
+     {"mid": [2.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0], "start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0]},
+     {"mid": [4.0, 1.5, 0.0], "kind": "Line", "domain": [0.0, 3.0], "start": [4.0, 0.0, 0.0], "end": [4.0, 3.0, 0.0]},
+     {"mid": [-0.7541308539912943, 5.4337265555266825, 0.0], "kind": "Arc", "domain": [0.0, 13.171915277964143], "start": [4.0, 3.0, 0.0], "end": [0.05131670194948601, 0.15395010584845892, 0.0]}
+   ]},
+  {"name": "last-seam-0.000000001", "inputs": ["PersistentClose=No", "w0,0,0", "Mode=Line", "Helpers=No", "w4,0,0", "w4,3,0", "w0.000000001,0,0", "w2,2,0", "Enter"],
+   "segments": [
+     {"mid": [2.0, 0.0, 0.0], "kind": "Line", "domain": [0.0, 4.0], "start": [0.0, 0.0, 0.0], "end": [4.0, 0.0, 0.0]},
+     {"mid": [4.0, 1.5, 0.0], "kind": "Line", "domain": [4.0, 7.0], "start": [4.0, 0.0, 0.0], "end": [4.0, 3.0, 0.0]},
+     {"mid": [2.0000000005, 1.5, 0.0], "kind": "Line", "domain": [7.0, 11.9999999992], "start": [4.0, 3.0, 0.0], "end": [1e-09, 0.0, 0.0]},
+     {"mid": [1.0000000005, 1.0, 0.0], "kind": "Line", "domain": [11.9999999992, 14.828427123239084], "start": [1e-09, 0.0, 0.0], "end": [2.0, 2.0, 0.0]}
+   ]},
+  {"name": "holdout-center-first-away", "inputs": ["PersistentClose=No", "w4,0,0", "Mode=Arc", "Helpers=No", "Center", "w4,3,0", "w1,3,0", "Enter"],
+   "segments": [
+     {"end": [1.0, 3.0, 0.0], "domain": [0.0, 14.137166941154069], "mid": [6.121320343559643, 5.121320343559642, 0.0], "kind": "Arc", "start": [4.0, 0.0, 0.0]}
+   ]}
+]

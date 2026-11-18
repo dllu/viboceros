@@ -267,6 +267,7 @@ mod point_grid;
 mod point_input;
 mod points;
 mod polygon;
+mod polyline;
 mod polyline_on_mesh;
 mod preferences;
 mod project;
@@ -519,6 +520,7 @@ pub struct VibocerosApp {
     parabola_session: Option<parabola::Session>,
     paraboloid_session: Option<paraboloid::Session>,
     polygon_session: Option<polygon::Session>,
+    polyline_session: Option<polyline::Session>,
     pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
@@ -719,6 +721,7 @@ impl VibocerosApp {
             parabola_session: None,
             paraboloid_session: None,
             polygon_session: None,
+            polyline_session: None,
             pyramid_session: None,
             conic_session: None,
             rectangle_session: None,
@@ -914,6 +917,7 @@ impl VibocerosApp {
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
             || self.try_continue_paraboloid(&input)
+            || self.continue_polyline(&input)
             || self.try_continue_polygon(&input)
             || self.try_continue_pyramid(&input)
             || self.continue_torus(&input)

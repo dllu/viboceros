@@ -183,9 +183,9 @@ fn draft_undo_discards_constraint_bound_to_removed_anchor() {
         enter(&mut app, input);
     }
     assert!(app.point_constraint.is_none());
-    assert_eq!(app.curve_points, vec![point(0.0, 0.0, 0.0)]);
+    assert_eq!(draft_curve_points(&app), vec![point(0.0, 0.0, 0.0)]);
     enter(&mut app, "w6,8,0");
-    assert_eq!(app.curve_points[1], point(6.0, 8.0, 0.0));
+    assert_eq!(draft_curve_points(&app)[1], point(6.0, 8.0, 0.0));
 }
 
 #[test]
@@ -1095,9 +1095,11 @@ fn polyline_close_finishes_once_without_duplicating_an_existing_seam() {
             assert!(app.accept_drafting_point(point(1.0, 2.0, 3.0)));
         }
         let last_point = app.last_point;
-        enter(&mut app, "_cLoSe");
+        if !repeated_start {
+            enter(&mut app, "_cLoSe");
+        }
         assert!(app.active_command.is_none());
-        assert!(app.curve_points.is_empty());
+        assert!(draft_curve_points(&app).is_empty());
         assert!(app.command_input.is_empty());
         assert_eq!(app.last_point, last_point);
         let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
@@ -1126,7 +1128,7 @@ fn polyline_close_finishes_once_without_duplicating_an_existing_seam() {
 fn invalid_polyline_close_preserves_points_plane_reference_and_redo() {
     for points in [
         vec!["0", "1,0,0"],
-        vec!["0", "1,0,0", "0.0000000001,0,0"],
+        vec!["0", "1,0,0", "0.0000000005,0,0"],
         vec!["-1e308,0,0", "0", "1e308,0,0"],
     ] {
         let mut app = test_app();
@@ -1137,12 +1139,12 @@ fn invalid_polyline_close_preserves_points_plane_reference_and_redo() {
             enter(&mut app, input);
         }
         let document = format!("{:?}", app.document);
-        let points = app.curve_points.clone();
+        let points = draft_curve_points(&app);
         let plane = app.drafting_plane;
         let last_point = app.last_point;
         enter(&mut app, "Close");
         assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
-        assert_eq!(app.curve_points, points);
+        assert_eq!(draft_curve_points(&app), points);
         assert_eq!(app.drafting_plane, plane);
         assert_eq!(app.last_point, last_point);
         assert_eq!(app.command_input, "Close");
@@ -1151,7 +1153,7 @@ fn invalid_polyline_close_preserves_points_plane_reference_and_redo() {
         enter(&mut app, "");
         if points.first().is_some_and(|p| p.x() == -1e308) {
             assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
-            assert_eq!(app.curve_points, points);
+            assert_eq!(draft_curve_points(&app), points);
             assert_eq!(format!("{:?}", app.document), document);
             assert!(app.document.can_redo());
             continue;
@@ -1173,24 +1175,24 @@ fn curve_prompt_undo_removes_points_without_touching_document_history() {
         let active = app.active_command;
         let plane = app.drafting_plane;
         enter(&mut app, "_uNdO");
-        assert_eq!(app.curve_points, vec![point(1.0, 2.0, 3.0)]);
+        assert_eq!(draft_curve_points(&app), vec![point(1.0, 2.0, 3.0)]);
         assert_eq!(app.last_point, Some(point(1.0, 2.0, 3.0)));
         assert_eq!(app.drafting_plane, plane);
         assert_eq!(app.active_command, active);
         assert!(app.command_input.is_empty());
         assert_eq!(format!("{:?}", app.document), document);
         enter(&mut app, "rw2,0,0");
-        assert_eq!(app.curve_points[1], point(3.0, 2.0, 3.0));
+        assert_eq!(draft_curve_points(&app)[1], point(3.0, 2.0, 3.0));
         for _ in 0..3 {
             enter(&mut app, "Undo");
         }
-        assert!(app.curve_points.is_empty());
+        assert!(draft_curve_points(&app).is_empty());
         assert_eq!(app.last_point, None);
         assert_eq!(app.drafting_plane, None);
         assert_eq!(app.active_command, active);
         assert_eq!(format!("{:?}", app.document), document);
         enter(&mut app, "rw1,0,0");
-        assert!(app.curve_points.is_empty());
+        assert!(draft_curve_points(&app).is_empty());
         for input in ["0", "1,0,0", ""] {
             enter(&mut app, input);
         }
@@ -1254,7 +1256,7 @@ fn polyline_rejects_overflowing_segments_before_appending_vertices() {
         enter(&mut app, "Polyline");
         enter(&mut app, "-1e308,0,0");
         let active = app.active_command;
-        let points = app.curve_points.clone();
+        let points = draft_curve_points(&app);
         if typed {
             enter(&mut app, "1e308,0,0");
             assert_eq!(app.command_input, "1e308,0,0");
@@ -1262,7 +1264,7 @@ fn polyline_rejects_overflowing_segments_before_appending_vertices() {
             assert!(!app.accept_drafting_point(point(1e308, 0.0, 0.0)));
         }
         assert_eq!(app.active_command, active);
-        assert_eq!(app.curve_points, points);
+        assert_eq!(draft_curve_points(&app), points);
         assert_eq!(app.last_point, Some(point(-1e308, 0.0, 0.0)));
         enter(&mut app, "0,0,0");
         enter(&mut app, "");

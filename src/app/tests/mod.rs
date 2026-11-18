@@ -227,6 +227,7 @@ mod polygon_modes;
 mod polyline_closure;
 #[path = "../../../crates/viboceros-geometry/tests/support/polyline_closure.rs"]
 mod polyline_closure_reference;
+mod polyline_modes;
 mod polyline_on_mesh;
 mod primitive_input;
 mod pyramid;
@@ -329,6 +330,25 @@ use super::*;
 use std::collections::BTreeSet;
 use viboceros_document::{ColorRgb, Geometry};
 use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
+
+fn draft_curve_points(app: &VibocerosApp) -> Vec<Point3> {
+    if let Some(session) = &app.polyline_session {
+        session
+            .input
+            .first()
+            .into_iter()
+            .chain(
+                session
+                    .input
+                    .segments()
+                    .iter()
+                    .map(|segment| segment.end().unwrap()),
+            )
+            .collect()
+    } else {
+        app.curve_points.clone()
+    }
+}
 
 pub(super) fn test_app() -> VibocerosApp {
     VibocerosApp::with_storage(None, Default::default())
