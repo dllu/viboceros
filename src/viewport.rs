@@ -378,6 +378,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
+    pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -550,6 +551,7 @@ impl Default for ViewportInput<'_> {
             direction: None,
             insert_edges: None,
             insert_mesh: None,
+            offset_mesh_preview: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -718,6 +720,7 @@ pub struct ViewportOutput {
     /// Resolved hovered drafting location, without accepting a point or editing
     /// the model. Commands can use it for cursor-dependent options.
     pub drafting_hover: Option<Point3>,
+    pub drafting_hover_is_free: bool,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
     pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
@@ -3402,6 +3405,11 @@ impl Viewport {
         if let Some(edges) = input.extrude_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }
+        if let Some(preview) = input.offset_mesh_preview {
+            for mesh in preview.meshes() {
+                self.paint_mesh_draft(&painter, rect, mesh);
+            }
+        }
         if let Some(edges) = input.offset_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }
@@ -3558,6 +3566,16 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
+            drafting_hover_is_free: response.hovered()
+                && input.point_filter.is_none()
+                && input.point_constraint.is_none()
+                && drafting_cursor.is_some_and(|cursor| {
+                    cursor.object_snap.is_none()
+                        && cursor.track.is_none()
+                        && !cursor.ortho
+                        && !cursor.ortho_z
+                        && !cursor.grid_snapped
+                }),
             blend_curve_handle: blend_curve_selection.map(|p| p.0),
             blend_curve_symmetric: blend_curve_selection.is_some_and(|p| p.1),
             blend_curve_angle: blend_curve_selection.is_some_and(|p| p.2),

@@ -3,7 +3,8 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.flip_offset_surface_input(click.object_id)
+        if self.pick_offset_mesh_flips(click.object_id, click.mode)
+            || self.flip_offset_surface_input(click.object_id)
             || self.flip_offset_subd_input(click.object_id)
         {
             return;
@@ -384,6 +385,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.picking_offset_mesh_flips() {
+            self.pick_offset_mesh_flips(selection.object_ids, selection.mode);
+            return;
+        }
         if (self.offset_surface_session.is_some()
             || self.arc_blend_session.is_some()
             || self.curve_fillet_session.is_some()

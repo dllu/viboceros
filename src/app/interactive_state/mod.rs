@@ -109,6 +109,7 @@ pub(super) enum InteractiveCommand {
     OrientOnCurve,
     OrientCurveToEdge,
     OffsetCurveOnSurface,
+    OffsetMesh,
     OffsetSubD,
     OffsetSurface {
         anchor: Option<Point3>,

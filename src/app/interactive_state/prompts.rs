@@ -16,6 +16,9 @@ impl InteractiveCommand {
             Self::OffsetSurface { .. } => {
                 "OffsetSrf: distance or options; click inputs to flip; Enter accepts, Esc cancels"
             }
+            Self::OffsetMesh => {
+                "OffsetMesh enter distance or options. Enter accepts the typed distance."
+            }
             Self::OffsetSubD => {
                 "OffsetSubD: enter distance or options; click inputs to flip; Enter commits, Esc cancels"
             }

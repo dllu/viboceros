@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 /// Direction used for every mesh vertex. Coincident raw vertices share a
 /// topological offset direction in `VertexNormals` mode.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MeshOffsetDirection {
     VertexNormals,
     AverageNormals { fallback: UnitVector3 },

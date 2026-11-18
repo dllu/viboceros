@@ -252,6 +252,7 @@ mod mirror;
 mod move_normal;
 mod named_view;
 mod object_selection;
+mod offset_mesh;
 mod offset_subd;
 mod offset_surface;
 mod orient_curve;
@@ -493,6 +494,8 @@ pub struct VibocerosApp {
     orient_edge_session: Option<orient_edge::Session>,
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
+    offset_mesh_session: Option<offset_mesh::Session>,
+    offset_mesh_preferences: offset_mesh::Preferences,
     offset_subd_session: Option<offset_subd::Session>,
     offset_surface_session: Option<offset_surface::Session>,
     ribbon_session: Option<ribbon::Session>,
@@ -697,6 +700,8 @@ impl VibocerosApp {
             orient_edge_session: None,
             surface_offset_session: None,
             short_path_session: None,
+            offset_mesh_session: None,
+            offset_mesh_preferences: Default::default(),
             offset_subd_session: None,
             offset_surface_session: None,
             ribbon_session: None,
@@ -904,6 +909,7 @@ impl VibocerosApp {
         if self.continue_inset(&input)
             || self.continue_ribbon(&input)
             || self.continue_extrude_subd(&input)
+            || self.continue_offset_mesh(&input)
             || self.continue_offset_subd(&input)
             || self.continue_offset_surface(&input)
         {
@@ -1234,6 +1240,7 @@ impl VibocerosApp {
             || self.try_continue_stretch(input)
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
+            || self.continue_offset_mesh(input)
             || self.continue_offset_surface(input)
             || self.continue_ribbon(input)
             || self.continue_surface_point_grid(input)

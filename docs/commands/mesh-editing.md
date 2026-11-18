@@ -10,32 +10,33 @@ the tested explicit mesh, rectangular planar surface, and box B-rep
 reports. Curved surfaces and B-reps remain unsupported because Rhino counts
 their render meshes, whose polygon counts depend on the meshing settings.
 
-`OffsetMesh 2` copies selected meshes by moving each topological vertex along
-the average of its raw vertex normals. Coincident unwelded copies move together.
-`DirectionMethod=UserSelectedDirection` with
-`Direction=0,0,1` uses one specified vector instead. `AverageNormals=Yes`
-moves all vertices opposite their common average normal, falling back to the
-opposite of the active construction plane normal when that average cancels.
-`FlipAll=Yes` reverses the side and the winding of open output skins.
-`BothSides=Yes` creates two offset skins; `Solid=Yes` also
-includes the original skin for a one-sided offset and joins naked boundaries
-with quadrilateral walls. Without `Solid`, `AllowDisjoint=No` returns only the
-offset skin, or two separate skins for `BothSides=Yes`. `AllowDisjoint=Yes`
-combines the original and offset skins in one result, or combines the two
-offset skins when using both sides. Each skin keeps any disconnected source
-components in the same mesh. Solid offsets retain one object per source,
-including closed inner and outer shells.
-`DeleteInput=Yes` removes the originals. Output keeps source attributes and
-groups, and the edit is undoable. Offsets that collapse faces are rejected.
-If the offset skin merges formerly distinct topology vertices, Rhino returns
-two skins without walls; this command follows that behavior. The retained
-[Rhino fixture](../../tools/rhino_oracle/fixtures/mesh_offset.json) and
-[observations](../../tools/rhino_oracle/observations/mesh_offset.json) cover
-normal and average-normal offsets, both sides, `FlipAll`, negative distances,
-`AllowDisjoint`, solid raw wall order for triangles, quads, and rings with holes,
-boundary ordering across a triangulated square, an unwelded seam, a bent
-collapsed skin, and a closed tetrahedron. Manually picked vector directions
-and other mesh arrangements still need live comparison.
+Run `OffsetMesh` with meshes selected, or pick meshes and press Enter.
+Type a distance, including a negative value, or move the pointer to preview
+the offset. With `DynamicPreview=Yes`, left-click accepts the preview
+distance and right-click or Enter accepts the typed distance. With
+`DynamicPreview=No`, normal offsets preview at the entered distance.
+`SetBasePoint` takes a viewport pick or typed coordinates.
+
+- `DirectionMethod=UseVertexNormals` moves topological vertices along their
+  normals, including coincident unwelded copies. `AverageNormals=Yes` uses
+  the opposite average normal, with the active construction plane normal as
+  fallback. `Flip` picks individual inputs and `FlipAll` reverses all offsets.
+- `DirectionMethod=UserSelectedDirection` takes a point to define the direction
+  toward the base point. `UseVectorLength=Yes` also takes the distance from
+  that vector. The positional form `OffsetMesh 2
+  DirectionMethod=UserSelectedDirection Direction=0,0,1` uses an explicit
+  world vector.
+- `BothSides=Yes` creates two offset skins. `Solid=Yes` joins naked boundaries
+  with quadrilateral walls. `AllowDisjoint=Yes` keeps disconnected skins in
+  one mesh when `Solid=No`. `DeleteInput=Yes` removes the originals.
+
+Results inherit source attributes and groups. The preview is temporary, and
+Undo reverses the accepted offset in one step. If an offset merges formerly
+distinct topology vertices, Rhino can return two skins without walls.
+[Rhino OffsetMesh](https://docs.mcneel.com/rhino/8/help/en-us/commands/offsetmesh.htm)
+· [Geometry fixtures](../../tools/rhino_oracle/fixtures/mesh_offset.json)
+· [Interactive replays](../../src/app/tests/offset_mesh/rhino.json)
+
 The geometry kernel also exposes `offset_mesh_rhinocommon_normal` and
 `offset_mesh_rhinocommon_vector` for the public RhinoCommon `Mesh.Offset`
 overloads. RhinoCommon's normal overload moves opposite vertex normals, and

@@ -60,6 +60,7 @@ impl VibocerosApp {
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
+        self.validate_offset_mesh();
         self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
@@ -185,7 +186,7 @@ impl VibocerosApp {
             None
         } else if self.picking_face_append() {
             Some(viboceros_command::ObjectSelectionFilter::FaceAppend)
-        } else if self.picking_mesh_polyline() {
+        } else if self.picking_mesh_polyline() || self.picking_offset_mesh_flips() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
         } else if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
@@ -202,6 +203,9 @@ impl VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        if let Some(session) = &self.offset_mesh_session {
+            selection_preview_ids.extend(session.flip_picks());
+        }
         selection_preview_ids.extend(
             self.subcurve_prompt
                 .as_ref()
@@ -1025,6 +1029,12 @@ impl VibocerosApp {
             .as_ref()
             .map(|s| s.ids())
             .or_else(|| {
+                self.offset_mesh_session
+                    .as_ref()
+                    .filter(|s| s.flipping())
+                    .map(|s| s.ids())
+            })
+            .or_else(|| {
                 self.object_prompt
                     .as_ref()
                     .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
@@ -1246,6 +1256,10 @@ impl VibocerosApp {
                                 .map(direction::Session::overlay),
                             insert_edges,
                             insert_mesh,
+                            offset_mesh_preview: self
+                                .offset_mesh_session
+                                .as_ref()
+                                .and_then(|s| s.preview()),
                             offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
                             inset_edges: self.inset_session.as_ref().map(|s| s.edges()),
                             extrude_subd_edges: self
@@ -1660,10 +1674,18 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
-        let fillet_corners_point = viewport_outputs
+        let drafting_hover = viewport_outputs
             .iter()
-            .find_map(|output| output.drafting_hover);
-        if self.update_fillet_corners_preview(fillet_corners_point) {
+            .enumerate()
+            .find_map(|(viewport, output)| {
+                output
+                    .drafting_hover
+                    .map(|point| (point, viewport, output.drafting_hover_is_free))
+            });
+        if self.update_offset_mesh_preview(drafting_hover) {
+            ui.ctx().request_repaint();
+        }
+        if self.update_fillet_corners_preview(drafting_hover.map(|(point, _, _)| point)) {
             ui.ctx().request_repaint();
         }
         let offset_draft = viewport_outputs

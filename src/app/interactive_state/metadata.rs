@@ -15,6 +15,7 @@ impl InteractiveCommand {
             Self::OrientOnCurve => "OrientOnCrv",
             Self::OrientCurveToEdge => "OrientCrvToEdge",
             Self::OffsetCurveOnSurface => "OffsetCrvOnSrf",
+            Self::OffsetMesh => "OffsetMesh",
             Self::OffsetSubD => "OffsetSubD",
             Self::OffsetSurface { .. } => "OffsetSrf",
             Self::ExtrudeSubD => "ExtrudeSubD",
@@ -299,6 +300,7 @@ impl InteractiveCommand {
             }
             | Self::Inset
             | Self::ExtrudeSubD
+            | Self::OffsetMesh
             | Self::OffsetSubD
             | Self::ExtractSrf { .. }
             | Self::Curvature { .. }

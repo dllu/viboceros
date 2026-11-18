@@ -345,7 +345,7 @@ pub mod inset;
 pub mod match_surface;
 pub mod merge_surfaces;
 mod object_name;
-mod offset_mesh;
+pub mod offset_mesh;
 pub mod offset_subd;
 pub mod offset_surface;
 pub mod pipe;

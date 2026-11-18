@@ -13,6 +13,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_curve_chamfer_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_offset_mesh_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_offset_surface_point(point) {
             return accepted;
         }
@@ -1079,7 +1082,8 @@ impl VibocerosApp {
             } => {
                 return self.finish_radius(point, diameter, mark, display_units);
             }
-            InteractiveCommand::OffsetSubD
+            InteractiveCommand::OffsetMesh
+            | InteractiveCommand::OffsetSubD
             | InteractiveCommand::ExtrudeSubD
             | InteractiveCommand::Inset => {}
             InteractiveCommand::ExtractSrf { .. } => {

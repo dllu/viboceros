@@ -6,7 +6,7 @@ impl VibocerosApp {
         if self.abort_command_file() {
             return;
         }
-        if self.cancel_offset_surface_distance() {
+        if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip() {
             return;
         }
         if self.layer_prompt.is_some() {

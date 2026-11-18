@@ -348,6 +348,9 @@ impl PendingObjectCommand {
             ObjectPromptPhase::RebuildValue(_) | ObjectPromptPhase::MergeSurfaceValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
+            ObjectPromptPhase::Selecting if self.description.command == "OffsetMesh" => {
+                "OffsetMesh select meshes, then press Enter".into()
+            }
             ObjectPromptPhase::Selecting if self.description.command == "OffsetSubD" => {
                 "Select SubD objects; Enter opens offset options, Esc cancels"
             }
@@ -1111,6 +1114,7 @@ impl VibocerosApp {
                     | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Ribbon"
+                    | "OffsetMesh"
                     | "OffsetSubD"
                     | "Rebuild"
                     | "ShowEdges"
@@ -1605,6 +1609,13 @@ impl VibocerosApp {
             if pending.description.command == "OffsetSrf" {
                 self.object_prompt = None;
                 if self.start_offset_surface(&command, pending.postselected) {
+                    return true;
+                }
+                self.object_prompt = Some(pending.clone());
+            }
+            if pending.description.command == "OffsetMesh" {
+                self.object_prompt = None;
+                if self.start_offset_mesh(&command, pending.postselected) {
                     return true;
                 }
                 self.object_prompt = Some(pending.clone());

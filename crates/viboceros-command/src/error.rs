@@ -438,6 +438,8 @@ pub enum CommandError {
     OffsetSurfaceCollapsedTorus,
     #[error("OffsetMesh requires selected meshes only")]
     UnsupportedOffsetMeshGeometry,
+    #[error("OffsetMesh inputs or tolerance changed; select the meshes again")]
+    OffsetMeshStale,
     #[error("OffsetSubD requires selected SubD objects")]
     UnsupportedOffsetSubDGeometry,
     #[error("ExtrudeSubD requires SubD faces or naked edges")]

@@ -237,6 +237,8 @@ impl VibocerosApp {
             }
         } else if let Some(p) = &self.curve_chamfer_session {
             p.hint()
+        } else if let Some(p) = &self.offset_mesh_session {
+            p.hint()
         } else if let Some(p) = &self.offset_surface_session {
             p.hint()
         } else if let Some(p) = &self.ribbon_session {
