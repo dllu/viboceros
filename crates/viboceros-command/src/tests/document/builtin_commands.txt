@@ -193,6 +193,7 @@ MarkFoci
 Match
 MatchCrvDir
 MatchMeshEdge
+MatchSrf
 MergeAllCoplanarFaces
 MergeAllEdges
 MergeCoplanarFace
@@ -288,6 +289,7 @@ RemoveMultiKnot
 Reparameterize
 ReplaceBlock
 Revolve
+Ribbon
 Rotate
 Rotate3D
 SaveAs
