@@ -41,6 +41,14 @@ impl ViewportCurve for CurveSegment3 {
     }
 }
 
+impl ViewportCurve for PolyCurve3 {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        for segment in self.segments() {
+            segment.visit_segments(&mut visit);
+        }
+    }
+}
+
 pub(super) fn visit_parametric_segments(
     count: usize,
     evaluate: impl Fn(Real) -> Result<Point3, GeometryError>,

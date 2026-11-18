@@ -129,6 +129,12 @@ impl InteractiveCommand {
             Self::BlendCurve => "BlendCrv: select sources, adjust the blend, then Enter",
             Self::Chamfer { .. } => "Chamfer: pick two curve ends; Distances / Join / Trim",
             Self::Fillet { .. } => "Fillet: pick two curve ends; Radius / Join / Trim / Dynamic",
+            Self::FilletCorners { anchor: None } => {
+                "Enter a radius or pick the first distance point"
+            }
+            Self::FilletCorners { anchor: Some(_) } => {
+                "Pick the second distance point or type a distance constraint"
+            }
             Self::ArcBlend => {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"
             }

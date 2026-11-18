@@ -14,6 +14,9 @@ impl VibocerosApp {
         if self.start_curve_chamfer(input) || self.start_curve_fillet(input) {
             return true;
         }
+        if self.start_fillet_corners(input) {
+            return true;
+        }
         if self.try_start_blend_curve(input) {
             return true;
         }

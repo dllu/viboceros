@@ -55,6 +55,7 @@ impl VibocerosApp {
         if self.curve_fillet_session.take().is_some() {
             self.document.clear_selection();
         }
+        self.release_fillet_corners();
         self.cancel_curve_boolean();
         self.finish_select_uv();
         self.refinement_prompt = None;

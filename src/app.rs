@@ -215,6 +215,7 @@ mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;
 mod face_create;
+mod fillet_corners;
 mod fillet_surface;
 mod flow;
 mod grid_settings;
@@ -454,6 +455,7 @@ pub struct VibocerosApp {
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     curve_fillet_session: Option<curve_fillet::Session>,
+    fillet_corners_session: Option<fillet_corners::Session>,
     curve_chamfer_session: Option<curve_chamfer::Session>,
     curve_boolean_prompt: Option<curve_boolean::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
@@ -645,6 +647,7 @@ impl VibocerosApp {
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             curve_fillet_session: None,
+            fillet_corners_session: None,
             curve_chamfer_session: None,
             curve_boolean_prompt: None,
             reparameterize_prompt: None,
@@ -960,7 +963,10 @@ impl VibocerosApp {
         if self.continue_curve_boolean(&input) {
             return;
         }
-        if self.continue_curve_chamfer(&input) || self.continue_curve_fillet(&input) {
+        if self.continue_curve_chamfer(&input)
+            || self.continue_curve_fillet(&input)
+            || self.continue_fillet_corners(&input)
+        {
             return;
         }
         if self.continue_fillet_surface(&input) {
@@ -1200,6 +1206,7 @@ impl VibocerosApp {
             || self.continue_surface_point_grid(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)
+            || self.continue_fillet_corners(input)
             || self.continue_blend_curve(input)
             || self.continue_arc_blend(input)
             || self.try_continue_line(input)

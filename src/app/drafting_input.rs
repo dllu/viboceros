@@ -19,6 +19,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_curve_fillet_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_fillet_corners_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_blend_curve_point(point) {
             return accepted;
         }
@@ -176,6 +179,7 @@ impl VibocerosApp {
             | InteractiveCommand::BlendCurve
             | InteractiveCommand::Chamfer { .. }
             | InteractiveCommand::Fillet { .. }
+            | InteractiveCommand::FilletCorners { .. }
             | InteractiveCommand::OffsetSurface { .. } => return false,
             InteractiveCommand::Ribbon { .. } => return false,
             InteractiveCommand::ProjectPlane { .. } => {

@@ -31,6 +31,7 @@ pub enum ObjectSelectionFilter {
     CoplanarFaces,
     Curves,
     CircularCurves,
+    FilletCorners,
     Polylines,
     ApplyCurves,
     ProjectTargets,
@@ -171,6 +172,7 @@ impl ObjectSelectionFilter {
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
             ),
             Self::Curves => geometry.curve_ref().is_some(),
+            Self::FilletCorners => crate::fillet_corners::accepts(geometry),
             Self::Polylines => geometry
                 .curve_ref()
                 .is_some_and(crate::reduce_polyline::accepts_curve),

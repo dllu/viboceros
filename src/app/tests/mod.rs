@@ -431,6 +431,7 @@ mod curve_chamfer;
 mod curve_fillet;
 mod fillet_closed;
 mod fillet_continuation;
+mod fillet_corners;
 mod fillet_open_zero;
 mod fillet_self;
 mod fillet_zero;

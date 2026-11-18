@@ -99,6 +99,9 @@ pub(super) enum InteractiveCommand {
     Fillet {
         anchor: Option<Point3>,
     },
+    FilletCorners {
+        anchor: Option<Point3>,
+    },
     ArcBlend,
     BlendCurve,
     DraftPullPoints {

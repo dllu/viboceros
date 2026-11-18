@@ -186,6 +186,9 @@ impl PendingObjectCommand {
                 "Enter a positive size; Radius, Diameter, Area, Circumference, Copy=Yes|No; Esc cancels"
             };
         }
+        if self.description.command == "FilletCorners" {
+            return "Select curves to fillet; Enter sets the radius, Esc cancels";
+        }
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
@@ -1030,8 +1033,9 @@ impl VibocerosApp {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
-            let selection_before = matches!(description.command, "Sweep1" | "Dir")
-                .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
+            let selection_before =
+                matches!(description.command, "Sweep1" | "Dir" | "FilletCorners")
+                    .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
             let rail_revolve_partial = matches!(description.command, "RailRevolve" | "Sweep1")
                 .then(|| {
                     self.document
@@ -1040,7 +1044,7 @@ impl VibocerosApp {
                         .map(|o| o.id())
                         .collect::<Vec<_>>()
                 });
-            if matches!(description.command, "Sweep1" | "Dir") {
+            if matches!(description.command, "Sweep1" | "Dir" | "FilletCorners") {
                 let _ = self
                     .document
                     .set_transient_selection(rail_revolve_partial.unwrap_or_default());
@@ -1486,6 +1490,11 @@ impl VibocerosApp {
                 self.begin_direction(pending.postselected);
                 return true;
             }
+            if pending.description.command == "FilletCorners" {
+                self.object_prompt = None;
+                self.begin_fillet_corners(pending.postselected);
+                return true;
+            }
             if pending.description.command == "RailRevolve" {
                 command = match self.rail_revolve_selection_input(&command, &pending.description) {
                     Ok(command) => command,
@@ -1669,7 +1678,11 @@ impl VibocerosApp {
                 return true;
             }
             if normalized == "selnone" {
-                self.document.clear_selection();
+                if pending.description.command == "FilletCorners" {
+                    self.restore_curve_selection(vec![]);
+                } else {
+                    self.document.clear_selection();
+                }
                 if self.shrink_prompt_mode().is_some()
                     || self.picking_subdivide()
                     || self.picking_nurbs_edges()
@@ -2036,7 +2049,10 @@ impl VibocerosApp {
                 self.component_selection.clear();
             }
             if let Some(selection_before) = pending.selection_before {
-                if matches!(pending.description.command, "Sweep1" | "Dir") {
+                if matches!(
+                    pending.description.command,
+                    "Sweep1" | "Dir" | "FilletCorners"
+                ) {
                     self.restore_curve_selection(selection_before);
                 } else if let Err(error) = self
                     .document
@@ -2161,9 +2177,9 @@ impl VibocerosApp {
         let result = if self
             .object_prompt
             .as_ref()
-            .is_some_and(|prompt| prompt.description.command == "Dir")
+            .is_some_and(|prompt| matches!(prompt.description.command, "Dir" | "FilletCorners"))
         {
-            // Dir picks are provisional: Escape must preserve SelPrev and Redo
+            // These picks are provisional: Escape must preserve SelPrev and Redo
             // as well as the prior selection. Retain click order without group
             // expansion or quadratic per-object searches.
             let previous = self.document.selected_object_ids().collect::<Vec<_>>();

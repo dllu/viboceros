@@ -2,8 +2,18 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/fillet.htm)
 
-Select one or more open or closed polylines, NURBS curves, or supported polycurves, then enter
-`FilletCorners 0.5` or `FilletCorners Radius=0.5`. Turns between straight spans
+Select one or more open or closed polylines, NURBS curves, or supported
+polycurves and run `FilletCorners`. You can also run the command first, pick
+the curves, and press Enter. Type a radius such as `0.5` or `5mm`, or press
+Enter to reuse the last accepted radius (initially 1 model unit). To measure
+the radius, click or type two points. After the first point, the viewport
+previews the rounded curves as you move the cursor. Escape dismisses the
+preview. At the second point, a typed distance or Enter locks the measurement
+for the next pick. Preselected objects stay selected after the command, and
+command-first picks are released.
+
+With curves preselected, `FilletCorners 0.5` and `FilletCorners Radius=0.5`
+apply the radius directly. Turns between straight spans
 and supported joints involving circular arcs or planar NURBS curves receive exact
 circular arcs tangent to both sides.
 The radius must exceed the document absolute tolerance. Each source segment
@@ -38,8 +48,9 @@ Curved NURBS-to-line/arc/NURBS contacts use the
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
 The same seam convention applies to a sharp curved NURBS junction.
-Stationary cusps, viewport radius picking, and interactive preview remain to be
-implemented.
+Stationary cusps remain unsupported. Rhino can leave individual corners
+unfilleted when the radius is too large. Viboceros keeps the original curves
+and lets you try another radius.
 
 The [geometry fixture](../../tools/rhino_oracle/fixtures/curve_fillet_corners.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_corners.json)

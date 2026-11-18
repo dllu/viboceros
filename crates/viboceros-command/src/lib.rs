@@ -453,7 +453,7 @@ mod curve_pair_edit;
 mod edge_blend_input;
 mod extract_surface;
 pub mod fillet;
-mod fillet_corners;
+pub mod fillet_corners;
 mod fillet_edge;
 use fillet_edge::FilletEdgeCommand;
 pub use fillet_edge::{EdgeBlendSelection, FilletEdgeSelection};
@@ -1923,7 +1923,7 @@ impl CommandRegistry {
             .register(FilletSurfaceCommand)
             .expect("unique built-in command");
         registry
-            .register(FilletCornersCommand)
+            .register(FilletCornersCommand::default())
             .expect("unique built-in command");
         registry
             .register(chamfer_edge::ChamferEdgeCommand)

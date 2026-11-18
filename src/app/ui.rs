@@ -58,6 +58,7 @@ impl VibocerosApp {
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
+        self.validate_fillet_corners();
         self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
@@ -1289,6 +1290,11 @@ impl VibocerosApp {
                                         .filter(|p| p.show_curve)
                                         .map(|p| &p.geometry.curve)
                                 }),
+                            preview_polycurves: self
+                                .fillet_corners_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map_or(&[], fillet_corners::Session::preview),
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()
@@ -1507,6 +1513,12 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
+        let fillet_corners_point = viewport_outputs
+            .iter()
+            .find_map(|output| output.drafting_hover);
+        if self.update_fillet_corners_preview(fillet_corners_point) {
+            ui.ctx().request_repaint();
+        }
         for (index, output) in viewport_outputs.into_iter().enumerate() {
             if let Some(preview) = output.mirror_preview
                 && self.update_mirror_preview(preview)

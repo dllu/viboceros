@@ -42,6 +42,7 @@ impl InteractiveCommand {
             Self::Point => "Point",
             Self::Chamfer { .. } => "Chamfer",
             Self::Fillet { .. } => "Fillet",
+            Self::FilletCorners { .. } => "FilletCorners",
             Self::ArcBlend => "ArcBlend",
             Self::BlendCurve => "BlendCrv",
             Self::EvaluatePoint => "EvaluatePt",
@@ -191,6 +192,7 @@ impl InteractiveCommand {
             | Self::CurveArray { base }
             | Self::Chamfer { anchor: base }
             | Self::Fillet { anchor: base }
+            | Self::FilletCorners { anchor: base }
             | Self::OffsetSurface { anchor: base }
             | Self::ShortPath { start: base }
             | Self::InterpolateCurveOnSurface { anchor: base }

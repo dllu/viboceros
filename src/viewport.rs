@@ -9,8 +9,8 @@ use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3, Real,
-    Tolerance, TriangleMesh, Vector3,
+    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3,
+    PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -393,6 +393,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
     pub preview_curves: &'a [NurbsCurve],
+    pub preview_polycurves: &'a [PolyCurve3],
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub select_uv_rows: Option<(
@@ -536,6 +537,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_highlights: &[],
             preview_curve: None,
             preview_curves: &[],
+            preview_polycurves: &[],
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
@@ -2555,13 +2557,15 @@ impl Viewport {
             }
         }
         if drafting.active {
+            let mut projected = ProjectedPrimitives::default();
             for curve in input.preview_curve.into_iter().chain(input.preview_curves) {
-                let mut projected = ProjectedPrimitives::default();
                 self.add_projected_nurbs_curve(&mut projected, rect, curve);
-                for segment in projected.segments {
-                    painter
-                        .line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
-                }
+            }
+            for curve in input.preview_polycurves {
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            }
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
             }
         }
         if drafting.active {
