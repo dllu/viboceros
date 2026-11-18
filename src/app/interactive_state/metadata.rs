@@ -273,9 +273,6 @@ impl InteractiveCommand {
             | Self::SelVolumePipe { .. }
             | Self::SelVolumeObject { .. }
             | Self::Pipe { .. }
-            | Self::Ellipsoid {
-                points: [None, _, _],
-            }
             | Self::Arc { points: [None, _] }
             | Self::ArcDeform { .. }
             | Self::ArcStartPoint { start: None, .. }
@@ -469,9 +466,7 @@ impl InteractiveCommand {
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
-            | Self::Ellipsoid {
-                points: [center, _, _],
-            }
+            | Self::Ellipsoid { anchor: center, .. }
             | Self::MeshEllipsoid {
                 points: [center, _, _],
                 ..
@@ -606,11 +601,7 @@ impl InteractiveCommand {
                 ..
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
-            Self::Ellipsoid { points } => match points {
-                [_, _, Some(second_axis)] => Some(second_axis),
-                [_, Some(first_axis), None] => Some(first_axis),
-                _ => None,
-            },
+            Self::Ellipsoid { reference, .. } => reference,
             Self::MeshEllipsoid { points, .. } => match points {
                 [_, _, Some(second_axis)] => Some(second_axis),
                 [_, Some(first_axis), None] => Some(first_axis),

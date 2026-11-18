@@ -159,6 +159,7 @@ pub use interpolation_options::{
 };
 pub mod catenary_input;
 pub mod ellipse_input;
+pub mod ellipsoid;
 pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
@@ -1030,6 +1031,7 @@ pub struct CommandRegistry {
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
+    ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
     draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
@@ -1250,7 +1252,9 @@ impl CommandRegistry {
             .register(ellipse_input::EllipseCommand::default())
             .expect("unique built-in command");
         registry
-            .register(EllipsoidCommand)
+            .register(ellipsoid::EllipsoidCommand(
+                registry.ellipsoid_mark_foci.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(polyline_command::PolylineCommand)
@@ -3411,27 +3415,6 @@ impl Command for ArcCommand {
         Ok(format!(
             "Added arc {id} (sweep {:.6}°)",
             d.signed_sweep_degrees
-        ))
-    }
-}
-
-const ELLIPSOID_USAGE: &str = "Ellipsoid center radius-x radius-y radius-z | Ellipsoid center first-axis-point second-axis-point third-axis-radius-point";
-
-struct EllipsoidCommand;
-
-impl Command for EllipsoidCommand {
-    fn name(&self) -> &'static str {
-        "Ellipsoid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let positionals = parse_ellipsoid_positionals(arguments, document.tolerance())?;
-        require_consumed(arguments, positionals.option_start, ELLIPSOID_USAGE)?;
-        let surface = NurbsSurface::try_ellipsoid(positionals.frame, positionals.radii)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added NURBS ellipsoid {id} (radii {:.6} × {:.6} × {:.6})",
-            positionals.radii[0], positionals.radii[1], positionals.radii[2]
         ))
     }
 }

@@ -38,10 +38,19 @@ and a size perpendicular to the tangent. Both show a live sphere preview.
 `Sphere FitPoints` fits a sphere through selected point objects or grips.
 See [point fitting and its retained Rhino difference](sphere-fit-points.md).
 
-`Ellipsoid` creates the exact closed 9-by-5 rational surface obtained by
-scaling that sphere along three orthogonal semi-axes. Supply three numeric
-radii in World XY, or center and three axis-radius points for an oriented
-ellipsoid; entering it without arguments starts the four-pick viewport workflow.
+`Ellipsoid` creates a closed 9-by-5 rational surface. Pick a center and two
+base axes, then set the third radius along the base normal. Typing a length at
+either base-axis prompt locks that length for the next pick. The viewport
+previews the base ellipse and then the ellipsoid. Complete commands also
+accept a center and three numeric World XY radii.
+
+`Corner` takes opposite corners, or a center and a corner if chosen after the
+center. `Diameter` starts with opposite ends of the first axis and accepts a
+numeric third diameter. Choose `Vertical` before the first diameter end to
+stand the base in a vertical plane. `AroundCurve` uses a curve or surface edge
+to set the center and third axis. `FromFoci` finishes with two foci and a point
+on the ellipsoid. Its remembered `MarkFoci` option adds the two points in the
+same Undo step. Newly created surfaces place their poles on the first axis.
 
 `Box` follows Rhino's two-opposite-base-corners and signed-height workflow in
 the active construction plane. It creates one closed typed extrusion with an

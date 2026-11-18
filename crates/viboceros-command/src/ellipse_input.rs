@@ -174,6 +174,13 @@ impl Input {
     pub fn markers(self) -> Vec<Point3> {
         self.points.into_iter().flatten().collect()
     }
+    pub(crate) fn picked_foci(self) -> Option<[Point3; 2]> {
+        if self.mode == Mode::FromFoci && self.options.mark_foci {
+            Some([self.points[0]?, self.points[1]?])
+        } else {
+            None
+        }
+    }
     pub fn set_initial_plane(&mut self, plane: Frame3) {
         if self.points[0].is_none() {
             self.plane = plane

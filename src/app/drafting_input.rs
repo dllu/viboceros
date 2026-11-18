@@ -71,6 +71,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_ellipsoid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_ellipsoid_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_ellipse_point(point) {
             return accepted;
         }
@@ -218,6 +221,7 @@ impl VibocerosApp {
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::SubDTorus { .. }
             | InteractiveCommand::SubDEllipsoid { .. }
+            | InteractiveCommand::Ellipsoid { .. }
             | InteractiveCommand::SubDSphere { .. }
             | InteractiveCommand::SubDTruncatedCone { .. }
             | InteractiveCommand::SubDCone { .. }
@@ -668,72 +672,6 @@ impl VibocerosApp {
                         format!(" WallThickness={thickness}")
                     })
                 ));
-            }
-            InteractiveCommand::Ellipsoid { mut points } => {
-                let point_count = points.iter().flatten().count();
-                if point_count == 1 {
-                    let Some(center) = points[0] else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if center.is_near(point, self.document.tolerance()) {
-                        self.push_log(
-                            "Error: ellipsoid axis point must differ from its center".to_owned(),
-                        );
-                        return false;
-                    }
-                } else if point_count == 2 {
-                    let [Some(center), Some(first_axis), _] = points else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if let Err(error) = Frame3::try_from_points(
-                        center,
-                        first_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(format!("Error: {error}"));
-                        return false;
-                    }
-                }
-
-                if point_count < points.len() {
-                    points[point_count] = Some(point);
-                    let command = InteractiveCommand::Ellipsoid { points };
-                    self.active_command = Some(command);
-                    let label = ["Center", "First axis", "Second axis"][point_count];
-                    self.push_log(format!("{label}: {}", format_model_point(point)));
-                    self.push_log(command.prompt().to_owned());
-                } else {
-                    let [Some(center), Some(first_axis), Some(second_axis)] = points else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if !ellipsoid_third_radius_exceeds_tolerance(
-                        center,
-                        first_axis,
-                        second_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(
-                            "Error: ellipsoid third-axis radius must be positive".to_owned(),
-                        );
-                        return false;
-                    }
-                    self.active_command = None;
-                    self.execute_command(&format!(
-                        "Ellipsoid {} {} {} {}",
-                        format_model_point(center),
-                        format_model_point(first_axis),
-                        format_model_point(second_axis),
-                        format_model_point(point)
-                    ));
-                }
             }
             InteractiveCommand::MeshEllipsoid {
                 mut points,

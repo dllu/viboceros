@@ -207,6 +207,7 @@ mod edge_analysis;
 mod edge_commands;
 mod edge_fillet;
 mod ellipse;
+mod ellipsoid;
 mod evaluate_point;
 mod evaluate_uv;
 mod extrude_surface;
@@ -531,6 +532,7 @@ pub struct VibocerosApp {
     subd_sphere_session: Option<subd_sphere::Session>,
     subd_torus_session: Option<subd_torus::Session>,
     subd_ellipsoid_session: Option<subd_ellipsoid::Session>,
+    ellipsoid_session: Option<ellipsoid::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -724,6 +726,7 @@ impl VibocerosApp {
             subd_sphere_session: None,
             subd_torus_session: None,
             subd_ellipsoid_session: None,
+            ellipsoid_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -896,6 +899,7 @@ impl VibocerosApp {
             || self.try_continue_arc(&input)
             || self.try_continue_circle_around(&input)
             || self.continue_subd_ellipsoid(&input)
+            || self.continue_ellipsoid(&input)
             || self.try_continue_ellipse(&input)
             || self.try_continue_catenary(&input)
             || self.try_continue_spiral(&input)

@@ -325,6 +325,11 @@ impl Viewport {
         let line = input
             .stretch_preview
             .and_then(|p| p.mouse_line())
+            .or_else(|| {
+                input
+                    .ellipsoid_preview
+                    .and_then(EllipsoidPreview::axis_constraint)
+            })
             .or_else(|| definition.and_then(|p| p.mouse_line(document.tolerance())))
             .or_else(|| input.curve_line_input.and_then(|g| g.mouse_line()));
         let cursor = self.translation_drafting_cursor(
@@ -347,6 +352,9 @@ impl Viewport {
                 Some(c)
             });
         }
+        let ellipsoid_plane = input
+            .ellipsoid_preview
+            .and_then(EllipsoidPreview::base_mouse_plane);
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
             .or_else(|| {
@@ -362,6 +370,7 @@ impl Viewport {
                     .map(|p| (p.origin(), p.z_axis()))
             })
             .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
+            .or_else(|| ellipsoid_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| input.taper_preview.and_then(|p| p.mouse_plane()))
         else {
             return cursor;
@@ -383,7 +392,11 @@ impl Viewport {
                 cursor.source_point = cursor.point;
                 return Some(cursor);
             }
-            return input.taper_preview.and(cursor);
+            return if ellipsoid_plane.is_some() {
+                cursor
+            } else {
+                input.taper_preview.and(cursor)
+            };
         }
         let distance = -origin.dot(normal.as_vector()).ok()? / denominator;
         let point = anchor

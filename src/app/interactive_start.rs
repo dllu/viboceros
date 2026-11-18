@@ -53,6 +53,9 @@ impl VibocerosApp {
         if self.try_start_ellipse(input) {
             return true;
         }
+        if self.try_start_ellipsoid(input) {
+            return true;
+        }
         if self.try_start_catenary(input) {
             return true;
         }
@@ -2036,7 +2039,6 @@ impl VibocerosApp {
                 "lines" => InteractiveCommand::Lines,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
-                "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
                 "arc" | "a" => InteractiveCommand::ArcCenter {
                     center: None,
                     start: None,

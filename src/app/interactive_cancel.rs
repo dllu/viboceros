@@ -9,6 +9,7 @@ impl VibocerosApp {
         self.release_arc_extension_pick();
         self.release_circle_around_picks();
         self.release_ellipse_picks();
+        self.release_ellipsoid_pick();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
         self.release_line_normal();
@@ -115,6 +116,7 @@ impl VibocerosApp {
         self.subd_sphere_session = None;
         self.subd_torus_session = None;
         self.subd_ellipsoid_session = None;
+        self.ellipsoid_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);

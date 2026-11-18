@@ -293,7 +293,8 @@ pub(super) enum InteractiveCommand {
         first_radius: Option<f64>,
     },
     Ellipsoid {
-        points: [Option<Point3>; 3],
+        anchor: Option<Point3>,
+        reference: Option<Point3>,
     },
     Arc {
         points: [Option<Point3>; 2],

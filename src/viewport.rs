@@ -9,8 +9,8 @@ use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    Circle3, CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3,
-    PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
+    Circle3, CircularArc3, CurveSegment3, Ellipse3, Frame3, GeometryError, NurbsCurve, Point3,
+    PointCloud3, PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -29,6 +29,8 @@ mod clipping;
 mod curve_line;
 pub(crate) mod direction;
 mod drafting;
+mod ellipsoid;
+pub(crate) use ellipsoid::EllipsoidPreview;
 mod named_view;
 mod navigation;
 mod normal_point;
@@ -415,6 +417,7 @@ pub struct ViewportInput<'a> {
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
+    pub ellipsoid_preview: Option<EllipsoidPreview>,
     pub tangent: Option<TangentPreview<'a>>,
     pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
     pub arc_preview: Option<(viboceros_command::arc_input::Preview, Frame3)>,
@@ -556,6 +559,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             ellipse_input: None,
+            ellipsoid_preview: None,
             tangent: None,
             arc_tilted_input: None,
             arc_extension_input: None,
@@ -2864,6 +2868,21 @@ impl Viewport {
                     self.paint_draft_points(&painter, rect, &foci);
                 }
             }
+        }
+        if let Some(preview) = input.ellipsoid_preview {
+            self.paint_ellipsoid_draft(
+                &painter,
+                rect,
+                preview,
+                drafting_cursor
+                    .filter(|_| {
+                        input
+                            .point_filter
+                            .is_none_or(|filter| !filter.awaiting_source())
+                    })
+                    .map(|cursor| cursor.point),
+                document.tolerance(),
+            );
         }
         if let Some(getter) = input.parabola_input {
             self.paint_draft_points(&painter, rect, &getter.markers());

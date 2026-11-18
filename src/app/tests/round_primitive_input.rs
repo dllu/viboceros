@@ -108,7 +108,8 @@ fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::Ellipsoid {
-            points: [Some(center), None, None]
+            anchor: Some(center),
+            reference: None,
         })
     );
     assert_eq!(app.document.objects().len(), 0);
@@ -139,14 +140,14 @@ fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
     };
     assert_eq!(surface.control_point_count_u(), 9);
     assert_eq!(surface.control_point_count_v(), 5);
-    assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), first_axis);
+    assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), second_axis);
     assert_eq!(
         surface.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
-        second_axis
+        point(1.0, 2.0, 7.0)
     );
     assert_eq!(
         surface.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
-        point(1.0, 2.0, 7.0)
+        first_axis
     );
     assert_eq!(app.document.undo_label(), Some("Ellipsoid"));
 }

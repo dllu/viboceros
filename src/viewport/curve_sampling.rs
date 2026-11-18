@@ -16,6 +16,16 @@ impl ViewportCurve for Circle3 {
     }
 }
 
+impl ViewportCurve for Ellipse3 {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        visit_parametric_segments(
+            CIRCLE_SAMPLES,
+            |t| self.point_at_angle(std::f64::consts::TAU * t),
+            &mut visit,
+        );
+    }
+}
+
 impl ViewportCurve for NurbsCurve {
     fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
         if let Ok(sampler) = self.parameter_sampler() {

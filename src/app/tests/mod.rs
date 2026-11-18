@@ -111,6 +111,7 @@ mod edit_points;
 mod ellipse;
 mod ellipse_around;
 mod ellipse_deform;
+mod ellipsoid_getters;
 mod evaluate_point;
 mod evaluate_uv;
 mod extract_analysis_mesh;

@@ -1052,8 +1052,12 @@ impl VibocerosApp {
         let ellipse_input = self
             .ellipse_session
             .as_ref()
+            .filter(|s| !s.solid_ellipsoid())
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let ellipsoid_preview = model_input_active
+            .then(|| self.ellipsoid_preview())
+            .flatten();
         let parabola_input = self
             .parabola_session
             .as_ref()
@@ -1381,6 +1385,7 @@ impl VibocerosApp {
                             hyperbola_input,
                             parabola_input,
                             ellipse_input,
+                            ellipsoid_preview,
                             tangent: tangent_input,
                             arc_tilted_input,
                             arc_extension_input,

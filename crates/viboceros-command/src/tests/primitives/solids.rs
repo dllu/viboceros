@@ -75,11 +75,11 @@ fn ellipsoid_creates_exact_affine_sphere_from_radii_or_axis_points() {
     );
     assert_eq!(
         surface.evaluate(0.0, 0.0).unwrap(),
-        Point3::try_new(3.0, 2.0, 3.0).unwrap()
+        Point3::try_new(1.0, 5.0, 3.0).unwrap()
     );
     assert_eq!(
         surface.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
-        Point3::try_new(1.0, 5.0, 3.0).unwrap()
+        Point3::try_new(1.0, 2.0, 7.0).unwrap()
     );
     assert_eq!(document.undo_label(), Some("Ellipsoid"));
 
@@ -92,15 +92,15 @@ fn ellipsoid_creates_exact_affine_sphere_from_radii_or_axis_points() {
     };
     assert_eq!(
         oriented.evaluate(0.0, 0.0).unwrap(),
-        Point3::try_new(1.0, 4.0, 3.0).unwrap()
-    );
-    assert_eq!(
-        oriented.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
         Point3::try_new(-2.0, 2.0, 3.0).unwrap()
     );
     assert_eq!(
-        oriented.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
+        oriented.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
         Point3::try_new(1.0, 2.0, 7.0).unwrap()
+    );
+    assert_eq!(
+        oriented.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
+        Point3::try_new(1.0, 4.0, 3.0).unwrap()
     );
 
     for invalid in [
