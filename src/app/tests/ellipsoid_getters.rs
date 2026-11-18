@@ -160,6 +160,9 @@ fn solid_ellipsoid_focal_preview_marks_authored_points_in_one_edit() {
 fn solid_ellipsoid_around_curve_keeps_the_guide_through_history() {
     for preselected in [false, true] {
         let mut app = test_app();
+        app.viewports[0] = Viewport::new(ViewKind::Front);
+        app.maximized_viewport = Some(0);
+        app.osnap = false;
         enter(&mut app, "Line 0,0,0 0,10,10");
         let guide = app.document.objects().next().unwrap().clone();
         let id = guide.id();
@@ -172,13 +175,15 @@ fn solid_ellipsoid_around_curve_keeps_the_guide_through_history() {
         if !preselected {
             enter(&mut app, &format!("Curve={id}"));
         }
-        for step in [
-            "w0,3,3",
-            "w5,3,3",
-            "w0,5.121320343559643,0.8786796564403576",
-        ] {
+        for step in ["w0,3,3", "w5,3,3"] {
             enter(&mut app, step);
         }
+        let context = egui::Context::default();
+        viewport_frame(&mut app, &context, vec![]);
+        let minor = screen_point(&app, point(0., 5.121320343559643, 0.8786796564403576));
+        let base = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(minor)]);
+        assert_eq!(base.len(), 64);
+        viewport_click(&mut app, &context, minor);
         assert!(app.ellipsoid_session.is_some());
         assert!(app.document.is_selected(id));
         enter(&mut app, "2mm");
@@ -200,4 +205,25 @@ fn solid_ellipsoid_around_curve_keeps_the_guide_through_history() {
         assert_eq!(ellipsoid(&app), &surface);
         assert_eq!(app.document.is_selected(id), preselected);
     }
+}
+
+#[test]
+fn solid_ellipsoid_cancels_if_the_guide_is_deleted_during_the_third_axis() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 0,0,10");
+    let guide = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Ellipsoid AroundCurve");
+    enter(&mut app, &format!("Curve={guide}"));
+    for step in ["w0,0,4", "w5,0,4", "w0,3,4"] {
+        enter(&mut app, step);
+    }
+    assert!(app.ellipsoid_session.is_some());
+    app.document.delete_object(guide).unwrap();
+    assert!(app.ellipsoid_preview().is_none());
+    enter(&mut app, "2");
+    assert!(app.active_command.is_none());
+    assert!(app.document.objects().next().is_none());
+    assert!(app.command_log.back().unwrap().contains("guide changed"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 1);
 }
