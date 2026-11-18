@@ -770,6 +770,24 @@ impl Default for Viewport {
 }
 
 impl Viewport {
+    pub(crate) fn screen_rect(&self) -> Option<Rect> {
+        self.last_rect
+    }
+
+    pub(crate) fn capture_scene(
+        &mut self,
+        rect: Rect,
+        document: &Document,
+        fit: bool,
+        borders: ZoomExtentsBorders,
+    ) -> Result<std::sync::Arc<crate::viewport_gpu::ViewportScene>, &'static str> {
+        self.last_rect = Some(rect);
+        if !fit || !self.zoom_extents(document, borders)? {
+            self.refresh_clipping_with_preview(document, rect, None)?;
+        }
+        Ok(self.object_scene_with_analyses(rect, document, None, &[], None, Default::default()))
+    }
+
     pub(crate) fn parallel_view_direction(&self) -> Option<Vector3> {
         (self.kind != ViewKind::Perspective).then(|| self.viewward_direction())
     }

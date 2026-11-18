@@ -1,0 +1,263 @@
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import subprocess
+from collections.abc import Sequence
+from pathlib import Path
+from threading import Event, Lock, Timer
+from typing import Any
+
+from ._types import (
+    CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
+    SessionError, Step, View, Viewport, XYZ, encode_step, object_id,
+)
+
+PathLike = str | os.PathLike[str]
+_PROTOCOL = 1
+_FORMATS = {".3dm": "3dm", ".stl": "Stl", ".step": "Step", ".stp": "Step"}
+
+
+def _executable(explicit: PathLike | None) -> str:
+    configured = explicit if explicit is not None else os.environ.get("VIBOCEROS_BIN")
+    if configured is not None:
+        return os.fspath(Path(configured).expanduser().absolute())
+    if path := shutil.which("viboceros"):
+        return path
+    name = "viboceros.exe" if os.name == "nt" else "viboceros"
+    for root in (Path(__file__).resolve().parent.parent, Path.cwd()):
+        paths = [root / "target" / profile / name for profile in ("release", "debug")]
+        built = [path for path in paths if path.is_file()]
+        if built:
+            return str(max(built, key=lambda path: path.stat().st_mtime_ns))
+    raise SessionError("Viboceros executable not found. Build it with cargo build --release or set VIBOCEROS_BIN.")
+
+
+def _path(path: PathLike) -> Path:
+    return Path(path).expanduser().absolute()
+
+
+class Session:
+    """A persistent Viboceros model, command interpreter, and viewport set.
+
+    Each session owns a native process. Use a context manager to close it when
+    the script finishes. All path arguments are resolved by the Python caller.
+    """
+
+    def __init__(self, executable: PathLike | None = None) -> None:
+        self._lock = Lock()
+        self._closed = False
+        environment = os.environ.copy()
+        environment.pop("DISPLAY", None)
+        environment.pop("WAYLAND_DISPLAY", None)
+        try:
+            self._process = subprocess.Popen(
+                [_executable(executable), "--headless"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                encoding="utf-8", errors="strict", env=environment,
+            )
+        except OSError as error:
+            raise SessionError(f"could not start Viboceros: {error}") from error
+        expired = Event()
+
+        def stop_startup() -> None:
+            expired.set()
+            self._process.kill()
+
+        timer = Timer(15, stop_startup)
+        timer.daemon = True
+        timer.start()
+        try:
+            info = self.info()
+            if info.get("protocol") != _PROTOCOL:
+                raise SessionError(f"incompatible Viboceros protocol {info.get('protocol')!r}")
+        except BaseException:
+            self.close()
+            if expired.is_set():
+                raise SessionError("Viboceros did not start its headless protocol within 15 seconds") from None
+            raise
+        finally:
+            timer.cancel()
+
+    def __enter__(self) -> Session:
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Release the document and native process."""
+        with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            process = self._process
+            try:
+                process.stdin.close()
+            except BrokenPipeError:
+                pass
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+            finally:
+                process.stdout.close()
+
+    def _request(self, method: str, **params: Any) -> Any:
+        payload = json.dumps({"method": method, **params}, allow_nan=False)
+        with self._lock:
+            if self._closed:
+                raise SessionError("Viboceros session is closed")
+            process = self._process
+            try:
+                process.stdin.write(payload + "\n")
+                process.stdin.flush()
+                line = process.stdout.readline()
+            except OSError as error:
+                raise SessionError(f"Viboceros communication failed: {error}") from error
+            except KeyboardInterrupt:
+                # An abandoned response would otherwise be read by the next request.
+                process.kill()
+                raise
+            if not line:
+                raise SessionError("Viboceros headless process closed without a response")
+            try:
+                response = json.loads(line)
+            except ValueError as error:
+                raise SessionError("Viboceros sent an invalid headless response") from error
+            if "error" in response:
+                raise SessionError(response["error"])
+            return response["result"]
+
+    def info(self) -> dict[str, Any]:
+        """Return version, backend, project path, units, and getter state."""
+        return self._request("info")
+
+    def new(self) -> None:
+        """Start a new document and discard the session's current unsaved state."""
+        self._request("reset")
+
+    def commands(self) -> tuple[str, ...]:
+        """Return command names from Viboceros's command completion catalog."""
+        return tuple(self._request("commands"))
+
+    def run(
+        self, *steps: Step, select: Sequence[ObjectLike] | None = None,
+        check: bool = True, track_changes: bool = True,
+    ) -> CommandResult:
+        """Submit whole command lines, prompt answers, points, or picks in order.
+
+        Strings are submitted as one line. Tuple points use world coordinates.
+        ENTER finishes variable-length picks. A pending result can be continued
+        by calling run again. With check enabled, processing stops at the first
+        reported error and raises CommandError with the partial result.
+        """
+        result = CommandResult._read(self._request(
+            "run", steps=[encode_step(step) for step in steps],
+            select=None if select is None else list(map(object_id, select)),
+            track_changes=track_changes, stop_on_error=check,
+        ))
+        if check and result.errors:
+            raise CommandError(result)
+        return result
+
+    def objects(
+        self, *objects: ObjectLike, kind: str | None = None, name: str | None = None,
+        layer: str | None = None,
+    ) -> tuple[Object, ...]:
+        """Read object identities, attributes, and display bounds in document order."""
+        if layer is not None:
+            layer = next((item["id"] for item in self.layers() if item["name"] == layer), layer)
+        records = self._request("objects", ids=list(map(object_id, objects)) if objects else None)
+        return tuple(
+            obj for obj in map(Object._read, records)
+            if (kind is None or obj.kind == kind)
+            and (name is None or obj.name == name)
+            and (layer is None or obj.layer == layer)
+        )
+
+    def object(self, obj: ObjectLike) -> Object:
+        return self.objects(obj)[0]
+
+    def layers(self) -> tuple[dict[str, Any], ...]:
+        return tuple(self._request("layers"))
+
+    def groups(self) -> tuple[dict[str, Any], ...]:
+        return tuple(self._request("groups"))
+
+    def selection(self) -> Selection:
+        return Selection._read(self._request("selection"))
+
+    def select(self, *objects: ObjectLike) -> Selection:
+        """Set the whole-object preselection in argument order. No arguments clears it."""
+        return Selection._read(self._request("select", ids=list(map(object_id, objects))))
+
+    def components(self, obj: ObjectLike) -> tuple[Component, ...]:
+        """List selectable topology (zero-based B-rep, mesh, or SubD indices)."""
+        return tuple(map(Component._read, self._request("components", id=object_id(obj))))
+
+    def select_components(self, *components: Component) -> Selection:
+        """Preselect specific components for a modeling command."""
+        return Selection._read(self._request("select_components", components=[c._ref() for c in components]))
+
+    def grips(self, obj: ObjectLike) -> tuple[Grip, ...]:
+        """List active grips after PointsOn or EditPtOn."""
+        return tuple(map(Grip._read, self._request("grips", id=object_id(obj))))
+
+    def select_grips(self, *grips: Grip) -> Selection:
+        return Selection._read(self._request("select_grips", grips=[g._ref() for g in grips]))
+
+    def open(self, path: PathLike) -> CommandResult:
+        """Open a 3DM project, replacing the current document."""
+        return self._file_command(f"Open3dm {_path(path)}", track_changes=True)
+
+    def save(self, path: PathLike | None = None) -> CommandResult:
+        """Save the current 3DM project, including its views and construction planes."""
+        return self._file_command("Save" if path is None else f"SaveAs {_path(path)}", track_changes=False)
+
+    def import_file(self, path: PathLike, *, native_step: bool = False) -> CommandResult:
+        """Import 3DM, STL, or STEP into the current document."""
+        path = _path(path)
+        form = _FORMATS.get(path.suffix.lower())
+        if form is None or native_step and form != "Step":
+            raise ValueError("expected 3DM, STL, or STEP (native_step applies only to STEP)")
+        options = "Native=Yes " if native_step else ""
+        return self._file_command(f"Import{form} {options}{path}", track_changes=True)
+
+    def export(self, path: PathLike, *, native_step: bool = False, ascii_stl: bool = False) -> CommandResult:
+        """Export the current model to 3DM, STL, or STEP."""
+        path = _path(path)
+        form = _FORMATS.get(path.suffix.lower())
+        if form is None or native_step and form != "Step" or ascii_stl and form != "Stl":
+            raise ValueError("expected 3DM, STL, or STEP with options matching the file type")
+        options = "Native=Yes " if native_step else "Ascii " if ascii_stl else ""
+        return self._file_command(f"Export{form} {options}{path}", track_changes=False)
+
+    def _file_command(self, command: str, *, track_changes: bool) -> CommandResult:
+        result = CommandResult._read(self._request(
+            "run", steps=[encode_step(command)], select=None, track_changes=track_changes,
+            stop_on_error=True, require_idle=True,
+        ))
+        if result.errors:
+            raise CommandError(result)
+        return result
+
+    def viewports(self) -> tuple[Viewport, ...]:
+        return tuple(map(Viewport._read, self._request("viewports")))
+
+    def project(self, point: XYZ, *, view: View | None = None) -> tuple[float, float]:
+        """Project a visible world point into headless window coordinates."""
+        x, y = self._request("project", point=point, view=view)
+        return x, y
+
+    def screenshot(
+        self, path: PathLike, *, view: View | None = None, mode: str = "Shaded",
+        size: tuple[int, int] = (1200, 800), fit: bool = True,
+        background: tuple[int, int, int, int] = (255, 255, 255, 255),
+    ) -> Path:
+        """Write a PNG using a viewport, named view, or standard view direction."""
+        path = _path(path)
+        self._request("screenshot", path=str(path), view=view, mode=mode, size=size, fit=fit, background=background)
+        return path

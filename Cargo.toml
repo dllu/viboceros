@@ -62,6 +62,9 @@ eframe = { version = "0.36.1", default-features = false, features = [
     "x11",
 ] }
 nalgebra.workspace = true
+png = "0.18.1"
+pollster = "1.0.1"
+serde.workspace = true
 serde_json.workspace = true
 viboceros-command.workspace = true
 viboceros-document.workspace = true
@@ -72,7 +75,6 @@ viboceros-io.workspace = true
 [dev-dependencies]
 tempfile = "3.27.0"
 flate2.workspace = true
-pollster = "1.0.1"
 viboceros-oracle = { path = "crates/viboceros-oracle" }
 
 [features]

@@ -31,4 +31,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 
 ## Documentation
 
+[Headless Python modeling](docs/python.md) covers scripting commands, selecting
+geometry, exchanging files, and capturing shaded views.
+
 [Documentation](docs/README.md) covers usage, commands, architecture, and testing.

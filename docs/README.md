@@ -8,6 +8,7 @@
 - [Command input](command-line.md): coordinates, units, completion and history.
 - [Command reference and examples](commands/README.md): modeling, editing and analysis.
 - [File formats](file-formats.md): 3DM, STL and STEP capabilities and limitations.
+- [Headless Python modeling](python.md) covers scripting, selection, and view captures.
 
 ## Development
 

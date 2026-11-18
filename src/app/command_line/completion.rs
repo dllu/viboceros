@@ -72,18 +72,10 @@ impl CompletionState {
     }
 }
 
-pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static str> {
-    let input = input.trim_start();
-    if input.is_empty() || input.chars().any(char::is_whitespace) {
-        return Vec::new();
-    }
-    let query = input
-        .trim_start_matches(['\'', '_', '-'])
-        .to_ascii_lowercase();
-    if query.is_empty() || query.len() > 128 {
-        return Vec::new();
-    }
-    let mut names = commands
+pub(in crate::app) fn available_commands(
+    commands: &CommandRegistry,
+) -> impl Iterator<Item = &'static str> {
+    commands
         .command_names()
         .into_iter()
         .chain(viboceros_command::interface::COMMAND_NAMES)
@@ -100,6 +92,20 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
             "ViewportProperties",
             "Help",
         ])
+}
+
+pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static str> {
+    let input = input.trim_start();
+    if input.is_empty() || input.chars().any(char::is_whitespace) {
+        return Vec::new();
+    }
+    let query = input
+        .trim_start_matches(['\'', '_', '-'])
+        .to_ascii_lowercase();
+    if query.is_empty() || query.len() > 128 {
+        return Vec::new();
+    }
+    let mut names = available_commands(commands)
         .filter_map(|name| score(&query, &name.to_ascii_lowercase()).map(|score| (score, name)))
         .collect::<Vec<_>>();
     names.sort_unstable();

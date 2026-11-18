@@ -2,6 +2,7 @@
 use super::*;
 mod completion;
 mod history;
+pub(super) use completion::available_commands;
 #[cfg(test)]
 pub(super) use completion::command_completions;
 
@@ -196,6 +197,122 @@ impl VibocerosApp {
         }
     }
 
+    pub(super) fn command_hint(&self) -> &str {
+        let set_view_prompt = self
+            .set_view_prompt
+            .as_ref()
+            .filter(|_| self.set_view_options_active())
+            .map(|session| session.prompt);
+        if self.command_line.file_path.is_some() {
+            "Path to a 3DM file • Enter to confirm • Esc to cancel"
+        } else if self.end_analysis_pick.is_some() {
+            "Pick curves; Enter finishes, Esc cancels"
+        } else if self.snap_size_pending.is_some() {
+            "Enter a positive grid snap spacing; Enter or Esc cancels"
+        } else if self.zoom_factor_pending.is_some() {
+            "Enter a positive factor; Enter or Esc cancels"
+        } else if self.plane_prompt.is_some() {
+            "Define the construction plane; Esc returns to the previous prompt"
+        } else if self.use_extrusions_prompt {
+            "Extrusion or Polysurface; Enter accepts, Esc cancels"
+        } else if self.remember_copy_prompt {
+            "Yes or No; Enter accepts, Esc cancels"
+        } else if self.edge_zoom_prompt.is_some() {
+            "All, Current, Next, Previous or Mark; Enter or Esc ends"
+        } else if let Some(prompt) = set_view_prompt {
+            prompt.message()
+        } else if let Some(p) = &self.select_uv_prompt {
+            p.hint()
+        } else if let Some(p) = &self.refinement_prompt {
+            p.hint()
+        } else if let Some(p) = &self.direction_session {
+            p.hint()
+        } else if let Some(p) = &self.reparameterize_prompt {
+            p.hint()
+        } else if let Some(p) = &self.curve_boolean_prompt {
+            if p.selecting() {
+                "Select curves; Enter continues, Esc cancels"
+            } else {
+                "Pick regions or AllRegions; DeleteInput / CombineRegions / Output / SimplifyCurves; Enter accepts, Esc cancels"
+            }
+        } else if let Some(p) = &self.curve_chamfer_session {
+            p.hint()
+        } else if let Some(p) = &self.offset_surface_session {
+            p.hint()
+        } else if let Some(p) = &self.ribbon_session {
+            p.hint()
+        } else if let Some(p) = &self.curve_fillet_session {
+            p.hint()
+        } else if let Some(p) = &self.fillet_surface_prompt {
+            p.hint()
+        } else if let Some(p) = &self.blend_surface_prompt {
+            p.hint()
+        } else if let Some(p) = &self.sweep_session {
+            p.hint()
+        } else if let Some(p) = &self.loft_prompt {
+            p.hint()
+        } else if let Some(p) = &self.tween_surfaces_prompt {
+            p.hint()
+        } else if let Some(p) = self.shell_prompt {
+            if p.awaiting_thickness {
+                "Shell thickness; Enter a distance with optional units"
+            } else {
+                "Select faces to remove; Thickness / DeleteInput; Enter applies, Esc cancels"
+            }
+        } else if self.surface_path_prompt.is_some() {
+            "Select path curve; Solid / DeleteInput / Reverse / PathLength; Esc cancels"
+        } else if self.planar_boolean_prompt.is_some() {
+            "Pick a planar surface; Esc cancels"
+        } else if let Some(prompt) = &self.boolean_two_prompt {
+            if prompt.cycling() {
+                "Click for next result; Enter accepts, Esc cancels"
+            } else {
+                "Select two surfaces or polysurfaces; Enter previews, Esc cancels"
+            }
+        } else if let Some(p) = &self.chain_prompt {
+            p.hint()
+        } else if self.edge_pattern_prompt.is_some() {
+            edge_pattern_selection::HINT
+        } else if self.length_units_pending {
+            "Enter a unit name or Model_Units; Esc cancels Length"
+        } else if let Some(prompt) = &self.object_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.group_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.intersection_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.subcurve_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.edge_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.hole_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.crease_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = &self.soft_crease_prompt {
+            prompt.hint()
+        } else if let Some(prompt) = self.edge_fillet_prompt {
+            prompt.hint()
+        } else if self.unjoin_prompt.is_some() {
+            "Select joined edges; Enter applies, Esc cancels"
+        } else if self.component_selection.has_choices() {
+            "Choose a component by number, or pick again"
+        } else if self.replacing_block() {
+            "Pick a replacement instance or choose a definition; Esc cancels"
+        } else if self.active_command.is_some() {
+            if self
+                .active_command
+                .is_some_and(InteractiveCommand::collects_curve_points)
+            {
+                "Pick curve points; press Enter to finish or Esc to cancel"
+            } else {
+                "Type coordinates or pick; Esc cancels"
+            }
+        } else {
+            "Type a command • Tab to complete • ↑ for history"
+        }
+    }
+
     pub(super) fn show_command_line(&mut self, root: &mut egui::Ui) {
         egui::Panel::bottom("command_line")
             .resizable(true)
@@ -237,11 +354,11 @@ impl VibocerosApp {
                         "Length units"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"
-                    } else if let Some(p)=&self.edge_pattern_prompt {
+                    } else if let Some(p) = &self.edge_pattern_prompt {
                         p.command()
                     } else if self.select_uv_prompt.is_some() {
                         "SelUV"
-                    } else if let Some(prompt)=&self.refinement_prompt {
+                    } else if let Some(prompt) = &self.refinement_prompt {
                         prompt.command_name()
                     } else if self.reparameterize_prompt.is_some() {
                         "Reparameterize"
@@ -290,23 +407,34 @@ impl VibocerosApp {
                     ui.label(RichText::new(format!("{label}:")).strong());
                     let id = input_id();
                     let focused = ui.memory(|memory| memory.focused() == Some(id));
-                    let submit = focused && ui.input_mut(|input| {
-                        consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Enter)
-                    });
-                    let (tab, reverse, older, newer) = if focused && (idle || (self.active_command.is_none() && self.command_input.is_empty())) {
+                    let submit = focused
+                        && ui.input_mut(|input| {
+                            consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Enter)
+                        });
+                    let (tab, reverse, older, newer) = if focused
+                        && (idle
+                            || (self.active_command.is_none() && self.command_input.is_empty()))
+                    {
                         ui.input_mut(|input| {
                             // Consume Shift+Tab first: plain Tab must not steal it.
-                            let reverse = idle &&
-                                consume_exact_key(input, egui::Modifiers::SHIFT, egui::Key::Tab);
+                            let reverse = idle
+                                && consume_exact_key(input, egui::Modifiers::SHIFT, egui::Key::Tab);
                             let tab = reverse
                                 || consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Tab);
-                            let older = idle && file_path.is_none() &&
-                                consume_exact_key(input, egui::Modifiers::NONE, egui::Key::ArrowUp);
-                            let newer = idle && file_path.is_none() && consume_exact_key(
-                                input,
-                                egui::Modifiers::NONE,
-                                egui::Key::ArrowDown,
-                            );
+                            let older = idle
+                                && file_path.is_none()
+                                && consume_exact_key(
+                                    input,
+                                    egui::Modifiers::NONE,
+                                    egui::Key::ArrowUp,
+                                );
+                            let newer = idle
+                                && file_path.is_none()
+                                && consume_exact_key(
+                                    input,
+                                    egui::Modifiers::NONE,
+                                    egui::Key::ArrowDown,
+                                );
                             (tab, reverse, older, newer)
                         })
                     } else {
@@ -325,121 +453,28 @@ impl VibocerosApp {
                             self.command_line.completion.reset();
                             self.command_focus_requested = true;
                         }
-                    } else if tab && !reverse && file_path.is_none() && self.command_input.is_empty() {
-                        self.apply_interface_command(viboceros_command::interface::InterfaceCommand::SubDDisplayToggle);
-                        self.command_focus_requested=true;
+                    } else if tab
+                        && !reverse
+                        && file_path.is_none()
+                        && self.command_input.is_empty()
+                    {
+                        self.apply_interface_command(
+                            viboceros_command::interface::InterfaceCommand::SubDDisplayToggle,
+                        );
+                        self.command_focus_requested = true;
                     } else if tab && let Some(text) = self.command_line.completion.cycle(reverse) {
                         self.command_line.completion_cursor = Some(completion_cursor(&text));
                         self.command_input = text;
                         self.command_focus_requested = true;
                     }
-                    let replacing_block = self.replacing_block();
+                    let hint = self.command_hint().to_owned();
                     let response = ui.add(
                         egui::TextEdit::singleline(&mut self.command_input)
                             .id(id)
                             .lock_focus(true)
                             .return_key(None)
                             .desired_width(f32::INFINITY)
-                            .hint_text(if file_path.is_some() {
-                                "Path to a 3DM file • Enter to confirm • Esc to cancel"
-                            } else if self.end_analysis_pick.is_some() {
-                                "Pick curves; Enter finishes, Esc cancels"
-                            } else if self.snap_size_pending.is_some() {
-                                "Enter a positive grid snap spacing; Enter or Esc cancels"
-                            } else if self.zoom_factor_pending.is_some() {
-                                "Enter a positive factor; Enter or Esc cancels"
-                            } else if self.plane_prompt.is_some() {
-                                "Define the construction plane; Esc returns to the previous prompt"
-                            } else if self.use_extrusions_prompt {
-                                "Extrusion or Polysurface; Enter accepts, Esc cancels"
-                            } else if self.remember_copy_prompt {
-                                "Yes or No; Enter accepts, Esc cancels"
-                            } else if self.edge_zoom_prompt.is_some() {
-                                "All, Current, Next, Previous or Mark; Enter or Esc ends"
-                            } else if let Some(prompt) = set_view_prompt {
-                                prompt.message()
-                            } else if let Some(p) = &self.select_uv_prompt {
-                                p.hint()
-                            } else if let Some(p) = &self.refinement_prompt {
-                                p.hint()
-                            } else if let Some(p) = &self.direction_session {
-                                p.hint()
-                            } else if let Some(p) = &self.reparameterize_prompt {
-                                p.hint()
-                            } else if let Some(p) = &self.curve_boolean_prompt {
-                                if p.selecting() {"Select curves; Enter continues, Esc cancels"} else {"Pick regions or AllRegions; DeleteInput / CombineRegions / Output / SimplifyCurves; Enter accepts, Esc cancels"}
-                            } else if let Some(p) = &self.curve_chamfer_session {
-                                p.hint()
-                            } else if let Some(p) = &self.offset_surface_session {
-                                p.hint()
-                            } else if let Some(p) = &self.ribbon_session {
-                                p.hint()
-                            } else if let Some(p) = &self.curve_fillet_session {
-                                p.hint()
-                            } else if let Some(p) = &self.fillet_surface_prompt {
-                                p.hint()
-                            } else if let Some(p) = &self.blend_surface_prompt {
-                                p.hint()
-                            } else if let Some(p)=&self.sweep_session {
-                                p.hint()
-                            } else if let Some(p)=&self.loft_prompt {
-                                p.hint()
-                            } else if let Some(p)=&self.tween_surfaces_prompt {
-                                p.hint()
-                            } else if let Some(p)=self.shell_prompt {
-                                if p.awaiting_thickness{"Shell thickness; Enter a distance with optional units"}else{"Select faces to remove; Thickness / DeleteInput; Enter applies, Esc cancels"}
-                            } else if self.surface_path_prompt.is_some() {
-                                "Select path curve; Solid / DeleteInput / Reverse / PathLength; Esc cancels"
-                            } else if self.planar_boolean_prompt.is_some() {
-                                "Pick a planar surface; Esc cancels"
-                            } else if let Some(prompt) = &self.boolean_two_prompt {
-                                if prompt.cycling() {
-                                    "Click for next result; Enter accepts, Esc cancels"
-                                } else {
-                                    "Select two surfaces or polysurfaces; Enter previews, Esc cancels"
-                                }
-                            } else if let Some(p)=&self.chain_prompt {
-                                p.hint()
-                            } else if self.edge_pattern_prompt.is_some() {
-                                edge_pattern_selection::HINT
-                            } else if self.length_units_pending {
-                                "Enter a unit name or Model_Units; Esc cancels Length"
-                            } else if let Some(prompt) = &self.object_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.group_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.intersection_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.subcurve_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.edge_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt) = &self.hole_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt)=&self.crease_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt)=&self.soft_crease_prompt {
-                                prompt.hint()
-                            } else if let Some(prompt)=self.edge_fillet_prompt {
-                                prompt.hint()
-                            } else if self.unjoin_prompt.is_some() {
-                                "Select joined edges; Enter applies, Esc cancels"
-                            } else if self.component_selection.has_choices() {
-                                "Choose a component by number, or pick again"
-                            } else if replacing_block {
-                                "Pick a replacement instance or choose a definition; Esc cancels"
-                            } else if self.active_command.is_some() {
-                                if self
-                                    .active_command
-                                    .is_some_and(InteractiveCommand::collects_curve_points)
-                                {
-                                    "Pick curve points; press Enter to finish or Esc to cancel"
-                                } else {
-                                    "Type coordinates or pick; Esc cancels"
-                                }
-                            } else {
-                                "Type a command • Tab to complete • ↑ for history"
-                            }),
+                            .hint_text(hint),
                     );
                     if response.changed() {
                         self.command_line.completion.reset();

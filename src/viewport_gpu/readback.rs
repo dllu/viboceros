@@ -1,78 +1,113 @@
-//! Opt-in integration-test support using the production pipelines without a window.
+//! Render the viewport pipelines to an RGBA image without a window or surface.
 
 use super::*;
+#[cfg(test)]
 use std::sync::{Mutex, MutexGuard};
 use std::time::Duration;
 
+#[cfg(test)]
 pub(crate) const SIZE: u32 = 256;
+#[cfg(test)]
 static GPU_TEST_CONTEXT: Mutex<()> = Mutex::new(());
+const READBACK_TIMEOUT: Duration = Duration::from_secs(30);
+
+type RenderError = Box<dyn std::error::Error>;
 
 pub(crate) struct OffscreenRenderer {
     device: wgpu::Device,
     queue: wgpu::Queue,
     renderer: ViewportRenderer,
     format: wgpu::TextureFormat,
-    // Drop this last, after all graphics resources. Concurrent context tests
-    // have triggered a native crash; keep this harness's lifetimes disjoint.
-    _serial: MutexGuard<'static, ()>,
+    // Serialize test contexts until all graphics resources have been dropped.
+    #[cfg(test)]
+    serial: Option<MutexGuard<'static, ()>>,
 }
 
 impl OffscreenRenderer {
-    pub(crate) fn new(format: wgpu::TextureFormat) -> Self {
-        Self::with_buffer_limit(format, None)
+    pub(crate) fn try_new() -> Result<Self, RenderError> {
+        Self::create(wgpu::TextureFormat::Rgba8Unorm, None)
     }
 
-    pub(crate) fn with_buffer_limit(format: wgpu::TextureFormat, limit: Option<u64>) -> Self {
-        let serial = GPU_TEST_CONTEXT.lock().expect("GPU test context lock");
+    fn create(format: wgpu::TextureFormat, limit: Option<u64>) -> Result<Self, RenderError> {
         let instance =
             wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle_from_env());
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
             compatible_surface: None,
             ..Default::default()
-        }))
-        .expect("the opt-in GPU test requires an available graphics adapter");
-        eprintln!("Offscreen viewport adapter: {:?}", adapter.get_info());
+        }))?;
         let mut descriptor = wgpu::DeviceDescriptor::default();
         if let Some(limit) = limit {
             descriptor.required_limits.max_buffer_size = limit;
         }
-        let (device, queue) = pollster::block_on(adapter.request_device(&descriptor))
-            .expect("create offscreen test device");
+        let (device, queue) = pollster::block_on(adapter.request_device(&descriptor))?;
         let renderer = ViewportRenderer::new(&device, format);
-        Self {
+        Ok(Self {
             device,
             queue,
             renderer,
             format,
-            _serial: serial,
+            #[cfg(test)]
+            serial: None,
+        })
+    }
+
+    pub(crate) fn capture(
+        &mut self,
+        scene: &ViewportScene,
+        size: [u32; 2],
+        background: [u8; 4],
+    ) -> Result<Vec<u8>, RenderError> {
+        let [r, g, b, a] = background.map(|channel| f64::from(channel) / 255.0);
+        let clear = wgpu::Color {
+            r: r * a,
+            g: g * a,
+            b: b * a,
+            a,
+        };
+        let mut rgba = self.read_pixels(0, scene, size, clear)?;
+        if a < 1.0 {
+            // The viewport compositor stores premultiplied color. PNG uses straight alpha.
+            for pixel in rgba.chunks_exact_mut(4) {
+                let alpha = u16::from(pixel[3]);
+                if (1..255).contains(&alpha) {
+                    for channel in &mut pixel[..3] {
+                        *channel = ((u16::from(*channel) * 255 + alpha / 2) / alpha).min(255) as u8;
+                    }
+                }
+            }
         }
+        Ok(rgba)
     }
 
-    pub(crate) fn render(&mut self, scene: &ViewportScene) -> Vec<[u8; 4]> {
-        self.render_at(0, scene)
-    }
-
-    pub(crate) fn render_at(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
-        assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
-        self.read_pixels(index, scene)
-    }
-
-    pub(crate) fn render_cached(&mut self, scene: &Arc<ViewportScene>) -> Vec<[u8; 4]> {
-        self.render(scene)
-    }
-
-    pub(crate) fn preparations(&self) -> usize {
-        self.renderer.viewports[0].preparations
-    }
-
-    fn read_pixels(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
+    fn read_pixels(
+        &mut self,
+        index: usize,
+        scene: &ViewportScene,
+        [width, height]: [u32; 2],
+        background: wgpu::Color,
+    ) -> Result<Vec<u8>, RenderError> {
+        let limits = self.device.limits();
+        if width == 0 || height == 0 || width.max(height) > limits.max_texture_dimension_2d {
+            return Err(format!(
+                "capture dimensions must be between 1 and {} pixels",
+                limits.max_texture_dimension_2d
+            )
+            .into());
+        }
+        let row_bytes = width * 4;
+        let alignment = wgpu::COPY_BYTES_PER_ROW_ALIGNMENT;
+        let padded_row_bytes = row_bytes.div_ceil(alignment) * alignment;
+        let buffer_size = u64::from(padded_row_bytes) * u64::from(height);
+        if buffer_size > limits.max_buffer_size {
+            return Err("capture exceeds the GPU readback buffer limit".into());
+        }
         let extent = wgpu::Extent3d {
-            width: SIZE,
-            height: SIZE,
+            width,
+            height,
             depth_or_array_layers: 1,
         };
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
-            label: Some("viewport test color"),
+            label: Some("offscreen viewport color"),
             size: extent,
             mip_level_count: 1,
             sample_count: 1,
@@ -83,8 +118,8 @@ impl OffscreenRenderer {
         });
         let color_view = texture.create_view(&Default::default());
         let readback = self.device.create_buffer(&wgpu::BufferDescriptor {
-            label: Some("viewport test readback"),
-            size: u64::from(SIZE * SIZE * 4),
+            label: Some("offscreen viewport readback"),
+            size: buffer_size,
             usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
             mapped_at_creation: false,
         });
@@ -92,7 +127,7 @@ impl OffscreenRenderer {
         self.renderer.prepare_image(
             index,
             scene,
-            [SIZE; 2],
+            [width, height],
             &self.device,
             &self.queue,
             &mut encoder,
@@ -100,13 +135,13 @@ impl OffscreenRenderer {
         {
             let mut pass = encoder
                 .begin_render_pass(&wgpu::RenderPassDescriptor {
-                    label: Some("viewport test pass"),
+                    label: Some("offscreen viewport pass"),
                     color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                         view: &color_view,
                         depth_slice: None,
                         resolve_target: None,
                         ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT),
+                            load: wgpu::LoadOp::Clear(background),
                             store: wgpu::StoreOp::Store,
                         },
                     })],
@@ -123,39 +158,65 @@ impl OffscreenRenderer {
                 buffer: &readback,
                 layout: wgpu::TexelCopyBufferLayout {
                     offset: 0,
-                    bytes_per_row: Some(SIZE * 4),
-                    rows_per_image: Some(SIZE),
+                    bytes_per_row: Some(padded_row_bytes),
+                    rows_per_image: Some(height),
                 },
             },
             extent,
         );
         let submission = self.queue.submit([encoder.finish()]);
         let (sender, receiver) = std::sync::mpsc::channel();
-        readback
-            .slice(..)
-            .map_async(wgpu::MapMode::Read, move |result| {
-                sender.send(result).unwrap();
-            });
-        self.device
-            .poll(wgpu::PollType::Wait {
-                submission_index: Some(submission),
-                timeout: Some(Duration::from_secs(30)),
-            })
-            .expect("complete offscreen render");
-        receiver
-            .recv_timeout(Duration::from_secs(30))
-            .expect("readback callback")
-            .expect("map pixels");
-        let pixels = readback
-            .slice(..)
-            .get_mapped_range()
-            .expect("read mapped pixels");
-        let result = pixels
-            .chunks_exact(4)
-            .map(|pixel| pixel.try_into().unwrap())
-            .collect();
+        let slice = readback.slice(..);
+        slice.map_async(wgpu::MapMode::Read, move |result| {
+            let _ = sender.send(result);
+        });
+        self.device.poll(wgpu::PollType::Wait {
+            submission_index: Some(submission),
+            timeout: Some(READBACK_TIMEOUT),
+        })?;
+        receiver.recv_timeout(READBACK_TIMEOUT)??;
+        let pixels = slice.get_mapped_range()?;
+        let mut rgba = Vec::with_capacity(row_bytes as usize * height as usize);
+        for row in pixels.chunks_exact(padded_row_bytes as usize) {
+            rgba.extend_from_slice(&row[..row_bytes as usize]);
+        }
         drop(pixels);
         readback.unmap();
-        result
+        Ok(rgba)
+    }
+}
+
+#[cfg(test)]
+impl OffscreenRenderer {
+    pub(crate) fn new(format: wgpu::TextureFormat) -> Self {
+        Self::with_buffer_limit(format, None)
+    }
+
+    pub(crate) fn with_buffer_limit(format: wgpu::TextureFormat, limit: Option<u64>) -> Self {
+        let serial = GPU_TEST_CONTEXT.lock().expect("GPU test context lock");
+        let mut renderer = Self::create(format, limit).expect("create offscreen test device");
+        renderer.serial = Some(serial);
+        renderer
+    }
+
+    pub(crate) fn render(&mut self, scene: &ViewportScene) -> Vec<[u8; 4]> {
+        self.render_at(0, scene)
+    }
+
+    pub(crate) fn render_at(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
+        assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
+        self.read_pixels(index, scene, [SIZE; 2], wgpu::Color::TRANSPARENT)
+            .expect("render offscreen test pixels")
+            .chunks_exact(4)
+            .map(|pixel| pixel.try_into().unwrap())
+            .collect()
+    }
+
+    pub(crate) fn render_cached(&mut self, scene: &Arc<ViewportScene>) -> Vec<[u8; 4]> {
+        self.render(scene)
+    }
+
+    pub(crate) fn preparations(&self) -> usize {
+        self.renderer.viewports[0].preparations
     }
 }

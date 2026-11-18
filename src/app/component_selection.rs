@@ -143,6 +143,17 @@ impl ComponentSelection {
         self.loop_click = None;
         self.clear_choices();
     }
+    pub(super) fn replace(
+        &mut self,
+        document: &Document,
+        picks: Vec<ComponentPick>,
+    ) -> Result<(), &'static str> {
+        self.shared.replace(document, picks)?;
+        self.raw_mesh_faces.clear();
+        self.loop_click = None;
+        self.clear_choices();
+        Ok(())
+    }
     /// Store fresh witnesses for surviving edge components after a topology edit.
     pub(super) fn retain_subd_edges(
         &mut self,

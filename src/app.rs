@@ -369,6 +369,8 @@ fn viewport_rect(available: egui::Rect, position: [f64; 4]) -> egui::Rect {
     )
 }
 
+pub(crate) mod headless;
+
 pub struct VibocerosApp {
     document: Document,
     document_path: Option<std::path::PathBuf>,
@@ -378,6 +380,7 @@ pub struct VibocerosApp {
     command_file: command_file::State,
     layer_prompt: Option<layer_prompt::Prompt>,
     command_log: VecDeque<String>,
+    command_capture: Option<Vec<String>>,
     command_line: command_line::CommandLineState,
     viewports: Vec<Viewport>,
     named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
@@ -542,20 +545,19 @@ impl VibocerosApp {
         if let Some(render_state) = &creation_context.wgpu_render_state {
             crate::viewport_gpu::install(render_state);
         }
-        let mut command_log = VecDeque::new();
-        command_log.push_back("Viboceros ready — enter Help for commands.".to_owned());
         let (command_line, history_error) = command_line::CommandLineState::load();
+        let mut app = Self::with_storage(creation_context.storage, command_line);
+        app.push_log("Viboceros ready — enter Help for commands.".to_owned());
         if let Some(error) = history_error {
-            command_log.push_back(error);
+            app.push_log(error);
         }
-        let zoom_scale = preferences::load_zoom_scale(creation_context.storage);
-        let zoom_extents_borders = preferences::load_zoom_extents_borders(creation_context.storage);
-        let named_view_policy = preferences::load_named_view_policy(creation_context.storage);
-        let viewport_tabs_visible =
-            preferences::load_viewport_tabs_visible(creation_context.storage);
-        let viewport_tab_alignment =
-            preferences::load_viewport_tab_alignment(creation_context.storage);
-        let four_view_projection = preferences::load_four_view_projection(creation_context.storage);
+        app
+    }
+
+    fn with_storage(
+        storage: Option<&dyn eframe::Storage>,
+        command_line: command_line::CommandLineState,
+    ) -> Self {
         let commands = CommandRegistry::with_builtins();
         let component_selection = component_selection::ComponentSelection::with_shared(
             commands.component_selection().clone(),
@@ -569,16 +571,17 @@ impl VibocerosApp {
             command_input: String::new(),
             command_file: Default::default(),
             layer_prompt: None,
-            command_log,
+            command_log: VecDeque::new(),
+            command_capture: None,
             viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
             named_cplanes: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
-            four_view_projection,
-            viewport_tabs_visible,
-            viewport_tab_alignment,
+            four_view_projection: preferences::load_four_view_projection(storage),
+            viewport_tabs_visible: preferences::load_viewport_tabs_visible(storage),
+            viewport_tab_alignment: preferences::load_viewport_tab_alignment(storage),
             viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
@@ -588,9 +591,9 @@ impl VibocerosApp {
             ortho_snap_to_cplane_z: false,
             planar: false,
             ortho_angle: viboceros_command::interface::OrthoAngle::try_new(90.0).unwrap(),
-            zoom_scale,
-            zoom_extents_borders,
-            named_view_policy,
+            zoom_scale: preferences::load_zoom_scale(storage),
+            zoom_extents_borders: preferences::load_zoom_extents_borders(storage),
+            named_view_policy: preferences::load_named_view_policy(storage),
             zoom_window_pending: false,
             zoom_factor_pending: None,
             snap_size_pending: None,
@@ -1330,6 +1333,9 @@ impl VibocerosApp {
     }
 
     fn push_log(&mut self, message: String) {
+        if let Some(capture) = &mut self.command_capture {
+            capture.push(message.clone());
+        }
         if self.suppress_command_file_echo() {
             return;
         }

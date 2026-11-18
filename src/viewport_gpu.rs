@@ -6,7 +6,6 @@ use eframe::{egui, egui_wgpu, wgpu};
 mod composite;
 use composite::{Composite, ViewportImage};
 
-#[cfg(test)]
 pub(crate) mod readback;
 #[cfg(test)]
 mod tests;

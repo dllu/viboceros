@@ -12,6 +12,16 @@ impl eframe::App for VibocerosApp {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        self.show_frame(ui, frame.wgpu_render_state());
+    }
+}
+
+impl VibocerosApp {
+    pub(super) fn show_frame(
+        &mut self,
+        ui: &mut egui::Ui,
+        render_state: Option<&eframe::egui_wgpu::RenderState>,
+    ) {
         self.show_edge_analysis(ui);
         self.show_curvature_graph(ui);
         self.show_direction_analysis(ui);
@@ -1086,7 +1096,7 @@ impl eframe::App for VibocerosApp {
             && (self.picking_curve_line()
                 || (self.picking_arc_blend() || self.picking_blend_curve()));
         let viewports = &mut self.viewports;
-        if let Some(render_state) = frame.wgpu_render_state() {
+        if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
         }
         egui::CentralPanel::default().show(ui, |ui| {

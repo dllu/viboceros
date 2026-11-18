@@ -55,6 +55,13 @@ mod viewport_gpu;
 use eframe::egui;
 
 fn main() -> eframe::Result {
+    if std::env::args_os().nth(1).as_deref() == Some(std::ffi::OsStr::new("--headless")) {
+        if let Err(error) = app::headless::run() {
+            eprintln!("Viboceros headless session: {error}");
+            std::process::exit(1);
+        }
+        return Ok(());
+    }
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Wgpu,
         viewport: egui::ViewportBuilder::default()
