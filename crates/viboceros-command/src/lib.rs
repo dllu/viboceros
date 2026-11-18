@@ -1567,10 +1567,12 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(pyramid::PyramidCommand::default())
+            .register(pyramid::PyramidCommand::new(pyramid::Kind::Pyramid))
             .expect("unique built-in command");
         registry
-            .register(TruncatedPyramidCommand)
+            .register(pyramid::PyramidCommand::new(
+                pyramid::Kind::TruncatedPyramid,
+            ))
             .expect("unique built-in command");
         registry
             .register(TubeCommand(registry.use_extrusions.clone()))
@@ -3023,14 +3025,14 @@ impl CommandRegistry {
             .and_then(|i| self.commands[*i].parabola_options())
             .unwrap_or_default()
     }
-    pub fn pyramid_options(&self) -> pyramid::Preferences {
+    pub fn pyramid_options(&self, kind: pyramid::Kind) -> pyramid::Preferences {
         self.lookup
-            .get("pyramid")
+            .get(&normalize_command_name(kind.name()))
             .and_then(|index| self.commands[*index].pyramid_options())
             .unwrap_or_default()
     }
-    pub fn remember_pyramid_options(&self, value: pyramid::Preferences) {
-        if let Some(index) = self.lookup.get("pyramid") {
+    pub fn remember_pyramid_options(&self, kind: pyramid::Kind, value: pyramid::Preferences) {
+        if let Some(index) = self.lookup.get(&normalize_command_name(kind.name())) {
             self.commands[*index].remember_pyramid_options(value);
         }
     }
@@ -7247,37 +7249,6 @@ fn curve_radius_value(
             .length()
             .map_err(Into::into)
         }
-    }
-}
-
-struct TruncatedPyramidCommand;
-
-impl Command for TruncatedPyramidCommand {
-    fn name(&self) -> &'static str {
-        "TruncatedPyramid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_truncated_pyramid_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let pyramid = Brep::try_truncated_pyramid(
-            frame,
-            options.side_count,
-            [base_radius, options.top_radius],
-            options.height,
-            options.solid,
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Brep(pyramid))?;
-        Ok(format!(
-            "Added {}-sided {} B-rep truncated pyramid {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-            options.side_count,
-            if options.solid { "closed" } else { "open" },
-            options.top_radius,
-            options.height
-        ))
     }
 }
 

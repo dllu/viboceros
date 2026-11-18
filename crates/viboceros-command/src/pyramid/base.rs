@@ -1,5 +1,5 @@
 //! Polygon sizing, phase and winding for the four Pyramid base getters.
-use super::BaseMode;
+use super::{BaseMode, Kind};
 use std::f64::consts::{PI, TAU};
 use viboceros_geometry::{Frame3, GeometryError, Point3, Tolerance, UnitVector3, Vector3};
 
@@ -126,6 +126,7 @@ impl Base {
     pub(super) fn perpendicular_to_apex(
         mut self,
         apex: Point3,
+        kind: Kind,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let origin = self.frame.origin();
@@ -137,12 +138,46 @@ impl Base {
         let angle = match self.mode {
             BaseMode::Inscribed => 0.0,
             BaseMode::Circumscribed => PI / self.sides as f64,
-            BaseMode::Edge if !self.flipped => TAU / self.sides as f64,
+            BaseMode::Edge if !self.flipped || kind == Kind::TruncatedPyramid => {
+                TAU / self.sides as f64
+            }
             BaseMode::Edge => 0.0,
             BaseMode::Star => self.star_roll,
         };
         self.frame = rotated_frame(basis, angle, tolerance)?;
         Ok(self)
+    }
+
+    pub(super) fn top_size_frame(
+        self,
+        center: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Frame3, GeometryError> {
+        let frame = self.frame.with_origin(center);
+        match self.mode {
+            BaseMode::Circumscribed | BaseMode::Edge => {
+                rotated_frame(frame, -PI / self.sides as f64, tolerance)
+            }
+            BaseMode::Inscribed | BaseMode::Star => Ok(frame),
+        }
+    }
+
+    pub(super) fn top_reference_size(self) -> f64 {
+        match self.mode {
+            BaseMode::Circumscribed | BaseMode::Edge => {
+                self.radius * (PI / self.sides as f64).cos()
+            }
+            BaseMode::Inscribed | BaseMode::Star => self.radius,
+        }
+    }
+
+    pub(super) fn scaled_at(self, center: Point3, scale: f64) -> Self {
+        Self {
+            frame: self.frame.with_origin(center),
+            radius: self.radius * scale,
+            inner_radius: self.inner_radius.map(|radius| radius * scale),
+            ..self
+        }
     }
 
     pub fn rim(self) -> Result<Vec<Point3>, GeometryError> {

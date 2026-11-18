@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_command::{
     CommandError,
-    pyramid::{Definition, Input},
+    pyramid::{Definition, Input, Kind},
 };
 use viboceros_document::HistoryGroup;
 
@@ -15,22 +15,20 @@ pub(super) struct Session {
 impl VibocerosApp {
     pub(super) fn try_start_pyramid(&mut self, text: &str) -> bool {
         let mut words = text.split_whitespace();
-        if !words.next().is_some_and(|name| {
-            name.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("Pyramid")
-        }) {
+        let Some(kind) = words.next().and_then(Kind::from_name) else {
             return false;
-        }
+        };
         let mut input = Input::new(
+            kind,
             self.viewports[self.active_viewport].construction_plane(),
-            self.commands.pyramid_options(),
+            self.commands.pyramid_options(kind),
             self.document.tolerance(),
         );
         if !words.all(|word| input.option(word).is_ok_and(|handled| handled)) {
             return false;
         }
         self.cancel_interactive_command(false);
-        let group = match self.document.begin_history_group("Pyramid") {
+        let group = match self.document.begin_history_group(kind.name()) {
             Ok(group) => group,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -52,8 +50,11 @@ impl VibocerosApp {
             && (!self.document.history_group_is_current(&session.group)
                 || self.document.tolerance() != session.input.tolerance())
         {
+            let name = session.input.kind().name();
             self.cancel_interactive_command(false);
-            self.push_log("Pyramid inputs or history changed. Restart the command.".to_owned());
+            self.push_log(format!(
+                "{name} inputs or history changed. Restart the command."
+            ));
             self.command_file.fail_dispatch();
             return false;
         }
@@ -62,15 +63,17 @@ impl VibocerosApp {
 
     fn pyramid_prompt(&mut self) {
         let input = self.pyramid_session.as_ref().unwrap().input;
-        self.commands.remember_pyramid_options(input.preferences());
+        self.commands
+            .remember_pyramid_options(input.kind(), input.preferences());
         self.point_filter = None;
         self.point_constraint = None;
         self.command_input.clear();
         if input.needs_guide() && self.circle_around_session.is_none() {
-            self.start_pyramid_around();
+            self.start_pyramid_around(input.kind());
             return;
         }
         self.active_command = Some(InteractiveCommand::Pyramid {
+            kind: input.kind(),
             anchor: input.anchor(),
         });
         self.push_log(input.prompt());
@@ -96,10 +99,11 @@ impl VibocerosApp {
         }
     }
 
-    fn refresh_pyramid_star_roll(&mut self) {
+    fn refresh_pyramid_cursor(&mut self) {
         let input = &mut self.pyramid_session.as_mut().unwrap().input;
-        if let Some(plane) = input.star_roll_plane()
-            && let Some(ray) = self.viewports[self.active_viewport].pointer_ray()
+        let viewport = &self.viewports[self.active_viewport];
+        if let Some(plane) = input.cursor_plane(viewport.construction_plane())
+            && let Some(ray) = viewport.pointer_ray()
             && let Ok(Some(point)) = ray.on_plane(plane)
         {
             input.observe_cursor(point);
@@ -118,7 +122,7 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
-        self.refresh_pyramid_star_roll();
+        self.refresh_pyramid_cursor();
         let input = &mut self.pyramid_session.as_mut().unwrap().input;
         let result = match input.option(text) {
             Ok(true) => {
@@ -150,7 +154,6 @@ impl VibocerosApp {
         if !self.valid_pyramid() {
             return Some(false);
         }
-        self.refresh_pyramid_star_roll();
         let input = &mut self.pyramid_session.as_mut().unwrap().input;
         input.set_initial_plane(self.viewports[self.active_viewport].construction_plane());
         let result = input.point(point);
@@ -189,10 +192,11 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let kind = self.pyramid_session.as_ref().unwrap().input.kind();
         let brep = match definition.brep(self.document.tolerance()) {
             Ok(brep) => brep,
             Err(error) => {
-                let old = self.commands.pyramid_options();
+                let old = self.commands.pyramid_options(kind);
                 self.pyramid_session
                     .as_mut()
                     .unwrap()
@@ -221,8 +225,8 @@ impl VibocerosApp {
         match result {
             Ok(()) => {
                 self.commands
-                    .remember_pyramid_options(session.input.preferences());
-                self.push_log("Created Pyramid".to_owned());
+                    .remember_pyramid_options(kind, session.input.preferences());
+                self.push_log(format!("Created {}", kind.name()));
                 true
             }
             Err(error) => {

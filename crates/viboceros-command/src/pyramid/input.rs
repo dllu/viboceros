@@ -1,5 +1,5 @@
 //! Staged base and apex input. Failed candidates leave the current getter open.
-use super::*;
+use super::{top::Top, *};
 use crate::{CommandError, option_name_eq, translation::DestinationConstraint};
 use viboceros_geometry::{Frame3, MAX_REGULAR_POLYGON_SIDES, Real};
 
@@ -10,6 +10,7 @@ enum Stage {
     EdgeEnd(Point3, bool),
     Inner(Base),
     Height(Base),
+    Top(Top),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -21,6 +22,7 @@ enum OptionValue {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Input {
+    kind: Kind,
     stage: Stage,
     mode: BaseMode,
     preferences: Preferences,
@@ -31,8 +33,9 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn new(plane: Frame3, preferences: Preferences, tolerance: Tolerance) -> Self {
+    pub fn new(kind: Kind, plane: Frame3, preferences: Preferences, tolerance: Tolerance) -> Self {
         Self {
+            kind,
             stage: Stage::First,
             mode: BaseMode::Inscribed,
             preferences,
@@ -41,6 +44,10 @@ impl Input {
             tolerance,
             free_cursor: None,
         }
+    }
+
+    pub fn kind(self) -> Kind {
+        self.kind
     }
 
     pub fn preferences(self) -> Preferences {
@@ -67,7 +74,7 @@ impl Input {
 
     pub fn set_guide(&mut self, frame: Frame3) -> Result<(), CommandError> {
         if !self.needs_guide() {
-            return Err(CommandError::Usage(crate::PYRAMID_USAGE));
+            return Err(self.kind.usage());
         }
         self.stage = Stage::Radial(frame.origin(), Some(frame));
         Ok(())
@@ -78,6 +85,7 @@ impl Input {
             Stage::First => None,
             Stage::Radial(point, _) | Stage::EdgeEnd(point, _) => Some(point),
             Stage::Inner(base) | Stage::Height(base) => Some(base.frame.origin()),
+            Stage::Top(top) => Some(top.center()),
         }
     }
 
@@ -97,15 +105,34 @@ impl Input {
         }
     }
 
-    pub fn height_constraint(self) -> Option<DestinationConstraint> {
-        let Stage::Height(base) = self.stage else {
-            return None;
-        };
-        (self.preferences.direction != Direction::None).then_some(DestinationConstraint {
-            anchor: base.frame.origin(),
-            direction: Some(base.height_normal()),
-            distance: None,
+    pub fn cursor_plane(self, active_plane: Frame3) -> Option<Frame3> {
+        self.star_roll_plane().or_else(|| {
+            (self.kind == Kind::TruncatedPyramid
+                && self.preferences.direction == Direction::None
+                && matches!(self.stage, Stage::Height(_)))
+            .then_some(active_plane)
         })
+    }
+
+    fn height_normal(self, base: Base) -> viboceros_geometry::UnitVector3 {
+        match self.kind {
+            Kind::Pyramid => base.height_normal(),
+            Kind::TruncatedPyramid => base.frame.z_axis(),
+        }
+    }
+
+    pub fn point_constraint(self) -> Option<DestinationConstraint> {
+        match self.stage {
+            Stage::Top(top) => Some(top.constraint()),
+            Stage::Height(base) if self.preferences.direction != Direction::None => {
+                Some(DestinationConstraint {
+                    anchor: base.frame.origin(),
+                    direction: Some(self.height_normal(base)),
+                    distance: None,
+                })
+            }
+            _ => None,
+        }
     }
 
     pub fn observe_cursor(&mut self, point: Point3) {
@@ -120,7 +147,11 @@ impl Input {
     }
 
     pub fn wants_number(self) -> bool {
-        self.option_value.is_none() && matches!(self.stage, Stage::Height(_) | Stage::Inner(_))
+        self.option_value.is_none()
+            && matches!(
+                self.stage,
+                Stage::Height(_) | Stage::Inner(_) | Stage::Top(_)
+            )
     }
 
     pub fn prompt(self) -> String {
@@ -130,11 +161,12 @@ impl Input {
             solid,
             height,
         } = self.preferences;
+        let noun = self.kind.noun();
         let center = match self.mode {
-            BaseMode::Inscribed => "Center of inscribed pyramid",
-            BaseMode::Circumscribed => "Center of circumscribed pyramid",
-            BaseMode::Edge => "Start of edge",
-            BaseMode::Star => "Center of star",
+            BaseMode::Inscribed => format!("Center of inscribed {noun}"),
+            BaseMode::Circumscribed => format!("Center of circumscribed {noun}"),
+            BaseMode::Edge => "Start of edge".into(),
+            BaseMode::Star => "Center of star".into(),
         };
         let base_mode = if self.mode == BaseMode::Circumscribed {
             "Circumscribed"
@@ -175,9 +207,9 @@ impl Input {
             }
             Stage::Radial(..) => {
                 let role = if self.mode == BaseMode::Circumscribed {
-                    "Midpoint of pyramid edge"
+                    format!("Midpoint of {noun} edge")
                 } else {
-                    "Corner of pyramid"
+                    format!("Corner of {noun}")
                 };
                 format!("{role} (NumSides={sides}, Mode={base_mode})")
             }
@@ -185,7 +217,8 @@ impl Input {
             Stage::Inner(_) => {
                 format!("Second star radius. Press Enter for automatic (NumSides={sides})")
             }
-            Stage::Height(_) => format!("End of pyramid <{height:.3}>"),
+            Stage::Height(_) => format!("End of {noun} <{height:.3}>"),
+            Stage::Top(_) => "Pick point".into(),
         }
     }
 
@@ -222,7 +255,7 @@ impl Input {
             return Ok(true);
         }
         let regular = matches!(self.mode, BaseMode::Inscribed | BaseMode::Circumscribed);
-        let before_base = !matches!(self.stage, Stage::Height(_));
+        let before_base = !matches!(self.stage, Stage::Height(_) | Stage::Top(_));
         let option = if before_base && option_name_eq(name, "NumSides") {
             OptionValue::Sides
         } else if regular
@@ -236,7 +269,7 @@ impl Input {
             self.preferences.solid = value
                 .map(crate::parse_yes_no)
                 .unwrap_or(Some(!self.preferences.solid))
-                .ok_or(CommandError::Usage(crate::PYRAMID_USAGE))?;
+                .ok_or(self.kind.usage())?;
             return Ok(true);
         } else {
             return Ok(false);
@@ -250,7 +283,7 @@ impl Input {
     }
 
     fn set_option_value(&mut self, option: OptionValue, value: &str) -> Result<(), CommandError> {
-        let invalid = || CommandError::Usage(crate::PYRAMID_USAGE);
+        let invalid = || self.kind.usage();
         match option {
             OptionValue::Sides => {
                 let sides = value.parse::<usize>().map_err(|_| invalid())?;
@@ -285,15 +318,19 @@ impl Input {
 
     pub fn point(&mut self, point: Point3) -> Result<Option<Definition>, CommandError> {
         if self.option_value.is_some() || self.needs_guide() {
-            return Err(CommandError::Usage(crate::PYRAMID_USAGE));
+            return Err(self.kind.usage());
+        }
+        if let Stage::Top(top) = self.stage {
+            return top
+                .definition(top.picked_size(point)?, self.preferences.solid)
+                .map(Some);
         }
         if let Stage::Height(base) = self.stage {
             let target = self
-                .height_constraint()
+                .point_constraint()
                 .map_or(Ok(point), |axis| axis.resolve(point))?;
-            let definition = self.definition(base, target)?;
-            self.preferences.height = base.frame.origin().distance_to(target)?;
-            return Ok(Some(definition));
+            let height = base.frame.origin().distance_to(target)?;
+            return self.accept_height(base, target, height);
         }
         self.stage = match self.stage {
             Stage::First if self.mode == BaseMode::Edge => Stage::EdgeEnd(point, false),
@@ -332,7 +369,7 @@ impl Input {
                 }
                 Stage::Height(base.with_inner_radius(radius)?)
             }
-            Stage::Height(_) => unreachable!("apex handled above"),
+            Stage::Height(_) | Stage::Top(_) => unreachable!("end getters handled above"),
         };
         Ok(None)
     }
@@ -345,18 +382,18 @@ impl Input {
             }
             Stage::Height(base) => {
                 let center = base.frame.origin();
+                let base_normal = self.height_normal(base);
                 let normal = if self.preferences.direction == Direction::None {
                     self.free_cursor
-                        .map_or(Ok(base.height_normal()), |point| center.direction_to(point))?
+                        .map_or(Ok(base_normal), |point| center.direction_to(point))?
                 } else {
-                    base.height_normal()
+                    base_normal
                 };
-                let apex = center.translated(normal.as_vector().scaled(value)?)?;
-                let definition = self.definition(base, apex)?;
-                self.preferences.height = value;
-                Ok(Some(definition))
+                let target = center.translated(normal.as_vector().scaled(value)?)?;
+                self.accept_height(base, target, value)
             }
-            _ => Err(CommandError::Usage(crate::PYRAMID_USAGE)),
+            Stage::Top(top) => top.definition(value, self.preferences.solid).map(Some),
+            _ => Err(self.kind.usage()),
         }
     }
 
@@ -371,37 +408,61 @@ impl Input {
         }
     }
 
-    pub fn preview(self, cursor: Option<Point3>) -> Option<(Base, Option<Point3>)> {
+    pub fn preview(self, cursor: Option<Point3>) -> Option<(Base, Option<End>)> {
         if self.option_value.is_some() || self.needs_guide() {
             return None;
         }
         let mut next = self;
-        if let Some(point) = cursor
-            && let Ok(candidate) = next.point(point)
-        {
-            if let Some(definition) = candidate {
-                return Some((definition.base, Some(definition.apex)));
+        if let Some(point) = cursor {
+            if self.kind == Kind::TruncatedPyramid && matches!(self.stage, Stage::Height(_)) {
+                next.observe_cursor(point);
             }
-            if let Stage::Inner(base) | Stage::Height(base) = next.stage {
-                return Some((base, None));
+            if let Ok(candidate) = next.point(point) {
+                if let Some(definition) = candidate {
+                    return Some((definition.base, Some(definition.end)));
+                }
+                if let Stage::Top(top) = next.stage {
+                    return Some((top.base, Some(End::Apex(top.center()))));
+                }
+                if let Stage::Inner(base) | Stage::Height(base) = next.stage {
+                    return Some((base, None));
+                }
             }
         }
         match self.stage {
             Stage::Inner(base) | Stage::Height(base) => Some((base, None)),
+            Stage::Top(top) => Some((top.base, Some(End::Apex(top.center())))),
             _ => None,
         }
     }
 
-    fn definition(self, base: Base, apex: Point3) -> Result<Definition, CommandError> {
-        let base = if self.preferences.direction == Direction::None {
-            base.perpendicular_to_apex(apex, self.tolerance)?
-        } else {
-            base
+    fn accept_height(
+        &mut self,
+        mut base: Base,
+        target: Point3,
+        height: Real,
+    ) -> Result<Option<Definition>, CommandError> {
+        if self.preferences.direction == Direction::None {
+            let basis_point = match self.kind {
+                Kind::Pyramid => target,
+                // The free frustum retains the preview orientation at the
+                // height getter even when the accepted world point differs.
+                Kind::TruncatedPyramid => self.free_cursor.unwrap_or(target),
+            };
+            base = base.perpendicular_to_apex(basis_point, self.kind, self.tolerance)?;
+        }
+        let definition = match self.kind {
+            Kind::Pyramid => Some(Definition {
+                base,
+                end: End::Apex(target),
+                solid: self.preferences.solid,
+            }),
+            Kind::TruncatedPyramid => {
+                self.stage = Stage::Top(Top::new(base, target, self.tolerance)?);
+                None
+            }
         };
-        Ok(Definition {
-            base,
-            apex,
-            solid: self.preferences.solid,
-        })
+        self.preferences.height = height;
+        Ok(definition)
     }
 }

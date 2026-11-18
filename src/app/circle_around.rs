@@ -4,6 +4,7 @@ use viboceros_command::{
     circle_around_input::{Input, Preferences},
     circle_input::CircleSizeMode as Mode,
     curve_reference::{CapturedCurve, perpendicular_frame},
+    pyramid::Kind as PyramidKind,
     solid_axial::Kind as AxialKind,
     torus_input::Kind as TorusKind,
 };
@@ -14,7 +15,7 @@ enum Owner {
     SubDSphere,
     Torus(TorusKind),
     SolidAxial(AxialKind),
-    Pyramid,
+    Pyramid(PyramidKind),
 }
 impl Owner {
     fn name(self) -> &'static str {
@@ -24,7 +25,7 @@ impl Owner {
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
             Self::SolidAxial(kind) => kind.name(),
-            Self::Pyramid => "Pyramid",
+            Self::Pyramid(kind) => kind.name(),
         }
     }
 }
@@ -46,7 +47,7 @@ impl Session {
         let input = self.input?;
         let projects_snaps = match self.owner {
             Owner::Circle | Owner::SolidAxial(_) => true,
-            Owner::Pyramid => false,
+            Owner::Pyramid(_) => false,
             Owner::Torus(kind) => kind.projects_base_snaps(),
             _ => false,
         };
@@ -106,8 +107,8 @@ impl VibocerosApp {
         self.start_circle_around_for(Owner::SolidAxial(kind), None);
     }
 
-    pub(super) fn start_pyramid_around(&mut self) {
-        self.start_circle_around_for(Owner::Pyramid, None);
+    pub(super) fn start_pyramid_around(&mut self, kind: PyramidKind) {
+        self.start_circle_around_for(Owner::Pyramid(kind), None);
     }
 
     fn start_circle_around_for(
@@ -223,7 +224,10 @@ impl VibocerosApp {
                 kind,
                 anchor: center,
             },
-            Owner::Pyramid => InteractiveCommand::Pyramid { anchor: center },
+            Owner::Pyramid(kind) => InteractiveCommand::Pyramid {
+                kind,
+                anchor: center,
+            },
         });
         self.drafting_plane = s.input.map(Input::frame);
         let name = s.owner.name();
@@ -300,7 +304,7 @@ impl VibocerosApp {
         if self
             .circle_around_session
             .as_ref()
-            .is_some_and(|s| s.owner == Owner::Pyramid)
+            .is_some_and(|s| matches!(s.owner, Owner::Pyramid(_)))
             && !self.valid_pyramid()
         {
             return false;
@@ -451,7 +455,7 @@ impl VibocerosApp {
             Some(
                 match perpendicular_frame(s.curve.as_ref().unwrap().curve_ref(), point) {
                     Ok(frame) => {
-                        if s.owner == Owner::Pyramid {
+                        if matches!(s.owner, Owner::Pyramid(_)) {
                             let release = s.postselected_object();
                             return Some(self.accept_pyramid_guide(frame, release));
                         }
@@ -484,7 +488,7 @@ impl VibocerosApp {
         {
             return true;
         }
-        if owner == Owner::Pyramid && self.try_edit_pyramid_guide(text) {
+        if matches!(owner, Owner::Pyramid(_)) && self.try_edit_pyramid_guide(text) {
             return true;
         }
         if self.try_continue_circle_snap_projection(text) {

@@ -1,22 +1,22 @@
 //! Registry entry point for staged input and the existing explicit-axis form.
 use super::*;
 use crate::{
-    Command, CommandContext, CommandError, PYRAMID_USAGE, axial_primitive_frame,
+    Command, CommandContext, CommandError, axial_primitive_frame,
     curve_reference::{CapturedCurve, parse_edge, perpendicular_frame},
-    option_name_eq, parse_point, parse_pyramid_options,
+    option_name_eq, parse_point, parse_pyramid_options, parse_truncated_pyramid_options,
     remembered::Remembered,
 };
 use viboceros_document::{Document, Geometry};
 use viboceros_drafting::{PointConstraintInput, PointConstraintState, PointInput};
 
-#[derive(Default)]
 pub(crate) struct PyramidCommand {
+    kind: Kind,
     preferences: Remembered<Preferences>,
 }
 
 impl Command for PyramidCommand {
     fn name(&self) -> &'static str {
-        "Pyramid"
+        self.kind.name()
     }
 
     fn pyramid_options(&self) -> Option<Preferences> {
@@ -41,17 +41,27 @@ impl Command for PyramidCommand {
             .first()
             .is_some_and(|word| word.parse::<usize>().is_ok())
         {
-            return run_positional(doc, arguments);
+            return match self.kind {
+                Kind::Pyramid => run_positional(doc, arguments),
+                Kind::TruncatedPyramid => run_truncated_positional(doc, arguments),
+            };
         }
         let (definition, preferences) = self.staged(doc, arguments, context)?;
         let brep = definition.brep(doc.tolerance())?;
         let id = doc.add_geometry(Geometry::Brep(brep))?;
         self.preferences.set(preferences);
-        Ok(format!("Created Pyramid {id}"))
+        Ok(format!("Created {} {id}", self.kind.name()))
     }
 }
 
 impl PyramidCommand {
+    pub(crate) fn new(kind: Kind) -> Self {
+        Self {
+            kind,
+            preferences: Remembered::default(),
+        }
+    }
+
     fn staged(
         &self,
         doc: &Document,
@@ -59,7 +69,7 @@ impl PyramidCommand {
         context: CommandContext,
     ) -> Result<(Definition, Preferences), CommandError> {
         let plane = context.construction_plane;
-        let mut input = Input::new(plane, self.preferences.get(), doc.tolerance());
+        let mut input = Input::new(self.kind, plane, self.preferences.get(), doc.tolerance());
         let mut guide: Option<CapturedCurve> = None;
         let mut constraint = None;
         while let Some((&word, tail)) = arguments.split_first() {
@@ -68,17 +78,10 @@ impl PyramidCommand {
                     && (option_name_eq(name, "Curve") || option_name_eq(name, "Edge"))
             }) {
                 let (id, edge) = if option_name_eq(source.0, "Edge") {
-                    let (id, index) =
-                        parse_edge(source.1).ok_or(CommandError::Usage(PYRAMID_USAGE))?;
+                    let (id, index) = parse_edge(source.1).ok_or(self.kind.usage())?;
                     (id, Some(index))
                 } else {
-                    (
-                        source
-                            .1
-                            .parse()
-                            .map_err(|_| CommandError::Usage(PYRAMID_USAGE))?,
-                        None,
-                    )
+                    (source.1.parse().map_err(|_| self.kind.usage())?, None)
                 };
                 guide = Some(CapturedCurve::capture(doc, id, edge)?);
                 arguments = tail;
@@ -128,7 +131,7 @@ impl PyramidCommand {
                     .map_or(Ok(point), |state| state.apply_typed(point))
                     .map_err(|_| CommandError::InvalidNumber(word.into()))?;
                 if input.needs_guide() {
-                    let guide = guide.as_ref().ok_or(CommandError::Usage(PYRAMID_USAGE))?;
+                    let guide = guide.as_ref().ok_or(self.kind.usage())?;
                     input.set_guide(perpendicular_frame(guide.curve_ref(), point)?)?;
                     (None, consumed)
                 } else {
@@ -140,11 +143,11 @@ impl PyramidCommand {
                 return if arguments.is_empty() {
                     Ok((definition, input.preferences()))
                 } else {
-                    Err(CommandError::Usage(PYRAMID_USAGE))
+                    Err(self.kind.usage())
                 };
             }
         }
-        Err(CommandError::Usage(PYRAMID_USAGE))
+        Err(self.kind.usage())
     }
 }
 
@@ -166,6 +169,32 @@ fn run_positional(doc: &mut Document, arguments: &[&str]) -> Result<String, Comm
         "Added {}-sided {} B-rep pyramid {id} (radius {radius:.6}, height {:.6})",
         options.side_count,
         if options.solid { "closed" } else { "open" },
+        options.height
+    ))
+}
+
+fn run_truncated_positional(
+    document: &mut Document,
+    arguments: &[&str],
+) -> Result<String, CommandError> {
+    let options = parse_truncated_pyramid_options(arguments)?;
+    let tolerance = document.tolerance();
+    let (frame, base_radius) =
+        axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
+    let pyramid = Brep::try_truncated_pyramid(
+        frame,
+        options.side_count,
+        [base_radius, options.top_radius],
+        options.height,
+        options.solid,
+        tolerance,
+    )?;
+    let id = document.add_geometry(Geometry::Brep(pyramid))?;
+    Ok(format!(
+        "Added {}-sided {} B-rep truncated pyramid {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
+        options.side_count,
+        if options.solid { "closed" } else { "open" },
+        options.top_radius,
         options.height
     ))
 }

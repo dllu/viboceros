@@ -417,6 +417,7 @@ pub(super) enum InteractiveCommand {
         z_count: usize,
     },
     Pyramid {
+        kind: viboceros_command::pyramid::Kind,
         anchor: Option<Point3>,
     },
     Polygon {

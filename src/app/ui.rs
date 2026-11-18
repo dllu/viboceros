@@ -918,7 +918,7 @@ impl VibocerosApp {
             .then(|| {
                 self.translation_constraint()
                     .or_else(|| self.line_axis_constraint())
-                    .or_else(|| pyramid_input?.height_constraint())
+                    .or_else(|| pyramid_input?.point_constraint())
                     .or_else(|| {
                         solid_axial_input
                             .and_then(viboceros_command::solid_axial::Input::height_constraint)

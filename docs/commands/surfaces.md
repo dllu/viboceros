@@ -200,9 +200,9 @@ reverse the construction direction while preserving the base seam. `Solid=Yes`
 adds outward planar caps with Rhino-compatible shared rim and seam topology.
 
 [Pyramid](pyramid.md) creates a joined B-rep from an inscribed, circumscribed,
-edge-defined, or star base. `TruncatedPyramid` builds a regular polygonal
-frustum from a side count, base and top radii, and signed height. The
-positional forms accept `Axis=` and `Solid=Yes`.
+edge-defined, or star base. [TruncatedPyramid](truncated-pyramid.md) uses
+the same base modes and adds a live top-size getter. The positional forms
+accept `Axis=` and `Solid=Yes`.
 
 `Tube` creates a closed typed extrusion with concentric rational cylinder walls and
 annular planar caps. The two radii may be entered in either order;
