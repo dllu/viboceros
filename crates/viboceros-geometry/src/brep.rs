@@ -2281,75 +2281,93 @@ impl Brep {
         height: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let wall = NurbsSurface::try_truncated_cone(frame, radii, height)?;
-        let end_frame = frame_at_height(frame, height)?;
-        let base_cap_frame = Frame3::try_from_unit_directions(
-            frame.origin(),
-            frame.x_axis(),
-            frame.y_axis().opposite(),
-            tolerance,
-        )?;
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let base_cap = planar_cap_surface(
-            base_cap_frame,
-            zero,
-            [[-radii[0], radii[0]], [-radii[0], radii[0]]],
-        )?;
-        let end_cap = planar_cap_surface(
-            end_frame,
-            zero,
-            [[-radii[1], radii[1]], [-radii[1], radii[1]]],
-        )?;
+        if radii[1] == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "truncated cone",
+            });
+        }
+        Self::try_truncated_cone_with_caps(frame, radii, height, true, tolerance)
+    }
+
+    /// Constructs a base-first frustum with optional caps and a singular top at zero radius.
+    pub fn try_truncated_cone_with_caps(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_truncated_cone_wall(frame, radii, height)?;
 
         let domain_u = wall.domain_u();
         let domain_v = wall.domain_v();
         let base_seam = wall.evaluate(*domain_u.start(), *domain_v.start())?;
         let end_seam = wall.evaluate(*domain_u.start(), *domain_v.end())?;
         let base_rim = surface_u_control_curve(&wall, 0)?;
-        let end_rim = surface_u_control_curve(&wall, 1)?.reversed()?;
         let seam = surface_v_control_curve(&wall, 0)?;
         let vertices = vec![
             BrepVertex::try_new(base_seam, 0.0)?,
             BrepVertex::try_new(end_seam, 0.0)?,
         ];
-        let edges = vec![
+        let mut edges = vec![
             BrepEdge::try_new([0, 0], base_rim, 0.0)?,
             BrepEdge::try_new([0, 1], seam, 0.0)?,
-            BrepEdge::try_new([1, 1], end_rim, 0.0)?,
         ];
+        let rim_type = if solid {
+            BrepTrimType::Mated
+        } else {
+            BrepTrimType::Boundary
+        };
+        let top_trim = if radii[1] > 0.0 {
+            let end_rim = surface_u_control_curve(&wall, 1)?.reversed()?;
+            edges.push(BrepEdge::try_new([1, 1], end_rim, 0.0)?);
+            RectangularTrimSpec::edge([1, 1], 2, false, rim_type)
+        } else {
+            RectangularTrimSpec::singular(1)
+        };
 
         let wall_loop = rectangular_surface_loop(
             &wall,
             [
-                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 0], 0, false, rim_type),
                 RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
-                RectangularTrimSpec::edge([1, 1], 2, false, BrepTrimType::Mated),
+                top_trim,
                 RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
             ],
         )?;
-        let base_loop = single_edge_loop(
-            0,
-            0,
-            BrepLoopType::Outer,
-            circular_parameter_curve(radii[0])?,
-            true,
-            BrepTrimType::Mated,
-            [0.0, 0.0],
-        )?;
-        let end_loop = single_edge_loop(
-            1,
-            2,
-            BrepLoopType::Outer,
-            circular_parameter_curve(radii[1])?,
-            true,
-            BrepTrimType::Mated,
-            [0.0, 0.0],
-        )?;
-        let faces = vec![
-            BrepFace::try_new(wall, false, vec![wall_loop])?,
-            BrepFace::try_new(base_cap, false, vec![base_loop])?,
-            BrepFace::try_new(end_cap, false, vec![end_loop])?,
-        ];
+        let mut faces = vec![BrepFace::try_new(wall, false, vec![wall_loop])?];
+        if solid {
+            let base_cap_frame = Frame3::try_from_unit_directions(
+                frame.origin(),
+                frame.x_axis(),
+                frame.y_axis().opposite(),
+                tolerance,
+            )?;
+            let caps = [
+                (base_cap_frame, radii[0], 0, 0),
+                (frame_at_height(frame, height)?, radii[1], 1, 2),
+            ];
+            for (frame, radius, vertex, edge) in caps {
+                if radius == 0.0 {
+                    continue;
+                }
+                let cap = planar_cap_surface(
+                    frame,
+                    Vector3::try_new(0.0, 0.0, 0.0)?,
+                    [[-radius, radius], [-radius, radius]],
+                )?;
+                let cap_loop = single_edge_loop(
+                    vertex,
+                    edge,
+                    BrepLoopType::Outer,
+                    circular_parameter_curve(radius)?,
+                    true,
+                    BrepTrimType::Mated,
+                    [0.0, 0.0],
+                )?;
+                faces.push(BrepFace::try_new(cap, false, vec![cap_loop])?);
+            }
+        }
         Self::try_new(vertices, edges, faces, tolerance)
     }
 

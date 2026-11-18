@@ -1,4 +1,4 @@
-//! Cone and cylinder drafts from the current point getter.
+//! Circular solid drafts from the current point getter.
 use super::*;
 use viboceros_command::solid_axial::{Input, Kind};
 
@@ -16,12 +16,9 @@ impl Viewport {
             let u = wall.domain_u();
             let v = wall.domain_v();
             let bands = [
-                if definition.kind == Kind::Cylinder {
-                    Some(*v.start())
-                } else {
-                    None
-                },
-                Some(*v.end()),
+                (definition.kind != Kind::Cone).then_some(*v.start()),
+                (definition.kind != Kind::TruncatedCone || definition.end_radius > 0.)
+                    .then_some(*v.end()),
             ];
             for v in bands.into_iter().flatten() {
                 if let Ok(rim) = wall.isocurve_u(v) {

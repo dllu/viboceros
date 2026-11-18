@@ -1,4 +1,4 @@
-//! Staged Cone and Cylinder construction and source selection.
+//! Staged circular solid construction and source selection.
 use super::*;
 use viboceros_command::{
     circle_input::CircleSizeMode,
@@ -124,6 +124,7 @@ impl VibocerosApp {
                 let input = &mut self.solid_axial_session.as_mut().unwrap().input;
                 input.definition = None;
                 input.preferences.height = settings.height;
+                input.preferences.end_size = settings.end_size;
                 self.command_file.fail_dispatch();
                 self.push_log(format!("Error: {error}"));
                 return false;

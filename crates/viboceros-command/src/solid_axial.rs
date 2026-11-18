@@ -1,13 +1,14 @@
-//! Shared construction of Cone and Cylinder from a base circle and an axis.
+//! Shared construction of circular solids from a base circle and an axis.
 use crate::{CommandError, CommandRegistry, option_name_eq};
 use viboceros_document::Geometry;
 use viboceros_geometry::{Brep, Frame3, NurbsSurface, Tolerance};
 
 mod arguments;
 mod command;
+mod end_circle;
 mod input;
-pub(super) use command::ConeCommand;
 pub(super) use command::run;
+pub(super) use command::{ConeCommand, TruncatedConeCommand};
 
 pub use arguments::from_arguments;
 pub use input::Input;
@@ -16,6 +17,7 @@ pub use input::Input;
 pub enum Kind {
     Cone,
     Cylinder,
+    TruncatedCone,
 }
 
 impl Kind {
@@ -24,6 +26,8 @@ impl Kind {
             Some(Self::Cone)
         } else if option_name_eq(name, "Cylinder") || option_name_eq(name, "Cyl") {
             Some(Self::Cylinder)
+        } else if option_name_eq(name, "TruncatedCone") {
+            Some(Self::TruncatedCone)
         } else {
             None
         }
@@ -33,6 +37,15 @@ impl Kind {
         match self {
             Self::Cone => "Cone",
             Self::Cylinder => "Cylinder",
+            Self::TruncatedCone => "TruncatedCone",
+        }
+    }
+
+    pub const fn noun(self) -> &'static str {
+        match self {
+            Self::Cone => "cone",
+            Self::Cylinder => "cylinder",
+            Self::TruncatedCone => "truncated cone",
         }
     }
 
@@ -40,6 +53,7 @@ impl Kind {
         match self {
             Self::Cone => "Cone FitPoints",
             Self::Cylinder => "Cylinder FitPoints",
+            Self::TruncatedCone => "TruncatedCone FitPoints",
         }
     }
 
@@ -51,6 +65,9 @@ impl Kind {
             Self::Cylinder => {
                 "Cylinder [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle [BothSides=Yes|No] height-or-end"
             }
+            Self::TruncatedCone => {
+                "TruncatedCone [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle height-or-end [Radius|Diameter] top-size"
+            }
         }
     }
 
@@ -58,6 +75,7 @@ impl Kind {
         match self {
             Self::Cone => registry.solid_cone_preferences.get().0,
             Self::Cylinder => registry.solid_cylinder_preferences.get().0,
+            Self::TruncatedCone => registry.truncated_cone_preferences.get().0,
         }
     }
 
@@ -69,6 +87,9 @@ impl Kind {
             Self::Cylinder => registry
                 .solid_cylinder_preferences
                 .set(CylinderSettings(preferences)),
+            Self::TruncatedCone => registry
+                .truncated_cone_preferences
+                .set(TruncatedConeSettings(preferences)),
         }
     }
 }
@@ -105,6 +126,7 @@ pub struct Preferences {
     pub radius: f64,
     pub diameter: bool,
     pub height: f64,
+    pub end_size: f64,
 }
 
 impl Default for Preferences {
@@ -116,6 +138,7 @@ impl Default for Preferences {
             radius: 1.,
             diameter: false,
             height: 1.,
+            end_size: 0.,
         }
     }
 }
@@ -124,6 +147,8 @@ impl Default for Preferences {
 pub(super) struct ConeSettings(pub(super) Preferences);
 #[derive(Clone, Copy)]
 pub(super) struct CylinderSettings(pub(super) Preferences);
+#[derive(Clone, Copy)]
+pub(super) struct TruncatedConeSettings(pub(super) Preferences);
 
 impl Default for ConeSettings {
     fn default() -> Self {
@@ -144,6 +169,15 @@ impl Default for CylinderSettings {
     }
 }
 
+impl Default for TruncatedConeSettings {
+    fn default() -> Self {
+        Self(Preferences {
+            height: 0.,
+            ..Default::default()
+        })
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Definition {
     pub kind: Kind,
@@ -152,6 +186,7 @@ pub struct Definition {
     pub height: f64,
     pub solid: bool,
     pub both_sides: bool,
+    pub end_radius: f64,
 }
 
 impl Definition {
@@ -178,11 +213,30 @@ impl Definition {
         )
     }
 
+    fn frustum_frame(self) -> Result<Frame3, viboceros_geometry::GeometryError> {
+        let normal = if self.height > 0.0 {
+            self.frame.z_axis()
+        } else {
+            self.frame.z_axis().opposite()
+        };
+        Frame3::try_from_unit_x_and_normal(
+            self.frame.origin(),
+            self.frame.x_axis(),
+            normal,
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+    }
+
     pub fn wall(self) -> Result<NurbsSurface, viboceros_geometry::GeometryError> {
         match self.kind {
             Kind::Cone => {
                 NurbsSurface::try_cone_from_apex(self.apex_frame()?, self.radius, self.height.abs())
             }
+            Kind::TruncatedCone => NurbsSurface::try_truncated_cone_wall(
+                self.frustum_frame()?,
+                [self.radius, self.end_radius],
+                self.height.abs(),
+            ),
             Kind::Cylinder => {
                 let [start, end] = self.height_range();
                 let origin = self.frame.point_at([0., 0., start])?;
@@ -227,6 +281,13 @@ impl Definition {
             Kind::Cone => Ok(Geometry::Brep(Brep::try_cone_from_apex(
                 self.apex_frame()?,
                 self.radius,
+                self.height.abs(),
+                self.solid,
+                tolerance,
+            )?)),
+            Kind::TruncatedCone => Ok(Geometry::Brep(Brep::try_truncated_cone_with_caps(
+                self.frustum_frame()?,
+                [self.radius, self.end_radius],
                 self.height.abs(),
                 self.solid,
                 tolerance,

@@ -6,6 +6,8 @@ use super::{
 use viboceros_command::solid_axial::{Direction, Kind};
 use viboceros_geometry::{Brep, NurbsSurface};
 
+mod truncated_cone;
+
 fn brep(app: &VibocerosApp) -> &Brep {
     let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
         panic!("expected a boundary representation");

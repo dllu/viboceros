@@ -7,6 +7,7 @@ B-rep output for eligible creators.
 
 - [Torus construction modes and live previews](torus.md)
 - [Cone and Cylinder bases, direction constraints and live previews](cone-cylinder.md)
+- [TruncatedCone base and top-circle input](truncated-cone.md)
 - [ShortPath surface geodesics](short-path.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [DivideAlongCreases](divide-along-creases.md)

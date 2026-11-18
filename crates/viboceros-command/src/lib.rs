@@ -1041,6 +1041,8 @@ pub struct CommandRegistry {
     solid_cylinder_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
     solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
+    truncated_cone_preferences:
+        std::sync::Arc<remembered::Remembered<solid_axial::TruncatedConeSettings>>,
     torus_preferences: std::sync::Arc<remembered::Remembered<torus::Settings>>,
     mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -1545,7 +1547,9 @@ impl CommandRegistry {
             .register(CatenaryCommand::default())
             .expect("unique built-in command");
         registry
-            .register(TruncatedConeCommand)
+            .register(solid_axial::TruncatedConeCommand(
+                registry.truncated_cone_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(PyramidCommand)
@@ -7530,49 +7534,6 @@ fn curve_radius_value(
             )?
             .length()
             .map_err(Into::into)
-        }
-    }
-}
-
-struct TruncatedConeCommand;
-
-impl Command for TruncatedConeCommand {
-    fn name(&self) -> &'static str {
-        "TruncatedCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_truncated_cone_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (base_frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = if options.height > 0.0 {
-            base_frame.z_axis()
-        } else {
-            base_frame.z_axis().opposite()
-        };
-        let frame = Frame3::try_from_unit_x_and_normal(
-            options.center,
-            base_frame.x_axis(),
-            direction,
-            tolerance,
-        )?;
-        let radii = [base_radius, options.end_radius];
-        let height = options.height.abs();
-        if options.solid {
-            let brep = Brep::try_truncated_cone(frame, radii, height, tolerance)?;
-            let id = document.add_geometry(Geometry::Brep(brep))?;
-            Ok(format!(
-                "Added closed B-rep truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-                options.end_radius, options.height
-            ))
-        } else {
-            let surface = NurbsSurface::try_truncated_cone(frame, radii, height)?;
-            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-            Ok(format!(
-                "Added open NURBS truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-                options.end_radius, options.height
-            ))
         }
     }
 }

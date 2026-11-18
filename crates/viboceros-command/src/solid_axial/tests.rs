@@ -1,6 +1,10 @@
 use super::*;
+use crate::CommandContext;
+use serde_json::json;
 use viboceros_document::{Document, SelectionMode};
-use viboceros_geometry::Point3;
+use viboceros_geometry::{BrepLoopType, Point3, Vector3};
+
+const AXIAL_FIXTURES: &str = include_str!("tests/rhino_primitives.json");
 
 #[test]
 fn solid_axial_numeric_height_uses_the_base_normal_at_a_coincident_cursor() {
@@ -23,18 +27,22 @@ fn solid_axial_numeric_height_uses_the_base_normal_at_a_coincident_cursor() {
 
 #[test]
 fn solid_axial_replays_rhino_faces_caps_and_signed_heights() {
-    replay_rhino_primitives(false);
+    replay_rhino_primitives(AXIAL_FIXTURES, false);
+}
+
+#[test]
+fn solid_axial_truncated_cone_replays_rhino_surfaces_and_topology() {
+    replay_rhino_primitives(include_str!("tests/rhino_truncated_cone.json"), false);
 }
 
 #[test]
 #[ignore = "the fitted normal can point in the opposite direction in Rhino"]
 fn solid_axial_replays_rhino_signed_height_from_a_clockwise_fit() {
-    replay_rhino_primitives(true);
+    replay_rhino_primitives(AXIAL_FIXTURES, true);
 }
 
-fn replay_rhino_primitives(signed_fit_orientation_gap: bool) {
-    let rows: Vec<serde_json::Value> =
-        serde_json::from_str(include_str!("tests/rhino_primitives.json")).unwrap();
+fn replay_rhino_primitives(fixture: &str, signed_fit_orientation_gap: bool) {
+    let rows: Vec<serde_json::Value> = serde_json::from_str(fixture).unwrap();
     for row in rows.into_iter().filter(|row| {
         row["signed_fit_orientation_gap"].as_bool().unwrap_or(false) == signed_fit_orientation_gap
     }) {
@@ -58,8 +66,19 @@ fn replay_rhino_primitives(signed_fit_orientation_gap: bool) {
                 .unwrap();
         }
         let before = doc.objects().len();
+        let mut context = CommandContext::default();
+        if let Some(plane) = row.get("construction_plane") {
+            let [origin, x, y]: [[f64; 3]; 3] = serde_json::from_value(plane.clone()).unwrap();
+            context.construction_plane = Frame3::try_from_directions(
+                Point3::try_from(origin).unwrap(),
+                Vector3::try_from(x).unwrap(),
+                Vector3::try_from(y).unwrap(),
+                Tolerance::NUMERICAL_VALIDATION,
+            )
+            .unwrap();
+        }
         registry
-            .execute(&mut doc, &command)
+            .execute_in_context(&mut doc, &command, context)
             .unwrap_or_else(|error| panic!("{command}: {error}"));
         let Geometry::Brep(brep) = doc.objects().last().unwrap().geometry() else {
             panic!("{command}: expected a B-rep");
@@ -81,6 +100,9 @@ fn replay_rhino_primitives(signed_fit_orientation_gap: bool) {
         for (face, expected) in brep.faces().iter().zip(faces) {
             assert_surface_matches(&command, face.surface(), expected);
         }
+        if let Some(expected) = row.get("topology") {
+            assert_eq!(&topology(brep), expected, "{command}");
+        }
         let name = command.split_whitespace().next().unwrap();
         assert_eq!(doc.undo_label(), Some(name));
         registry.execute(&mut doc, "Undo").unwrap();
@@ -88,6 +110,38 @@ fn replay_rhino_primitives(signed_fit_orientation_gap: bool) {
         registry.execute(&mut doc, "Redo").unwrap();
         assert_eq!(doc.objects().len(), before + 1);
     }
+}
+
+fn topology(brep: &Brep) -> serde_json::Value {
+    let faces =
+        brep.faces()
+            .iter()
+            .map(|face| {
+                let loops = face.loops().iter().map(|face_loop| {
+            let trims = face_loop.trims().iter().map(|trim| {
+                json!({
+                    "type": format!("{:?}", trim.trim_type()),
+                    "vertices": trim.vertices(),
+                    "edge": trim.edge(),
+                    "reversed": trim.is_reversed_3d(),
+                })
+            }).collect::<Vec<_>>();
+            json!({ "outer": face_loop.loop_type() == BrepLoopType::Outer, "trims": trims })
+        }).collect::<Vec<_>>();
+                json!({ "reversed": face.is_reversed(), "loops": loops })
+            })
+            .collect::<Vec<_>>();
+    let edges = brep
+        .edges()
+        .iter()
+        .map(|edge| edge.vertices())
+        .collect::<Vec<_>>();
+    json!({
+        "vertices": brep.vertices().len(),
+        "solid": brep.is_solid(),
+        "faces": faces,
+        "edges": edges,
+    })
 }
 
 fn assert_surface_matches(command: &str, surface: &NurbsSurface, expected: &serde_json::Value) {

@@ -1,4 +1,5 @@
-//! Base-circle, direction and signed-height getters.
+//! Base-circle, direction, signed-height and end-circle getters.
+use super::end_circle::EndCircle;
 use super::*;
 use crate::{
     circle_input::{CircleDefinition, CircleInput, CircleSizeMode},
@@ -14,6 +15,7 @@ pub struct Input {
     pub circle: Option<CircleDefinition>,
     pub definition: Option<Definition>,
     base: CircleInput,
+    end_circle: Option<EndCircle>,
     guide_selected: bool,
     direction_menu: bool,
     cursor: Option<Point3>,
@@ -32,6 +34,7 @@ impl Input {
             circle: None,
             definition: None,
             base: CircleInput::new(plane).with_size_mode(mode),
+            end_circle: None,
             guide_selected: false,
             direction_menu: false,
             cursor: None,
@@ -45,8 +48,9 @@ impl Input {
     }
 
     pub fn anchor(self) -> Option<Point3> {
-        self.circle
-            .map(|base| base.frame.origin())
+        self.end_plane()
+            .map(Frame3::origin)
+            .or(self.circle.map(|base| base.frame.origin()))
             .or(self.base.anchor())
     }
 
@@ -82,7 +86,10 @@ impl Input {
 
     pub fn height_constraint(self) -> Option<DestinationConstraint> {
         let circle = self.circle?;
-        if self.direction_menu || self.preferences.direction == Direction::None {
+        if self.end_circle.is_some()
+            || self.direction_menu
+            || self.preferences.direction == Direction::None
+        {
             return None;
         }
         Some(DestinationConstraint {
@@ -92,8 +99,20 @@ impl Input {
         })
     }
 
+    pub fn end_plane(self) -> Option<Frame3> {
+        self.end_circle.map(|end| end.frame)
+    }
+
+    fn end_mode(self) -> CircleSizeMode {
+        if self.preferences.diameter {
+            CircleSizeMode::Diameter
+        } else {
+            CircleSizeMode::Radius
+        }
+    }
+
     pub fn prompt(self) -> String {
-        let name = self.kind.name().to_ascii_lowercase();
+        let name = self.kind.noun();
         let direction = self.preferences.direction.label();
         if self.direction_menu {
             let choices = if self.circle.is_some() {
@@ -104,6 +123,18 @@ impl Input {
             return format!("Direction constraint <{direction}> ({choices})");
         }
         if self.circle.is_some() {
+            if self.kind == Kind::TruncatedCone {
+                return if self.end_circle.is_some() {
+                    let (mode, option) = if self.preferences.diameter {
+                        ("Diameter", "Radius")
+                    } else {
+                        ("Radius", "Diameter")
+                    };
+                    format!("{mode} at top <{}>; {option}", self.preferences.end_size)
+                } else {
+                    format!("Top of {name} <{}>", self.preferences.height)
+                };
+            }
             let mut prompt = format!("End of {name} <{}>", self.preferences.height);
             if self.preferences.direction != Direction::AroundCurve {
                 prompt.push_str(&format!("; DirectionConstraint={direction}"));
@@ -158,7 +189,21 @@ impl Input {
             .split_once('=')
             .or_else(|| word.split_once(char::is_whitespace))
             .map_or((word, None), |(k, v)| (k, Some(v.trim())));
-        let can_toggle_direction = (self.base.is_two_point() || self.circle.is_some())
+        if self.end_circle.is_some() {
+            if let Some(mode @ (CircleSizeMode::Radius | CircleSizeMode::Diameter)) =
+                CircleSizeMode::parse(name)
+            {
+                let size = value.map(crate::parse_finite_real).transpose()?;
+                self.preferences.diameter = mode == CircleSizeMode::Diameter;
+                if let Some(size) = size {
+                    self.number(size)?;
+                }
+                return Ok(true);
+            }
+            return Ok(false);
+        }
+        let can_toggle_direction = (self.base.is_two_point() && self.circle.is_none()
+            || self.circle.is_some() && self.kind != Kind::TruncatedCone)
             && self.preferences.direction != Direction::AroundCurve;
         if option_name_eq(name, "DirectionConstraint") && (self.at_start() || can_toggle_direction)
         {
@@ -261,7 +306,8 @@ impl Input {
     }
 
     pub fn observe_cursor(&mut self, point: Point3) {
-        if let Some(circle) = self.circle
+        if self.end_circle.is_none()
+            && let Some(circle) = self.circle
             && !self.direction_menu
         {
             self.cursor = (point != circle.frame.origin()).then_some(point);
@@ -272,7 +318,11 @@ impl Input {
         if self.direction_menu || self.needs_guide() {
             return Err(CommandError::Usage(self.kind.usage()));
         }
-        if let Some(circle) = self.circle {
+        if let Some(end) = self.end_circle {
+            let definition = end.size(self.end_mode(), end.projected_size(point)?)?;
+            self.preferences.end_size = definition.end_radius;
+            self.definition = Some(definition);
+        } else if let Some(circle) = self.circle {
             let offset = circle.frame.origin().vector_to(point)?;
             let height = if self.preferences.direction == Direction::None {
                 offset.length()?
@@ -298,8 +348,12 @@ impl Input {
         if self.direction_menu || self.needs_guide() {
             return Err(CommandError::Usage(self.kind.usage()));
         }
-        if self.circle.is_some() {
-            self.end(value, self.cursor)?;
+        if let Some(end) = self.end_circle {
+            let definition = end.size(self.end_mode(), value)?;
+            self.preferences.end_size = value.max(0.);
+            self.definition = Some(definition);
+        } else if self.circle.is_some() {
+            self.end(value, None)?;
         } else if let Some(circle) = self.base.number(value)? {
             self.accept_circle(circle);
         }
@@ -310,6 +364,9 @@ impl Input {
         if self.direction_menu {
             self.direction_menu = false;
             return Ok(());
+        }
+        if self.end_circle.is_some() {
+            return self.number(self.preferences.end_size);
         }
         if self.circle.is_some() {
             return self.number(self.preferences.height);
@@ -335,16 +392,36 @@ impl Input {
     fn end(&mut self, height: f64, point: Option<Point3>) -> Result<(), CommandError> {
         if !height.is_finite() || height.abs() <= Tolerance::NUMERICAL_VALIDATION.absolute() {
             return Err(GeometryError::Degenerate {
-                context: "cone or cylinder height",
+                context: "axial primitive height",
             }
             .into());
         }
         let circle = self.circle.ok_or(CommandError::Usage(self.kind.usage()))?;
         let mut frame = circle.frame;
-        if self.preferences.direction == Direction::None
-            && let Some(point) = point
-        {
-            let normal = frame.origin().vector_to(point)?.normalized_nonzero()?;
+        let target = if self.preferences.direction == Direction::None {
+            point.or(self.cursor)
+        } else {
+            None
+        };
+        if self.kind == Kind::TruncatedCone {
+            if point.is_some() || target.is_some() {
+                let normal =
+                    target.map_or(Ok(frame.z_axis()), |p| frame.origin().direction_to(p))?;
+                let signed = if height < 0. {
+                    normal.opposite()
+                } else {
+                    normal
+                };
+                let basis = Frame3::try_from_unit_normal(frame.origin(), signed)?;
+                frame = Frame3::try_from_unit_x_and_normal(
+                    frame.origin(),
+                    basis.x_axis(),
+                    normal,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?;
+            }
+        } else if let Some(target) = target {
+            let normal = frame.origin().vector_to(target)?.normalized_nonzero()?;
             let basis = Frame3::try_from_unit_normal(frame.origin(), normal.opposite())?;
             frame = Frame3::try_from_unit_directions(
                 basis.origin(),
@@ -353,15 +430,21 @@ impl Input {
                 Tolerance::NUMERICAL_VALIDATION,
             )?;
         }
-        self.preferences.height = height;
-        self.definition = Some(Definition {
+        let definition = Definition {
             kind: self.kind,
             frame,
             radius: circle.radius,
             height,
             solid: self.preferences.solid,
             both_sides: self.kind == Kind::Cylinder && self.preferences.both_sides,
-        });
+            end_radius: 0.,
+        };
+        if self.kind == Kind::TruncatedCone {
+            self.end_circle = Some(EndCircle::new(definition)?);
+        } else {
+            self.definition = Some(definition);
+        }
+        self.preferences.height = height;
         Ok(())
     }
 
@@ -371,7 +454,11 @@ impl Input {
             None => self.enter(),
         }
         .ok()?;
-        self.definition
+        self.definition.or_else(|| {
+            self.end_circle?
+                .size(self.end_mode(), self.preferences.end_size)
+                .ok()
+        })
     }
 
     pub fn preview_circle(self, cursor: Point3) -> Option<CircleDefinition> {
