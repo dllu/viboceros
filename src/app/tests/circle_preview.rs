@@ -313,3 +313,34 @@ fn circle_around_curve_project_option_uses_the_guide_plane() {
         enter(&mut app, "Undo");
     }
 }
+
+#[test]
+fn transparent_zoom_target_uses_the_original_circle_snap() {
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    enter(&mut app, "Line 6,0,8 9,0,8");
+    enter(&mut app, "Circle");
+    enter(&mut app, "w0,0,3");
+    enter(&mut app, "_End");
+    assert!(
+        app.viewport_drafting_input(false, false)
+            .snap_projection
+            .is_some()
+    );
+    enter(&mut app, "ZT");
+    let context = egui::Context::default();
+    viewport_frame(&mut app, &context, vec![]);
+    let endpoint = point(6., 0., 8.);
+    let pointer = screen_point(&app, endpoint);
+    viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(pointer)]);
+    viewport_click(&mut app, &context, pointer);
+    assert!(matches!(
+        app.zoom_target,
+        Some(ZoomTargetState::PickWindow {
+            target,
+            viewport: 0
+        }) if target == endpoint
+    ));
+    assert!(app.circle_preview().is_some());
+}

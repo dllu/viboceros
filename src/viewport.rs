@@ -1719,6 +1719,7 @@ impl Viewport {
             };
         let zoom_drafting = DraftingInput {
             active: true,
+            snap_projection: None,
             anchor: None,
             reference: None,
             ..drafting
