@@ -60,6 +60,9 @@ enum Request {
         surface: surfaces::Definition,
         patches: Vec<surfaces::Patch>,
     },
+    SewBrepEdges {
+        pairs: Vec<(ComponentRef, ComponentRef, bool)>,
+    },
     SurfaceDefinition {
         id: String,
         face: Option<usize>,
@@ -184,6 +187,12 @@ impl Session {
                     return Err("finish the active command before adding surfaces".into());
                 }
                 surfaces::add_patches(&mut self.app.document, surface, patches)?
+            }
+            Request::SewBrepEdges { pairs } => {
+                if self.pending() {
+                    return Err("finish the active command before sewing B-rep edges".into());
+                }
+                surfaces::sew_edges(&mut self.app.document, pairs)?
             }
             Request::SurfaceDefinition { id, face } => surfaces::definition(document, &id, face)?,
             Request::SurfaceJets { id, face, samples } => {

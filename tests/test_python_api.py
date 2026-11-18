@@ -193,6 +193,41 @@ class PythonApiTests(unittest.TestCase):
             model.add_surface_patches(support, SurfacePatch(), SurfacePatch(opacity=1.01))
         self.assertEqual(len(model.objects()), 1)
 
+    def test_sew_explicit_surface_edges_preserves_uv_and_is_atomic(self):
+        model = self.model
+        knots = [0, 0, 1, 1]
+        support = NurbsSurface(1, 1, knots, knots, [[(0, 0, 0), (0, 1, 0)], [(1, 0, 0), (1, 1, 1)]])
+        parts = []
+        for low, high in ((0., .5), (.5, 1.)):
+            corners = [(low, 0.), (high, 0.), (high, 1.), (low, 1.)]
+            rim = [TrimCurve.line(a, b) for a, b in zip(corners, corners[1:] + corners[:1])]
+            parts.append(model.add_nurbs_surface(support, name="Skin", trim_loops=[rim]))
+        boundaries = []
+        for identifier in parts:
+            seam, = (part for part in model.components(identifier)
+                     if part.kind == "brep_edge" and all(point[0] == .5 for point in part.points))
+            boundaries.append(seam)
+        first, second = boundaries
+        reversed = first.points == second.points[::-1]
+        with self.assertRaises(SessionError):
+            model.sew_brep_edges((first, second, not reversed))
+        self.assertEqual([obj.id for obj in model.objects()], parts)
+        original = [model.surface_definition(identifier) for identifier in parts]
+        joined = model.sew_brep_edges((first, second, reversed))
+        self.assertEqual(model.object(joined).name, "Skin")
+        archive = self.folder / "sewn.3dm"
+        model.save(archive)
+        for reopened in (False, True):
+            if reopened:
+                model.open(archive)
+            faces = [part for part in model.components(joined) if part.kind == "brep_face"]
+            self.assertEqual(len(faces), 2)
+            self.assertEqual(len(set(faces[0].loops[0]) & set(faces[1].loops[0])), 1)
+            self.assertEqual([model.surface_definition(joined, face=face.index) for face in faces], original)
+            if not reopened:
+                self.assertEqual(set(model.run("Undo").added), set(parts))
+                self.assertEqual(model.run("Redo").added, (joined,))
+
     @unittest.skipUnless(os.environ.get("VIBOCEROS_TEST_GPU") == "1", "requires a wgpu adapter")
     def test_shaded_png_from_multiple_views(self):
         model = self.model

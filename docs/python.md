@@ -83,6 +83,11 @@ Read controls and knots from an object with `surface_definition()`. Use
 order two in native UV. `SurfaceSample` specifies left or right limits at
 knots. Pass `face=` to query the supporting surface of a B-rep face.
 
+Use `sew_brep_edges((first, second, reversed), ...)` when the mating edges
+are known. Get each edge from `components()`. Set `reversed` to `True` for
+oppositely directed edges. Sewing preserves each face's UV support and
+replaces the input B-reps in one undo step.
+
 ## Files and images
 
 Use `save()` for the current project or `save(path)` for Save As. `open(path)`

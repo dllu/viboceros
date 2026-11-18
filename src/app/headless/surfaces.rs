@@ -1,5 +1,7 @@
 //! Exact tensor-product surface admission, patch extraction, and native UV evaluation.
 use super::*;
+use std::collections::BTreeMap;
+use viboceros_command::ComponentSelectionKind;
 use viboceros_document::{ColorRgb, Geometry, ObjectAttributes};
 use viboceros_geometry::{
     Brep, NurbsCurve2, NurbsSurface, ParameterSide, Point2, WeightedPoint2, WeightedPoint3,
@@ -173,6 +175,55 @@ pub(super) fn add_patches(
     Ok(json!(
         ids.iter().map(ToString::to_string).collect::<Vec<_>>()
     ))
+}
+
+pub(super) fn sew_edges(
+    document: &mut Document,
+    pairs: Vec<(ComponentRef, ComponentRef, bool)>,
+) -> Result<Value> {
+    if pairs.is_empty() {
+        return Err("supply at least one B-rep edge pair".into());
+    }
+    let tolerance = document.tolerance();
+    let mut offsets = BTreeMap::new();
+    let mut sources = Vec::new();
+    let mut parts = Vec::new();
+    let mut edge_count = 0usize;
+    let mut edge_index = |reference: ComponentRef| -> Result<usize> {
+        let pick = reference.pick(|id| model::revision(document, id))?;
+        if pick.kind != ComponentSelectionKind::BrepEdge {
+            return Err("sewing requires B-rep edge references".into());
+        }
+        let object = document
+            .object(pick.object)
+            .ok_or_else(|| format!("unknown object {}", pick.object))?;
+        let Geometry::Brep(brep) = object.geometry() else {
+            return Err("sewing requires B-rep objects".into());
+        };
+        if pick.index >= brep.edges().len() {
+            return Err("B-rep edge index is out of range".into());
+        }
+        let offset = *offsets.entry(pick.object).or_insert_with(|| {
+            sources.push(pick.object);
+            parts.push(brep.clone());
+            let offset = edge_count;
+            edge_count += brep.edges().len();
+            offset
+        });
+        Ok(offset + pick.index)
+    };
+    let edge_pairs = pairs
+        .into_iter()
+        .map(|(a, b, reversed)| Ok((edge_index(a)?, edge_index(b)?, reversed)))
+        .collect::<Result<Vec<_>>>()?;
+    let attributes = document.object(sources[0]).unwrap().attributes().clone();
+    let combined = Brep::try_combine(parts, tolerance)?;
+    let sewn = combined.try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)?;
+    let id = edit_document_transaction(document, "Sew B-rep edges", |document| {
+        document.delete_objects(sources)?;
+        document.add_geometry_with_attributes(Geometry::Brep(sewn), attributes)
+    })?;
+    Ok(json!(id.to_string()))
 }
 
 fn surface<'a>(document: &'a Document, id: &str, face: Option<usize>) -> Result<&'a NurbsSurface> {

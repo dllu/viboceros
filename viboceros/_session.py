@@ -280,6 +280,16 @@ class Session:
         """Read the tensor-product definition of a surface or B-rep face."""
         return NurbsSurface(**self._request("surface_definition", id=object_id(obj), face=face))
 
+    def sew_brep_edges(self, *pairs: tuple[Component, Component, bool]) -> str:
+        """Sew explicit edge pairs and replace their B-reps in one undoable edit.
+
+        The boolean is true when the second edge runs opposite the first.
+        The result inherits the attributes of the first referenced object.
+        """
+        return self._request("sew_brep_edges", pairs=[
+            (a._ref(), b._ref(), reversed) for a, b, reversed in pairs
+        ])
+
     def surface_jets(
         self, obj: ObjectLike, *samples: SurfaceSample | UV, face: int | None = None,
     ) -> tuple[SurfaceJet, ...]:
