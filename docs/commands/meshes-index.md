@@ -38,6 +38,7 @@
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [MeshSphere and MeshTorus construction modes](mesh-primitives.md)
+- [MeshCone, MeshCylinder, and MeshTruncatedCone inputs and previews](mesh-axial.md)
 - [Polygon meshes](meshes.md)
 - [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
 - [MeshIntersect: transverse and coplanar intersection curves](mesh-intersect.md)

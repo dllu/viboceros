@@ -6,6 +6,7 @@ use super::{
 use viboceros_command::solid_axial::{Direction, Kind};
 use viboceros_geometry::{Brep, NurbsSurface};
 
+mod mesh;
 mod truncated_cone;
 
 fn brep(app: &VibocerosApp) -> &Brep {

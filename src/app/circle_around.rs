@@ -193,7 +193,11 @@ impl VibocerosApp {
             )
         } else if matches!(s.owner, Owner::SolidAxial(_)) {
             let input = self.solid_axial_session.as_ref().unwrap().input;
-            format!("{}; pick center on curve", input.prompt())
+            if input.at_start() {
+                format!("{}; pick center on curve", input.prompt())
+            } else {
+                input.prompt()
+            }
         } else {
             "center on curve".into()
         };

@@ -39,7 +39,7 @@ impl VibocerosApp {
         let mut input = Input::new(
             kind,
             self.viewports[self.active_viewport].construction_plane(),
-            kind.preferences(&self.commands),
+            kind.initial_preferences(&self.commands),
         );
         let guide_mode = words
             .get(1..)
@@ -55,7 +55,7 @@ impl VibocerosApp {
                 return false;
             }
         }
-        if guide_mode.is_some() && input.needs_guide() {
+        if input.validate_mesh_layout().is_err() || guide_mode.is_some() && input.needs_guide() {
             return false;
         }
         self.cancel_interactive_command(false);
@@ -266,6 +266,7 @@ impl VibocerosApp {
             .next()
             .unwrap_or("");
         let reference_mode = guide_selected
+            && session.input.at_start()
             && ["Tangent", "FitPoints"]
                 .iter()
                 .any(|mode| name.eq_ignore_ascii_case(mode));
@@ -282,7 +283,7 @@ impl VibocerosApp {
                 }
             }
         }
-        if name.eq_ignore_ascii_case("Solid") {
+        if !reference_mode && session.input.continues_base_on_guide() {
             let kind = session.input.kind;
             kind.remember(&self.commands, session.input.preferences);
             self.circle_around_prompt();

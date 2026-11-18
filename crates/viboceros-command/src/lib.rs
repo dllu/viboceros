@@ -572,12 +572,12 @@ use viboceros_geometry::{
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
     MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT,
-    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction,
-    MeshTruncatedConeOptions, NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3,
-    PointCloud3, Polyline3, Real, RectangularSurfaceCorner, RectangularSurfaceCornerCut,
-    SurfaceBrepIntersectionEvent, SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph,
-    SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_curves, sort_and_cull_points, try_catenary,
+    MeshCapFaceStyle, MeshEdgeFilter, MeshFaceExtraction, NurbsCurve, NurbsCurve2, NurbsSurface,
+    Plane, Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
+    try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -1038,6 +1038,7 @@ pub struct CommandRegistry {
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
+    mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
     solid_cylinder_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
     solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
@@ -1428,15 +1429,18 @@ impl CommandRegistry {
         registry
             .register(MeshBoxCommand)
             .expect("unique built-in command");
-        registry
-            .register(MeshConeCommand)
-            .expect("unique built-in command");
-        registry
-            .register(MeshTruncatedConeCommand)
-            .expect("unique built-in command");
-        registry
-            .register(MeshCylinderCommand)
-            .expect("unique built-in command");
+        for kind in [
+            solid_axial::Kind::MeshCone,
+            solid_axial::Kind::MeshTruncatedCone,
+            solid_axial::Kind::MeshCylinder,
+        ] {
+            registry
+                .register(solid_axial::MeshCommand {
+                    kind,
+                    preferences: registry.mesh_axial_preferences[kind.shape() as usize].clone(),
+                })
+                .expect("unique built-in circular mesh command");
+        }
         registry
             .register(to_subd::ToSubDCommand::default())
             .expect("unique built-in ToSubD");
@@ -7082,149 +7086,6 @@ fn axial_primitive_radius_value(
             .length()
             .map_err(Into::into)
         }
-    }
-}
-
-struct MeshCylinderCommand;
-
-impl Command for MeshCylinderCommand {
-    fn name(&self) -> &'static str {
-        "MeshCylinder"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_cylinder_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let heights = if options.both_sides {
-            let magnitude = options.height.abs();
-            [-magnitude, magnitude]
-        } else {
-            [options.height.min(0.0), options.height.max(0.0)]
-        };
-        let mesh_options = MeshCylinderOptions {
-            vertical_count: options.vertical_count,
-            around_count: options.around_count,
-            cap_bottom: options.solid,
-            cap_top: options.solid,
-            circumscribe: false,
-            cap_style: options.cap_style,
-        };
-        let mesh =
-            TriangleMesh::try_cylinder_grid(frame, radius, heights, mesh_options, tolerance)?;
-        // Rhino's command orients the otherwise independently constructed
-        // bottom cap before adding the mesh to the document.
-        let mesh = if options.solid {
-            mesh.unified_face_orientations()?.0
-        } else {
-            mesh
-        };
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh cylinder {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
-    }
-}
-
-struct MeshConeCommand;
-
-impl Command for MeshConeCommand {
-    fn name(&self) -> &'static str {
-        "MeshCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_cone_options(arguments)?;
-        if options.height == 0.0 {
-            return Err(GeometryError::InvalidMeshConeDimensions.into());
-        }
-        let tolerance = document.tolerance();
-        let (base_frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let base_to_apex = base_frame.z_axis().as_vector().scaled(options.height)?;
-        let apex = options.center.translated(base_to_apex)?;
-        let apex_to_base_normal = if options.height > 0.0 {
-            base_frame.z_axis().opposite()
-        } else {
-            base_frame.z_axis()
-        };
-        let apex_frame = Frame3::try_from_unit_x_and_normal(
-            apex,
-            base_frame.x_axis(),
-            apex_to_base_normal,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_cone_grid(
-            apex_frame,
-            radius,
-            options.height.abs(),
-            MeshConeOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                solid: options.solid,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh cone {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
-    }
-}
-
-struct MeshTruncatedConeCommand;
-
-impl Command for MeshTruncatedConeCommand {
-    fn name(&self) -> &'static str {
-        "MeshTruncatedCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_truncated_cone_options(arguments)?;
-        if options.height == 0.0 {
-            return Err(GeometryError::InvalidMeshTruncatedConeDimensions.into());
-        }
-        let tolerance = document.tolerance();
-        let (base_frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = if options.height > 0.0 {
-            base_frame.z_axis()
-        } else {
-            base_frame.z_axis().opposite()
-        };
-        let frame = Frame3::try_from_unit_x_and_normal(
-            options.center,
-            base_frame.x_axis(),
-            direction,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_truncated_cone_grid(
-            frame,
-            [base_radius, options.end_radius],
-            options.height.abs(),
-            MeshTruncatedConeOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                solid: options.solid,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh truncated cone {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
     }
 }
 

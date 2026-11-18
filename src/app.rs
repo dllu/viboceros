@@ -3,18 +3,15 @@ use std::collections::VecDeque;
 use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
-    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings, format_interp_curve_options,
-    parse_curve_closure, parse_curve_degree, parse_interp_curve_options,
-    update_interp_curve_options,
+    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
+    DistributionSettings, format_interp_curve_options, parse_curve_closure, parse_curve_degree,
+    parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_PLANE_FACES,
     MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
@@ -1382,10 +1379,6 @@ fn edit_document_transaction<T>(
 
 fn format_model_point(point: Point3) -> String {
     format!("{},{},{}", point.x(), point.y(), point.z())
-}
-
-fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
-    (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
 }
 
 fn point_is_near_axis(

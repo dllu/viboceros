@@ -1,12 +1,13 @@
 //! Base-circle, direction, signed-height and end-circle getters.
 use super::end_circle::EndCircle;
+use super::mesh_topology::Count;
 use super::*;
 use crate::{
     circle_input::{CircleDefinition, CircleInput, CircleSizeMode},
     translation::DestinationConstraint,
 };
 use viboceros_document::Document;
-use viboceros_geometry::{Circle3, GeometryError, Point3};
+use viboceros_geometry::{Circle3, GeometryError, MeshCapFaceStyle, Point3};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Input {
@@ -18,6 +19,7 @@ pub struct Input {
     end_circle: Option<EndCircle>,
     guide_selected: bool,
     direction_menu: bool,
+    mesh_count: Option<Count>,
     cursor: Option<Point3>,
 }
 
@@ -37,6 +39,7 @@ impl Input {
             end_circle: None,
             guide_selected: false,
             direction_menu: false,
+            mesh_count: None,
             cursor: None,
         }
     }
@@ -55,7 +58,10 @@ impl Input {
     }
 
     pub fn at_start(self) -> bool {
-        self.circle.is_none() && self.base.at_start() && !self.direction_menu
+        self.circle.is_none()
+            && self.base.at_start()
+            && !self.direction_menu
+            && self.mesh_count.is_none()
     }
 
     pub fn needs_guide(self) -> bool {
@@ -66,6 +72,25 @@ impl Input {
 
     pub fn select_guide(&mut self) {
         self.guide_selected = true;
+    }
+
+    pub fn continues_base_on_guide(self) -> bool {
+        self.guide_selected && self.circle.is_none() && self.base.at_start()
+    }
+
+    pub fn validate_mesh_layout(self) -> Result<(), CommandError> {
+        let shape = self.kind.shape();
+        let cap_count = shape.cap_count(self.preferences.solid, 0.);
+        if self.kind.is_mesh()
+            && self
+                .preferences
+                .topology
+                .face_count(cap_count)
+                .is_none_or(|count| count > shape.mesh_face_limit())
+        {
+            return Err(GeometryError::TooManyMeshFaces.into());
+        }
+        Ok(())
     }
 
     pub fn wants_number(self) -> bool {
@@ -114,6 +139,13 @@ impl Input {
     pub fn prompt(self) -> String {
         let name = self.kind.noun();
         let direction = self.preferences.direction.label();
+        if let Some(count) = self.mesh_count {
+            return format!(
+                "{} <{}>",
+                count.label(),
+                count.get(self.preferences.topology)
+            );
+        }
         if self.direction_menu {
             let choices = if self.circle.is_some() {
                 "None Vertical"
@@ -123,7 +155,7 @@ impl Input {
             return format!("Direction constraint <{direction}> ({choices})");
         }
         if self.circle.is_some() {
-            if self.kind == Kind::TruncatedCone {
+            if self.kind.shape() == Shape::TruncatedCone {
                 return if self.end_circle.is_some() {
                     let (mode, option) = if self.preferences.diameter {
                         ("Diameter", "Radius")
@@ -139,7 +171,7 @@ impl Input {
             if self.preferences.direction != Direction::AroundCurve {
                 prompt.push_str(&format!("; DirectionConstraint={direction}"));
             }
-            if self.kind == Kind::Cylinder {
+            if self.kind.shape() == Shape::Cylinder {
                 prompt.push_str(if self.preferences.both_sides {
                     "; BothSides=Yes"
                 } else {
@@ -150,9 +182,20 @@ impl Input {
         }
         if self.base.at_start() {
             let solid = if self.preferences.solid { "Yes" } else { "No" };
-            return format!(
+            let mut prompt = format!(
                 "Base of {name}; DirectionConstraint={direction}; Solid={solid}; 2Point, 3Point, Tangent, FitPoints",
             );
+            if self.kind.is_mesh() {
+                let topology = self.preferences.topology;
+                prompt.push_str(&format!(
+                    "; VerticalFaces={}; AroundFaces={}",
+                    topology.vertical_count, topology.around_count,
+                ));
+                if topology.offers_cap_style(self.preferences.solid) {
+                    prompt.push_str(&format!("; CapFaceStyle={}", topology.cap_label()));
+                }
+            }
+            return prompt;
         }
         let mut prompt = self
             .base
@@ -177,6 +220,14 @@ impl Input {
     }
 
     pub fn option(&mut self, word: &str) -> Result<bool, CommandError> {
+        if let Some(count) = self.mesh_count {
+            let word = word.trim();
+            if !word.is_empty() && !option_name_eq(word, "Enter") {
+                count.set(&mut self.preferences.topology, word, self.kind)?;
+            }
+            self.mesh_count = None;
+            return Ok(true);
+        }
         let word = word.trim().trim_start_matches(['_', '-']);
         if self.direction_menu {
             return if option_name_eq(word, "Enter") {
@@ -203,7 +254,7 @@ impl Input {
             return Ok(false);
         }
         let can_toggle_direction = (self.base.is_two_point() && self.circle.is_none()
-            || self.circle.is_some() && self.kind != Kind::TruncatedCone)
+            || self.circle.is_some() && self.kind.shape() != Shape::TruncatedCone)
             && self.preferences.direction != Direction::AroundCurve;
         if option_name_eq(name, "DirectionConstraint") && (self.at_start() || can_toggle_direction)
         {
@@ -225,10 +276,36 @@ impl Input {
             self.preferences.solid = toggle(value, self.preferences.solid, self.kind)?;
             return Ok(true);
         }
-        if option_name_eq(name, "BothSides") && self.kind == Kind::Cylinder && self.circle.is_some()
+        if option_name_eq(name, "BothSides")
+            && self.kind.shape() == Shape::Cylinder
+            && (self.circle.is_some() || self.kind.is_mesh() && self.at_start() && value.is_some())
         {
             self.preferences.both_sides = toggle(value, self.preferences.both_sides, self.kind)?;
             return Ok(true);
+        }
+        if self.kind.is_mesh() && self.at_start() {
+            if let Some(count) = Count::parse(name) {
+                if let Some(value) = value {
+                    count.set(&mut self.preferences.topology, value, self.kind)?;
+                } else {
+                    self.mesh_count = Some(count);
+                }
+                return Ok(true);
+            }
+            let topology = &mut self.preferences.topology;
+            if option_name_eq(name, "CapFaceStyle")
+                && (value.is_some() || topology.offers_cap_style(self.preferences.solid))
+            {
+                topology.cap_style = match value {
+                    Some(value) => crate::parse_mesh_cap_face_style(value.trim_start_matches('_'))
+                        .ok_or(CommandError::Usage(self.kind.usage()))?,
+                    None if topology.cap_style == MeshCapFaceStyle::Triangles => {
+                        MeshCapFaceStyle::Quadrilaterals
+                    }
+                    None => MeshCapFaceStyle::Triangles,
+                };
+                return Ok(true);
+            }
         }
         if self.circle.is_none()
             && !["Vertical", "Orientation"]
@@ -315,7 +392,7 @@ impl Input {
     }
 
     pub fn point(&mut self, mut point: Point3) -> Result<(), CommandError> {
-        if self.direction_menu || self.needs_guide() {
+        if self.direction_menu || self.mesh_count.is_some() || self.needs_guide() {
             return Err(CommandError::Usage(self.kind.usage()));
         }
         if let Some(end) = self.end_circle {
@@ -330,7 +407,13 @@ impl Input {
                 offset.dot(circle.frame.z_axis().as_vector())?
             };
             self.end(height, Some(point))?;
-            self.preferences.height = height.abs();
+            let measured_height = if self.kind == Kind::MeshCylinder && self.preferences.both_sides
+            {
+                2. * height
+            } else {
+                height
+            };
+            self.preferences.height = measured_height.abs();
         } else {
             if self.preferences.direction == Direction::AroundCurve && self.base.has_size_mode() {
                 let frame = self.base.construction_plane();
@@ -345,7 +428,7 @@ impl Input {
     }
 
     pub fn number(&mut self, value: f64) -> Result<(), CommandError> {
-        if self.direction_menu || self.needs_guide() {
+        if self.direction_menu || self.mesh_count.is_some() || self.needs_guide() {
             return Err(CommandError::Usage(self.kind.usage()));
         }
         if let Some(end) = self.end_circle {
@@ -361,6 +444,9 @@ impl Input {
     }
 
     pub fn enter(&mut self) -> Result<(), CommandError> {
+        if self.mesh_count.take().is_some() {
+            return Ok(());
+        }
         if self.direction_menu {
             self.direction_menu = false;
             return Ok(());
@@ -403,7 +489,7 @@ impl Input {
         } else {
             None
         };
-        if self.kind == Kind::TruncatedCone {
+        if self.kind.shape() == Shape::TruncatedCone {
             if point.is_some() || target.is_some() {
                 let normal =
                     target.map_or(Ok(frame.z_axis()), |p| frame.origin().direction_to(p))?;
@@ -436,10 +522,11 @@ impl Input {
             radius: circle.radius,
             height,
             solid: self.preferences.solid,
-            both_sides: self.kind == Kind::Cylinder && self.preferences.both_sides,
+            both_sides: self.kind.shape() == Shape::Cylinder && self.preferences.both_sides,
             end_radius: 0.,
+            topology: self.preferences.topology,
         };
-        if self.kind == Kind::TruncatedCone {
+        if self.kind.shape() == Shape::TruncatedCone {
             self.end_circle = Some(EndCircle::new(definition)?);
         } else {
             self.definition = Some(definition);

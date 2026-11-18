@@ -65,6 +65,7 @@ impl Command for TruncatedConeCommand {
                 solid: options.solid,
                 both_sides: false,
                 end_radius: options.end_radius,
+                topology: MeshTopology::default(),
             };
             let frame = definition.frustum_frame()?;
             let radii = [radius, options.end_radius];
@@ -149,6 +150,7 @@ pub(crate) fn run(
                 solid,
                 both_sides: opts.both_sides,
                 end_radius: 0.,
+                topology: MeshTopology::default(),
             };
             preferences.radius = radius;
             preferences.height = opts.height;

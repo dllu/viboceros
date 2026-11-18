@@ -506,10 +506,14 @@ impl InteractiveCommand {
                 "SubDTruncatedCone: pick a base circle, height and end size; Esc cancels"
             }
             Self::SubDCone { .. } => "SubDCone: pick a base circle or cone end; Esc cancels",
-            Self::SolidAxial {
-                kind: viboceros_command::solid_axial::Kind::TruncatedCone,
-                ..
-            } => "Pick the base circle, height and top size (Esc cancels)",
+            Self::SolidAxial { kind, .. }
+                if matches!(
+                    kind.shape(),
+                    viboceros_command::solid_axial::Shape::TruncatedCone
+                ) =>
+            {
+                "Pick the base circle, height and top size (Esc cancels)"
+            }
             Self::SolidAxial { .. } => "Pick the base circle or specify the height (Esc cancels)",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
@@ -539,47 +543,6 @@ impl InteractiveCommand {
             Self::SelBox {
                 opposite: Some(_), ..
             } => "SelBox: pick a height point (Esc to cancel)",
-            Self::MeshCone { center: None, .. } => {
-                "MeshCone: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshCone {
-                center: Some(_),
-                radius_point: None,
-                ..
-            } => "MeshCone: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshCone {
-                radius_point: Some(_),
-                ..
-            } => "MeshCone: pick the apex height in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone { center: None, .. } => {
-                "MeshTruncatedCone: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshTruncatedCone {
-                center: Some(_),
-                base_radius_point: None,
-                ..
-            } => "MeshTruncatedCone: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone {
-                base_radius_point: Some(_),
-                end_center: None,
-                ..
-            } => "MeshTruncatedCone: pick the end-circle center in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone {
-                end_center: Some(_),
-                ..
-            } => "MeshTruncatedCone: pick the end-circle radius in the viewport (Esc to cancel)",
-            Self::MeshCylinder { center: None, .. } => {
-                "MeshCylinder: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshCylinder {
-                center: Some(_),
-                radius_point: None,
-                ..
-            } => "MeshCylinder: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshCylinder {
-                radius_point: Some(_),
-                ..
-            } => "MeshCylinder: pick the height in the viewport (Esc to cancel)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }

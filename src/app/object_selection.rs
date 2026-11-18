@@ -302,6 +302,9 @@ impl PendingObjectCommand {
                 | "Cone FitPoints"
                 | "Cylinder FitPoints"
                 | "TruncatedCone FitPoints"
+                | "MeshCone FitPoints"
+                | "MeshCylinder FitPoints"
+                | "MeshTruncatedCone FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
@@ -412,6 +415,9 @@ impl VibocerosApp {
                         | "Cone FitPoints"
                         | "Cylinder FitPoints"
                         | "TruncatedCone FitPoints"
+                        | "MeshCone FitPoints"
+                        | "MeshCylinder FitPoints"
+                        | "MeshTruncatedCone FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
@@ -889,6 +895,9 @@ impl VibocerosApp {
             | "Cone FitPoints"
             | "Cylinder FitPoints"
             | "TruncatedCone FitPoints"
+            | "MeshCone FitPoints"
+            | "MeshCylinder FitPoints"
+            | "MeshTruncatedCone FitPoints"
             | "SubDCylinder FitPoints"
             | "SubDCone FitPoints"
             | "SubDTruncatedCone FitPoints"
@@ -921,6 +930,9 @@ impl VibocerosApp {
                 | "Cone FitPoints"
                 | "Cylinder FitPoints"
                 | "TruncatedCone FitPoints"
+                | "MeshCone FitPoints"
+                | "MeshCylinder FitPoints"
+                | "MeshTruncatedCone FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
@@ -1111,6 +1123,9 @@ impl VibocerosApp {
                     | "Cone FitPoints"
                     | "Cylinder FitPoints"
                     | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
                     | "SubDTruncatedCone FitPoints"
@@ -1420,6 +1435,9 @@ impl VibocerosApp {
                             | "Cone FitPoints"
                             | "Cylinder FitPoints"
                             | "TruncatedCone FitPoints"
+                            | "MeshCone FitPoints"
+                            | "MeshCylinder FitPoints"
+                            | "MeshTruncatedCone FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"
@@ -1510,7 +1528,12 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "Cone FitPoints" | "Cylinder FitPoints" | "TruncatedCone FitPoints"
+                "Cone FitPoints"
+                    | "Cylinder FitPoints"
+                    | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
             ) {
                 self.accept_solid_axial_fit(pending.postselected);
                 self.command_input.clear();
@@ -1757,6 +1780,9 @@ impl VibocerosApp {
                         | "Cone FitPoints"
                         | "Cylinder FitPoints"
                         | "TruncatedCone FitPoints"
+                        | "MeshCone FitPoints"
+                        | "MeshCylinder FitPoints"
+                        | "MeshTruncatedCone FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
@@ -2085,7 +2111,12 @@ impl VibocerosApp {
 
             if matches!(
                 pending.description.command,
-                "Cone FitPoints" | "Cylinder FitPoints" | "TruncatedCone FitPoints"
+                "Cone FitPoints"
+                    | "Cylinder FitPoints"
+                    | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
             ) {
                 self.solid_axial_session = None;
                 self.active_command = None;

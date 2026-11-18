@@ -1,6 +1,6 @@
 //! Circular solid drafts from the current point getter.
 use super::*;
-use viboceros_command::solid_axial::{Input, Kind};
+use viboceros_command::solid_axial::{Input, Shape};
 
 impl Viewport {
     pub(super) fn paint_solid_axial_preview(
@@ -9,16 +9,29 @@ impl Viewport {
         rect: Rect,
         input: Input,
         cursor: Option<Point3>,
+        tolerance: Tolerance,
     ) {
-        if let Some(definition) = input.preview_definition(cursor)
+        let definition = input.preview_definition(cursor);
+        if let Some(mesh) = definition
+            .filter(|d| d.kind.is_mesh())
+            .filter(|d| {
+                d.mesh_face_count()
+                    .is_some_and(|count| count <= MAX_DRAFT_MESH_FACES)
+            })
+            .and_then(|d| d.mesh(tolerance).ok())
+        {
+            self.paint_mesh_draft(painter, rect, &mesh);
+            return;
+        }
+        if let Some(definition) = definition
             && let Ok(wall) = definition.wall()
         {
             let u = wall.domain_u();
             let v = wall.domain_v();
+            let shape = definition.kind.shape();
             let bands = [
-                (definition.kind != Kind::Cone).then_some(*v.start()),
-                (definition.kind != Kind::TruncatedCone || definition.end_radius > 0.)
-                    .then_some(*v.end()),
+                (shape != Shape::Cone).then_some(*v.start()),
+                (shape != Shape::TruncatedCone || definition.end_radius > 0.).then_some(*v.end()),
             ];
             for v in bands.into_iter().flatten() {
                 if let Ok(rim) = wall.isocurve_u(v) {

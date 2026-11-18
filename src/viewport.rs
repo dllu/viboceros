@@ -2862,7 +2862,13 @@ impl Viewport {
         if let Some(getter) = input.solid_axial_input {
             let cursor =
                 drafting_cursor.filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()));
-            self.paint_solid_axial_preview(&painter, rect, getter, cursor.map(|p| p.point));
+            self.paint_solid_axial_preview(
+                &painter,
+                rect,
+                getter,
+                cursor.map(|p| p.point),
+                document.tolerance(),
+            );
         }
         if let Some(circle) = input.solid_axial_fit {
             self.paint_curve_draft(&painter, rect, &circle);

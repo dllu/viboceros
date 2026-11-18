@@ -106,9 +106,6 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
-            Self::MeshCone { .. } => "MeshCone",
-            Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
-            Self::MeshCylinder { .. } => "MeshCylinder",
             Self::Polygon { .. } => "Polygon",
             Self::SurfacePointGrid { control, .. } => {
                 if control {
@@ -296,9 +293,6 @@ impl InteractiveCommand {
             | Self::PointGrid { base: None, .. }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
-            | Self::MeshCone { center: None, .. }
-            | Self::MeshTruncatedCone { center: None, .. }
-            | Self::MeshCylinder { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -397,8 +391,6 @@ impl InteractiveCommand {
             | Self::PointGrid { base: start, .. }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
-            | Self::MeshCone { center: start, .. }
-            | Self::MeshCylinder { center: start, .. }
             | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }
@@ -432,15 +424,6 @@ impl InteractiveCommand {
                 normal_point: Some(normal_point),
                 ..
             } => Some(normal_point),
-            Self::MeshTruncatedCone {
-                center: Some(center),
-                end_center: None,
-                ..
-            } => Some(center),
-            Self::MeshTruncatedCone {
-                end_center: Some(end_center),
-                ..
-            } => Some(end_center),
             Self::SplitMeshEdge { edge_point } => edge_point,
             Self::ArcExtension { anchor: center }
             | Self::ArcTilted { anchor: center }

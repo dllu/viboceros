@@ -1,4 +1,5 @@
 use super::*;
+use viboceros_command::solid_axial::{Kind as AxialKind, MeshTopology};
 
 #[test]
 fn interactive_mesh_ellipsoid_retains_topology_and_validates_each_axis() {
@@ -186,35 +187,28 @@ fn interactive_mesh_cone_retains_options_and_validates_three_picks() {
         "MeshCone VerticalFaces=2 AroundFaces=6 Solid=Yes CapFaceStyle=Quadrilaterals"
     ));
     let center = point(1.0, 2.0, 1.0);
-    app.accept_drafting_point(center);
-    app.accept_drafting_point(point(1.0, 2.0, 9.0));
+    assert!(app.accept_drafting_point(center));
+    assert!(!app.accept_drafting_point(center));
+    let input = app.solid_axial_preview_input().unwrap();
+    assert_eq!(input.anchor(), Some(center));
+    assert!(input.circle.is_none());
+    assert_eq!(input.kind, AxialKind::MeshCone);
     assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshCone {
-            center: Some(center),
-            radius_point: None,
+        input.preferences.topology,
+        MeshTopology {
             vertical_count: 2,
             around_count: 6,
-            solid: true,
             cap_style: MeshCapFaceStyle::Quadrilaterals,
-        })
+        },
     );
-    assert_eq!(app.document.objects().len(), 0);
+    assert!(input.preferences.solid);
+    assert_eq!(input.preferences.both_sides, false);
 
-    let radius_point = point(3.0, 2.0, 1.0);
-    app.accept_drafting_point(point(3.0, 2.0, 9.0));
-    app.accept_drafting_point(point(9.0, 9.0, 1.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshCone {
-            center: Some(center),
-            radius_point: Some(radius_point),
-            vertical_count: 2,
-            around_count: 6,
-            solid: true,
-            cap_style: MeshCapFaceStyle::Quadrilaterals,
-        })
-    );
+    assert!(app.accept_drafting_point(point(3.0, 2.0, 1.0)));
+    let awaiting_height = app.solid_axial_preview_input().unwrap();
+    assert_eq!(awaiting_height.circle.unwrap().radius, 2.);
+    assert!(!app.accept_drafting_point(point(9.0, 9.0, 1.0)));
+    assert_eq!(app.solid_axial_preview_input(), Some(awaiting_height));
     assert_eq!(app.document.objects().len(), 0);
 
     app.accept_drafting_point(point(9.0, 9.0, 4.0));
@@ -247,54 +241,38 @@ fn interactive_mesh_truncated_cone_retains_options_and_validates_four_picks() {
         "MeshTruncatedCone VerticalFaces=2 AroundFaces=6 Solid=Yes CapFaceStyle=Quadrilaterals"
     ));
     let center = point(1.0, 2.0, 1.0);
-    app.accept_drafting_point(center);
-    app.accept_drafting_point(point(1.0, 2.0, 9.0));
+    assert!(app.accept_drafting_point(center));
+    assert!(!app.accept_drafting_point(center));
+    let input = app.solid_axial_preview_input().unwrap();
+    assert_eq!(input.anchor(), Some(center));
+    assert!(input.circle.is_none());
+    assert_eq!(input.kind, AxialKind::MeshTruncatedCone);
     assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshTruncatedCone {
-            center: Some(center),
-            base_radius_point: None,
-            end_center: None,
+        input.preferences.topology,
+        MeshTopology {
             vertical_count: 2,
             around_count: 6,
-            solid: true,
             cap_style: MeshCapFaceStyle::Quadrilaterals,
-        })
+        },
     );
+    assert!(input.preferences.solid);
+    assert_eq!(input.preferences.both_sides, false);
+
+    assert!(app.accept_drafting_point(point(3.0, 2.0, 1.0)));
+    let awaiting_height = app.solid_axial_preview_input().unwrap();
+    assert_eq!(awaiting_height.circle.unwrap().radius, 2.);
+    assert!(!app.accept_drafting_point(point(9.0, 9.0, 1.0)));
+    assert_eq!(app.solid_axial_preview_input(), Some(awaiting_height));
     assert_eq!(app.document.objects().len(), 0);
 
-    let base_radius_point = point(3.0, 2.0, 1.0);
-    app.accept_drafting_point(point(3.0, 2.0, 9.0));
-    let awaiting_height = InteractiveCommand::MeshTruncatedCone {
-        center: Some(center),
-        base_radius_point: Some(base_radius_point),
-        end_center: None,
-        vertical_count: 2,
-        around_count: 6,
-        solid: true,
-        cap_style: MeshCapFaceStyle::Quadrilaterals,
-    };
-    assert_eq!(app.active_command, Some(awaiting_height));
-    assert_eq!(awaiting_height.anchor(), Some(center));
-    app.accept_drafting_point(point(9.0, 9.0, 1.0));
-    assert_eq!(app.active_command, Some(awaiting_height));
-    assert_eq!(app.document.objects().len(), 0);
-
+    assert!(app.accept_drafting_point(point(9.0, 9.0, 4.0)));
     let end_center = point(1.0, 2.0, 4.0);
-    app.accept_drafting_point(point(9.0, 9.0, 4.0));
-    let awaiting_end_radius = InteractiveCommand::MeshTruncatedCone {
-        center: Some(center),
-        base_radius_point: Some(base_radius_point),
-        end_center: Some(end_center),
-        vertical_count: 2,
-        around_count: 6,
-        solid: true,
-        cap_style: MeshCapFaceStyle::Quadrilaterals,
-    };
-    assert_eq!(app.active_command, Some(awaiting_end_radius));
-    assert_eq!(awaiting_end_radius.anchor(), Some(end_center));
-    app.accept_drafting_point(point(1.0, 2.0, 20.0));
-    assert_eq!(app.active_command, Some(awaiting_end_radius));
+    let awaiting_end_radius = app.solid_axial_preview_input().unwrap();
+    assert_eq!(
+        awaiting_end_radius.end_plane().unwrap().origin(),
+        end_center
+    );
+    assert_eq!(app.active_command.unwrap().anchor(), Some(end_center));
     assert_eq!(app.document.objects().len(), 0);
 
     app.accept_drafting_point(point(5.0, 2.0, 99.0));
@@ -449,37 +427,28 @@ fn interactive_mesh_cylinder_retains_options_and_validates_three_picks() {
         "MeshCylinder VerticalFaces=2 AroundFaces=6 Solid=Yes BothSides=Yes CapFaceStyle=Quadrilaterals"
     ));
     let center = point(1.0, 2.0, 1.0);
-    app.accept_drafting_point(center);
-    app.accept_drafting_point(point(1.0, 2.0, 9.0));
+    assert!(app.accept_drafting_point(center));
+    assert!(!app.accept_drafting_point(center));
+    let input = app.solid_axial_preview_input().unwrap();
+    assert_eq!(input.anchor(), Some(center));
+    assert!(input.circle.is_none());
+    assert_eq!(input.kind, AxialKind::MeshCylinder);
     assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshCylinder {
-            center: Some(center),
-            radius_point: None,
+        input.preferences.topology,
+        MeshTopology {
             vertical_count: 2,
             around_count: 6,
-            solid: true,
-            both_sides: true,
             cap_style: MeshCapFaceStyle::Quadrilaterals,
-        })
+        },
     );
-    assert_eq!(app.document.objects().len(), 0);
+    assert!(input.preferences.solid);
+    assert_eq!(input.preferences.both_sides, true);
 
-    let radius_point = point(3.0, 2.0, 1.0);
-    app.accept_drafting_point(point(3.0, 2.0, 9.0));
-    app.accept_drafting_point(point(9.0, 9.0, 1.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshCylinder {
-            center: Some(center),
-            radius_point: Some(radius_point),
-            vertical_count: 2,
-            around_count: 6,
-            solid: true,
-            both_sides: true,
-            cap_style: MeshCapFaceStyle::Quadrilaterals,
-        })
-    );
+    assert!(app.accept_drafting_point(point(3.0, 2.0, 1.0)));
+    let awaiting_height = app.solid_axial_preview_input().unwrap();
+    assert_eq!(awaiting_height.circle.unwrap().radius, 2.);
+    assert!(!app.accept_drafting_point(point(9.0, 9.0, 1.0)));
+    assert_eq!(app.solid_axial_preview_input(), Some(awaiting_height));
     assert_eq!(app.document.objects().len(), 0);
 
     app.accept_drafting_point(point(9.0, 9.0, 4.0));
