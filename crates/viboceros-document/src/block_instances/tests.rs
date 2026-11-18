@@ -482,6 +482,7 @@ fn hierarchical_display_resolves_parent_color_visibility_and_lock_without_changi
         state,
         BlockMemberDisplay {
             color: ColorRgb::new(50, 60, 70),
+            opacity: 1.0,
             visible: true,
             locked: false
         }

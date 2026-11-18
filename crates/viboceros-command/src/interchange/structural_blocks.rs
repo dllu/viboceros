@@ -76,6 +76,7 @@ fn attributes(object: &ThreeDmObject, layer: LayerId) -> Result<ObjectAttributes
         ))
         .with_color_source(document_color_source_from_3dm(object.color_source))
         .with_file_state(object.visible, object.locked)
+        .try_with_opacity(object.opacity)?
         .try_with_wire_density(object.wire_density)?;
     if let Some(name) = &object.name {
         attributes = attributes.with_name(name);
@@ -150,6 +151,7 @@ pub(super) fn export_definitions(
                             attributes.color_source(),
                         ),
                         wire_density: attributes.wire_density(),
+                        opacity: attributes.opacity(),
                         group_indices: member.group_ids().iter().map(|id| groups[id]).collect(),
                     })
                 })

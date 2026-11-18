@@ -74,6 +74,7 @@ struct BridgeObject {
   uint8_t color_green = 0;
   uint8_t color_blue = 0;
   int32_t wire_density = 1;
+  double opacity = 1.0;
   uint8_t rational_curve = 0;
   uint32_t degree_u = 0;
   uint32_t degree_v = 0;
@@ -1927,7 +1928,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
   }
 }
 
-bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
+bool read_geometry_metadata(const ONX_Model& model, const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
       read_user_text(*geometry, object.geometry_user_text);
       if (attributes != nullptr) {
         char id[37] = {};
@@ -1944,6 +1945,13 @@ bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttrib
         object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
         object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
         object.wire_density = attributes->m_wire_density;
+        if (attributes->MaterialSource() == ON::material_from_object) {
+          const auto reference = model.MaterialFromIndex(attributes->m_material_index);
+          if (const auto* material = ON_Material::FromModelComponentRef(reference, nullptr)) {
+            const double opacity = 1.0 - material->Transparency();
+            if (0.0 <= opacity && opacity <= 1.0) object.opacity = opacity;
+          }
+        }
         read_user_text(*attributes, object.user_text);
         const int group_count = attributes->GroupCount();
         const int* group_list = attributes->GroupList();
@@ -1960,8 +1968,8 @@ bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttrib
       return true;
 }
 
-bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object, double model_tolerance) {
-      if(!read_geometry_metadata(geometry,attributes,object)) return false;
+bool read_geometry_object(const ONX_Model& model, const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object, double model_tolerance) {
+      if(!read_geometry_metadata(model,geometry,attributes,object)) return false;
       bool supported = false;
       if (const ON_Point* point = ON_Point::Cast(geometry)) {
         supported = append_point(*point, object);
@@ -2203,7 +2211,7 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
       if(attrs!=nullptr && attrs->IsInstanceDefinitionObject()) continue;
       if(structural){
         BridgeObject object;
-        if(!read_structural_object(decoded->definition_index, geometry, attrs, object, error, error_capacity, tolerances.m_absolute_tolerance)){
+        if(!read_structural_object(source, decoded->definition_index, geometry, attrs, object, error, error_capacity, tolerances.m_absolute_tolerance)){
           if(ON_InstanceRef::Cast(geometry)!=nullptr) return 0;
           ++decoded->unsupported_object_count;
         } else {
@@ -2391,6 +2399,7 @@ extern "C" int32_t vibo_3dm_object(
            object.color_green,
            object.color_blue,
            object.wire_density,
+           object.opacity,
            object.degree_u,
            object.degree_v,
            object.control_point_count_u,
@@ -2798,6 +2807,21 @@ extern "C" int32_t vibo_3dm_write(
                   "object " + std::to_string(index) +
                       ": object name is invalid");
         return 0;
+      }
+      if (source.opacity < 1.0) {
+        ON_Material material;
+        material.SetDiffuse(model.WireframeColorFromAttributes(*attributes));
+        material.SetTransparency(1.0 - source.opacity);
+        const auto reference = model.AddModelComponent(material, true);
+        const auto* component = reference.ModelComponent();
+        if (component == nullptr) {
+          delete geometry;
+          delete attributes;
+          set_error(error, error_capacity, "OpenNURBS could not add an object material");
+          return 0;
+        }
+        attributes->SetMaterialSource(ON::material_from_object);
+        attributes->m_material_index = component->Index();
       }
       if(index<top_level_start) attributes->SetMode(ON::idef_object);
       if(!source.visible){ON_3dmObjectAttributes hidden;hidden.SetMode(ON::hidden_object);attributes->ApplyParentalControl(hidden,ON_Layer::Default,0x01U);}

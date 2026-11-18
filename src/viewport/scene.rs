@@ -72,6 +72,14 @@ fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) 
     Color32::from_rgb(color.red, color.green, color.blue)
 }
 
+fn shaded_face_color(color: Color32, mode: DisplayMode, opacity: f64) -> Color32 {
+    match mode {
+        DisplayMode::Wireframe => color,
+        DisplayMode::Shaded => color_with_alpha(color, (opacity * 255.0).round() as u8),
+        DisplayMode::Ghosted => color_with_alpha(color, 110),
+    }
+}
+
 // Source snapshots are shared with the geometry cache; pointer equality here is
 // safe because DisplayCache validates immutable snapshot identity before reuse.
 #[derive(Clone)]
@@ -163,9 +171,12 @@ fn push_display_object(
         if display.member_colors_enabled {
             leaf.color = color;
         }
-        if display.face_member_colors_enabled {
-            leaf.face_color = color;
-        }
+        let face_base = if display.face_member_colors_enabled {
+            base
+        } else {
+            display.face_color
+        };
+        leaf.face_color = shaded_face_color(face_base, mode, state.opacity);
         leaf.member_colors_enabled &= !state.locked;
         leaf.face_member_colors_enabled &= !state.locked;
         objects.push(leaf);
@@ -192,6 +203,12 @@ pub(super) struct DepthTriangle {
     pub(super) depth: Real,
     vertex_depths: [Real; 3],
     pub(super) vertices: [GpuTriangleVertex; 3],
+}
+
+impl DepthTriangle {
+    fn is_translucent(&self) -> bool {
+        self.vertices.iter().any(|vertex| vertex.color[3] < 1.0)
+    }
 }
 
 pub(super) struct DepthPrimitive<T, const N: usize> {
@@ -246,9 +263,8 @@ impl GpuSceneBuilder {
         let uniform = viewport.gpu_view_uniform(rect, range);
         if transparent {
             self.triangles.sort_by(|left, right| {
-                let translucent = |t: &DepthTriangle| t.vertices.iter().any(|v| v.color[3] < 1.);
-                translucent(left)
-                    .cmp(&translucent(right))
+                left.is_translucent()
+                    .cmp(&right.is_translucent())
                     .then_with(|| right.depth.total_cmp(&left.depth))
             });
         }
@@ -475,11 +491,7 @@ impl Viewport {
             let mut display = DisplayObject {
                 geometry: cache.get(object, document.tolerance(), document.subd_control_net()),
                 color,
-                face_color: if self.display_mode == DisplayMode::Ghosted {
-                    color_with_alpha(base_color, 110)
-                } else {
-                    base_color
-                },
+                face_color: shaded_face_color(base_color, self.display_mode, attributes.opacity()),
                 draw_faces: true,
                 highlighted,
                 member_colors_enabled: !selected
@@ -665,6 +677,7 @@ impl Viewport {
             if previous.key.mode == key.mode
                 && previous.key.draw_surface_edges == key.draw_surface_edges
                 && previous.key.objects == key.objects
+                && (!previous.scene.geometry.transparent || self.kind.is_parallel())
                 && let Some(uniform) = previous
                     .reprojection
                     .as_ref()
@@ -816,7 +829,9 @@ impl Viewport {
             .complete
             .then(|| Reprojection::new(self, &key.objects, scene.depth_range()))
             .flatten();
-        let scene = Arc::new(scene.finish(self, rect, self.display_mode == DisplayMode::Ghosted));
+        let transparent = self.display_mode == DisplayMode::Ghosted
+            || scene.triangles.iter().any(DepthTriangle::is_translucent);
+        let scene = Arc::new(scene.finish(self, rect, transparent));
         *cached = Some(CachedScene {
             key,
             scene: Arc::clone(&scene),

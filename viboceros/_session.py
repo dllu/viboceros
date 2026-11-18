@@ -271,9 +271,10 @@ class Session:
         self, surface: NurbsSurface, *, domain: Domain | None = None,
         name: str | None = None, color: RGB | None = None,
         trim_loops: Sequence[Sequence[TrimCurve]] = (),
+        opacity: float | None = None,
     ) -> str:
         """Add a NURBS surface using explicit knots and control points."""
-        return self.add_surface_patches(surface, SurfacePatch(domain, name, color, trim_loops))[0]
+        return self.add_surface_patches(surface, SurfacePatch(domain, name, color, trim_loops, opacity))[0]
 
     def surface_definition(self, obj: ObjectLike, *, face: int | None = None) -> NurbsSurface:
         """Read the tensor-product definition of a surface or B-rep face."""

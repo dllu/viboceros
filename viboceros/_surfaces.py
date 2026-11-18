@@ -55,6 +55,7 @@ class SurfacePatch:
     name: str | None = None
     color: RGB | None = None
     trim_loops: Sequence[Sequence[TrimCurve]] = ()
+    opacity: float | None = None
 
     def _payload(self) -> dict:
         return asdict(self)

@@ -177,17 +177,20 @@ class PythonApiTests(unittest.TestCase):
             TrimCurve.line((.75, .75), (.75, .25)),
             TrimCurve.line((.75, .25), (.25, .25)),
         ]
-        face = model.add_nurbs_surface(support, name="Trimmed", trim_loops=[outer, hole])
+        face = model.add_nurbs_surface(support, name="Trimmed", trim_loops=[outer, hole], opacity=.375)
         path = self.folder / "trim.3dm"
         for reopen in (False, True):
             if reopen:
                 model.save(path)
                 model.open(path)
             self.assertEqual(model.object(face).kind, "brep")
+            self.assertEqual(model.object(face).opacity, .375)
             self.assertEqual(len([item for item in model.components(face) if item.kind == "brep_edge"]), 8)
             self.assertEqual(model.surface_jets(face, (.9, .9))[0].duv, (0., 0., 1.))
         with self.assertRaises(SessionError):
             model.add_surface_patches(support, SurfacePatch(), SurfacePatch(trim_loops=[outer[:3]]))
+        with self.assertRaisesRegex(SessionError, "object opacity must be between 0 and 1"):
+            model.add_surface_patches(support, SurfacePatch(), SurfacePatch(opacity=1.01))
         self.assertEqual(len(model.objects()), 1)
 
     @unittest.skipUnless(os.environ.get("VIBOCEROS_TEST_GPU") == "1", "requires a wgpu adapter")

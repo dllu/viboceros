@@ -101,7 +101,12 @@ impl Viewport {
                         } else {
                             255 - transparency
                         };
-                        color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
+                        let mut color =
+                            color_to_gpu(Color32::from_rgba_unmultiplied(red, green, blue, alpha));
+                        if self.display_mode == DisplayMode::Shaded {
+                            color[3] *= gpu_color[3];
+                        }
+                        color
                     })
                 })
             } else {

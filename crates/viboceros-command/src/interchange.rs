@@ -456,6 +456,7 @@ fn import_3dm_model(
             ))
             .with_color_source(document_color_source_from_3dm(object.color_source))
             .with_file_state(object.visible, object.locked)
+            .try_with_opacity(object.opacity)?
             .try_with_wire_density(object.wire_density)?;
         if let Some(name) = object.name {
             attributes = attributes.with_name(name);
@@ -735,6 +736,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
                     object.attributes().color_source(),
                 ),
                 wire_density: object.attributes().wire_density(),
+                opacity: object.attributes().opacity(),
                 group_indices: object
                     .group_ids()
                     .iter()

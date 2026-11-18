@@ -20,6 +20,7 @@ pub(super) struct Patch {
     domain: Option<[[f64; 2]; 2]>,
     name: Option<String>,
     color: Option<[u8; 3]>,
+    opacity: Option<f64>,
     #[serde(default)]
     trim_loops: Vec<Vec<TrimCurve>>,
 }
@@ -136,6 +137,9 @@ pub(super) fn add_patches(
         }
         if let Some([r, g, b]) = patch.color {
             attributes = attributes.with_object_color(ColorRgb::new(r, g, b));
+        }
+        if let Some(opacity) = patch.opacity {
+            attributes = attributes.try_with_opacity(opacity)?;
         }
         let geometry = if patch.trim_loops.is_empty() {
             Geometry::NurbsSurface(surface)

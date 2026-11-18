@@ -35,6 +35,7 @@ class Object:
     locked: bool
     selected: bool
     bounds: tuple[XYZ, XYZ] | None
+    opacity: float = 1.0
 
     @classmethod
     def _read(cls, record: dict[str, Any]) -> Object:

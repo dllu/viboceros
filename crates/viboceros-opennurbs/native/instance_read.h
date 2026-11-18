@@ -51,7 +51,7 @@ bool read_instance_geometry(const ONX_Model& source,const ON_ModelGeometryCompon
   }
   if(output.size()>=100000){error="3DM block expansion exceeds 100000 objects";return false;}
   BridgeObject result;
-  if(!read_geometry_object(geometry,&attributes,result,
+  if(!read_geometry_object(source,geometry,&attributes,result,
       source.m_settings.m_ModelUnitsAndTolerances.m_absolute_tolerance))return false;
   result.placements=placements;output.push_back(std::move(result));return true;
 }

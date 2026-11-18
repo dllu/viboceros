@@ -67,7 +67,10 @@ run the application's `ReadCommandFile` command.
 as `control_net[u][v]`. Supply optional weights with the same layout. Add a
 surface with `add_nurbs_surface()` or use `add_surface_patches()` to extract
 several exact rectangular UV subdomains in a single undo step. Each patch
-keeps the parent's parameterization and can have its own name and color.
+keeps the parent's parameterization and can have its own name, color, and
+opacity. `opacity=0.25` makes a surface translucent in shaded views. Opacity
+ranges from 0 for clear to 1 for opaque and is stored in the object's 3DM
+material. Read it from `model.object(id).opacity`.
 
 Use `trim_loops` on a patch or in `add_nurbs_surface()` to create a B-rep face
 on that support. Supply a simple, counterclockwise outer loop of connected

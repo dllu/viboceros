@@ -340,6 +340,42 @@ fn mesh_vertex_colors_reach_the_gpu_scene() {
 }
 
 #[test]
+fn shaded_opacity_stages_opaque_faces_then_translucent_faces_back_to_front() {
+    let mut document = Document::default();
+    for (height, opacity) in [(2.0, 0.25), (0.0, 1.0), (1.0, 0.5)] {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(-1.0, -1.0, height),
+                point(1.0, -1.0, height),
+                point(0.0, 1.0, height),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .try_with_opacity(opacity)
+            .unwrap();
+        document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh), attributes)
+            .unwrap();
+    }
+    let mut view = Viewport::new(ViewKind::Top);
+    view.display_mode = DisplayMode::Shaded;
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+    let scene = view.object_scene(rect, &document);
+    assert!(scene.geometry.transparent);
+    assert_eq!(
+        scene.triangles.iter().map(|v| v.color[3]).collect::<Vec<_>>(),
+        [1.0; 3]
+            .into_iter()
+            .chain([128.0 / 255.0; 3])
+            .chain([64.0 / 255.0; 3])
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn stored_mesh_normals_reach_shaded_and_ghosted_gpu_scenes() {
     let mut document = Document::default();
     let mesh = TriangleMesh::try_new(

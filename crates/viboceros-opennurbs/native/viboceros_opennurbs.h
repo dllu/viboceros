@@ -49,6 +49,7 @@ typedef struct ViboObjectInfo {
   uint8_t color_green;
   uint8_t color_blue;
   int32_t wire_density;
+  double opacity;
   uint32_t degree_u;
   uint32_t degree_v;
   size_t control_point_count_u;
@@ -143,6 +144,7 @@ typedef struct ViboWriteObject {
   uint8_t color_green;
   uint8_t color_blue;
   int32_t wire_density;
+  double opacity;
   uint32_t degree_u;
   uint32_t degree_v;
   size_t control_point_count_u;

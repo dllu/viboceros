@@ -19,6 +19,7 @@ pub struct BlockInsertionPoint {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BlockMemberDisplay {
     pub color: ColorRgb,
+    pub opacity: f64,
     pub visible: bool,
     pub locked: bool,
 }
@@ -201,6 +202,7 @@ impl Document {
             .ok_or(DocumentError::LayerNotFound(root.layer_id()))?;
         let initial = BlockMemberDisplay {
             color: root.display_color(layer.color()),
+            opacity: root.opacity(),
             visible: root.is_visible() && layer.is_visible(),
             locked: root.is_locked() || layer.is_locked(),
         };
@@ -222,6 +224,7 @@ impl Document {
                     if attributes.color_source() != ObjectColorSource::Parent {
                         display.color = attributes.display_color(layer.color());
                     }
+                    display.opacity *= attributes.opacity();
                     display.visible &= attributes.is_visible() && layer.is_visible();
                     display.locked |= attributes.is_locked();
                 }

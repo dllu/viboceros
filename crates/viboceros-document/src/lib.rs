@@ -176,6 +176,7 @@ pub struct ObjectAttributes {
     layer_id: LayerId,
     object_color: ColorRgb,
     color_source: ObjectColorSource,
+    opacity: f64,
     wire_density: i32,
     visible: bool,
     locked: bool,
@@ -196,6 +197,7 @@ impl ObjectAttributes {
             layer_id,
             object_color: ColorRgb::BLACK,
             color_source: ObjectColorSource::Layer,
+            opacity: 1.0,
             wire_density: DEFAULT_SURFACE_WIRE_DENSITY,
             visible: true,
             locked: false,
@@ -242,6 +244,18 @@ impl ObjectAttributes {
     pub const fn with_color_source(mut self, source: ObjectColorSource) -> Self {
         self.color_source = source;
         self
+    }
+
+    pub fn try_with_opacity(mut self, opacity: f64) -> Result<Self, DocumentError> {
+        if !(0.0..=1.0).contains(&opacity) {
+            return Err(DocumentError::InvalidObjectOpacity(opacity));
+        }
+        self.opacity = opacity;
+        Ok(self)
+    }
+
+    pub const fn opacity(&self) -> f64 {
+        self.opacity
     }
 
     pub fn try_with_wire_density(mut self, wire_density: i32) -> Result<Self, DocumentError> {
@@ -2083,6 +2097,9 @@ pub enum DocumentError {
         "surface wire density must be from {MIN_SURFACE_WIRE_DENSITY} through {MAX_SURFACE_WIRE_DENSITY}, got {0}"
     )]
     InvalidSurfaceWireDensity(i32),
+
+    #[error("object opacity must be between 0 and 1, got {0}")]
+    InvalidObjectOpacity(f64),
 
     #[error("a group must contain at least one object")]
     EmptyGroup,

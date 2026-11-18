@@ -138,6 +138,7 @@ pub(super) fn objects(document: &Document, ids: Option<Vec<String>>) -> Result<V
             "groups": object.group_ids().iter().map(ToString::to_string).collect::<Vec<_>>(),
             "visible": attrs.is_visible(),
             "locked": attrs.is_locked(),
+            "opacity": attrs.opacity(),
             "selected": selected.contains(&object.id()),
             "bounds": geometry.bounds().map(|bounds| [bounds.min().to_array(), bounds.max().to_array()]),
         })

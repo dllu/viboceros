@@ -2,7 +2,7 @@
 struct DefinitionIdLess { bool operator()(const ON_UUID& a,const ON_UUID& b)const{return ON_UuidCompare(a,b)<0;} };
 using DefinitionIndex=std::map<ON_UUID,uint32_t,DefinitionIdLess>;
 
-bool read_structural_object(const DefinitionIndex& definitions,const ON_Geometry* geometry,
+bool read_structural_object(const ONX_Model& model,const DefinitionIndex& definitions,const ON_Geometry* geometry,
     const ON_3dmObjectAttributes* original,BridgeObject& output,char* error,size_t capacity,double model_tolerance){
   ON_3dmObjectAttributes attributes=original==nullptr?ON_3dmObjectAttributes():*original;
   const bool visible=attributes.IsVisible();
@@ -16,12 +16,12 @@ bool read_structural_object(const DefinitionIndex& definitions,const ON_Geometry
     if(!instance->m_xform.IsValid()||!instance->m_xform.IsAffine()){
       set_error(error,capacity,"3DM block placement is not finite affine data");return false;
     }
-    if(!read_geometry_metadata(geometry,&attributes,output))return false;
+    if(!read_geometry_metadata(model,geometry,&attributes,output))return false;
     output.object_type=VIBO_OBJECT_INSTANCE;output.indices.push_back(found->second);
     for(int r=0;r<4;++r)for(int c=0;c<4;++c)output.coordinates.push_back(instance->m_xform[r][c]);
     return true;
   }
-  return read_geometry_object(geometry,&attributes,output,model_tolerance);
+  return read_geometry_object(model,geometry,&attributes,output,model_tolerance);
 }
 
 bool read_structural_blocks(const ONX_Model& source,std::vector<BridgeDefinition>& definitions,
@@ -49,7 +49,7 @@ bool read_structural_blocks(const ONX_Model& source,std::vector<BridgeDefinition
       const auto* geometry=component.Geometry(nullptr);
       if(geometry==nullptr){set_error(error,capacity,"block definition member is missing");return false;}
       BridgeObject object;
-      if(!read_structural_object(indices,geometry,component.Attributes(nullptr),object,error,capacity,
+      if(!read_structural_object(source,indices,geometry,component.Attributes(nullptr),object,error,capacity,
           source.m_settings.m_ModelUnitsAndTolerances.m_absolute_tolerance)){
         set_error(error,capacity,"block definition member is missing or unsupported");return false;
       }
