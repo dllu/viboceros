@@ -5,6 +5,7 @@ pub struct Draft {
     pub sections: Vec<(Frame3, [Real; 2])>,
     pub active: Option<(Frame3, [Real; 2])>,
     pub round_caps: bool,
+    pub cages: Vec<ControlCage>,
 }
 
 impl Input {
@@ -54,6 +55,26 @@ impl Input {
             _ => {}
         }
         let first = sections.first()?.1;
+        if self.settings.output == Output::SubD {
+            let first = wall_profile(&sections, 0, self.closed);
+            let second = sections
+                .iter()
+                .all(|(_, radii)| radii[1] > 0. && radii[0] != radii[1])
+                .then(|| wall_profile(&sections, 1, self.closed));
+            return Some(Draft {
+                sections: vec![],
+                active,
+                round_caps: false,
+                cages: subd::cages(
+                    rail.curve(),
+                    &first,
+                    second.as_ref(),
+                    self.options(),
+                    tolerance,
+                )
+                .unwrap_or_default(),
+            });
+        }
         if self.closed {
             sections.push((1., first));
         }
@@ -66,6 +87,7 @@ impl Input {
             sections,
             active,
             round_caps: !self.closed && !self.settings.thick && self.settings.cap == PipeCap::Round,
+            cages: vec![],
         })
     }
 }

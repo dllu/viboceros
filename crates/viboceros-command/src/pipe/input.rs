@@ -21,6 +21,7 @@ pub struct Preferences {
     by_thickness: bool,
     diameter: bool,
     thick: bool,
+    output: Output,
     cap: PipeCap,
     blend: SweepBlend,
     fit_rail: bool,
@@ -35,6 +36,7 @@ impl Default for Preferences {
             by_thickness: false,
             diameter: false,
             thick: false,
+            output: Output::Surface,
             cap: PipeCap::Flat,
             blend: SweepBlend::Local,
             fit_rail: false,
@@ -84,6 +86,25 @@ impl Input {
 
     pub fn preferences(&self) -> Preferences {
         self.settings
+    }
+
+    fn options(&self) -> PipeOptions {
+        PipeOptions {
+            blend: self.settings.blend,
+            fit_rail: self.settings.fit_rail,
+            cap: self.settings.cap,
+            wall_thickness: None,
+        }
+    }
+
+    fn subd_thick(&self) -> bool {
+        self.settings.output == Output::SubD && self.settings.thick
+    }
+
+    fn normalize_cap(&mut self) {
+        if self.subd_thick() && self.settings.cap == PipeCap::Round {
+            self.settings.cap = PipeCap::Flat;
+        }
     }
 
     pub fn selecting(&self) -> bool {
@@ -139,9 +160,10 @@ impl Input {
     pub fn prompt(&self) -> String {
         if let Some(menu) = self.menu {
             return match menu {
+                Menu::Cap if self.subd_thick() => "Cap (None, Flat)".into(),
                 Menu::Cap => "Cap (None, Flat, Round)".into(),
                 Menu::Blend => "ShapeBlending (Local, Global)".into(),
-                Menu::Output => "Output (Surface)".into(),
+                Menu::Output => "Output (Surface, SubD)".into(),
             };
         }
         let name = self.radius_name();
@@ -183,13 +205,14 @@ impl Input {
                 let units = self.default_size(first) * if self.settings.diameter { 2. } else { 1. };
                 let thick = yes_no(self.settings.thick);
                 let fit = yes_no(self.settings.fit_rail);
+                let output = self.settings.output.label();
                 let thickness = if first.is_some() {
                     ", WallThickness"
                 } else {
                     ""
                 };
                 format!(
-                    "{prefix} <{units}> ({toggle}, Output=Surface, Thick={thick}, Cap={cap}, ShapeBlending={blend}, FitRail={fit}{thickness})"
+                    "{prefix} <{units}> ({toggle}, Output={output}, Thick={thick}, Cap={cap}, ShapeBlending={blend}, FitRail={fit}{thickness})"
                 )
             }
         }
@@ -239,6 +262,7 @@ impl Input {
             self.settings.fit_rail = toggle(value, self.settings.fit_rail)?;
         } else if option_name_eq(name, "Thick") && self.at_first_size() {
             self.settings.thick = toggle(value, self.settings.thick)?;
+            self.normalize_cap();
             if !self.settings.thick {
                 self.fixed_thickness = None;
             }
@@ -280,6 +304,7 @@ impl Input {
                     return Err(CommandError::Usage(USAGE));
                 }
                 self.settings.thick = true;
+                self.normalize_cap();
                 self.settings.thickness = thickness;
                 self.fixed_thickness = Some(thickness);
             } else {
@@ -306,14 +331,19 @@ impl Input {
         match menu {
             Menu::Cap if option_name_eq(choice, "None") => self.settings.cap = PipeCap::None,
             Menu::Cap if option_name_eq(choice, "Flat") => self.settings.cap = PipeCap::Flat,
-            Menu::Cap if option_name_eq(choice, "Round") => self.settings.cap = PipeCap::Round,
+            Menu::Cap if option_name_eq(choice, "Round") && !self.subd_thick() => {
+                self.settings.cap = PipeCap::Round
+            }
             Menu::Blend if option_name_eq(choice, "Local") => {
                 self.settings.blend = SweepBlend::Local
             }
             Menu::Blend if option_name_eq(choice, "Global") => {
                 self.settings.blend = SweepBlend::Global
             }
-            Menu::Output if option_name_eq(choice, "Surface") => {}
+            Menu::Output => {
+                self.settings.output = Output::parse(choice)?;
+                self.normalize_cap();
+            }
             _ => return Err(CommandError::Usage(USAGE)),
         }
         Ok(())
@@ -503,45 +533,45 @@ impl Input {
         if !matches!(self.stage, Stage::Complete) || rails.is_empty() {
             return Err(CommandError::Usage(USAGE));
         }
-        let last = self.sections.len() - 1;
-        let first = self.sections[0].1;
-        let end = if self.closed {
-            first
-        } else {
-            self.sections[last].1
-        };
-        let stations = &self.sections[1..if self.closed {
-            self.sections.len()
-        } else {
-            last.max(1)
-        }];
-        let profile = |wall| {
-            Profile::new(
-                [first[wall], end[wall]],
-                stations.iter().map(|(f, r)| (*f, r[wall])).collect(),
-            )
-        };
-        let a = profile(0);
-        let b = self.settings.thick.then(|| profile(1));
-        let options = PipeOptions {
-            blend: self.settings.blend,
-            fit_rail: self.settings.fit_rail,
-            cap: self.settings.cap,
-            wall_thickness: None,
-        };
+        let a = wall_profile(&self.sections, 0, self.closed);
+        let b = self
+            .settings
+            .thick
+            .then(|| wall_profile(&self.sections, 1, self.closed));
+        let options = self.options();
         let mut outputs = Vec::with_capacity(rails.len());
         for rail in rails {
-            outputs.extend(build::build_walls(
-                rail.geometry(),
-                &a,
-                b.as_ref(),
-                options,
-                use_extrusions,
-                tolerance,
-            )?);
+            outputs.extend(match self.settings.output {
+                Output::Surface => build::build_walls(
+                    rail.geometry(),
+                    &a,
+                    b.as_ref(),
+                    options,
+                    use_extrusions,
+                    tolerance,
+                )?,
+                Output::SubD => {
+                    subd::build_walls(rail.curve(), &a, b.as_ref(), options, tolerance)?
+                }
+            });
         }
         Ok(outputs)
     }
+}
+
+fn wall_profile(sections: &[(Real, [Real; 2])], wall: usize, closed: bool) -> Profile {
+    let first = sections[0].1[wall];
+    let end = if closed {
+        first
+    } else {
+        sections.last().unwrap().1[wall]
+    };
+    let stations = sections
+        .iter()
+        .filter(|(fraction, _)| 0. < *fraction && *fraction < 1.)
+        .map(|&(fraction, radii)| (fraction, radii[wall]))
+        .collect();
+    Profile::new([first, end], stations)
 }
 
 fn measured_radius(frame: Frame3, point: Point3) -> Result<Real, GeometryError> {

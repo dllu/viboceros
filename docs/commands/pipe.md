@@ -8,9 +8,10 @@ to return to an earlier prompt before creating geometry.
 
 `Radius` and `Diameter` switch the size input. `Thick=Yes` asks for both
 wall sizes at each section. Choose `WallThickness` at the second size to apply
-a signed offset through the rest of the pipe. `Cap`, `ShapeBlending`, and
-`FitRail` remain available while sizing. The viewport draws the current
-sections and a sampled wire preview along the rail.
+a signed offset through the rest of the pipe. `Output`, `Cap`, `ShapeBlending`,
+and `FitRail` remain available while sizing. The viewport draws the current
+sections and a sampled wire preview along the rail. `Output=SubD` previews
+the subdivision control cage.
 
 `Multiple` uses the same sizes for every selected rail. `ChainEdges` joins
 the picked connected edges into one rail. Press Enter to finish either
@@ -18,14 +19,14 @@ selection. The command creates all outputs in one undo step.
 
 ## Positional input
 
-Straight constant-radius results follow [UseExtrusions](use-extrusions.md).
-Open thick pipes create two separate walls; flat-capped thick pipes create one
-hollow extrusion when that output mode is enabled.
+Straight constant-radius surface results follow [UseExtrusions](use-extrusions.md).
+Open thick pipes create two separate walls. In Surface mode, flat-capped thick
+pipes create one hollow extrusion when extrusion output is enabled.
 
 Linux `native-smlib` builds use the shared [native sweep fitting and interpolation](../smlib-sweep-interpolation.md)
 for retained/refitted rails and continuous-model wall construction.
 
-`Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`
+`Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Output=Surface|SubD] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`
 creates a circular-profile pipe around one selected curve. The first radius is
 required and the second defaults to the first. For example, after selecting a
 line:
@@ -35,9 +36,15 @@ Pipe 1.5 2.0 Cap=Flat ShapeBlending=Global
 Pipe 1 WallThickness=0.25 Cap=Flat
 Pipe 1 Cap=Round
 Pipe 1 Stations=0.5:2 Cap=Flat
+Pipe 1 2 Output=SubD Cap=Round
 ```
 
-Straight constant-radius rails use exact cylinders. For two different radii,
+`Output=SubD` supports straight rails with constant radii, Local or Global
+tapers, and intermediate Local radius stations. A single wall supports open,
+flat, and round ends. Thick pipes support open or flat ends. Turning on
+`Thick` with round ends selected switches the cap to Flat.
+
+In Surface mode, straight constant-radius rails use exact cylinders. For two different radii,
 `ShapeBlending=Local` uses a smooth cubic radius transition and
 `ShapeBlending=Global` uses a cone. Global round caps use sphere segments
 tangent to the cone; local round caps are hemispheres. A circular rail with one
@@ -114,7 +121,8 @@ surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
 Variable-radius sharp rails with `FitRail=No`, closed rails other than
-constant-radius line loops and circles, and SubD output are still unsupported.
+constant-radius line loops and circles, and SubD output on curved rails
+are still unsupported. Intermediate radii require Local shape blending.
 Closed sharp line loops with `FitRail=No` remain unsupported because Rhino's
 tested rectangle case produces an open five-face result. A
 circular rail requires a pipe radius smaller than the rail radius.

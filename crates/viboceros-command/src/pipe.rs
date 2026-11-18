@@ -6,15 +6,17 @@ mod command;
 mod extrusion;
 mod input;
 mod rail;
+mod subd;
 use build::{BuiltPipe, build};
 pub use input::{Draft, Input, Preferences, RailMode};
 pub use rail::Rail;
+pub use subd::ControlCage;
 use viboceros_geometry::{
     Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3, SurfaceIso,
     SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
-const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
+const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Output=Surface|SubD] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
 
 pub(super) struct PipeCommand(pub use_extrusions::Preference);
 
@@ -33,6 +35,32 @@ enum PipeCap {
     None,
     Flat,
     Round,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+enum Output {
+    #[default]
+    Surface,
+    SubD,
+}
+
+impl Output {
+    fn parse(value: &str) -> Result<Self, CommandError> {
+        if option_name_eq(value, "Surface") {
+            Ok(Self::Surface)
+        } else if option_name_eq(value, "SubD") {
+            Ok(Self::SubD)
+        } else {
+            Err(CommandError::Usage(USAGE))
+        }
+    }
+
+    fn label(self) -> &'static str {
+        match self {
+            Self::Surface => "Surface",
+            Self::SubD => "SubD",
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -55,6 +83,17 @@ impl Profile {
             endpoints,
             stations,
         }
+    }
+
+    fn combine(&self, other: &Self, radius: fn(Real, Real) -> Real) -> Self {
+        Self::new(
+            std::array::from_fn(|end| radius(self.endpoints[end], other.endpoints[end])),
+            self.stations
+                .iter()
+                .zip(&other.stations)
+                .map(|(a, b)| (a.0, radius(a.1, b.1)))
+                .collect(),
+        )
     }
 }
 

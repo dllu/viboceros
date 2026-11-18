@@ -33,6 +33,7 @@ impl Command for PipeCommand {
             start_radius
         };
         let mut cap = None;
+        let mut output = None;
         let mut blend = None;
         let mut fit_rail = None;
         let mut thick = None;
@@ -40,7 +41,9 @@ impl Command for PipeCommand {
         let mut stations = None;
         for argument in &arguments[next..] {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            if option_name_eq(name, "Cap") && cap.is_none() {
+            if option_name_eq(name, "Output") && output.is_none() {
+                output = Some(Output::parse(value)?);
+            } else if option_name_eq(name, "Cap") && cap.is_none() {
                 cap = Some(
                     match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
                         "none" => PipeCap::None,
@@ -78,7 +81,7 @@ impl Command for PipeCommand {
                         let fraction = fraction
                             .parse::<Real>()
                             .map_err(|_| CommandError::InvalidNumber(fraction.to_owned()))?;
-                        if !fraction.is_finite() || !(0.0..1.0).contains(&fraction) {
+                        if !fraction.is_finite() || fraction <= 0.0 || fraction >= 1.0 {
                             return Err(CommandError::Usage(USAGE));
                         }
                         Ok((fraction, positive_radius(radius)?))
@@ -142,6 +145,25 @@ impl Command for PipeCommand {
             .ok_or(CommandError::Usage(USAGE))?;
         let profile = Profile::new([start_radius, end_radius], stations);
         let tolerance = document.tolerance();
+        if output == Some(Output::SubD) {
+            let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
+            let second = wall_thickness.zip(second_radii).map(|(offset, endpoints)| {
+                Profile::new(
+                    endpoints,
+                    profile
+                        .stations
+                        .iter()
+                        .map(|&(f, r)| (f, r + offset))
+                        .collect(),
+                )
+            });
+            let outputs = subd::build_walls(rail, &profile, second.as_ref(), options, tolerance)?;
+            let count = outputs.len();
+            for geometry in outputs {
+                document.add_geometry(geometry)?;
+            }
+            return Ok(format!("Added {count} SubD pipe object(s)"));
+        }
         match build(source, &profile, options, self.0.get().0, tolerance)? {
             BuiltPipe::Straight(outputs) => {
                 let count = outputs.len();

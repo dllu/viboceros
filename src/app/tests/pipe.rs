@@ -131,3 +131,45 @@ fn pipe_chains_surface_edges_without_temporary_objects() {
     assert_eq!(app.document.undo().unwrap().as_deref(), Some("Pipe"));
     assert_eq!(app.document.objects().len(), 1);
 }
+
+#[test]
+fn pipe_subd_previews_the_control_cage_and_commits_one_edit() {
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    app.grid_snap = false;
+    app.osnap = false;
+    enter(&mut app, "Line w0,0,0 w0,0,12");
+    let rail = app.document.objects().next().unwrap().id();
+    enter(&mut app, &format!("Pipe Curve={rail}"));
+    let ctx = egui::Context::default();
+    viewport_frame(&mut app, &ctx, vec![]);
+    viewport_frame(&mut app, &ctx, vec![]);
+    let a = screen_point(&app, point(1., 0., 0.));
+    let b = screen_point(&app, point(2., 0., 0.));
+    let surface = viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(a)]);
+    enter(&mut app, "Output");
+    enter(&mut app, "SubD");
+    let small = viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(a)]);
+    let large = viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(b)]);
+    assert_ne!(surface, small);
+    assert!(!large.is_empty());
+    assert_ne!(small, large);
+    viewport_click(&mut app, &ctx, b);
+    enter(&mut app, "3");
+    enter(&mut app, "w0,0,6");
+    enter(&mut app, "2.5");
+    assert_eq!(app.document.undo_label(), Some("Line"));
+    assert_eq!(app.document.objects().len(), 1);
+    enter(&mut app, "");
+    let Geometry::SubD(subd) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected SubD: {:?}", app.command_log);
+    };
+    assert_eq!(subd.faces().len(), 64);
+    assert!(subd.edge_face_counts().iter().all(|&count| count == 2));
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Pipe"));
+    assert!(!app.document.is_selected(rail));
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.document.redo().unwrap().as_deref(), Some("Pipe"));
+    assert_eq!(app.document.objects().len(), 2);
+}

@@ -61,17 +61,6 @@ pub(super) fn build_walls(
         }
     }
 
-    let combine = |radius: fn(Real, Real) -> Real| {
-        Profile::new(
-            std::array::from_fn(|end| radius(first.endpoints[end], second.endpoints[end])),
-            first
-                .stations
-                .iter()
-                .zip(&second.stations)
-                .map(|(a, b)| (a.0, radius(a.1, b.1)))
-                .collect(),
-        )
-    };
     let make_wall = |profile: Profile| {
         let built = build(
             source,
@@ -99,8 +88,8 @@ pub(super) fn build_walls(
             _ => Err(CommandError::Usage(USAGE)),
         }
     };
-    let outer = make_wall(combine(Real::max))?;
-    let inner = make_wall(combine(Real::min))?;
+    let outer = make_wall(first.combine(second, Real::max))?;
+    let inner = make_wall(first.combine(second, Real::min))?;
     if options.cap == PipeCap::None {
         return Ok(vec![
             Geometry::Brep(outer),

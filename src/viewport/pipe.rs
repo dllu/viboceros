@@ -24,6 +24,11 @@ impl Viewport {
             let Some(draft) = input.draft(rail, cursor, tolerance) else {
                 continue;
             };
+            for cage in &draft.cages {
+                for (a, b) in cage.segments() {
+                    draw(a, b);
+                }
+            }
             for (index, &(frame, radii)) in draft.sections.iter().enumerate() {
                 for (wall, radius) in radii.into_iter().enumerate().filter(|&(_, r)| r > 0.) {
                     if index % 8 == 0 || index + 1 == draft.sections.len() {
