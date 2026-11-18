@@ -104,7 +104,6 @@ impl InteractiveCommand {
             Self::RectanglePrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
-            Self::MeshPlane { .. } => "MeshPlane",
             Self::Polygon { .. } => "Polygon",
             Self::Pyramid { kind, .. } => kind.name(),
             Self::SurfacePointGrid { control, .. } => {
@@ -292,7 +291,6 @@ impl InteractiveCommand {
             | Self::Plane { first: None }
             | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
-            | Self::MeshPlane { first: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -390,7 +388,6 @@ impl InteractiveCommand {
             | Self::Plane { first: start }
             | Self::SelBox { base: start, .. }
             | Self::PointGrid { base: start, .. }
-            | Self::MeshPlane { first: start, .. }
             | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }

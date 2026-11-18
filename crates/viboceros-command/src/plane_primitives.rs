@@ -567,57 +567,6 @@ impl Command for PolygonCommand {
     }
 }
 
-pub(super) struct MeshPlaneCommand;
-
-impl Command for MeshPlaneCommand {
-    fn name(&self) -> &'static str {
-        "MeshPlane"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        self.run_in_context(document, arguments, CommandContext::default())
-    }
-
-    fn run_in_context(
-        &self,
-        document: &mut Document,
-        arguments: &[&str],
-        context: CommandContext,
-    ) -> Result<String, CommandError> {
-        let plane = context.construction_plane;
-        let leading_options = mesh_plane_leading_option_count(arguments);
-        let (first, opposite, options) = if leading_options == 0 {
-            let (first, first_consumed) = parse_point(arguments)?;
-            let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
-            let options =
-                parse_mesh_plane_arguments(&arguments[first_consumed + opposite_consumed..])?;
-            (first, opposite, options)
-        } else {
-            let options = parse_mesh_plane_arguments(&arguments[..leading_options])?;
-            let (first, first_consumed) = parse_point(&arguments[leading_options..])?;
-            let point_start = leading_options + first_consumed;
-            let (opposite, opposite_consumed) = parse_point(&arguments[point_start..])?;
-            require_consumed(arguments, point_start + opposite_consumed, MESH_PLANE_USAGE)?;
-            (first, opposite, options)
-        };
-        let frame = plane.with_origin(first);
-        let [x, y, _] = frame.coordinates_of(opposite)?;
-        let mesh = TriangleMesh::try_plane_grid(
-            frame,
-            [x.min(0.0), x.max(0.0)],
-            [y.min(0.0), y.max(0.0)],
-            options.x_count,
-            options.y_count,
-            document.tolerance(),
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added mesh plane {id} ({} × {} faces)",
-            options.x_count, options.y_count
-        ))
-    }
-}
-
 pub(super) struct MeshBoxCommand;
 
 impl Command for MeshBoxCommand {

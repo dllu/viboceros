@@ -375,44 +375,6 @@ impl VibocerosApp {
                 width: None,
                 options,
             }
-        } else if normalized == "meshplane" {
-            let mut x_count = DEFAULT_MESH_PLANE_FACE_COUNT;
-            let mut y_count = DEFAULT_MESH_PLANE_FACE_COUNT;
-            let mut x_seen = false;
-            let mut y_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let Ok(count) = value.parse::<usize>() else {
-                    return false;
-                };
-                if count == 0 {
-                    return false;
-                }
-                if name.eq_ignore_ascii_case("XCount") && !x_seen {
-                    x_count = count;
-                    x_seen = true;
-                } else if name.eq_ignore_ascii_case("YCount") && !y_seen {
-                    y_count = count;
-                    y_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            if x_count
-                .checked_mul(y_count)
-                .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshPlane {
-                first: None,
-                x_count,
-                y_count,
-            }
         } else if matches!(normalized.as_str(), "interpcrv" | "interpcurve") {
             let Ok(options) = parse_interp_curve_options(&arguments) else {
                 return false;

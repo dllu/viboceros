@@ -47,6 +47,7 @@ use mesh_component_weld::{WeldEdgeCommand, WeldVerticesCommand};
 use mesh_seams::{UnweldCommand, WeldCommand};
 pub mod box_input;
 pub mod insert_point;
+pub mod mesh_plane;
 mod morph_edit;
 pub mod orient_curve;
 pub mod orient_curve_edge;
@@ -439,7 +440,7 @@ use set_point::SetPointCommand;
 mod plane_transform_tests;
 pub use context::CommandContext;
 use plane_primitives::{
-    BoxCommand, CircleCommand, MeshBoxCommand, MeshPlaneCommand, PolygonCommand, RectangleCommand,
+    BoxCommand, CircleCommand, MeshBoxCommand, PolygonCommand, RectangleCommand,
 };
 mod blend;
 pub mod blend_surface;
@@ -1048,6 +1049,7 @@ pub struct CommandRegistry {
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
+    mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
@@ -1423,7 +1425,9 @@ impl CommandRegistry {
             .register(MeshToNurbCommand::default())
             .expect("unique built-in command");
         registry
-            .register(MeshPlaneCommand)
+            .register(mesh_plane::MeshPlaneCommand(
+                registry.mesh_plane_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(mesh_sphere::MeshSphereCommand(
@@ -5558,77 +5562,7 @@ fn parse_mesh_arguments(arguments: &[&str]) -> Result<MeshCommandOptions, Comman
     })
 }
 
-pub const DEFAULT_MESH_PLANE_FACE_COUNT: usize = 10;
-const MESH_PLANE_USAGE: &str =
-    "MeshPlane first-corner opposite-corner [XCount=positive-integer] [YCount=positive-integer]";
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct MeshPlaneCommandOptions {
-    x_count: usize,
-    y_count: usize,
-}
-
-fn mesh_plane_leading_option_count(arguments: &[&str]) -> usize {
-    let mut index = 0;
-    while let Some(argument) = arguments.get(index) {
-        let name = argument.split_once('=').map_or(*argument, |(name, _)| name);
-        if !option_name_eq(name, "XCount") && !option_name_eq(name, "YCount") {
-            break;
-        }
-        index = index.saturating_add(if argument.contains('=') { 1 } else { 2 });
-        if index >= arguments.len() {
-            return arguments.len();
-        }
-    }
-    index
-}
-
-fn parse_mesh_plane_arguments(arguments: &[&str]) -> Result<MeshPlaneCommandOptions, CommandError> {
-    let mut options = MeshPlaneCommandOptions {
-        x_count: DEFAULT_MESH_PLANE_FACE_COUNT,
-        y_count: DEFAULT_MESH_PLANE_FACE_COUNT,
-    };
-    let mut x_seen = false;
-    let mut y_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
-            (name, value, 1)
-        } else if option_name_eq(argument, "XCount") || option_name_eq(argument, "YCount") {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(MESH_PLANE_USAGE))?;
-            (argument, *value, 2)
-        } else {
-            return Err(CommandError::Usage(MESH_PLANE_USAGE));
-        };
-        let count = value
-            .trim_start_matches('_')
-            .parse::<usize>()
-            .ok()
-            .filter(|count| *count > 0)
-            .ok_or_else(|| CommandError::InvalidMeshPlaneFaceCount(value.to_owned()))?;
-        if option_name_eq(name, "XCount") && !x_seen {
-            options.x_count = count;
-            x_seen = true;
-        } else if option_name_eq(name, "YCount") && !y_seen {
-            options.y_count = count;
-            y_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_PLANE_USAGE));
-        }
-        index += consumed;
-    }
-    if options
-        .x_count
-        .checked_mul(options.y_count)
-        .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
-    {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
-}
+pub use mesh_plane::DEFAULT_FACE_COUNT as DEFAULT_MESH_PLANE_FACE_COUNT;
 
 pub const DEFAULT_MESH_BOX_FACE_COUNT: usize = 1;
 const MESH_BOX_USAGE: &str = "MeshBox base-corner opposite-base-corner height-or-point [XCount=positive-integer] [YCount=positive-integer] [ZCount=positive-integer]";

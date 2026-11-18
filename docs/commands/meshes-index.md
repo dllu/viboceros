@@ -9,6 +9,7 @@
 - [MeshFromLines from connected line networks](mesh-from-lines.md)
 - [MeshPolyline from closed polylines](mesh-polyline.md)
 - [MeshBox construction modes and face counts](box.md)
+- [MeshPlane rectangle modes and live quad grid](mesh-plane.md)
 - [3DFace from corner points and boundary edges](3dface.md)
 - [ToSubD: mesh, surface, extrusion and selected-face conversion](to-subd.md)
 - [Inset: grouped SubD regions and individual mesh/control faces](inset.md)

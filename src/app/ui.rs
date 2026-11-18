@@ -1455,6 +1455,11 @@ impl VibocerosApp {
                             box_square_plane: rectangle_input.and_then(|_| {
                                 self.rectangle_primitive_session.as_ref()?.square_plane()
                             }),
+                            rectangle_mesh_counts: rectangle_input.and_then(|_| {
+                                self.rectangle_primitive_session
+                                    .as_ref()?
+                                    .mesh_plane_preview_counts()
+                            }),
                             srf_pt_input,
                             surface_point_grid,
                             surface_flow_preview: self

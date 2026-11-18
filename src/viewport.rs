@@ -32,6 +32,7 @@ mod drafting;
 mod paraboloid;
 mod pipe;
 mod pyramid;
+mod rectangle_grid;
 mod solid_axial;
 pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
 mod ellipsoid;
@@ -457,6 +458,7 @@ pub struct ViewportInput<'a> {
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
     pub box_square_plane: Option<Frame3>,
+    pub rectangle_mesh_counts: Option<[usize; 2]>,
     pub srf_pt_input: Option<viboceros_command::srf_pt::Input>,
     pub surface_point_grid: Option<(&'a [Point3], usize)>,
     pub flow_preview: Option<FlowPreview<'a>>,
@@ -609,6 +611,7 @@ impl Default for ViewportInput<'_> {
             conic_reference: None,
             rectangle_input: None,
             box_square_plane: None,
+            rectangle_mesh_counts: None,
             srf_pt_input: None,
             surface_point_grid: None,
             flow_preview: None,
@@ -3101,6 +3104,8 @@ impl Viewport {
                         );
                     }
                 }
+            } else if let Some(counts) = input.rectangle_mesh_counts {
+                self.paint_rectangle_mesh_grid(&painter, rect, rectangle.corners, counts);
             } else {
                 for index in 0..4 {
                     if let Some(segment) = self.project_segment(

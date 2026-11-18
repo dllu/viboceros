@@ -394,11 +394,6 @@ pub(super) enum InteractiveCommand {
         width: Option<f64>,
         options: viboceros_command::PointGridOptions,
     },
-    MeshPlane {
-        first: Option<Point3>,
-        x_count: usize,
-        y_count: usize,
-    },
     Pyramid {
         kind: viboceros_command::pyramid::Kind,
         anchor: Option<Point3>,

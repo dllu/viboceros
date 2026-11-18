@@ -3,16 +3,15 @@ use std::collections::VecDeque;
 use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
-    CommandRegistry, DEFAULT_MESH_PLANE_FACE_COUNT, DistributionSettings,
-    format_interp_curve_options, parse_curve_closure, parse_curve_degree,
-    parse_interp_curve_options, update_interp_curve_options,
+    CommandRegistry, DistributionSettings, format_interp_curve_options, parse_curve_closure,
+    parse_curve_degree, parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_PLANE_FACES,
-    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Frame3, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
+    Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};

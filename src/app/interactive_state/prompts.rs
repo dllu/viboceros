@@ -413,12 +413,6 @@ impl InteractiveCommand {
             Self::Rectangle { first: Some(_) } => {
                 "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
             }
-            Self::MeshPlane { first: None, .. } => {
-                "MeshPlane: pick the first corner in the viewport (Esc to cancel)"
-            }
-            Self::MeshPlane { first: Some(_), .. } => {
-                "MeshPlane: pick the opposite corner in the viewport (Esc to cancel)"
-            }
             Self::PointGrid {
                 base: None,
                 options,
@@ -506,6 +500,10 @@ impl InteractiveCommand {
                 kind: rectangle_primitives::Kind::Plane,
                 ..
             } => "SubDPlane: pick rectangle points; Esc cancels",
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::MeshPlane,
+                ..
+            } => "MeshPlane: pick rectangle points or set face counts",
             Self::RectanglePrimitive { .. } => "Pick a box corner or height; Esc cancels",
             Self::SelBox { base: None, .. } => "SelBox: pick the first base corner (Esc to cancel)",
             Self::SelBox {

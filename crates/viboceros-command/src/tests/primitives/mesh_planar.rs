@@ -177,18 +177,14 @@ fn mesh_plane_creates_an_unselected_rhino_ordered_top_view_grid() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
     assert_eq!(
-        parse_mesh_plane_arguments(&[]).unwrap(),
-        MeshPlaneCommandOptions {
-            x_count: 10,
-            y_count: 10,
-        }
+        mesh_plane::counts_from_arguments(&[]).unwrap().counts,
+        [10, 10]
     );
     assert_eq!(
-        parse_mesh_plane_arguments(&["_XCount=_2", "-YCount", "3"]).unwrap(),
-        MeshPlaneCommandOptions {
-            x_count: 2,
-            y_count: 3,
-        }
+        mesh_plane::counts_from_arguments(&["_XCount=_2", "-YCount", "3"])
+            .unwrap()
+            .counts,
+        [2, 3]
     );
 
     let message = registry

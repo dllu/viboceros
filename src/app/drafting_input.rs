@@ -1058,46 +1058,6 @@ impl VibocerosApp {
                 ));
                 self.push_log(command.prompt().to_owned());
             }
-            InteractiveCommand::MeshPlane {
-                first: None,
-                x_count,
-                y_count,
-            } => {
-                let command = InteractiveCommand::MeshPlane {
-                    first: Some(point),
-                    x_count,
-                    y_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("First corner: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshPlane {
-                first: Some(first),
-                x_count,
-                y_count,
-            } => {
-                if !plane_rectangle_exceeds_tolerance(
-                    plane,
-                    first,
-                    point,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(
-                        "Error: mesh-plane width and height must both exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshPlane {} {} XCount={} YCount={}",
-                    format_model_point(first),
-                    format_model_point(point),
-                    x_count,
-                    y_count
-                ));
-            }
             InteractiveCommand::SelBox {
                 base,
                 opposite,

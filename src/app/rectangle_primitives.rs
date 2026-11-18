@@ -5,7 +5,7 @@ pub(super) mod tests;
 use viboceros_command::subd_box as solver;
 use viboceros_command::subd_plane as plane_solver;
 use viboceros_command::{
-    box_input,
+    box_input, mesh_plane,
     rectangle_input::{RectangleDefinition, RectangleMode},
 };
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -14,6 +14,7 @@ pub(super) enum Kind {
     Plane,
     SolidBox,
     MeshBox,
+    MeshPlane,
 }
 impl Kind {
     pub(super) const fn name(self) -> &'static str {
@@ -22,11 +23,28 @@ impl Kind {
             Self::Plane => "SubDPlane",
             Self::SolidBox => "Box",
             Self::MeshBox => "MeshBox",
+            Self::MeshPlane => "MeshPlane",
         }
     }
 
-    fn is_solid_or_mesh(self) -> bool {
+    fn has_box_modes(self) -> bool {
         matches!(self, Self::SolidBox | Self::MeshBox)
+    }
+
+    fn has_edge_midpoint(self) -> bool {
+        self.has_box_modes() || self == Self::MeshPlane
+    }
+
+    fn is_surface(self) -> bool {
+        matches!(self, Self::Plane | Self::MeshPlane)
+    }
+
+    fn validate_counts(self, [x, y, z]: [usize; 3]) -> Result<(), viboceros_command::CommandError> {
+        match self {
+            Self::MeshBox => box_input::check_mesh_counts([x, y, z]),
+            Self::MeshPlane => mesh_plane::Preferences { counts: [x, y] }.validate(),
+            _ => Ok(()),
+        }
     }
 }
 use viboceros_document::HistoryGroup;
@@ -54,7 +72,7 @@ struct DiagonalMode {
 fn axes(kind: Kind) -> &'static [&'static str] {
     match kind {
         Kind::Box | Kind::MeshBox => &["XCount", "YCount", "ZCount"],
-        Kind::Plane => &["XCount", "YCount"],
+        Kind::Plane | Kind::MeshPlane => &["XCount", "YCount"],
         Kind::SolidBox => &[],
     }
 }
@@ -85,6 +103,14 @@ fn count_option(
             *counts = updated;
             Ok(Some(consumed))
         }
+        Kind::MeshPlane => {
+            let mut preferences = mesh_plane::Preferences {
+                counts: [counts[0], counts[1]],
+            };
+            let result = preferences.option(args)?;
+            *counts = [preferences.counts[0], preferences.counts[1], 1];
+            Ok(result)
+        }
         Kind::SolidBox => Ok(None),
     }
 }
@@ -106,12 +132,15 @@ fn mode_option(
         }
         return false;
     }
-    if kind.is_solid_or_mesh() {
-        if word.eq_ignore_ascii_case("Diagonal") && rectangle.input.anchor().is_none() {
+    if kind.has_edge_midpoint() {
+        if kind.has_box_modes()
+            && word.eq_ignore_ascii_case("Diagonal")
+            && rectangle.input.anchor().is_none()
+        {
             *diagonal = Some(DiagonalMode::default());
             return true;
         }
-        return box_input::rectangle_option(&mut rectangle.input, word, kind == Kind::MeshBox);
+        return box_input::rectangle_option(&mut rectangle.input, word, kind != Kind::SolidBox);
     }
     solver::rectangle_option(&mut rectangle.input, word)
 }
@@ -126,8 +155,16 @@ impl Session {
             .flatten()
     }
 
-    pub(super) fn uses_box_modes(&self) -> bool {
-        self.kind.is_solid_or_mesh()
+    pub(super) fn uses_primitive_modes(&self) -> bool {
+        self.kind.has_edge_midpoint()
+    }
+
+    pub(super) fn mesh_plane_preview_counts(&self) -> Option<[usize; 2]> {
+        (self.kind == Kind::MeshPlane).then_some([self.counts[0], self.counts[1]])
+    }
+
+    pub(super) fn setting_count(&self) -> bool {
+        self.value.is_some()
     }
 
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
@@ -139,20 +176,24 @@ impl Session {
         let starting = self.rectangle.input.anchor().is_none();
         let mut phase = if self.rectangle.cursor_curve().is_some() {
             "center on curve"
-        } else if starting && mode == RectangleMode::Corners && self.kind.is_solid_or_mesh() {
+        } else if starting && mode == RectangleMode::Corners && self.kind.has_box_modes() {
             if self.kind == Kind::MeshBox {
                 "first corner (Diagonal, 3Point, Vertical, Center, AroundCurve)"
             } else {
                 "first corner (Diagonal, 3Point, Vertical, Center)"
             }
-        } else if starting && mode == RectangleMode::ThreePoint && self.kind.is_solid_or_mesh() {
+        } else if starting && mode == RectangleMode::ThreePoint && self.kind.has_edge_midpoint() {
             "start of first edge (EdgeMidpoint)"
+        } else if self.kind == Kind::MeshPlane && self.rectangle.input.square_plane().is_some() {
+            "opposite corner or length (3Point)"
         } else {
             self.rectangle.input.prompt()
         }
         .to_owned();
-        for (axis, count) in axes(self.kind).iter().zip(self.counts) {
-            phase.push_str(&format!(" {axis}={count}"));
+        if starting || self.kind != Kind::MeshPlane {
+            for (axis, count) in axes(self.kind).iter().zip(self.counts) {
+                phase.push_str(&format!(" {axis}={count}"));
+            }
         }
         phase
     }
@@ -236,6 +277,7 @@ impl VibocerosApp {
             Some("subdplane") => Kind::Plane,
             Some("box") => Kind::SolidBox,
             Some("meshbox") => Kind::MeshBox,
+            Some("meshplane") => Kind::MeshPlane,
             _ => return false,
         };
         let mut counts = match kind {
@@ -246,6 +288,10 @@ impl VibocerosApp {
             }
             Kind::SolidBox => [1; 3],
             Kind::MeshBox => self.mesh_box_counts,
+            Kind::MeshPlane => {
+                let [x, y] = self.commands.mesh_plane_preferences().counts;
+                [x, y, 1]
+            }
         };
         let mut rectangle =
             rectangle::InputSession::new(self.viewports[self.active_viewport].construction_plane());
@@ -265,7 +311,7 @@ impl VibocerosApp {
             }
             i += 1;
         }
-        if kind == Kind::MeshBox && box_input::check_mesh_counts(counts).is_err() {
+        if kind.validate_counts(counts).is_err() {
             return false;
         }
         self.cancel_interactive_command(false);
@@ -307,6 +353,12 @@ impl VibocerosApp {
                     });
             }
             Kind::MeshBox => self.mesh_box_counts = s.counts,
+            Kind::MeshPlane => {
+                self.commands
+                    .remember_mesh_plane_preferences(mesh_plane::Preferences {
+                        counts: [s.counts[0], s.counts[1]],
+                    })
+            }
             Kind::SolidBox => {}
         }
         let name = s.kind.name();
@@ -315,8 +367,13 @@ impl VibocerosApp {
             .map(|b| b.corners[0])
             .or_else(|| s.diagonal.and_then(|mode| mode.frame.map(Frame3::origin)))
             .or(s.rectangle.input.anchor());
-        let message = if let Some(value) = s.value {
-            format!("{name}: {value}")
+        let message = if let Some((axis, count)) = axes(s.kind)
+            .iter()
+            .copied()
+            .zip(s.counts)
+            .find(|&(axis, _)| s.value == Some(axis))
+        {
+            format!("{name}: {axis} <{count}>")
         } else if s.base.is_some() && s.diagonal.is_some() {
             format!("{name}: height point")
         } else if let Some(base) = s.base {
@@ -367,7 +424,7 @@ impl VibocerosApp {
             return false;
         }
         let session = self.rectangle_primitive_session.as_mut().unwrap();
-        if session.kind.is_solid_or_mesh()
+        if session.kind.has_edge_midpoint()
             && [base.corners[1], base.corners[3]]
                 .into_iter()
                 .any(|corner| {
@@ -376,13 +433,23 @@ impl VibocerosApp {
                         .is_ok_and(|length| length > session.tolerance.absolute())
                 })
         {
-            self.push_log("Error: box base dimensions must exceed model tolerance".into());
+            let message = format!(
+                "Error: {} dimensions must exceed model tolerance",
+                session.kind.name()
+            );
+            self.push_log(message);
             return false;
         }
         session.base = Some(base);
         self.point_filter = None;
         self.point_constraint = None;
-        if self.rectangle_primitive_session.as_ref().unwrap().kind == Kind::Plane {
+        if self
+            .rectangle_primitive_session
+            .as_ref()
+            .unwrap()
+            .kind
+            .is_surface()
+        {
             return self.finish_rectangle_primitive(0.);
         }
         self.rectangle_primitive_prompt();
@@ -422,6 +489,15 @@ impl VibocerosApp {
             )
             .map(Geometry::Mesh)
             .map_err(Into::into),
+            Kind::MeshPlane => mesh_plane::geometry(
+                base,
+                mesh_plane::Preferences {
+                    counts: [s.counts[0], s.counts[1]],
+                },
+                self.document.tolerance(),
+            )
+            .map(Geometry::Mesh)
+            .map_err(Into::into),
         } {
             Ok(g) => g,
             Err(e) => {
@@ -429,6 +505,8 @@ impl VibocerosApp {
                     self.rectangle_primitive_session = None;
                     self.active_command = None;
                     self.drafting_plane = None;
+                } else if s.kind == Kind::MeshPlane {
+                    self.rectangle_primitive_session.as_mut().unwrap().base = None;
                 }
                 self.push_log(format!("Error: {e}"));
                 return false;
@@ -546,23 +624,26 @@ impl VibocerosApp {
             }
             return false;
         }
-        if s.kind == Kind::Plane
+        if s.kind.is_surface()
             && word
                 .split('=')
                 .next()
                 .is_some_and(|name| name.eq_ignore_ascii_case("ZCount"))
         {
-            self.push_log("SubDPlane uses XCount and YCount".into());
+            let message = format!("{} uses XCount and YCount", s.kind.name());
+            self.push_log(message);
             return true;
         }
-        if s.kind.is_solid_or_mesh() && mode_option(s.kind, &mut s.rectangle, &mut s.diagonal, word)
+        if s.value.is_none()
+            && s.kind.has_edge_midpoint()
+            && mode_option(s.kind, &mut s.rectangle, &mut s.diagonal, word)
         {
             self.point_filter = None;
             self.point_constraint = None;
             self.rectangle_primitive_prompt();
             return true;
         }
-        if !s.kind.is_solid_or_mesh()
+        if !s.kind.has_edge_midpoint()
             && ["Cube", "Diagonal", "EdgeMidpoint"]
                 .iter()
                 .any(|s| word.eq_ignore_ascii_case(s))
@@ -580,8 +661,16 @@ impl VibocerosApp {
         }
         if s.building_rectangle()
             && s.rectangle.input.anchor().is_none()
-            && s.rectangle.cursor_curve().is_none()
+            && (s.kind == Kind::MeshPlane || s.rectangle.cursor_curve().is_none())
         {
+            if s.kind == Kind::MeshPlane
+                && s.value.is_some()
+                && (word.is_empty() || word.eq_ignore_ascii_case("Enter"))
+            {
+                s.value = None;
+                self.rectangle_primitive_prompt();
+                return true;
+            }
             let args = input.split_whitespace().collect::<Vec<_>>();
             let option = s.value.map_or_else(
                 || args.clone(),
@@ -602,9 +691,7 @@ impl VibocerosApp {
             let mut counts = s.counts;
             match count_option(s.kind, &mut counts, &option) {
                 Ok(Some(n)) if n == option.len() => {
-                    if s.kind == Kind::MeshBox
-                        && let Err(error) = box_input::check_mesh_counts(counts)
-                    {
+                    if let Err(error) = s.kind.validate_counts(counts) {
                         self.push_log(format!("Error: {error}"));
                         return true;
                     }

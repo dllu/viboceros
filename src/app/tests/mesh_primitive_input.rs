@@ -100,14 +100,14 @@ fn interactive_mesh_plane_retains_counts_and_normalizes_corner_order() {
     let first = point(4.0, 3.0, 2.0);
     app.accept_drafting_point(first);
     app.accept_drafting_point(point(4.0, 0.0, 8.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshPlane {
-            first: Some(first),
-            x_count: 2,
-            y_count: 3,
-        })
-    );
+    let input = &app
+        .rectangle_primitive_session
+        .as_ref()
+        .unwrap()
+        .rectangle
+        .input;
+    assert_eq!(input.anchor(), Some(first));
+    assert_eq!(app.commands.mesh_plane_preferences().counts, [2, 3]);
     assert_eq!(app.document.objects().len(), 0);
 
     app.accept_drafting_point(point(0.0, 0.0, 8.0));

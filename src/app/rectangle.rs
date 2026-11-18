@@ -229,7 +229,13 @@ impl VibocerosApp {
     }
     pub(super) fn accept_rectangle_point(&mut self, point: Point3) -> Option<bool> {
         self.rectangle_getter()?;
-        if !self.validate_plane_surface() || self.plane_surface_setting_pending() {
+        if !self.validate_plane_surface()
+            || self.plane_surface_setting_pending()
+            || self
+                .rectangle_primitive_session
+                .as_ref()
+                .is_some_and(|s| s.setting_count())
+        {
             return Some(false);
         }
         self.validate_rectangle_curve();
@@ -297,7 +303,7 @@ impl VibocerosApp {
         if !self
             .rectangle_primitive_session
             .as_ref()
-            .is_some_and(|s| s.uses_box_modes())
+            .is_some_and(|s| s.uses_primitive_modes())
             && self.rectangle_getter_mut().unwrap().input.option(word)
         {
             if self.rectangle_getter().unwrap().input.mode() != prior_mode {

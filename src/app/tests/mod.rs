@@ -182,6 +182,7 @@ mod merge_surfaces;
 mod mesh_edit_input;
 mod mesh_ellipsoid_getters;
 mod mesh_face_prompt;
+mod mesh_plane_modes;
 mod mesh_primitive_input;
 mod mesh_sphere;
 mod mesh_torus;
