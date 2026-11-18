@@ -7,7 +7,7 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from threading import Event, Lock, Timer
-from typing import Any
+from typing import Any, Literal
 
 from ._surfaces import Domain, NurbsSurface, RGB, SurfaceJet, SurfacePatch, SurfaceSample, TrimCurve, UV
 from ._types import (
@@ -308,12 +308,13 @@ class Session:
         size: tuple[int, int] = (1200, 800), fit: bool = True,
         background: tuple[int, int, int, int] = (255, 255, 255, 255),
         camera: Camera | None = None, show_edges: bool = True,
+        lighting: Literal["viewport", "diffuse"] = "viewport",
     ) -> Path:
         """Write a PNG using a viewport, named view, or standard view direction."""
         path = _path(path)
         self._request(
             "screenshot", path=str(path), view=view, mode=mode, size=size,
             fit=fit, background=background, camera=None if camera is None else camera._payload(),
-            show_edges=show_edges,
+            show_edges=show_edges, lighting=lighting,
         )
         return path

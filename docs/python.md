@@ -101,6 +101,8 @@ adapter works without a desktop session.
 Pass `camera=Camera(eye=(...), target=(...))` for a custom perspective and
 `show_edges=False` to hide tessellated object wires in shaded captures.
 Standalone model curves remain visible.
+`lighting="diffuse"` shades the model colors with a directional light and
+ambient fill. The default `lighting="viewport"` uses the desktop shading.
 
 Use `model.run("NamedView Save Front detail")` to save the active camera and
 pass `view="Front detail"` to capture it.

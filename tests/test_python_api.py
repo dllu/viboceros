@@ -217,6 +217,15 @@ class PythonApiTests(unittest.TestCase):
         edges = model.screenshot(self.folder / "camera-edges.png", camera=camera, size=size)
         self.assertNotEqual(clean.read_bytes(), blank)
         self.assertNotEqual(clean.read_bytes(), edges.read_bytes())
+        diffuse = model.screenshot(
+            self.folder / "diffuse.png", camera=camera, show_edges=False, size=size, lighting="diffuse",
+        )
+        self.assertNotEqual(diffuse.read_bytes(), blank)
+        self.assertNotEqual(diffuse.read_bytes(), clean.read_bytes())
+        default_again = model.screenshot(
+            self.folder / "default-again.png", camera=camera, show_edges=False, size=size,
+        )
+        self.assertEqual(clean.read_bytes(), default_again.read_bytes())
 
 
 if __name__ == "__main__":

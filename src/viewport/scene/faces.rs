@@ -116,6 +116,8 @@ impl Viewport {
             let normals = normals.map(vector_to_gpu);
             let shading = if appearance.draft.is_some() || appearance.analysis_colors.is_some() {
                 0.
+            } else if self.diffuse_lighting {
+                2.
             } else {
                 1.
             };

@@ -764,6 +764,10 @@ fn shaded_triangle(input: TriangleOutput) -> vec4<f32> {
     let normal = normalize(input.normal + vec3<f32>(0.0, 0.0, 1.0e-20));
     let light = normalize(vec3<f32>(-0.35, -0.45, 0.82));
     let illumination = clamp(abs(dot(normal, light)), 0.0, 1.0);
+    if input.shading > 1.5 {
+        let reflected = srgb_to_linear(input.color.rgb) * (0.40 + 0.60 * illumination);
+        return vec4<f32>(linear_to_srgb(reflected), input.color.a);
+    }
     let whiten = input.shading * (0.35 + 0.55 * illumination);
     return vec4<f32>(mix(input.color.rgb, vec3<f32>(1.0), whiten), input.color.a);
 }

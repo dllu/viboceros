@@ -15,6 +15,16 @@ pub(super) struct Screenshot {
     background: [u8; 4],
     #[serde(default = "show_edges")]
     show_edges: bool,
+    #[serde(default)]
+    lighting: Lighting,
+}
+
+#[derive(Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum Lighting {
+    #[default]
+    Viewport,
+    Diffuse,
 }
 
 fn show_edges() -> bool {
@@ -49,6 +59,7 @@ impl Session {
         };
         viewport.display_mode = DisplayMode::parse(&options.mode).ok_or("unknown display mode")?;
         viewport.draw_surface_edges = options.show_edges;
+        viewport.diffuse_lighting = matches!(options.lighting, Lighting::Diffuse);
         let [width, height] = options.size;
         let rect =
             egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(width as f32, height as f32));
